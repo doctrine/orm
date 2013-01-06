@@ -19,6 +19,9 @@
 
 namespace Doctrine\ORM\Proxy;
 
+use Doctrine\ORM\Configuration;
+use Closure;
+
 /**
  * Special Autoloader for Proxy classes because them not being PSR-0 compatible.
  *
@@ -61,7 +64,7 @@ class Autoloader
      *
      * @return \Closure
      */
-    static public function register($proxyDir, $proxyNamespace, \Closure $notFoundCallback = null)
+    static public function register($proxyDir, $proxyNamespace, Closure $notFoundCallback = null)
     {
         $proxyNamespace = ltrim($proxyNamespace, "\\");
         $autoloader = function($className) use ($proxyDir, $proxyNamespace, $notFoundCallback) {
@@ -80,4 +83,18 @@ class Autoloader
 
         return $autoloader;
     }
+
+    /**
+     * Registers and returns autoloader callback from a Configuration instance
+     *
+     * @param Configuration $config
+     * @param \Closure $notFoundCallback
+     *
+     * @return \Closure
+     */
+    static public function registerFromConfiguration(Configuration $configuration, Closure $notFoundCallback)
+    {
+        return self::register($configuration->getProxyDir(), $configuration->getProxyNamespace(), $notFoundCallback);
+    }
 }
+
