@@ -1,3 +1,11 @@
+# Upgrade to 2.4
+
+## OnFlush and PreFlush event always called
+
+Before 2.4  the preFlush and onFlush events were only called when there were
+actually entities that changed. Now these events are called no matter if there
+are entities in the UoW or changes are found.
+
 # Upgrade to 2.3
 
 ## EntityManager#find() not calls EntityRepository#find() anymore

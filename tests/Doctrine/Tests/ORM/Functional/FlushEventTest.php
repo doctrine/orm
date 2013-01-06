@@ -48,6 +48,26 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         //echo "SECOND FLUSH";
         //$this->_em->flush();
     }
+
+    /**
+     * @group DDC-2173
+     */
+    public function testPreAndOnFlushCalledAlways()
+    {
+        $listener = new OnFlushCalledListener();
+        $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
+        $this->_em->getEventManager()->addEventListener(Events::preFlush, $listener);
+
+        $this->_em->flush();
+
+        $this->assertEquals(1, $listener->preFlush);
+        $this->assertEquals(1, $listener->onFlush);
+
+        $this->_em->flush();
+
+        $this->assertEquals(2, $listener->preFlush);
+        $this->assertEquals(2, $listener->onFlush);
+    }
 }
 
 class OnFlushListener
@@ -91,4 +111,18 @@ class OnFlushListener
     }
 }
 
+class OnFlushCalledListener
+{
+    public $preFlush = 0;
+    public $onFlush = 0;
 
+    public function preFlush($args)
+    {
+        $this->preFlush++;
+    }
+
+    public function onFlush($args)
+    {
+        $this->onFlush++;
+    }
+}
