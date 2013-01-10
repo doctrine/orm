@@ -94,6 +94,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
             $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
+            $this->addInheritedEmbeddeds($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
@@ -188,11 +189,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $class->validateIdentifier();
+        $class->validateEmdeddeds();
         $class->validateAssocations();
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
-        if ( ! $class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
+        if ( ! $class->isMappedSuperclass && ! $class->isEmbeddable && !$class->isInheritanceTypeNone()) {
             if ( ! $parent) {
                 if (count($class->discriminatorMap) == 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);
@@ -286,7 +288,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddable) {
                 $mapping['inherited'] = $parentClass->name;
             }
             if ( ! isset($mapping['declared'])) {
@@ -296,6 +298,28 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
+        }
+    }
+
+    	
+    /**
+     * Adds inherited fields to the subclass mapping.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     */
+    private function addInheritedEmbeddeds(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        foreach ($parentClass->embeddedMappings as $fieldName => $mapping) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddable) {
+                $mapping['inherited'] = $parentClass->name;
+            }
+
+            if ( ! isset($mapping['declared'])) {
+                $mapping['declared'] = $parentClass->name;
+            }
+
+            $subClass->addInheritedEmbeddedMapping($mapping);
         }
     }
 
@@ -312,7 +336,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
-            if ($parentClass->isMappedSuperclass) {
+            if ($parentClass->isMappedSuperclass || $parentClass->isEmbeddable) {
                 if ($mapping['type'] & ClassMetadata::TO_MANY && !$mapping['isOwningSide']) {
                     throw MappingException::illegalToManyAssocationOnMappedSuperclass($parentClass->name, $field);
                 }
@@ -320,7 +344,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             //$subclassMapping = $mapping;
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddable) {
                 $mapping['inherited'] = $parentClass->name;
             }
             if ( ! isset($mapping['declared'])) {
@@ -554,6 +578,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false && isset($class->isEmbeddable) && $class->isEmbeddable;
     }
 }

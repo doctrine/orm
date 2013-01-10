@@ -163,6 +163,7 @@ class SchemaTool
             if ($class->isInheritanceTypeSingleTable()) {
                 $columns = $this->gatherColumns($class, $table);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherEmbeddedsSql($class, $table, $schema);
 
                 // Add the discriminator column
                 $this->addDiscriminatorColumnDefinition($class, $table);
@@ -194,6 +195,7 @@ class SchemaTool
                 }
 
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherEmbeddedsSql($class, $table, $schema);
 
                 // Add the discriminator column only to the root table
                 if ($class->name == $class->rootEntityName) {
@@ -221,8 +223,10 @@ class SchemaTool
             } elseif ($class->isInheritanceTypeTablePerClass()) {
                 throw ORMException::notSupported();
             } else {
+
                 $this->gatherColumns($class, $table);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherEmbeddedsSql($class, $table, $schema);
             }
 
             $pkColumns = array();
@@ -497,7 +501,38 @@ class SchemaTool
     }
 
     /**
-     * Gets the class metadata that is responsible for the definition of the referenced column name.
+     * Gathers the SQL for properly setting up the embeddeds of the given class.
+     *
+     * @param ClassMetadata $class
+     * @param \Doctrine\DBAL\Schema\Table $table
+     * @param \Doctrine\DBAL\Schema\Schema $schema
+     * @return void
+     */
+    private function gatherEmbeddedsSql($class, $table, $schema)
+    {
+        foreach ($class->embeddedMappings as $embeddedFieldMapping) {
+            \Doctrine\Common\Util\Debug::dump($embeddedFieldMapping, 6);
+
+            if (isset($embeddedFieldMapping['inherited'])) {
+                continue;
+            }
+
+            $embeddedClass = $this->em->getClassMetadata($embeddedFieldMapping['class']);
+
+            // Map each individual field in an optimized way
+            foreach ($embeddedClass->fieldMappings as $mapping) {
+                // Override fieldName for prefix generation
+                $mapping['fieldName'] = $embeddedFieldMapping['prefix'] . '_' . $mapping['fieldName'];
+
+                $this->gatherColumn($embeddedClass, $mapping, $table);
+            }
+
+            \Doctrine\Common\Util\Debug::dump($table, 6);
+        }
+    }
+
+    /**
+     * Get the class metadata that is responsible for the definition of the referenced column name.
      *
      * Previously this was a simple task, but with DDC-117 this problem is actually recursive. If its
      * not a simple field, go through all identifier field names that are associations recursivly and

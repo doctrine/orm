@@ -65,6 +65,9 @@ class YamlDriver extends FileDriver
                 isset($element['repositoryClass']) ? $element['repositoryClass'] : null
             );
             $metadata->isMappedSuperclass = true;
+        } else if ($element['type'] == 'embeddable') {
+            $metadata->markReadOnly();
+            $metadata->isEmbeddable = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
@@ -302,6 +305,22 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapField($mapping);
+            }
+        }
+
+        // Evaluate embedded fields
+        if (isset($element['embedded'])) {
+            foreach ($element['embedded'] as $name => $embeddedMapping) {
+                $mapping = array(
+                    'fieldName' => $name,
+                    'class'     => $embeddedMapping['class'],
+                );
+
+                if (isset($embeddedMapping['prefix'])) {
+                    $mapping['prefix'] = $embeddedMapping['prefix'];
+                }
+
+                $metadata->mapEmbedded($mapping);
             }
         }
 
