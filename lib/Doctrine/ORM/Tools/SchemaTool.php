@@ -528,7 +528,7 @@ class SchemaTool
     }
 
     /**
-     * Get the class metadata that is responsible for the definition of the referenced column name.
+     * Gets the class metadata that is responsible for the definition of the referenced column name.
      *
      * Previously this was a simple task, but with DDC-117 this problem is actually recursive. If its
      * not a simple field, go through all identifier field names that are associations recursivly and
