@@ -511,8 +511,6 @@ class SchemaTool
     private function gatherEmbeddedsSql($class, $table, $schema)
     {
         foreach ($class->embeddedMappings as $embeddedFieldMapping) {
-            \Doctrine\Common\Util\Debug::dump($embeddedFieldMapping, 6);
-
             if (isset($embeddedFieldMapping['inherited'])) {
                 continue;
             }
@@ -526,8 +524,6 @@ class SchemaTool
 
                 $this->gatherColumn($embeddedClass, $mapping, $table);
             }
-
-            \Doctrine\Common\Util\Debug::dump($table, 6);
         }
     }
 
