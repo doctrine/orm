@@ -578,6 +578,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false && isset($class->isEmbeddable) && $class->isEmbeddable;
+        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false && isset($class->isEmbeddable) && $class->isEmbeddable === false;
     }
 }
