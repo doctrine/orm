@@ -164,6 +164,18 @@ class FilterCollection
     }
 
     /**
+     * Checks if a filter is enabled.
+     * 
+     * @param string $name Name of the filter.
+     * 
+     * @return boolean True if the filter is enabled, false otherwise.
+     */
+    public function isEnabled($name)
+    {
+        return isset($this->enabledFilters[$name]);
+    }
+    
+    /**
      * @return boolean True, if the filter collection is clean.
      */
     public function isClean()

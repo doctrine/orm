@@ -172,6 +172,26 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($exceptionThrown);
     }
 
+    /**
+     * @group DDC-2203
+     */
+    public function testEntityManagerIsFilterEnabled()
+    {
+        $em = $this->_getEntityManager();
+        $this->configureFilters($em);
+
+        // Check for an enabled filter
+        $em->getFilters()->enable("locale");
+        $this->assertTrue($em->getFilters()->isEnabled("locale"));
+
+        // Check for a disabled filter
+        $em->getFilters()->disable("locale");
+        $this->assertFalse($em->getFilters()->isEnabled("locale"));
+        
+        // Check a non-existing filter
+        $this->assertFalse($em->getFilters()->isEnabled("foo_filter"));        
+    }
+    
     protected function configureFilters($em)
     {
         // Add filters to the configuration of the EM
