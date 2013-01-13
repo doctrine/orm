@@ -23,6 +23,11 @@ illustrate how the filter feature works. A filter class must extend the base
 method. The method receives the ``ClassMetadata`` of the filtered entity and the
 table alias of the SQL table of the entity.
 
+.. note::
+
+    In the case of joined or single table inheritance, you always get passed the ClassMetadata of the
+    inheritance root. This is necessary to avoid edge cases that would break the SQL when applying the filters.
+
 Parameters for the query should be set on the filter object by
 ``SQLFilter#setParameter()``. Only parameters set via this function can be used
 in filters.  The ``SQLFilter#getParameter()`` function takes care of the
