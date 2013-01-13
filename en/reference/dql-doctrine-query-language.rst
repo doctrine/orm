@@ -424,6 +424,12 @@ Get all users visible on a given website that have chosen certain gender:
     <?php
     $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
 
+IDENTITY() DQL Function when the association has a composite primary key:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1');
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -585,7 +591,7 @@ The following functions are supported in SELECT, WHERE and HAVING
 clauses:
 
 
--  IDENTITY(single\_association\_path\_expression) - Retrieve the foreign key column of association of the owning side
+-  IDENTITY(single\_association\_path\_expression [, fieldMapping]) - Retrieve the foreign key column of association of the owning side
 -  ABS(arithmetic\_expression)
 -  CONCAT(str1, str2)
 -  CURRENT\_DATE() - Return the current date
