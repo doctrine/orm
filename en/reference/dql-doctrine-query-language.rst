@@ -451,6 +451,44 @@ You use the partial syntax when joining as well:
     $query = $em->createQuery('SELECT partial u.{id, username}, partial a.{id, name} FROM CmsUser u JOIN u.articles a');
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
+"NEW" Operator Syntax
+^^^^^^^^^^^^^^^^^^^^^
+
+Using the ``NEW`` operator you can construct DTOs from queries.
+
+- When using ``SELECT NEW`` you don't need to specify a mapped entity.
+- You can specify any PHP class, it's only require that you have a matching constructor in your class.
+- This approach involves determining exactly which columns you really need,
+  and instantiating data-transfer object that containing a constructor with those arguments.
+
+
+If you want to select data-transfer objects you should create a class:
+
+.. code-block:: php
+
+    <?php
+    class CustomerDTO
+    {
+        public function __construct($name, $email, $city, $value = null)
+        {
+            // Bind values to the object properties.
+        }
+    }
+
+And then use the ``NEW`` DQL keyword :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, a.city) FROM Customer c JOIN c.email e JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, a.city, SUM(o.value)) FROM Customer c JOIN c.email e JOIN c.address a JOIN c.orders o GROUP BY c');
+    $users = $query->getResult(); // array of CustomerDTO
+
 Using INDEX BY
 ~~~~~~~~~~~~~~
 
