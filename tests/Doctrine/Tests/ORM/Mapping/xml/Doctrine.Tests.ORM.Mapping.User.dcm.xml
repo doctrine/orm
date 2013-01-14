@@ -48,6 +48,7 @@
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
 
         <field name="version" type="integer" version="true" />
+        <embedded name="parents" class="Parents" />
 
         <one-to-one field="address" target-entity="Address" inversed-by="user">
             <cascade><cascade-remove /></cascade>

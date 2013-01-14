@@ -1415,27 +1415,41 @@ class BasicEntityPersister
      */
     protected function getInsertColumnList()
     {
-        $columns = array();
+        return $this->getClassMetadataInsertColumnList($this->class, array());
+    }
 
-        foreach ($this->class->reflFields as $name => $field) {
-            if ($this->class->isVersioned && $this->class->versionField == $name) {
+    private function getClassMetadataInsertColumnList($class, $columns)
+    {
+
+        foreach ($class->reflFields as $name => $field) {
+            if ($class->isVersioned && $this->class->versionField == $name) {
                 continue;
             }
 
-            if (isset($this->class->associationMappings[$name])) {
-                $assoc = $this->class->associationMappings[$name];
+            if (isset($class->associationMappings[$name])) {
+                $assoc = $class->associationMappings[$name];
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                        $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
 
                 continue;
             }
+            
+            if (isset($class->embeddedMappings[$name])) {
+                $embed = $class->embeddedMappings[$name];
+                $embeddable = $this->em->getClassMetadata($embed['class']);
+                $embeddedColumns = $this->getClassMetadataInsertColumnList($embeddable, array());
 
-            if ($this->class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->class->identifier[0] != $name) {
-                $columns[] = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
-                $this->columnTypes[$name] = $this->class->fieldMappings[$name]['type'];
+                foreach(array_keys($embeddedColumns) as $embeddedColumnName) {
+                    $columns[] = $embed['prefix'] . '_' . $embeddedColumnName;
+                }
+            }
+
+            if ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $class->identifier[0] != $name) {
+                $columns[] = $this->quoteStrategy->getColumnName($name, $class, $this->platform);
+                $this->columnTypes[$name] = $class->fieldMappings[$name]['type'];
             }
         }
 

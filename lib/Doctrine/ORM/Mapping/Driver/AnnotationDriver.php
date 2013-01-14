@@ -83,6 +83,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
+        } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
+            $metadata->markReadOnly();
+            $metadata->isEmbeddable = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
@@ -238,7 +241,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 ||
                 $metadata->isInheritedField($property->name)
                 ||
-                $metadata->isInheritedAssociation($property->name)) {
+                $metadata->isInheritedAssociation($property->name)
+                ||
+                $metadata->isInheritedEmbedded($property->name)) {
                 continue;
             }
 
@@ -257,7 +262,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
 
             // Field can only be annotated with one of:
-            // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
+            // @Column, @Embedded, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             if ($columnAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column')) {
                 if ($columnAnnot->type == null) {
                     throw MappingException::propertyTypeIsRequired($className, $property->getName());
@@ -282,9 +287,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 // Check for SequenceGenerator/TableGenerator definition
                 if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\SequenceGenerator')) {
                     $metadata->setSequenceGeneratorDefinition(array(
-                        'sequenceName' => $seqGeneratorAnnot->sequenceName,
+                        'sequenceName'   => $seqGeneratorAnnot->sequenceName,
                         'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                        'initialValue' => $seqGeneratorAnnot->initialValue
+                        'initialValue'   => $seqGeneratorAnnot->initialValue
                     ));
                 } else if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
@@ -293,6 +298,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         'class' => $customGeneratorAnnot->class
                     ));
                 }
+            } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
+                $mapping['class']  = $embeddedAnnot->class;
+
+                if (isset($embeddedAnnot->prefix)) {
+                    $mapping['prefix'] = $embeddedAnnot->prefix;
+                }
+
+                $metadata->mapEmbedded($mapping);
             } else if ($oneToOneAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 if ($idAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
@@ -329,6 +342,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
+
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();

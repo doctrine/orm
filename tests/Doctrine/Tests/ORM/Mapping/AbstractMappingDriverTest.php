@@ -205,6 +205,20 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testIdentifier
      * @param ClassMetadata $class
      */
+    public function testEmbeddeds($class)
+    {
+        $this->assertEquals(1, count($class->embeddedMappings));
+
+        $this->assertTrue(isset($class->embeddedMappings['parents']));
+        $this->assertEquals('Doctrine\Tests\ORM\Mapping\Parents', $class->embeddedMappings['parents']['class']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEmbeddeds
+     * @param ClassMetadata $class
+     */
     public function testAssocations($class)
     {
         $this->assertEquals(3, count($class->associationMappings));
@@ -784,6 +798,11 @@ class User
     public $email;
 
     /**
+     * @Embedded(class="Parents")
+     */
+    public $parents;
+
+    /**
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
      * @JoinColumn(onDelete="CASCADE")
      */
@@ -867,6 +886,10 @@ class User
         $mapping = array('fieldName' => 'version', 'type' => 'integer');
         $metadata->setVersionMapping($mapping);
         $metadata->mapField($mapping);
+        $metadata->mapEmbedded(array(
+            'fieldName' => 'parents',
+            'class'     => 'Parents',
+        ));
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(
            'fieldName' => 'address',
@@ -1093,6 +1116,7 @@ class DDC807Entity
 class DDC807SubClasse1 {}
 class DDC807SubClasse2 {}
 
+class Parents {}
 class Address {}
 class Phonenumber {}
 class Group {}

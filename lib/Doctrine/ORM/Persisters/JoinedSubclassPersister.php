@@ -520,6 +520,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if (isset($this->class->fieldMappings[$name]['inherited'])
                     && ! isset($this->class->fieldMappings[$name]['id'])
                     || isset($this->class->associationMappings[$name]['inherited'])
+                    || isset($this->class->embeddedMappings[$name]['inherited'])
                     || ($this->class->isVersioned && $this->class->versionField == $name)) {
                 continue;
             }
@@ -530,6 +531,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
                         $columns[] = $sourceCol;
                     }
+                }
+            } else if (isset($this->class->embeddedMappings[$name])) {
+                $embedded      = $this->class->embeddedMappings[$name];
+                $embeddedClass = $this->em->getClassMetadata($embedded['class']);
+
+                foreach ($embeddedClass->fieldMappings as $embeddedFieldName => $embeddedFieldMapping) {
+                    $columns[] = $embeddedClass->getQuotedColumnName($embeddedFieldName, $this->platform);
                 }
             } else if ($this->class->name != $this->class->rootEntityName ||
                     ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
