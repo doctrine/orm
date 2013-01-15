@@ -59,16 +59,6 @@ it with the following command.
 
         $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.2.2
 
-Package Download
-----------------
-
-You can also use Doctrine 2 by downloading the latest release
-package from
-`the download page <http://www.doctrine-project.org/download>`_.
-
-See the configuration section on how to configure and bootstrap a
-downloaded version of Doctrine.
-
 GitHub
 ------
 
