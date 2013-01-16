@@ -39,7 +39,7 @@ concrete subclasses, ``ConcreteComponent`` and ``ConcreteDecorator``.
          */
         protected $id;
  
-        /** @Column(type="string", nullable="true") */
+        /** @Column(type="string", nullable=true) */
         protected $name;
  
         /**
@@ -119,7 +119,7 @@ use a ``MappedSuperclass`` for this.
          */
         public function __construct(Component $c)
         {
-    	    $this->setDecorates($c);
+            $this->setDecorates($c);
         }
  
         /**
@@ -191,7 +191,7 @@ of the getSpecial() method to its return value.
     class ConcreteDecorator extends Decorator
     {
  
-        /** @Column(type="string", nullable="true") */
+        /** @Column(type="string", nullable=true) */
         protected $special;
  
         /**
