@@ -3101,7 +3101,7 @@ class Parser
     }
 
     /**
-     * NullComparisonExpression ::= InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression "IS" ["NOT"] "NULL"
+     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression) "IS" ["NOT"] "NULL"
      *
      * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
      */
