@@ -1874,20 +1874,16 @@ class SqlWalker implements TreeWalker
      */
     public function walkNullComparisonExpression($nullCompExpr)
     {
-        $sql = '';
-        $innerExpr = $nullCompExpr->expression;
+        $expression = $nullCompExpr->expression;
+        $comparison = ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
 
-        if ($innerExpr instanceof AST\InputParameter) {
-            $dqlParamKey = $innerExpr->name;
-            $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
-            $sql .= ' ?';
-        } else {
-            $sql .= $this->walkPathExpression($innerExpr);
+        if ($expression instanceof AST\InputParameter) {
+            $this->parserResult->addParameterMapping($expression->name, $this->sqlParamIndex++);
+
+            return '?' . $comparison;
         }
 
-        $sql .= ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
-
-        return $sql;
+        return $expression->dispatch($this) . $comparison;
     }
 
     /**
