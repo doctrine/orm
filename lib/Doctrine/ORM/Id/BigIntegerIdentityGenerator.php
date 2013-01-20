@@ -26,7 +26,7 @@ use Doctrine\ORM\EntityManager;
  * that automatically get a database-generated, auto-incremented identifier on INSERT.
  * This generator obtains the last insert id after such an insert.
  */
-class IdentityGenerator extends AbstractIdGenerator
+class BigIntegerIdentityGenerator extends AbstractIdGenerator
 {
     /**
      * The name of the sequence to pass to lastInsertId(), if any.
@@ -36,9 +36,11 @@ class IdentityGenerator extends AbstractIdGenerator
     private $sequenceName;
 
     /**
-     * @param string $seqName The name of the sequence to pass to lastInsertId()
-     *                        to obtain the last generated identifier within the current
-     *                        database session/connection, if any.
+     * Constructor.
+     *
+     * @param string|null $seqName The name of the sequence to pass to lastInsertId()
+     *                             to obtain the last generated identifier within the current
+     *                             database session/connection, if any.
      */
     public function __construct($sequenceName = null)
     {
@@ -50,7 +52,7 @@ class IdentityGenerator extends AbstractIdGenerator
      */
     public function generate(EntityManager $em, $entity)
     {
-        return (int)$em->getConnection()->lastInsertId($this->sequenceName);
+        return (string)$em->getConnection()->lastInsertId($this->sequenceName);
     }
 
     /**
@@ -61,3 +63,4 @@ class IdentityGenerator extends AbstractIdGenerator
         return true;
     }
 }
+

@@ -19,16 +19,17 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use ReflectionException,
-    Doctrine\ORM\ORMException,
-    Doctrine\ORM\EntityManager,
-    Doctrine\DBAL\Platforms,
-    Doctrine\ORM\Events,
-    Doctrine\Common\Persistence\Mapping\ReflectionService,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface,
-    Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory,
-    Doctrine\ORM\Id\IdentityGenerator,
-    Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use ReflectionException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Platforms;
+use Doctrine\ORM\Events;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\ORM\Id\IdentityGenerator;
+use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -418,9 +419,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 // <table>_<column>_seq in PostgreSQL for SERIAL columns.
                 // Not pretty but necessary and the simplest solution that currently works.
                 $sequenceName = null;
+                $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
                 if ($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
-                    $fieldName      = $class->getSingleIdentifierFieldName();
                     $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
@@ -435,7 +436,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform);
                 }
 
-                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($sequenceName));
+                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === "bigint")
+                    ? new BigIntegerIdentityGenerator($sequenceName)
+                    : new IdentityGenerator($sequenceName);
+
+                $class->setIdGenerator($generator);
+
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
