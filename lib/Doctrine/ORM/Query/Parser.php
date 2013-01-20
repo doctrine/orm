@@ -2400,76 +2400,92 @@ class Parser
      */
     public function SimpleConditionalExpression()
     {
-        $token = $this->lexer->lookahead;
+        if ($this->lexer->isNextToken(Lexer::T_EXISTS)) {
+            return $this->ExistsExpression();
+        }
+
+        $token      = $this->lexer->lookahead;
+        $peek       = $this->lexer->glimpse();
+        $lookahead  = $token;
 
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $token = $this->lexer->glimpse();
         }
 
-        if ($token['type'] === Lexer::T_EXISTS) {
-            return $this->ExistsExpression();
-        }
+        if ($token['type'] === Lexer::T_IDENTIFIER || $token['type'] === Lexer::T_INPUT_PARAMETER || $this->isFunction()) {
+            // Peek beyond the matching closing paranthesis.
+            $beyond = $this->lexer->peek();
 
-        $peek = $this->lexer->glimpse();
+            switch ($peek['value']) {
+                case '(':
+                    //Peeks beyond the matched closing parenthesis.
+                    $token = $this->peekBeyondClosingParenthesis(false);
 
-        if ($token['type'] === Lexer::T_IDENTIFIER || $token['type'] === Lexer::T_INPUT_PARAMETER) {
-            if ($peek['value'] == '(') {
-                // Peek beyond the matching closing paranthesis ')'
-                $this->lexer->peek();
-                $token = $this->peekBeyondClosingParenthesis(false);
+                    if ($token['type'] === Lexer::T_NOT) {
+                        $token = $this->lexer->peek();
+                    }
 
-                if ($token['type'] === Lexer::T_NOT) {
-                    $token = $this->lexer->peek();
-                }
+                    if ($token['type'] === Lexer::T_IS) {
+                        $lookahead = $this->lexer->peek();
+                    }
+                    break;
 
-                $this->lexer->resetPeek();
-            } else {
-                // Peek beyond the PathExpression (or InputParameter)
-                $peek = $this->lexer->peek();
+                default:
+                    // Peek beyond the PathExpression or InputParameter.
+                    $token = $beyond;
 
-                while ($peek['value'] === '.') {
-                    $this->lexer->peek();
-                    $peek = $this->lexer->peek();
-                }
+                    while ($token['value'] === '.') {
+                        $this->lexer->peek();
 
-                // Also peek beyond a NOT if there is one
-                if ($peek['type'] === Lexer::T_NOT) {
-                    $peek = $this->lexer->peek();
-                }
+                        $token = $this->lexer->peek();
+                    }
 
-                $token = $peek;
+                    // Also peek beyond a NOT if there is one.
+                    if ($token['type'] === Lexer::T_NOT) {
+                        $token = $this->lexer->peek();
+                    }
 
-                // We need to go even further in case of IS (differenciate between NULL and EMPTY)
-                $lookahead = $this->lexer->peek();
-
-                // Also peek beyond a NOT if there is one
-                if ($lookahead['type'] === Lexer::T_NOT) {
+                    // We need to go even further in case of IS (differenciate between NULL and EMPTY)
                     $lookahead = $this->lexer->peek();
-                }
-
-                $this->lexer->resetPeek();
             }
+
+            // Also peek beyond a NOT if there is one.
+            if ($lookahead['type'] === Lexer::T_NOT) {
+                $lookahead = $this->lexer->peek();
+            }
+
+            $this->lexer->resetPeek();
         }
 
-        switch ($token['type']) {
-            case Lexer::T_BETWEEN:
-                return $this->BetweenExpression();
-            case Lexer::T_LIKE:
-                return $this->LikeExpression();
-            case Lexer::T_IN:
-                return $this->InExpression();
-            case Lexer::T_INSTANCE:
-                return $this->InstanceOfExpression();
-            case Lexer::T_IS:
-                if ($lookahead['type'] == Lexer::T_NULL) {
-                    return $this->NullComparisonExpression();
-                }
-                return $this->EmptyCollectionComparisonExpression();
-            case Lexer::T_MEMBER:
-                return $this->CollectionMemberExpression();
-            default:
-                return $this->ComparisonExpression();
+        if ($token['type'] === Lexer::T_BETWEEN) {
+            return $this->BetweenExpression();
         }
+
+        if ($token['type'] === Lexer::T_LIKE) {
+            return $this->LikeExpression();
+        }
+
+        if ($token['type'] === Lexer::T_IN) {
+            return $this->InExpression();
+        }
+
+        if ($token['type'] === Lexer::T_INSTANCE) {
+            return $this->InstanceOfExpression();
+        }
+
+        if ($token['type'] === Lexer::T_MEMBER) {
+            return $this->CollectionMemberExpression();
+        }
+
+        if ($token['type'] === Lexer::T_IS && $lookahead['type'] === Lexer::T_NULL) {
+            return $this->NullComparisonExpression();
+        }
+
+        if ($token['type'] === Lexer::T_IS  && $lookahead['type'] === Lexer::T_EMPTY) {
+            return $this->EmptyCollectionComparisonExpression();
+        }
+
+        return $this->ComparisonExpression();
     }
 
     /**
@@ -3085,24 +3101,43 @@ class Parser
     }
 
     /**
-     * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
+     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression) "IS" ["NOT"] "NULL"
      *
      * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
      */
     public function NullComparisonExpression()
     {
-        if ($this->lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            $expr = new AST\InputParameter($this->lexer->token['value']);
-        } else {
-            $expr = $this->SingleValuedPathExpression();
+        switch (true) {
+            case $this->lexer->isNextToken(Lexer::T_INPUT_PARAMETER):
+                $this->match(Lexer::T_INPUT_PARAMETER);
+
+                $expr = new AST\InputParameter($this->lexer->token['value']);
+                break;
+
+            case $this->lexer->isNextToken(Lexer::T_NULLIF):
+                $expr = $this->NullIfExpression();
+                break;
+
+            case $this->lexer->isNextToken(Lexer::T_COALESCE):
+                $expr = $this->CoalesceExpression();
+                break;
+
+            case $this->isFunction():
+                $expr = $this->FunctionDeclaration();
+                break;
+
+            default:
+                $expr = $this->SingleValuedPathExpression();
+                break;
         }
 
         $nullCompExpr = new AST\NullComparisonExpression($expr);
+
         $this->match(Lexer::T_IS);
 
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
+
             $nullCompExpr->not = true;
         }
 

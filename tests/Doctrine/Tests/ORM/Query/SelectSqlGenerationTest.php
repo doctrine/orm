@@ -119,6 +119,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testNotExistsExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE NOT EXISTS (SELECT c1_.phonenumber FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234)'
+        );
+    }
+
     public function testSupportsSelectForMultipleColumnsOfASingleComponent()
     {
         $this->assertSqlGeneration(
@@ -1652,6 +1660,47 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS sclr0, c0_.country AS sclr1, c0_.city AS sclr2, c1_.name AS sclr3, c2_.email AS sclr4 FROM cms_users c1_ INNER JOIN cms_emails c2_ ON c1_.email_id = c2_.id INNER JOIN cms_addresses c0_ ON c1_.id = c0_.user_id ORDER BY c1_.name ASC"
         );
 
+    }
+
+    /**
+     * @group DDC-2234
+     */
+    public function testWhereFunctionIsNullComparisonExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE IDENTITY(u.email) IS NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.email_id IS NULL"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NULLIF(u.name, 'FabioBatSilva') IS NULL AND IDENTITY(u.email) IS NOT NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE NULLIF(c0_.name, 'FabioBatSilva') IS NULL AND c0_.email_id IS NOT NULL"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE IDENTITY(u.email) IS NOT NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.email_id IS NOT NULL"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NULLIF(u.name, 'FabioBatSilva') IS NOT NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE NULLIF(c0_.name, 'FabioBatSilva') IS NOT NULL"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE COALESCE(u.name, u.id) IS NOT NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE COALESCE(c0_.name, c0_.id) IS NOT NULL"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE COALESCE(u.id, IDENTITY(u.email)) IS NOT NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE COALESCE(c0_.id, c0_.email_id) IS NOT NULL"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE COALESCE(IDENTITY(u.email), NULLIF(u.name, 'FabioBatSilva')) IS NOT NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE COALESCE(c0_.email_id, NULLIF(c0_.name, 'FabioBatSilva')) IS NOT NULL"
+        );
     }
 
     public function testCustomTypeValueSql()
