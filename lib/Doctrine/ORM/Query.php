@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 use Doctrine\DBAL\LockMode;
 
 use Doctrine\ORM\Query\Parser;
@@ -111,6 +109,15 @@ final class Query extends AbstractQuery
      */
     const HINT_LOCK_MODE = 'doctrine.lockMode';
 
+    /**
+     * @var string
+     */
+    const HINT_NO_STORE_IDENTITY_MAP = 'doctrine.doNotStoreIdentityMap';
+
+    /**
+     * @var string
+     */
+    const HINT_NO_LOAD_ASSOCIATED_SUBTYPES = 'doctrine.doNotLoadAssociatedSubtypes';
 
     /**
      * @var integer $_state   The current state of this query.

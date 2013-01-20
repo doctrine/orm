@@ -2442,7 +2442,9 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityStates[$oid]       = self::STATE_MANAGED;
             $this->originalEntityData[$oid] = $data;
 
-            $this->identityMap[$class->rootEntityName][$idHash] = $entity;
+            if (!isset($hints[Query::HINT_NO_STORE_IDENTITY_MAP])) {
+                $this->identityMap[$class->rootEntityName][$idHash] = $entity;
+            }
 
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
@@ -2542,10 +2544,13 @@ class UnitOfWork implements PropertyChangedListener
                             break;
 
                         case ($targetClass->subClasses):
+                            $newValue = null;
                             // If it might be a subtype, it can not be lazy. There isn't even
                             // a way to solve this with deferred eager loading, which means putting
                             // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
-                            $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                            if (!isset($hints[Query::HINT_NO_LOAD_ASSOCIATED_SUBTYPES])) {
+                                $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                            }
                             break;
 
                         default:
@@ -2760,7 +2765,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
- 
+
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.

@@ -386,4 +386,39 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $contract->getSalesPerson());
     }
+
+    public function testHintNoLoadAssociatedSubtypes()
+    {
+        $this->loadFullFixture();
+
+        $employees = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyEmployee')->findAll();
+
+        foreach ($employees as $employee) { /* @var $employee \Doctrine\Tests\Models\Company\CompanyEmployee */
+            foreach ($employee->contracts as $contract) {
+                if (null === $employee->lastContract || $employee->lastContract->getId() < $contract->getId()) {
+                    $employee->lastContract = $contract;
+                }
+            }
+        }
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $employees = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyEmployee')->findAll();
+        foreach ($employees as $employee) { /* @var $employee \Doctrine\Tests\Models\Company\CompanyEmployee */
+            if ($employee->lastContract) {
+                $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyContract', $employee->lastContract);
+            }
+        }
+
+        $this->_em->clear();
+
+        $employees = $this->_em
+            ->createQuery('SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e')
+            ->setHint(\Doctrine\ORM\Query::HINT_NO_LOAD_ASSOCIATED_SUBTYPES, true)
+            ->getResult();
+
+        foreach ($employees as $employee) { /* @var $employee \Doctrine\Tests\Models\Company\CompanyEmployee */
+            $this->assertNull($employee->lastContract);
+        }
+    }
 }

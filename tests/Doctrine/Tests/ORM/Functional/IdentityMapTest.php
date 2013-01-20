@@ -135,7 +135,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Should still be $user1
         $this->assertSame($user1, $address2->user);
-        $this->assertTrue($user2->address === null);
+        $this->assertNull($user2->address);
 
         // But we want to have this external change!
         // Solution 2: Alternatively, a refresh query should work
@@ -152,6 +152,32 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Attention! refreshes can result in broken bidirectional associations! this is currently expected!
         // $user1 still points to $address2!
         $this->assertSame($user1->address, $address2);
+    }
+
+    public function testHintNoStoreIdentityMap()
+    {
+        $user = new CmsUser;
+        $user->status = 'dev';
+        $user->username = 'romanb';
+        $user->name = 'Roman B.';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userFromDb = $this->_em
+            ->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = :username')
+            ->setParameter('username', 'romanb')
+            ->setHint(Query::HINT_NO_STORE_IDENTITY_MAP, true)
+            ->getSingleResult();
+
+        $userFromDb2 = $this->_em
+            ->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = :username')
+            ->setParameter('username', 'romanb')
+            ->setHint(Query::HINT_NO_STORE_IDENTITY_MAP, true)
+            ->getSingleResult();
+
+        $this->assertNotSame($userFromDb, $userFromDb2);
     }
 
     public function testCollectionValuedAssociationIdentityMapBehaviorWithRefreshQuery()
@@ -285,4 +311,3 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         return spl_object_hash($user);
     }
 }
-

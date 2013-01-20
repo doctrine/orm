@@ -29,6 +29,12 @@ class CompanyEmployee extends CompanyPerson
     public $contracts;
 
     /**
+     * @ManyToOne(targetEntity="CompanyContract")
+     * @JoinColumn(name="last_contract_id", referencedColumnName="id")
+     */
+    public $lastContract;
+
+    /**
      * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
      */
     public $soldContracts;
