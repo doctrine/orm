@@ -551,6 +551,11 @@ class QueryBuilder
 
                 $newDqlPart[$k] = $v;
             }
+            
+            // When a join contains more items, this must be added completely.
+            if (!$append) {
+                $isMultiple = false;
+            }
 
             $dqlPart = $newDqlPart;
         }
