@@ -169,6 +169,8 @@ built-in mapping types:
 -  ``float``: Type that maps a SQL Float (Double Precision) to a
    PHP double. *IMPORTANT*: Works only with locale settings that use
    decimal points as separator.
+-  ``guid``: Type that maps a database GUID/UUID to a PHP string. Defaults to
+   varchar but uses a specific type if the platform supports it.
 
 .. note::
 
