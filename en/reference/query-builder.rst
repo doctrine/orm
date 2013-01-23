@@ -500,7 +500,8 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
    a string or any instance of ``Doctrine\ORM\Query\Expr\*``
 -  ``$append``: Optional flag (default=false) if the ``$dqlPart``
    should override all previously defined items in ``$dqlPartName`` or
-   not
+   not (no effect on the ``where`` and ``having`` DQL query parts,
+   which always override all previously defined items)
 
 -
 
