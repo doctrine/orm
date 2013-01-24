@@ -83,7 +83,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     private $existingCollections = array();
 
-     /**
+    /**
      * {@inheritdoc}
      */
     protected function prepare()
@@ -101,6 +101,12 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->identifierMap[$dqlAlias] = array();
             $this->idTemplate[$dqlAlias]    = '';
+
+            // Check for namespace alias.
+            if (strpos($className, ':') !== false) {
+                $metadata = $this->_em->getClassMetadata($className);
+                $className = $metadata->name;
+            }
 
             if ( ! isset($this->ce[$className])) {
                 $this->ce[$className] = $this->_em->getClassMetadata($className);
@@ -525,7 +531,7 @@ class ObjectHydrator extends AbstractHydrator
                 // check for existing result from the iterations before
                 if ( ! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
-   
+
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);
                     }
@@ -597,7 +603,7 @@ class ObjectHydrator extends AbstractHydrator
 
                 if ($count === 1) {
                     $result[$resultKey] = $obj;
-                    
+
                     continue;
                 }
 
