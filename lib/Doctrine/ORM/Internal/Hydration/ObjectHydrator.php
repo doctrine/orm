@@ -102,12 +102,6 @@ class ObjectHydrator extends AbstractHydrator
             $this->identifierMap[$dqlAlias] = array();
             $this->idTemplate[$dqlAlias]    = '';
 
-            // Check for namespace alias.
-            if (strpos($className, ':') !== false) {
-                $metadata = $this->_em->getClassMetadata($className);
-                $className = $metadata->name;
-            }
-
             if ( ! isset($this->ce[$className])) {
                 $this->ce[$className] = $this->_em->getClassMetadata($className);
             }
