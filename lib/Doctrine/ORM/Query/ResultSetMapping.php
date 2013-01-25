@@ -559,15 +559,10 @@ class ResultSetMapping
 
         $translate = function (&$alias) use ($em, $fqcn)
         {
-            if (strpos($alias, ':') !== false && !isset($fqcn[$alias])) {
-                if ($metadata = $em->getClassMetadata($alias)) {
-                    $fqcn[$alias] = $metadata->name;
-                }
+            if ( ! isset($fqcn[$alias])) {
+                $fqcn[$alias] = $em->getClassMetadata($alias)->getName();
             }
-
-            if (isset($fqcn[$alias])) {
-                $alias = $fqcn[$alias];
-            }
+            $alias = $fqcn[$alias];
         };
 
         array_walk($this->aliasMap, $translate);
