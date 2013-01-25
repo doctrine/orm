@@ -358,7 +358,7 @@ class EntityManager implements ObjectManager
      *
      * @return QueryBuilder
      */
-    public function createQueryBuilderFromParts(array $parts = array())
+    public function setDQLParts(array $parts = array())
     {
         $queryBuilder = new QueryBuilder($this);
         foreach ($parts as $name => $part)
