@@ -67,6 +67,16 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
     }
 
+    public function testCreateQueryBuilderFromParts()
+    {
+        $q = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.username = test');
+        $q2 = $this->_em->createQueryBuilderFromParts($q->getDQLParts());
+        $this->assertEquals($q->getDQL(), $q2->getDQL());
+    }
+
     public function testCreateQueryBuilderAliasValid()
     {
         $q = $this->_em->createQueryBuilder()
