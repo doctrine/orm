@@ -61,8 +61,8 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
-        $this->assertEquals("\Doctrine\Tests\ORM\Functional\MyLocaleFilter", $config->getFilterClassName("locale"));
-        $this->assertNull($config->getFilterClassName("foo"));
+        $this->assertEquals("\Doctrine\Tests\ORM\Functional\MyLocaleFilter", $config->getFilter("locale"));
+        $this->assertNull($config->getFilter("foo"));
     }
 
     public function testEntityManagerEnableFilter()

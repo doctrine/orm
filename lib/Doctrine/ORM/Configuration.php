@@ -584,14 +584,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets the class name for a given filter name.
+     * Gets the filter for a given name.
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
+     * @return string|SQLFilter|null The class name or instance of the filter, or null of it is not
      *  defined.
      */
-    public function getFilterClassName($name)
+    public function getFilter($name)
     {
         return isset($this->_attributes['filters'][$name])
             ? $this->_attributes['filters'][$name]
