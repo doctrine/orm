@@ -161,16 +161,24 @@ built-in mapping types:
 -  ``time``: Type that maps an SQL TIME to a PHP DateTime object.
 -  ``datetime``: Type that maps an SQL DATETIME/TIMESTAMP to a PHP
    DateTime object.
+-  ``datetimetz``: Type that maps an SQL DATETIME/TIMESTAMP to a PHP
+   DateTime object with timezone.
 -  ``text``: Type that maps an SQL CLOB to a PHP string.
 -  ``object``: Type that maps a SQL CLOB to a PHP object using
    ``serialize()`` and ``unserialize()``
 -  ``array``: Type that maps a SQL CLOB to a PHP array using
    ``serialize()`` and ``unserialize()``
+-  ``simple_array``: Type that maps a SQL CLOB to a PHP array using
+   ``implode()`` and ``explode()``, with a comma as delimiter. *IMPORTANT*
+   Only use this type if you are sure that your values cannot contain a ",".
+-  ``json_array``: Type that maps a SQL CLOB to a PHP array using
+   ``json_encode()`` and ``json_decode()``
 -  ``float``: Type that maps a SQL Float (Double Precision) to a
    PHP double. *IMPORTANT*: Works only with locale settings that use
    decimal points as separator.
 -  ``guid``: Type that maps a database GUID/UUID to a PHP string. Defaults to
    varchar but uses a specific type if the platform supports it.
+-  ``blob``: Type that maps an SQL BLOB to a PHP resource stream
 
 .. note::
 
