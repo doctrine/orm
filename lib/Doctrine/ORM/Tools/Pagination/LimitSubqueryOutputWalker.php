@@ -179,12 +179,16 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $orderBy         = array();
         if (isset($AST->orderByClause)) {
             foreach ($AST->orderByClause->orderByItems as $item) {
-                $possibleAliases = array_keys($this->rsm->fieldMappings, $item->expression->field);
+                if (is_object($item->expression)) {
+                    $possibleAliases = array_keys($this->rsm->fieldMappings, $item->expression->field);
+                } else {
+                    $possibleAliases = array_keys($this->rsm->scalarMappings, $item->expression);
+                }
 
                 foreach ($possibleAliases as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] == $item->expression->identificationVariable) {
+                    if (!is_object($item->expression) || $this->rsm->columnOwnerMap[$alias] == $item->expression->identificationVariable) {
                         $sqlOrderColumns[] = $alias;
-                        $orderBy[]         = $alias . ' ' . $item->type;
+                        $orderBy[] = $alias . ' ' . $item->type;
                         break;
                     }
                 }

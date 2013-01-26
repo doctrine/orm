@@ -48,7 +48,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM USER u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC) dctrn_result ORDER BY sclr0 ASC",
+            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC) dctrn_result ORDER BY sclr0 ASC",
             $limitQuery->getSql()
         );
 
