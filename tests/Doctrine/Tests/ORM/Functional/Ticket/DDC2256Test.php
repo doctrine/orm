@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 

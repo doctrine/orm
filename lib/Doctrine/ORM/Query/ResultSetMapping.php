@@ -557,8 +557,7 @@ class ResultSetMapping
     {
         $fqcn = array();
 
-        $translate = function (&$alias) use ($em, $fqcn)
-        {
+        $translate = function (&$alias) use ($em, &$fqcn) {
             if ( ! isset($fqcn[$alias])) {
                 $fqcn[$alias] = $em->getClassMetadata($alias)->getName();
             }
