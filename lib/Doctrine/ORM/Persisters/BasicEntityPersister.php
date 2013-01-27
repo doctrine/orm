@@ -912,6 +912,20 @@ class BasicEntityPersister
     }
 
     /**
+     * Counts entities by a list of field criteria.
+     *
+     * @param array $criteria
+     * @return int
+     */
+    public function countAll(array $criteria = array())
+    {
+        $sql = $this->_getCountSQL($criteria);
+        list($params, $types) = $this->expandParameters($criteria);
+        $stmt = $this->conn->executeQuery($sql, $params, $types);
+        return intval($stmt->fetchColumn());
+    }
+
+    /**
      * Gets (sliced or full) elements of the given collection.
      *
      * @param array    $assoc
@@ -1124,6 +1138,40 @@ class BasicEntityPersister
             . $orderBySql;
 
         return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+    }
+
+    /**
+     * Gets the SELECT SQL to count entities by a set of field criteria.
+     *
+     * @param array|\Doctrine\Common\Collections\Criteria $criteria
+     * @return string
+     */
+    protected function _getCountSQL($criteria)
+    {
+        $conditionSql = ($criteria instanceof Criteria)
+            ? $this->getSelectConditionCriteriaSQL($criteria)
+            : $this->getSelectConditionSQL($criteria);
+
+        $tableAlias = $this->getSQLTableAlias($this->class->name);
+        $filterSql  = $this->generateFilterConditionSQL($this->class, $tableAlias);
+        $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+
+        if ('' !== $filterSql) {
+            $conditionSql = $conditionSql
+                ? $conditionSql . ' AND ' . $filterSql
+                : $filterSql;
+        }
+
+        $select = 'SELECT COUNT(1)';
+        $from   = ' FROM ' . $tableName . ' ' . $tableAlias;
+        $join   = $this->selectJoinSql;
+        $where  = ($conditionSql ? ' WHERE ' . $conditionSql : '');
+        $query  = $select
+            . $from
+            . $join
+            . $where;
+
+        return $query;
     }
 
     /**

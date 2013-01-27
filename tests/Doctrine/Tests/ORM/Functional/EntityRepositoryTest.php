@@ -185,6 +185,15 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('dev', $users[0]->status);
     }
 
+    public function testCountByField()
+    {
+        $user1Id = $this->loadFixture();
+        $repos   = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $userCount = $repos->countBy(array('status' => 'dev'));
+        $this->assertEquals(2, $userCount);
+    }
+
     public function testFindByAssociationWithIntegerAsParameter()
     {
         $address1 = $this->buildAddress('Germany', 'Berlim', 'Foo st.', '123456');
@@ -209,6 +218,29 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress',$addresses[0]);
     }
 
+    public function testCountByAssociationWithIntegerAsParameter()
+    {
+        $address1 = $this->buildAddress('Germany', 'Berlim', 'Foo st.', '123456');
+        $user1    = $this->buildUser('Benjamin', 'beberlei', 'dev', $address1);
+
+        $address2 = $this->buildAddress('Brazil', 'São Paulo', 'Bar st.', '654321');
+        $user2    = $this->buildUser('Guilherme', 'guilhermeblanco', 'freak', $address2);
+
+        $address3 = $this->buildAddress('USA', 'Nashville', 'Woo st.', '321654');
+        $user3    = $this->buildUser('Jonathan', 'jwage', 'dev', $address3);
+
+        unset($address1);
+        unset($address2);
+        unset($address3);
+
+        $this->_em->clear();
+
+        $repository   = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addressCount = $repository->countBy(array('user' => array($user1->getId(), $user2->getId())));
+
+        $this->assertEquals(2, $addressCount);
+    }
+
     public function testFindByAssociationWithObjectAsParameter()
     {
         $address1 = $this->buildAddress('Germany', 'Berlim', 'Foo st.', '123456');
@@ -231,6 +263,29 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(2, count($addresses));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress',$addresses[0]);
+    }
+
+    public function testCountByAssociationWithObjectAsParameter()
+    {
+        $address1 = $this->buildAddress('Germany', 'Berlim', 'Foo st.', '123456');
+        $user1    = $this->buildUser('Benjamin', 'beberlei', 'dev', $address1);
+
+        $address2 = $this->buildAddress('Brazil', 'São Paulo', 'Bar st.', '654321');
+        $user2    = $this->buildUser('Guilherme', 'guilhermeblanco', 'freak', $address2);
+
+        $address3 = $this->buildAddress('USA', 'Nashville', 'Woo st.', '321654');
+        $user3    = $this->buildUser('Jonathan', 'jwage', 'dev', $address3);
+
+        unset($address1);
+        unset($address2);
+        unset($address3);
+
+        $this->_em->clear();
+
+        $repository   = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addressCount = $repository->countBy(array('user' => array($user1, $user2)));
+
+        $this->assertEquals(2, $addressCount);
     }
 
     public function testFindFieldByMagicCall()
@@ -376,6 +431,15 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $repos->findBy(array('address' => $addressId));
     }
 
+    public function testCountByAssociationKey_ExceptionOnInverseSide()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\ORMException', "You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
+        $userCount = $repos->countBy(array('address' => $addressId));
+    }
+
     /**
      * @group DDC-817
      */
@@ -415,6 +479,15 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsAddress', $addresses);
         $this->assertEquals(1, count($addresses));
         $this->assertEquals($addressId, $addresses[0]->id);
+    }
+
+    public function testCountByAssociationKey()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos        = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addressCount = $repos->countBy(array('user' => $userId));
+
+        $this->assertEquals(1, $addressCount);
     }
 
     /**
@@ -484,6 +557,16 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findBy(array('status' => null));
         $this->assertEquals(1, count($users));
+    }
+
+    public function testCountByNullCriteria()
+    {
+        $this->loadFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $userCount = $repos->countBy(array('status' => null));
+        $this->assertEquals(1, $userCount);
     }
 
     /**
