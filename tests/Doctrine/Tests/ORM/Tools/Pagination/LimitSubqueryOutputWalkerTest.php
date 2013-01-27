@@ -36,6 +36,44 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
+    public function testLimitSubqueryWithScalarSortPg()
+    {
+        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
+        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+
+        $query = $this->entityManager->createQuery(
+            'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity'
+        );
+        $limitQuery = clone $query;
+        $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC) dctrn_result ORDER BY sclr0 ASC",
+            $limitQuery->getSql()
+        );
+
+        $this->entityManager->getConnection()->setDatabasePlatform($odp);
+    }
+
+    public function testLimitSubqueryWithMixedSortPg()
+    {
+        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
+        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+
+        $query = $this->entityManager->createQuery(
+            'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
+        );
+        $limitQuery = clone $query;
+        $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC, u1_.id DESC) dctrn_result ORDER BY sclr0 ASC, id1 DESC",
+            $limitQuery->getSql()
+        );
+
+        $this->entityManager->getConnection()->setDatabasePlatform($odp);
+    }
+
     public function testLimitSubqueryPg()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
