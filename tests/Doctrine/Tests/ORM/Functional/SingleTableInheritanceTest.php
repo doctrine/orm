@@ -5,6 +5,8 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
 
+require_once __DIR__ . '/../../TestInit.php';
+
 class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $salesPerson;
@@ -332,6 +334,27 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexUltraContract");
         $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
         $this->assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
+    }
+
+    public function testCountByAssociation()
+    {
+        $this->loadFullFixture();
+
+        $repos         = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
+        $contractCount = $repos->countBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(3, $contractCount, "There should be 3 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyContract'");
+
+        $repos         = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
+        $contractCount = $repos->countBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(1, $contractCount, "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFixContract'");
+
+        $repos         = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexContract");
+        $contractCount = $repos->countBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(2, $contractCount, "There should be 2 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexContract'");
+
+        $repos         = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexUltraContract");
+        $contractCount = $repos->countBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(1, $contractCount, "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
     }
 
     /**

@@ -402,6 +402,18 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(array('id' => $this->groupId2)));
     }
 
+    public function testRepositoryCountBy()
+    {
+        $this->loadFixtureData();
+
+        $this->assertSame(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->countBy(array('id' => $this->groupId2)));
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertSame(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->countBy(array('id' => $this->groupId2)));
+    }
+
     public function testRepositoryFindByX()
     {
         $this->loadFixtureData();
