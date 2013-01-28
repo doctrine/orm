@@ -352,28 +352,6 @@ class EntityManager implements ObjectManager
     }
 
     /**
-     * Create a QueryBuilder instance from DQL parts
-     *
-     * @param array $parts
-     *
-     * @return QueryBuilder
-     */
-    public function setDQLParts(array $parts = array())
-    {
-        $queryBuilder = new QueryBuilder($this);
-        foreach ($parts as $name => $part)
-        {
-            if ($part) {
-                if (is_array($part) && $name != 'join') {
-                    $part = current($part);
-                }
-                $queryBuilder->add($name, $part);
-            }
-        }
-        return $queryBuilder;
-    }
-
-    /**
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
