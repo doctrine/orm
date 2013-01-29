@@ -336,6 +336,30 @@ The ``key`` of the lifecycleCallbacks is the name of the method and
 the value is the event type. The allowed event types are the ones
 listed in the previous Lifecycle Events section.
 
+.. versionadded:: 2.4
+Lifecycle Callbacks Event Argument
+-----------------------------------
+
+Since 2.4 the triggered event is given to the lifecycle-callback.
+
+With the additional argument you have access to the
+``EntityManager`` and ``UnitOfWork`` APIs inside these callback methods.
+
+.. code-block:: php
+
+    <?php
+    // ...
+
+    class User
+    {
+        public function preUpdate(PreUpdateEventArgs $event)
+        {
+            if ($event->hasChangedField('username')) {
+                // Do something when the username is changed.
+            }
+        }
+    }
+
 Listening to Lifecycle Events
 -----------------------------
 
