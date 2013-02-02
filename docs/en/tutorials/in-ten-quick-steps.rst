@@ -172,7 +172,7 @@ with another setup just take a look into the :doc:`Installation help
         public function __construct(User $author)
         {
             $this->author = $author;
-            $this->posts = new ArrayCollection();
+            $this->comments = new ArrayCollection();
         }
 
         public function addComment($text)
