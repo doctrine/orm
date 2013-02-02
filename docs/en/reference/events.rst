@@ -771,18 +771,19 @@ you should map the listener method using the event type mapping.
 
         MyProject\Entity\User:
           type: entity
-          UserListener:
-            preFlush: [preFlushHandler]
-            postLoad: [postLoadHandler]
+          entityListeners:
+            UserListener:
+              preFlush: [preFlushHandler]
+              postLoad: [postLoadHandler]
 
-            postPersist: [postPersistHandler]
-            prePersist: [prePersistHandler]
+              postPersist: [postPersistHandler]
+              prePersist: [prePersistHandler]
 
-            postUpdate: [postUpdateHandler]
-            preUpdate: [preUpdateHandler]
+              postUpdate: [postUpdateHandler]
+              preUpdate: [preUpdateHandler]
 
-            postRemove: [postRemoveHandler]
-            preRemove: [preRemoveHandler]
+              postRemove: [postRemoveHandler]
+              preRemove: [preRemoveHandler]
           # ....
     
 
