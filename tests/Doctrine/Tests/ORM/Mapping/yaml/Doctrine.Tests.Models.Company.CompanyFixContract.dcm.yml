@@ -1,0 +1,5 @@
+Doctrine\Tests\Models\Company\CompanyFixContract:
+  type: entity
+  fields:
+    fixPrice:
+      type: integer

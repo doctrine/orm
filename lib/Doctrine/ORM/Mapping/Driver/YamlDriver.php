@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
@@ -569,6 +570,24 @@ class YamlDriver extends FileDriver
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
                 foreach ($methods as $method) {
                     $metadata->addLifecycleCallback($method, constant('Doctrine\ORM\Events::' . $type));
+                }
+            }
+        }
+
+        // Evaluate entityListeners
+        if (isset($element['entityListeners'])) {
+            foreach ($element['entityListeners'] as $className => $entityListener) {
+                // Evaluate the listener using naming convention.
+                if (empty($entityListener)) {
+                    EntityListenerBuilder::bindEntityListener($metadata, $className);
+
+                    continue;
+                }
+
+                foreach ($entityListener as $eventName => $callbackElement){
+                    foreach ($callbackElement as $methodName){
+                        $metadata->addEntityListener($eventName, $className, $methodName);
+                    }
                 }
             }
         }

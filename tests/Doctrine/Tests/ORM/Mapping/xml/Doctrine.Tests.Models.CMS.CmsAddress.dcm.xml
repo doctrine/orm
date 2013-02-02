@@ -7,6 +7,10 @@
                               
     <entity name="Doctrine\Tests\Models\CMS\CmsAddress" table="cms_users">
 
+        <entity-listeners>
+            <entity-listener class="CmsAddressListener"/>
+        </entity-listeners>
+
         <named-native-queries>
             <named-native-query name="find-all" result-set-mapping="mapping-find-all">
                 <query>SELECT id, country, city FROM cms_addresses</query>

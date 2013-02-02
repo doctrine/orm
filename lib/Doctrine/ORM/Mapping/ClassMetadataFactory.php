@@ -156,6 +156,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addInheritedSqlResultSetMappings($class, $parent);
         }
 
+        if ($parent && !empty($parent->entityListeners) && empty($class->entityListeners)) {
+            $class->entityListeners = $parent->entityListeners;
+        }
+
         $class->setParentClasses($nonSuperclassParents);
 
         if ( $class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
@@ -458,7 +462,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform);
                 }
 
-                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === "bigint")
+                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')
                     ? new BigIntegerIdentityGenerator($sequenceName)
                     : new IdentityGenerator($sequenceName);
 

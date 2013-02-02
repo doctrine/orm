@@ -11,6 +11,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackEventArgEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestUser'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackCascader'),
@@ -182,6 +183,77 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals('Bob', $bob->getName());
     }
+
+    /**
+    * @group DDC-1955
+    */
+    public function testLifecycleCallbackEventArgs()
+    {
+        $e = new LifecycleCallbackEventArgEntity;
+
+        $e->value = 'foo';
+        $this->_em->persist($e);
+        $this->_em->flush();
+
+        $e->value = 'var';
+        $this->_em->persist($e);
+        $this->_em->flush();
+
+        $this->_em->refresh($e);
+        
+        $this->_em->remove($e);
+        $this->_em->flush();
+
+
+        $this->assertArrayHasKey('preFlushHandler', $e->calls);
+        $this->assertArrayHasKey('postLoadHandler', $e->calls);
+        $this->assertArrayHasKey('prePersistHandler', $e->calls);
+        $this->assertArrayHasKey('postPersistHandler', $e->calls);
+        $this->assertArrayHasKey('preUpdateHandler', $e->calls);
+        $this->assertArrayHasKey('postUpdateHandler', $e->calls);
+        $this->assertArrayHasKey('preRemoveHandler', $e->calls);
+        $this->assertArrayHasKey('postRemoveHandler', $e->calls);
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\PreFlushEventArgs',
+            $e->calls['preFlushHandler']
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->calls['postLoadHandler']
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->calls['prePersistHandler']
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->calls['postPersistHandler']
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\PreUpdateEventArgs',
+            $e->calls['preUpdateHandler']
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->calls['postUpdateHandler']
+        );
+ 
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->calls['preRemoveHandler']
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->calls['postRemoveHandler']
+        );
+    }
 }
 
 /** @Entity @HasLifecycleCallbacks */
@@ -307,5 +379,81 @@ class LifecycleListenerPreUpdate
     public function preUpdate(PreUpdateEventArgs $eventArgs)
     {
         $eventArgs->setNewValue('name', 'Bob');
+    }
+}
+
+/** @Entity @HasLifecycleCallbacks */
+class LifecycleCallbackEventArgEntity
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    public $id;
+
+    /** @Column() */
+    public $value;
+
+    public $calls = array();
+
+    /**
+     * @PostPersist
+     */
+    public function postPersistHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PrePersist
+     */
+    public function prePersistHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PostUpdate
+     */
+    public function postUpdateHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PreUpdate
+     */
+    public function preUpdateHandler(\Doctrine\ORM\Event\PreUpdateEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PostRemove
+     */
+    public function postRemoveHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PreRemove
+     */
+    public function preRemoveHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PreFlush
+     */
+    public function preFlushHandler(\Doctrine\ORM\Event\PreFlushEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PostLoad
+     */
+    public function postLoadHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
     }
 }

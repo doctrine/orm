@@ -1,6 +1,8 @@
 Doctrine\Tests\Models\CMS\CmsAddress:
   type: entity
   table: cms_address
+  entityListeners:
+    CmsAddressListener:
   namedNativeQueries:
     find-all:
       resultSetMapping: mapping-find-all
@@ -55,7 +57,7 @@ Doctrine\Tests\Models\CMS\CmsAddress:
       type: string
       length: 50
   oneToOne:
-    address:
+    user:
       targetEntity: CmsUser
       inversedBy: address
       joinColumn:

@@ -2,10 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\Driver\XmlDriver,
-    Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
+
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -748,6 +751,126 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($guestMetadata->fieldMappings['name']['unique']);
     }
 
+    /**
+     * @group DDC-1955
+     */
+    public function testEntityListeners()
+    {
+        $em         = $this->_getTestEntityManager();
+        $factory    = $this->createClassMetadataFactory($em);
+        $superClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyContract');
+        $flexClass  = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
+        $fixClass   = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
+        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
+
+        $this->assertArrayHasKey(Events::prePersist, $superClass->entityListeners);
+        $this->assertArrayHasKey(Events::postPersist, $superClass->entityListeners);
+
+        $this->assertCount(1, $superClass->entityListeners[Events::prePersist]);
+        $this->assertCount(1, $superClass->entityListeners[Events::postPersist]);
+
+        $postPersist = $superClass->entityListeners[Events::postPersist][0];
+        $prePersist  = $superClass->entityListeners[Events::prePersist][0];
+
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $postPersist['class']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $prePersist['class']);
+        $this->assertEquals('postPersistHandler', $postPersist['method']);
+        $this->assertEquals('prePersistHandler', $prePersist['method']);
+
+        //Inherited listeners
+        $this->assertEquals($fixClass->entityListeners, $superClass->entityListeners);
+        $this->assertEquals($flexClass->entityListeners, $superClass->entityListeners);
+    }
+
+    /**
+     * @group DDC-1955
+     */
+    public function testEntityListenersOverride()
+    {
+        $em         = $this->_getTestEntityManager();
+        $factory    = $this->createClassMetadataFactory($em);
+        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
+
+        //overrited listeners
+        $this->assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
+        $this->assertArrayHasKey(Events::prePersist, $ultraClass->entityListeners);
+
+        $this->assertCount(1, $ultraClass->entityListeners[Events::postPersist]);
+        $this->assertCount(3, $ultraClass->entityListeners[Events::prePersist]);
+
+        $postPersist = $ultraClass->entityListeners[Events::postPersist][0];
+        $prePersist  = $ultraClass->entityListeners[Events::prePersist][0];
+
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $postPersist['class']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $prePersist['class']);
+        $this->assertEquals('postPersistHandler', $postPersist['method']);
+        $this->assertEquals('prePersistHandler', $prePersist['method']);
+
+        $prePersist = $ultraClass->entityListeners[Events::prePersist][1];
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
+        $this->assertEquals('prePersistHandler1', $prePersist['method']);
+
+        $prePersist = $ultraClass->entityListeners[Events::prePersist][2];
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
+        $this->assertEquals('prePersistHandler2', $prePersist['method']);
+    }
+
+
+    /**
+     * @group DDC-1955
+     */
+    public function testEntityListenersNamingConvention()
+    {
+        $em         = $this->_getTestEntityManager();
+        $factory    = $this->createClassMetadataFactory($em);
+        $metadata   = $factory->getMetadataFor('Doctrine\Tests\Models\CMS\CmsAddress');
+
+        $this->assertArrayHasKey(Events::postPersist, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::prePersist, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::postUpdate, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::preUpdate, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::postRemove, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::preRemove, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::postLoad, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::preFlush, $metadata->entityListeners);
+
+        $this->assertCount(1, $metadata->entityListeners[Events::postPersist]);
+        $this->assertCount(1, $metadata->entityListeners[Events::prePersist]);
+        $this->assertCount(1, $metadata->entityListeners[Events::postUpdate]);
+        $this->assertCount(1, $metadata->entityListeners[Events::preUpdate]);
+        $this->assertCount(1, $metadata->entityListeners[Events::postRemove]);
+        $this->assertCount(1, $metadata->entityListeners[Events::preRemove]);
+        $this->assertCount(1, $metadata->entityListeners[Events::postLoad]);
+        $this->assertCount(1, $metadata->entityListeners[Events::preFlush]);
+
+        $postPersist = $metadata->entityListeners[Events::postPersist][0];
+        $prePersist  = $metadata->entityListeners[Events::prePersist][0];
+        $postUpdate  = $metadata->entityListeners[Events::postUpdate][0];
+        $preUpdate   = $metadata->entityListeners[Events::preUpdate][0];
+        $postRemove  = $metadata->entityListeners[Events::postRemove][0];
+        $preRemove   = $metadata->entityListeners[Events::preRemove][0];
+        $postLoad    = $metadata->entityListeners[Events::postLoad][0];
+        $preFlush    = $metadata->entityListeners[Events::preFlush][0];
+
+
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postPersist['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $prePersist['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postUpdate['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $preUpdate['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postRemove['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $preRemove['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postLoad['class']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $preFlush['class']);
+
+        $this->assertEquals(Events::postPersist, $postPersist['method']);
+        $this->assertEquals(Events::prePersist, $prePersist['method']);
+        $this->assertEquals(Events::postUpdate, $postUpdate['method']);
+        $this->assertEquals(Events::preUpdate, $preUpdate['method']);
+        $this->assertEquals(Events::postRemove, $postRemove['method']);
+        $this->assertEquals(Events::preRemove, $preRemove['method']);
+        $this->assertEquals(Events::postLoad, $postLoad['method']);
+        $this->assertEquals(Events::preFlush, $preFlush['method']);
+    }
 }
 
 /**
