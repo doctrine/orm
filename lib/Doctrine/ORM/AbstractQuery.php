@@ -296,6 +296,7 @@ abstract class AbstractQuery
      */
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
     {
+        $rsm->translateNamespaces($this->_em);
         $this->_resultSetMapping = $rsm;
 
         return $this;
