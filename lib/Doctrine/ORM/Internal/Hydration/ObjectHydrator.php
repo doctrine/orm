@@ -83,7 +83,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     private $existingCollections = array();
 
-     /**
+    /**
      * {@inheritdoc}
      */
     protected function prepare()
@@ -525,7 +525,7 @@ class ObjectHydrator extends AbstractHydrator
                 // check for existing result from the iterations before
                 if ( ! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
-   
+
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);
                     }
@@ -597,7 +597,7 @@ class ObjectHydrator extends AbstractHydrator
 
                 if ($count === 1) {
                     $result[$resultKey] = $obj;
-                    
+
                     continue;
                 }
 
