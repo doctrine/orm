@@ -686,6 +686,29 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     /**
      * @param string $className
+     * @param string $methodName
+     *
+     * @return \Doctrine\ORM\Mapping\MappingException
+     */
+    public static function entityListenerClassNotFound($listenerName, $className)
+    {
+        return new self(sprintf('Entity Listener "%s" declared on "%s" not found.', $listenerName, $className));
+    }
+
+    /**
+     * @param string $listenerName
+     * @param string $methodName
+     * @param string $className
+     *
+     * @return \Doctrine\ORM\Mapping\MappingException
+     */
+    public static function entityListenerMethodNotFound($listenerName, $methodName, $className)
+    {
+        return new self(sprintf('Entity Listener "%s" declared on "%s" has no method "%s".', $listenerName, $className, $methodName));
+    }
+
+    /**
+     * @param string $className
      * @param string $annotation
      *
      * @return MappingException

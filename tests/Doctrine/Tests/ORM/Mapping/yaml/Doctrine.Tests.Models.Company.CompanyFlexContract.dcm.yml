@@ -1,0 +1,7 @@
+Doctrine\Tests\Models\Company\CompanyFlexContract:
+  type: entity
+  fields:
+    hoursWorked:
+      type: integer
+    pricePerHour:
+      type: integer

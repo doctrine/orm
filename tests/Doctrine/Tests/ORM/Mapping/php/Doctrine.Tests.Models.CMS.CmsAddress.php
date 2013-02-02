@@ -6,6 +6,27 @@ $metadata->setPrimaryTable(array(
    'name' => 'company_person',
 ));
 
+$metadata->mapField(array (
+    'id'        => true,
+    'fieldName' => 'id',
+    'type'      => 'integer',
+));
+
+$metadata->mapField(array (
+    'fieldName' => 'zip',
+    'length'    => 50,
+));
+
+$metadata->mapField(array (
+    'fieldName' => 'city',
+    'length'    => 50,
+));
+
+$metadata->mapOneToOne(array(
+    'fieldName'     => 'user',
+    'targetEntity'  => 'CmsUser',
+    'joinColumns'   => array(array('referencedColumnName' => 'id'))
+));
 
 $metadata->addNamedNativeQuery(array (
     'name'              => 'find-all',
@@ -67,3 +88,15 @@ $metadata->addSqlResultSetMapping(array (
         ),
     )
 ));
+
+$metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CmsAddressListener', 'postPersist');
+$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CmsAddressListener', 'prePersist');
+
+$metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CmsAddressListener', 'postUpdate');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CmsAddressListener', 'preUpdate');
+
+$metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CmsAddressListener', 'postRemove');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CmsAddressListener', 'preRemove');
+
+$metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CmsAddressListener', 'preFlush');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CmsAddressListener', 'postLoad');

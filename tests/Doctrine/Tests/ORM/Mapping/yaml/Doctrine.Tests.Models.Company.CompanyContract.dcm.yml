@@ -1,0 +1,32 @@
+Doctrine\Tests\Models\Company\CompanyContract:
+  type: entity
+  table: company_contracts
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    fix: CompanyFixContract
+    flexible: CompanyFlexContract
+    flexultra: CompanyFlexUltraContract
+
+  entityListeners:
+    CompanyContractListener:
+
+      preFlush: [preFlushHandler]
+      postLoad: [postLoadHandler]
+
+      postPersist: [postPersistHandler]
+      prePersist: [prePersistHandler]
+
+      postUpdate: [postUpdateHandler]
+      preUpdate: [preUpdateHandler]
+
+      postRemove: [postRemoveHandler]
+      preRemove: [preRemoveHandler]
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    completed:
+      type: boolean

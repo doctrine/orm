@@ -1,0 +1,25 @@
+Doctrine\Tests\Models\Company\CompanyFlexUltraContract:
+  type: entity
+
+  entityListeners:
+    CompanyContractListener:
+      
+      preFlush: [preFlushHandler]
+      postLoad: [postLoadHandler]
+
+      postPersist: [postPersistHandler]
+      prePersist: [prePersistHandler]
+
+      postUpdate: [postUpdateHandler]
+      preUpdate: [preUpdateHandler]
+
+      postRemove: [postRemoveHandler]
+      preRemove: [preRemoveHandler]
+      
+    CompanyFlexUltraContractListener:
+
+      prePersist: [prePersistHandler1, prePersistHandler2]
+
+  fields:
+    maxPrice:
+      type: integer

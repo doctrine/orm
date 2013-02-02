@@ -23,8 +23,10 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\ORM\Events;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -384,9 +386,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 // Check for JoinTable annotations
                 if ($associationOverride->joinTable) {
-                    $joinTable      = null;
                     $joinTableAnnot = $associationOverride->joinTable;
-                    $joinTable = array(
+                    $joinTable      = array(
                         'name'      => $joinTableAnnot->name,
                         'schema'    => $joinTableAnnot->schema
                     );
@@ -415,54 +416,47 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
+        // Evaluate EntityListeners annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\EntityListeners'])) {
+            $entityListenersAnnot = $classAnnotations['Doctrine\ORM\Mapping\EntityListeners'];
+
+            foreach ($entityListenersAnnot->value as $item) {
+                $listenerClassName = $metadata->fullyQualifiedClassName($item);
+
+                if ( ! class_exists($listenerClassName)) {
+                    throw MappingException::entityListenerClassNotFound($listenerClassName, $className);
+                }
+
+                $hasMapping     = false;
+                $listenerClass  = new \ReflectionClass($listenerClassName);
+                /* @var $method \ReflectionMethod */
+                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    // find method callbacks.
+                    $callbacks  = $this->getMethodCallbacks($method);
+                    $hasMapping = $hasMapping ?: ( ! empty($callbacks));
+
+                    foreach ($callbacks as $value) {
+                        $metadata->addEntityListener($value[1], $listenerClassName, $value[0]);
+                    }
+                }
+                // Evaluate the listener using naming convention.
+                if ( ! $hasMapping ) {
+                    EntityListenerBuilder::bindEntityListener($metadata, $listenerClassName);
+                }
+            }
+        }
+
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
             /* @var $method \ReflectionMethod */
-            foreach ($class->getMethods() as $method) {
+            foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 // filter for the declaring class only, callbacks from parents will already be registered.
-                if ($method->isPublic() && $method->getDeclaringClass()->getName() == $class->name) {
-                    $annotations = $this->reader->getMethodAnnotations($method);
+                if ($method->getDeclaringClass()->name !== $class->name) {
+                    continue;
+                }
 
-                    if ($annotations) {
-                        foreach ($annotations as $key => $annot) {
-                            if ( ! is_numeric($key)) {
-                                continue;
-                            }
-                            $annotations[get_class($annot)] = $annot;
-                        }
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PrePersist'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::prePersist);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostPersist'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postPersist);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreUpdate'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preUpdate);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostUpdate'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postUpdate);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreRemove'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preRemove);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostRemove'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postRemove);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
-                    }
-
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreFlush'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preFlush);
-                    }
+                foreach ($this->getMethodCallbacks($method) as $value) {
+                    $metadata->addLifecycleCallback($value[0], $value[1]);
                 }
             }
         }
@@ -488,9 +482,56 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * Parses the given JoinColumn as array.
+     * Parses the given method.
      *
-     * @param JoinColumn $joinColumn
+     * @param \ReflectionMethod $method
+     *
+     * @return array
+     */
+    private function getMethodCallbacks(\ReflectionMethod $method)
+    {
+        $callbacks   = array();
+        $annotations = $this->reader->getMethodAnnotations($method);
+
+        foreach ($annotations as $annot) {
+            if ($annot instanceof \Doctrine\ORM\Mapping\PrePersist) {
+                $callbacks[] = array($method->name, Events::prePersist);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PostPersist) {
+                $callbacks[] = array($method->name, Events::postPersist);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PreUpdate) {
+                $callbacks[] = array($method->name, Events::preUpdate);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PostUpdate) {
+                $callbacks[] = array($method->name, Events::postUpdate);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PreRemove) {
+                $callbacks[] = array($method->name, Events::preRemove);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PostRemove) {
+                $callbacks[] = array($method->name, Events::postRemove);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PostLoad) {
+                $callbacks[] = array($method->name, Events::postLoad);
+            }
+
+            if ($annot instanceof \Doctrine\ORM\Mapping\PreFlush) {
+                $callbacks[] = array($method->name, Events::preFlush);
+            }
+        }
+
+        return $callbacks;
+    }
+
+    /**
+     * Parse the given JoinColumn as array
      *
      * @return array
      */

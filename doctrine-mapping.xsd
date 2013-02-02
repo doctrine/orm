@@ -51,6 +51,7 @@
       <xs:enumeration value="preRemove"/>
       <xs:enumeration value="postRemove"/>
       <xs:enumeration value="postLoad"/>
+      <xs:enumeration value="preFlush"/>
     </xs:restriction>
   </xs:simpleType>
   
@@ -98,6 +99,20 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="entity-listener">
+    <xs:sequence>
+      <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+    <xs:attribute name="class" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="entity-listeners">
+    <xs:sequence>
+      <xs:element name="entity-listener" type="orm:entity-listener" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="column-result">
     <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
@@ -137,6 +152,7 @@
       <xs:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
+      <xs:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-native-queries" type="orm:named-native-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />

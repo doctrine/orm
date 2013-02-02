@@ -997,6 +997,34 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $cm->setAttributeOverride('name', array('type'=>'date'));
     }
+
+    /**
+     * @group DDC-1955
+     * 
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
+     */
+    public function testInvalidEntityListenerClassException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $cm->addEntityListener(Events::postLoad, '\InvalidClassName', 'postLoadHandler');
+    }
+
+    /**
+     * @group DDC-1955
+     *
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Entity Listener "\Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".
+     */
+    public function testInvalidEntityListenerMethodException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $cm->addEntityListener(Events::postLoad, '\Doctrine\Tests\Models\Company\CompanyContractListener', 'invalidMethod');
+    }
 }
 
 class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy

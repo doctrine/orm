@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 
 /**
  * @group DDC-1707
@@ -25,9 +25,11 @@ class DDC1707Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testPostLoadOnChild()
     {
-        $class = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1707Child');
+        $class  = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1707Child');
         $entity = new DDC1707Child();
-        $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::postLoad, $entity);
+        $event  = new LifecycleEventArgs($entity, $this->_em);
+
+        $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::postLoad, $entity, $event);
 
         $this->assertTrue($entity->postLoad);
     }
