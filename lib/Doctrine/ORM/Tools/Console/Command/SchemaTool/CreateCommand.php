@@ -74,5 +74,7 @@ EOT
             $schemaTool->createSchema($metadatas);
             $output->writeln('Database schema created successfully!');
         }
+
+        return 0;
     }
 }

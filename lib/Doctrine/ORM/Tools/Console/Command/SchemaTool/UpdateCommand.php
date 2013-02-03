@@ -110,7 +110,7 @@ EOT
         if (0 === count($sqls)) {
             $output->writeln('Nothing to update - your database is already in sync with the current entity metadata.');
 
-            return;
+            return 0;
         }
 
         $dumpSql = true === $input->getOption('dump-sql');
