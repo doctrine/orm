@@ -25,20 +25,6 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function getNativeDeclaration(array $field)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPortableDeclaration(array $field)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function prefersIdentityColumns()
     {
         return $this->_prefersIdentityColumns;
