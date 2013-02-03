@@ -199,8 +199,6 @@ class QueryBuilder
             return $this->_dql;
         }
 
-        $dql = '';
-
         switch ($this->_type) {
             case self::DELETE:
                 $dql = $this->_getDQLForDelete();
