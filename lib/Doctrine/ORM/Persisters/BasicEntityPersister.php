@@ -254,7 +254,7 @@ class BasicEntityPersister
     public function executeInserts()
     {
         if ( ! $this->queuedInserts) {
-            return;
+            return array();
         }
 
         $postInsertIds  = array();
