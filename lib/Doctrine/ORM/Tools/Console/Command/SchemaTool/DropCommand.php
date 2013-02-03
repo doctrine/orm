@@ -116,5 +116,7 @@ EOT
         }
 
         $output->writeln('Nothing to drop. The database is empty!');
+
+        return 0;
     }
 }
