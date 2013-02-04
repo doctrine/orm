@@ -1,5 +1,10 @@
 # Upgrade to 2.4
 
+## Composer is now the default autoloader
+
+The test suite now runs with composer autoloading. Support for PEAR, and tarball autoloading is deprecated.
+Support for GIT submodules is removed.
+
 ## OnFlush and PostFlush event always called
 
 Before 2.4 the postFlush and onFlush events were only called when there were

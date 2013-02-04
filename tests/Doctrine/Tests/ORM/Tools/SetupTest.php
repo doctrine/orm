@@ -37,13 +37,6 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         }
     }
 
-    public function testGitAutoload()
-    {
-        Setup::registerAutoloadGit(__DIR__ . "/../../../../../");
-
-        $this->assertEquals($this->originalAutoloaderCount + 4, count(spl_autoload_functions()));
-    }
-
     public function testPEARAutoload()
     {
         set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . "/../../../../../lib/vendor/doctrine-common/lib");
