@@ -6,39 +6,24 @@ namespace Doctrine\Tests;
 
 error_reporting(E_ALL | E_STRICT);
 
-
-if (isset($GLOBALS['DOCTRINE_COMMON_PATH'])) {
-    require_once $GLOBALS['DOCTRINE_COMMON_PATH'] . '/Doctrine/Common/ClassLoader.php';
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $GLOBALS['DOCTRINE_COMMON_PATH']);
+if (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
+    // dependencies were installed via composer - this is the main project
+    $classLoader = require __DIR__ . '/../../../vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../../../../autoload.php')) {
+    // installed as a dependency in `vendor`
+    $classLoader = require __DIR__ . '/../../../../../autoload.php';
 } else {
-    require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', __DIR__ . '/../../../lib/vendor/doctrine-common/lib');
+    throw new \Exception('Can\'t find autoload.php. Did you install dependencies via composer?');
 }
-$classLoader->register();
 
-if (isset($GLOBALS['DOCTRINE_DBAL_PATH'])) {
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', $GLOBALS['DOCTRINE_DBAL_PATH']);
-} else {
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', __DIR__ . '/../../../lib/vendor/doctrine-dbal/lib');
+/* @var $classLoader \Composer\Autoload\ClassLoader */
+$classLoader->add('Doctrine\\Tests\\', __DIR__ . '/../../');
+unset($classLoader);
+
+if ( ! file_exists(__DIR__ . '/Proxies') && ! mkdir(__DIR__ . '/Proxies')) {
+    throw new \Exception("Could not create " . __DIR__."/Proxies Folder.");
 }
-$classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', __DIR__ . '/../../../lib');
-$classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Tests', __DIR__ . '/../../');
-$classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . "/../../../lib/vendor");
-$classLoader->register();
-
-if (!file_exists(__DIR__."/Proxies")) {
-    if (!mkdir(__DIR__."/Proxies")) {
-        throw new Exception("Could not create " . __DIR__."/Proxies Folder.");
-    }
-}
-if (!file_exists(__DIR__."/ORM/Proxy/generated")) {
-    if (!mkdir(__DIR__."/ORM/Proxy/generated")) {
-        throw new Exception("Could not create " . __DIR__."/ORM/Proxy/generated Folder.");
-    }
+if ( ! file_exists(__DIR__ . '/ORM/Proxy/generated') &&  ! mkdir(__DIR__ . '/ORM/Proxy/generated')) {
+    throw new \Exception('Could not create ' . __DIR__ . '/ORM/Proxy/generated Folder.');
 }

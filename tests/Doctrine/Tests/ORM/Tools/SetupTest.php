@@ -50,7 +50,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
 
         Setup::registerAutoloadPEAR();
 
-        $this->assertEquals($this->originalAutoloaderCount + 2, count(spl_autoload_functions()));
+        $this->assertEquals($this->originalAutoloaderCount + 1, count(spl_autoload_functions()));
     }
 
     public function testDirectoryAutoload()
