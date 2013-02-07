@@ -15,6 +15,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 
 /**
  * Wraps the query in order to accurately count the root objects.
@@ -79,6 +80,13 @@ class CountOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
+        // The ORDER BY clause is invalid in views, inline functions, derived
+        // tables, subqueries, and common table expressions, unless TOP or
+        // FOR XML is also specified
+        if ($this->platform instanceof SQLServerPlatform) {
+            $AST->orderByClause = null;
+        }
+
         $sql = parent::walkSelectStatement($AST);
 
         // Find out the SQL alias of the identifier column of the root entity
