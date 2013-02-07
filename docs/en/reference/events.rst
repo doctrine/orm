@@ -148,7 +148,8 @@ the life-time of their registered entities.
    delete operations. It is not called for a DQL DELETE statement.
 -  prePersist - The prePersist event occurs for a given entity
    before the respective EntityManager persist operation for that
-   entity is executed.
+   entity is executed. It should be noted that this event is only triggered on
+   *initial* persist of an entity
 -  postPersist - The postPersist event occurs for an entity after
    the entity has been made persistent. It will be invoked after the
    database insert operations. Generated primary key values are
