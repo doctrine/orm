@@ -239,26 +239,48 @@ Sometimes you have the requirement that two objects are related by a One-To-One 
 and that the dependent class should re-use the primary key of the class it depends on.
 One good example for this is a user-address relationship:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /**
-     * @Entity
-     */
-    class User
-    {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
-    }
+    .. code-block:: php
 
-    /**
-     * @Entity
-     */
-    class Address
-    {
-        /** @Id @OneToOne(targetEntity="User") */
-        private $user;
-    }
+        <?php
+        /**
+         * @Entity
+         */
+        class User
+        {
+            /** @Id @Column(type="integer") @GeneratedValue */
+            private $id;
+        }
+
+        /**
+         * @Entity
+         */
+        class Address
+        {
+            /** @Id @OneToOne(targetEntity="User") */
+            private $user;
+        }
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          id:
+            id:
+              type: integer
+              generator:
+                strategy: AUTO
+
+        Address:
+          type: entity
+          id:
+            user:
+              associationKey: true
+          oneToOne:
+            user:
+              targetEntity: User
+
 
 Use-Case 3: Join-Table with Metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
