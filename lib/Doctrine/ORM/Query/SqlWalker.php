@@ -2072,6 +2072,12 @@ class SqlWalker implements TreeWalker
     {
         $this->parserResult->addParameterMapping($inputParam->name, $this->sqlParamIndex++);
 
+        $parameter = $this->query->getParameter($inputParam->name);
+        if ($parameter && Type::hasType($parameter->getType())) {
+            $parameterType = Type::getType($parameter->getType());
+            return $parameterType->convertToDatabaseValueSQL('?', $this->platform);
+        }
+
         return '?';
     }
 
