@@ -104,14 +104,12 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if (null === $filter = $this->config->getFilter($name)) {
+        if (null === $filterClass = $this->config->getFilterClassName($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if (!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = is_object($filter)
-                ? $filter
-                : new $filter($this->em);
+            $this->enabledFilters[$name] = new $filterClass($this->em);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);

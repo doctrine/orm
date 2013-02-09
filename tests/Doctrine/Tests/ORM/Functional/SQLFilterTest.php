@@ -58,27 +58,11 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testConfigureFilter()
     {
         $config = new \Doctrine\ORM\Configuration();
-        $validFilter = $this->getMockBuilder('\Doctrine\ORM\Query\Filter\SQLFilter')
-            ->disableOriginalConstructor()
-            ->getMock();
 
-        $config->addFilter("geolocation", $validFilter);
         $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
-        $this->assertEquals("\Doctrine\Tests\ORM\Functional\MyLocaleFilter", $config->getFilter("locale"));
-        $this->assertNull($config->getFilter("foo"));
-        $this->assertInstanceOf("\Doctrine\ORM\Query\Filter\SQLFilter", $config->getFilter("geolocation"));
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testConfigureFilterFails()
-    {
-        $config = new \Doctrine\ORM\Configuration();
-        $invalidFilter = $this->getMock('\StdClass');
-
-        $config->addFilter("geolocation", $invalidFilter);
+        $this->assertEquals("\Doctrine\Tests\ORM\Functional\MyLocaleFilter", $config->getFilterClassName("locale"));
+        $this->assertNull($config->getFilterClassName("foo"));
     }
 
     public function testEntityManagerEnableFilter()

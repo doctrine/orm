@@ -635,24 +635,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Adds a filter to the list of possible filters.
      *
-     * @param string                        $name   The name of the filter.
-     * @param string|Query\Filter\SQLFilter $filter The filter class name or an SQLFilter instance.
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException If the filter is an object and it doesn't
-     *                                   extend the Query\Filter\SQLFilter class.
+     * @param string $name      The name of the filter.
+     * @param string $className The class name of the filter.
      */
-    public function addFilter($name, $filter)
+    public function addFilter($name, $className)
     {
-        if (is_object($filter) && ! $filter instanceof Query\Filter\SQLFilter) {
-            throw new \InvalidArgumentException(
-                "A filter can be either a class name or an object extending \Doctrine\ORM\Query\Filter\SQLFilter," .
-                " instance of '" . get_class($filter) . "' given."
-            );
-        }
-
-        $this->_attributes['filters'][$name] = $filter;
+        $this->_attributes['filters'][$name] = $className;
     }
 
     /**
@@ -660,10 +648,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return null|string|Query\Filter\SQLFilter The class name of the filter, an
-     *                                            SQLFilter instance or null of it is not defined.
+     * @return string The class name of the filter, or null of it is not
+     *  defined.
      */
-    public function getFilter($name)
+    public function getFilterClassName($name)
     {
         return isset($this->_attributes['filters'][$name])
             ? $this->_attributes['filters'][$name]
