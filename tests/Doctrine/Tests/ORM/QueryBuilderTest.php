@@ -375,6 +375,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
     }
 
+    public function testAddOrderByWithExpression()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->orderBy('u.username', 'ASC')
+            ->addOrderBy($qb->expr()->desc('u.username'));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
+    }
+
     public function testAddCriteriaWhere()
     {
         $qb = $this->_em->createQueryBuilder();

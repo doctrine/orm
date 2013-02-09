@@ -1047,8 +1047,8 @@ class QueryBuilder
      * Specifies an ordering for the query results.
      * Replaces any previously specified orderings, if any.
      *
-     * @param string $sort  The ordering expression.
-     * @param string $order The ordering direction.
+     * @param string|Expr\OrderBy $sort  The ordering expression.
+     * @param string              $order The ordering direction.
      *
      * @return QueryBuilder This QueryBuilder instance.
      */
@@ -1062,14 +1062,16 @@ class QueryBuilder
     /**
      * Adds an ordering to the query results.
      *
-     * @param string $sort  The ordering expression.
-     * @param string $order The ordering direction.
+     * @param string|Expr\OrderBy $sort  The ordering expression.
+     * @param string              $order The ordering direction.
      *
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function addOrderBy($sort, $order = null)
     {
-        return $this->add('orderBy', new Expr\OrderBy($sort, $order), true);
+        $orderBy = ($sort instanceof Expr\OrderBy) ? $sort : new Expr\OrderBy($sort, $order);
+
+        return $this->add('orderBy', $orderBy, true);
     }
 
     /**
