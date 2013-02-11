@@ -37,7 +37,7 @@ internally but also mean more work during ``flush``.
         $user->setUsername('user' . $i);
         $user->setName('Mr.Smith-' . $i);
         $em->persist($user);
-        if (($i % $batchSize) == 0) {
+        if (($i % $batchSize) === 0) {
             $em->flush();
             $em->clear(); // Detaches all objects from Doctrine!
         }
@@ -80,12 +80,13 @@ with the batching strategy that was already used for bulk inserts:
         $user = $row[0];
         $user->increaseCredit();
         $user->calculateNewBonuses();
-        if (($i % $batchSize) == 0) {
+        if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all updates.
             $em->clear(); // Detaches all objects from Doctrine!
         }
         ++$i;
     }
+    $em->flush();
 
 .. note::
 
@@ -132,12 +133,13 @@ The following example shows how to do this:
     $iterableResult = $q->iterate();
     while (($row = $iterableResult->next()) !== false) {
         $em->remove($row[0]);
-        if (($i % $batchSize) == 0) {
+        if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all deletions.
             $em->clear(); // Detaches all objects from Doctrine!
         }
         ++$i;
     }
+    $em->flush();
 
 .. note::
 
