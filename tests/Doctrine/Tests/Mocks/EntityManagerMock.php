@@ -39,11 +39,6 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     private $_proxyFactoryMock;
 
     /**
-     * @var array
-     */
-    private $_idGenerators = array();
-
-    /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
@@ -103,21 +98,4 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
 
         return new EntityManagerMock($conn, $config, $eventManager);
     }
-/*
-    public function setIdGenerator($className, $generator)
-    {
-        $this->_idGenerators[$className] = $generator;
-    }
-*/
-    /** @override */
-/*    public function getIdGenerator($className)
-    {
-
-        if (isset($this->_idGenerators[$className])) {
-            return $this->_idGenerators[$className];
-        }
-
-        return parent::getIdGenerator($className);
-    }
- */
 }
