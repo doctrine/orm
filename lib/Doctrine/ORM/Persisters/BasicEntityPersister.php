@@ -714,7 +714,7 @@ class BasicEntityPersister
      * @param int|null    $limit    Limit number of results.
      * @param array|null  $orderBy  Criteria to order by.
      *
-     * @return object The loaded and managed entity instance or NULL if the entity can not be found.
+     * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */

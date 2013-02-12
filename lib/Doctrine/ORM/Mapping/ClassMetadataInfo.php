@@ -1676,9 +1676,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the mapped identifier field of this class.
-     *
-     * @return array|string
+     * {@inheritDoc}
      */
     public function getIdentifier()
     {
