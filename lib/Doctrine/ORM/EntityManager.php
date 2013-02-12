@@ -376,12 +376,12 @@ class EntityManager implements ObjectManager
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string  $entityName
-     * @param mixed   $id
-     * @param integer $lockMode
-     * @param integer $lockVersion
+     * @param string       $entityName
+     * @param mixed        $id
+     * @param integer      $lockMode
+     * @param integer|null $lockVersion
      *
-     * @return object
+     * @return object|null The entity instance or NULL if the entity can not be found.
      *
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException

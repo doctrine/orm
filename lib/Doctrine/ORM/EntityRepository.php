@@ -147,7 +147,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param int      $lockMode    The lock mode.
      * @param int|null $lockVersion The lock version.
      *
-     * @return object The entity.
+     * @return object|null The entity instance or NULL if the entity can not be found.
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
@@ -187,7 +187,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param array $criteria
      * @param array|null $orderBy
      *
-     * @return object
+     * @return object|null The entity instance or NULL if the entity can not be found.
      */
     public function findOneBy(array $criteria, array $orderBy = null)
     {
