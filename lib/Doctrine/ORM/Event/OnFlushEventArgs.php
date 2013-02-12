@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\Common\EventArgs;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -30,7 +31,7 @@ use Doctrine\ORM\EntityManager;
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class OnFlushEventArgs extends \Doctrine\Common\EventArgs
+class OnFlushEventArgs extends EventArgs
 {
     /**
      * @var \Doctrine\ORM\EntityManager
