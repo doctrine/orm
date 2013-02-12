@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\ORM\EntityManager;
+
 /**
  * Provides event arguments for the onClear event.
  *
@@ -46,7 +48,7 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
      * @param \Doctrine\ORM\EntityManager $em
      * @param string|null                 $entityClass Optional entity class.
      */
-    public function __construct($em, $entityClass = null)
+    public function __construct(EntityManager $em, $entityClass = null)
     {
         $this->em          = $em;
         $this->entityClass = $entityClass;
