@@ -10,6 +10,11 @@ use Doctrine\Common\Cache\ArrayCache;
 abstract class OrmTestCase extends DoctrineTestCase
 {
     /**
+     * @var \Doctrine\Common\Cache\Cache|null
+     */
+    protected static $sharedSecondLevelCacheDriverImpl = null;
+    
+    /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
      *
      * @var \Doctrine\Common\Cache\Cache|null
@@ -134,5 +139,17 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         return self::$_queryCacheImpl;
+    }
+
+    /**
+     * @return \Doctrine\Common\Cache\Cache
+     */
+    protected static function getSharedSecondLevelCacheDriverImpl()
+    {
+        if (self::$sharedSecondLevelCacheDriverImpl === null) {
+            self::$sharedSecondLevelCacheDriverImpl = new \Doctrine\Common\Cache\ArrayCache;
+        }
+
+        return self::$sharedSecondLevelCacheDriverImpl;
     }
 }

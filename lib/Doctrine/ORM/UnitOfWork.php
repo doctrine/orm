@@ -38,6 +38,13 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
+use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persisters\SingleTablePersister;
+use Doctrine\ORM\Persisters\JoinedSubclassPersister;
+use Doctrine\ORM\Persisters\UnionSubclassPersister;
+use Doctrine\ORM\Persisters\OneToManyPersister;
+use Doctrine\ORM\Persisters\ManyToManyPersister;
+
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
@@ -255,6 +262,11 @@ class UnitOfWork implements PropertyChangedListener
     private $eagerLoadingEntities = array();
 
     /**
+     * @var array
+     */
+    private $cachedPersisters = array();
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param \Doctrine\ORM\EntityManager $em
@@ -368,6 +380,10 @@ class UnitOfWork implements PropertyChangedListener
             $this->em->close();
             $conn->rollback();
 
+            foreach ($this->cachedPersisters as $persister) {
+                $persister->afterTransactionComplete(false);
+            }
+
             throw $e;
         }
 
@@ -377,6 +393,10 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->dispatchPostFlushEvent();
+
+        foreach ($this->cachedPersisters as $persister) {
+            $persister->afterTransactionComplete(true);
+        }
 
         // Clear up
         $this->entityInsertions =
@@ -388,6 +408,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
+        $this->cachedPersisters =
         $this->orphanRemovals = array();
     }
 
@@ -970,6 +991,10 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($entities as $entity) {
             $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
+
+        if ($persister->hasCache()) {
+            $this->cachedPersisters[$className] = $persister;
+        }
     }
 
     /**
@@ -1004,6 +1029,10 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($postUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new LifecycleEventArgs($entity, $this->em), $postUpdateInvoke);
+            }
+
+            if ($persister->hasCache()) {
+                $this->cachedPersisters[$className] = $persister;
             }
         }
     }
@@ -1044,6 +1073,10 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
+            }
+
+            if ($persister->hasCache()) {
+                $this->cachedPersisters[$className] = $persister;
             }
         }
     }
@@ -2952,15 +2985,15 @@ class UnitOfWork implements PropertyChangedListener
 
         switch (true) {
             case ($class->isInheritanceTypeNone()):
-                $persister = new Persisters\BasicEntityPersister($this->em, $class);
+                $persister = new BasicEntityPersister($this->em, $class);
                 break;
 
             case ($class->isInheritanceTypeSingleTable()):
-                $persister = new Persisters\SingleTablePersister($this->em, $class);
+                $persister = new SingleTablePersister($this->em, $class);
                 break;
-
+ 
             case ($class->isInheritanceTypeJoined()):
-                $persister = new Persisters\JoinedSubclassPersister($this->em, $class);
+                $persister = new JoinedSubclassPersister($this->em, $class);
                 break;
 
             default:
@@ -2981,25 +3014,19 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getCollectionPersister(array $association)
     {
-        $type = $association['type'];
+        $role = $association['sourceEntity'] . '::' . $association['fieldName'];
 
-        if (isset($this->collectionPersisters[$type])) {
-            return $this->collectionPersisters[$type];
+        if (isset($this->collectionPersisters[$role])) {
+            return $this->collectionPersisters[$role];
         }
 
-        switch ($type) {
-            case ClassMetadata::ONE_TO_MANY:
-                $persister = new Persisters\OneToManyPersister($this->em);
-                break;
+        $persister = ClassMetadata::ONE_TO_MANY === $association['type']
+            ? new OneToManyPersister($this->em, $association)
+            : new ManyToManyPersister($this->em, $association);
 
-            case ClassMetadata::MANY_TO_MANY:
-                $persister = new Persisters\ManyToManyPersister($this->em);
-                break;
-        }
+        $this->collectionPersisters[$role] = $persister;
 
-        $this->collectionPersisters[$type] = $persister;
-
-        return $this->collectionPersisters[$type];
+        return $this->collectionPersisters[$role];
     }
 
     /**

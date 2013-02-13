@@ -130,7 +130,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
-                    if (!isset($proxy->$propertyName)) {
+                    if ( ! isset($proxy->$propertyName)) {
                         $proxy->$propertyName = $properties[$propertyName];
                     }
                 }
@@ -138,7 +138,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $proxy->__setInitialized(true);
                 $proxy->__wakeup();
 
-                if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                if (null === $entityPersister->loadById($classMetadata->getIdentifierValues($proxy), $proxy)) {
                     $proxy->__setInitializer($initializer);
                     $proxy->__setCloner($cloner);
                     $proxy->__setInitialized(false);
@@ -169,7 +169,7 @@ class ProxyFactory extends AbstractProxyFactory
 
             $proxy->__setInitialized(true);
 
-            if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+            if (null === $entityPersister->loadById($classMetadata->getIdentifierValues($proxy), $proxy)) {
                 $proxy->__setInitializer($initializer);
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
@@ -198,20 +198,21 @@ class ProxyFactory extends AbstractProxyFactory
 
             $proxy->__setInitialized(true);
             $proxy->__setInitializer(null);
-            $class = $entityPersister->getClassMetadata();
-            $original = $entityPersister->load($classMetadata->getIdentifierValues($proxy));
+ 
+            $class    = $entityPersister->getClassMetadata();
+            $original = $entityPersister->loadById($classMetadata->getIdentifierValues($proxy));
 
             if (null === $original) {
                 throw new EntityNotFoundException();
             }
 
-            foreach ($class->getReflectionClass()->getProperties() as $reflectionProperty) {
-                $propertyName = $reflectionProperty->getName();
-
-                if ($class->hasField($propertyName) || $class->hasAssociation($propertyName)) {
-                    $reflectionProperty->setAccessible(true);
-                    $reflectionProperty->setValue($proxy, $reflectionProperty->getValue($original));
+            foreach ($class->getReflectionClass()->getProperties() as $property) {
+                if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                    continue;
                 }
+
+                $property->setAccessible(true);
+                $property->setValue($proxy, $property->getValue($original));
             }
         };
     }

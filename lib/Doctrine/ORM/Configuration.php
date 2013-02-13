@@ -35,6 +35,7 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\ORM\Cache\AccessProvider;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -231,6 +232,46 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['metadataDriverImpl'])
             ? $this->_attributes['metadataDriverImpl']
             : null;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSecondLevelCacheEnabled()
+    {
+        return isset($this->_attributes['isSecondLevelCacheEnabled'])
+            ? $this->_attributes['isSecondLevelCacheEnabled']
+            : false;
+    }
+
+    /**
+     * @param boolean $flag
+     *
+     * @return void
+     */
+    public function setSecondLevelCacheEnabled($flag = true)
+    {
+        $this->_attributes['isSecondLevelCacheEnabled'] = (boolean) $flag;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache\AccessProvider|null
+     */
+    public function getSecondLevelCacheAccessProvider()
+    {
+        return isset($this->_attributes['secondLevelCacheAccessProvider'])
+            ? $this->_attributes['secondLevelCacheAccessProvider']
+            : null;
+    }
+
+    /**
+     * @param \Doctrine\ORM\Cache\AccessProvider $provider
+     *
+     * @return void
+     */
+    public function setSecondLevelCacheAccessProvider(AccessProvider $provider)
+    {
+        $this->_attributes['secondLevelCacheAccessProvider'] = $provider;
     }
 
     /**

@@ -21,6 +21,9 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionEntryStructure;
 
 /**
  * Base class for all collection persisters.
@@ -60,17 +63,76 @@ abstract class AbstractCollectionPersister
     protected $quoteStrategy;
 
     /**
+     * @var array
+     */
+    protected $association;
+
+    /**
+     * @var array
+     */
+    protected $queuedCache = array();
+
+    /**
+     * @var boolean
+     */
+    protected $hasCache = false;
+
+    /**
+     * @var boolean
+     */
+    protected $isTransactionalRegionAccess = false;
+
+    /**
+     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\TransactionalRegionAccess
+     */
+    protected $cacheRegionAccess;
+
+    /**
+     * @var \Doctrine\ORM\Cache\CollectionEntryStructure
+     */
+    protected $cacheEntryStructure;
+
+    /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param \Doctrine\ORM\EntityManager $em
+     * @param array $association
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, array $association)
     {
         $this->em               = $em;
+        $this->association      = $association;
         $this->uow              = $em->getUnitOfWork();
         $this->conn             = $em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->hasCache         = isset($association['cache']) && $em->getConfiguration()->isSecondLevelCacheEnabled();
+
+        if ($this->hasCache) {
+            $sourceClass             = $em->getClassMetadata($association['sourceEntity']);
+            $this->cacheRegionAccess = $em->getConfiguration()
+                ->getSecondLevelCacheAccessProvider()
+                ->buildCollectioRegionAccessStrategy($sourceClass, $association['fieldName']);
+
+            $this->cacheEntryStructure         = new CollectionEntryStructure($em);
+            $this->isTransactionalRegionAccess = ($this->cacheRegionAccess instanceof TransactionalRegionAccess);
+        }
+    }
+
+    /**
+     * @return boolean
+     */
+    public function hasCache()
+    {
+        return $this->hasCache;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache\RegionAccess
+     */
+    public function getCacheRegionAcess()
+    {
+        return $this->cacheRegionAccess;
     }
 
     /**
@@ -164,6 +226,49 @@ abstract class AbstractCollectionPersister
         foreach ($diff as $element) {
             $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
         }
+    }
+
+    /**
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
+     *
+     * @return \Doctrine\ORM\PersistentCollection|null
+     */
+    public function loadCachedCollection(PersistentCollection $collection, CollectionCacheKey $key)
+    {
+        $metadata   = $collection->getTypeClass();
+        $cache      = $this->cacheRegionAccess->get($key);
+
+        if ($cache === null) {
+            return null;
+        }
+
+        return $this->cacheEntryStructure->loadCacheEntry($metadata, $key, $cache, $collection);
+    }
+
+    /**
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
+     *
+     * @return void
+     */
+    public function saveLoadedCollection(PersistentCollection $collection, CollectionCacheKey $key, array $list)
+    {
+        $metadata           = $collection->getTypeClass();
+        $targetClass        = $this->association['targetEntity'];
+        $targetPersister    = $this->uow->getEntityPersister($targetClass);
+        $targetRegionAcess  = $targetPersister->getCacheRegionAcess();
+        $listData           = $this->cacheEntryStructure->buildCacheEntry($metadata, $key, $list);
+
+        foreach ($listData as $index => $identifier) {
+            $entity       = $list[$index];
+            $entityKey    = new EntityCacheKey($identifier, $targetClass);
+            $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($metadata, $entityKey, $entity);
+
+            $targetRegionAcess->put($entityKey, $entityEntry);
+        }
+
+        $this->cacheRegionAccess->put($key, $listData);
     }
 
     /**

@@ -26,7 +26,6 @@ use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
-use Doctrine\Common\EventArgs;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -188,6 +187,21 @@ class ClassMetadataInfo implements ClassMetadata
      * Combined bitmask for to-many (collection-valued) associations.
      */
     const TO_MANY = 12;
+
+    /**
+     * ReadOnly cache can do reads, inserts and deletes, cannot perform updates or employ any locks,
+     */
+    const CACHE_USAGE_READ_ONLY = 1;
+
+    /**
+     * Nonstrict Read Write Cache doesn’t employ any locks but can do reads, inserts and deletes.
+     */
+    const CACHE_USAGE_NONSTRICT_READ_WRITE = 2;
+
+    /**
+     * Read Write cache employs locks the entity before insert/update/delete.
+     */
+    const CACHE_USAGE_READ_WRITE = 3;
 
     /**
      * READ-ONLY: The name of the entity class.
@@ -576,6 +590,11 @@ class ClassMetadataInfo implements ClassMetadata
      * @var mixed
      */
     public $versionField;
+
+    /**
+     * @var array
+     */
+    public $cache;
 
     /**
      * The ReflectionClass instance of the mapped class.
@@ -977,6 +996,50 @@ class ClassMetadataInfo implements ClassMetadata
     public function getReflectionClass()
     {
         return $this->reflClass;
+    }
+
+    /**
+     * @param array $cache
+     *
+     * @return void
+     */
+    public function enableCache(array $cache)
+    {
+        if ( ! isset($cache['usage'])) {
+            $cache['usage'] = self::CACHE_USAGE_READ_ONLY;
+        }
+
+        if ( ! isset($cache['region'])) {
+            $cache['region'] = str_replace('\\', '', $this->rootEntityName);
+        }
+
+        if ( ! isset($cache['properties'])) {
+            $cache['properties'] = array();
+        }
+
+        $this->cache = $cache;
+    }
+
+    /**
+     * @param array $cache
+     *
+     * @return void
+     */
+    public function enableAssociationCache($fieldName, array $cache)
+    {
+        if ( ! isset($cache['usage'])) {
+            $cache['usage'] = self::CACHE_USAGE_READ_ONLY;
+        }
+
+        if ( ! isset($cache['region'])) {
+            $cache['region'] = str_replace('\\', '', $this->rootEntityName) . '::' . $fieldName;
+        }
+
+        if ( ! isset($cache['properties'])) {
+            $cache['properties'] = array();
+        }
+
+        $this->associationMappings[$fieldName]['cache'] = $cache;
     }
 
     /**
