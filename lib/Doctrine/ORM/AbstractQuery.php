@@ -296,10 +296,29 @@ abstract class AbstractQuery
      */
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
     {
-        $rsm->translateNamespaces($this->_em);
+        $this->translateNamespaces($rsm);
         $this->_resultSetMapping = $rsm;
 
         return $this;
+    }
+
+    /**
+     * Allows to translate entity namespaces to full qualified names.
+     *
+     * @param EntityManager $em
+     *
+     * @return void
+     */
+    private function translateNamespaces(Query\ResultSetMapping $rsm)
+    {
+        $entityManager = $this->_em;
+
+        $translate = function ($alias) use ($entityManager) {
+            return $entityManager->getClassMetadata($alias)->getName();
+        };
+
+        $rsm->aliasMap = array_map($translate, $rsm->aliasMap);
+        $rsm->declaringClasses = array_map($translate, $rsm->declaringClasses);
     }
 
     /**

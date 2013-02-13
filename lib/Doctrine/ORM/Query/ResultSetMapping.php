@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\EntityManager;
-
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
  *
@@ -544,28 +542,6 @@ class ResultSetMapping
         }
 
         return $this;
-    }
-
-    /**
-     * Allows to translate entity namespaces to full qualified names.
-     *
-     * @param EntityManager $em
-     *
-     * @return void
-     */
-    public function translateNamespaces(EntityManager $em)
-    {
-        $fqcn = array();
-
-        $translate = function (&$alias) use ($em, &$fqcn) {
-            if ( ! isset($fqcn[$alias])) {
-                $fqcn[$alias] = $em->getClassMetadata($alias)->getName();
-            }
-            $alias = $fqcn[$alias];
-        };
-
-        array_walk($this->aliasMap, $translate);
-        array_walk($this->declaringClasses, $translate);
     }
 }
 
