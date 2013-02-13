@@ -100,6 +100,20 @@ class ORMException extends Exception
         return new self("Unrecognized field: $field");
     }
 
+     /**
+     *
+     * @param string $class
+     * @param string $association
+     * @param string $given
+     * @param string $expected
+     *
+     * @return \Doctrine\ORM\ORMInvalidArgumentException
+     */
+    static public function unexpectedAssociationValue($class, $association, $given, $expected)
+    {
+        return new self(sprintf('Found entity of type %s on association %s#%s, but expecting %s', $given, $class, $association, $expected));
+    }
+
     /**
      * @param string $className
      * @param string $field
@@ -246,6 +260,16 @@ class ORMException extends Exception
     public static function invalidEntityRepository($className)
     {
         return new self("Invalid repository class '".$className."'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return ORMException
+     */
+    public static function invalidSecondLevelCache($className)
+    {
+        return new self(sprintf('Invalid cache class "%s". It must be a Doctrine\ORM\Cache.', $className));
     }
 
     /**

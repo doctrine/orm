@@ -72,9 +72,16 @@ class YamlDriver extends FileDriver
 
         // Evaluate root level properties
         $table = array();
+
         if (isset($element['table'])) {
             $table['name'] = $element['table'];
         }
+
+        // Evaluate second level cache
+        if (isset($element['cache'])) {
+            $metadata->enableCache($this->cacheToArray($element['cache']));
+        }
+
         $metadata->setPrimaryTable($table);
 
         // Evaluate named queries
@@ -361,6 +368,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapOneToOne($mapping);
+
+                // Evaluate second level cache
+                if (isset($oneToOneElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToOneElement['cache']));
+                }
             }
         }
 
@@ -394,6 +406,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapOneToMany($mapping);
+
+                // Evaluate second level cache
+                if (isset($oneToManyElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToManyElement['cache']));
+                }
             }
         }
 
@@ -438,6 +455,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapManyToOne($mapping);
+
+                // Evaluate second level cache
+                if (isset($manyToOneElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToOneElement['cache']));
+                }
             }
         }
 
@@ -506,6 +528,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+
+                // Evaluate second level cache
+                if (isset($manyToManyElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToManyElement['cache']));
+                }
             }
         }
 
@@ -702,6 +729,22 @@ class YamlDriver extends FileDriver
         }
 
         return $mapping;
+    }
+
+    /**
+     * @param array $cacheMapping
+     *
+     * @return array
+     */
+    private function cacheToArray($cacheMapping)
+    {
+        $region = isset($cacheMapping['region']) ? (string)$cacheMapping['region'] : null;
+        $usage  = isset($cacheMapping['usage']) ? constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . strtoupper($cacheMapping['usage'])) : null;
+
+        return array(
+            'usage'  => $usage,
+            'region' => $region,
+        );
     }
 
     /**

@@ -55,6 +55,14 @@
       <xs:enumeration value="preFlush"/>
     </xs:restriction>
   </xs:simpleType>
+
+  <xs:simpleType name="cache-usage-type">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="READ_ONLY"/>
+      <xs:enumeration value="READ_WRITE"/>
+      <xs:enumeration value="NONSTRICT_READ_WRITE"/>
+    </xs:restriction>
+  </xs:simpleType>
   
   <xs:complexType name="lifecycle-callback">
     <xs:sequence>
@@ -152,8 +160,14 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="cache">
+    <xs:attribute name="usage" type="orm:cache-usage-type" />
+    <xs:attribute name="region" type="xs:string" />
+  </xs:complexType>
+
   <xs:complexType name="entity">
     <xs:sequence>
+      <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:element name="indexes" type="orm:indexes" minOccurs="0"/>
       <xs:element name="unique-constraints" type="orm:unique-constraints" minOccurs="0"/>
@@ -445,6 +459,7 @@
 
   <xs:complexType name="many-to-many">
     <xs:sequence>
+      <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
       <xs:element name="join-table" type="orm:join-table" minOccurs="0" />
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
@@ -462,6 +477,7 @@
 
   <xs:complexType name="one-to-many">
     <xs:sequence>
+      <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
@@ -477,6 +493,7 @@
   
   <xs:complexType name="many-to-one">
     <xs:sequence>
+      <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
       <xs:choice minOccurs="0" maxOccurs="1">
         <xs:element name="join-column" type="orm:join-column"/>
@@ -495,6 +512,7 @@
   
   <xs:complexType name="one-to-one">
     <xs:sequence>
+      <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
       <xs:choice minOccurs="0" maxOccurs="1">
         <xs:element name="join-column" type="orm:join-column"/>

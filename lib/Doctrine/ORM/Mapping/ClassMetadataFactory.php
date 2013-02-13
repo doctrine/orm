@@ -144,6 +144,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setPrimaryTable($parent->table);
         }
 
+        if ($parent && $parent->cache) {
+            $class->cache = $parent->cache;
+        }
+
         if ($parent && $parent->containsForeignIdentifier) {
             $class->containsForeignIdentifier = true;
         }
