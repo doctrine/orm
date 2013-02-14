@@ -23,6 +23,10 @@ Then run the composer command and you are done. Continue with the
 PEAR
 ----
 
+.. caution::
+
+    PEAR autoloading is deprecated as of version ``2.4`` of the ORM
+
 You can easily install any of the three Doctrine packages from the
 PEAR command line installation utility.
 
@@ -58,36 +62,3 @@ it with the following command.
     .. code-block:: bash
 
         $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.2.2
-
-GitHub
-------
-
-Alternatively you can clone the latest version of Doctrine 2 via
-GitHub.com:
-
-.. code-block:: php
-
-    $ git clone git://github.com/doctrine/doctrine2.git doctrine
-
-This downloads all the sources of the ORM package. You need to
-initialize the Github submodules for the Common and DBAL package
-dependencies:
-
-.. code-block:: php
-
-    $ git submodule init
-    $ git submodule update
-
-This updates your Git checkout to use the Doctrine and Doctrine
-package versions that are recommended for the cloned Master version
-of Doctrine 2.
-
-See the configuration chapter on how to configure a Github
-installation of Doctrine with regards to autoloading.
-
-.. note::
-
-    You should not combine the Doctrine-Common, Doctrine-DBAL and
-    Doctrine-ORM master commits with each other in combination. The ORM
-    may not work with the current Common or DBAL master versions.
-    Instead the ORM ships with the Git Submodules that are required.
