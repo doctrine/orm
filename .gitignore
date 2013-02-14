@@ -9,3 +9,4 @@ lib/Doctrine/DBAL
 /.settings/
 .buildpath
 .project
+.idea

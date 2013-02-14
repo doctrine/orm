@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\Common\Persistence\Proxy as BaseProxy;
+use Doctrine\Common\Proxy\Proxy as BaseProxy;
 
 /**
  * Interface for proxy classes.
