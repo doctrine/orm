@@ -10,3 +10,4 @@ lib/Doctrine/DBAL
 .buildpath
 .project
 .idea
+vendor/
