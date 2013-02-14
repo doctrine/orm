@@ -19,82 +19,11 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\ORM\Configuration;
-use Closure;
+use Doctrine\Common\Proxy\Autoloader as BaseAutoloader;
 
 /**
- * Special Autoloader for Proxy classes because them not being PSR-0 compatible.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @deprecated use \Doctrine\Common\Proxy\Autoloader instead
  */
-class Autoloader
+class Autoloader extends BaseAutoloader
 {
-    /**
-     * Resolves proxy class name to a filename based on the following pattern.
-     *
-     * 1. Remove Proxy namespace from class name
-     * 2. Remove namespace seperators from remaining class name.
-     * 3. Return PHP filename from proxy-dir with the result from 2.
-     *
-     * @param string $proxyDir
-     * @param string $proxyNamespace
-     * @param string $className
-     *
-     * @return string
-     *
-     * @throws ProxyException
-     */
-    static public function resolveFile($proxyDir, $proxyNamespace, $className)
-    {
-        if (0 !== strpos($className, $proxyNamespace)) {
-            throw ProxyException::notProxyClass($className, $proxyNamespace);
-        }
-
-        $className = str_replace('\\', '', substr($className, strlen($proxyNamespace) +1));
-        return $proxyDir . DIRECTORY_SEPARATOR . $className.'.php';
-    }
-
-    /**
-     * Registers and returns autoloader callback for the given proxy dir and
-     * namespace.
-     *
-     * @param string   $proxyDir
-     * @param string   $proxyNamespace
-     * @param \Closure $notFoundCallback Invoked when the proxy file is not found.
-     *
-     * @return \Closure
-     */
-    static public function register($proxyDir, $proxyNamespace, Closure $notFoundCallback = null)
-    {
-        $proxyNamespace = ltrim($proxyNamespace, "\\");
-        $autoloader = function($className) use ($proxyDir, $proxyNamespace, $notFoundCallback) {
-            if (0 === strpos($className, $proxyNamespace)) {
-                $file = Autoloader::resolveFile($proxyDir, $proxyNamespace, $className);
-
-                if ($notFoundCallback && ! file_exists($file)) {
-                    $notFoundCallback($proxyDir, $proxyNamespace, $className);
-                }
-
-                require $file;
-            }
-        };
-
-        spl_autoload_register($autoloader, true, true);
-
-        return $autoloader;
-    }
-
-    /**
-     * Registers and returns autoloader callback from a Configuration instance
-     *
-     * @param Configuration $config
-     * @param \Closure $notFoundCallback
-     *
-     * @return \Closure
-     */
-    static public function registerFromConfiguration(Configuration $configuration, Closure $notFoundCallback)
-    {
-        return self::register($configuration->getProxyDir(), $configuration->getProxyNamespace(), $notFoundCallback);
-    }
 }
-

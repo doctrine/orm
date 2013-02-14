@@ -853,9 +853,10 @@ final class PersistentCollection implements Collection, Selectable
             $newObjects = $this->coll->matching($criteria)->toArray();
         }
 
-        $targetClass = $this->em->getClassMetadata(get_class($this->owner));
-
-        $id              = $targetClass->getSingleIdReflectionProperty()->getValue($this->owner);
+        $id              = $this->em
+            ->getClassMetadata(get_class($this->owner))
+            ->getSingleIdReflectionProperty()
+            ->getValue($this->owner);
         $builder         = Criteria::expr();
         $ownerExpression = $builder->eq($this->backRefFieldName, $id);
         $expression      = $criteria->getWhereExpression();

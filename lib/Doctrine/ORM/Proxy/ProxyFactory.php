@@ -19,422 +19,186 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Common\Proxy\Proxy;
+use Doctrine\Common\Proxy\ProxyGenerator;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @author Marco Pivetta  <ocramius@gmail.com>
  * @since 2.0
  */
-class ProxyFactory
+class ProxyFactory extends AbstractProxyFactory
 {
     /**
-     * The EntityManager this factory is bound to.
-     *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager The EntityManager this factory is bound to.
      */
-    private $_em;
+    private $em;
 
     /**
-     * Whether to automatically (re)generate proxy classes.
-     *
-     * @var bool
+     * @var \Doctrine\ORM\UnitOfWork The UnitOfWork this factory uses to retrieve persisters
      */
-    private $_autoGenerate;
+    private $uow;
 
     /**
-     * The namespace that contains all proxy classes.
-     *
      * @var string
      */
-    private $_proxyNamespace;
-
-    /**
-     * The directory that contains all proxy classes.
-     *
-     * @var string
-     */
-    private $_proxyDir;
-
-    /**
-     * Used to match very simple id methods that don't need
-     * to be proxied since the identifier is known.
-     *
-     * @var string
-     */
-    const PATTERN_MATCH_ID_METHOD = '((public\s)?(function\s{1,}%s\s?\(\)\s{1,})\s{0,}{\s{0,}return\s{0,}\$this->%s;\s{0,}})i';
+    private $proxyNs;
 
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
-     * @param EntityManager $em           The EntityManager the new factory works for.
-     * @param string        $proxyDir     The directory to use for the proxy classes. It must exist.
-     * @param string        $proxyNs      The namespace to use for the proxy classes.
-     * @param boolean       $autoGenerate Whether to automatically generate proxy classes.
-     *
-     * @throws ProxyException
+     * @param \Doctrine\ORM\EntityManager $em           The EntityManager the new factory works for.
+     * @param string                      $proxyDir     The directory to use for the proxy classes. It must exist.
+     * @param string                      $proxyNs      The namespace to use for the proxy classes.
+     * @param boolean                     $autoGenerate Whether to automatically generate proxy classes.
      */
     public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
     {
-        if ( ! $proxyDir) {
-            throw ProxyException::proxyDirectoryRequired();
-        }
-        if ( ! $proxyNs) {
-            throw ProxyException::proxyNamespaceRequired();
-        }
-        $this->_em = $em;
-        $this->_proxyDir = $proxyDir;
-        $this->_autoGenerate = $autoGenerate;
-        $this->_proxyNamespace = $proxyNs;
+        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
+
+        $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+        parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
+
+        $this->em      = $em;
+        $this->uow     = $em->getUnitOfWork();
+        $this->proxyNs = $proxyNs;
+
     }
 
     /**
-     * Gets a reference proxy instance for the entity of the given type and identified by
-     * the given identifier.
-     *
-     * @param string $className
-     * @param mixed  $identifier
-     *
-     * @return object
+     * {@inheritDoc}
      */
-    public function getProxy($className, $identifier)
+    protected function skipClass(ClassMetadata $metadata)
     {
-        $fqn = ClassUtils::generateProxyClassName($className, $this->_proxyNamespace);
-
-        if (! class_exists($fqn, false)) {
-            $fileName = $this->getProxyFileName($className);
-            if ($this->_autoGenerate) {
-                $this->_generateProxyClass($this->_em->getClassMetadata($className), $fileName, self::$_proxyClassTemplate);
-            }
-            require $fileName;
-        }
-
-        $entityPersister = $this->_em->getUnitOfWork()->getEntityPersister($className);
-
-        return new $fqn($entityPersister, $identifier);
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
+        return $metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract();
     }
 
     /**
-     * Generates the Proxy file name.
-     *
-     * @param string      $className
-     * @param string|null $baseDir   Optional base directory for proxy file name generation.
-     *                               If not specified, the directory configured on the Configuration of the
-     *                               EntityManager will be used by this factory.
-     * @return string
+     * {@inheritDoc}
      */
-    private function getProxyFileName($className, $baseDir = null)
+    protected function createProxyDefinition($className)
     {
-        $proxyDir = $baseDir ?: $this->_proxyDir;
+        $classMetadata   = $this->em->getClassMetadata($className);
+        $entityPersister = $this->uow->getEntityPersister($className);
 
-        return $proxyDir . DIRECTORY_SEPARATOR . '__CG__' . str_replace('\\', '', $className) . '.php';
-    }
-
-    /**
-     * Generates proxy classes for all given classes.
-     *
-     * @param array       $classes The classes (ClassMetadata instances) for which to generate proxies.
-     * @param string|null $toDir   The target directory of the proxy classes. If not specified, the
-     *                             directory configured on the Configuration of the EntityManager used
-     *                             by this factory is used.
-     *
-     * @return int Number of generated proxies.
-     */
-    public function generateProxyClasses(array $classes, $toDir = null)
-    {
-        $proxyDir = $toDir ?: $this->_proxyDir;
-        $proxyDir = rtrim($proxyDir, DIRECTORY_SEPARATOR);
-        $num = 0;
-
-        foreach ($classes as $class) {
-            /* @var $class ClassMetadata */
-            if ($class->isMappedSuperclass || $class->reflClass->isAbstract()) {
-                continue;
-            }
-
-            $proxyFileName = $this->getProxyFileName($class->name, $proxyDir);
-
-            $this->_generateProxyClass($class, $proxyFileName, self::$_proxyClassTemplate);
-            $num++;
-        }
-
-        return $num;
-    }
-
-    /**
-     * Generates a proxy class file.
-     *
-     * @param ClassMetadata $class    Metadata for the original class.
-     * @param string        $fileName Filename (full path) for the generated class.
-     * @param string        $file     The proxy class template data.
-     *
-     * @return void
-     *
-     * @throws ProxyException
-     */
-    private function _generateProxyClass(ClassMetadata $class, $fileName, $file)
-    {
-        $methods = $this->_generateMethods($class);
-        $sleepImpl = $this->_generateSleep($class);
-        $cloneImpl = $class->reflClass->hasMethod('__clone') ? 'parent::__clone();' : ''; // hasMethod() checks case-insensitive
-
-        $placeholders = array(
-            '<namespace>',
-            '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>', '<cloneImpl>'
+        return new ProxyDefinition(
+            ClassUtils::generateProxyClassName($className, $this->proxyNs),
+            $classMetadata->getIdentifierFieldNames(),
+            $classMetadata->getReflectionProperties(),
+            $this->createInitializer($classMetadata, $entityPersister),
+            $this->createCloner($classMetadata, $entityPersister)
         );
-
-        $className = ltrim($class->name, '\\');
-        $proxyClassName = ClassUtils::generateProxyClassName($class->name, $this->_proxyNamespace);
-        $parts = explode('\\', strrev($proxyClassName), 2);
-        $proxyClassNamespace = strrev($parts[1]);
-        $proxyClassName = strrev($parts[0]);
-
-        $replacements = array(
-            $proxyClassNamespace,
-            $proxyClassName,
-            $className,
-            $methods,
-            $sleepImpl,
-            $cloneImpl
-        );
-
-        $file = str_replace($placeholders, $replacements, $file);
-
-        $parentDirectory = dirname($fileName);
-
-        if ( ! is_dir($parentDirectory)) {
-            if (false === @mkdir($parentDirectory, 0775, true)) {
-                throw ProxyException::proxyDirectoryNotWritable();
-            }
-        } else if ( ! is_writable($parentDirectory)) {
-            throw ProxyException::proxyDirectoryNotWritable();
-        }
-
-        $tmpFileName = $fileName . '.' . uniqid("", true);
-        file_put_contents($tmpFileName, $file);
-        rename($tmpFileName, $fileName);
     }
 
     /**
-     * Generates the methods of a proxy class.
+     * Creates a closure capable of initializing a proxy
      *
-     * @param ClassMetadata $class
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
      *
-     * @return string The code of the generated methods.
+     * @return \Closure
+     *
+     * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function _generateMethods(ClassMetadata $class)
+    private function createInitializer(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
     {
-        $methods = '';
+        if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
+            return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+                $proxy->__setInitializer(null);
+                $proxy->__setCloner(null);
 
-        $methodNames = array();
-        foreach ($class->reflClass->getMethods() as $method) {
-            /* @var $method \ReflectionMethod */
-            if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || isset($methodNames[$method->getName()])) {
-                continue;
-            }
-            $methodNames[$method->getName()] = true;
-
-            if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
-                $methods .= "\n" . '    public function ';
-                if ($method->returnsReference()) {
-                    $methods .= '&';
+                if ($proxy->__isInitialized()) {
+                    return;
                 }
-                $methods .= $method->getName() . '(';
-                $firstParam = true;
-                $parameterString = $argumentString = '';
 
-                foreach ($method->getParameters() as $param) {
-                    if ($firstParam) {
-                        $firstParam = false;
-                    } else {
-                        $parameterString .= ', ';
-                        $argumentString  .= ', ';
-                    }
+                $properties = $proxy->__getLazyProperties();
 
-                    // We need to pick the type hint class too
-                    if (($paramClass = $param->getClass()) !== null) {
-                        $parameterString .= '\\' . $paramClass->getName() . ' ';
-                    } else if ($param->isArray()) {
-                        $parameterString .= 'array ';
-                    }
-
-                    if ($param->isPassedByReference()) {
-                        $parameterString .= '&';
-                    }
-
-                    $parameterString .= '$' . $param->getName();
-                    $argumentString  .= '$' . $param->getName();
-
-                    if ($param->isDefaultValueAvailable()) {
-                        $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
+                foreach ($properties as $propertyName => $property) {
+                    if (!isset($proxy->$propertyName)) {
+                        $proxy->$propertyName = $properties[$propertyName];
                     }
                 }
 
-                $methods .= $parameterString . ')';
-                $methods .= "\n" . '    {' . "\n";
-                if ($this->isShortIdentifierGetter($method, $class)) {
-                    $identifier = lcfirst(substr($method->getName(), 3));
+                $proxy->__setInitialized(true);
+                $proxy->__wakeup();
 
-                    $cast = in_array($class->fieldMappings[$identifier]['type'], array('integer', 'smallint')) ? '(int) ' : '';
-
-                    $methods .= '        if ($this->__isInitialized__ === false) {' . "\n";
-                    $methods .= '            return ' . $cast . '$this->_identifier["' . $identifier . '"];' . "\n";
-                    $methods .= '        }' . "\n";
+                if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                    throw new EntityNotFoundException();
                 }
-                $methods .= '        $this->__load();' . "\n";
-                $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
-                $methods .= "\n" . '    }' . "\n";
-            }
+            };
         }
 
-        return $methods;
+        return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+            $proxy->__setInitializer(null);
+            $proxy->__setCloner(null);
+
+            if ($proxy->__isInitialized()) {
+                return;
+            }
+
+            $properties = $proxy->__getLazyProperties();
+
+            foreach ($properties as $propertyName => $property) {
+                if (!isset($proxy->$propertyName)) {
+                    $proxy->$propertyName = $properties[$propertyName];
+                }
+            }
+
+            $proxy->__setInitialized(true);
+
+            if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                throw new EntityNotFoundException();
+            }
+        };
     }
 
     /**
-     * Checks if the method is a short identifier getter.
+     * Creates a closure capable of finalizing state a cloned proxy
      *
-     * What does this mean? For proxy objects the identifier is already known,
-     * however accessing the getter for this identifier usually triggers the
-     * lazy loading, leading to a query that may not be necessary if only the
-     * ID is interesting for the userland code (for example in views that
-     * generate links to the entity, but do not display anything else).
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
      *
-     * @param \ReflectionMethod $method
-     * @param ClassMetadata     $class
+     * @return \Closure
      *
-     * @return bool
+     * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function isShortIdentifierGetter($method, ClassMetadata $class)
+    private function createCloner(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
     {
-        $identifier = lcfirst(substr($method->getName(), 3));
-        $cheapCheck = (
-            $method->getNumberOfParameters() == 0 &&
-            substr($method->getName(), 0, 3) == "get" &&
-            in_array($identifier, $class->identifier, true) &&
-            $class->hasField($identifier) &&
-            (($method->getEndLine() - $method->getStartLine()) <= 4)
-            && in_array($class->fieldMappings[$identifier]['type'], array('integer', 'bigint', 'smallint', 'string'))
-        );
-
-        if ($cheapCheck) {
-            $code = file($method->getDeclaringClass()->getFileName());
-            $code = trim(implode(" ", array_slice($code, $method->getStartLine() - 1, $method->getEndLine() - $method->getStartLine() + 1)));
-
-            $pattern = sprintf(self::PATTERN_MATCH_ID_METHOD, $method->getName(), $identifier);
-
-            if (preg_match($pattern, $code)) {
-                return true;
+        return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+            if ($proxy->__isInitialized()) {
+                return;
             }
-        }
-        return false;
-    }
 
-    /**
-     * Generates the code for the __sleep method for a proxy class.
-     *
-     * @param ClassMetadata $class
-     *
-     * @return string
-     */
-    private function _generateSleep(ClassMetadata $class)
-    {
-        $sleepImpl = '';
+            $proxy->__setInitialized(true);
+            $proxy->__setInitializer(null);
+            $class = $entityPersister->getClassMetadata();
+            $original = $entityPersister->load($classMetadata->getIdentifierValues($proxy));
 
-        if ($class->reflClass->hasMethod('__sleep')) {
-            $sleepImpl .= "return array_merge(array('__isInitialized__'), parent::__sleep());";
-        } else {
-            $sleepImpl .= "return array('__isInitialized__', ";
-            $first = true;
+            if (null === $original) {
+                throw new EntityNotFoundException();
+            }
 
-            foreach ($class->getReflectionProperties() as $name => $prop) {
-                if ($first) {
-                    $first = false;
-                } else {
-                    $sleepImpl .= ', ';
+            foreach ($class->getReflectionClass()->getProperties() as $reflectionProperty) {
+                $propertyName = $reflectionProperty->getName();
+
+                if ($class->hasField($propertyName) || $class->hasAssociation($propertyName)) {
+                    $reflectionProperty->setAccessible(true);
+                    $reflectionProperty->setValue($proxy, $reflectionProperty->getValue($original));
                 }
-
-                $sleepImpl .= "'" . $name . "'";
             }
-
-            $sleepImpl .= ');';
-        }
-
-        return $sleepImpl;
+        };
     }
-
-    /** Proxy class code template */
-    private static $_proxyClassTemplate =
-'<?php
-
-namespace <namespace>;
-
-/**
- * THIS CLASS WAS GENERATED BY THE DOCTRINE ORM. DO NOT EDIT THIS FILE.
- */
-class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
-{
-    private $_entityPersister;
-    private $_identifier;
-    public $__isInitialized__ = false;
-    public function __construct($entityPersister, $identifier)
-    {
-        $this->_entityPersister = $entityPersister;
-        $this->_identifier = $identifier;
-    }
-    /** @private */
-    public function __load()
-    {
-        if (!$this->__isInitialized__ && $this->_entityPersister) {
-            $this->__isInitialized__ = true;
-
-            if (method_exists($this, "__wakeup")) {
-                // call this after __isInitialized__to avoid infinite recursion
-                // but before loading to emulate what ClassMetadata::newInstance()
-                // provides.
-                $this->__wakeup();
-            }
-
-            if ($this->_entityPersister->load($this->_identifier, $this) === null) {
-                throw new \Doctrine\ORM\EntityNotFoundException();
-            }
-            unset($this->_entityPersister, $this->_identifier);
-        }
-    }
-
-    /** @private */
-    public function __isInitialized()
-    {
-        return $this->__isInitialized__;
-    }
-
-    <methods>
-
-    public function __sleep()
-    {
-        <sleepImpl>
-    }
-
-    public function __clone()
-    {
-        if (!$this->__isInitialized__ && $this->_entityPersister) {
-            $this->__isInitialized__ = true;
-            $class = $this->_entityPersister->getClassMetadata();
-            $original = $this->_entityPersister->load($this->_identifier);
-            if ($original === null) {
-                throw new \Doctrine\ORM\EntityNotFoundException();
-            }
-            foreach ($class->reflFields as $field => $reflProperty) {
-                $reflProperty->setValue($this, $reflProperty->getValue($original));
-            }
-            unset($this->_entityPersister, $this->_identifier);
-        }
-        <cloneImpl>
-    }
-}';
 }
