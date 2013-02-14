@@ -55,6 +55,14 @@ different types of Doctrine Installations:
 
 PEAR
 ^^^^
+.. caution::
+
+    PEAR autoloading is deprecated as of version ``2.4`` of the ORM
+
+.. note::
+
+    This assumes you've created some kind of script to test
+    the following code in. Something like a ``test.php`` file.
 
 .. code-block:: php
 
@@ -68,6 +76,10 @@ PEAR
 Tarball Download
 ^^^^^^^^^^^^^^^^
 
+.. caution::
+
+    Tarball autoloading is deprecated as of version ``2.4`` of the ORM
+
 .. code-block:: php
 
     <?php
@@ -76,22 +88,6 @@ Tarball Download
 
     $lib = "/path/to/doctrine2-orm/lib";
     Doctrine\ORM\Tools\Setup::registerAutoloadDirectory($lib);
-
-Git
-^^^
-
-The Git bootstrap assumes that you have fetched the related
-packages through ``git submodule update --init``
-
-.. code-block:: php
-
-    <?php
-    // test.php
-    require 'Doctrine/ORM/Tools/Setup.php';
-    
-    $lib = '/path/to/doctrine2-orm-root';
-    Doctrine\ORM\Tools\Setup::registerAutoloadGit($lib);
-
 
 Additional Symfony Components
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

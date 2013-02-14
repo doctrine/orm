@@ -34,33 +34,6 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 class Setup
 {
     /**
-     * Use this method to register all autoloaders for a setup where Doctrine is checked out from
-     * its github repository at {@link http://github.com/doctrine/doctrine2}
-     *
-     * @param string $gitCheckoutRootPath
-     *
-     * @return void
-     */
-    public static function registerAutoloadGit($gitCheckoutRootPath)
-    {
-        if (!class_exists('Doctrine\Common\ClassLoader', false)) {
-            require_once $gitCheckoutRootPath . "/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php";
-        }
-
-        $loader = new ClassLoader("Doctrine\Common", $gitCheckoutRootPath . "/lib/vendor/doctrine-common/lib");
-        $loader->register();
-
-        $loader = new ClassLoader("Doctrine\DBAL", $gitCheckoutRootPath . "/lib/vendor/doctrine-dbal/lib");
-        $loader->register();
-
-        $loader = new ClassLoader("Doctrine\ORM", $gitCheckoutRootPath . "/lib");
-        $loader->register();
-
-        $loader = new ClassLoader("Symfony\Component", $gitCheckoutRootPath . "/lib/vendor");
-        $loader->register();
-    }
-
-    /**
      * Use this method to register all autoloaders for a setup where Doctrine is installed
      * though {@link http://pear.doctrine-project.org}.
      *
