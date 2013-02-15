@@ -53,32 +53,8 @@ different types of Doctrine Installations:
     This assumes you've created some kind of script to test
     the following code in. Something like a ``test.php`` file.
 
-PEAR
-^^^^
-.. caution::
-
-    PEAR autoloading is deprecated as of version ``2.4`` of the ORM
-
-.. note::
-
-    This assumes you've created some kind of script to test
-    the following code in. Something like a ``test.php`` file.
-
-.. code-block:: php
-
-    <?php
-    // test.php
-    
-    require 'Doctrine/ORM/Tools/Setup.php';
-
-    Doctrine\ORM\Tools\Setup::registerAutoloadPEAR();
-
 Tarball Download
 ^^^^^^^^^^^^^^^^
-
-.. caution::
-
-    Tarball autoloading is deprecated as of version ``2.4`` of the ORM
 
 .. code-block:: php
 
@@ -568,10 +544,7 @@ script and the ``Doctrine\ORM\Tools\Console\ConsoleRunner`` command
 for inspiration how to setup the cli.
 
 If you installed Doctrine 2 through Composer, then the Doctrine command is
-available to you in the bin-dir, by default at ``vendor/.bin/doctrine``.
-
-If you installed Doctrine 2 through PEAR, the ``doctrine`` command
-line tool should already be available to you.
+available to you in the bin-dir, by default at ``vendor/bin/doctrine-orm``.
 
 In general the required code looks like this:
 

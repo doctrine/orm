@@ -774,10 +774,7 @@ step:
     // bootstrap_doctrine.php
 
     // See :doc:`Configuration <../reference/configuration>` for up to date autoloading details.
-    use Doctrine\ORM\Tools\Setup;
-
-    require_once "Doctrine/ORM/Tools/Setup.php";
-    Setup::registerAutoloadPEAR();
+    require_once "vendor/autoload.php";
 
     // Create a simple "default" Doctrine ORM configuration for XML Mapping
     $isDevMode = true;
@@ -795,8 +792,8 @@ step:
     // obtaining the entity manager
     $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
 
-The first block sets up the autoloading capabilities of Doctrine.
-We assume here that you have installed Doctrine using PEAR.
+The first require statement sets up the autoloading capabilities of Doctrine.
+We assume here that you have installed Doctrine using Composer.
 See :doc:`Configuration <../reference/configuration>` for more details
 on other installation procedures.
 
@@ -869,12 +866,12 @@ Doctrine command-line tool:
 ::
 
     $ cd project/
-    $ doctrine orm:schema-tool:create
+    $ php vendor/bin/doctrine-orm orm:schema-tool:create
 
 .. note::
 
     The ``doctrine`` command will only be present if you installed
-    Doctrine from PEAR. Otherwise you will have to dig into the
+    Doctrine from Composer. Otherwise you will have to dig into the
     ``bin/doctrine.php`` code of your Doctrine 2 directory to setup
     your doctrine command-line client.
 

@@ -2,8 +2,8 @@ Doctrine explained in 10 quick steps
 ====================================
 
 You can follow this tutorial step by step yourself and end up with a simple
-Doctrine application. It assumed that you installed Doctrine via PEAR. To work
-with another setup just take a look into the :doc:`Installation help
+Doctrine application. It assumed that you installed Doctrine via Composer.
+For more information take a look at the :doc:`Installation help
 <../reference/introduction>`.
 
 1. Allows you to map PHP Objects to database tables
@@ -209,14 +209,10 @@ with another setup just take a look into the :doc:`Installation help
 .. code-block:: php
 
     <?php
-
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
 
-    require_once 'Doctrine/Common/ClassLoader.php';
-    
-    $loader = new \Doctrine\Common\ClassLoader("Doctrine");
-    $loader->register();
+    require_once "vendor/autoload.php";
 
     $dbParams = array(
         'driver' => 'pdo_mysql',

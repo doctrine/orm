@@ -14,20 +14,20 @@ information how to setup the console command.
 Getting Help
 ~~~~~~~~~~~~
 
-Type ``doctrine`` on the command line and you should see an
+Type ``php vendor/bin/doctrine-orm`` on the command line and you should see an
 overview of the available commands or use the --help flag to get
 information on the available commands. If you want to know more
 about the use of generate entities for example, you can call:
 
 .. code-block:: php
 
-    doctrine orm:generate-entities --help
+    $> php vendor/bin/doctrine-orm orm:generate-entities --help
 
 
-Configuration (PEAR)
-~~~~~~~~~~~~~~~~~~~~
+Configuration
+~~~~~~~~~~~~~
 
-Whenever the ``doctrine`` command line tool is invoked, it can
+Whenever the ``doctrine-orm`` command line tool is invoked, it can
 access all Commands that were registered by developer. There is no
 auto-detection mechanism at work. The Doctrine binary
 already registers all the commands that currently ship with
@@ -90,36 +90,6 @@ namespace and use this.
     You have to adjust this snippet for your specific application or framework
     and use their facilities to access the Doctrine EntityManager and
     Connection Resources.
-
-Configuration (Non-PEAR)
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you do not use a PEAR installation of Doctrine you have to define your own
-Doctrine binary. Put this file into the application root and invoke it from
-there whenever you want to access the Doctrine console.
-
-.. code-block:: php
-
-    <?php
-    // doctrine.php - Put in your application root
-
-    use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
-    use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-    use Doctrine\ORM\Tools\Console\ConsoleRunner;
-    use Symfony\Component\Console\Helper\HelperSet;
-
-    require_once 'my_bootstrap.php';
-
-    // Any way to access the EntityManager from  your application
-    $em = GetMyEntityManager();
-    
-    $helperSet = new HelperSet(array(
-        'db' => new ConnectionHelper($em->getConnection()),
-        'em' => new EntityManagerHelper($em)
-    ));
-
-    ConsoleRunner::run($helperSet);
- 
 
 Command Overview
 ~~~~~~~~~~~~~~~~
@@ -484,7 +454,7 @@ Adding own commands
 -------------------
 
 You can also add your own commands on-top of the Doctrine supported
-tools if you are using a manually built (Non-PEAR) binary.
+tools if you are using a manually built console script.
 
 To include a new command on Doctrine Console, you need to do modify the
 ``doctrine.php`` file a little:
