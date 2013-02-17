@@ -21,12 +21,17 @@
 namespace Doctrine\ORM\Cache;
 
 /**
- * Defines entity classes / collection key to be stored in the cache region.
+ * Defines entity / collection key to be stored in the cache region.
+ * Allows multiple roles to be stored in the same cache region.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface CacheKey
 {
+
+    /**
+     * @return string Unique identifier
+     */
     public function hash();
 }

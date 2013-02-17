@@ -67,6 +67,11 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $berlin     = new City("Berlin", $this->states[1]);
         $munich     = new City("Munich", $this->states[1]);
 
+        $this->states[0]->addCity($saopaulo);
+        $this->states[0]->addCity($rio);
+        $this->states[1]->addCity($berlin);
+        $this->states[1]->addCity($berlin);
+
         $this->cities[] = $saopaulo;
         $this->cities[] = $rio;
         $this->cities[] = $munich;
@@ -90,22 +95,22 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $countryClass     = 'Doctrine\Tests\Models\Cache\Country';
-        $countryMetadata  = $this->_em->getClassMetadata($countryClass);
-        $cacheAccess      = $this->_em->getCache()->getEntityCacheRegionAcess($countryMetadata);
-        $region           = $cacheAccess->getRegion();
-        
-        $cacheAccess->evictAll();
+        $cache              = $this->_em->getCache();
+        $entityClass        = 'Doctrine\Tests\Models\Cache\Country';
 
-        $this->assertCount(0, $region);
+        $cache->evictEntityRegion($entityClass);
 
-        $c1 = $this->_em->find($countryClass, $this->countries[0]->getId());
-        $c2 = $this->_em->find($countryClass, $this->countries[1]->getId());
+        $this->assertFalse($cache->containsEntity($entityClass, $this->countries[0]->getId()));
+        $this->assertFalse($cache->containsEntity($entityClass, $this->countries[1]->getId()));
 
-        $this->assertCount(2, $region);
+        $c1 = $this->_em->find($entityClass, $this->countries[0]->getId());
+        $c2 = $this->_em->find($entityClass, $this->countries[1]->getId());
 
-        $this->assertInstanceOf($countryClass, $c1);
-        $this->assertInstanceOf($countryClass, $c2);
+        $this->assertTrue($cache->containsEntity($entityClass, $this->countries[0]->getId()));
+        $this->assertTrue($cache->containsEntity($entityClass, $this->countries[1]->getId()));
+
+        $this->assertInstanceOf($entityClass, $c1);
+        $this->assertInstanceOf($entityClass, $c2);
 
         $this->assertEquals($this->countries[0]->getId(), $c1->getId());
         $this->assertEquals($this->countries[0]->getName(), $c1->getName());
@@ -117,14 +122,13 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getQueryCount();
 
-        $c3 = $this->_em->find($countryClass, $this->countries[0]->getId());
-        $c4 = $this->_em->find($countryClass, $this->countries[1]->getId());
+        $c3 = $this->_em->find($entityClass, $this->countries[0]->getId());
+        $c4 = $this->_em->find($entityClass, $this->countries[1]->getId());
 
-        $this->assertCount(2, $region);
         $this->assertEquals($queryCount, $this->getQueryCount());
 
-        $this->assertInstanceOf($countryClass, $c3);
-        $this->assertInstanceOf($countryClass, $c4);
+        $this->assertInstanceOf($entityClass, $c3);
+        $this->assertInstanceOf($entityClass, $c4);
         
         $this->assertEquals($c1->getId(), $c3->getId());
         $this->assertEquals($c1->getName(), $c3->getName());
@@ -138,22 +142,22 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $countryClass     = 'Doctrine\Tests\Models\Cache\Country';
-        $countryMetadata  = $this->_em->getClassMetadata($countryClass);
-        $cacheAccess      = $this->_em->getCache()->getEntityCacheRegionAcess($countryMetadata);
-        $region           = $cacheAccess->getRegion();
+        $cache              = $this->_em->getCache();
+        $entityClass        = 'Doctrine\Tests\Models\Cache\Country';
 
-        $cacheAccess->evictAll();
+        $cache->evictEntityRegion($entityClass);
 
-        $this->assertCount(0, $region);
+        $this->assertFalse($cache->containsEntity($entityClass, $this->countries[0]->getId()));
+        $this->assertFalse($cache->containsEntity($entityClass, $this->countries[1]->getId()));
 
-        $c1 = $this->_em->find($countryClass, $this->countries[0]->getId());
-        $c2 = $this->_em->find($countryClass, $this->countries[1]->getId());
+        $c1 = $this->_em->find($entityClass, $this->countries[0]->getId());
+        $c2 = $this->_em->find($entityClass, $this->countries[1]->getId());
 
-        $this->assertCount(2, $region);
+        $this->assertTrue($cache->containsEntity($entityClass, $this->countries[0]->getId()));
+        $this->assertTrue($cache->containsEntity($entityClass, $this->countries[1]->getId()));
 
-        $this->assertInstanceOf($countryClass, $c1);
-        $this->assertInstanceOf($countryClass, $c2);
+        $this->assertInstanceOf($entityClass, $c1);
+        $this->assertInstanceOf($entityClass, $c2);
 
         $this->assertEquals($this->countries[0]->getId(), $c1->getId());
         $this->assertEquals($this->countries[0]->getName(), $c1->getName());
@@ -166,9 +170,11 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertCount(0, $region);
-        $this->assertNull($this->_em->find($countryClass, $this->countries[0]->getId()));
-        $this->assertNull($this->_em->find($countryClass, $this->countries[1]->getId()));
+        $this->assertFalse($cache->containsEntity($entityClass, $this->countries[0]->getId()));
+        $this->assertFalse($cache->containsEntity($entityClass, $this->countries[1]->getId()));
+
+        $this->assertNull($this->_em->find($entityClass, $this->countries[0]->getId()));
+        $this->assertNull($this->_em->find($entityClass, $this->countries[1]->getId()));
     }
 
     public function testUpdateEntities()
@@ -177,22 +183,22 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFixturesStates();
         $this->_em->clear();
 
-        $stateClass     = 'Doctrine\Tests\Models\Cache\State';
-        $stateMetadata  = $this->_em->getClassMetadata($stateClass);
-        $cacheAccess    = $this->_em->getCache()->getEntityCacheRegionAcess($stateMetadata);
-        $region         = $cacheAccess->getRegion();
+        $cache              = $this->_em->getCache();
+        $entityClass        = 'Doctrine\Tests\Models\Cache\State';
 
-        $cacheAccess->evictAll();
+        $cache->evictEntityRegion($entityClass);
 
-        $this->assertCount(0, $region);
+        $this->assertFalse($cache->containsEntity($entityClass, $this->states[0]->getId()));
+        $this->assertFalse($cache->containsEntity($entityClass, $this->states[1]->getId()));
 
-        $s1 = $this->_em->find($stateClass, $this->states[0]->getId());
-        $s2 = $this->_em->find($stateClass, $this->states[1]->getId());
+        $s1 = $this->_em->find($entityClass, $this->states[0]->getId());
+        $s2 = $this->_em->find($entityClass, $this->states[1]->getId());
 
-        $this->assertCount(2, $region);
+        $this->assertTrue($cache->containsEntity($entityClass, $this->states[0]->getId()));
+        $this->assertTrue($cache->containsEntity($entityClass, $this->states[1]->getId()));
 
-        $this->assertInstanceOf($stateClass, $s1);
-        $this->assertInstanceOf($stateClass, $s2);
+        $this->assertInstanceOf($entityClass, $s1);
+        $this->assertInstanceOf($entityClass, $s2);
 
         $this->assertEquals($this->states[0]->getId(), $s1->getId());
         $this->assertEquals($this->states[0]->getName(), $s1->getName());
@@ -208,17 +214,21 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertCount(2, $region);
+        $this->assertTrue($cache->containsEntity($entityClass, $this->states[0]->getId()));
+        $this->assertTrue($cache->containsEntity($entityClass, $this->states[1]->getId()));
+
         $queryCount = $this->getQueryCount();
 
-        $c3 = $this->_em->find($stateClass, $this->states[0]->getId());
-        $c4 = $this->_em->find($stateClass, $this->states[1]->getId());
+        $c3 = $this->_em->find($entityClass, $this->states[0]->getId());
+        $c4 = $this->_em->find($entityClass, $this->states[1]->getId());
 
-        $this->assertCount(2, $region);
         $this->assertEquals($queryCount, $this->getQueryCount());
 
-        $this->assertInstanceOf($stateClass, $c3);
-        $this->assertInstanceOf($stateClass, $c4);
+        $this->assertTrue($cache->containsEntity($entityClass, $this->states[0]->getId()));
+        $this->assertTrue($cache->containsEntity($entityClass, $this->states[1]->getId()));
+
+        $this->assertInstanceOf($entityClass, $c3);
+        $this->assertInstanceOf($entityClass, $c4);
 
         $this->assertEquals($s1->getId(), $c3->getId());
         $this->assertEquals("NEW NAME 1", $c3->getName());
@@ -233,25 +243,34 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFixturesStates();
         $this->_em->clear();
 
-        $stateClass     = 'Doctrine\Tests\Models\Cache\State';
-        $countryClass   = 'Doctrine\Tests\Models\Cache\Country';
-        $stateMetadata  = $this->_em->getClassMetadata($stateClass);
-        $cacheAccess    = $this->_em->getCache()->getEntityCacheRegionAcess($stateMetadata);
-        $region         = $cacheAccess->getRegion();
+        $cache              = $this->_em->getCache();
+        $sourceClass        = 'Doctrine\Tests\Models\Cache\State';
+        $targetClass        = 'Doctrine\Tests\Models\Cache\Country';
 
-        $cacheAccess->evictAll();
+        $cache->evictEntityRegion($sourceClass);
+        $cache->evictEntityRegion($targetClass);
 
-        $this->assertCount(0, $region);
+        $this->assertFalse($cache->containsEntity($sourceClass, $this->states[0]->getId()));
+        $this->assertFalse($cache->containsEntity($sourceClass, $this->states[1]->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->states[0]->getCountry()->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->states[1]->getCountry()->getId()));
 
-        $c1 = $this->_em->find($stateClass, $this->states[0]->getId());
-        $c2 = $this->_em->find($stateClass, $this->states[1]->getId());
+        $c1 = $this->_em->find($sourceClass, $this->states[0]->getId());
+        $c2 = $this->_em->find($sourceClass, $this->states[1]->getId());
 
-        $this->assertCount(2, $region);
+        //trigger lazy load
+        $this->assertNotNull($c1->getCountry()->getName());
+        $this->assertNotNull($c2->getCountry()->getName());
 
-        $this->assertInstanceOf($stateClass, $c1);
-        $this->assertInstanceOf($stateClass, $c2);
-        $this->assertInstanceOf($countryClass, $c1->getCountry());
-        $this->assertInstanceOf($countryClass, $c2->getCountry());
+        $this->assertTrue($cache->containsEntity($targetClass, $this->states[0]->getCountry()->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->states[1]->getCountry()->getId()));
+        $this->assertTrue($cache->containsEntity($sourceClass, $this->states[0]->getId()));
+        $this->assertTrue($cache->containsEntity($sourceClass, $this->states[1]->getId()));
+
+        $this->assertInstanceOf($sourceClass, $c1);
+        $this->assertInstanceOf($sourceClass, $c2);
+        $this->assertInstanceOf($targetClass, $c1->getCountry());
+        $this->assertInstanceOf($targetClass, $c2->getCountry());
 
         $this->assertEquals($this->states[0]->getId(), $c1->getId());
         $this->assertEquals($this->states[0]->getName(), $c1->getName());
@@ -267,16 +286,19 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getQueryCount();
 
-        $c3 = $this->_em->find($stateClass, $this->states[0]->getId());
-        $c4 = $this->_em->find($stateClass, $this->states[1]->getId());
+        $c3 = $this->_em->find($sourceClass, $this->states[0]->getId());
+        $c4 = $this->_em->find($sourceClass, $this->states[1]->getId());
 
-        $this->assertCount(2, $region);
         $this->assertEquals($queryCount, $this->getQueryCount());
 
-        $this->assertInstanceOf($stateClass, $c3);
-        $this->assertInstanceOf($stateClass, $c4);
-        $this->assertInstanceOf($countryClass, $c3->getCountry());
-        $this->assertInstanceOf($countryClass, $c4->getCountry());
+        //trigger lazy load from cache
+        $this->assertNotNull($c3->getCountry()->getName());
+        $this->assertNotNull($c4->getCountry()->getName());
+
+        $this->assertInstanceOf($sourceClass, $c3);
+        $this->assertInstanceOf($sourceClass, $c4);
+        $this->assertInstanceOf($targetClass, $c3->getCountry());
+        $this->assertInstanceOf($targetClass, $c4->getCountry());
 
         $this->assertEquals($c1->getId(), $c3->getId());
         $this->assertEquals($c1->getName(), $c3->getName());
@@ -298,67 +320,70 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFixturesCities();
         $this->_em->clear();
 
-        $targetMetadata     = $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\City');
-        $entityMetadata     = $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\State');
+        $cache       = $this->_em->getCache();
+        $targetClass = 'Doctrine\Tests\Models\Cache\City';
+        $sourceClass = 'Doctrine\Tests\Models\Cache\State';
 
-        $collCacheAccess    = $this->_em->getCache()->getCollectionCacheRegionAcess($entityMetadata, 'cities');
-        $entityCacheAccess  = $this->_em->getCache()->getEntityCacheRegionAcess($entityMetadata);
-        $targetCacheAccess  = $this->_em->getCache()->getEntityCacheRegionAcess($targetMetadata);
+        $cache->evictEntityRegion($sourceClass);
+        $cache->evictEntityRegion($targetClass);
+        $cache->evictCollectionRegion($sourceClass, 'cities');
 
-        $collRegion         = $collCacheAccess->getRegion();
-        $entityRegion       = $entityCacheAccess->getRegion();
-        $targetRegion       = $targetCacheAccess->getRegion();
+        $this->assertFalse($cache->containsEntity($sourceClass, $this->states[0]->getId()));
+        $this->assertFalse($cache->containsEntity($sourceClass, $this->states[1]->getId()));
 
-        $collRegion->evictAll();
-        $targetRegion->evictAll();
-        $entityRegion->evictAll();
+        $this->assertFalse($cache->containsCollection($sourceClass, 'cities', $this->states[0]->getId()));
+        $this->assertFalse($cache->containsCollection($sourceClass, 'cities', $this->states[1]->getId()));
 
-        $this->assertCount(0, $targetRegion);
-        $this->assertCount(0, $entityRegion);
-        $this->assertCount(0, $collRegion);
+        $this->assertFalse($cache->containsEntity($targetClass, $this->states[0]->getCities()->get(0)->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->states[0]->getCities()->get(1)->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->states[1]->getCities()->get(0)->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->states[1]->getCities()->get(1)->getId()));
 
-        $c1 = $this->_em->find($entityMetadata->name, $this->states[0]->getId());
-        $c2 = $this->_em->find($entityMetadata->name, $this->states[1]->getId());
+        $c1 = $this->_em->find($sourceClass, $this->states[0]->getId());
+        $c2 = $this->_em->find($sourceClass, $this->states[1]->getId());
 
         //trigger lazy load
         $this->assertCount(2, $c1->getCities());
         $this->assertCount(2, $c2->getCities());
-        
-        $this->assertInstanceOf($targetMetadata->name, $c1->getCities()->get(0));
-        $this->assertInstanceOf($targetMetadata->name, $c1->getCities()->get(1));
 
-        $this->assertInstanceOf($targetMetadata->name, $c2->getCities()->get(0));
-        $this->assertInstanceOf($targetMetadata->name, $c2->getCities()->get(1));
+        $this->assertInstanceOf($targetClass, $c1->getCities()->get(0));
+        $this->assertInstanceOf($targetClass, $c1->getCities()->get(1));
 
-        $this->assertCount(4, $targetRegion);
-        $this->assertCount(2, $entityRegion);
-        $this->assertCount(2, $collRegion);
+        $this->assertInstanceOf($targetClass, $c2->getCities()->get(0));
+        $this->assertInstanceOf($targetClass, $c2->getCities()->get(1));
+
+        $this->assertTrue($cache->containsEntity($sourceClass, $this->states[0]->getId()));
+        $this->assertTrue($cache->containsEntity($sourceClass, $this->states[1]->getId()));
+
+        $this->assertTrue($cache->containsCollection($sourceClass, 'cities', $this->states[0]->getId()));
+        $this->assertTrue($cache->containsCollection($sourceClass, 'cities', $this->states[1]->getId()));
+
+        $this->assertTrue($cache->containsEntity($targetClass, $this->states[0]->getCities()->get(0)->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->states[0]->getCities()->get(1)->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->states[1]->getCities()->get(0)->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->states[1]->getCities()->get(1)->getId()));
 
         $this->_em->clear();
 
         $queryCount = $this->getQueryCount();
 
-        $c3 = $this->_em->find($entityMetadata->name, $this->states[0]->getId());
-        $c4 = $this->_em->find($entityMetadata->name, $this->states[1]->getId());
+        $c3 = $this->_em->find($sourceClass, $this->states[0]->getId());
+        $c4 = $this->_em->find($sourceClass, $this->states[1]->getId());
 
         //trigger lazy load from cache
         $this->assertCount(2, $c3->getCities());
         $this->assertCount(2, $c4->getCities());
 
-        $this->assertInstanceOf($targetMetadata->name, $c3->getCities()->get(0));
-        $this->assertInstanceOf($targetMetadata->name, $c3->getCities()->get(1));
-        $this->assertInstanceOf($targetMetadata->name, $c4->getCities()->get(0));
-        $this->assertInstanceOf($targetMetadata->name, $c4->getCities()->get(1));
+        $this->assertInstanceOf($targetClass, $c3->getCities()->get(0));
+        $this->assertInstanceOf($targetClass, $c3->getCities()->get(1));
+        $this->assertInstanceOf($targetClass, $c4->getCities()->get(0));
+        $this->assertInstanceOf($targetClass, $c4->getCities()->get(1));
 
         $this->assertEquals($c1->getCities()->get(0)->getId(), $c3->getCities()->get(0)->getId());
         $this->assertEquals($c1->getCities()->get(0)->getName(), $c3->getCities()->get(0)->getName());
 
         $this->assertEquals($c2->getCities()->get(1)->getId(), $c4->getCities()->get(1)->getId());
         $this->assertEquals($c2->getCities()->get(1)->getName(), $c4->getCities()->get(1)->getName());
-
-        $this->assertCount(4, $targetRegion);
-        $this->assertCount(2, $entityRegion);
-        $this->assertCount(2, $collRegion);
 
         $this->assertEquals($queryCount, $this->getQueryCount());
     }

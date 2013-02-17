@@ -3,7 +3,7 @@
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\Cache;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Cache\CacheAccessProvider;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -474,7 +474,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function enableSecondLevelCache(Cache $cache = null)
     {
         $cache      = $cache ?: self::getSharedSecondLevelCacheDriverImpl();
-        $provider   = new \Doctrine\ORM\Cache\CacheAccessProvider($cache);
+        $provider   = new CacheAccessProvider($cache);
 
         $this->secondLevelCacheAccessProvider   = $provider;
         $this->isSecondLevelCacheEnabled        = true;

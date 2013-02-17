@@ -64,9 +64,9 @@ class EntityEntryStructure
         $data = $this->uow->getOriginalEntityData($entity);
         $data = array_merge($data, $key->identifier); // why update has no identifier values ?
 
-        foreach ($metadata->associationMappings as $name => $association) {
+        foreach ($metadata->associationMappings as $name => $assoc) {
 
-            if ( ! isset($association['cache'])) {
+            if (! $assoc['isOwningSide'] || ! $assoc['type'] & ClassMetadata::TO_ONE) {
                 unset($data[$name]);
 
                 continue;
@@ -76,23 +76,17 @@ class EntityEntryStructure
                 continue;
             }
 
-            if ($association['type'] & ClassMetadata::TO_ONE) {
-                $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
-            }
-
-            if ($association['type'] & ClassMetadata::TO_MANY) {
-                unset($data[$name]); // handle collection here ?
-            }
+            $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
         }
 
         return $data;
     }
 
     /**
-     * @param  \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
-     * @param  \Doctrine\ORM\Cache\EntityCacheKey  $key      The entity cache key.
-     * @param  array                               $cache    The entity data.
-     * @param  object                              $entity   The entity to load the cache into. If not specified, a new entity is created.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey  $key      The entity cache key.
+     * @param array                               $cache    The entity data.
+     * @param object                              $entity   The entity to load the cache into. If not specified, a new entity is created.
      */
     public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, array $cache, $entity = null)
     {

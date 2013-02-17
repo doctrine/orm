@@ -22,7 +22,7 @@ class City
     protected $name;
 
     /**
-     * @Cache()
+     * @Cache
      * @ManyToOne(targetEntity="State", inversedBy="cities")
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */

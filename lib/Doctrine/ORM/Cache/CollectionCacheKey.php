@@ -44,6 +44,11 @@ class CollectionCacheKey implements CacheKey
     public $association;
 
     /**
+     * @var string
+     */
+    private $hash;
+
+    /**
      * @param string $entityClass     The entity class.
      * @param string $association     The field name that represents the association.
      * @param array  $ownerIdentifier The identifier of the owning entity.
@@ -60,6 +65,13 @@ class CollectionCacheKey implements CacheKey
      */
     public function hash()
     {
-        return hash('sha512', $this->entityClass . $this->association . serialize($this->ownerIdentifier));
+        if ($this->hash === null) {
+
+            ksort($this->ownerIdentifier);
+
+            $this->hash = sprintf('%s[%s].%s', str_replace('\\', '.', strtolower($this->entityClass)), implode(' ', $this->ownerIdentifier), $this->association);
+        }
+
+        return $this->hash;
     }
 }

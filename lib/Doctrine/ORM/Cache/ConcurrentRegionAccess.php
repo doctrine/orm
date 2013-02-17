@@ -21,19 +21,19 @@
 namespace Doctrine\ORM\Cache;
 
 /**
- * Defines contract for regions which hold transactionally-managed data.
+ * Defines contract for regions which hold concurrently managed data.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface TransactionalRegionAccess extends RegionAccess
+interface ConcurrentRegionAccess extends RegionAccess
 {
     /**
      * We are going to attempt to update/delete the keyed object.
      *
      * @param \Doctrine\ORM\Cache\CacheKey $identifier The key of the item to lock.
      *
-     * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item; or null.
+     * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */

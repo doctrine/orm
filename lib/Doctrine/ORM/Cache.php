@@ -21,9 +21,11 @@
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * Provides an API for querying/managing the second level cache regions.
@@ -33,6 +35,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
  */
 class Cache
 {
+
     /**
      * @var \Doctrine\ORM\EntityManager
      */
@@ -53,12 +56,13 @@ class Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * 
-     * @return \Doctrine\ORM\Cache\RegionAccess
+     * @param string $className The entity class.
+     *
+     * @return \Doctrine\ORM\Cache\RegionAccess|null
      */
-    public function getEntityCacheRegionAcess(ClassMetadata $metadata)
+    public function getEntityCacheRegionAcess($className)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
 
         if ( ! $persister->hasCache()) {
@@ -69,13 +73,14 @@ class Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
-     * @param string                              $association     The field name that represents the association.
+     * @param string $className   The entity class.
+     * @param string $association The field name that represents the association.
      *
-     * @return \Doctrine\ORM\Cache\RegionAccess
+     * @return \Doctrine\ORM\Cache\RegionAccess|null
      */
-    public function getCollectionCacheRegionAcess(ClassMetadata $metadata, $association)
+    public function getCollectionCacheRegionAcess($className, $association)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
 
         if ( ! $persister->hasCache()) {
@@ -87,19 +92,17 @@ class Cache
 
     /**
      * Determine whether the cache contains data for the given entity "instance".
-     * <p/>
-     * The semantic here is whether the cache contains data visible for the
-     * current call context.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param array                               $identifier The entity identifier
+     * @param string $className  The entity class.
+     * @param mixed  $identifier The entity identifier
      *
      * @return boolean true if the underlying cache contains corresponding data; false otherwise.
      */
-    public function containsEntity(ClassMetadata $metadata, array $identifier)
+    public function containsEntity($className, $identifier)
     {
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
-        $key       = $this->buildEntityCacheKey($metadata, $identifier);
+        $metadata   = $this->em->getClassMetadata($className);
+        $persister  = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $key        = $this->buildEntityCacheKey($metadata, $identifier);
 
         if ( ! $persister->hasCache()) {
             return false;
@@ -111,11 +114,14 @@ class Cache
     /**
      * Evicts the entity data for a particular entity "instance".
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param mixed                               $identifier The entity identifier.
+     * @param string $className  The entity class.
+     * @param mixed  $identifier The entity identifier.
+     *
+     * @return void
      */
-    public function evictEntity(ClassMetadata $metadata, $identifier)
+    public function evictEntity($className, $identifier)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
         $key       = $this->buildEntityCacheKey($metadata, $identifier);
 
@@ -123,41 +129,45 @@ class Cache
             return;
         }
 
-        return $persister->getCacheRegionAcess()->evict($key);
+        $persister->getCacheRegionAcess()->evict($key);
     }
 
     /**
      * Evicts all entity data from the given region.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
+     * @param string $className The entity metadata.
+     *
+     * @return void
      */
-    public function evictEntityRegion(ClassMetadata $metadata)
+    public function evictEntityRegion($className)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
 
         if ( ! $persister->hasCache()) {
             return;
         }
 
-        return $persister->getCacheRegionAcess()->evictAll();
+        $persister->getCacheRegionAcess()->evictAll();
     }
 
     /**
      * Determine whether the cache contains data for the given collection.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
-     * @param string                              $association     The field name that represents the association.
-     * @param mixed                               $ownerIdentifier The identifier of the owning entity.
+     * @param string $className       The entity class.
+     * @param string $association     The field name that represents the association.
+     * @param mixed  $ownerIdentifier The identifier of the owning entity.
      *
      * @return boolean true if the underlying cache contains corresponding data; false otherwise.
      */
-    public function containsCollection(ClassMetadata $metadata, $association, array $ownerIdentifier)
+    public function containsCollection($className, $association, $ownerIdentifier)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
         $key       = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
 
         if ( ! $persister->hasCache()) {
-            return;
+            return false;
         }
 
         return $persister->getCacheRegionAcess()->getRegion()->contains($key);
@@ -166,12 +176,15 @@ class Cache
     /**
      * Evicts the cache data for the given identified collection instance.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
-     * @param string                              $association     The field name that represents the association.
-     * @param mixed                               $ownerIdentifier The identifier of the owning entity.
+     * @param string $className       The entity class.
+     * @param string $association     The field name that represents the association.
+     * @param mixed  $ownerIdentifier The identifier of the owning entity.
+     *
+     * @return void
      */
-    public function evictCollection(ClassMetadata $metadata, $association, array $ownerIdentifier)
+    public function evictCollection($className, $association, $ownerIdentifier)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
         $key       = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
 
@@ -179,24 +192,27 @@ class Cache
             return;
         }
 
-       return $persister->getCacheRegionAcess()->evict($key);
+        $persister->getCacheRegionAcess()->evict($key);
     }
 
     /**
      * Evicts all entity data from the given region.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata    The entity metadata.
-     * @param string                              $association The field name that represents the association.
+     * @param string $className   The entity class.
+     * @param string $association The field name that represents the association.
+     *
+     * @return void
      */
-    public function evictCollectionRegion(ClassMetadata $metadata, $association)
+    public function evictCollectionRegion($className, $association)
     {
+        $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
 
         if ( ! $persister->hasCache()) {
             return;
         }
 
-       return $persister->getCacheRegionAcess()->evictAll();
+        $persister->getCacheRegionAcess()->evictAll();
     }
 
     /**
@@ -230,7 +246,7 @@ class Cache
     }
 
     /**
-     * Get query cache by <tt>region name</tt> or create a new one if none exist.
+     * Get query cache by region name or create a new one if none exist.
      *
      * @param regionName Query cache region name.
      *
@@ -243,13 +259,17 @@ class Cache
 
     /**
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param array                               $identifier The entity identifier.
+     * @param mixed                               $identifier The entity identifier.
      *
      * @return \Doctrine\ORM\Cache\EntityCacheKey
      */
-    public function buildEntityCacheKey(ClassMetadata $metadata, array $identifier)
+    public function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
-        return new EntityCacheKey($identifier, $metadata->rootEntityName);
+        if ( ! is_array($identifier)) {
+            $identifier = $this->toIdentifierArray($metadata, $identifier);
+        }
+
+        return new EntityCacheKey($metadata->rootEntityName, $identifier);
     }
 
     /**
@@ -259,8 +279,32 @@ class Cache
      *
      * @return \Doctrine\ORM\Cache\CollectionCacheKey
      */
-    public function buildCollectionCacheKey(ClassMetadata $metadata, $association, array $ownerIdentifier)
+    public function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {
-        return new CollectionCacheKey($ownerIdentifier, $metadata->rootEntityName, $association);
+        if ( ! is_array($ownerIdentifier)) {
+            $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);;
+        }
+
+        return new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
     }
+
+    /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
+     * @param mixed                               $identifier The entity identifier.
+     *
+     * @return array
+     */
+    private function toIdentifierArray(ClassMetadata $metadata, $identifier)
+    {
+        if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($identifier))) {
+            $identifier = $this->unitOfWork->getSingleIdentifierValue($identifier);
+
+            if ($identifier === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+            }
+        }
+
+        return array($metadata->identifier[0] => $identifier);
+    }
+
 }

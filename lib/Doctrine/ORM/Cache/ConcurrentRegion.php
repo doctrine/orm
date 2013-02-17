@@ -21,12 +21,12 @@
 namespace Doctrine\ORM\Cache;
 
 /**
- * Defines contract for regions which hold transactionally-managed data.
+ * Defines contract for concurrently managed data region.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface TransactionalRegion extends Region
+interface ConcurrentRegion extends Region
 {
     /**
      * Attempts to write lock the mapping for the given key.

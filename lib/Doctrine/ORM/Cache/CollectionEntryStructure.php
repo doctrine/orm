@@ -48,8 +48,8 @@ class CollectionEntryStructure
      */
     public function __construct(EntityManager $em)
     {
-        $this->em   = $em;
-        $this->uow  = $em->getUnitOfWork();
+        $this->em  = $em;
+        $this->uow = $em->getUnitOfWork();
     }
 
     /**

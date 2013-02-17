@@ -194,12 +194,12 @@ class ClassMetadataInfo implements ClassMetadata
     const CACHE_USAGE_READ_ONLY = 1;
 
     /**
-     * Nonstrict Read Write Cache doesn’t employ any locks but can do reads, inserts and deletes.
+     * Nonstrict Read Write Cache doesn’t employ any locks but can do inserts, update and deletes.
      */
     const CACHE_USAGE_NONSTRICT_READ_WRITE = 2;
 
     /**
-     * Read Write cache employs locks the entity before insert/update/delete.
+     * Read Write Attempts to lock the entity before update/delete.
      */
     const CACHE_USAGE_READ_WRITE = 3;
 
@@ -1010,7 +1010,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ( ! isset($cache['region'])) {
-            $cache['region'] = str_replace('\\', '', $this->rootEntityName);
+            $cache['region'] = strtolower(str_replace('\\', '.', $this->rootEntityName));
         }
 
         if ( ! isset($cache['properties'])) {
@@ -1032,7 +1032,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ( ! isset($cache['region'])) {
-            $cache['region'] = str_replace('\\', '', $this->rootEntityName) . '::' . $fieldName;
+            $cache['region'] = strtolower(str_replace('\\', '.', $this->rootEntityName)) . '::' . $fieldName;
         }
 
         if ( ! isset($cache['properties'])) {

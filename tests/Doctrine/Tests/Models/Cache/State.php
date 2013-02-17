@@ -24,16 +24,15 @@ class State
     protected $name;
 
     /**
-     * @Cache()
+     * @Cache
      * @ManyToOne(targetEntity="Country")
      * @JoinColumn(name="country_id", referencedColumnName="id")
      */
     protected $country;
 
     /**
-     * @Cache()
+     * @Cache
      * @OneToMany(targetEntity="City", mappedBy="state")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
      */
     protected $cities;
 
@@ -41,6 +40,7 @@ class State
     {
         $this->name     = $name;
         $this->country  = $country;
+        $this->cities   = new ArrayCollection();
     }
 
     public function getId()

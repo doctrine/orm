@@ -39,10 +39,15 @@ class EntityCacheKey implements CacheKey
     public $entityClass;
 
     /**
-     * @param array  $identifier
-     * @param string $entityClass
+     * @var string
      */
-    public function __construct(array $identifier, $entityClass)
+    private $hash;
+
+    /**
+     * @param string $entityClass
+     * @param array  $identifier
+     */
+    public function __construct($entityClass, array $identifier)
     {
         $this->identifier  = $identifier;
         $this->entityClass = $entityClass;
@@ -53,6 +58,12 @@ class EntityCacheKey implements CacheKey
      */
     public function hash()
     {
-        return hash('sha512', $this->entityClass . serialize($this->identifier));
+        if ($this->hash === null) {
+            ksort($this->identifier);
+
+            return sprintf('%s[%s]', str_replace('\\', '.', strtolower($this->entityClass)) , implode(' ', $this->identifier));
+        }
+
+        return $this->hash;
     }
 }

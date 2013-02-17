@@ -39,7 +39,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityEntryStructure;
-use Doctrine\ORM\Cache\TransactionalRegionAccess;
+use Doctrine\ORM\Cache\ConcurrentRegionAccess;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -224,10 +224,10 @@ class BasicEntityPersister
     /**
      * @var boolean
      */
-    protected $isTransactionalRegionAccess = false;
+    private $isConcurrentRegion = false;
 
     /**
-     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\TransactionalRegionAccess
+     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\ConcurrentRegionAccess
      */
     protected $cacheRegionAccess;
 
@@ -257,8 +257,8 @@ class BasicEntityPersister
                 ->getSecondLevelCacheAccessProvider()
                 ->buildEntityRegionAccessStrategy($this->class);
 
-            $this->cacheEntryStructure         = new EntityEntryStructure($em);
-            $this->isTransactionalRegionAccess = ($this->cacheRegionAccess instanceof TransactionalRegionAccess);
+            $this->cacheEntryStructure = new EntityEntryStructure($em);
+            $this->isConcurrentRegion  = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
         }
     }
 
@@ -431,9 +431,9 @@ class BasicEntityPersister
         $cacheKey   = null;
         $cacheLock  = null;
 
-        if ($this->isTransactionalRegionAccess) {
-            $cacheKey  = new EntityCacheKey($this->em->getUnitOfWork()->getEntityIdentifier($entity), $this->class->rootEntityName);
-            $cacheLock = $this->cacheRegionAccess->lockItem();
+        if ($this->isConcurrentRegion) {
+            $cacheKey  = new EntityCacheKey($this->class->rootEntityName, $this->em->getUnitOfWork()->getEntityIdentifier($entity));
+            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
         }
 
         $tableName  = $this->class->getTableName();
@@ -679,10 +679,10 @@ class BasicEntityPersister
         $cacheLock  = null;
 
         if ($this->hasCache) {
-            $cacheKey = new EntityCacheKey($identifier, $this->class->rootEntityName);
+            $cacheKey = new EntityCacheKey($this->class->rootEntityName, $identifier);
         }
 
-        if ($this->isTransactionalRegionAccess) {
+        if ($this->isConcurrentRegion) {
             $cacheLock = $this->cacheRegionAccess->lockItem();
         }
 
@@ -861,9 +861,8 @@ class BasicEntityPersister
 
         $hydrator = $this->em->newHydrator($this->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
         $entities = $hydrator->hydrateAll($stmt, $this->rsm, $hints);
-        $entity   = $entities ? $entities[0] : null;
 
-        return $entity;
+        return $entities ? $entities[0] : null;
     }
 
     /**
@@ -882,7 +881,7 @@ class BasicEntityPersister
         $cacheKey = null;
 
         if ($this->hasCache) {
-            $cacheKey   = new EntityCacheKey($identifier, $this->class->rootEntityName);
+            $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
             $cacheEntry = $this->cacheRegionAccess->get($cacheKey);
 
             if ($cacheEntry !== null) {
@@ -893,7 +892,9 @@ class BasicEntityPersister
         $entity = $this->load($identifier, $entity, null, array(), $lockMode);
 
         if ($this->hasCache && $entity !== null) {
-            $this->cacheRegionAccess->put($cacheKey, $this->cacheEntryStructure->buildCacheEntry($this->class, $cacheKey, $entity));
+            $cacheEntry = $this->cacheEntryStructure->buildCacheEntry($this->class, $cacheKey, $entity);
+
+            $this->cacheRegionAccess->put($cacheKey, $cacheEntry);
         }
 
         return $entity;
@@ -1873,13 +1874,13 @@ class BasicEntityPersister
      */
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
-        $key                = null;
         $collPersister      = $this->em->getUnitOfWork()->getCollectionPersister($assoc);
         $hasCache           = $collPersister->hasCache();
+        $key                = null;
 
         if ($hasCache) {
             $ownerId = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
-            $key     = new CollectionCacheKey($this->class->name, $assoc['fieldName'], $ownerId);
+            $key     = new CollectionCacheKey($assoc['sourceEntity'], $assoc['fieldName'], $ownerId);
             $list    = $collPersister->loadCachedCollection($coll, $key);
 
             if ($list !== null) {
@@ -2135,36 +2136,14 @@ class BasicEntityPersister
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 
-    /**
-     * @param boolean $wasCommitted
-     */
-    public function afterTransactionComplete($wasCommitted)
+    public function afterTransactionComplete()
     {
-        if ( ! $wasCommitted) {
-
-            if (isset($this->queuedCache['update'])) {
-                foreach ($this->queuedCache['update'] as $item) {
-                    $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-                }
-            }
-
-            if (isset($this->queuedCache['delete'])) {
-                foreach ($this->queuedCache['delete'] as $item) {
-                    $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-                }
-            }
-
-            $this->queuedCache = array();
-
-            return;
-        }
-
         $uow = $this->em->getUnitOfWork();
 
         if (isset($this->queuedCache['insert'])) {
             foreach ($this->queuedCache['insert'] as $item) {
 
-                $key    = new EntityCacheKey($uow->getEntityIdentifier($item['entity']), $this->class->rootEntityName);
+                $key    = new EntityCacheKey($this->class->rootEntityName, $uow->getEntityIdentifier($item['entity']));
                 $entry  = $this->cacheEntryStructure->buildCacheEntry($this->class, $key, $item['entity']);
 
                 $this->cacheRegionAccess->afterInsert($key, $entry);
@@ -2174,12 +2153,12 @@ class BasicEntityPersister
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
 
-                $key    = $item['key'] ?: new EntityCacheKey($uow->getEntityIdentifier($item['entity']), $this->class->rootEntityName);
+                $key    = $item['key'] ?: new EntityCacheKey($this->class->rootEntityName, $uow->getEntityIdentifier($item['entity']));
                 $entry  = $this->cacheEntryStructure->buildCacheEntry($this->class, $key,  $item['entity']);
 
                 $this->cacheRegionAccess->afterUpdate($key, $entry);
 
-                if ($this->isTransactionalRegionAccess && $item['lock'] !== null) {
+                if ($this->isConcurrentRegion && $item['lock'] !== null) {
                     $this->cacheRegionAccess->unlockItem($key, $item['lock']);
                 }
             }
@@ -2192,5 +2171,28 @@ class BasicEntityPersister
         }
 
         $this->queuedCache = array();;
+    }
+
+    public function afterTransactionRolledBack()
+    {
+        if ( ! $this->isConcurrentRegion) {
+            $this->queuedCache = array();
+
+            return;
+        }
+
+        if (isset($this->queuedCache['update'])) {
+            foreach ($this->queuedCache['update'] as $item) {
+                $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
+            }
+        }
+
+        if (isset($this->queuedCache['delete'])) {
+            foreach ($this->queuedCache['delete'] as $item) {
+                $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
+            }
+        }
+
+        $this->queuedCache = array();
     }
 }

@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\ConcurrentRegionAccess;
 use Doctrine\ORM\Cache\CollectionEntryStructure;
 
 /**
@@ -80,10 +81,10 @@ abstract class AbstractCollectionPersister
     /**
      * @var boolean
      */
-    protected $isTransactionalRegionAccess = false;
+    protected $isConcurrentRegion = false;
 
     /**
-     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\TransactionalRegionAccess
+     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\ConcurrentRegionAccess
      */
     protected $cacheRegionAccess;
 
@@ -114,8 +115,8 @@ abstract class AbstractCollectionPersister
                 ->getSecondLevelCacheAccessProvider()
                 ->buildCollectioRegionAccessStrategy($sourceClass, $association['fieldName']);
 
-            $this->cacheEntryStructure         = new CollectionEntryStructure($em);
-            $this->isTransactionalRegionAccess = ($this->cacheRegionAccess instanceof TransactionalRegionAccess);
+            $this->cacheEntryStructure  = new CollectionEntryStructure($em);
+            $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
         }
     }
 
@@ -262,7 +263,7 @@ abstract class AbstractCollectionPersister
 
         foreach ($listData as $index => $identifier) {
             $entity       = $list[$index];
-            $entityKey    = new EntityCacheKey($identifier, $targetClass);
+            $entityKey    = new EntityCacheKey($targetClass, $identifier);
             $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($metadata, $entityKey, $entity);
 
             $targetRegionAcess->put($entityKey, $entityEntry);

@@ -25,7 +25,7 @@ use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\Common\Cache\Cache;
 
 /**
- * Defines a contract for accessing a particular named region.
+ * The simplest cache region compatible with all doctrine-cache drivers.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -71,21 +71,27 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @return \Doctrine\Common\Cache\AccessProvider
+     * @return \Doctrine\Common\Cache\Cache
      */
     public function getCache()
     {
         return $this->cache;
     }
 
+    /**
+     * @return string
+     */
     private function entryKey(CacheKey $key)
     {
-        return sprintf("%s::values[%s]", $this->name, $key->hash());
+        return sprintf("%s.values[%s]", $this->name, $key->hash());
     }
 
+    /**
+     * @return string
+     */
     private function entriesMapKey()
     {
-        return sprintf("%s::entries", $this->name);
+        return sprintf("%s[entries]", $this->name);
     }
 
     /**

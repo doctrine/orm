@@ -381,7 +381,7 @@ class UnitOfWork implements PropertyChangedListener
             $conn->rollback();
 
             foreach ($this->cachedPersisters as $persister) {
-                $persister->afterTransactionComplete(false);
+                $persister->afterTransactionRolledBack();
             }
 
             throw $e;
@@ -395,7 +395,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->dispatchPostFlushEvent();
 
         foreach ($this->cachedPersisters as $persister) {
-            $persister->afterTransactionComplete(true);
+            $persister->afterTransactionComplete();
         }
 
         // Clear up

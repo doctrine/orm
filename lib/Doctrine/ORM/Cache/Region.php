@@ -40,7 +40,7 @@ interface Region extends \Countable
      *
      * @param \Doctrine\ORM\Cache\CacheKey $key The cache key
      *
-     * @return boolean <tt>TRUE</tt> if the underlying cache contains corresponding data; <tt>FALSE</tt> otherwise.
+     * @return boolean TRUE if the underlying cache contains corresponding data; FALSE otherwise.
      */
     public function contains(CacheKey $key);
 
@@ -49,7 +49,7 @@ interface Region extends \Countable
      *
      * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to be retrieved.
      *
-     * @return array The cached object or data <tt>NULL</tt>
+     * @return array The cached data or NULL
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the item or region.
      */
