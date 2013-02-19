@@ -21,6 +21,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\Comparison as CriteriaComparison;
 use Doctrine\ORM\Query\Expr\Comparison as QueryComparison;
@@ -47,7 +48,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->visitor = new QueryExpressionVisitor();
+        $this->visitor = new QueryExpressionVisitor('entity');
     }
 
     /**
@@ -71,22 +72,41 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
         $qb = new QueryBuilder();
 
         return array(
-            array($cb->eq('field', 'value'), $qb->eq('field', ':field'), new Parameter('field', 'value')),
-            array($cb->neq('field', 'value'), $qb->neq('field', ':field'), new Parameter('field', 'value')),
-            array($cb->eq('field', null), $qb->isNull('field')),
-            array($cb->neq('field', null), $qb->isNotNull('field')),
-            array($cb->isNull('field'), $qb->isNull('field')),
+            array($cb->eq('field', 'value'), $qb->eq('entity.field', ':entity_field_0'), new Parameter('entity_field_0', 'value')),
+            array($cb->neq('field', 'value'), $qb->neq('entity.field', ':entity_field_0'), new Parameter('entity_field_0', 'value')),
+            array($cb->eq('field', null), $qb->isNull('entity.field')),
+            array($cb->neq('field', null), $qb->isNotNull('entity.field')),
+            array($cb->isNull('field'), $qb->isNull('entity.field')),
 
-            array($cb->gt('field', 'value'), $qb->gt('field', ':field'), new Parameter('field', 'value')),
-            array($cb->gte('field', 'value'), $qb->gte('field', ':field'), new Parameter('field', 'value')),
-            array($cb->lt('field', 'value'), $qb->lt('field', ':field'), new Parameter('field', 'value')),
-            array($cb->lte('field', 'value'), $qb->lte('field', ':field'), new Parameter('field', 'value')),
+            array($cb->gt('field', 'value'), $qb->gt('entity.field', ':entity_field_0'), new Parameter('entity_field_0', 'value')),
+            array($cb->gte('field', 'value'), $qb->gte('entity.field', ':entity_field_0'), new Parameter('entity_field_0', 'value')),
+            array($cb->lt('field', 'value'), $qb->lt('entity.field', ':entity_field_0'), new Parameter('entity_field_0', 'value')),
+            array($cb->lte('field', 'value'), $qb->lte('entity.field', ':entity_field_0'), new Parameter('entity_field_0', 'value')),
 
-            array($cb->in('field', array('value')), $qb->in('field', ':field'), new Parameter('field', array('value'))),
-            array($cb->notIn('field', array('value')), $qb->notIn('field', ':field'), new Parameter('field', array('value'))),
+            array($cb->in('field', array('value')), $qb->in('entity.field', ':entity_field_0'), new Parameter('entity_field_0', array('value'))),
+            array($cb->notIn('field', array('value')), $qb->notIn('entity.field', ':entity_field_0'), new Parameter('entity_field_0', array('value'))),
 
-            // Test parameter conversion
-            array($cb->eq('object.field', 'value'), $qb->eq('object.field', ':object_field'), new Parameter('object_field', 'value')),
+            // Test second level alias
+            array($cb->eq('object.field', 'value'), $qb->eq('object.field', ':object_field_0'), new Parameter('object_field_0', 'value')),
+        );
+    }
+
+    public function testWalkComparisonSameField()
+    {
+        $cb = new CriteriaBuilder();
+        $this->visitor->walkComparison($cb->eq('field1', 'f1_v1'));
+        $this->visitor->walkComparison($cb->eq('field1', 'f1_v2'));
+        $this->visitor->walkComparison($cb->eq('field2', 'f2_v1'));
+        $this->visitor->walkComparison($cb->eq('field2', 'f2_v2'));
+
+        $this->assertEquals(
+            new ArrayCollection(array(
+                new Parameter('entity_field1_0', 'f1_v1'),
+                new Parameter('entity_field1_1', 'f1_v2'),
+                new Parameter('entity_field2_0', 'f2_v1'),
+                new Parameter('entity_field2_1', 'f2_v2'),
+            )),
+            $this->visitor->getParameters()
         );
     }
 
@@ -125,10 +145,27 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
 
     public function testClearParameters()
     {
-        $this->visitor->getParameters()->add(new Parameter('field', 'value'));
-
+        $cb = new CriteriaBuilder();
+        $this->visitor->dispatch($cb->eq('field', 'value'));
         $this->visitor->clearParameters();
 
         $this->assertCount(0, $this->visitor->getParameters());
+    }
+
+    public function testWalkOrdering()
+    {
+        $this->assertEquals(
+            new QueryBuilder\OrderBy('entity.field', 'DESC'),
+            $this->visitor->walkOrdering('field', Criteria::DESC)
+        );
+    }
+
+    public function testDispatchOrderings()
+    {
+        $this->assertCount(3, $this->visitor->dispatchOrderings(array(
+            'field1' => Criteria::ASC,
+            'field2' => Criteria::DESC,
+            'field3' => null
+        )));
     }
 }
