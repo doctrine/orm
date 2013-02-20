@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 use Doctrine\ORM\Query\Lexer;
 
 /**
- * "CONCAT" "(" StringPrimary "," StringPrimary "," StringPrimary ",...)"
+ * "CONCAT" "(" StringPrimary "," StringPrimary {"," StringPrimary }* ")"
  *
  *
  * @link    www.doctrine-project.org
@@ -45,8 +45,8 @@ class ConcatFunction extends FunctionNode
         
         $args = array();
         
-        foreach($this->concatExpressions as $e){
-            $args[] = $sqlWalker->walkStringPrimary($this->firstStringPrimary);
+        foreach ($this->concatExpressions as $expression) {
+            $args[] = $sqlWalker->walkStringPrimary($expression);
         }
         
         return $platform->getConcatExpression( $args );
@@ -61,9 +61,11 @@ class ConcatFunction extends FunctionNode
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->concatExpressions[] = $parser->StringPrimary(); 
+        $parser->match(Lexer::T_COMMA);
+        $this->concatExpressions[] = $parser->StringPrimary();
         
         while ($parser->getLexer()->isNextToken(Lexer::T_COMMA)) {
-            $parser->match(Lexer::T_COMMA);
+        	$parser->match(Lexer::T_COMMA);
         	$this->concatExpressions[] = $parser->StringPrimary();
         }
 
