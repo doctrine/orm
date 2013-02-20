@@ -49,7 +49,7 @@ class ConcatFunction extends FunctionNode
             $args[] = $sqlWalker->walkStringPrimary($expression);
         }
         
-        return $platform->getConcatExpression( $args );
+        return $platform->getConcatExpression($args);
     }
 
     /**
@@ -65,8 +65,8 @@ class ConcatFunction extends FunctionNode
         $this->concatExpressions[] = $parser->StringPrimary();
         
         while ($parser->getLexer()->isNextToken(Lexer::T_COMMA)) {
-        	$parser->match(Lexer::T_COMMA);
-        	$this->concatExpressions[] = $parser->StringPrimary();
+ 			$parser->match(Lexer::T_COMMA);
+	        $this->concatExpressions[] = $parser->StringPrimary();
         }
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
