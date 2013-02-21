@@ -359,7 +359,7 @@ class EntityManager implements ObjectManager
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     * @param object $entity
+     * @param null|object|array $entity
      *
      * @return void
      *
