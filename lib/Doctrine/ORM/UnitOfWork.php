@@ -2659,7 +2659,10 @@ class UnitOfWork implements PropertyChangedListener
                             $this->entityIdentifiers[$newValueOid] = $associatedId;
                             $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
 
-                            if ($newValue instanceof NotifyPropertyChanged) {
+                            if (
+                                $newValue instanceof NotifyPropertyChanged &&
+                                ( ! $newValue instanceof Proxy || $newValue->__isInitialized())
+                            ) {
                                 $newValue->addPropertyChangedListener($this);
                             }
                             $this->entityStates[$newValueOid] = self::STATE_MANAGED;
@@ -3003,7 +3006,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->addToIdentityMap($entity);
 
-        if ($entity instanceof NotifyPropertyChanged) {
+        if ($entity instanceof NotifyPropertyChanged && ( ! $entity instanceof Proxy || $entity->__isInitialized())) {
             $entity->addPropertyChangedListener($this);
         }
     }
