@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\Query\Parameter;
@@ -403,6 +404,10 @@ abstract class AbstractQuery
     {
         if (is_scalar($value)) {
             return $value;
+        }
+
+        if ($value instanceof Collection) {
+            $value = $value->toArray();
         }
 
         if (is_array($value)) {
@@ -1089,7 +1094,7 @@ abstract class AbstractQuery
 
     /**
      * Generates a string of currently query to use for the cache second level cache.
-     * 
+     *
      * @return string
      */
     protected function getHash()
