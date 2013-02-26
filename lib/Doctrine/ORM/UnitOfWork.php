@@ -2475,14 +2475,14 @@ class UnitOfWork implements PropertyChangedListener
                 && isset($hints[Query::HINT_REFRESH_ENTITY])
                 && ($unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY]) !== $entity
                 && $unmanagedProxy instanceof Proxy
+                && (($unmanagedProxyClass = $this->em->getClassMetadata(get_class($unmanagedProxy))) === $class)
             ) {
                 // DDC-1238 - we have a managed instance, but it isn't the provided one.
                 // Therefore we clear its identifier. Also, we must re-fetch metadata since the
                 // refreshed object may be anything
-                $class = $this->em->getClassMetadata(get_class($unmanagedProxy));
 
-                foreach ($class->identifier as $fieldName) {
-                    $class->reflFields[$fieldName]->setValue($unmanagedProxy, null);
+                foreach ($unmanagedProxyClass->identifier as $fieldName) {
+                    $unmanagedProxyClass->reflFields[$fieldName]->setValue($unmanagedProxy, null);
                 }
 
                 return $unmanagedProxy;
