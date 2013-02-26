@@ -50,7 +50,14 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child = $this->_em->find(__NAMESPACE__.'\DDC1690Child', $childId);
 
         $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        $this->assertInstanceOf(
+            'Doctrine\\ORM\\Proxy\\Proxy',
+            $child,
+            'Verifying that $child is a proxy before using proxy API'
+        );
+        $this->assertCount(0, $child->listeners);
+        $child->__load();
+        $this->assertCount(1, $child->listeners);
         unset($parent, $child);
 
         $parent = $this->_em->find(__NAMESPACE__.'\DDC1690Parent', $parentId);
