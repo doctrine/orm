@@ -38,9 +38,6 @@ class OnFlushEventArgs extends EventArgs
      */
     private $em;
 
-    //private $entitiesToPersist = array();
-    //private $entitiesToRemove = array();
-
     /**
      * Constructor.
      *
@@ -61,25 +58,4 @@ class OnFlushEventArgs extends EventArgs
         return $this->em;
     }
 
-    /*
-    public function addEntityToPersist($entity)
-    {
-
-    }
-
-    public function addEntityToRemove($entity)
-    {
-
-    }
-
-    public function addEntityToUpdate($entity)
-    {
-
-    }
-
-    public function getEntitiesToPersist()
-    {
-        return $this->_entitiesToPersist;
-    }
-    */
 }
