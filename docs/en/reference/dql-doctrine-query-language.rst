@@ -421,7 +421,7 @@ hierarchies:
 
 Get all users visible on a given website that have chosen certain gender:
 
-.. versionadded:: 2.3
+.. versionadded:: 2.2
 
 .. code-block:: php
 
