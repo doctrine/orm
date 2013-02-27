@@ -78,11 +78,11 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @return QueryBuilder
      */
-    public function createQueryBuilder($alias)
+    public function createQueryBuilder($alias, $indexBy = null)
     {
         return $this->_em->createQueryBuilder()
             ->select($alias)
-            ->from($this->_entityName, $alias);
+            ->from($this->_entityName, $alias, $indexBy);
     }
 
     /**
