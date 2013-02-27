@@ -335,10 +335,10 @@ The ``key`` of the lifecycleCallbacks is the name of the method and
 the value is the event type. The allowed event types are the ones
 listed in the previous Lifecycle Events section.
 
-.. versionadded:: 2.4
-
 Lifecycle Callbacks Event Argument
 -----------------------------------
+
+.. versionadded:: 2.4
 
 Since 2.4 the triggered event is given to the lifecycle-callback.
 
@@ -652,6 +652,8 @@ EntityManager.
 
 Entity listeners
 ----------------
+
+.. versionadded:: 2.4
 
 An entity listeners is a lifecycle listener classes used for an entity.
 
