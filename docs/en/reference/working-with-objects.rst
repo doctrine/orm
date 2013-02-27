@@ -731,6 +731,8 @@ examples are equivalent:
 By Criteria
 ~~~~~~~~~~~
 
+.. versionadded:: 2.3
+
 The Repository implement the ``Doctrine\Common\Collections\Selectable``
 interface. That means you can build ``Doctrine\Common\Collections\Criteria``
 and pass them to the ``matching($criteria)`` method.

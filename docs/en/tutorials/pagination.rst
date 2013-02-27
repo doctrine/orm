@@ -1,6 +1,8 @@
 Pagination
 ==========
 
+.. versionadded:: 2.2
+
 Starting with version 2.2 Doctrine ships with a Paginator for DQL queries. It
 has a very simple API and implements the SPL interfaces ``Countable`` and
 ``IteratorAggregate``.

@@ -1,6 +1,8 @@
 Implementing a NamingStrategy
 ==============================
 
+.. versionadded:: 2.3
+
 Using a naming strategy you can provide rules for automatically generating
 database identifiers, columns and tables names
 when the table/column name is not given.

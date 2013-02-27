@@ -1,6 +1,8 @@
 Filters
 =======
 
+.. versionadded:: 2.2
+
 Doctrine 2.2 features a filter system that allows the developer to add SQL to
 the conditional clauses of queries, regardless the place where the SQL is
 generated (e.g. from a DQL query, or by loading associated entities).

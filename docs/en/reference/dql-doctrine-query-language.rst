@@ -410,6 +410,8 @@ Get all users that have no phonenumber
 Get all instances of a specific type, for use with inheritance
 hierarchies:
 
+.. versionadded:: 2.1
+
 .. code-block:: php
 
     <?php
@@ -418,6 +420,8 @@ hierarchies:
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
 
 Get all users visible on a given website that have chosen certain gender:
+
+.. versionadded:: 2.3
 
 .. code-block:: php
 
