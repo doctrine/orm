@@ -1,4 +1,4 @@
-Keeping your Modules independent
+Keeping your Modules independents
 =================================
 
 .. versionadded:: 2.2
@@ -112,7 +112,7 @@ An InvoiceSubjectInterface
 
 Next, we need to configure the listener. Add this to the area you set up Doctrine. You
 must set this up in the way outlined below, otherwise you can not be guaranteed that
-the targetEntity resolution will occur reliably::
+the targetEntity resolution will occur reliably:
 
 .. code-block:: php
 
