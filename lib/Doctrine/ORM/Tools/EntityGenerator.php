@@ -1092,8 +1092,8 @@ public function __construct()
     protected function generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null,  $defaultValue = null)
     {
         $methodName = $type . Inflector::classify($fieldName);
-        if (in_array($type, array("add", "remove")) && substr($methodName, -1) == "s") {
-            $methodName = substr($methodName, 0, -1);
+        if (in_array($type, array("add", "remove"))) {
+            $methodName = Inflector::singularize($methodName);
         }
 
         if ($this->hasMethod($methodName, $metadata)) {
