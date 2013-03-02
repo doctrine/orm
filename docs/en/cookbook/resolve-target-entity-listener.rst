@@ -1,4 +1,4 @@
-Keeping your Modules independents
+Keeping your Modules independent
 =================================
 
 .. versionadded:: 2.2
