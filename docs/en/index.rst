@@ -114,7 +114,7 @@ Cookbook
   :doc:`Working with DateTime <cookbook/working-with-datetime>` |
   :doc:`Validation <cookbook/validation-of-entities>` |
   :doc:`Entities in the Session <cookbook/entities-in-session>` |
-  :doc:`Keeping your Modules independents <cookbook/resolve-target-entity-listener>`
+  :doc:`Keeping your Modules independent <cookbook/resolve-target-entity-listener>`
 
 * **Integration into Frameworks/Libraries**
   :doc:`CodeIgniter <cookbook/integrating-with-codeigniter>`
