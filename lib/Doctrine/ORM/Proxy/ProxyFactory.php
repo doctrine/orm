@@ -23,7 +23,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Proxy\Proxy;
+use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
@@ -116,7 +116,7 @@ class ProxyFactory extends AbstractProxyFactory
     private function createInitializer(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
     {
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -141,7 +141,7 @@ class ProxyFactory extends AbstractProxyFactory
             };
         }
 
-        return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             $proxy->__setInitializer(null);
             $proxy->__setCloner(null);
 
@@ -177,7 +177,7 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createCloner(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
     {
-        return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             if ($proxy->__isInitialized()) {
                 return;
             }
