@@ -564,7 +564,6 @@ Let's now see an implicit declaration of the property / column.
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
@@ -648,7 +647,6 @@ followed by a dot ("."), followed by the name or the field or property of the pr
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
@@ -766,7 +764,6 @@ you can use the resultClass attribute instead of resultSetMapping:
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
@@ -814,7 +811,6 @@ You actually can even mix, entities and scalar returns in the same native query 
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
