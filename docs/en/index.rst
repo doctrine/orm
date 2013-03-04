@@ -113,7 +113,8 @@ Cookbook
   :doc:`Using Wakeup Or Clone <cookbook/implementing-wakeup-or-clone>` |
   :doc:`Working with DateTime <cookbook/working-with-datetime>` |
   :doc:`Validation <cookbook/validation-of-entities>` |
-  :doc:`Entities in the Session <cookbook/entities-in-session>`
+  :doc:`Entities in the Session <cookbook/entities-in-session>` |
+  :doc:`Keeping your Modules independent <cookbook/resolve-target-entity-listener>`
 
 * **Integration into Frameworks/Libraries**
   :doc:`CodeIgniter <cookbook/integrating-with-codeigniter>`
