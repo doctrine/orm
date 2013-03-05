@@ -781,6 +781,22 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(4, count($users));
     }
 
+    public function testMatchingCriteriaContainsComparison()
+    {
+        $this->loadFixture();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->contains('name', 'Foobar')));
+        $this->assertEquals(0, count($users));
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->contains('name', 'Rom')));
+        $this->assertEquals(1, count($users));
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->contains('status', 'dev')));
+        $this->assertEquals(2, count($users));
+    }
+
     /**
      * @group DDC-2055
      */

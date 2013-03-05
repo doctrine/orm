@@ -1,5 +1,5 @@
 {
-    "hash": "eff8840dfb1a83e6e1aef32b8031ac7c",
+    "hash": "acae8c9f654bd03696631d5eac8d16ad",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -22,7 +22,6 @@
             "require-dev": {
                 "doctrine/cache": "1.*"
             },
-            "time": "2013-01-12 19:23:32",
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -65,7 +64,8 @@
                 "annotations",
                 "docblock",
                 "parser"
-            ]
+            ],
+            "time": "2013-01-12 19:23:32"
         },
         {
             "name": "doctrine/cache",
@@ -84,7 +84,6 @@
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2013-01-10 22:43:46",
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -126,27 +125,32 @@
             "keywords": [
                 "cache",
                 "caching"
-            ]
+            ],
+            "time": "2013-01-10 22:43:46"
         },
         {
             "name": "doctrine/collections",
-            "version": "v1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "v1.0"
+                "reference": "560f29c39cfcfbcd210e5d549d993a39d898b04b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/doctrine/collections/archive/v1.0.zip",
-                "reference": "v1.0",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/560f29c39cfcfbcd210e5d549d993a39d898b04b",
+                "reference": "560f29c39cfcfbcd210e5d549d993a39d898b04b",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2013-01-12 16:36:50",
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Doctrine\\Common\\Collections\\": "lib/"
@@ -188,7 +192,8 @@
                 "array",
                 "collections",
                 "iterator"
-            ]
+            ],
+            "time": "2013-03-07 12:15:54"
         },
         {
             "name": "doctrine/common",
@@ -212,7 +217,6 @@
                 "doctrine/lexer": "1.*",
                 "php": ">=5.3.2"
             },
-            "time": "2013-01-29 12:48:56",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -262,7 +266,8 @@
                 "eventmanager",
                 "persistence",
                 "spl"
-            ]
+            ],
+            "time": "2013-01-29 12:48:56"
         },
         {
             "name": "doctrine/dbal",
@@ -288,7 +293,6 @@
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
             },
-            "time": "2013-02-09 23:28:29",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -331,7 +335,8 @@
                 "dbal",
                 "persistence",
                 "queryobject"
-            ]
+            ],
+            "time": "2013-02-09 23:28:29"
         },
         {
             "name": "doctrine/inflector",
@@ -350,7 +355,6 @@
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2013-01-10 21:49:15",
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -394,7 +398,8 @@
                 "pluarlize",
                 "singuarlize",
                 "string"
-            ]
+            ],
+            "time": "2013-01-10 21:49:15"
         },
         {
             "name": "doctrine/lexer",
@@ -413,7 +418,6 @@
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2013-01-12 18:59:04",
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -446,7 +450,8 @@
             "keywords": [
                 "lexer",
                 "parser"
-            ]
+            ],
+            "time": "2013-01-12 18:59:04"
         },
         {
             "name": "symfony/console",
@@ -466,7 +471,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2013-01-31 21:39:01",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -493,15 +497,25 @@
                 }
             ],
             "description": "Symfony Console Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "2013-01-31 21:39:01"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "dev",
     "stability-flags": [
+
+    ],
+    "platform": {
+        "php": ">=5.3.2",
+        "ext-pdo": "*"
+    },
+    "platform-dev": [
 
     ]
 }
