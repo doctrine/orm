@@ -109,15 +109,28 @@ class DatabaseDriver implements MappingDriver
      *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    private function reverseEngineerMappingFromDatabase()
+    private function reverseEngineerMappingFromDatabase(array $filters = array())
     {
         if ($this->tables !== null) {
             return;
         }
 
         $tables = array();
+        $listTableNames = $this->_sm->listTableNames();
 
-        foreach ($this->_sm->listTableNames() as $tableName) {
+        if (empty($filters)) {
+            $listTableNamesToUse = $listTableNames;
+        } else {
+            foreach ($listTableNames as $tableName) {
+                foreach ($filters as $regex) {
+                    if (strpos($regex, $tableName) !== false){
+                        $listTableNamesToUse[] = $tableName;
+                        break;
+                    }
+                }
+            }
+        }
+        foreach ( $listTableNamesToUse as $tableName) {
             $tables[$tableName] = $this->_sm->listTableDetails($tableName);
         }
 
@@ -345,6 +358,20 @@ class DatabaseDriver implements MappingDriver
 
         return array_keys($this->classToTableNames);
     }
+
+    /**
+     * Gets the names of all mapped classes known to this driver and filter them by the pattern in filter.
+     *
+     * @param array $filter
+     * @return array The names of all mapped classes known to this driver.
+     */
+    function getFilteredClassNames(array $filter = array())
+    {
+        $this->reverseEngineerMappingFromDatabase($filter);
+
+        return array_keys($this->classToTableNames);
+    }
+
 
     /**
      * Sets class name for a table.
