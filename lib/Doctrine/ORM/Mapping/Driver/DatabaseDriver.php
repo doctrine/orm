@@ -122,8 +122,8 @@ class DatabaseDriver implements MappingDriver
             $listTableNamesToUse = $listTableNames;
         } else {
             foreach ($listTableNames as $tableName) {
-                foreach ($filters as $regex) {
-                    if (strpos($regex, $tableName) !== false){
+                foreach ($filters as $haystack) {
+                    if (strpos($haystack, $tableName) !== false){
                         $listTableNamesToUse[] = $tableName;
                         break;
                     }
@@ -365,7 +365,7 @@ class DatabaseDriver implements MappingDriver
      * @param array $filter
      * @return array The names of all mapped classes known to this driver.
      */
-    function getFilteredClassNames(array $filter = array())
+    public function getFilteredClassNames(array $filter = array())
     {
         $this->reverseEngineerMappingFromDatabase($filter);
 

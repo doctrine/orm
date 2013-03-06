@@ -126,7 +126,6 @@ EOT
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);
         $metadata = $cmf->getAllFilteredMetadata($input->getOption('filter'));
-//        $metadata = MetadataFilter::filter($metadata, $input->getOption('filter'));
 
         // Process destination directory
         if ( ! is_dir($destPath = $input->getArgument('dest-path'))) {
