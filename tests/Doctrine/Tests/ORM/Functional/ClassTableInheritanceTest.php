@@ -417,7 +417,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyPerson', $manager->getId());
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $ref);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $ref, "Direct fetch of the reference has to load the child class Emplyoee directly.");
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $ref, "Direct fetch of the reference has to load the child class Employee directly.");
         $this->_em->clear();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());

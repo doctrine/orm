@@ -25,7 +25,7 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    public function testCreateRetreaveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete()
     {
         $e1 = new SimpleEntity('Bar 1');
         $e2 = new SimpleEntity('Foo 1');
@@ -39,7 +39,7 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e1Id   = $e1->id;
         $e2Id   = $e2->id;
 
-        // Retreave
+        // Retrieve
         $e1     = $this->_em->find(self::CLASS_NAME, $e1Id);
         $e2     = $this->_em->find(self::CLASS_NAME, $e2Id);
 

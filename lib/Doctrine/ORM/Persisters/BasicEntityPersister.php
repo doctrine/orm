@@ -37,7 +37,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 
 /**
- * A BasicEntityPersiter maps an entity to a single table in a relational database.
+ * A BasicEntityPersister maps an entity to a single table in a relational database.
  *
  * A persister is always responsible for a single entity type.
  *
@@ -177,8 +177,8 @@ class BasicEntityPersister
     protected $selectColumnListSql;
 
     /**
-     * The JOIN SQL fragement used to eagerly load all many-to-one and one-to-one
-     * associations configured as FETCH_EAGER, aswell as all inverse one-to-one associations.
+     * The JOIN SQL fragment used to eagerly load all many-to-one and one-to-one
+     * associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
      *
      * @var string
      */
@@ -499,7 +499,7 @@ class BasicEntityPersister
             }
 
             // @Todo this only covers scenarios with no inheritance or of the same level. Is there something
-            // like self-referential relationship between different levels of an inheritance hierachy? I hope not!
+            // like self-referential relationship between different levels of an inheritance hierarchy? I hope not!
             $selfReferential = ($mapping['targetEntity'] == $mapping['sourceEntity']);
             $class           = $this->class;
             $association     = $mapping;

@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * The default DefaultEntityListene
+ * The default DefaultEntityListener
  *
  * @since   2.4
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>

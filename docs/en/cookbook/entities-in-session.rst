@@ -64,5 +64,5 @@ object or implement the __sleep() magic method on your entity.
 
     When you called detach on your objects they get "unmanaged" with that
     entity manager. This means you cannot use them as part of write operations
-    during ``EntityManagr#flush()`` anymore in this request.
+    during ``EntityManager#flush()`` anymore in this request.
 

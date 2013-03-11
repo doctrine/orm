@@ -4,8 +4,8 @@ namespace Doctrine\Tests\Models\StockExchange;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Bonds have many stocks. This uses a many to many assocation and fails to model how many of a
- * particular stock a bond has. But i Need a many-to-many assocation, so please bear with my modelling skills ;)
+ * Bonds have many stocks. This uses a many to many association and fails to model how many of a
+ * particular stock a bond has. But i Need a many-to-many association, so please bear with my modelling skills ;)
  *
  * @Entity
  * @Table(name="exchange_bonds")

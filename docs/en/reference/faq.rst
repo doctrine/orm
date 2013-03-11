@@ -162,7 +162,7 @@ is supposed to kick-start you, but not towards 100%.
 Why does the EntityGenerator not generate inheritance correctly?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierachy.
+Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierarchy.
 This is why the generation of inherited entities does not fully work. You have to adjust some additional
 code to get this one working correctly.
 

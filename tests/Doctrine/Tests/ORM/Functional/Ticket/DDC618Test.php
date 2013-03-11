@@ -76,7 +76,7 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        $this->assertEquals(3, count($result[0]->books)); // Alice, Joe doesnt appear because he has no books.
+        $this->assertEquals(3, count($result[0]->books)); // Alice, Joe doesn't appear because he has no books.
         $this->assertEquals('Alice', $result[0]->name);
         $this->assertTrue( isset($result[0]->books["In Wonderland"] ), "Indexing by title should have books by title.");
         $this->assertTrue( isset($result[0]->books["Reloaded"] ), "Indexing by title should have books by title.");
@@ -84,7 +84,7 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
-        $this->assertEquals(3, count($result[0]['books'])); // Alice, Joe doesnt appear because he has no books.
+        $this->assertEquals(3, count($result[0]['books'])); // Alice, Joe doesn't appear because he has no books.
         $this->assertEquals('Alice', $result[0]['name']);
         $this->assertTrue( isset($result[0]['books']["In Wonderland"] ), "Indexing by title should have books by title.");
         $this->assertTrue( isset($result[0]['books']["Reloaded"] ), "Indexing by title should have books by title.");
@@ -121,7 +121,7 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertArrayHasKey(11, $result); // Alice
 
-        $this->assertEquals(3, count($result[11]->books)); // Alice, Joe doesnt appear because he has no books.
+        $this->assertEquals(3, count($result[11]->books)); // Alice, Joe doesn't appear because he has no books.
         $this->assertEquals('Alice', $result[11]->name);
         $this->assertTrue( isset($result[11]->books["In Wonderland"] ), "Indexing by title should have books by title.");
         $this->assertTrue( isset($result[11]->books["Reloaded"] ), "Indexing by title should have books by title.");

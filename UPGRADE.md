@@ -126,7 +126,7 @@ from 2.0 have to configure the annotation driver if they don't use `Configuratio
     $config->setMetadataDriverImpl($driver);
 
 
-## Scalar mappings can now be ommitted from DQL result
+## Scalar mappings can now be omitted from DQL result
 
 You are now allowed to mark scalar SELECT expressions as HIDDEN an they are not hydrated anymore.
 Example:
@@ -307,7 +307,7 @@ them for batch updates like SchemaTool and other commands. However the
 annotations driver being a default driver does not really help that much
 anyways.
 
-Therefore we decided to break backwards compability in this issue and drop
+Therefore we decided to break backwards compatibility in this issue and drop
 the support for Annotations as Default Driver and require our users to
 specify the driver explicitly (which allows us to ask for the path to all
 entities).
@@ -366,7 +366,7 @@ apologize for the inconvenience.
 ## Default Property for Field Mappings
 
 The "default" option for database column defaults has been removed. If desired, database column defaults can
-be implemented by using the columnDefinition attribute of the @Column annotation (or the approriate XML and YAML equivalents).
+be implemented by using the columnDefinition attribute of the @Column annotation (or the appropriate XML and YAML equivalents).
 Prefer PHP default values, if possible.
 
 ## Selecting Partial Objects
@@ -451,7 +451,7 @@ With new required method AbstractTask::buildDocumentation, its implementation de
 
     * "doctrine schema-tool --drop" now always drops the complete database instead of
     only those tables defined by the current database model. The previous method had
-    problems when foreign keys of orphaned tables pointed to tables that were schedulded
+    problems when foreign keys of orphaned tables pointed to tables that were scheduled
     for deletion.
     * Use "doctrine schema-tool --update" to get a save incremental update for your
     database schema without deleting any unused tables, sequences or foreign keys.

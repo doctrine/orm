@@ -11,7 +11,7 @@ use Doctrine\Tests\Mocks\HydratorMockStatement,
 /**
  * Tests to prevent serious performance regressions.
  *
- * IMPORTANT: Be sure to run these tests withoug xdebug or similar tools that
+ * IMPORTANT: Be sure to run these tests without xdebug or similar tools that
  * seriously degrade performance.
  *
  * @author robo

@@ -84,7 +84,7 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Sets tables manually instead of relying on the reverse engeneering capabilities of SchemaManager.
+     * Sets tables manually instead of relying on the reverse engineering capabilities of SchemaManager.
      *
      * @param array $entityTables
      * @param array $manyToManyTables
@@ -252,7 +252,7 @@ class DatabaseDriver implements MappingDriver
 
                     if (!$otherFk) {
                         // the definition of this many to many table does not contain
-                        // enough foreign key information to continue reverse engeneering.
+                        // enough foreign key information to continue reverse engineering.
                         continue;
                     }
 
@@ -319,7 +319,7 @@ class DatabaseDriver implements MappingDriver
                 );
             }
 
-            //Here we need to check if $cols are the same as $primaryKeyColums
+            //Here we need to check if $cols are the same as $primaryKeyColumns
             if (!array_diff($cols,$primaryKeyColumns)) {
                 $metadata->mapOneToOne($associationMapping);
             } else {
