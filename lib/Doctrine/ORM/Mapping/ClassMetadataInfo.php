@@ -1377,7 +1377,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & self::TO_MANY) {
-            throw MappingException::illegalToManyIdentifierAssoaction($this->name, $mapping['fieldName']);
+            throw MappingException::illegalToManyIdentifierAssociation($this->name, $mapping['fieldName']);
         }
 
         // Fetch mode. Default fetch mode to LAZY, if not set.
