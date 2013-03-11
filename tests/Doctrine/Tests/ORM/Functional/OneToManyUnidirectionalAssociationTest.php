@@ -75,7 +75,7 @@ class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunction
 
         $exceptionThrown = false;
         try {
-            // exception depending on the underyling Database Driver
+            // exception depending on the underlying Database Driver
             $this->_em->flush();
         } catch(\Exception $e) {
             $exceptionThrown = true;

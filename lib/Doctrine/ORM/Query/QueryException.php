@@ -123,9 +123,9 @@ class QueryException extends \Doctrine\ORM\ORMException
     /**
      * @return QueryException
      */
-    public static function parameterTypeMissmatch()
+    public static function parameterTypeMismatch()
     {
-        return new self("DQL Query parameter and type numbers missmatch, but have to be exactly equal.");
+        return new self("DQL Query parameter and type numbers mismatch, but have to be exactly equal.");
     }
 
     /**
@@ -159,7 +159,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     {
         return new self(
             "Invalid query operation: Not allowed to iterate over fetch join collections ".
-            "in class ".$assoc['sourceEntity']." assocation ".$assoc['fieldName']
+            "in class ".$assoc['sourceEntity']." association ".$assoc['fieldName']
         );
     }
 
@@ -184,7 +184,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     {
         return new self(
             "Unsupported query operation: It is not yet possible to overwrite the join ".
-            "conditions in class ".$assoc['sourceEntityName']." assocation ".$assoc['fieldName'].". ".
+            "conditions in class ".$assoc['sourceEntityName']." association ".$assoc['fieldName'].". ".
             "Use WITH to append additional join conditions to the association."
         );
     }
@@ -234,7 +234,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     public static function instanceOfUnrelatedClass($className, $rootClass)
     {
         return new self("Cannot check if a child of '" . $rootClass . "' is instanceof '" . $className . "', " .
-                "inheritance hierachy exists between these two classes.");
+                "inheritance hierarchy exists between these two classes.");
     }
 
     /**

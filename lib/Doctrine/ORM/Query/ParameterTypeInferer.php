@@ -23,7 +23,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 
 /**
- * Provides an enclosed support for parameter infering.
+ * Provides an enclosed support for parameter inferring.
  *
  * @link    www.doctrine-project.org
  * @since   2.0

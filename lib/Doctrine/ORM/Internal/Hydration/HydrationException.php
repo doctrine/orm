@@ -49,7 +49,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
     public static function emptyDiscriminatorValue($dqlAlias)
     {
         return new self("The DQL alias '" . $dqlAlias . "' contains an entity ".
-            "of an inheritance hierachy with an empty discriminator value. This means " .
+            "of an inheritance hierarchy with an empty discriminator value. This means " .
             "that the database contains inconsistent data with an empty " .
             "discriminator value in a table row."
         );

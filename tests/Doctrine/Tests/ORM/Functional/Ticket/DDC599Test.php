@@ -18,7 +18,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $ignored) {}
     }
 
-    public function testCascadeRemoveOnInheritanceHierachy()
+    public function testCascadeRemoveOnInheritanceHierarchy()
     {
         $item = new DDC599Subitem;
         $item->elem = "foo";

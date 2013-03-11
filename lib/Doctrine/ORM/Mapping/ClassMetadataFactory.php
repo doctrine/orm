@@ -193,7 +193,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $class->validateIdentifier();
-        $class->validateAssocations();
+        $class->validateAssociations();
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
@@ -319,7 +319,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         foreach ($parentClass->associationMappings as $field => $mapping) {
             if ($parentClass->isMappedSuperclass) {
                 if ($mapping['type'] & ClassMetadata::TO_MANY && !$mapping['isOwningSide']) {
-                    throw MappingException::illegalToManyAssocationOnMappedSuperclass($parentClass->name, $field);
+                    throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
                 }
                 $mapping['sourceEntity'] = $subClass->name;
             }

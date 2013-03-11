@@ -19,7 +19,7 @@ the ID fields have to have their values set before you call ``EntityManager#pers
 Primitive Types only
 ~~~~~~~~~~~~~~~~~~~~
 
-Even in version 2.0 you can have composite keys as long as they only consist of the primative types
+Even in version 2.0 you can have composite keys as long as they only consist of the primitive types
 ``integer`` and ``string``. Suppose you want to create a database of cars and use the model-name
 and year of production as primary keys:
 
@@ -129,7 +129,7 @@ of one or many parent entities.
 
 -   Dynamic Attributes of an Entity (for example Article). Each Article has many
     attributes with primary key "article_id" and "attribute_name".
--   Address object of a Person, the primary key of the adress is "user_id". This is not a case of a composite primary
+-   Address object of a Person, the primary key of the address is "user_id". This is not a case of a composite primary
     key, but the identity is derived through a foreign entity and a foreign key.
 -   Join Tables with metadata can be modelled as Entity, for example connections between two articles
     with a little description and a score.

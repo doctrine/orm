@@ -247,7 +247,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
-            // Check for JoinColummn/JoinColumns annotations
+            // Check for JoinColumn/JoinColumns annotations
             $joinColumns = array();
 
             if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
@@ -375,7 +375,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $override   = array();
                 $fieldName  = $associationOverride->name;
 
-                // Check for JoinColummn/JoinColumns annotations
+                // Check for JoinColumn/JoinColumns annotations
                 if ($associationOverride->joinColumns) {
                     $joinColumns = array();
                     foreach ($associationOverride->joinColumns as $joinColumn) {

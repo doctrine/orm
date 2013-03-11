@@ -163,7 +163,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Sets class as root of a joined table inheritance hierachy.
+     * Sets class as root of a joined table inheritance hierarchy.
      *
      * @return ClassMetadataBuilder
      */
@@ -175,7 +175,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Sets class as root of a single table inheritance hierachy.
+     * Sets class as root of a single table inheritance hierarchy.
      *
      * @return ClassMetadataBuilder
      */
@@ -207,7 +207,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds a subclass to this inheritance hierachy.
+     * Adds a subclass to this inheritance hierarchy.
      *
      * @param string $name
      * @param string $class
@@ -319,7 +319,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Creates a ManyToOne Assocation Builder.
+     * Creates a ManyToOne Association Builder.
      *
      * Note: This method does not add the association, you have to call build() on the AssociationBuilder.
      *
@@ -361,7 +361,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds simple inverse one-to-one assocation.
+     * Adds simple inverse one-to-one association.
      *
      * @param string $name
      * @param string $targetEntity
@@ -378,7 +378,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds simple owning one-to-one assocation.
+     * Adds simple owning one-to-one association.
      *
      * @param string      $name
      * @param string      $targetEntity
@@ -398,7 +398,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Creates a ManyToMany Assocation Builder.
+     * Creates a ManyToMany Association Builder.
      *
      * @param string $name
      * @param string $targetEntity
@@ -418,7 +418,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds a simple owning many to many assocation.
+     * Adds a simple owning many to many association.
      *
      * @param string      $name
      * @param string      $targetEntity
@@ -438,7 +438,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds a simple inverse many to many assocation.
+     * Adds a simple inverse many to many association.
      *
      * @param string $name
      * @param string $targetEntity
@@ -455,7 +455,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Creates a one to many assocation builder.
+     * Creates a one to many association builder.
      *
      * @param string $name
      * @param string $targetEntity
@@ -475,7 +475,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds simple OneToMany assocation.
+     * Adds simple OneToMany association.
      *
      * @param string $name
      * @param string $targetEntity

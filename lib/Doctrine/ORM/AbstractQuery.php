@@ -386,7 +386,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Defines a cache driver to be used for caching result sets and implictly enables caching.
+     * Defines a cache driver to be used for caching result sets and implicitly enables caching.
      *
      * @param \Doctrine\Common\Cache\Cache|null $resultCacheDriver Cache driver
      *

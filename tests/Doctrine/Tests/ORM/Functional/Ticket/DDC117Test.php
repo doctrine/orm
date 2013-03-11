@@ -85,7 +85,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testUpdateAssocationEntity()
+    public function testUpdateAssociationEntity()
     {
         $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
 
@@ -211,7 +211,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $exceptionThrown = false;
         try {
-            // exception depending on the underyling Database Driver
+            // exception depending on the underlying Database Driver
             $this->_em->flush();
         } catch(\Exception $e) {
             $exceptionThrown = true;

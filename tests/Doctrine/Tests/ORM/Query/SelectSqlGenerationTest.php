@@ -197,7 +197,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /* NOT (YET?) SUPPORTED.
-       Can be supported if SimpleSelectExpresion supports SingleValuedPathExpression instead of StateFieldPathExpression.
+       Can be supported if SimpleSelectExpression supports SingleValuedPathExpression instead of StateFieldPathExpression.
 
     public function testSingleAssociationPathExpressionInSubselect()
     {

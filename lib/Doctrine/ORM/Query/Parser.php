@@ -305,7 +305,7 @@ class Parser
      *
      * @return void
      *
-     * @throws QueryException If the tokens dont match.
+     * @throws QueryException If the tokens don't match.
      */
     public function match($token)
     {
@@ -644,7 +644,7 @@ class Parser
             }
 
             if ($class->getConstructor() === null) {
-                $this->semanticalError(sprintf('Class "%s" has not a valid contructor.', $className), $token);
+                $this->semanticalError(sprintf('Class "%s" has not a valid constructor.', $className), $token);
             }
 
             if ($class->getConstructor()->getNumberOfRequiredParameters() > count($args)) {
@@ -2373,7 +2373,7 @@ class Parser
             return $condPrimary;
         }
 
-        // Peek beyond the matching closing paranthesis ')'
+        // Peek beyond the matching closing parenthesis ')'
         $peek = $this->peekBeyondClosingParenthesis();
 
         if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
@@ -2445,7 +2445,7 @@ class Parser
                         $token = $this->lexer->peek();
                     }
 
-                    // We need to go even further in case of IS (differenciate between NULL and EMPTY)
+                    // We need to go even further in case of IS (differentiate between NULL and EMPTY)
                     $lookahead = $this->lexer->peek();
             }
 
@@ -2495,19 +2495,19 @@ class Parser
      */
     public function EmptyCollectionComparisonExpression()
     {
-        $emptyColletionCompExpr = new AST\EmptyCollectionComparisonExpression(
+        $emptyCollectionCompExpr = new AST\EmptyCollectionComparisonExpression(
             $this->CollectionValuedPathExpression()
         );
         $this->match(Lexer::T_IS);
 
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $emptyColletionCompExpr->not = true;
+            $emptyCollectionCompExpr->not = true;
         }
 
         $this->match(Lexer::T_EMPTY);
 
-        return $emptyColletionCompExpr;
+        return $emptyCollectionCompExpr;
     }
 
     /**
@@ -2800,7 +2800,7 @@ class Parser
                 }
 
                 if ($peek['value'] == '(') {
-                    // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
+                    // do NOT directly go to FunctionsReturningString() because it doesn't check for custom functions.
                     return $this->FunctionDeclaration();
                 }
 

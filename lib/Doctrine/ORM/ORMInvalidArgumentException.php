@@ -176,7 +176,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     public static function invalidCompositeIdentifier()
     {
         return new self("Binding an entity with a composite primary key to a query is not supported. " .
-            "You should split the parameter into the explicit fields and bind them seperately.");
+            "You should split the parameter into the explicit fields and bind them separately.");
     }
 
     /**

@@ -168,7 +168,7 @@ abstract class AbstractHydrator
     }
 
     /**
-     * Excutes one-time preparation tasks, once each time hydration is started
+     * Executes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
      *
      * @return void
@@ -178,7 +178,7 @@ abstract class AbstractHydrator
     }
 
     /**
-     * Excutes one-time cleanup tasks at the end of a hydration that was initiated
+     * Executes one-time cleanup tasks at the end of a hydration that was initiated
      * through {@link hydrateAll} or {@link iterate()}.
      *
      * @return void
@@ -223,7 +223,7 @@ abstract class AbstractHydrator
      * Puts the elements of a result row into a new array, grouped by the dql alias
      * they belong to. The column names in the result set are mapped to their
      * field names during this procedure as well as any necessary conversions on
-     * the values applied. Scalar values are kept in a specfic key 'scalars'.
+     * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
      * @param array  $data               SQL Result Row.
      * @param array &$cache              Cache for column to field result information.
@@ -321,7 +321,7 @@ abstract class AbstractHydrator
             }
 
             // in an inheritance hierarchy the same field could be defined several times.
-            // We overwrite this value so long we dont have a non-null value, that value we keep.
+            // We overwrite this value so long we don't have a non-null value, that value we keep.
             // Per definition it cannot be that a field is defined several times and has several values.
             if (isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) && $value === null) {
                 continue;

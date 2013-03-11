@@ -2,7 +2,7 @@
 
 # This script is a small convenience wrapper for running the doctrine testsuite against a large bunch of databases.
 # Just create the phpunit.xmls as described in the array below and configure the specific files <php /> section
-# to connect to that database. Just omit a file if you dont have that database and the tests will be skipped.
+# to connect to that database. Just omit a file if you don't have that database and the tests will be skipped.
 
 configs[1]="mysql.phpunit.xml" 
 configs[2]='postgres.phpunit.xml' 

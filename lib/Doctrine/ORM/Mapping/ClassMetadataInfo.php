@@ -509,7 +509,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $isIdentifierComposite = false;
 
     /**
-     * READ-ONLY: Flag indicating wheather the identifier/primary key contains at least one foreign key association.
+     * READ-ONLY: Flag indicating whether the identifier/primary key contains at least one foreign key association.
      *
      * This flag is necessary because some code blocks require special treatment of this cases.
      *
@@ -631,7 +631,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the ReflectionPropertys of the mapped class.
+     * Gets the ReflectionProperties of the mapped class.
      *
      * @return array An array of ReflectionProperty instances.
      */
@@ -938,7 +938,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @throws MappingException
      */
-    public function validateAssocations()
+    public function validateAssociations()
     {
         foreach ($this->associationMappings as $mapping) {
             if ( ! ClassLoader::classExists($mapping['targetEntity']) ) {
@@ -1437,7 +1437,7 @@ class ClassMetadataInfo implements ClassMetadata
                 ));
             }
 
-            $uniqueContraintColumns = array();
+            $uniqueConstraintColumns = array();
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
                     if (count($mapping['joinColumns']) == 1) {
@@ -1445,7 +1445,7 @@ class ClassMetadataInfo implements ClassMetadata
                             $joinColumn['unique'] = true;
                         }
                     } else {
-                        $uniqueContraintColumns[] = $joinColumn['name'];
+                        $uniqueConstraintColumns[] = $joinColumn['name'];
                     }
                 }
 
@@ -1472,12 +1472,12 @@ class ClassMetadataInfo implements ClassMetadata
                         ? $joinColumn['fieldName'] : $joinColumn['name'];
             }
 
-            if ($uniqueContraintColumns) {
+            if ($uniqueConstraintColumns) {
                 if ( ! $this->table) {
                     throw new RuntimeException("ClassMetadataInfo::setTable() has to be called before defining a one to one relationship.");
                 }
                 $this->table['uniqueConstraints'][$mapping['fieldName']."_uniq"] = array(
-                    'columns' => $uniqueContraintColumns
+                    'columns' => $uniqueConstraintColumns
                 );
             }
 
@@ -1488,7 +1488,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
         if (isset($mapping['id']) && $mapping['id'] === true && !$mapping['isOwningSide']) {
-            throw MappingException::illegalInverseIdentifierAssocation($this->name, $mapping['fieldName']);
+            throw MappingException::illegalInverseIdentifierAssociation($this->name, $mapping['fieldName']);
         }
 
         return $mapping;
@@ -2051,7 +2051,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks if this entity is the root in any entity-inheritance-hierachy.
+     * Checks if this entity is the root in any entity-inheritance-hierarchy.
      *
      * @return bool
      */
@@ -2427,7 +2427,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @deprecated Deprecated since version 2.4 in favor of \Doctrine\ORM\Event\ListenersInvoker
      * 
      * @param string $lifecycleEvent The lifecycle event.
-     * @param object $entity         The Entity on which the event occured.
+     * @param object $entity         The Entity on which the event occurred.
      *
      * @return void
      */

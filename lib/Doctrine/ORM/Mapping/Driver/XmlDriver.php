@@ -224,7 +224,7 @@ class XmlDriver extends FileDriver
             $metadata->table['options'] = $this->_parseOptions($xmlRoot->options->children());
         }
 
-        // The mapping assignement is done in 2 times as a bug might occurs on some php/xml lib versions
+        // The mapping assignment is done in 2 times as a bug might occurs on some php/xml lib versions
         // The internal SimpleXmlIterator get resetted, to this generate a duplicate field exception
         $mappings = array();
         // Evaluate <field ...> mappings

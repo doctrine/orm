@@ -26,7 +26,7 @@ class DDC933Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager = new \Doctrine\Tests\Models\Company\CompanyManager();
         $manager->setName('beberlei');
         $manager->setSalary(1234);
-        $manager->setTitle('Vice Precident of This Test');
+        $manager->setTitle('Vice President of This Test');
         $manager->setDepartment("Foo");
 
         $this->_em->persist($manager);
