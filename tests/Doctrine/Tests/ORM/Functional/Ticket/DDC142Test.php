@@ -29,7 +29,7 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    public function testCreateRetreaveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete()
     {
 
         $user           = new User;

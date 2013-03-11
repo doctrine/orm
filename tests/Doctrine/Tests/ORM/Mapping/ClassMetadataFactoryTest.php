@@ -89,7 +89,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->name);
     }
 
-    public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
+    public function testHasGetMetadata_NamespaceSeparatorIsNotNormalized()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
@@ -325,7 +325,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     }
 }
 
-/* Test subject class with overriden factory method for mocking purposes */
+/* Test subject class with overridden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadataFactory
 {
     private $mockMetadata = array();

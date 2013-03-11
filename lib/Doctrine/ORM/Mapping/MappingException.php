@@ -529,7 +529,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function cannotVersionIdField($className, $fieldName)
     {
-        return new self("Setting Id field '$fieldName' as versionale in entity class '$className' is not supported.");
+        return new self("Setting Id field '$fieldName' as versionable in entity class '$className' is not supported.");
     }
 
     /**
@@ -561,7 +561,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    public static function illegalToManyAssocationOnMappedSuperclass($className, $field)
+    public static function illegalToManyAssociationOnMappedSuperclass($className, $field)
     {
         return new self("It is illegal to put an inverse side one-to-many or many-to-many association on mapped superclass '".$className."#".$field."'.");
     }
@@ -632,7 +632,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    public static function illegalInverseIdentifierAssocation($className, $field)
+    public static function illegalInverseIdentifierAssociation($className, $field)
     {
         return new self("An inverse association is not allowed to be identifier in '$className#$field'.");
     }
@@ -643,7 +643,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    public static function illegalToManyIdentifierAssoaction($className, $field)
+    public static function illegalToManyIdentifierAssociation($className, $field)
     {
         return new self("Many-to-many or one-to-many associations are not allowed to be identifier in '$className#$field'.");
     }
@@ -668,8 +668,8 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self(
             "Entity '" . $className . "' has to be part of the discriminator map of '" . $rootClassName . "' " .
-            "to be properly mapped in the inheritance hierachy. Alternatively you can make '".$className."' an abstract class " .
-            "to avoid this exception from occuring."
+            "to be properly mapped in the inheritance hierarchy. Alternatively you can make '".$className."' an abstract class " .
+            "to avoid this exception from occurring."
         );
     }
 

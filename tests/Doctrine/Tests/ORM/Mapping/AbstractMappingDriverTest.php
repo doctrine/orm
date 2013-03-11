@@ -208,7 +208,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testIdentifier
      * @param ClassMetadata $class
      */
-    public function testAssocations($class)
+    public function testAssociations($class)
     {
         $this->assertEquals(3, count($class->associationMappings));
 
@@ -216,10 +216,10 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @depends testAssocations
+     * @depends testAssociations
      * @param ClassMetadata $class
      */
-    public function testOwningOneToOneAssocation($class)
+    public function testOwningOneToOneAssociation($class)
     {
         $this->assertTrue(isset($class->associationMappings['address']));
         $this->assertTrue($class->associationMappings['address']['isOwningSide']);
@@ -235,7 +235,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @depends testOwningOneToOneAssocation
+     * @depends testOwningOneToOneAssociation
      * @param ClassMetadata $class
      */
     public function testInverseOneToManyAssociation($class)
@@ -791,7 +791,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory    = $this->createClassMetadataFactory($em);
         $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
 
-        //overrited listeners
+        //overridden listeners
         $this->assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
         $this->assertArrayHasKey(Events::prePersist, $ultraClass->entityListeners);
 

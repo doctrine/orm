@@ -302,31 +302,31 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
-            $contitions     = array();
+            $conditions     = array();
             $parentClass    = $this->em->getClassMetadata($parentClassName);
             $tableAlias     = $this->getSQLTableAlias($parentClassName);
             $joinSql       .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
 
             foreach ($identifierColumn as $idColumn) {
-                $contitions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
 
-            $joinSql .= implode(' AND ', $contitions);
+            $joinSql .= implode(' AND ', $conditions);
         }
 
         // OUTER JOIN sub tables
         foreach ($this->class->subClasses as $subClassName) {
-            $contitions  = array();
+            $conditions  = array();
             $subClass    = $this->em->getClassMetadata($subClassName);
             $tableAlias  = $this->getSQLTableAlias($subClassName);
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumn as $idColumn) {
-                $contitions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
 
-            $joinSql .= implode(' AND ', $contitions);
+            $joinSql .= implode(' AND ', $conditions);
         }
 
         if ($assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {

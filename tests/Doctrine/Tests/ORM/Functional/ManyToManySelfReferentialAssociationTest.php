@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../TestInit.php';
 /**
  * Tests a self referential many-to-many association mapping (from a model to the same model, without inheritance).
  * For simplicity the relation duplicates entries in the association table
- * to remain simmetrical.
+ * to remain symmetrical.
  */
 class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssociationTestCase
 {

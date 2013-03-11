@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 {
-    public function testAddUniqueIndexForUniqueFieldAnnocation()
+    public function testAddUniqueIndexForUniqueFieldAnnotation()
     {
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);

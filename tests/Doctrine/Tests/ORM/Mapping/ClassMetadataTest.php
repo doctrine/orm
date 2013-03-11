@@ -80,7 +80,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-115
      */
-    public function testMapAssocationInGlobalNamespace()
+    public function testMapAssociationInGlobalNamespace()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
@@ -237,7 +237,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
     }
 
-    public function testDuplicateFieldAndAssocationMapping1_ThrowsException()
+    public function testDuplicateFieldAndAssociationMapping1_ThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -248,7 +248,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapOneToOne(array('fieldName' => 'name', 'targetEntity' => 'CmsUser'));
     }
 
-    public function testDuplicateFieldAndAssocationMapping2_ThrowsException()
+    public function testDuplicateFieldAndAssociationMapping2_ThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -301,7 +301,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        // this is really dirty, but it's the simpliest way to test whether
+        // this is really dirty, but it's the simplest way to test whether
         // joinColumn's name will be automatically set to user_id
         $cm->mapOneToOne(array(
             'fieldName' => 'user',
@@ -447,7 +447,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-117
      */
-    public function testInverseIdentifierAssocation()
+    public function testInverseIdentifierAssociation()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -466,7 +466,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-117
      */
-    public function testIdentifierAssocationManyToMany()
+    public function testIdentifierAssociationManyToMany()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -825,7 +825,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass'));
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "The target-entity Doctrine\Tests\Models\CMS\UnknownClass cannot be found in 'Doctrine\Tests\Models\CMS\CmsUser#address'.");
-        $cm->validateAssocations();
+        $cm->validateAssociations();
     }
 
     /**

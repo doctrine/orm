@@ -214,7 +214,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
     }
 
-    public function testQueryScalarWithDiscrimnatorValue()
+    public function testQueryScalarWithDiscriminatorValue()
     {
         $this->loadFullFixture();
 
@@ -364,7 +364,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyContract', $ref);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Emplyoee directly.");
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Employee directly.");
         $this->_em->clear();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFixContract', $this->fix->getId());
@@ -374,7 +374,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-952
      */
-    public function testEagerLoadInheritanceHierachy()
+    public function testEagerLoadInheritanceHierarchy()
     {
         $this->loadFullFixture();
 

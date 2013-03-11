@@ -1042,7 +1042,7 @@ class SqlWalker implements TreeWalker
 
                 // Handle WITH clause
                 if (($condExpr = $join->conditionalExpression) !== null) {
-                    // Phase 2 AST optimization: Skip processment of ConditionalExpression
+                    // Phase 2 AST optimization: Skip processing of ConditionalExpression
                     // if only one ConditionalTerm is defined
                     $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
                 }
@@ -1691,7 +1691,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkConditionalExpression($condExpr)
     {
-        // Phase 2 AST optimization: Skip processment of ConditionalExpression
+        // Phase 2 AST optimization: Skip processing of ConditionalExpression
         // if only one ConditionalTerm is defined
         if ( ! ($condExpr instanceof AST\ConditionalExpression)) {
             return $this->walkConditionalTerm($condExpr);
@@ -1705,7 +1705,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkConditionalTerm($condTerm)
     {
-        // Phase 2 AST optimization: Skip processment of ConditionalTerm
+        // Phase 2 AST optimization: Skip processing of ConditionalTerm
         // if only one ConditionalFactor is defined
         if ( ! ($condTerm instanceof AST\ConditionalTerm)) {
             return $this->walkConditionalFactor($condTerm);
@@ -1719,7 +1719,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkConditionalFactor($factor)
     {
-        // Phase 2 AST optimization: Skip processment of ConditionalFactor
+        // Phase 2 AST optimization: Skip processing of ConditionalFactor
         // if only one ConditionalPrimary is defined
         return ( ! ($factor instanceof AST\ConditionalFactor))
             ? $this->walkConditionalPrimary($factor)
@@ -2114,7 +2114,7 @@ class SqlWalker implements TreeWalker
                 : $term;
         }
 
-        // Phase 2 AST optimization: Skip processment of ArithmeticTerm
+        // Phase 2 AST optimization: Skip processing of ArithmeticTerm
         // if only one ArithmeticFactor is defined
         if ( ! ($term instanceof AST\ArithmeticTerm)) {
             return $this->walkArithmeticFactor($term);
@@ -2132,7 +2132,7 @@ class SqlWalker implements TreeWalker
             return $factor;
         }
 
-        // Phase 2 AST optimization: Skip processment of ArithmeticFactor
+        // Phase 2 AST optimization: Skip processing of ArithmeticFactor
         // if only one ArithmeticPrimary is defined
         if ( ! ($factor instanceof AST\ArithmeticFactor)) {
             return $this->walkArithmeticPrimary($factor);

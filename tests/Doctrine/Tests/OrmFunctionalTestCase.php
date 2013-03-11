@@ -237,7 +237,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         if (isset($this->_usedModelSets['directorytree'])) {
             $conn->executeUpdate('DELETE FROM ' . $this->_em->getConnection()->getDatabasePlatform()->quoteIdentifier("file"));
-            // MySQL doesnt know deferred deletions therefore only executing the second query gives errors.
+            // MySQL doesn't know deferred deletions therefore only executing the second query gives errors.
             $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeUpdate('DELETE FROM Directory');
         }

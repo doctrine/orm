@@ -689,7 +689,7 @@ interchangeably, independent of in-memory or sql-backed collections.
          */
         public function setMaxResults($maxResults);
         public function getOrderings();
-        public function getWhereExpresion();
+        public function getWhereExpression();
         public function getFirstResult();
         public function getMaxResults();
     }

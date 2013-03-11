@@ -91,7 +91,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue($user->groups->isInitialized());
         $this->assertEquals(3, count($user->groups));
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Should only execute one query to initialize colleciton, no extra query for count() more.");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Should only execute one query to initialize collection, no extra query for count() more.");
     }
 
     /**

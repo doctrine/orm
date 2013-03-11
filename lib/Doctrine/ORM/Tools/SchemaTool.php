@@ -500,7 +500,7 @@ class SchemaTool
      * Gets the class metadata that is responsible for the definition of the referenced column name.
      *
      * Previously this was a simple task, but with DDC-117 this problem is actually recursive. If its
-     * not a simple field, go through all identifier field names that are associations recursivly and
+     * not a simple field, go through all identifier field names that are associations recursively and
      * find that referenced column name.
      *
      * TODO: Is there any way to make this code more pleasing?
@@ -643,7 +643,7 @@ class SchemaTool
     /**
      * Drops the database schema for the given classes.
      *
-     * In any way when an exception is thrown it is supressed since drop was
+     * In any way when an exception is thrown it is suppressed since drop was
      * issued for all classes of the schema and some probably just don't exist.
      *
      * @param array $classes

@@ -16,7 +16,7 @@ require_once 'PHPUnit/Framework.php';
 /**
  * A more flexible and powerful PHPUnit Task than the native Phing one.
  *
- * Plus forward compability for PHPUnit 3.5 and later is ensured by using the PHPUnit Test Runner instead of implementing one.
+ * Plus forward compatibility for PHPUnit 3.5 and later is ensured by using the PHPUnit Test Runner instead of implementing one.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */

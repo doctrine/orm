@@ -90,7 +90,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * Retrieves the Query Instance reponsible for the current walkers execution.
+     * Retrieves the Query Instance responsible for the current walkers execution.
      *
      * @return \Doctrine\ORM\AbstractQuery
      */
