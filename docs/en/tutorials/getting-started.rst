@@ -97,7 +97,7 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
 
     $ composer install
 
-This ill install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
+This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
 Symfony YAML and Symfony Console. Both Symfony dependencies are optional
 but will be used in this tutorial.
 
