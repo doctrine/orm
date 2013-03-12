@@ -805,6 +805,10 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function matching(Criteria $criteria)
     {
+        if ($this->isDirty) {
+            $this->initialize();
+        }
+
         if ($this->initialized) {
             return $this->coll->matching($criteria);
         }
@@ -813,16 +817,10 @@ final class PersistentCollection implements Collection, Selectable
             throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany assocations at the moment.");
         }
 
-        // If there are NEW objects we have to check if any of them matches the criteria
-        $newObjects = array();
-
-        if ($this->isDirty) {
-            $newObjects = $this->coll->matching($criteria)->toArray();
-        }
-
-        $targetClass = $this->em->getClassMetadata(get_class($this->owner));
-
-        $id              = $targetClass->getSingleIdReflectionProperty()->getValue($this->owner);
+        $id              = $this->em
+            ->getClassMetadata(get_class($this->owner))
+            ->getSingleIdReflectionProperty()
+            ->getValue($this->owner);
         $builder         = Criteria::expr();
         $ownerExpression = $builder->eq($this->backRefFieldName, $id);
         $expression      = $criteria->getWhereExpression();
@@ -832,7 +830,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
 
-        return new ArrayCollection(array_merge($persister->loadCriteria($criteria), $newObjects));
+        return new ArrayCollection($persister->loadCriteria($criteria));
     }
 }
 
