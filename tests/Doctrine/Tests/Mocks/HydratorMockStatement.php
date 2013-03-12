@@ -69,21 +69,6 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     }
 
     /**
-     * @param array $resultSet
-     *
-     * @return void
-     */
-    public function setResultSet(array $resultSet)
-    {
-        reset($resultSet);
-        $this->_resultSet = $resultSet;
-    }
-
-    public function bindColumn($column, &$param, $type = null)
-    {
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function bindValue($param, $value, $type = null)
@@ -93,7 +78,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array())
+    public function bindParam($column, &$variable, $type = null)
     {
     }
 

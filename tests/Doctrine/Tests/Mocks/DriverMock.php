@@ -26,20 +26,6 @@ class DriverMock implements \Doctrine\DBAL\Driver
     }
 
     /**
-     * Constructs the Sqlite PDO DSN.
-     *
-     * @param array $params
-     *
-     * @return string The DSN.
-     *
-     * @override
-     */
-    protected function _constructPdoDsn(array $params)
-    {
-        return "";
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getDatabasePlatform()
