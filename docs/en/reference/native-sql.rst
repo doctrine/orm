@@ -203,11 +203,12 @@ detail:
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
      * 
-     * @param string $alias
-     * @param string $columnAlias
-     * @param string $columnName
+     * @param string  $alias
+     * @param string  $columnAlias
+     * @param string  $columnName
+     * @param boolean $isIdentifierColumn
      */
-    public function addMetaResult($alias, $columnAlias, $columnName)
+    public function addMetaResult($alias, $columnAlias, $columnName, $isIdentifierColumn = false)
 
 The first parameter is the alias of the entity result to which the
 meta column belongs. A meta result column (foreign key or
@@ -215,6 +216,8 @@ discriminator column) always belongs to to an entity result. The
 second parameter is the column alias/name of the column in the SQL
 result set and the third parameter is the column name used in the
 mapping.
+The fourth parameter should be set to true in case the primary key
+of the entity is the foreign key you're adding.
 
 Discriminator Column
 ~~~~~~~~~~~~~~~~~~~~
