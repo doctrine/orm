@@ -79,6 +79,7 @@ class CountOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
+        $AST->orderByClause = null;
         $sql = parent::walkSelectStatement($AST);
 
         // Find out the SQL alias of the identifier column of the root entity
