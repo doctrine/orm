@@ -50,7 +50,7 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $value          = $comparison->getValue()->getValue();
+        $value          = $this->getValueFromComparison($comparison);
         $field          = $comparison->getField();
         
         $this->values[] = $value;
@@ -91,5 +91,21 @@ class SqlValueVisitor extends ExpressionVisitor
     public function getParamsAndTypes()
     {
         return array($this->values, $this->types);
+    }
+
+    /**
+     * Returns the value from a Comparison. In case of a CONTAINS comparison,
+     * the value is wrapped in %-signs, because it will be used in a LIKE clause.
+     *
+     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
+     * @return mixed
+     */
+    protected function getValueFromComparison(Comparison $comparison)
+    {
+        $value = $comparison->getValue()->getValue();
+
+        return $comparison->getOperator() == Comparison::CONTAINS
+            ? "%{$value}%"
+            : $value;
     }
 }
