@@ -89,9 +89,8 @@ just fields of the entity using the syntax ``u.name``. Combinations
 of both are also allowed and it is possible to wrap both fields and
 identification values into aggregation and DQL functions. Numerical
 fields can be part of computations using mathematical operations.
-See the sub-section on
-`DQL Functions, Aggregates and Operations <#dqlfn>`_ on more
-information.
+See the sub-section on `Functions, Operators, Aggregates`_ for
+more information.
 
 Joins
 ~~~~~
