@@ -22,30 +22,6 @@ class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
         return $this->_sequenceNumber++;
     }
 
-    /**
-     * @override
-     */
-    public function nextId($seqName, $ondemand = true)
-    {
-        return $this->_sequenceNumber++;
-    }
-
-    /**
-     * @override
-     */
-    public function lastInsertId($table = null, $field = null)
-    {
-        return $this->_sequenceNumber - 1;
-    }
-
-    /**
-     * @override
-     */
-    public function currId($seqName)
-    {
-        return $this->_sequenceNumber;
-    }
-
     /* Mock API */
 
     /**
@@ -54,13 +30,5 @@ class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
     public function reset()
     {
         $this->_sequenceNumber = 0;
-    }
-
-    /**
-     * @return void
-     */
-    public function autoinc()
-    {
-        $this->_sequenceNumber++;
     }
 }

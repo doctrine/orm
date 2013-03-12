@@ -53,28 +53,6 @@ class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
     }
 
     /**
-     * @param object $entity
-     * @param array  $mockChangeSet
-     *
-     * @return void
-     */
-    public function setDataChangeSet($entity, array $mockChangeSet)
-    {
-        $this->_mockDataChangeSets[spl_object_hash($entity)] = $mockChangeSet;
-    }
-
-    /**
-     * @param object $entity
-     * @param mixed  $state
-     *
-     * @return void
-     */
-    public function setEntityState($entity, $state)
-    {
-        $this->_entityStates[spl_object_hash($entity)] = $state;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function setOriginalEntityData($entity, array $originalData)
