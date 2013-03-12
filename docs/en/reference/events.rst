@@ -535,8 +535,8 @@ The following restrictions apply to the onFlush event:
 postFlush
 ~~~~~~~~~
 
-``postFlush`` is called at the end of ``EntityManager#flush()``. ``EntityManager#flush()`` can be 
-called safely inside its listeners.
+``postFlush`` is called at the end of ``EntityManager#flush()``.
+``EntityManager#flush()`` can **NOT** be called safely inside its listeners.
 
 .. code-block:: php
 
