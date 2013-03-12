@@ -84,15 +84,16 @@ class BasicEntityPersister
      * @var array
      */
     static private $comparisonMap = array(
-        Comparison::EQ  => '= %s',
-        Comparison::IS  => 'IS %s',
-        Comparison::NEQ => '!= %s',
-        Comparison::GT  => '> %s',
-        Comparison::GTE => '>= %s',
-        Comparison::LT  => '< %s',
-        Comparison::LTE => '<= %s',
-        Comparison::IN  => 'IN (%s)',
-        Comparison::NIN => 'NOT IN (%s)',
+        Comparison::EQ       => '= %s',
+        Comparison::IS       => 'IS %s',
+        Comparison::NEQ      => '!= %s',
+        Comparison::GT       => '> %s',
+        Comparison::GTE      => '>= %s',
+        Comparison::LT       => '< %s',
+        Comparison::LTE      => '<= %s',
+        Comparison::IN       => 'IN (%s)',
+        Comparison::NIN      => 'NOT IN (%s)',
+        Comparison::CONTAINS => 'LIKE %s',
     );
 
     /**
