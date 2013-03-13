@@ -24,6 +24,9 @@ use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
 
@@ -75,10 +78,17 @@ class ObjectHydrator extends AbstractHydrator
     private $existingCollections = array();
 
     /**
+     * @var \Doctrine\ORM\Event\PostLoadEventDispatcher
+     */
+    private $postLoadEventDispatcher;
+
+    /**
      * {@inheritdoc}
      */
     protected function prepare()
     {
+        $this->postLoadEventDispatcher = new PostLoadEventDispatcher($this->_em, $this->_hints);
+
         if ( ! isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) {
             $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] = true;
         }
@@ -144,6 +154,8 @@ class ObjectHydrator extends AbstractHydrator
         $this->existingCollections =
         $this->resultPointers = array();
 
+        unset($this->postLoadEventDispatcher);
+
         if ($eagerLoad) {
             $this->_uow->triggerEagerLoads();
         }
@@ -166,6 +178,8 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->initializedCollections as $coll) {
             $coll->takeSnapshot();
         }
+
+        $this->postLoadEventDispatcher->dispatchEnqueuedPostLoadEvents();
 
         return $result;
     }
@@ -267,7 +281,13 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        return $this->_uow->createEntity($className, $data, $this->_hints);
+        $created = false;
+        $entity = $this->_uow->createEntity($className, $data, $this->_hints, $created);
+        if ($created) {
+            $this->postLoadEventDispatcher->dispatchPostLoad($entity);
+        }
+
+        return $entity;
     }
 
     /**
