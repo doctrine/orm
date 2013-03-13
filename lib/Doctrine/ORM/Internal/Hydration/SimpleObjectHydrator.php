@@ -23,6 +23,10 @@ use PDO;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\ListenersInvoker;
+use Doctrine\ORM\Event\PostLoadEventDispatcher;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
@@ -32,10 +36,22 @@ class SimpleObjectHydrator extends AbstractHydrator
     private $class;
 
     /**
+     * @var \Doctrine\ORM\Event\PostLoadEventDispatcher
+     */
+    private $postLoadEventDispatcher;
+
+    /**
+     * @var array
+     */
+    private $hydratedObjects = array();
+
+    /**
      * {@inheritdoc}
      */
     protected function prepare()
     {
+        $this->postLoadEventDispatcher = new PostLoadEventDispatcher($this->_em, $this->_hints);
+
         if (count($this->_rsm->aliasMap) !== 1) {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
         }
@@ -60,7 +76,19 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         $this->_em->getUnitOfWork()->triggerEagerLoads();
 
+        $this->postLoadEventDispatcher->dispatchEnqueuedPostLoadEvents();
+
         return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function cleanup()
+    {
+        parent::cleanup();
+
+        unset($this->postLoadEventDispatcher);
     }
 
     /**
@@ -130,7 +158,11 @@ class SimpleObjectHydrator extends AbstractHydrator
         }
 
         $uow    = $this->_em->getUnitOfWork();
-        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        $created = false;
+        $entity = $uow->createEntity($entityName, $data, $this->_hints, $created);
+        if ($created) {
+            $this->postLoadEventDispatcher->dispatchPostLoad($entity);
+        }
 
         $result[] = $entity;
     }

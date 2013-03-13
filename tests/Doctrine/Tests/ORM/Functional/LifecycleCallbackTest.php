@@ -150,6 +150,65 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($e2->prePersistCallbackInvoked);
     }
 
+    public function testCascadedEntitiesLoadedInPostLoad()
+    {
+        $e1 = new LifecycleCallbackTestEntity();
+        $e2 = new LifecycleCallbackTestEntity();
+
+        $c = new LifecycleCallbackCascader();
+        $this->_em->persist($c);
+
+        $c->entities[] = $e1;
+        $c->entities[] = $e2;
+        $e1->cascader = $c;
+        $e2->cascader = $c;
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('
+SELECT e, c
+FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e
+    LEFT JOIN e.cascader AS c
+WHERE e.id IN ('.$e1->getId().', '.$e2->getId().')');
+        $entities = $query->execute(null, \Doctrine\ORM\Query::HYDRATE_OBJECT);
+
+        $this->assertTrue(current($entities)->postLoadCallbackInvoked);
+        $this->assertTrue(current($entities)->postLoadCascaderNotNull);
+        $this->assertTrue(current($entities)->cascader->postLoadCallbackInvoked);
+        $this->assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
+    }
+
+    public function testCascadedEntitiesNotLoadedInPostLoadDuringIteration()
+    {
+        $e1 = new LifecycleCallbackTestEntity();
+        $e2 = new LifecycleCallbackTestEntity();
+
+        $c = new LifecycleCallbackCascader();
+        $this->_em->persist($c);
+
+        $c->entities[] = $e1;
+        $c->entities[] = $e2;
+        $e1->cascader = $c;
+        $e2->cascader = $c;
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('
+SELECT e, c
+FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e
+LEFT JOIN e.cascader AS c
+WHERE e.id IN ('.$e1->getId().', '.$e2->getId().')');
+        $result = $query->iterate();
+
+        foreach ($result as $entity) {
+            $this->assertTrue($entity[0]->postLoadCallbackInvoked);
+            $this->assertFalse($entity[0]->postLoadCascaderNotNull);
+            break;
+        }
+    }
+
     public function testLifecycleCallbacksGetInherited()
     {
         $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
@@ -282,7 +341,7 @@ class LifecycleCallbackTestEntity
     public $prePersistCallbackInvoked = false;
     public $postPersistCallbackInvoked = false;
     public $postLoadCallbackInvoked = false;
-
+    public $postLoadCascaderNotNull = false;
     public $preFlushCallbackInvoked = false;
 
     /**
@@ -322,6 +381,7 @@ class LifecycleCallbackTestEntity
     /** @PostLoad */
     public function doStuffOnPostLoad() {
         $this->postLoadCallbackInvoked = true;
+        $this->postLoadCascaderNotNull = isset($this->cascader);
     }
 
     /** @PreUpdate */
@@ -336,11 +396,15 @@ class LifecycleCallbackTestEntity
 }
 
 /**
- * @Entity
+ * @Entity @HasLifecycleCallbacks
  * @Table(name="lc_cb_test_cascade")
  */
 class LifecycleCallbackCascader
 {
+    /* test stuff */
+    public $postLoadCallbackInvoked = false;
+    public $postLoadEntitiesCount = 0;
+
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -355,6 +419,12 @@ class LifecycleCallbackCascader
     public function __construct()
     {
         $this->entities = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /** @PostLoad */
+    public function doStuffOnPostLoad() {
+        $this->postLoadCallbackInvoked = true;
+        $this->postLoadEntitiesCount = count($this->entities);
     }
 }
 
