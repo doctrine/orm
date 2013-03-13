@@ -78,7 +78,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = null)
+    public function bindParam($column, &$variable, $type = null, $length = null)
     {
     }
 
