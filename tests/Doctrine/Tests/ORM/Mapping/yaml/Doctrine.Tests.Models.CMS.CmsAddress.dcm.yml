@@ -2,7 +2,7 @@ Doctrine\Tests\Models\CMS\CmsAddress:
   type: entity
   table: cms_address
   entityListeners:
-    CmsAddressListener:
+    CmsAddressListener: ~
   namedNativeQueries:
     find-all:
       resultSetMapping: mapping-find-all
