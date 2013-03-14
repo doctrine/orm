@@ -1939,9 +1939,7 @@ class ObjectHydratorTest extends HydrationTestCase
      */
     public function testMixedQueryNormalJoinWithEntityNamespaces($userEntityKey)
     {
-        $this->_em->getConfiguration()->addEntityNamespace(
-            'DoctrineCmsModels', 'Doctrine\Tests\Models\CMS'
-        );
+        $this->_em->getConfiguration()->addEntityNamespace('DoctrineCmsModels', 'Doctrine\Tests\Models\CMS');
 
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('DoctrineCmsModels:CmsUser', 'u', $userEntityKey ?: null);
@@ -2018,9 +2016,7 @@ class ObjectHydratorTest extends HydrationTestCase
      */
     public function testSimpleEntityQueryWithEntityNamespaces()
     {
-        $this->_em->getConfiguration()->addEntityNamespace(
-            'DoctrineCmsModels', 'Doctrine\Tests\Models\CMS'
-        );
+        $this->_em->getConfiguration()->addEntityNamespace('DoctrineCmsModels', 'Doctrine\Tests\Models\CMS');
 
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('DoctrineCmsModels:CmsUser', 'u');
