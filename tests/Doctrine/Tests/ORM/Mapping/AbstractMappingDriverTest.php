@@ -156,6 +156,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertTrue($class->isVersioned);
         $this->assertEquals("version", $class->versionField);
+
+        $this->assertFalse(isset($class->fieldMappings['version']['version']));
     }
 
     /**
