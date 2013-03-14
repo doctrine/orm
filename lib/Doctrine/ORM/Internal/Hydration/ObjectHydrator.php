@@ -104,7 +104,7 @@ class ObjectHydrator extends AbstractHydrator
             $classMetadata                  = $this->_em->getClassMetadata($className);
 
             if ( ! isset($this->ce[$classMetadata->name])) {
-                $this->ce[$classMetadata->name] = $this->_em->getClassMetadata($className);
+                $this->ce[$classMetadata->name] = $classMetadata;
             }
 
             // Remember which associations are "fetch joined", so that we know where to inject
