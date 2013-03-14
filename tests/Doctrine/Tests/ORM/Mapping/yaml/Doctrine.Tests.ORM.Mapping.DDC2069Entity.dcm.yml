@@ -1,7 +1,7 @@
 Doctrine\Tests\ORM\Mapping\DDC2069Entity:
   type: entity
   id:
-    id:
+    id: ~
   fields:
     name:
       type: string ( 255 )
