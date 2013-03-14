@@ -300,6 +300,7 @@ class YamlDriver extends FileDriver
 
                 if (isset($mapping['version'])) {
                     $metadata->setVersionMapping($mapping);
+                    unset($mapping['version']);
                 }
 
                 $metadata->mapField($mapping);
