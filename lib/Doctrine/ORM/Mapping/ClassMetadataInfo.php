@@ -1487,6 +1487,10 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
         $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
+        if ($mapping['orphanRemoval']) {
+            unset($mapping['unique']);
+        }
+
         if (isset($mapping['id']) && $mapping['id'] === true && !$mapping['isOwningSide']) {
             throw MappingException::illegalInverseIdentifierAssociation($this->name, $mapping['fieldName']);
         }
