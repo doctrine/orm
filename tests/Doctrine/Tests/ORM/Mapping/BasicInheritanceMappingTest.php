@@ -115,7 +115,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnmappedEntityInHierachy()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierarchyBase' to be properly mapped in the inheritance hierarchy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' an abstract class to avoid this exception from occurring.");
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierachyBase' to be properly mapped in the inheritance hierachy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' an abstract class to avoid this exception from occuring.");
 
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyE');
     }
