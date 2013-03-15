@@ -291,10 +291,7 @@ class SqlWalker implements TreeWalker
         $tableName .= ($dqlAlias) ? '@[' . $dqlAlias . ']' : '';
 
         if ( ! isset($this->tableAliasMap[$tableName])) {
-            $tablePrefixAlias = strtolower(substr($tableName, 0, 1));
-            if( ! preg_match("/[a-z]/", $tablePrefixAlias)) {
-                $tablePrefixAlias = 't';
-            }
+            $tablePrefixAlias = preg_match('~[a-z]~i', $tableName[0]) ? strtolower($tableName[0]) : 't';
             $this->tableAliasMap[$tableName] = $tablePrefixAlias . $this->tableAliasCounter++ . '_';
         }
 
