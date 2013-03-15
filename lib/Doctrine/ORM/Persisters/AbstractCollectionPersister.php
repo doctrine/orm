@@ -113,7 +113,7 @@ abstract class AbstractCollectionPersister
             $sourceClass             = $em->getClassMetadata($association['sourceEntity']);
             $this->cacheRegionAccess = $em->getConfiguration()
                 ->getSecondLevelCacheAccessProvider()
-                ->buildCollectioRegionAccessStrategy($sourceClass, $association['fieldName']);
+                ->buildCollectionRegionAccessStrategy($sourceClass, $association['fieldName']);
 
             $this->cacheEntryStructure  = new CollectionEntryStructure($em);
             $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);

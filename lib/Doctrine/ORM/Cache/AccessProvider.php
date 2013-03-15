@@ -49,5 +49,5 @@ interface AccessProvider
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
      */
-    public function buildCollectioRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
+    public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
 }

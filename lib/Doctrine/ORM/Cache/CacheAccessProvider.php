@@ -65,7 +65,7 @@ class CacheAccessProvider implements AccessProvider
     /**
      * {@inheritdoc}
      */
-    public function buildCollectioRegionAccessStrategy(ClassMetadata $metadata, $fieldName)
+    public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName)
     {
         $mapping    = $metadata->getAssociationMapping($fieldName);
         $properties = $mapping['cache']['properties'];

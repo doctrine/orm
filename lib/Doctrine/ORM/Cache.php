@@ -250,7 +250,7 @@ class Cache
      *
      * @param regionName Query cache region name.
      *
-     * @return Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
+     * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
      */
     public function getQueryCache($regionName)
     {
