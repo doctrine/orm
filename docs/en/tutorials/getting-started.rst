@@ -1,47 +1,48 @@
-Getting Started: Code First
-===========================
+Getting Started with Doctrine
+=============================
 
-.. note:: *Development Workflows*
+This guide covers getting started with the Doctrine ORM. After working
+through the guide you should know:
 
-    When you :doc:`Code First <getting-started>`, you
-    start with developing Objects and then map them onto your database. When
-    you :doc:`Model First <getting-started-models>`, you are modelling your application using tools (for
-    example UML) and generate database schema and PHP code from this model.
-    When you have a :doc:`Database First <getting-started-database>`, then you already have a database schema
-    and generate the corresponding PHP code from it.
+- How to install and configure Doctrine by connecting it to a database
+- Mapping PHP objects to database tables
+- Generating a database schema from PHP objects
+- Using the ``EntityManager`` to insert, update, delete and find
+  objects in the database.
 
-Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides
-transparent persistence for PHP objects. It uses the Data Mapper pattern at
-the heart of this project, aiming for a complete separation of the
-domain/business logic from the persistence in a relational database management
-system. The benefit of Doctrine for the programmer is the ability to focus
-solely on the object-oriented business logic and worry about persistence only
-as a secondary task. This doesn't mean persistence is not important to Doctrine
-2, however it is our belief that there are considerable benefits for
-object-oriented programming if persistence and entities are kept perfectly
-separated.
+Guide Assumptions
+-----------------
 
-Starting with the object-oriented model is called the *Code First* approach to
-Doctrine.
+This guide is designed for beginners that haven't worked with Doctrine ORM
+before. There are some prerequesites for the tutorial that have to be
+installed:
+
+- PHP 5.3.3 or above
+- Composer Package Manager (`Install Composer
+  <http://getcomposer.org/doc/00-intro.md>`_)
+
+The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
 
 .. note::
 
-    The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
+    This tutorial assumes you work with Doctrine 2.3 and above.
+    Some of the code will not work with lower versions.
 
-What are Entities?
-------------------
+What is Doctrine?
+-----------------
 
-Entities are lightweight PHP Objects that don't need to extend any
-abstract base class or interface. An entity class must not be final
-or contain final methods. Additionally it must not implement
-**clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
+Doctrine 2 is an `object-relational mapper (ORM)
+<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.3.3+ that
+provides transparent persistence for PHP objects. It uses the Data Mapper
+pattern at the heart, aiming for a complete separation of your domain/business
+logic from the persistence in a relational database management system.
 
-See the :doc:`architecture chapter <../reference/architecture>` for a full list of the restrictions
-that your entities need to comply with.
-
-An entity contains persistable properties. A persistable property
-is an instance variable of the entity that is saved into and retrieved from the database
-by Doctrine's data mapping capabilities.
+The benefit of Doctrine for the programmer is the ability to focus
+on the object-oriented business logic and worry about persistence only
+as a secondary problem. This doesn't mean persistence is downplayed by Doctrine
+2, however it is our belief that there are considerable benefits for
+object-oriented programming if persistence and entities are kept 
+separated.
 
 An Example Model: Bug Tracker
 -----------------------------
@@ -50,8 +51,7 @@ For this Getting Started Guide for Doctrine we will implement the
 Bug Tracker domain model from the
 `Zend\_Db\_Table <http://framework.zend.com/manual/en/zend.db.table.html>`_
 documentation. Reading their documentation we can extract the
-requirements to be:
-
+requirements:
 
 -  A Bugs has a description, creation date, status, reporter and
    engineer
@@ -118,27 +118,47 @@ A first prototype
 We start with a simplified design for the bug tracker domain, by creating three
 classes ``Bug``, ``Product`` and ``User`` and putting them into
 `entities/Bug.php`, `entities/Product.php` and `entities/User.php`
-respectively.
+respectively. We want instances of this three classes to be saved
+in the database. A class saved into a database with Doctrine is called
+entity. Entity classes are part of the domain model of your application.
 
 .. code-block:: php
 
     <?php
-    // Bug.php
+    // entities/Bug.php
     class Bug
     {
+        /**
+         * @var int
+         */
         protected $id;
+        /**
+         * @var string
+         */
         protected $description;
+        /**
+         * @var DateTime
+         */
         protected $created;
+        /**
+         * @var string
+         */
         protected $status;
     }
 
 .. code-block:: php
 
     <?php
-    // Product.php
+    // entities/Product.php
     class Product
     {
+        /**
+         * @var int
+         */
         protected $id;
+        /**
+         * @var string
+         */
         protected $name;
 
         public function getId()
@@ -160,11 +180,17 @@ respectively.
 .. code-block:: php
 
     <?php
-    // User.php
+    // entities/User.php
     class User
     {
+        /**
+         * @var int
+         */
         protected $id;
-        public $name; // public for educational purpose, see below
+        /**
+         * @var string
+         */
+        protected $name;
 
         public function getId()
         {
@@ -182,47 +208,46 @@ respectively.
         }
     }
 
-.. warning::
+.. note::
 
-    Properties should never be public when using Doctrine.
-    This will lead to bugs with the way lazy loading works in Doctrine.
+    **What are Entities?**
 
-You see that all properties have getters and setters except `$id`.
-Doctrine 2 uses Reflection to access the values in all your entities properties, so it
-is possible to set the `$id` value for Doctrine, however not from
-your application code. The use of reflection by Doctrine allows you
-to completely encapsulate state and state changes in your entities.
+    Entities are PHP Objects that can be identified over many requests
+    by a unique identifier or primary key. These classes don't need to extend any
+    abstract base class or interface. An entity class must not be final
+    or contain final methods. Additionally it must not implement
+    **clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
 
-Many of the fields are single scalar values, for example the 3 ID
-fields of the entities, their names, description, status and change
-dates. Doctrine 2 can easily handle these single values as can any
-other ORM. From a point of our domain model they are ready to be
-used right now and we will see at a later stage how they are mapped
-to the database.
+    An entity contains persistable properties. A persistable property
+    is an instance variable of the entity that is saved into and retrieved from the database
+    by Doctrine's data mapping capabilities.
 
-We will soon add references between objects in this domain
-model. The semantics are discussed case by case to
-explain how Doctrine handles them. In general each OneToOne or
-ManyToOne Relation in the Database is replaced by an instance of
-the related object in the domain model. Each OneToMany or
-ManyToMany Relation is replaced by a collection of instances in the
-domain model. You never have to work with the foreign keys, only
-with objects that represent the foreign key through their own identity.
+Note how all properties have getter and setter methods defined except
+`$id`. To access data from entities Doctrine 2 uses the Reflection API, so it
+is possible for Doctrine to access the value of `$id`. You don't have to
+take Doctrine into account when designing access to the state of your objects.
 
-If you think this through carefully you realize Doctrine 2 will
-load up the complete database in memory if you access one object.
-However by default Doctrine generates Lazy Load proxies of entities
-or collections of all the relations that haven't been explicitly
+All of the properties so far are scalar values, for example the 3 ID
+fields of the entities, their names, description, status and change dates.
+
+With just the scalar values this model is useless. We need to add references
+between entities in this domain model. The semantics of each type of reference
+are now introduced and discussed on a case by case basis
+to explain how Doctrine handles them.
+
+In general each OneToOne or ManyToOne Relation in the Database is replaced by
+an instance of the related object in the domain model. Each OneToMany or
+ManyToMany Relation is replaced by a collection of instances in the domain
+model. You never have to work with the foreign keys, only with objects that
+represent the foreign key through their own identity.
+
+To prevent Doctrine 2 from loading up the complete database in memory if you
+access one object, the Lazy Load pattern is implemented. Proxies of entities or
+collections are created of all the relations that haven't been explicitly
 retrieved from the database yet.
 
-To be able to use lazyload with collections, simple PHP arrays have
-to be replaced by a generic collection interface for Doctrine which
-tries to act as as much like an array as possible by using ArrayAccess,
-IteratorAggregate and Countable interfaces. The class is the most
-simple implementation of this interface.
-
-Now that we know this, we have to clear up our domain model to cope
-with the assumptions about related collections:
+Now that you know the basics about references in Doctrine, we can extend the
+domain model to match the requirements:
 
 .. code-block:: php
 
@@ -234,7 +259,7 @@ with the assumptions about related collections:
     {
         // ... (previous code)
 
-        protected $products = null;
+        protected $products;
     
         public function __construct()
         {
@@ -251,8 +276,8 @@ with the assumptions about related collections:
     {
         // ... (previous code)
 
-        protected $reportedBugs = null;
-        protected $assignedBugs = null;
+        protected $reportedBugs;
+        protected $assignedBugs;
     
         public function __construct()
         {
@@ -1161,12 +1186,9 @@ Find by Primary Key
 
 The next Use-Case is displaying a Bug by primary key. This could be
 done using DQL as in the previous example with a where clause,
-however there is a convenience method on the Entity Manager that
+however there is a convenience method on the ``EntityManager`` that
 handles loading by primary key, which we have already seen in the
 write scenarios:
-
-However we will soon see another problem with our entities using
-this approach. Try displaying the engineer's name:
 
 .. code-block:: php
 
@@ -1179,18 +1201,17 @@ this approach. Try displaying the engineer's name:
     $bug = $entityManager->find("Bug", (int)$theBugId);
 
     echo "Bug: ".$bug->getDescription()."\n";
-    // Accessing our special public $name property here on purpose:
-    echo "Engineer: ".$bug->getEngineer()->name."\n";
+    echo "Engineer: ".$bug->getEngineer()->getName()."\n";
 
-The output of the engineers name is null! What is happening?
-It worked in the previous example, so it can't be a problem with the persistence code of
-Doctrine. What is it then? You walked in the public property trap.
+The output of the engineers name is fetched from the database! What is happening?
 
-Since we only retrieved the bug by primary key both the engineer
-and reporter are not immediately loaded from the database but are
-replaced by LazyLoading proxies. Sample code of this proxy
-generated code can be found in the specified Proxy Directory, it
-looks like:
+Since we only retrieved the bug by primary key both the engineer and reporter
+are not immediately loaded from the database but are replaced by LazyLoading
+proxies. These proxies will load behind the scenes, when the first method
+is called on them.
+
+Sample code of this proxy generated code can be found in the specified Proxy
+Directory, it looks like:
 
 .. code-block:: php
 
@@ -1218,36 +1239,15 @@ looks like:
     }
 
 See how upon each method call the proxy is lazily loaded from the
-database? Using public properties however we never call a method
-and Doctrine has no way to hook into the PHP Engine to detect a
-direct access to a public property and trigger the lazy load. We
-need to rewrite our entities, make all the properties private or
-protected and add getters and setters to get a working example:
+database?
 
-.. code-block:: php
-
-    <?php
-    // show_bug.php
-    require_once "bootstrap.php";
-
-    $theBugId = $argv[1];
-
-    $bug = $entityManager->find("Bug", (int)$theBugId);
-
-    echo "Bug: ".$bug->getDescription()."\n";
-    echo "Engineer: ".$bug->getEngineer()->getName()."\n";
-
-Now prints:
+The call prints:
 
 ::
 
     $ php show_bug.php 1
     Bug: Something does not work!
     Engineer: beberlei
-
-Being required to use private or protected properties Doctrine 2
-actually enforces you to encapsulate your objects according to
-object-oriented best-practices.
 
 Dashboard of the User
 ---------------------
