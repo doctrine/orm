@@ -598,7 +598,7 @@ class UnitOfWork implements PropertyChangedListener
                 $orgValue = $originalData[$propName];
 
                 // skip if value havent changed
-                if ($orgValue === $actualValue) {
+                if ($orgValue === $actualValue || $actualValue instanceof Proxy) {
                     continue;
                 }
 
