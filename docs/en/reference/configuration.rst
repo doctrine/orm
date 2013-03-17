@@ -107,6 +107,23 @@ You need to register your applications EntityManager to the console tool
 to make use of the tasks by creating a ``cli-config.php`` file with the
 following content:
 
+On Doctrine 2.4 and above:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\Console\ConsoleRunner;
+
+    // replace with file to your own project bootstrap
+    require_once 'bootstrap.php';
+
+    // replace with mechanism to retrieve EntityManager in your app
+    $entityManager = GetEntityManager();
+
+    return ConsoleRunner::createHelperSet($entityManager);
+
+On Doctrine 2.3 and below:
+
 .. code-block:: php
 
     <?php
@@ -115,7 +132,7 @@ following content:
 
     // Any way to access the EntityManager from  your application
     $em = GetMyEntityManager();
-    
+
     $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
