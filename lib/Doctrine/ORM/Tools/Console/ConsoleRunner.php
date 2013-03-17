@@ -23,8 +23,27 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Doctrine\ORM\Version;
 
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+
+/**
+ * Handles running the Console Tools inside Symfony Console context.
+ */
 class ConsoleRunner
 {
+    /**
+     * Create a Symfony Console HelperSet
+     *
+     * @return HelperSet
+     */
+    public static function createHelperSet(EntityManager $entityManager)
+    {
+        return new HelperSet(array(
+            'db' => new ConnectionHelper($entityManager->getConnection()),
+            'em' => new EntityManagerHelper($entityManager)
+        ));
+    }
+
     /**
      * Runs console with the given helperset.
      *
@@ -72,5 +91,27 @@ class ConsoleRunner
             new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
             new \Doctrine\ORM\Tools\Console\Command\InfoCommand()
         ));
+    }
+
+    static public function printCliConfigTemplate()
+    {
+        echo <<<'HELP'
+You are missing a "cli-config.php" or "config/cli-config.php" file in your
+project, which is required to get the Doctrine Console working. You can use the
+following sample as a template:
+
+<?php
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+
+// replace with file to your own project bootstrap
+require_once 'bootstrap.php';
+
+// replace with mechanism to retrieve EntityManager in your app
+$entityManager = GetEntityManager();
+
+return ConsoleRunner::createHelperSet($entityManager);
+
+HELP;
+
     }
 }

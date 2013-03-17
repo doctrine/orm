@@ -92,3 +92,31 @@ Configuration <reference/advanced-configuration>` section.
     You can learn more about the database connection configuration in the
     `Doctrine DBAL connection configuration reference <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
 
+Setting up the Commandline Tool
+-------------------------------
+
+Doctrine ships with a number of command line tools that are very helpful
+during development. You can call this command from the Composer binary
+directory:
+
+.. code-block::
+
+    $ php vendor/bin/doctrine
+
+You need to register your applications EntityManager to the console tool
+to make use of the tasks by creating a ``cli-config.php`` file with the
+following content:
+
+.. code-block:: php
+
+    <?php
+    // cli-config.php
+    require_once 'my_bootstrap.php';
+
+    // Any way to access the EntityManager from  your application
+    $em = GetMyEntityManager();
+    
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
+        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
+    ));

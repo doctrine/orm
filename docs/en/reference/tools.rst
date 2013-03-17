@@ -4,30 +4,29 @@ Tools
 Doctrine Console
 ----------------
 
-The Doctrine Console is a Command Line Interface tool for
-simplifying common tasks during the development of a project that
-uses Doctrine 2.
+The Doctrine Console is a Command Line Interface tool for simplifying common
+administration tasks during the development of a project that uses Doctrine 2.
 
-Take a look at the :doc:`Configuration <configuration>` for more
-information how to setup the console command.
+Take a look at the :doc:`Installation and Configuration <configuration>`
+chapter for more information how to setup the console command.
 
-Getting Help
-~~~~~~~~~~~~
+Display Help Information
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Type ``php vendor/bin/doctrine-orm`` on the command line and you should see an
+Type ``php vendor/bin/doctrine`` on the command line and you should see an
 overview of the available commands or use the --help flag to get
 information on the available commands. If you want to know more
 about the use of generate entities for example, you can call:
 
 .. code-block:: php
 
-    $> php vendor/bin/doctrine-orm orm:generate-entities --help
+    $> php vendor/bin/doctrine orm:generate-entities --help
 
 
 Configuration
 ~~~~~~~~~~~~~
 
-Whenever the ``doctrine-orm`` command line tool is invoked, it can
+Whenever the ``doctrine`` command line tool is invoked, it can
 access all Commands that were registered by developer. There is no
 auto-detection mechanism at work. The Doctrine binary
 already registers all the commands that currently ship with
