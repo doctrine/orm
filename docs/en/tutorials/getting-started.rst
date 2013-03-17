@@ -41,7 +41,7 @@ The benefit of Doctrine for the programmer is the ability to focus
 on the object-oriented business logic and worry about persistence only
 as a secondary problem. This doesn't mean persistence is downplayed by Doctrine
 2, however it is our belief that there are considerable benefits for
-object-oriented programming if persistence and entities are kept 
+object-oriented programming if persistence and entities are kept
 separated.
 
 An Example Model: Bug Tracker
@@ -254,13 +254,13 @@ domain model to match the requirements:
     <?php
     // entities/Bug.php
     use Doctrine\Common\Collections\ArrayCollection;
-    
+
     class Bug
     {
         // ... (previous code)
 
         protected $products;
-    
+
         public function __construct()
         {
             $this->products = new ArrayCollection();
@@ -278,7 +278,7 @@ domain model to match the requirements:
 
         protected $reportedBugs;
         protected $assignedBugs;
-    
+
         public function __construct()
         {
             $this->reportedBugs = new ArrayCollection();
@@ -356,24 +356,24 @@ the bi-directional reference:
 
         protected $engineer;
         protected $reporter;
-    
+
         public function setEngineer($engineer)
         {
             $engineer->assignedToBug($this);
             $this->engineer = $engineer;
         }
-    
+
         public function setReporter($reporter)
         {
             $reporter->addReportedBug($this);
             $this->reporter = $reporter;
         }
-    
+
         public function getEngineer()
         {
             return $this->engineer;
         }
-    
+
         public function getReporter()
         {
             return $this->reporter;
@@ -395,7 +395,7 @@ the bi-directional reference:
         {
             $this->reportedBugs[] = $bug;
         }
-    
+
         public function assignedToBug($bug)
         {
             $this->assignedBugs[] = $bug;
@@ -444,12 +444,12 @@ the database that points from Bugs to Products.
         // ... (previous code)
 
         protected $products = null;
-    
+
         public function assignToProduct($product)
         {
             $this->products[] = $product;
         }
-    
+
         public function getProducts()
         {
             return $this->products;
@@ -661,7 +661,7 @@ We then go on specifying the definition of a Bug:
           manyToMany:
             products:
               targetEntity: Product
-              
+
 
 Here again we have the entity, id and primitive type definitions.
 The column names are used from the Zend\_Db\_Table examples and
@@ -796,34 +796,33 @@ step:
 .. code-block:: php
 
     <?php
-    // bootstrap_doctrine.php
+    // bootstrap.php
+    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
 
-    // See :doc:`Configuration <../reference/configuration>` for up to date autoloading details.
     require_once "vendor/autoload.php";
 
-    // Create a simple "default" Doctrine ORM configuration for XML Mapping
+    // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
-    $config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    // or if you prefer yaml or annotations
-    //$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/entities"), $isDevMode);
+    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/entities"), $isDevMode);
+    // or if you prefer yaml or XML
+    //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
-    
+
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
     );
-    
-    // obtaining the entity manager
-    $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
 
-The first require statement sets up the autoloading capabilities of Doctrine.
-We assume here that you have installed Doctrine using Composer.
-See :doc:`Configuration <../reference/configuration>` for more details
-on other installation procedures.
+    // obtaining the entity manager
+    $entityManager = EntityManager::create($conn, $config);
+
+The first require statement sets up the autoloading capabilities of Doctrine
+using the Composer autoload.
 
 The second block consists of the instantiation of the ORM
-Configuration object using the Setup helper. It assumes a bunch
+``Configuration`` object using the Setup helper. It assumes a bunch
 of defaults that you don't have to bother about for now. You can
 read up on the configuration details in the
 :doc:`reference chapter on configuration <../reference/configuration>`.
@@ -833,34 +832,8 @@ to a database, in my case a file-based sqlite database. All the
 configuration options for all the shipped drivers are given in the
 `DBAL Configuration section of the manual <http://www.doctrine-project.org/documentation/manual/2_0/en/dbal>`_.
 
-You should make sure to make it configurable if Doctrine should run
-in dev or production mode using the `$devMode` variable. You can
-use an environment variable for example, hook into your frameworks configuration
-or check for the HTTP_HOST of your devsystem (localhost for example)
-
-.. code-block:: php
-
-    <?php
-    // examples, use your own logic to determine this:
-    $isDevMode = ($_SERVER['HTTP_HOST'] == 'localhost');
-    $isDevMode = ($_ENV['APPLICATION_ENV'] == 'development');
-
 The last block shows how the ``EntityManager`` is obtained from a
 factory method.
-
-We also have to create a general bootstrap file for our application:
-
-.. code-block:: php
-
-    <?php
-    // bootstrap.php
-    if (!class_exists("Doctrine\Common\Version", false)) {
-        require_once "bootstrap_doctrine.php";
-    }
-
-    require_once "entities/User.php";
-    require_once "entities/Product.php";
-    require_once "entities/Bug.php";
 
 Generating the Database Schema
 ------------------------------
@@ -891,19 +864,7 @@ Doctrine command-line tool:
 ::
 
     $ cd project/
-    $ php vendor/bin/doctrine-orm orm:schema-tool:create
-
-.. note::
-
-    The ``doctrine`` command will only be present if you installed
-    Doctrine from Composer. Otherwise you will have to dig into the
-    ``bin/doctrine.php`` code of your Doctrine 2 directory to setup
-    your doctrine command-line client.
-
-    See the
-    :doc:`Tools section of the manual <../reference/tools>`
-    on how to setup the Doctrine console correctly.
-
+    $ php vendor/bin/doctrine orm:schema-tool:create
 
 During the development you probably need to re-create the database
 several times when changing the Entity metadata. You can then
@@ -911,14 +872,14 @@ either re-create the database:
 
 ::
 
-    $ doctrine orm:schema-tool:drop --force
-    $ doctrine orm:schema-tool:create
+    $ php vendor/bin/doctrine orm:schema-tool:drop --force
+    $ php vendor/bin/doctrine orm:schema-tool:create
 
 Or use the update functionality:
 
 ::
 
-    $ doctrine orm:schema-tool:update --force
+    $ php vendor/bin/doctrine orm:schema-tool:update --force
 
 The updating of databases uses a Diff Algorithm for a given
 Database Schema, a cornerstone of the ``Doctrine\DBAL`` package,
@@ -942,10 +903,10 @@ database. For starters we need a create user use-case:
     require_once "bootstrap.php";
 
     $newUsername = $argv[1];
-    
+
     $user = new User();
     $user->setName($newUsername);
-    
+
     $entityManager->persist($user);
     $entityManager->flush();
 
@@ -960,10 +921,10 @@ Products can also be created:
     require_once "bootstrap.php";
 
     $newProductName = $argv[1];
-    
+
     $product = new Product();
     $product->setName($newProductName);
-    
+
     $entityManager->persist($product);
     $entityManager->flush();
 
@@ -1021,23 +982,23 @@ code for this scenario may look like this:
         echo "No reporter and/or engineer found for the input.\n";
         exit(1);
     }
-    
+
     $bug = new Bug();
     $bug->setDescription("Something does not work!");
     $bug->setCreated(new DateTime("now"));
     $bug->setStatus("OPEN");
-    
+
     foreach ($productIds AS $productId) {
         $product = $entityManager->find("Product", $productId);
         $bug->assignToProduct($product);
     }
-    
+
     $bug->setReporter($reporter);
     $bug->setEngineer($engineer);
-    
+
     $entityManager->persist($bug);
     $entityManager->flush();
-    
+
     echo "Your new Bug Id: ".$bug->getId()."\n";
 
 Since we only have one user and product, probably with the ID of 1, we can call this script with:
@@ -1076,11 +1037,11 @@ the first read-only use-case:
     require_once "bootstrap.php";
 
     $dql = "SELECT b, e, r FROM Bug b JOIN b.engineer e JOIN b.reporter r ORDER BY b.created DESC";
-    
+
     $query = $entityManager->createQuery($dql);
     $query->setMaxResults(30);
     $bugs = $query->getResult();
-    
+
     foreach($bugs AS $bug) {
         echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug->getReporter()->name."\n";
@@ -1164,7 +1125,7 @@ can rewrite our code:
            "JOIN b.reporter r JOIN b.products p ORDER BY b.created DESC";
     $query = $entityManager->createQuery($dql);
     $bugs = $query->getArrayResult();
-    
+
     foreach ($bugs AS $bug) {
         echo $bug['description'] . " - " . $bug['created']->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug['reporter']['name']."\n";
@@ -1217,20 +1178,20 @@ Directory, it looks like:
 
     <?php
     namespace MyProject\Proxies;
-    
+
     /**
      * THIS CLASS WAS GENERATED BY THE DOCTRINE ORM. DO NOT EDIT THIS FILE.
      **/
     class UserProxy extends \User implements \Doctrine\ORM\Proxy\Proxy
     {
         // .. lazy load code here
-    
+
         public function addReportedBug($bug)
         {
             $this->_load();
             return parent::addReportedBug($bug);
         }
-    
+
         public function assignedToBug($bug)
         {
             $this->_load();
@@ -1267,12 +1228,12 @@ and usage of bound parameters:
 
     $dql = "SELECT b, e, r FROM Bug b JOIN b.engineer e JOIN b.reporter r ".
            "WHERE b.status = 'OPEN' AND (e.id = ?1 OR r.id = ?1) ORDER BY b.created DESC";
-    
+
     $myBugs = $entityManager->createQuery($dql)
                             ->setParameter(1, $theUserId)
                             ->setMaxResults(15)
                             ->getResult();
-    
+
     echo "You have created or assigned to " . count($myBugs) . " open bugs:\n\n";
 
     foreach ($myBugs AS $bug) {
@@ -1299,7 +1260,7 @@ grouped by product:
     $dql = "SELECT p.id, p.name, count(b.id) AS openBugs FROM Bug b ".
            "JOIN b.products p WHERE b.status = 'OPEN' GROUP BY p.id";
     $productBugs = $entityManager->createQuery($dql)->getScalarResult();
-    
+
     foreach($productBugs as $productBug) {
         echo $productBug['name']." has " . $productBug['openBugs'] . " open bugs!\n";
     }
@@ -1333,7 +1294,7 @@ should be able to close a bug. This looks like:
 
     $bug = $entityManager->find("Bug", (int)$theBugId);
     $bug->close();
-    
+
     $entityManager->flush();
 
 When retrieving the Bug from the database it is inserted into the
