@@ -104,19 +104,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
                     $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
 
-                    //FIXME: parameters can be more deeply nested. traverse the tree.
-                    //FIXME (URGENT): With query cache the parameter is out of date. Move to execute() stage.
                     if ($newValue instanceof AST\InputParameter) {
-                        $parameterName = $newValue->name;
-                        $parameter     = $sqlWalker->getQuery()->getParameter($parameterName);
-
-                        $value = $sqlWalker->getQuery()->processParameterValue($parameter->getValue());
-                        $type  = ($parameter->getValue() === $value)
-                            ? $parameter->getType()
-                            : ParameterTypeInferer::inferType($value);
-
-                        $this->_sqlParameters[$i]['parameters'][] = $value;
-                        $this->_sqlParameters[$i]['types'][] = $type;
+                        $this->_sqlParameters[$i][] = $newValue->name;
 
                         ++$this->_numParametersInUpdateClause;
                     }
@@ -168,16 +157,18 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             );
 
             // Execute UPDATE statements
-            for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-                $parameters = array();
-                $types      = array();
+            foreach ($this->_sqlStatements as $key => $statement) {
+                $paramValues = array();
+                $paramTypes  = array();
 
-                if (isset($this->_sqlParameters[$i])) {
-                    $parameters = isset($this->_sqlParameters[$i]['parameters']) ? $this->_sqlParameters[$i]['parameters'] : array();
-                    $types = isset($this->_sqlParameters[$i]['types']) ? $this->_sqlParameters[$i]['types'] : array();
+                if (isset($this->_sqlParameters[$key])) {
+                    foreach ($this->_sqlParameters[$key] as $parameterKey => $parameterName) {
+                        $paramValues[] = $params[$parameterKey];
+                        $paramTypes[]  = isset($types[$parameterKey]) ? $types[$parameterKey] : ParameterTypeInferer::inferType($params[$parameterKey]);
+                    }
                 }
 
-                $conn->executeUpdate($this->_sqlStatements[$i], $parameters, $types);
+                $conn->executeUpdate($statement, $paramValues, $paramTypes);
             }
         } catch (\Exception $exception) {
             // FAILURE! Drop temporary table to avoid possible collisions
