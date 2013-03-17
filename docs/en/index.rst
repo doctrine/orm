@@ -25,13 +25,11 @@ of contents <toc>`.
 Getting Started
 ---------------
 
-* **Setup**:
-  :doc:`Installation & Configuration <reference/configuration>` |
-
 * **Tutorial**:
-  :doc:`Code First <tutorials/getting-started>` |
-  :doc:`Model First <tutorials/getting-started-models>` |
-  :doc:`Database First <tutorials/getting-started-database>`
+  :doc:`Getting Started with Doctrine <tutorials/getting-started>`
+
+* **Setup**:
+  :doc:`Installation & Configuration <reference/configuration>`
 
 Mapping Objects onto a Database
 -------------------------------
