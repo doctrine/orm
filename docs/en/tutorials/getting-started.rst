@@ -63,14 +63,6 @@ requirements:
 -  A user can see all his reported or assigned bugs.
 -  Bugs can be paginated through a list-view.
 
-.. warning::
-
-    This tutorial is incrementally building up your Doctrine 2
-    knowledge and even lets you make some mistakes, to show some common
-    pitfalls in mapping Entities to a database. Don't blindly
-    copy-paste the examples here, it is not production ready without
-    the additional comments and knowledge this tutorial teaches.
-
 Setup Project
 -------------
 
@@ -83,7 +75,6 @@ the following contents:
     {
         "require": {
             "doctrine/orm": "2.*",
-            "symfony/console": "2.*",
             "symfony/yaml": "2.*"
         },
         "autoload": {
@@ -110,14 +101,14 @@ You can prepare the directory structure:
     |-- config
     |   |-- xml
     |   `-- yaml
-    `-- entities
+    `-- src
 
 A first prototype
 -----------------
 
 We start with a simplified design for the bug tracker domain, by creating three
 classes ``Bug``, ``Product`` and ``User`` and putting them into
-`entities/Bug.php`, `entities/Product.php` and `entities/User.php`
+`src/Bug.php`, `src/Product.php` and `src/User.php`
 respectively. We want instances of this three classes to be saved
 in the database. A class saved into a database with Doctrine is called
 entity. Entity classes are part of the domain model of your application.
@@ -125,7 +116,7 @@ entity. Entity classes are part of the domain model of your application.
 .. code-block:: php
 
     <?php
-    // entities/Bug.php
+    // src/Bug.php
     class Bug
     {
         /**
@@ -149,7 +140,7 @@ entity. Entity classes are part of the domain model of your application.
 .. code-block:: php
 
     <?php
-    // entities/Product.php
+    // src/Product.php
     class Product
     {
         /**
@@ -180,7 +171,7 @@ entity. Entity classes are part of the domain model of your application.
 .. code-block:: php
 
     <?php
-    // entities/User.php
+    // src/User.php
     class User
     {
         /**
@@ -252,7 +243,7 @@ domain model to match the requirements:
 .. code-block:: php
 
     <?php
-    // entities/Bug.php
+    // src/Bug.php
     use Doctrine\Common\Collections\ArrayCollection;
 
     class Bug
@@ -270,7 +261,7 @@ domain model to match the requirements:
 .. code-block:: php
 
     <?php
-    // entities/User.php
+    // src/User.php
     use Doctrine\Common\Collections\ArrayCollection;
     class User
     {
@@ -349,7 +340,7 @@ the bi-directional reference:
 .. code-block:: php
 
     <?php
-    // entities/Bug.php
+    // src/Bug.php
     class Bug
     {
         // ... (previous code)
@@ -383,7 +374,7 @@ the bi-directional reference:
 .. code-block:: php
 
     <?php
-    // entities/User.php
+    // src/User.php
     class User
     {
         // ... (previous code)
@@ -438,7 +429,7 @@ the database that points from Bugs to Products.
 .. code-block:: php
 
     <?php
-    // entities/Bug.php
+    // src/Bug.php
     class Bug
     {
         // ... (previous code)
@@ -507,7 +498,7 @@ the most simple one:
     .. code-block:: php
 
         <?php
-        // entities/Product.php
+        // src/Product.php
         /**
          * @Entity @Table(name="products")
          **/
@@ -568,7 +559,7 @@ We then go on specifying the definition of a Bug:
     .. code-block:: php
 
         <?php
-        // entities/Bug.php
+        // src/Bug.php
         /**
          * @Entity @Table(name="bugs")
          **/
@@ -698,7 +689,7 @@ The last missing definition is that of the User entity:
     .. code-block:: php
 
         <?php
-        // entities/User.php
+        // src/User.php
         /**
          * @Entity @Table(name="users")
          **/
@@ -1274,7 +1265,7 @@ should be able to close a bug. This looks like:
 .. code-block:: php
 
     <?php
-    // entities/Bug.php
+    // src/Bug.php
 
     class Bug
     {
@@ -1354,7 +1345,7 @@ the previously discussed query functionality in it:
 .. code-block:: php
 
     <?php
-    // repositories/BugRepository.php
+    // src/BugRepository.php
 
     use Doctrine\ORM\EntityRepository;
 
