@@ -79,12 +79,13 @@ Or if you prefer YAML:
 
 Inside the ``Setup`` methods several assumptions are made:
 
--  If `$devMode` is true always use an ``ArrayCache`` and set ``setAutoGenerateProxyClasses(true)``.
+-  If `$devMode` is true always use an ``ArrayCache`` (in-memory) and regenerate proxies on every request.
 -  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
--  If `$devMode` is false, set ``setAutoGenerateProxyClasses(false)``
+-  If `$devMode` is false, set then proxy classes have to be explicitly created
+  through the command line.
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
-If you want to configure Doctrine in more detail, take a look at the `Advanced
+If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced
 Configuration <reference/advanced-configuration>` section.
 
 .. note::
