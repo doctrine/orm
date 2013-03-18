@@ -361,7 +361,7 @@ class EntityManager implements ObjectManager
      *
      * @param null|object|array $entity
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
@@ -371,6 +371,8 @@ class EntityManager implements ObjectManager
         $this->errorIfClosed();
 
         $this->unitOfWork->commit($entity);
+
+        return $this;
     }
 
     /**
@@ -593,7 +595,7 @@ class EntityManager implements ObjectManager
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws ORMInvalidArgumentException
      */
@@ -606,6 +608,8 @@ class EntityManager implements ObjectManager
         $this->errorIfClosed();
 
         $this->unitOfWork->persist($entity);
+
+        return $this;
     }
 
     /**
