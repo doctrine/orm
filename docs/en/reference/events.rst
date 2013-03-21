@@ -99,11 +99,9 @@ array of events it should be subscribed to.
 
 .. note::
 
-    If you are familiar with the Symfony2 event manager, note that
-    the array returned by getSubscribedEvents is different. For
-    doctrine, the array values must be the event names, and the
-    names are used as method names that will be called when the
-    event occurs.
+    The array to return in the ``getSubscribedEvents`` method is a simple array
+    with the values being the event names. The subscriber must have a method
+    that is named exactly like the event.
 
 Now when you dispatch an event, any event subscribers will be
 notified for that event.
@@ -413,6 +411,7 @@ A lifecycle event subscriber may looks like this:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Events;
     use Doctrine\Common\EventSubscriber;
     use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 
@@ -421,7 +420,7 @@ A lifecycle event subscriber may looks like this:
         public function getSubscribedEvents()
         {
             return array(
-                'postUpdate',
+                Events::postUpdate,
             );
         }
 
