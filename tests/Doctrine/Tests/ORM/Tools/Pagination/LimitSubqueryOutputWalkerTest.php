@@ -95,5 +95,17 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             "SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_) dctrn_result", $limitQuery->getSql()
         );
     }
+    
+    public function testLimitSubqueryOrderBySqlServer()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY a.id');
+        $limitQuery = clone $query;
+        $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            "SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_) dctrn_result", $limitQuery->getSql()
+        );
+    }
 }
 
