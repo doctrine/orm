@@ -98,6 +98,10 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     
     public function testLimitSubqueryOrderBySqlServer()
     {
+       if ($this->entityManager->getConnection()->getDatabasePlatform()->getName() !== "mssql") {
+            $this->markTestSkipped('SQLServer only test.');
+        }
+        
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY a.id');
         $limitQuery = clone $query;
