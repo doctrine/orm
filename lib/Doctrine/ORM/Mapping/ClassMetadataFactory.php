@@ -241,43 +241,28 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $allClasses = $this->driver->getAllClassNames();
         $fqcn = $class->getName();
-        $map = array($this->getShortName($class->name) => $fqcn);
+        $map = array($this->getUniqueName($class->name) => $fqcn);
 
-        $duplicates = array();
         foreach ($allClasses as $subClassCandidate) {
             if (is_subclass_of($subClassCandidate, $fqcn)) {
-                $shortName = $this->getShortName($subClassCandidate);
-
-                if (isset($map[$shortName])) {
-                    $duplicates[] = $shortName;
-                }
+                $shortName = $this->getUniqueName($subClassCandidate);
 
                 $map[$shortName] = $subClassCandidate;
             }
-        }
-
-        if ($duplicates) {
-            throw MappingException::duplicateDiscriminatorEntry($class->name, $duplicates, $map);
         }
 
         $class->setDiscriminatorMap($map);
     }
 
     /**
-     * Gets the lower-case short name of a class.
+     * Get the lower-case unique name of a class.
      *
      * @param string $className
-     *
      * @return string
      */
-    private function getShortName($className)
+    private function getUniqueName($className)
     {
-        if (strpos($className, "\\") === false) {
-            return strtolower($className);
-        }
-
-        $parts = explode("\\", $className);
-        return strtolower(end($parts));
+        return strtolower(str_replace("\\", "_", $className));
     }
 
     /**
