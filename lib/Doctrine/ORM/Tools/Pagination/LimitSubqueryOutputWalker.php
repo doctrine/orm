@@ -91,6 +91,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
+        if ($this->platform->getName() === "mssql") {
+            $AST->orderByClause = null;
+        }
+        
         $innerSql = parent::walkSelectStatement($AST);
 
         // Find out the SQL alias of the identifier column of the root entity.
