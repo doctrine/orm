@@ -1,6 +1,6 @@
 {
     "name": "doctrine/orm",
-    "type": "library",
+    "type": "library","version":"2.4.0-BETA1",
     "description": "Object-Relational-Mapper for PHP",
     "keywords": ["orm", "database"],
     "homepage": "http://www.doctrine-project.org",
@@ -16,7 +16,7 @@
         "php": ">=5.3.2",
         "ext-pdo": "*",
         "doctrine/collections": "~1.1",
-        "doctrine/dbal": ">=2.4-dev,<2.5-dev",
+        "doctrine/dbal": ">=2.4-beta,<2.5-dev",
         "symfony/console": "2.*"
     },
     "suggest": {
