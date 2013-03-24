@@ -171,7 +171,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
 
-        $this->wakeupReflection($class, $this->getReflectionService());
         $this->validateRuntimeMetadata($class, $parent);
     }
 
