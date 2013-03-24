@@ -138,32 +138,32 @@ Doctrine Mapping Types
 ----------------------
 
 A Doctrine Mapping Type defines the mapping between a PHP type and
-an SQL type. All Doctrine Mapping Types that ship with Doctrine are
+a SQL type. All Doctrine Mapping Types that ship with Doctrine are
 fully portable between different RDBMS. You can even write your own
 custom mapping types that might or might not be portable, which is
 explained later in this chapter.
 
 For example, the Doctrine Mapping Type ``string`` defines the
-mapping from a PHP string to an SQL VARCHAR (or VARCHAR2 etc.
+mapping from a PHP string to a SQL VARCHAR (or VARCHAR2 etc.
 depending on the RDBMS brand). Here is a quick overview of the
 built-in mapping types:
 
 
--  ``string``: Type that maps an SQL VARCHAR to a PHP string.
--  ``integer``: Type that maps an SQL INT to a PHP integer.
+-  ``string``: Type that maps a SQL VARCHAR to a PHP string.
+-  ``integer``: Type that maps a SQL INT to a PHP integer.
 -  ``smallint``: Type that maps a database SMALLINT to a PHP
    integer.
 -  ``bigint``: Type that maps a database BIGINT to a PHP string.
--  ``boolean``: Type that maps an SQL boolean to a PHP boolean.
--  ``decimal``: Type that maps an SQL DECIMAL to a PHP string.
--  ``date``: Type that maps an SQL DATETIME to a PHP DateTime
+-  ``boolean``: Type that maps a SQL boolean to a PHP boolean.
+-  ``decimal``: Type that maps a SQL DECIMAL to a PHP string.
+-  ``date``: Type that maps a SQL DATETIME to a PHP DateTime
    object.
--  ``time``: Type that maps an SQL TIME to a PHP DateTime object.
--  ``datetime``: Type that maps an SQL DATETIME/TIMESTAMP to a PHP
+-  ``time``: Type that maps a SQL TIME to a PHP DateTime object.
+-  ``datetime``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
    DateTime object.
--  ``datetimetz``: Type that maps an SQL DATETIME/TIMESTAMP to a PHP
+-  ``datetimetz``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
    DateTime object with timezone.
--  ``text``: Type that maps an SQL CLOB to a PHP string.
+-  ``text``: Type that maps a SQL CLOB to a PHP string.
 -  ``object``: Type that maps a SQL CLOB to a PHP object using
    ``serialize()`` and ``unserialize()``
 -  ``array``: Type that maps a SQL CLOB to a PHP array using
@@ -178,7 +178,7 @@ built-in mapping types:
    decimal points as separator.
 -  ``guid``: Type that maps a database GUID/UUID to a PHP string. Defaults to
    varchar but uses a specific type if the platform supports it.
--  ``blob``: Type that maps an SQL BLOB to a PHP resource stream
+-  ``blob``: Type that maps a SQL BLOB to a PHP resource stream
 
 .. note::
 
