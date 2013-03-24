@@ -93,7 +93,7 @@ information about its type and if it's the owning or inverse side.
         /**
          * Bidirectional - Many Comments are authored by one user (OWNING SIDE)
          *
-         * @ManyToOne(targetEntity="User", inversedBy="authoredComments")
+         * @ManyToOne(targetEntity="User", inversedBy="commentsAuthored")
          */
          private $author;
     }
