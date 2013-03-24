@@ -548,6 +548,10 @@ class XmlDriver extends FileDriver
                     $override['joinTable'] = $joinTable;
                 }
 
+                if ($overrideElement->targetEntity) {
+                    $override['targetEntity'] = $overrideElement->targetEntity;
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }
