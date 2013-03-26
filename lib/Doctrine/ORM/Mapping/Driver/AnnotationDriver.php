@@ -366,6 +366,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+            } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
+                $mapping['class'] = $embeddedAnnot->class;
+                $metadata->mapEmbedded($mapping);
             }
         }
 

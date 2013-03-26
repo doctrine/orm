@@ -32,7 +32,11 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $person = $this->_em->find(DDC93Person::CLASSNAME, $person->id);
+
         $this->assertInstanceOf(DDC93Address::CLASSNAME, $person->address);
+        $this->assertEquals('United States of Tara Street', $person->address->street);
+        $this->assertEquals('12345', $person->address->zip);
+        $this->assertEquals('funkytown', $person->address->city);
     }
 }
 
