@@ -232,6 +232,24 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
         $this->assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
     }
+
+    /**
+     * @group DDC-2042
+     */
+    public function testAttributeOverridesMappingWithTargetEntity()
+    {
+        if (!version_compare(PHP_VERSION, '5.4.0', '>=')) {
+            $this->markTestSkipped('This test is only for 5.4+.');
+        }
+
+        $factory = $this->createClassMetadataFactory();
+
+        $metadataWithoutOverride = $factory->getMetadataFor('Doctrine\Tests\Models\DDC2042\DDC2042ExampleEntityWithoutOverride');
+        $metadataWithOverride = $factory->getMetadataFor('Doctrine\Tests\Models\DDC2042\DDC2042ExampleEntityWithOverride');
+
+        $this->assertEquals('Doctrine\Tests\Models\DDC2042\DDC2042Bar', $metadataWithoutOverride->associationMappings['bar']['targetEntity']);
+        $this->assertEquals('Doctrine\Tests\Models\DDC2042\DDC2042Baz', $metadataWithOverride->associationMappings['bar']['targetEntity']);
+    }
 }
 
 /**

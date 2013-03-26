@@ -1976,6 +1976,10 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['joinTable'] = $overrideMapping['joinTable'];
         }
 
+        if (isset($overrideMapping['targetEntity'])) {
+            $mapping['targetEntity'] = $overrideMapping['targetEntity'];
+        }
+
         $mapping['joinColumnFieldNames']        = null;
         $mapping['joinTableColumns']            = null;
         $mapping['sourceToTargetKeyColumns']    = null;

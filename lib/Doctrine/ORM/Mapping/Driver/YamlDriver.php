@@ -553,6 +553,10 @@ class YamlDriver extends FileDriver
                     $override['joinTable'] = $joinTable;
                 }
 
+                if (isset($associationOverrideElement['targetEntity'])) {
+                    $override['targetEntity'] = $associationOverrideElement['targetEntity'];
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }

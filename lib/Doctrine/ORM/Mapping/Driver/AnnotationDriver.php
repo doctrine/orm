@@ -403,6 +403,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $override['joinTable'] = $joinTable;
                 }
 
+                if ($associationOverride->targetEntity) {
+                    $override['targetEntity'] = $associationOverride->targetEntity;
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }
