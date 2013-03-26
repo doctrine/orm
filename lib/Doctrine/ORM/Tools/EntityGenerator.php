@@ -709,6 +709,15 @@ public function __construct()
             }
         }
 
+        // check traits for existing property
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        foreach ($reflClass->getTraits() as $trait) {
+            if ($trait->hasProperty($property)) {
+                return true;
+            }
+        }
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($property, $this->staticReflection[$metadata->name]['properties'])
@@ -728,6 +737,15 @@ public function __construct()
             $reflClass = new \ReflectionClass($this->getClassToExtend());
 
             if ($reflClass->hasMethod($method)) {
+                return true;
+            }
+        }
+
+        // check traits for existing method
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        foreach ($reflClass->getTraits() as $trait) {
+            if ($trait->hasMethod($method)) {
                 return true;
             }
         }
