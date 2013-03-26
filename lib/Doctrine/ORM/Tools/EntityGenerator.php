@@ -710,11 +710,13 @@ public function __construct()
         }
 
         // check traits for existing property
-        $reflClass = new \ReflectionClass($metadata->name);
+        if (isset($this->staticReflection[$metadata->name])) {
+            $reflClass = $this->staticReflection[$metadata->name];
 
-        foreach ($reflClass->getTraits() as $trait) {
-            if ($trait->hasProperty($property)) {
-                return true;
+            foreach ($reflClass->getTraits() as $trait) {
+                if ($trait->hasProperty($property)) {
+                    return true;
+                }
             }
         }
 
@@ -742,11 +744,13 @@ public function __construct()
         }
 
         // check traits for existing method
-        $reflClass = new \ReflectionClass($metadata->name);
+        if (isset($this->staticReflection[$metadata->name])) {
+            $reflClass = $this->staticReflection[$metadata->name];
 
-        foreach ($reflClass->getTraits() as $trait) {
-            if ($trait->hasMethod($method)) {
-                return true;
+            foreach ($reflClass->getTraits() as $trait) {
+                if ($trait->hasMethod($method)) {
+                    return true;
+                }
             }
         }
 
