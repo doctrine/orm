@@ -247,6 +247,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $isMappedSuperclass = false;
 
     /**
+     * READ-ONLY: Wheather this class describes the mapping of an embeddable class.
+     *
+     * @var boolean
+     */
+    public $isEmbeddedClass = false;
+
+    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -921,8 +928,12 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function validateIdentifier()
     {
+        if ($this->isMappedSuperclass || $this->isEmbeddedClass) {
+            return;
+        }
+
         // Verify & complete identifier mapping
-        if ( ! $this->identifier && ! $this->isMappedSuperclass) {
+        if ( ! $this->identifier) {
             throw MappingException::identifierRequired($this->name);
         }
 

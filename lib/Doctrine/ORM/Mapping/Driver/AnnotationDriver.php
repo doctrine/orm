@@ -85,6 +85,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
+        } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
+            $metadata->isEmbeddedClass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
