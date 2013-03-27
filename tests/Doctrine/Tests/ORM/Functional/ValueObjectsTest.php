@@ -17,7 +17,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
-    public function testMetadata()
+    public function testCRUD()
     {
         $person = new DDC93Person();
         $person->name = "Tara";
@@ -26,17 +26,40 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $person->address->zip = "12345";
         $person->address->city = "funkytown";
 
+        // 1. check saving value objects works
         $this->_em->persist($person);
         $this->_em->flush();
 
         $this->_em->clear();
 
+        // 2. check loading value objects works
         $person = $this->_em->find(DDC93Person::CLASSNAME, $person->id);
 
         $this->assertInstanceOf(DDC93Address::CLASSNAME, $person->address);
         $this->assertEquals('United States of Tara Street', $person->address->street);
         $this->assertEquals('12345', $person->address->zip);
         $this->assertEquals('funkytown', $person->address->city);
+
+        // 3. check changing value objects works
+        $person->address->street = "Street";
+        $person->address->zip = "54321";
+        $person->address->city = "another town";
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $person = $this->_em->find(DDC93Person::CLASSNAME, $person->id);
+
+        $this->assertEquals('Street', $person->address->street);
+        $this->assertEquals('54321', $person->address->zip);
+        $this->assertEquals('another town', $person->address->city);
+
+        // 4. check deleting works
+        $personId = $person->id;;
+        $this->_em->remove($person);
+        $this->_em->flush();
+
+        $this->assertNull($this->_em->find(DDC93Person::CLASSNAME, $personId));
     }
 }
 
