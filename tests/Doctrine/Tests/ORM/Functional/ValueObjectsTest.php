@@ -11,10 +11,13 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
-        ));
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
+            ));
+        } catch(\Exception $e) {
+        }
     }
 
     public function testCRUD()
@@ -60,6 +63,43 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertNull($this->_em->find(DDC93Person::CLASSNAME, $personId));
+    }
+
+    public function testLoadDql()
+    {
+        for ($i = 0; $i < 3; $i++) {
+            $person = new DDC93Person();
+            $person->name = "Donkey Kong$i";
+            $person->address = new DDC93Address();
+            $person->address->street = "Tree";
+            $person->address->zip = "12345";
+            $person->address->city = "funkytown";
+
+            $this->_em->persist($person);
+        }
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = "SELECT p FROM " . __NAMESPACE__ . "\DDC93Person p";
+        $persons = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertCount(3, $persons);
+        foreach ($persons as $person) {
+            $this->assertInstanceOf(DDC93Address::CLASSNAME, $person->address);
+            $this->assertEquals('Tree', $person->address->street);
+            $this->assertEquals('12345', $person->address->zip);
+            $this->assertEquals('funkytown', $person->address->city);
+        }
+
+        $dql = "SELECT p FROM " . __NAMESPACE__ . "\DDC93Person p";
+        $persons = $this->_em->createQuery($dql)->getArrayResult();
+
+        foreach ($persons as $person) {
+            $this->assertEquals('Tree', $person['address.street']);
+            $this->assertEquals('12345', $person['address.zip']);
+            $this->assertEquals('funkytown', $person['address.city']);
+        }
     }
 }
 

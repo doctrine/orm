@@ -25,8 +25,10 @@ namespace Doctrine\ORM\Mapping;
  *
  * This way value objects "just work" without UnitOfWork, Persisters or Hydrators
  * needing any changes.
+ *
+ * TODO: Move this class into Common\Reflection
  */
-class ReflectionProxy
+class ReflectionEmbeddedProperty
 {
     private $parentProperty;
     private $childProperty;
