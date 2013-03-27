@@ -713,9 +713,11 @@ public function __construct()
         if (class_exists($metadata->name)) {
             $reflClass = new \ReflectionClass($metadata->name);
 
-            foreach ($reflClass->getTraits() as $trait) {
-                if ($trait->hasProperty($property)) {
-                    return true;
+            if (method_exists($reflClass, 'getTraits')) {
+                foreach ($reflClass->getTraits() as $trait) {
+                    if ($trait->hasProperty($property)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -747,9 +749,11 @@ public function __construct()
         if (class_exists($metadata->name)) {
             $reflClass = new \ReflectionClass($metadata->name);
 
-            foreach ($reflClass->getTraits() as $trait) {
-                if ($trait->hasMethod($method)) {
-                    return true;
+            if (method_exists($reflClass, 'getTraits')) {
+                foreach ($reflClass->getTraits() as $trait) {
+                    if ($trait->hasMethod($method)) {
+                        return true;
+                    }
                 }
             }
         }
