@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\Models\AddManyToOne;
+namespace Doctrine\Tests\Models\DDC2376;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
