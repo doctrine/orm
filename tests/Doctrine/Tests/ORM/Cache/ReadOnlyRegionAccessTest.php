@@ -2,18 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Access\ReadOnlyRegionAccess;
-
-require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * @group DDC-2183
  */
-class ReadOnlyRegionAccessTest extends NonStrictReadWriteRegionAccessTest
+class ReadOnlyRegionAccessTest extends AbstractRegionAccessTest
 {
-    protected function createRegionAccess()
+    protected function createRegionAccess(Region $region)
     {
-        return new ReadOnlyRegionAccess($this->region);
+        return new ReadOnlyRegionAccess($region);
     }
 
     /**

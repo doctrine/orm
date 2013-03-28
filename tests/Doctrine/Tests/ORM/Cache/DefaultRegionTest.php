@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Common\Cache\ArrayCache;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-2183
  */

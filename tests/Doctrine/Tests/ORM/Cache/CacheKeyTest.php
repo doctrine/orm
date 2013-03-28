@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-2183
  */
