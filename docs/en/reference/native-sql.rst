@@ -3,7 +3,7 @@ Native SQL
 
 A ``NativeQuery`` lets you execute native SELECT SQL statements, mapping the results
 according to your specifications. Such a specification that
-describes how an SQL result set is mapped to a Doctrine result is
+describes how a SQL result set is mapped to a Doctrine result is
 represented by a ``ResultSetMapping``. It describes how each column
 of the database result should be mapped by Doctrine in terms of the
 object graph. This allows you to map arbitrary SQL code to objects,
@@ -136,7 +136,7 @@ joined entity result.
 Field results
 ~~~~~~~~~~~~~
 
-A field result describes the mapping of a single column in an SQL
+A field result describes the mapping of a single column in a SQL
 result set to a field in an entity. As such, field results are
 inherently bound to entity results. You add a field result through
 ``ResultSetMapping#addFieldResult()``. Again, let's examine the
@@ -165,7 +165,7 @@ column should be set.
 Scalar results
 ~~~~~~~~~~~~~~
 
-A scalar result describes the mapping of a single column in an SQL
+A scalar result describes the mapping of a single column in a SQL
 result set to a scalar value in the Doctrine result. Scalar results
 are typically used for aggregate values but any column in the SQL
 result set can be mapped as a scalar value. To add a scalar result
@@ -190,7 +190,7 @@ of the column will be placed in the transformed Doctrine result.
 Meta results
 ~~~~~~~~~~~~
 
-A meta result describes a single column in an SQL result set that
+A meta result describes a single column in a SQL result set that
 is either a foreign key or a discriminator column. These columns
 are essential for Doctrine to properly construct objects out of SQL
 result sets. To add a column as a meta result use
@@ -546,12 +546,12 @@ it represents the name of a defined @SqlResultSetMapping.
 
 Things to note:
     - The resultset mapping declares the entities retrieved by this native query.
-    - Each field of the entity is bound to an SQL alias (or column name).
+    - Each field of the entity is bound to a SQL alias (or column name).
     - All fields of the entity including the ones of subclasses
       and the foreign key columns of related entities have to be present in the SQL query.
     - Field definitions are optional provided that they map to the same
       column name as the one declared on the class property.
-    - ``__CLASS__`` is a alias for the mapped class
+    - ``__CLASS__`` is an alias for the mapped class
 
 
 In the above example,
