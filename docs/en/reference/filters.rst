@@ -7,7 +7,7 @@ Doctrine 2.2 features a filter system that allows the developer to add SQL to
 the conditional clauses of queries, regardless the place where the SQL is
 generated (e.g. from a DQL query, or by loading associated entities).
 
-The filter functionality works on SQL level. Whether an SQL query is generated
+The filter functionality works on SQL level. Whether a SQL query is generated
 in a Persister, during lazy loading, in extra lazy collections or from DQL.
 Each time the system iterates over all the enabled filters, adding a new SQL
 part as a filter returns.

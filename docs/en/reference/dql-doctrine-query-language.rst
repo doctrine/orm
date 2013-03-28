@@ -909,7 +909,7 @@ Query Result Formats
 
 The format in which the result of a DQL SELECT query is returned
 can be influenced by a so-called ``hydration mode``. A hydration
-mode specifies a particular way in which an SQL result set is
+mode specifies a particular way in which a SQL result set is
 transformed. Each hydration mode has its own dedicated method on
 the Query class. Here they are:
 
@@ -1290,7 +1290,7 @@ userland:
 Query Cache (DQL Query Only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Parsing a DQL query and converting it into an SQL query against the
+Parsing a DQL query and converting it into a SQL query against the
 underlying database platform obviously has some overhead in
 contrast to directly executing Native SQL queries. That is why
 there is a dedicated Query Cache for caching the DQL parser
