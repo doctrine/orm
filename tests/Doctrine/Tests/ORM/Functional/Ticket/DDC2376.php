@@ -24,8 +24,6 @@ class DDC2376 extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata('Doctrine\Tests\Models\DDC2376\Reference'),
         ));
 
-        $this->assertNotEquals('CREATE TABLE Reference (id INTEGER NOT NULL, user_id INTEGER DEFAULT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_2C52CBB0A76ED395 FOREIGN KEY (user_id) REFERENCES User (id) NOT DEFERRABLE INITIALLY IMMEDIATE)', $sql[1]);
-
         $this->assertEquals('CREATE TABLE User (user_id INTEGER NOT NULL, username VARCHAR(255) NOT NULL, PRIMARY KEY(user_id))', $sql[0]);
         $this->assertEquals('CREATE TABLE Reference (id INTEGER NOT NULL, user_id INTEGER DEFAULT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_2C52CBB0A76ED395 FOREIGN KEY (user_id) REFERENCES User (user_id) NOT DEFERRABLE INITIALLY IMMEDIATE)', $sql[1]);
     }
