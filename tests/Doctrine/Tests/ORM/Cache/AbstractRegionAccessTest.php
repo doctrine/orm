@@ -8,6 +8,8 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 
+require_once __DIR__ . '/../../TestInit.php';
+
 /**
  * @group DDC-2183
  */

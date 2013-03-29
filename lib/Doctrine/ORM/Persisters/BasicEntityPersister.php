@@ -430,17 +430,16 @@ class BasicEntityPersister
     {
         $cacheKey   = null;
         $cacheLock  = null;
-
-        if ($this->isConcurrentRegion) {
-            $cacheKey  = new EntityCacheKey($this->class->rootEntityName, $this->em->getUnitOfWork()->getEntityIdentifier($entity));
-            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
-        }
-
         $tableName  = $this->class->getTableName();
         $updateData = $this->prepareUpdateData($entity);
 
         if ( ! isset($updateData[$tableName]) || ! ($data = $updateData[$tableName])) {
             return;
+        }
+
+        if ($this->isConcurrentRegion) {
+            $cacheKey  = new EntityCacheKey($this->class->rootEntityName, $this->em->getUnitOfWork()->getEntityIdentifier($entity));
+            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
         }
 
         $isVersioned     = $this->class->isVersioned;
@@ -1150,9 +1149,28 @@ class BasicEntityPersister
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
-        $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
+        $collPersister      = $this->em->getUnitOfWork()->getCollectionPersister($assoc);
+        $hasCache           = $collPersister->hasCache();
+        $key                = null;
 
-        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
+        if ($hasCache) {
+            $ownerId = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+            $key     = new CollectionCacheKey($assoc['sourceEntity'], $assoc['fieldName'], $ownerId);
+            $list    = $collPersister->loadCachedCollection($coll, $key);
+
+            if ($list !== null) {
+                return $list;
+            }
+        }
+
+        $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
+        $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
+
+        if ($hasCache && ! empty($list)) {
+            $collPersister->saveLoadedCollection($coll, $key, $list);
+        }
+
+        return $list;
     }
 
     /**

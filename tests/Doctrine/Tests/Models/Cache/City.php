@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * @Cache
  * @Entity
@@ -28,10 +30,16 @@ class City
      */
     protected $state;
 
+     /**
+     * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
+     */
+    public $travels;
+
     public function __construct($name, State $state)
     {
-        $this->name  = $name;
-        $this->state = $state;
+        $this->name     = $name;
+        $this->state    = $state;
+        $this->travels  = new ArrayCollection();
     }
 
     public function getId()
@@ -62,5 +70,15 @@ class City
     public function setState(State $state)
     {
         $this->state = $state;
+    }
+
+    public function addTravel(Travel $travel)
+    {
+        $this->travels[] = $travel;
+    }
+
+    public function getTravels()
+    {
+        return $this->travels;
     }
 }

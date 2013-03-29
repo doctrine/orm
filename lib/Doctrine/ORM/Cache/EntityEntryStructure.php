@@ -66,17 +66,15 @@ class EntityEntryStructure
 
         foreach ($metadata->associationMappings as $name => $assoc) {
 
-            if (! $assoc['isOwningSide'] || ! $assoc['type'] & ClassMetadata::TO_ONE) {
-                unset($data[$name]);
-
-                continue;
-            }
-
             if ( ! isset($data[$name]) || $data[$name] === null) {
                 continue;
             }
 
-            $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
+            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
+            }
+
+            unset($data[$name]);
         }
 
         return $data;

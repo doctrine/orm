@@ -179,6 +179,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\Country',
             'Doctrine\Tests\Models\Cache\State',
             'Doctrine\Tests\Models\Cache\City',
+            'Doctrine\Tests\Models\Cache\Traveler',
+            'Doctrine\Tests\Models\Cache\Travel',
         ),
     );
 
@@ -316,6 +318,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['cache_country'])) {
+            $conn->executeUpdate('DELETE FROM cache_trip_city');
+            $conn->executeUpdate('DELETE FROM cache_traveler');
+            $conn->executeUpdate('DELETE FROM cache_travel');
             $conn->executeUpdate('DELETE FROM cache_country');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_city');

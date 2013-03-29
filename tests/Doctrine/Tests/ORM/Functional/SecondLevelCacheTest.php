@@ -6,6 +6,9 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
 
+use Doctrine\Tests\Models\Cache\Traveler;
+use Doctrine\Tests\Models\Cache\Travel;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -16,6 +19,9 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $countries = array();
     private $states    = array();
     private $cities    = array();
+
+    private $travels   = array();
+    private $travelers = array();
 
     protected function setUp()
     {
@@ -81,6 +87,41 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($rio);
         $this->_em->persist($munich);
         $this->_em->persist($berlin);
+
+        $this->_em->flush();
+    }
+
+    private function loadFixturesTraveler()
+    {
+        $t1   = new Traveler("Fabio Silva");
+        $t2   = new Traveler("Doctrine Bot");
+
+        $this->_em->persist($t1);
+        $this->_em->persist($t2);
+
+        $this->travelers[] = $t1;
+        $this->travelers[] = $t2;
+
+        $this->_em->flush();
+    }
+
+    private function loadFixturesTravels()
+    {
+        $t1   = new Travel($this->travelers[0]);
+        $t2   = new Travel($this->travelers[1]);
+
+        $t1->addVisitedCity($this->cities[0]);
+        $t1->addVisitedCity($this->cities[1]);
+        $t1->addVisitedCity($this->cities[2]);
+
+        $t2->addVisitedCity($this->cities[1]);
+        $t2->addVisitedCity($this->cities[3]);
+
+        $this->_em->persist($t1);
+        $this->_em->persist($t2);
+
+        $this->travels[] = $t1;
+        $this->travels[] = $t2;
 
         $this->_em->flush();
     }
@@ -379,11 +420,116 @@ class SecondLevelCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf($targetClass, $c4->getCities()->get(0));
         $this->assertInstanceOf($targetClass, $c4->getCities()->get(1));
 
+        $this->assertNotSame($c1->getCities()->get(0), $c3->getCities()->get(0));
         $this->assertEquals($c1->getCities()->get(0)->getId(), $c3->getCities()->get(0)->getId());
         $this->assertEquals($c1->getCities()->get(0)->getName(), $c3->getCities()->get(0)->getName());
 
+        $this->assertNotSame($c1->getCities()->get(1), $c3->getCities()->get(1));
+        $this->assertEquals($c1->getCities()->get(1)->getId(), $c3->getCities()->get(1)->getId());
+        $this->assertEquals($c1->getCities()->get(1)->getName(), $c3->getCities()->get(1)->getName());
+
+        $this->assertNotSame($c2->getCities()->get(0), $c4->getCities()->get(0));
+        $this->assertEquals($c2->getCities()->get(0)->getId(), $c4->getCities()->get(0)->getId());
+        $this->assertEquals($c2->getCities()->get(0)->getName(), $c4->getCities()->get(0)->getName());
+
+        $this->assertNotSame($c2->getCities()->get(1), $c4->getCities()->get(1));
         $this->assertEquals($c2->getCities()->get(1)->getId(), $c4->getCities()->get(1)->getId());
         $this->assertEquals($c2->getCities()->get(1)->getName(), $c4->getCities()->get(1)->getName());
+
+        $this->assertEquals($queryCount, $this->getQueryCount());
+    }
+
+    public function testPutAndLoadManyToManyRelation()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesTraveler();
+        $this->loadFixturesTravels();
+
+        $this->_em->clear();
+
+        $cache       = $this->_em->getCache();
+        $targetClass = 'Doctrine\Tests\Models\Cache\City';
+        $sourceClass = 'Doctrine\Tests\Models\Cache\Travel';
+
+        $cache->evictEntityRegion($sourceClass);
+        $cache->evictEntityRegion($targetClass);
+        $cache->evictCollectionRegion($sourceClass, 'visitedCities');
+
+        $this->assertFalse($cache->containsEntity($sourceClass, $this->travels[0]->getId()));
+        $this->assertFalse($cache->containsEntity($sourceClass, $this->travels[1]->getId()));
+
+        $this->assertFalse($cache->containsCollection($sourceClass, 'visitedCities', $this->travels[0]->getId()));
+        $this->assertFalse($cache->containsCollection($sourceClass, 'visitedCities', $this->travels[1]->getId()));
+
+        $this->assertFalse($cache->containsEntity($targetClass, $this->cities[0]->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->cities[1]->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->cities[2]->getId()));
+        $this->assertFalse($cache->containsEntity($targetClass, $this->cities[3]->getId()));
+
+        $t1 = $this->_em->find($sourceClass, $this->travels[0]->getId());
+        $t2 = $this->_em->find($sourceClass, $this->travels[1]->getId());
+
+        //trigger lazy load
+        $this->assertCount(3, $t1->getVisitedCities());
+        $this->assertCount(2, $t2->getVisitedCities());
+
+        $this->assertInstanceOf($targetClass, $t1->getVisitedCities()->get(0));
+        $this->assertInstanceOf($targetClass, $t1->getVisitedCities()->get(1));
+        $this->assertInstanceOf($targetClass, $t1->getVisitedCities()->get(2));
+
+        $this->assertInstanceOf($targetClass, $t2->getVisitedCities()->get(0));
+        $this->assertInstanceOf($targetClass, $t2->getVisitedCities()->get(1));
+
+        $this->assertTrue($cache->containsEntity($sourceClass, $this->travels[0]->getId()));
+        $this->assertTrue($cache->containsEntity($sourceClass, $this->travels[1]->getId()));
+
+        $this->assertTrue($cache->containsCollection($sourceClass, 'visitedCities', $this->travels[0]->getId()));
+        $this->assertTrue($cache->containsCollection($sourceClass, 'visitedCities', $this->travels[1]->getId()));
+
+        $this->assertTrue($cache->containsEntity($targetClass, $this->cities[0]->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->cities[1]->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->cities[2]->getId()));
+        $this->assertTrue($cache->containsEntity($targetClass, $this->cities[3]->getId()));
+
+        $this->_em->clear();
+
+        $queryCount = $this->getQueryCount();
+
+        $t3 = $this->_em->find($sourceClass, $this->travels[0]->getId());
+        $t4 = $this->_em->find($sourceClass, $this->travels[1]->getId());
+
+        //trigger lazy load from cache
+        $this->assertCount(3, $t3->getVisitedCities());
+        $this->assertCount(2, $t4->getVisitedCities());
+
+        $this->assertInstanceOf($targetClass, $t3->getVisitedCities()->get(0));
+        $this->assertInstanceOf($targetClass, $t3->getVisitedCities()->get(1));
+        $this->assertInstanceOf($targetClass, $t3->getVisitedCities()->get(2));
+
+        $this->assertInstanceOf($targetClass, $t4->getVisitedCities()->get(0));
+        $this->assertInstanceOf($targetClass, $t4->getVisitedCities()->get(1));
+
+        $this->assertNotSame($t1->getVisitedCities()->get(0), $t3->getVisitedCities()->get(0));
+        $this->assertEquals($t1->getVisitedCities()->get(0)->getId(), $t3->getVisitedCities()->get(0)->getId());
+        $this->assertEquals($t1->getVisitedCities()->get(0)->getName(), $t3->getVisitedCities()->get(0)->getName());
+
+        $this->assertNotSame($t1->getVisitedCities()->get(1), $t3->getVisitedCities()->get(1));
+        $this->assertEquals($t1->getVisitedCities()->get(1)->getId(), $t3->getVisitedCities()->get(1)->getId());
+        $this->assertEquals($t1->getVisitedCities()->get(1)->getName(), $t3->getVisitedCities()->get(1)->getName());
+
+        $this->assertNotSame($t1->getVisitedCities()->get(2), $t3->getVisitedCities()->get(2));
+        $this->assertEquals($t1->getVisitedCities()->get(2)->getId(), $t3->getVisitedCities()->get(2)->getId());
+        $this->assertEquals($t1->getVisitedCities()->get(2)->getName(), $t3->getVisitedCities()->get(2)->getName());
+
+        $this->assertNotSame($t2->getVisitedCities()->get(0), $t4->getVisitedCities()->get(0));
+        $this->assertEquals($t2->getVisitedCities()->get(0)->getId(), $t4->getVisitedCities()->get(0)->getId());
+        $this->assertEquals($t2->getVisitedCities()->get(0)->getName(), $t4->getVisitedCities()->get(0)->getName());
+
+        $this->assertNotSame($t2->getVisitedCities()->get(1), $t4->getVisitedCities()->get(1));
+        $this->assertEquals($t2->getVisitedCities()->get(1)->getId(), $t4->getVisitedCities()->get(1)->getId());
+        $this->assertEquals($t2->getVisitedCities()->get(1)->getName(), $t4->getVisitedCities()->get(1)->getName());
 
         $this->assertEquals($queryCount, $this->getQueryCount());
     }
