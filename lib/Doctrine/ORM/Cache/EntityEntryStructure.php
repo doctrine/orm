@@ -72,6 +72,8 @@ class EntityEntryStructure
 
             if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                 $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
+
+                continue;
             }
 
             unset($data[$name]);

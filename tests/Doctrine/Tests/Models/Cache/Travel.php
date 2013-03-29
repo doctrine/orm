@@ -11,6 +11,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Travel
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue

@@ -9,6 +9,8 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Country
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue

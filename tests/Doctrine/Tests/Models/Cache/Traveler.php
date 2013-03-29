@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * @Cache
  * @Entity
@@ -9,6 +11,8 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Traveler
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue
@@ -22,6 +26,8 @@ class Traveler
     protected $name;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     * 
      * @OneToMany(targetEntity="Travel", mappedBy="traveler")
      */
     public $travels;
@@ -31,7 +37,8 @@ class Traveler
      */
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name     = $name;
+        $this->travels  = new ArrayCollection();
     }
 
     public function getId()
@@ -57,5 +64,27 @@ class Traveler
     public function getTravels()
     {
         return $this->travels;
+    }
+
+    /**
+     * @param \Doctrine\Tests\Models\Cache\Travel $item
+     */
+    public function addTravel(Travel $item)
+    {
+        if ( ! $this->travels->contains($item)) {
+            $this->travels->add($item);
+        }
+
+        if ($item->getTraveler() !== $this) {
+            $item->setTraveler($this);
+        }
+    }
+
+    /**
+     * @param \Doctrine\Tests\Models\Cache\Travel $item
+     */
+    public function removeTravel(Travel $item)
+    {
+        $this->travels->removeElement($item);
     }
 }
