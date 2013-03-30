@@ -2,10 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\Tools\SchemaTool,
-    Doctrine\ORM\Tools\EntityGenerator,
-    Doctrine\ORM\Tools\Export\ClassMetadataExporter,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Entities\TraitedUser;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -282,7 +284,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
                   . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC1784Entity.php';
-        
+
         $this->assertFileExists($filename);
         require_once $filename;
 
@@ -330,7 +332,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $property   = new \ReflectionProperty($metadata->name, 'centroCustos');
         $docComment = $property->getDocComment();
-        
+
         //joinColumns
         $this->assertContains('@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
         $this->assertContains('@JoinColumn(name="idunidade", referencedColumnName="idunidade")', $docComment);
@@ -436,7 +438,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $entity     = new $metadata->name;
         $reflClass  = new \ReflectionClass($metadata->name);
-        
+
         $type   = $field['phpType'];
         $name   = $field['fieldName'];
         $value  = $field['value'];
@@ -449,6 +451,34 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSame($entity, $entity->{$setter}($value));
         $this->assertEquals($value, $entity->{$getter}());
+    }
+
+    /**
+     * @group DDC-2372
+     */
+    public function testTraitPropertiesAndMethodsAreNotDuplicated()
+    {
+        if (function_exists('trait_exists')) {
+            $cmf = new ClassMetadataFactory();
+            $em = $this->_getTestEntityManager();
+            $cmf->setEntityManager($em);
+
+            $user = new TraitedUser();
+            $metadata = $cmf->getMetadataFor(get_class($user));
+            $metadata->name = $this->_namespace . "\TraitedUser";
+            $metadata->namespace = $this->_namespace;
+
+            $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+            $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/TraitedUser.php");
+            require $this->_tmpDir . "/" . $this->_namespace . "/TraitedUser.php";
+
+            $reflClass = new \ReflectionClass($metadata->name);
+
+            $this->assertSame($reflClass->hasProperty('address'), false);
+            $this->assertSame($reflClass->hasMethod('setAddress'), false);
+            $this->assertSame($reflClass->hasMethod('getAddress'), false);
+        }
     }
 
     /**
@@ -470,43 +500,43 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
                 'value' => new \DateTime
             )),
             array(array(
-                'fieldName' => 'date', 
+                'fieldName' => 'date',
                 'phpType' => '\\DateTime',
                 'dbType' => 'date',
                 'value' => new \DateTime
             )),
             array(array(
-                'fieldName' => 'time', 
+                'fieldName' => 'time',
                 'phpType' => '\DateTime',
                 'dbType' => 'time',
                 'value' => new \DateTime
             )),
             array(array(
-                'fieldName' => 'object', 
+                'fieldName' => 'object',
                 'phpType' => '\stdClass',
                 'dbType' => 'object',
                 'value' => new \stdClass()
             )),
             array(array(
-                'fieldName' => 'bigint', 
+                'fieldName' => 'bigint',
                 'phpType' => 'integer',
                 'dbType' => 'bigint',
                 'value' => 11
             )),
             array(array(
-                'fieldName' => 'smallint', 
+                'fieldName' => 'smallint',
                 'phpType' => 'integer',
                 'dbType' => 'smallint',
                 'value' => 22
             )),
             array(array(
-                'fieldName' => 'text', 
+                'fieldName' => 'text',
                 'phpType' => 'string',
                 'dbType' => 'text',
                 'value' => 'text'
             )),
             array(array(
-                'fieldName' => 'blob', 
+                'fieldName' => 'blob',
                 'phpType' => 'string',
                 'dbType' => 'blob',
                 'value' => 'blob'
