@@ -19,7 +19,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 /**
  * Wraps the query in order to accurately count the root objects.
  *
- * Given a DQL like `SELECT u FROM User u` it will generate an SQL query like:
+ * Given a DQL like `SELECT u FROM User u` it will generate a SQL query like:
  * SELECT COUNT(*) (SELECT DISTINCT <id> FROM (<original SQL>))
  *
  * Works with composite keys but cannot deal with queries that have multiple

@@ -386,7 +386,7 @@ class Parser
         $outputWalkerClass = $this->customOutputWalker ?: __NAMESPACE__ . '\SqlWalker';
         $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
 
-        // Assign an SQL executor to the parser result
+        // Assign a SQL executor to the parser result
         $this->parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
 
         return $this->parserResult;

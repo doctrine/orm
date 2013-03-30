@@ -31,7 +31,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 interface QuoteStrategy
 {
     /**
-     * Gets the (possibly quoted) column name for safe use in an SQL statement.
+     * Gets the (possibly quoted) column name for safe use in a SQL statement.
      *
      * @param string           $fieldName
      * @param ClassMetadata    $class
@@ -42,7 +42,7 @@ interface QuoteStrategy
     function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
-     * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
+     * Gets the (possibly quoted) primary table name for safe use in a SQL statement.
      *
      * @param ClassMetadata    $class
      * @param AbstractPlatform $platform
@@ -52,7 +52,7 @@ interface QuoteStrategy
     function getTableName(ClassMetadata $class, AbstractPlatform $platform);
 
     /**
-     * Gets the (possibly quoted) sequence name for safe use in an SQL statement.
+     * Gets the (possibly quoted) sequence name for safe use in a SQL statement.
      *
      * @param array            $definition
      * @param ClassMetadata    $class
@@ -96,7 +96,7 @@ interface QuoteStrategy
     function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
-     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
+     * Gets the (possibly quoted) identifier column names for safe use in a SQL statement.
      *
      * @param ClassMetadata    $class
      * @param AbstractPlatform $platform

@@ -27,7 +27,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
- * of transformation of an SQL result set into another structure.
+ * of transformation of a SQL result set into another structure.
  *
  * @since  2.0
  * @author Konsta Vesterinen <kvesteri@cc.hut.fi>
