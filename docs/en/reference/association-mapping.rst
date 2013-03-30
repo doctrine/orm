@@ -83,6 +83,7 @@ Generated MySQL Schema:
     CREATE TABLE Product (
         id INT AUTO_INCREMENT NOT NULL,
         shipping_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_6FBC94267FE4B2B (shipping_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
     CREATE TABLE Shipping (
