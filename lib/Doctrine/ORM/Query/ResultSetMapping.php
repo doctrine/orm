@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 /**
- * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
+ * A ResultSetMapping describes how a result set of a SQL query maps to a Doctrine result.
  *
  * IMPORTANT NOTE:
  * The properties of this class are only public for fast internal READ access and to (drastically)

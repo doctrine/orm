@@ -1915,7 +1915,7 @@ class BasicEntityPersister
     }
 
     /**
-     * Gets an SQL column alias for a column name.
+     * Gets a SQL column alias for a column name.
      *
      * @param string $columnName
      *

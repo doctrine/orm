@@ -27,7 +27,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
- * The ObjectHydrator constructs an object graph out of an SQL result set.
+ * The ObjectHydrator constructs an object graph out of a SQL result set.
  *
  * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -327,7 +327,7 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * Hydrates a single row in an SQL result set.
+     * Hydrates a single row in a SQL result set.
      *
      * @internal
      * First, the data of the row is split into chunks where each chunk contains data

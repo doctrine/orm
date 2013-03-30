@@ -2891,7 +2891,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
+     * Gets the (possibly quoted) identifier column names for safe use in a SQL statement.
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
@@ -2930,7 +2930,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the (possibly quoted) column name of a mapped field for safe use  in an SQL statement.
+     * Gets the (possibly quoted) column name of a mapped field for safe use  in a SQL statement.
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
@@ -2947,7 +2947,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the (possibly quoted) primary table name of this class for safe use in an SQL statement.
+     * Gets the (possibly quoted) primary table name of this class for safe use in a SQL statement.
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
