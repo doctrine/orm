@@ -464,24 +464,6 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     /**
      * @param string $className
-     * @param array  $entries
-     * @param array  $map
-     *
-     * @return MappingException
-     */
-    public static function duplicateDiscriminatorEntry($className, array $entries, array $map)
-    {
-        return new self(
-            "The entries " . implode(', ',  $entries) . " in discriminator map of class '" . $className . "' is duplicated. " .
-            "If the discriminator map is automatically generated you have to convert it to an explicit discriminator map now. " .
-            "The entries of the current map are: @DiscriminatorMap({" . implode(', ', array_map(
-                function($a, $b) { return "'$a': '$b'"; }, array_keys($map), array_values($map)
-            )) . "})"
-        );
-    }
-
-    /**
-     * @param string $className
      *
      * @return MappingException
      */
