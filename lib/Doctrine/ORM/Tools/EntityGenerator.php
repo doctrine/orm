@@ -710,15 +710,9 @@ public function __construct()
         }
 
         // check traits for existing property
-        if (class_exists($metadata->name)) {
-            $reflClass = new \ReflectionClass($metadata->name);
-
-            if (method_exists($reflClass, 'getTraits')) {
-                foreach ($reflClass->getTraits() as $trait) {
-                    if ($trait->hasProperty($property)) {
-                        return true;
-                    }
-                }
+        foreach ($this->getTraits($metadata) as $trait) {
+            if ($trait->hasProperty($property)) {
+                return true;
             }
         }
 
@@ -746,15 +740,9 @@ public function __construct()
         }
 
         // check traits for existing method
-        if (class_exists($metadata->name)) {
-            $reflClass = new \ReflectionClass($metadata->name);
-
-            if (method_exists($reflClass, 'getTraits')) {
-                foreach ($reflClass->getTraits() as $trait) {
-                    if ($trait->hasMethod($method)) {
-                        return true;
-                    }
-                }
+        foreach ($this->getTraits($metadata) as $trait) {
+            if ($trait->hasMethod($method)) {
+                return true;
             }
         }
 
@@ -762,6 +750,26 @@ public function __construct()
             isset($this->staticReflection[$metadata->name]) &&
             in_array($method, $this->staticReflection[$metadata->name]['methods'])
         );
+    }
+
+    /**
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return array
+     */
+    protected function getTraits(ClassMetadataInfo $metadata)
+    {
+        if ($metadata->reflClass != null || class_exists($metadata->name)) {
+            $reflClass = $metadata->reflClass == null
+                ? new \ReflectionClass($metadata->name)
+                : $metadata->reflClass;
+
+            if (method_exists($reflClass, 'getTraits')) {
+                return $reflClass->getTraits();
+            }
+        }
+
+        return array();
     }
 
     /**
