@@ -153,6 +153,14 @@ abstract class AbstractCollectionPersister
 
         $sql = $this->getDeleteSQL($coll);
 
+        if ($this->hasCache) {
+            $this->queuedCache['delete'][] = array(
+                'collection'=> $coll,
+                'lock'      => null,
+                'key'       => null
+            );
+        }
+
         $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
     }
 
@@ -193,6 +201,14 @@ abstract class AbstractCollectionPersister
 
         $this->deleteRows($coll);
         $this->insertRows($coll);
+
+        if ($this->hasCache) {
+            $this->queuedCache['update'][] = array(
+                'collection'=> $coll,
+                'lock'      => null,
+                'key'       => null
+            );
+        }
     }
 
     /**
@@ -262,14 +278,75 @@ abstract class AbstractCollectionPersister
         $listData           = $this->cacheEntryStructure->buildCacheEntry($metadata, $key, $list);
 
         foreach ($listData as $index => $identifier) {
+            $entityKey = new EntityCacheKey($targetClass, $identifier);
+
+            if ($targetRegionAcess->getRegion()->contains($entityKey)) {
+                continue;
+            }
+
             $entity       = $list[$index];
-            $entityKey    = new EntityCacheKey($targetClass, $identifier);
             $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($metadata, $entityKey, $entity);
 
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
 
         $this->cacheRegionAccess->put($key, $listData);
+    }
+
+    /**
+     * Execute operations after transaction complete
+     *
+     * @return void
+     */
+    public function afterTransactionComplete()
+    {
+        // @TODO - handle locks
+
+        $uow = $this->em->getUnitOfWork();
+
+        if (isset($this->queuedCache['update'])) {
+            foreach ($this->queuedCache['update'] as $item) {
+
+                $coll    = $item['collection'];
+                $mapping = $coll->getMapping();
+                $list    = $coll->toArray();
+                $ownerId = $uow->getEntityIdentifier($coll->getOwner());
+                $key     = new CollectionCacheKey($mapping['sourceEntity'], $mapping['fieldName'], $ownerId);
+
+                $this->saveLoadedCollection($coll, $key, $list);
+            }
+        }
+
+        if (isset($this->queuedCache['delete'])) {
+            foreach ($this->queuedCache['delete'] as $item) {
+
+                $coll    = $item['collection'];
+                $mapping = $coll->getMapping();
+                $list    = $coll->toArray();
+                $ownerId = $uow->getEntityIdentifier($coll->getOwner());
+                $key     = new CollectionCacheKey($mapping['sourceEntity'], $mapping['fieldName'], $ownerId);
+
+                $this->saveLoadedCollection($coll, $key, $list);
+            }
+        }
+
+        $this->queuedCache = array();
+    }
+
+    /**
+     * Execute operations after transaction rollback
+     *
+     * @return void
+     */
+    public function afterTransactionRolledBack()
+    {
+        if ( ! $this->isConcurrentRegion) {
+            $this->queuedCache = array();
+
+            return;
+        }
+
+        // @TODO - handle locks
     }
 
     /**

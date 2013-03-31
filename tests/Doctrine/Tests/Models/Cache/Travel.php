@@ -21,6 +21,11 @@ class Travel
     protected $id;
 
     /**
+     * @Column(type="date")
+     */
+    protected $createdAt;
+
+    /**
      * @Cache
      * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
      * @JoinColumn(name="traveler_id", referencedColumnName="id")
@@ -30,7 +35,7 @@ class Travel
     /**
      * @Cache
      * 
-     * @ManyToMany(targetEntity="City", inversedBy="travels")
+     * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
      * @JoinTable(name="cache_visited_cities",
      *  joinColumns={
      *      @JoinColumn(name="travel_id", referencedColumnName="id")
@@ -45,6 +50,7 @@ class Travel
     public function __construct(Traveler $traveler)
     {
         $this->traveler      = $traveler;
+        $this->createdAt     = new \DateTime('now');
         $this->visitedCities = new ArrayCollection();
     }
 
@@ -85,6 +91,22 @@ class Travel
      */
     public function addVisitedCity(City $city)
     {
-        $this->visitedCities[] = $city;
+        $this->visitedCities->add($city);
+    }
+
+    /**
+     * @param \Doctrine\Tests\Models\Cache\City $city
+     */
+    public function removeVisitedCity(City $city)
+    {
+        $this->visitedCities->removeElement($city);
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

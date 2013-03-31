@@ -361,11 +361,24 @@ class UnitOfWork implements PropertyChangedListener
 
             // Collection deletions (deletions of complete collections)
             foreach ($this->collectionDeletions as $collectionToDelete) {
-                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+                $collectionPersister = $this->getCollectionPersister($collectionToDelete->getMapping());
+
+                $collectionPersister->delete($collectionToDelete);
+
+                if ($collectionPersister->hasCache()) {
+                    $this->cachedPersisters[] = $collectionPersister;
+                }
             }
+
             // Collection updates (deleteRows, updateRows, insertRows)
             foreach ($this->collectionUpdates as $collectionToUpdate) {
-                $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
+                $collectionPersister = $this->getCollectionPersister($collectionToUpdate->getMapping());
+
+                $collectionPersister->update($collectionToUpdate);
+
+                if ($collectionPersister->hasCache()) {
+                    $this->cachedPersisters[] = $collectionPersister;
+                }
             }
 
             // Entity deletions come last and need to be in reverse commit order

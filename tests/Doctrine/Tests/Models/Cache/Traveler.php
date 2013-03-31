@@ -26,9 +26,10 @@ class Traveler
     protected $name;
 
     /**
+     * @Cache()
+     * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"})
+     *
      * @var \Doctrine\Common\Collections\Collection
-     * 
-     * @OneToMany(targetEntity="Travel", mappedBy="traveler")
      */
     public $travels;
 

@@ -4,24 +4,22 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Travel;
+use Doctrine\Tests\Models\Cache\Traveler;
 
 /**
  * @group DDC-2183
  */
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 {
-    protected function setUp()
-    {
-        parent::setUp();
 
+    public function testPutAndLoadOneToManyRelation()
+    {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
         $this->_em->clear();
-    }
 
-    public function testPutAndLoadOneToManyRelation()
-    {
         $this->cache->evictEntityRegion(State::CLASSNAME);
         $this->cache->evictEntityRegion(City::CLASSNAME);
         $this->cache->evictCollectionRegion(State::CLASSNAME, 'cities');
@@ -92,6 +90,39 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertNotSame($c2->getCities()->get(1), $c4->getCities()->get(1));
         $this->assertEquals($c2->getCities()->get(1)->getId(), $c4->getCities()->get(1)->getId());
         $this->assertEquals($c2->getCities()->get(1)->getName(), $c4->getCities()->get(1)->getName());
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+    }
+
+    public function testStoreOneToManyAssociationWhitCascade()
+    {
+        $this->markTestIncomplete();
+
+        $this->cache->evictCollectionRegion(Traveler::CLASSNAME, 'travels');
+        $this->cache->evictEntityRegion(Traveler::CLASSNAME);
+        $this->cache->evictEntityRegion(Travel::CLASSNAME);
+
+        $traveler   = new Traveler('Doctrine Bot');
+
+        $traveler->addTravel(new Travel($traveler));
+        $traveler->addTravel(new Travel($traveler));
+
+        $this->_em->persist($traveler);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsCollection(Traveler::CLASSNAME, 'travels', $traveler->getId()));
+
+        $queryCount = $this->getCurrentQueryCount();
+        $t1         = $this->_em->find(Traveler::CLASSNAME, $traveler->getId());
+
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+
+        $this->assertInstanceOf(Traveler::CLASSNAME, $t1);
+        $this->assertInstanceOf(Travel::CLASSNAME, $t1->getTravels()->get(0));
+        $this->assertInstanceOf(Travel::CLASSNAME, $t1->getTravels()->get(1));
+        $this->assertCount(2, $t1->getTravels());
+        $this->assertNotSame($traveler, $t1);
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }

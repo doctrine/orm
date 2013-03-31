@@ -152,6 +152,26 @@ class Cache
     }
 
     /**
+     * Evict data from all entity regions.
+     *
+     * @return void
+     */
+    public function evictEntityRegions()
+    {
+        $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
+
+        foreach ($metadatas as $metadata) {
+            $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+
+            if ( ! $persister->hasCache()) {
+                continue;
+            }
+
+            $persister->getCacheRegionAcess()->evictAll();
+        }
+    }
+
+    /**
      * Determine whether the cache contains data for the given collection.
      *
      * @param string $className       The entity class.
@@ -216,6 +236,33 @@ class Cache
     }
 
     /**
+     * Evict data from all collection regions.
+     *
+     * @return void
+     */
+    public function evictCollectionRegions()
+    {
+        $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
+
+        foreach ($metadatas as $metadata) {
+
+            foreach ($metadata->associationMappings as $association) {
+                if ( ! $association['type'] & ClassMetadata::TO_MANY) {
+                    continue;
+                }
+
+                $persister = $this->uow->getCollectionPersister($association);
+
+                if ( ! $persister->hasCache()) {
+                    return;
+                }
+
+                $persister->getCacheRegionAcess()->evictAll();
+            }
+        }
+    }
+
+    /**
      * Determine whether the cache contains data for the given query.
      *
      * @param string $regionName The cache name given to the query.
@@ -239,6 +286,8 @@ class Cache
 
     /**
      * Evict data from all query regions.
+     *
+     * @return void
      */
     public function evictQueryRegions()
     {
