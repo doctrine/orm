@@ -102,16 +102,23 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->cache->evictEntityRegion(Traveler::CLASSNAME);
         $this->cache->evictEntityRegion(Travel::CLASSNAME);
 
-        $traveler   = new Traveler('Doctrine Bot');
+        $traveler = new Traveler('Doctrine Bot');
 
         $traveler->addTravel(new Travel($traveler));
         $traveler->addTravel(new Travel($traveler));
+
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $this->_em->persist($traveler);
         $this->_em->flush();
         $this->_em->clear();
 
+        //print_r($this->cache->getEntityCacheRegionAcess(Travel::CLASSNAME)->getRegion()->getCache());
+
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getId()));
         $this->assertTrue($this->cache->containsCollection(Traveler::CLASSNAME, 'travels', $traveler->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(0)->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(1)->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
         $t1         = $this->_em->find(Traveler::CLASSNAME, $traveler->getId());

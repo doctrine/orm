@@ -1167,7 +1167,7 @@ class BasicEntityPersister
         $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
 
         if ($hasCache && ! empty($list)) {
-            $collPersister->saveLoadedCollection($coll, $key, $list);
+            $collPersister->saveLoadedCollection($coll->getTypeClass(), $key, $list);
         }
 
         return $list;
@@ -1910,7 +1910,7 @@ class BasicEntityPersister
         $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
 
         if ($hasCache && ! empty($list)) {
-            $collPersister->saveLoadedCollection($coll, $key, $list);
+            $collPersister->saveLoadedCollection($coll->getTypeClass(), $key, $list);
         }
 
         return $list;

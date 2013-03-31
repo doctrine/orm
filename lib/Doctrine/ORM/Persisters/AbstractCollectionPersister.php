@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegionAccess;
@@ -153,15 +154,11 @@ abstract class AbstractCollectionPersister
 
         $sql = $this->getDeleteSQL($coll);
 
-        if ($this->hasCache) {
-            $this->queuedCache['delete'][] = array(
-                'collection'=> $coll,
-                'lock'      => null,
-                'key'       => null
-            );
-        }
-
         $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
+
+        if ($this->hasCache) {
+            $this->queuedCachedCollectionChange($coll->getOwner(), $coll->toArray());
+        }
     }
 
     /**
@@ -203,12 +200,20 @@ abstract class AbstractCollectionPersister
         $this->insertRows($coll);
 
         if ($this->hasCache) {
-            $this->queuedCache['update'][] = array(
-                'collection'=> $coll,
-                'lock'      => null,
-                'key'       => null
-            );
+            $this->queuedCachedCollectionChange($coll->getOwner(), $coll->toArray());
         }
+    }
+
+    /**
+     * @param object $owner
+     * @param array  $elements
+     */
+    public function queuedCachedCollectionChange($owner, array $elements)
+    {
+        $this->queuedCache[] = array(
+            'owner'         => $owner,
+            'elements'      => $elements,
+        );
     }
 
     /**
@@ -264,18 +269,17 @@ abstract class AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
+     * @param \Doctrine\ORM\Mapping\ClassMetadata       $targetMetadata
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey    $key
      *
      * @return void
      */
-    public function saveLoadedCollection(PersistentCollection $collection, CollectionCacheKey $key, array $list)
+    public function saveLoadedCollection(ClassMetadata $targetMetadata, CollectionCacheKey $key, array $list)
     {
-        $metadata           = $collection->getTypeClass();
         $targetClass        = $this->association['targetEntity'];
         $targetPersister    = $this->uow->getEntityPersister($targetClass);
         $targetRegionAcess  = $targetPersister->getCacheRegionAcess();
-        $listData           = $this->cacheEntryStructure->buildCacheEntry($metadata, $key, $list);
+        $listData           = $this->cacheEntryStructure->buildCacheEntry($targetMetadata, $key, $list);
 
         foreach ($listData as $index => $identifier) {
             $entityKey = new EntityCacheKey($targetClass, $identifier);
@@ -285,7 +289,7 @@ abstract class AbstractCollectionPersister
             }
 
             $entity       = $list[$index];
-            $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($metadata, $entityKey, $entity);
+            $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($targetMetadata, $entityKey, $entity);
 
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
@@ -300,33 +304,21 @@ abstract class AbstractCollectionPersister
      */
     public function afterTransactionComplete()
     {
-        // @TODO - handle locks
+        // @TODO - handle locks ?
 
         $uow = $this->em->getUnitOfWork();
 
-        if (isset($this->queuedCache['update'])) {
-            foreach ($this->queuedCache['update'] as $item) {
+        if ( ! empty($this->queuedCache)) {
 
-                $coll    = $item['collection'];
-                $mapping = $coll->getMapping();
-                $list    = $coll->toArray();
-                $ownerId = $uow->getEntityIdentifier($coll->getOwner());
-                $key     = new CollectionCacheKey($mapping['sourceEntity'], $mapping['fieldName'], $ownerId);
+            $association  = $this->association['fieldName'];
+            $mapping      = $this->em->getClassMetadata($this->association['sourceEntity']);
 
-                $this->saveLoadedCollection($coll, $key, $list);
-            }
-        }
+            foreach ($this->queuedCache as $item) {
+                $elements       = $item['elements'];
+                $ownerId        = $uow->getEntityIdentifier($item['owner']);
+                $key            = new CollectionCacheKey($mapping->rootEntityName, $association, $ownerId);
 
-        if (isset($this->queuedCache['delete'])) {
-            foreach ($this->queuedCache['delete'] as $item) {
-
-                $coll    = $item['collection'];
-                $mapping = $coll->getMapping();
-                $list    = $coll->toArray();
-                $ownerId = $uow->getEntityIdentifier($coll->getOwner());
-                $key     = new CollectionCacheKey($mapping['sourceEntity'], $mapping['fieldName'], $ownerId);
-
-                $this->saveLoadedCollection($coll, $key, $list);
+                $this->saveLoadedCollection($mapping, $key, $elements);
             }
         }
 
@@ -340,13 +332,15 @@ abstract class AbstractCollectionPersister
      */
     public function afterTransactionRolledBack()
     {
+        // @TODO - handle locks ?
+
         if ( ! $this->isConcurrentRegion) {
             $this->queuedCache = array();
 
             return;
         }
 
-        // @TODO - handle locks
+        $this->queuedCache = array();
     }
 
     /**
