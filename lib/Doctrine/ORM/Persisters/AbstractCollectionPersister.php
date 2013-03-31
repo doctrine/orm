@@ -24,6 +24,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\ConcurrentRegionAccess;
 use Doctrine\ORM\Cache\CollectionEntryStructure;
 
@@ -206,9 +207,9 @@ abstract class AbstractCollectionPersister
 
     /**
      * @param object $owner
-     * @param array  $elements
+     * @param array|\Doctrine\Common\Collections\Collection  $elements
      */
-    public function queuedCachedCollectionChange($owner, array $elements)
+    public function queuedCachedCollectionChange($owner, $elements)
     {
         $this->queuedCache[] = array(
             'owner'         => $owner,
@@ -269,17 +270,18 @@ abstract class AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata       $targetMetadata
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey    $key
+     * @param \Doctrine\ORM\Mapping\ClassMetadata           $targetMetadata
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey        $key
+     * @param array|\Doctrine\Common\Collections\Collection $elements
      *
      * @return void
      */
-    public function saveLoadedCollection(ClassMetadata $targetMetadata, CollectionCacheKey $key, array $list)
+    public function saveLoadedCollection(ClassMetadata $targetMetadata, CollectionCacheKey $key, $elements)
     {
         $targetClass        = $this->association['targetEntity'];
         $targetPersister    = $this->uow->getEntityPersister($targetClass);
         $targetRegionAcess  = $targetPersister->getCacheRegionAcess();
-        $listData           = $this->cacheEntryStructure->buildCacheEntry($targetMetadata, $key, $list);
+        $listData           = $this->cacheEntryStructure->buildCacheEntry($targetMetadata, $key, $elements);
 
         foreach ($listData as $index => $identifier) {
             $entityKey = new EntityCacheKey($targetClass, $identifier);
@@ -288,7 +290,7 @@ abstract class AbstractCollectionPersister
                 continue;
             }
 
-            $entity       = $list[$index];
+            $entity       = $elements[$index];
             $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($targetMetadata, $entityKey, $entity);
 
             $targetRegionAcess->put($entityKey, $entityEntry);

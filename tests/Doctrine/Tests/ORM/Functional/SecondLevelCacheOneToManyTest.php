@@ -96,8 +96,6 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
     public function testStoreOneToManyAssociationWhitCascade()
     {
-        $this->markTestIncomplete();
-
         $this->cache->evictCollectionRegion(Traveler::CLASSNAME, 'travels');
         $this->cache->evictEntityRegion(Traveler::CLASSNAME);
         $this->cache->evictEntityRegion(Travel::CLASSNAME);
@@ -107,13 +105,9 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $traveler->addTravel(new Travel($traveler));
         $traveler->addTravel(new Travel($traveler));
 
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $this->_em->persist($traveler);
         $this->_em->flush();
         $this->_em->clear();
-
-        //print_r($this->cache->getEntityCacheRegionAcess(Travel::CLASSNAME)->getRegion()->getCache());
 
         $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getId()));
         $this->assertTrue($this->cache->containsCollection(Traveler::CLASSNAME, 'travels', $traveler->getId()));
@@ -122,8 +116,6 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $queryCount = $this->getCurrentQueryCount();
         $t1         = $this->_em->find(Traveler::CLASSNAME, $traveler->getId());
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $this->assertInstanceOf(Traveler::CLASSNAME, $t1);
         $this->assertInstanceOf(Travel::CLASSNAME, $t1->getTravels()->get(0));

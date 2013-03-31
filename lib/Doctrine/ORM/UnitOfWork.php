@@ -709,17 +709,22 @@ class UnitOfWork implements PropertyChangedListener
 
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $field => $assoc) {
-            if (($val = $class->reflFields[$field]->getValue($entity)) !== null) {
-                $this->computeAssociationChanges($assoc, $val);
-                if (!isset($this->entityChangeSets[$oid]) &&
-                    $assoc['isOwningSide'] &&
-                    $assoc['type'] == ClassMetadata::MANY_TO_MANY &&
-                    $val instanceof PersistentCollection &&
-                    $val->isDirty()) {
-                    $this->entityChangeSets[$oid]   = array();
-                    $this->originalEntityData[$oid] = $actualData;
-                    $this->entityUpdates[$oid]      = $entity;
-                }
+
+            if (($val = $class->reflFields[$field]->getValue($entity)) === null) {
+                continue;
+            }
+
+            $this->computeAssociationChanges($entity, $assoc, $val);
+
+            if ( ! isset($this->entityChangeSets[$oid]) &&
+                $assoc['isOwningSide'] &&
+                $assoc['type'] == ClassMetadata::MANY_TO_MANY &&
+                $val instanceof PersistentCollection &&
+                $val->isDirty()) {
+
+                $this->entityChangeSets[$oid]   = array();
+                $this->originalEntityData[$oid] = $actualData;
+                $this->entityUpdates[$oid]      = $entity;
             }
         }
     }
@@ -780,15 +785,16 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changes of an association.
      *
-     * @param array $assoc
-     * @param mixed $value The value of the association.
+     * @param mixed $entity The owner entity.
+     * @param array $assoc  The association mapping.
+     * @param mixed $value  The value of the association.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      *
      * @return void
      */
-    private function computeAssociationChanges($assoc, $value)
+    private function computeAssociationChanges($entity, $assoc, $value)
     {
         if ($value instanceof Proxy && ! $value->__isInitialized__) {
             return;
@@ -809,6 +815,16 @@ class UnitOfWork implements PropertyChangedListener
         // Unwrap. Uninitialized collections will simply be empty.
         $unwrappedValue = ($assoc['type'] & ClassMetadata::TO_ONE) ? array($value) : $value->unwrap();
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
+
+        // Handle colection cache
+        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && isset($assoc['cache'])) {
+            
+            $collectionPersister = $this->getCollectionPersister($assoc);
+
+            $collectionPersister->queuedCachedCollectionChange($entity, $value);
+
+            $this->cachedPersisters[] = $collectionPersister;
+        }
 
         foreach ($unwrappedValue as $key => $entry) {
             $state = $this->getEntityState($entry, self::STATE_NEW);
