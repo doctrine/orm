@@ -10,6 +10,15 @@ use Doctrine\Tests\Models\Cache\State;
  */
 class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 {
+    public function testPutOnPersist()
+    {
+        $this->loadFixturesCountries();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+    }
+
     public function testPutAndLoadEntities()
     {
         $this->loadFixturesCountries();

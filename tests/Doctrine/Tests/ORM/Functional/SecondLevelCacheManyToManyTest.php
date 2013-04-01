@@ -12,6 +12,27 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 {
+    public function testPutOnPersist()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesTraveler();
+        $this->loadFixturesTravels();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $this->travels[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $this->travels[1]->getId()));
+
+        $this->assertTrue($this->cache->containsCollection(Travel::CLASSNAME, 'visitedCities', $this->travels[0]->getId()));
+        $this->assertTrue($this->cache->containsCollection(Travel::CLASSNAME, 'visitedCities', $this->travels[1]->getId()));
+
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[2]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[3]->getId()));
+    }
+
     public function testPutAndLoadManyToManyRelation()
     {
         $this->loadFixturesCountries();

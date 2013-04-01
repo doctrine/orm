@@ -12,6 +12,24 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 {
+    public function testPutOnPersist()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
+
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[1]->getId()));
+
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(0)->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(1)->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[1]->getCities()->get(0)->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[1]->getCities()->get(1)->getId()));
+    }
 
     public function testPutAndLoadOneToManyRelation()
     {

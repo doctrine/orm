@@ -10,17 +10,24 @@ use Doctrine\Tests\Models\Cache\State;
  */
 class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 {
-
-    protected function setUp()
+    public function testPutOnPersist()
     {
-        parent::setUp();
-
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->states[0]->getCountry()->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->states[1]->getCountry()->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
     }
+
     public function testPutAndLoadManyToOneRelation()
     {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->_em->clear();
+
         $this->cache->evictEntityRegion(State::CLASSNAME);
         $this->cache->evictEntityRegion(Country::CLASSNAME);
 
