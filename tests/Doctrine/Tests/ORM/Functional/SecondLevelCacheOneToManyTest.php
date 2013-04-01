@@ -122,6 +122,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $traveler->addTravel(new Travel($traveler));
         $traveler->addTravel(new Travel($traveler));
+        $traveler->addTravel(new Travel($traveler));
 
         $this->_em->persist($traveler);
         $this->_em->flush();
@@ -131,16 +132,46 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsCollection(Traveler::CLASSNAME, 'travels', $traveler->getId()));
         $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(0)->getId()));
         $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(1)->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(2)->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $t1         = $this->_em->find(Traveler::CLASSNAME, $traveler->getId());
+        $queryCount1    = $this->getCurrentQueryCount();
+        $t1             = $this->_em->find(Traveler::CLASSNAME, $traveler->getId());
 
         $this->assertInstanceOf(Traveler::CLASSNAME, $t1);
         $this->assertInstanceOf(Travel::CLASSNAME, $t1->getTravels()->get(0));
         $this->assertInstanceOf(Travel::CLASSNAME, $t1->getTravels()->get(1));
+        $this->assertInstanceOf(Travel::CLASSNAME, $t1->getTravels()->get(2));
+        $this->assertCount(3, $t1->getTravels());
+        $this->assertNotSame($traveler, $t1);
+
+        $this->assertEquals($queryCount1, $this->getCurrentQueryCount());
+
+        $t1->removeTravel($t1->getTravels()->get(1));
+
+        $this->_em->persist($t1);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $queryCount2 = $this->getCurrentQueryCount();
+        $t2          = $this->_em->find(Traveler::CLASSNAME, $traveler->getId());
+
+        $this->assertInstanceOf(Traveler::CLASSNAME, $t2);
+        $this->assertInstanceOf(Travel::CLASSNAME, $t2->getTravels()->get(0));
+        $this->assertInstanceOf(Travel::CLASSNAME, $t2->getTravels()->get(2));
         $this->assertCount(2, $t1->getTravels());
         $this->assertNotSame($traveler, $t1);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount2, $this->getCurrentQueryCount());
+
+        $this->assertCount(2, $t1->getTravels());
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getId()));
+        $this->assertTrue($this->cache->containsCollection(Traveler::CLASSNAME, 'travels', $traveler->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(0)->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(2)->getId()));
+
+        $this->assertFalse($this->cache->containsEntity(Travel::CLASSNAME, $traveler->getTravels()->get(1)->getId()));
+        $this->assertNull($this->_em->find(Travel::CLASSNAME, $traveler->getTravels()->get(1)->getId()));
+
+        $this->assertEquals($queryCount2 + 1, $this->getCurrentQueryCount());
     }
 }

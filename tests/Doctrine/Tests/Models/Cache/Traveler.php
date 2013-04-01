@@ -27,7 +27,7 @@ class Traveler
 
     /**
      * @Cache()
-     * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var \Doctrine\Common\Collections\Collection
      */
