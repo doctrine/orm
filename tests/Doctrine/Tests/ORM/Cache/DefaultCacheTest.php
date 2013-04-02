@@ -27,22 +27,33 @@ class DefaultCacheTest extends OrmFunctionalTestCase
         $this->cache = new DefaultCache($this->_em);
     }
 
-    private function putEntityCache($className, array $identifier, array $cacheEntry)
+    /**
+     * @param string $className
+     * @param array $identifier
+     * @param array $cacheEntry
+     */
+    private function putEntityCacheEntry($className, array $identifier, array $cacheEntry)
     {
         $metadata   = $this->_em->getClassMetadata($className);
         $cacheKey   = new EntityCacheKey($metadata->rootEntityName, $identifier);
+        $persister  = $this->_em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
 
-        $this->cache->getEntityCacheRegionAccess($metadata->rootEntityName)
-            ->put($cacheKey, $cacheEntry);
+        $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
     }
 
-    private function putCollectionCache($className, $association, array $ownerIdentifier, array $cacheEntry)
+    /**
+     * @param string $className
+     * @param string $association
+     * @param array $ownerIdentifier
+     * @param array $cacheEntry
+     */
+    private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $cacheEntry)
     {
         $metadata   = $this->_em->getClassMetadata($className);
         $cacheKey   = new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
+        $persister  = $this->_em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
 
-        $this->cache->getCollectionCacheRegionAccess($className, $association)
-            ->put($cacheKey, $cacheEntry);
+        $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
     }
 
     public function testImplementsCache()
@@ -70,7 +81,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
 
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
 
-        $this->putEntityCache($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
     }
@@ -81,7 +92,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
         $className  = Country::CLASSNAME;
         $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
 
-        $this->putEntityCache($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
 
@@ -96,7 +107,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
         $className  = Country::CLASSNAME;
         $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
 
-        $this->putEntityCache($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
 
@@ -111,7 +122,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
         $className  = Country::CLASSNAME;
         $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
 
-        $this->putEntityCache($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
 
@@ -132,7 +143,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
 
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
 
-        $this->putCollectionCache($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
     }
@@ -147,7 +158,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
             array('id' => 12),
         );
 
-        $this->putCollectionCache($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
 
@@ -166,7 +177,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
             array('id' => 12),
         );
 
-        $this->putCollectionCache($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
 
@@ -185,7 +196,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
             array('id' => 12),
         );
 
-        $this->putCollectionCache($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
 
