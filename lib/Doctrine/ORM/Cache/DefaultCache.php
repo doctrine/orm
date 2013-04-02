@@ -47,7 +47,7 @@ class DefaultCache implements Cache
     private $uow;
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em
+     * {@inheritdoc}
      */
     public function __construct(EntityManager $em)
     {
@@ -56,11 +56,9 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param string $className The entity class.
-     *
-     * @return \Doctrine\ORM\Cache\RegionAccess|null
+     * {@inheritdoc}
      */
-    public function getEntityCacheRegionAcess($className)
+    public function getEntityCacheRegionAccess($className)
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
@@ -73,12 +71,9 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param string $className   The entity class.
-     * @param string $association The field name that represents the association.
-     *
-     * @return \Doctrine\ORM\Cache\RegionAccess|null
+     * {@inheritdoc}
      */
-    public function getCollectionCacheRegionAcess($className, $association)
+    public function getCollectionCacheRegionAccess($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
@@ -91,12 +86,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Determine whether the cache contains data for the given entity "instance".
-     *
-     * @param string $className  The entity class.
-     * @param mixed  $identifier The entity identifier
-     *
-     * @return boolean true if the underlying cache contains corresponding data; false otherwise.
+     * {@inheritdoc}
      */
     public function containsEntity($className, $identifier)
     {
@@ -112,12 +102,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evicts the entity data for a particular entity "instance".
-     *
-     * @param string $className  The entity class.
-     * @param mixed  $identifier The entity identifier.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictEntity($className, $identifier)
     {
@@ -133,11 +118,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evicts all entity data from the given region.
-     *
-     * @param string $className The entity metadata.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictEntityRegion($className)
     {
@@ -152,9 +133,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evict data from all entity regions.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictEntityRegions()
     {
@@ -172,13 +151,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Determine whether the cache contains data for the given collection.
-     *
-     * @param string $className       The entity class.
-     * @param string $association     The field name that represents the association.
-     * @param mixed  $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return boolean true if the underlying cache contains corresponding data; false otherwise.
+     * {@inheritdoc}
      */
     public function containsCollection($className, $association, $ownerIdentifier)
     {
@@ -194,13 +167,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evicts the cache data for the given identified collection instance.
-     *
-     * @param string $className       The entity class.
-     * @param string $association     The field name that represents the association.
-     * @param mixed  $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictCollection($className, $association, $ownerIdentifier)
     {
@@ -216,12 +183,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evicts all entity data from the given region.
-     *
-     * @param string $className   The entity class.
-     * @param string $association The field name that represents the association.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictCollectionRegion($className, $association)
     {
@@ -236,9 +198,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evict data from all collection regions.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictCollectionRegions()
     {
@@ -263,11 +223,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Determine whether the cache contains data for the given query.
-     *
-     * @param string $regionName The cache name given to the query.
-     *
-     * @return boolean true if the underlying cache contains corresponding data; false otherwise.
+     * {@inheritdoc}
      */
     public function containsQuery($regionName)
     {
@@ -275,9 +231,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evicts all cached query results under the given name.
-     *
-     * @param string $regionName The cache name associated to the queries being cached.
+     * {@inheritdoc}
      */
     public function evictQueryRegion($regionName)
     {
@@ -285,9 +239,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Evict data from all query regions.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function evictQueryRegions()
     {
@@ -295,11 +247,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * Get query cache by region name or create a new one if none exist.
-     *
-     * @param regionName Query cache region name.
-     *
-     * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
+     * {@inheritdoc}
      */
     public function getQueryCache($regionName)
     {
@@ -307,10 +255,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param mixed                               $identifier The entity identifier.
-     *
-     * @return \Doctrine\ORM\Cache\EntityCacheKey
+     * {@inheritdoc}
      */
     public function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
@@ -322,11 +267,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
-     * @param string                              $association     The field name that represents the association.
-     * @param mixed                               $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return \Doctrine\ORM\Cache\CollectionCacheKey
+     * {@inheritdoc}
      */
     public function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {

@@ -43,7 +43,7 @@ interface Cache
      *
      * @return \Doctrine\ORM\Cache\RegionAccess|null
      */
-    public function getEntityCacheRegionAcess($className);
+    public function getEntityCacheRegionAccess($className);
 
     /**
      * @param string $className   The entity class.
@@ -51,7 +51,7 @@ interface Cache
      *
      * @return \Doctrine\ORM\Cache\RegionAccess|null
      */
-    public function getCollectionCacheRegionAcess($className, $association);
+    public function getCollectionCacheRegionAccess($className, $association);
 
     /**
      * Determine whether the cache contains data for the given entity "instance".

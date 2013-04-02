@@ -445,7 +445,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->setSecondLevelCacheAccessProvider($this->secondLevelCacheAccessProvider);
         }
 
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
+            realpath(__DIR__ . '/Models/Cache')
+        ), true));
 
         $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
