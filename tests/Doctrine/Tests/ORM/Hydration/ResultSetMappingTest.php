@@ -255,6 +255,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('status'));
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('username'));
     }
+
     public function testIndexByMetadataColumn()
     {
         $rms = $this->_rsm;
