@@ -21,7 +21,6 @@
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Provides an API for querying/managing the second level cache regions.
@@ -159,21 +158,4 @@ interface Cache
      * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
      */
     public function getQueryCache($regionName);
-
-    /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param mixed                               $identifier The entity identifier.
-     *
-     * @return \Doctrine\ORM\Cache\EntityCacheKey
-     */
-    public function buildEntityCacheKey(ClassMetadata $metadata, $identifier);
-
-    /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
-     * @param string                              $association     The field name that represents the association.
-     * @param mixed                               $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return \Doctrine\ORM\Cache\CollectionCacheKey
-     */
-    public function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier);
 }

@@ -254,10 +254,13 @@ class DefaultCache implements Cache
         throw new \BadMethodCallException("Not implemented.");
     }
 
-    /**
-     * {@inheritdoc}
+     /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
+     * @param mixed                               $identifier The entity identifier.
+     *
+     * @return \Doctrine\ORM\Cache\EntityCacheKey
      */
-    public function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
+    private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
         if ( ! is_array($identifier)) {
             $identifier = $this->toIdentifierArray($metadata, $identifier);
@@ -267,9 +270,13 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
+     * @param string                              $association     The field name that represents the association.
+     * @param mixed                               $ownerIdentifier The identifier of the owning entity.
+     *
+     * @return \Doctrine\ORM\Cache\CollectionCacheKey
      */
-    public function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
+    private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {
         if ( ! is_array($ownerIdentifier)) {
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);;
