@@ -738,6 +738,38 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * @since 2.5
+     *
+     * @param string $className
+     *
+     * @return void
+     *
+     * @throws ORMException If not is a \Doctrine\ORM\Cache
+     */
+    public function setSecondLevelCacheClassName($className)
+    {
+        $reflectionClass = new \ReflectionClass($className);
+
+        if ( ! $reflectionClass->implementsInterface('Doctrine\ORM\Cache')) {
+            throw ORMException::invalidSecondLevelCache($className);
+        }
+
+        $this->_attributes['secondLevelCacheClassName'] = $className;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @return string A \Doctrine\ORM\Cache implementation
+     */
+    public function getSecondLevelCacheClassName()
+    {
+        return isset($this->_attributes['secondLevelCacheClassName'])
+            ? $this->_attributes['secondLevelCacheClassName']
+            : 'Doctrine\ORM\Cache\DefaultCache';
+    }
+
+    /**
      * Sets naming strategy.
      *
      * @since 2.3

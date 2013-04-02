@@ -272,6 +272,21 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->setEntityListenerResolver($resolver);
         $this->assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
+
+    /**
+     * @group DDC-2183
+     */
+    public function testSetGetSecondLevelCacheClassName()
+    {
+        $mockClass = get_class($this->getMock('Doctrine\ORM\Cache'));
+
+        $this->assertEquals('Doctrine\ORM\Cache\DefaultCache', $this->configuration->getSecondLevelCacheClassName());
+        $this->configuration->setSecondLevelCacheClassName($mockClass);
+        $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheClassName());
+
+        $this->setExpectedException('Doctrine\ORM\ORMException');
+        $this->configuration->setSecondLevelCacheClassName(__CLASS__);
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker
