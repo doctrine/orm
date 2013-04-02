@@ -7,7 +7,6 @@ use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Cache\CollectionEntryStructure;

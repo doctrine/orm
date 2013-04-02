@@ -173,39 +173,4 @@ class DefaultRegion implements Region
 
         return empty($entries);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
-    {
-        $entriesKey = $this->entriesMapKey();
-        $entries    = $this->cache->fetch($entriesKey);
-
-        if ( ! is_array($entries)) {
-            return 0;
-        }
-
-        return count($entries);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray()
-    {
-        $data       = array();
-        $entriesKey = $this->entriesMapKey();
-        $entries    = $this->cache->fetch($entriesKey);
-
-        if ( ! is_array($entries) || empty($entries)) {
-            return array();
-        }
-
-        foreach ($entries as $entryKey => $value) {
-            $data[] = $this->cache->fetch($entryKey);
-        }
-
-        return $data;
-    }
 }

@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Cache;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface Region extends \Countable
+interface Region
 {
     /**
      * Retrieve the name of this region.
@@ -80,13 +80,4 @@ interface Region extends \Countable
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problem accessing the region.
      */
     public function evictAll();
-
-    /**
-     * Get the contents of this region as an array.
-     *
-     * @return array The cached data.
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException Indicates problem accessing the region.
-     */
-    public function toArray();
 }
