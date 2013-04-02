@@ -255,5 +255,18 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('status'));
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('username'));
     }
+    public function testIndexByMetadataColumn()
+    {
+        $rms = $this->_rsm;
+        $rms->addEntityResult('Doctrine\Tests\Models\Legacy\LegacyUser', 'u')
+            ->addJoinedEntityResult('Doctrine\Tests\Models\Legacy', 'lu', 'u', '_references')
+            ->addMetaResult('lu', '_source',  '_source', true)
+            ->addMetaResult('lu', '_target',  '_target', true)
+            ->addIndexBy('lu', '_source');
+
+
+          $this->assertTrue($rms->hasIndexBy('lu'));
+
+    }
 }
 
