@@ -12,32 +12,51 @@ collection.
 Additional to any ``@OneToMany`` or ``@ManyToMany`` annotation you
 can specify the ``@OrderBy`` in the following way:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity **/
-    class User
-    {
-        // ...
-    
-        /**
-         * @ManyToMany(targetEntity="Group")
-         * @OrderBy({"name" = "ASC"})
-         **/
-        private $groups;
-    }
+    .. code-block:: php
 
-.. code-block:: xml
+        <?php
+        /** @Entity **/
+        class User
+        {
+            // ...
+        
+            /**
+             * @ManyToMany(targetEntity="Group")
+             * @OrderBy({"name" = "ASC"})
+             **/
+            private $groups;
+        }
 
-    <doctrine-mapping>
-        <entity name="User">
-            <many-to-many field="groups" target-entity="Group">
-                <order-by>
-                    <order-by-field name="name" direction="ASC" />
-                </order-by>
-            </many-to-many>
-        </entity>
-    </doctrine-mapping>
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="User">
+                <many-to-many field="groups" target-entity="Group">
+                    <order-by>
+                        <order-by-field name="name" direction="ASC" />
+                    </order-by>
+                </many-to-many>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              orderBy: { 'name': 'ASC' }
+              targetEntity: Group
+              joinTable:
+                name: users_groups
+                joinColumns:
+                  user_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  group_id:
+                    referencedColumnName: id
 
 The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC
