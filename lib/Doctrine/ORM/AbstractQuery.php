@@ -26,6 +26,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\MetadataBag;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
@@ -90,20 +91,6 @@ abstract class AbstractQuery
     protected $_em;
 
     /**
-     * The map of query hints.
-     *
-     * @var array
-     */
-    protected $_hints = array();
-
-    /**
-     * The hydration mode.
-     *
-     * @var integer
-     */
-    protected $_hydrationMode = self::HYDRATE_OBJECT;
-
-    /**
      * @param \Doctrine\DBAL\Cache\QueryCacheProfile
      */
     protected $_queryCacheProfile;
@@ -121,6 +108,11 @@ abstract class AbstractQuery
     protected $_hydrationCacheProfile;
 
     /**
+     * @param \Doctrine\ORM\Query\MetadataBag
+     */
+    protected $metadata;
+
+    /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
      *
      * @param \Doctrine\ORM\EntityManager $em
@@ -128,7 +120,8 @@ abstract class AbstractQuery
     public function __construct(EntityManager $em)
     {
         $this->_em = $em;
-        $this->parameters = new ArrayCollection();
+
+        $this->free();
     }
 
     /**
@@ -160,8 +153,7 @@ abstract class AbstractQuery
     public function free()
     {
         $this->parameters = new ArrayCollection();
-
-        $this->_hints = array();
+        $this->metadata = new MetadataBag();
     }
 
     /**
@@ -530,7 +522,7 @@ abstract class AbstractQuery
             $fetchMode = Mapping\ClassMetadata::FETCH_LAZY;
         }
 
-        $this->_hints['fetchMode'][$class][$assocName] = $fetchMode;
+        $this->metadata->setFetchMode($class, $assocName, $fetchMode);
 
         return $this;
     }
@@ -545,7 +537,7 @@ abstract class AbstractQuery
      */
     public function setHydrationMode($hydrationMode)
     {
-        $this->_hydrationMode = $hydrationMode;
+        $this->metadata->setHydrationMode($hydrationMode);
 
         return $this;
     }
@@ -557,7 +549,7 @@ abstract class AbstractQuery
      */
     public function getHydrationMode()
     {
-        return $this->_hydrationMode;
+        return $this->metadata->getHydrationMode();
     }
 
     /**
@@ -611,7 +603,7 @@ abstract class AbstractQuery
     {
         $result = $this->execute(null, $hydrationMode);
 
-        if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
+        if ($this->getHydrationMode() !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             return null;
         }
 
@@ -645,7 +637,7 @@ abstract class AbstractQuery
     {
         $result = $this->execute(null, $hydrationMode);
 
-        if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
+        if ($this->getHydrationMode() !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             throw new NoResultException;
         }
 
@@ -684,7 +676,7 @@ abstract class AbstractQuery
      */
     public function setHint($name, $value)
     {
-        $this->_hints[$name] = $value;
+        $this->metadata->setHint($name, $value);
 
         return $this;
     }
@@ -698,7 +690,7 @@ abstract class AbstractQuery
      */
     public function getHint($name)
     {
-        return isset($this->_hints[$name]) ? $this->_hints[$name] : false;
+        return $this->metadata->getHint($name);
     }
 
     /**
@@ -708,7 +700,7 @@ abstract class AbstractQuery
      */
     public function getHints()
     {
-        return $this->_hints;
+        return $this->metadata->getHints();
     }
 
     /**
@@ -732,8 +724,8 @@ abstract class AbstractQuery
 
         $stmt = $this->_doExecute();
 
-        return $this->_em->newHydrator($this->_hydrationMode)->iterate(
-            $stmt, $this->_resultSetMapping, $this->_hints
+        return $this->_em->newHydrator($this->getHydrationMode())->iterate(
+            $stmt, $this->_resultSetMapping, $this->metadata->getHints()
         );
     }
 
@@ -787,8 +779,8 @@ abstract class AbstractQuery
             return $stmt;
         }
 
-        $data = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-            $stmt, $this->_resultSetMapping, $this->_hints
+        $data = $this->_em->getHydrator($this->getHydrationMode())->hydrateAll(
+            $stmt, $this->_resultSetMapping, $this->metadata->getHints()
         );
 
         $setCacheEntry($data);
@@ -866,7 +858,7 @@ abstract class AbstractQuery
     public function __clone()
     {
         $this->parameters = new ArrayCollection();
-
-        $this->_hints = array();
+        $this->metadata = clone $this->metadata;
+        $this->metadata->clearHints();
     }
 }
