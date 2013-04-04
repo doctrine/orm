@@ -759,12 +759,12 @@ public function __construct()
      */
     protected function getTraits(ClassMetadataInfo $metadata)
     {
-        if ($metadata->reflClass != null || class_exists($metadata->name)) {
-            $reflClass = $metadata->reflClass == null
+        if ($metadata->reflClass !== null || class_exists($metadata->name)) {
+            $reflClass = $metadata->reflClass === null
                 ? new \ReflectionClass($metadata->name)
                 : $metadata->reflClass;
 
-            if (method_exists($reflClass, 'getTraits')) {
+            if (PHP_VERSION_ID >= 50400) {
                 return $reflClass->getTraits();
             }
         }

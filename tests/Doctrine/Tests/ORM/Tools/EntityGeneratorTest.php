@@ -458,7 +458,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
-        if (function_exists('trait_exists')) {
+        if (PHP_VERSION_ID >= 50400) {
             $cmf = new ClassMetadataFactory();
             $em = $this->_getTestEntityManager();
             $cmf->setEntityManager($em);
