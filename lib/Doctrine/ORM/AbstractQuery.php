@@ -179,7 +179,7 @@ abstract class AbstractQuery
      *
      * @param mixed $key The key (index or name) of the bound parameter.
      *
-     * @return mixed The value of the bound parameter.
+     * @return Query\Parameter|null The value of the bound parameter.
      */
     public function getParameter($key)
     {
