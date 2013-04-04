@@ -193,7 +193,7 @@ final class Query extends AbstractQuery
      */
     public function getAST()
     {
-        $parser = new Parser($this);
+        $parser = new Parser($this->getDQL(), $this->metadata, $this->_em);
 
         return $parser->getAST();
     }
@@ -216,7 +216,7 @@ final class Query extends AbstractQuery
 
         // Check query cache.
         if ( ! ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver()))) {
-            $parser = new Parser($this);
+            $parser = new Parser($this->getDQL(), $this->metadata, $this->_em);
 
             $this->_parserResult = $parser->parse();
 
@@ -234,7 +234,7 @@ final class Query extends AbstractQuery
         }
 
         // Cache miss.
-        $parser = new Parser($this);
+        $parser = new Parser($this->getDQL(), $this->metadata, $this->_em);
 
         $this->_parserResult = $parser->parse();
 

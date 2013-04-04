@@ -44,15 +44,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 
     public function parseDql($dql, $hints = array())
     {
-        $query = $this->_em->createQuery($dql);
-        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
-        $query->setDql($dql);
+        $metadata = new \Doctrine\ORM\Query\MetadataBag;
+        $metadata->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
         foreach ($hints as $key => $value) {
-        	$query->setHint($key, $value);
+            $metadata->setHint($key, $value);
         }
 
-        $parser = new \Doctrine\ORM\Query\Parser($query);
+        $parser = new \Doctrine\ORM\Query\Parser($dql, $metadata, $this->_em);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
         $parser->setCustomOutputTreeWalker('Doctrine\Tests\Mocks\MockTreeWalker');
