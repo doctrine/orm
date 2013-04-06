@@ -11,6 +11,23 @@ Before 2.4 the postFlush and onFlush events were only called when there were
 actually entities that changed. Now these events are called no matter if there
 are entities in the UoW or changes are found.
 
+## Parenthesis are now considered in arithmetic expression
+
+Before 2.4 parenthesis are not considered in arithmetic primary expression.
+That's conceptually wrong, since it might result in wrong values. For example:
+
+The DQL:
+
+    SELECT 100/(2*2) FROM MyEntity
+
+Before 2.4 it generates the SQL:
+
+    SELECT 100/2*2 my_entity
+
+Now parenthesis are considered, the previous DQL will generate:
+
+    SELECT (100/2*2) my_entity
+
 # Upgrade to 2.3
 
 ## EntityManager#find() not calls EntityRepository#find() anymore
