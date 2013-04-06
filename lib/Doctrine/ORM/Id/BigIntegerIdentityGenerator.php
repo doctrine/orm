@@ -38,9 +38,9 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
     /**
      * Constructor.
      *
-     * @param string|null $seqName The name of the sequence to pass to lastInsertId()
-     *                             to obtain the last generated identifier within the current
-     *                             database session/connection, if any.
+     * @param string|null $sequenceName The name of the sequence to pass to lastInsertId()
+     *                                  to obtain the last generated identifier within the current
+     *                                  database session/connection, if any.
      */
     public function __construct($sequenceName = null)
     {

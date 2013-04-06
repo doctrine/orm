@@ -533,6 +533,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Parse the given JoinColumn as array
      *
+     * @param JoinColumn $joinColumn
      * @return array
      */
     private function joinColumnToArray(JoinColumn $joinColumn)

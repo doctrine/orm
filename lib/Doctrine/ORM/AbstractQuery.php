@@ -309,7 +309,7 @@ abstract class AbstractQuery
     /**
      * Allows to translate entity namespaces to full qualified names.
      *
-     * @param EntityManager $em
+     * @param Query\ResultSetMapping $rsm
      *
      * @return void
      */

@@ -685,8 +685,8 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param string $listenerName
      * @param string $className
-     * @param string $methodName
      *
      * @return \Doctrine\ORM\Mapping\MappingException
      */

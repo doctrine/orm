@@ -428,7 +428,7 @@ class SqlWalker implements TreeWalker
             $conn   = $this->em->getConnection();
             $values = array();
 
-            if ($class->discriminatorValue !== null) { // discrimnators can be 0
+            if ($class->discriminatorValue !== null) { // discriminators can be 0
                 $values[] = $conn->quote($class->discriminatorValue);
             }
 
