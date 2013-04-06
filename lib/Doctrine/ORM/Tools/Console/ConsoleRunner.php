@@ -35,6 +35,7 @@ class ConsoleRunner
     /**
      * Create a Symfony Console HelperSet
      *
+     * @param EntityManager $entityManager
      * @return HelperSet
      */
     public static function createHelperSet(EntityManager $entityManager)
