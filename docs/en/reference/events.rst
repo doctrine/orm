@@ -2,7 +2,9 @@ Events
 ======
 
 Doctrine 2 features a lightweight event system that is part of the
-Common package.
+Common package. Doctrine uses it to dispatch system events, mainly
+:ref:`lifecycle events <reference-events-lifecycle-events>`.
+You can also use it for your own custom events.
 
 The Event System
 ----------------
@@ -27,28 +29,28 @@ Now we can add some event listeners to the ``$evm``. Let's create a
     {
         const preFoo = 'preFoo';
         const postFoo = 'postFoo';
-    
+
         private $_evm;
-    
+
         public $preFooInvoked = false;
         public $postFooInvoked = false;
-    
+
         public function __construct($evm)
         {
             $evm->addEventListener(array(self::preFoo, self::postFoo), $this);
         }
-    
+
         public function preFoo(EventArgs $e)
         {
             $this->preFooInvoked = true;
         }
-    
+
         public function postFoo(EventArgs $e)
         {
             $this->postFooInvoked = true;
         }
     }
-    
+
     // Create a new instance
     $test = new EventTest($evm);
 
@@ -80,22 +82,28 @@ array of events it should be subscribed to.
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
     {
         public $preFooInvoked = false;
-    
+
         public function preFoo()
         {
             $this->preFooInvoked = true;
         }
-    
+
         public function getSubscribedEvents()
         {
             return array(TestEvent::preFoo);
         }
     }
-    
+
     $eventSubscriber = new TestEventSubscriber();
     $evm->addEventSubscriber($eventSubscriber);
 
-Now when you dispatch an event any event subscribers will be
+.. note::
+
+    The array to return in the ``getSubscribedEvents`` method is a simple array
+    with the values being the event names. The subscriber must have a method
+    that is named exactly like the event.
+
+Now when you dispatch an event, any event subscribers will be
 notified for that event.
 
 .. code-block:: php
@@ -133,6 +141,8 @@ several reasons:
 An example for a correct notation can be found in the example
 ``EventTest`` above.
 
+.. _reference-events-lifecycle-events:
+
 Lifecycle Events
 ----------------
 
@@ -164,7 +174,7 @@ the life-time of their registered entities.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml).
--  preFlush - The preFlush event occurs at the very beginning of a flush 
+-  preFlush - The preFlush event occurs at the very beginning of a flush
    operation. This event is not a lifecycle callback.
 -  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
@@ -198,7 +208,7 @@ listeners:
 
 -  Lifecycle Callbacks are methods on the entity classes that are
    called when the event is triggered. They receives some kind of ``EventArgs``.
--  Lifecycle Event Listeners are classes with specific callback
+-  Lifecycle Event Listeners and Subscribers are classes with specific callback
    methods that receives some kind of ``EventArgs`` instance which
    give access to the entity, EntityManager or other relevant data.
 
@@ -222,44 +232,44 @@ event occurs.
 .. code-block:: php
 
     <?php
-    
+
     /** @Entity @HasLifecycleCallbacks */
     class User
     {
         // ...
-    
+
         /**
          * @Column(type="string", length=255)
          */
         public $value;
-    
+
         /** @Column(name="created_at", type="string", length=255) */
         private $createdAt;
-    
+
         /** @PrePersist */
         public function doStuffOnPrePersist()
         {
             $this->createdAt = date('Y-m-d H:i:s');
         }
-    
+
         /** @PrePersist */
         public function doOtherStuffOnPrePersist()
         {
             $this->value = 'changed from prePersist callback!';
         }
-    
+
         /** @PostPersist */
         public function doStuffOnPostPersist()
         {
             $this->value = 'changed from postPersist callback!';
         }
-    
+
         /** @PostLoad */
         public function doStuffOnPostLoad()
         {
             $this->value = 'changed from postLoad callback!';
         }
-    
+
         /** @PreUpdate */
         public function doStuffOnPreUpdate()
         {
@@ -283,28 +293,28 @@ can do it with the following.
           type: string(50)
       lifecycleCallbacks:
         prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
-        postPersist: [ doStuffOnPostPersist ] 
+        postPersist: [ doStuffOnPostPersist ]
 
 XML would look something like this:
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
-    
+
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
-    
+
         <entity name="User">
-    
+
             <lifecycle-callbacks>
                 <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
                 <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
             </lifecycle-callbacks>
-    
+
         </entity>
-    
+
     </doctrine-mapping>
 
 You just need to make sure a public ``doStuffOnPrePersist()`` and
@@ -315,16 +325,16 @@ model.
 
     <?php
     // ...
-    
+
     class User
     {
         // ...
-    
+
         public function doStuffOnPrePersist()
         {
             // ...
         }
-    
+
         public function doStuffOnPostPersist()
         {
             // ...
@@ -360,8 +370,8 @@ With the additional argument you have access to the
         }
     }
 
-Listening to Lifecycle Events
------------------------------
+Listening and subscribing to Lifecycle Events
+---------------------------------------------
 
 Lifecycle event listeners are much more powerful than the simple
 lifecycle callbacks that are defined on the entity classes. They
@@ -371,7 +381,67 @@ workings of the EntityManager and UnitOfWork. Please read the
 *Implementing Event Listeners* section carefully if you are trying
 to write your own listener.
 
-To register an event listener you have to hook it into the
+For event subscribers, there are no surprises. They declare the
+lifecycle events in their ``getSubscribedEvents`` method and provide
+public methods that expect the relevant arguments.
+
+A lifecycle event listener looks like the following:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+
+    class MyEventListener
+    {
+        public function preUpdate(LifecycleEventArgs $args)
+        {
+            $entity = $args->getObject();
+            $entityManager = $args->getObjectManager();
+
+            // perhaps you only want to act on some "Product" entity
+            if ($entity instanceof Product) {
+                // do something with the Product
+            }
+        }
+    }
+
+A lifecycle event subscriber may looks like this:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Events;
+    use Doctrine\Common\EventSubscriber;
+    use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+
+    class MyEventSubscriber implements EventSubscriber
+    {
+        public function getSubscribedEvents()
+        {
+            return array(
+                Events::postUpdate,
+            );
+        }
+
+        public function postUpdate(LifecycleEventArgs $args)
+        {
+            $entity = $args->getObject();
+            $entityManager = $args->getObjectManager();
+
+            // perhaps you only want to act on some "Product" entity
+            if ($entity instanceof Product) {
+                // do something with the Product
+            }
+        }
+
+.. note::
+
+    Lifecycle events are triggered for all entities. It is the responsibility
+    of the listeners and subscribers to check if the entity is of a type
+    it wants to handle.
+
+To register an event listener or subscriber, you have to hook it into the
 EventManager that is passed to the EntityManager factory:
 
 .. code-block:: php
@@ -380,7 +450,7 @@ EventManager that is passed to the EntityManager factory:
     $eventManager = new EventManager();
     $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
-    
+
     $entityManager = EntityManager::create($dbOpts, $config, $eventManager);
 
 You can also retrieve the event manager instance after the
@@ -451,8 +521,8 @@ called during a flush operation.
 preFlush
 ~~~~~~~~
 
-``preFlush`` is called at ``EntityManager#flush()`` before 
-anything else. ``EntityManager#flush()`` can be called safely 
+``preFlush`` is called at ``EntityManager#flush()`` before
+anything else. ``EntityManager#flush()`` can be called safely
 inside its listeners.
 
 .. code-block:: php
@@ -497,25 +567,25 @@ mentioned sets. See this example:
         {
             $em = $eventArgs->getEntityManager();
             $uow = $em->getUnitOfWork();
-    
+
             foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-    
+
             }
-    
+
             foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-    
+
             }
-    
+
             foreach ($uow->getScheduledEntityDeletions() AS $entity) {
-    
+
             }
-    
+
             foreach ($uow->getScheduledCollectionDeletions() AS $col) {
-    
+
             }
-    
+
             foreach ($uow->getScheduledCollectionUpdates() AS $col) {
-    
+
             }
         }
     }
@@ -615,7 +685,7 @@ lifecycle callback when there are expensive validations to call:
                 }
             }
         }
-    
+
         private function validateCreditCard($no)
         {
             // throw an exception to interrupt flush event. Transaction will be rolled back.
@@ -788,7 +858,7 @@ you should map the listener method using the event type mapping.
               postRemove: [postRemoveHandler]
               preRemove: [preRemoveHandler]
           # ....
-    
+
 
 
 Entity listeners resolver
@@ -867,7 +937,7 @@ process and manipulate the instance.
     $metadataFactory = $em->getMetadataFactory();
     $evm = $em->getEventManager();
     $evm->addEventListener(Events::loadClassMetadata, $test);
-    
+
     class EventTest
     {
         public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
