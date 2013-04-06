@@ -2704,7 +2704,7 @@ class Parser
     }
 
     /**
-     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
+     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | ParenthesisExpression
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
      *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
      *          | InputParameter | CaseExpression
@@ -2713,11 +2713,12 @@ class Parser
     {
         if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $this->match(Lexer::T_OPEN_PARENTHESIS);
+
             $expr = $this->SimpleArithmeticExpression();
 
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-            return $expr;
+            return new AST\ParenthesisExpression($expr);
         }
 
         switch ($this->lexer->lookahead['type']) {

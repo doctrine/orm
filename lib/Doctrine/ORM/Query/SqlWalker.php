@@ -1216,6 +1216,7 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleArithmeticExpression):
             case ($expr instanceof AST\ArithmeticTerm):
             case ($expr instanceof AST\ArithmeticFactor):
+            case ($expr instanceof AST\ParenthesisExpression):
             case ($expr instanceof AST\Literal):
             case ($expr instanceof AST\NullIfExpression):
             case ($expr instanceof AST\CoalesceExpression):
@@ -1407,6 +1408,16 @@ class SqlWalker implements TreeWalker
     {
         return 'SELECT' . ($simpleSelectClause->isDistinct ? ' DISTINCT' : '')
              . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
+    }
+
+    /**
+     * @param \Doctrine\ORM\Query\AST\ParenthesisExpression $parenthesisExpression
+     *
+     * @return string.
+     */
+    public function walkParenthesisExpression(AST\ParenthesisExpression $parenthesisExpression)
+    {
+        return sprintf('(%s)', $parenthesisExpression->expression->dispatch($this));
     }
 
     /**
