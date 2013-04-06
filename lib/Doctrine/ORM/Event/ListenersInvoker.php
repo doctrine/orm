@@ -91,7 +91,7 @@ class ListenersInvoker
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
      * @param string $eventName                             The entity lifecycle event.
-     * @param object $entity                                The Entity on which the event occured.
+     * @param object $entity                                The Entity on which the event occurred.
      * @param \Doctrine\Common\EventArgs $event             The Event args.
      * @param integer $invoke                               Bitmask to invoke listeners.
      */

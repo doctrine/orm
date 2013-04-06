@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 use Doctrine\ORM\Query\AST\Node;
 
 /**
- * Abtract Function Node.
+ * Abstract Function Node.
  *
  * 
  * @link    www.doctrine-project.org
