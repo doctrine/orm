@@ -18,15 +18,15 @@ That's conceptually wrong, since it might result in wrong values. For example:
 
 The DQL:
 
-    SELECT 100/(2*2) FROM MyEntity
+    SELECT 100 / ( 2 * 2 ) FROM MyEntity
 
 Before 2.4 it generates the SQL:
 
-    SELECT 100/2*2 my_entity
+    SELECT 100 / 2 * 2 FROM my_entity
 
 Now parenthesis are considered, the previous DQL will generate:
 
-    SELECT (100/2*2) my_entity
+    SELECT 100 / (2 * 2) FROM my_entity
 
 # Upgrade to 2.3
 
