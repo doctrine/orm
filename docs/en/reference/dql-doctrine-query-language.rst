@@ -427,12 +427,13 @@ Get all users visible on a given website that have chosen certain gender:
     <?php
     $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
 
-IDENTITY() DQL Function when the association has a composite primary key:
+Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys:
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1');
+
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
