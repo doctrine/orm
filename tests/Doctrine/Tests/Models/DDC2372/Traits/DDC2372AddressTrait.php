@@ -1,11 +1,11 @@
 <?php
 
-namespace Entities\Traits;
+namespace Doctrine\Tests\Models\DDC2372\Traits;
 
-trait AddressTrait
+trait DDC2372AddressTrait
 {
     /**
-     * @OneToOne(targetEntity="Entities\Address", inversedBy="user")
+     * @OneToOne(targetEntity="Doctrine\Tests\Models\DDC2372\DDC2372Address", inversedBy="user")
      * @JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;

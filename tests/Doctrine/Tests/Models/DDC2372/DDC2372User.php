@@ -1,13 +1,13 @@
 <?php
 
-namespace Entities;
+namespace Doctrine\Tests\Models\DDC2372;
 
-use Entities\Traits\AddressTrait;
+use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressTrait;
 
-/** @Entity @Table(name="traited_users") */
-class TraitedUser
+/** @Entity @Table(name="users") */
+class DDC2372User
 {
-    use AddressTrait;
+    use DDC2372AddressTrait;
 
     /**
      * @Id @Column(type="integer")

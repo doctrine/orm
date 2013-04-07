@@ -17,7 +17,6 @@ if (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
 }
 
 /* @var $classLoader \Composer\Autoload\ClassLoader */
-$classLoader->add('Entities', __DIR__ . '/../../../tools/sandbox');
 $classLoader->add('Doctrine\\Tests\\', __DIR__ . '/../../');
 unset($classLoader);
 

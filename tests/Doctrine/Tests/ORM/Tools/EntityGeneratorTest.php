@@ -7,7 +7,7 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Entities\TraitedUser;
+use Doctrine\Tests\Models\DDC2372\DDC2372User;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -463,15 +463,15 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
             $em = $this->_getTestEntityManager();
             $cmf->setEntityManager($em);
 
-            $user = new TraitedUser();
+            $user = new DDC2372User();
             $metadata = $cmf->getMetadataFor(get_class($user));
-            $metadata->name = $this->_namespace . "\TraitedUser";
+            $metadata->name = $this->_namespace . "\DDC2372User";
             $metadata->namespace = $this->_namespace;
 
             $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-            $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/TraitedUser.php");
-            require $this->_tmpDir . "/" . $this->_namespace . "/TraitedUser.php";
+            $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php");
+            require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php";
 
             $reflClass = new \ReflectionClass($metadata->name);
 
