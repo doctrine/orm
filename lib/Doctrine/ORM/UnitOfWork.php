@@ -68,6 +68,13 @@ class UnitOfWork implements PropertyChangedListener
     const STATE_REMOVED = 4;
 
     /**
+     * Hint used to collect all primary keys of associated entities during hydration
+     * and execute it in a dedicated query afterwards
+     * @see https://doctrine-orm.readthedocs.org/en/latest/reference/dql-doctrine-query-language.html?highlight=eager#temporarily-change-fetch-mode-in-dql
+     */
+    const HINT_DEFEREAGERLOAD = 'deferEagerLoad';
+
+    /**
      * The identity map that holds references to all managed entities that have
      * an identity. The entities are grouped by their class name.
      * Since all classes in a hierarchy must share the same identifier set,
@@ -2552,7 +2559,7 @@ class UnitOfWork implements PropertyChangedListener
                             // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
                             // then we can append this entity for eager loading!
                             if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
-                                isset($hints['deferEagerLoad']) &&
+                                isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 !$targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
                                 $newValue->__isInitialized__ === false) {
@@ -2577,7 +2584,7 @@ class UnitOfWork implements PropertyChangedListener
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
-                                case (isset($hints['deferEagerLoad']) && ! $targetClass->isIdentifierComposite):
+                                case (isset($hints[self::HINT_DEFEREAGERLOAD]) && ! $targetClass->isIdentifierComposite):
                                     // TODO: Is there a faster approach?
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
 
