@@ -16,6 +16,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 
 /**
  * Wraps the query in order to select root entity IDs for pagination.
@@ -138,19 +139,13 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Build the counter query
-        if ($this->platform instanceof OraclePlatform) {
-            // Ordering is lost in Oracle with subqueries
-            // http://www.doctrine-project.org/jira/browse/DDC-1800
-            $sql = sprintf('SELECT DISTINCT %s, ROWNUM FROM (%s) dctrn_result ORDER BY ROWNUM ASC',
-                implode(', ', $sqlIdentifier), $innerSql);
-        } else {
-            $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
-                implode(', ', $sqlIdentifier), $innerSql);
-        }
+        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
+            implode(', ', $sqlIdentifier), $innerSql);
 
-        if ($this->platform instanceof PostgreSqlPlatform) {
+        if ($this->platform instanceof PostgreSqlPlatform ||
+            $this->platform instanceof OraclePlatform) {
             //http://www.doctrine-project.org/jira/browse/DDC-1958
-            $this->getPostgresqlSql($AST, $sqlIdentifier, $innerSql, $sql);
+            $this->preserveSqlOrdering($AST, $sqlIdentifier, $innerSql, $sql);
         }
 
         // Apply the limit and offset.
@@ -168,9 +163,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         return $sql;
     }
-
+    
     /**
-     * Generates new SQL for postgresql if necessary.
+     * Generates new SQL for Postgresql or Oracle if necessary.
      *
      * @param SelectStatement $AST
      * @param array           $sqlIdentifier
@@ -179,7 +174,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return void
      */
-    public function getPostgresqlSql(SelectStatement $AST, array $sqlIdentifier, $innerSql, &$sql)
+    public function preserveSqlOrdering(SelectStatement $AST, array $sqlIdentifier, $innerSql, &$sql)
     {
         // For every order by, find out the SQL alias by inspecting the ResultSetMapping.
         $sqlOrderColumns = array();
