@@ -137,9 +137,16 @@ class LimitSubqueryOutputWalker extends SqlWalker
             ));
         }
 
-        // Build the counter query.
-        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
-            implode(', ', $sqlIdentifier), $innerSql);
+        // Build the counter query
+        if ($this->platform instanceof OraclePlatform) {
+            // Ordering is lost in Oracle with subqueries
+            // http://www.doctrine-project.org/jira/browse/DDC-1800
+            $sql = sprintf('SELECT DISTINCT %s, ROWNUM FROM (%s) dctrn_result ORDER BY ROWNUM ASC',
+                implode(', ', $sqlIdentifier), $innerSql);
+        } else {
+            $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
+                implode(', ', $sqlIdentifier), $innerSql);
+        }
 
         if ($this->platform instanceof PostgreSqlPlatform) {
             //http://www.doctrine-project.org/jira/browse/DDC-1958
