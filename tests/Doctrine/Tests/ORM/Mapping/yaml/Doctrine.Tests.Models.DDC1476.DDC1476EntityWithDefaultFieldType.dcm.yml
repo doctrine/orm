@@ -5,4 +5,4 @@ Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType:
       generator:
         strategy: NONE
   fields:
-    name:
+    name: ~

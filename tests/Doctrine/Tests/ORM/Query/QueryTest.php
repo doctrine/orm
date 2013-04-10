@@ -163,4 +163,16 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('cities', $parameter->getName());
         $this->assertEquals($cities, $parameter->getValue());
     }
+
+    /**
+     * @group DDC-2224
+     */
+    public function testProcessParameterValueClassMetadata()
+    {
+        $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
+        $this->assertEquals(
+            'Doctrine\Tests\Models\CMS\CmsAddress',
+            $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+        );
+    }
 }
