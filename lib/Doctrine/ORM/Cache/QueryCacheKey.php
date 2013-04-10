@@ -29,8 +29,24 @@ namespace Doctrine\ORM\Cache;
  */
 class QueryCacheKey implements CacheKey
 {
+    /**
+     * @var string
+     */
+    private $hash;
+
+    /**
+     * @param string $hash The result cache id
+     */
+    public function __construct($hash)
+    {
+        $this->hash = $hash;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hash()
     {
-        throw new \BadMethodCallException("Not implemented.");
+        return $this->hash;
     }
 }

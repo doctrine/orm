@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Query\ResultSetMapping;
+
 /**
  * Defines the contract for caches capable of storing query results.
  * These caches should only concern themselves with storing the matching result ids.
@@ -35,17 +37,19 @@ interface QueryCache
     public function clear();
 
     /**
-     * @param \Doctrine\ORM\Cache\QueryCacheKey $key
-     * @param array                             $result
+     * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
+     * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
+     * @param array                                 $result
      *
      * @return boolean
      */
-    public function put(QueryCacheKey $key, array $result);
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, array $result);
 
     /**
-     * @return array
+     * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
+     * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
      */
-    public function get(QueryCacheKey $key);
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm);
 
     /**
      * @return \Doctrine\ORM\Cache\Region

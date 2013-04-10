@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManager;
 
 /**
  * @since   2.5
@@ -50,4 +51,14 @@ interface AccessProvider
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
      */
     public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
+
+    /**
+     * @param \Doctrine\ORM\EntityManager   $em         The Entity manager.
+     * @param string                        $regionName The region name.
+     *
+     * @return \Doctrine\ORM\Cache\QueryCache The built query cache.
+     * 
+     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     */
+    public function buildQueryCache(EntityManager $em, $regionName);
 }

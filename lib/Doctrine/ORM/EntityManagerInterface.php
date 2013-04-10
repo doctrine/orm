@@ -31,6 +31,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 interface EntityManagerInterface extends ObjectManager
 {
+    public function getCache();
     public function getConnection();
     public function getExpressionBuilder();
     public function beginTransaction();

@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
@@ -81,5 +82,13 @@ class CacheAccessProvider implements AccessProvider
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildQueryCache(EntityManager $em, $regionName)
+    {
+        return new DefaultQueryCache($em, new DefaultRegion($regionName ?: 'query.cache.region', $this->cache));
     }
 }
