@@ -495,6 +495,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('jwage', $qb->getQuery()->getParameter('username2')->getValue());
         $this->assertEquals('jonwage', $qb->getQuery()->getParameter('username3')->getValue());
+        $this->assertCount(3, $qb->getQuery()->getParameters());
     }
 
 
