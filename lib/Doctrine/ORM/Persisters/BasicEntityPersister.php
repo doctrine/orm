@@ -790,7 +790,7 @@ class BasicEntityPersister
 
         $hydrator = $this->_em->newHydrator(($this->_selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->_rsm, array('deferEagerLoads' => true));
+        return $hydrator->hydrateAll($stmt, $this->_rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**
@@ -845,7 +845,7 @@ class BasicEntityPersister
 
         $hydrator = $this->_em->newHydrator(($this->_selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->_rsm, array('deferEagerLoads' => true));
+        return $hydrator->hydrateAll($stmt, $this->_rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**
@@ -874,7 +874,7 @@ class BasicEntityPersister
      */
     private function loadArrayFromStatement($assoc, $stmt)
     {
-        $hints = array('deferEagerLoads' => true);
+        $hints = array(UnitOfWork::HINT_DEFEREAGERLOAD => true);
 
         if (isset($assoc['indexBy'])) {
             $rsm = clone ($this->_rsm); // this is necessary because the "default rsm" should be changed.
@@ -899,7 +899,7 @@ class BasicEntityPersister
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {
-        $hints = array('deferEagerLoads' => true, 'collection' => $coll);
+        $hints = array(UnitOfWork::HINT_DEFEREAGERLOAD => true, 'collection' => $coll);
 
         if (isset($assoc['indexBy'])) {
             $rsm = clone ($this->_rsm); // this is necessary because the "default rsm" should be changed.
