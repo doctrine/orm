@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\ORM\UnitOfWork;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -94,8 +95,8 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->resultCounter = 0;
 
-        if ( ! isset($this->_hints['deferEagerLoad'])) {
-            $this->_hints['deferEagerLoad'] = true;
+        if ( ! isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) {
+            $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] = true;
         }
 
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
@@ -152,7 +153,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     protected function cleanup()
     {
-        $eagerLoad = (isset($this->_hints['deferEagerLoad'])) && $this->_hints['deferEagerLoad'] == true;
+        $eagerLoad = (isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) && $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] == true;
 
         parent::cleanup();
 
