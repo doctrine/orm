@@ -458,27 +458,29 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
-        if (PHP_VERSION_ID >= 50400) {
-            $cmf = new ClassMetadataFactory();
-            $em = $this->_getTestEntityManager();
-            $cmf->setEntityManager($em);
-
-            $user = new DDC2372User();
-            $metadata = $cmf->getMetadataFor(get_class($user));
-            $metadata->name = $this->_namespace . "\DDC2372User";
-            $metadata->namespace = $this->_namespace;
-
-            $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
-
-            $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php");
-            require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php";
-
-            $reflClass = new \ReflectionClass($metadata->name);
-
-            $this->assertSame($reflClass->hasProperty('address'), false);
-            $this->assertSame($reflClass->hasMethod('setAddress'), false);
-            $this->assertSame($reflClass->hasMethod('getAddress'), false);
+        if (PHP_VERSION_ID < 50400) {
+            $this->markTestSkipped('Traits are not available before php 5.4.');
         }
+
+        $cmf = new ClassMetadataFactory();
+        $em = $this->_getTestEntityManager();
+        $cmf->setEntityManager($em);
+
+        $user = new DDC2372User();
+        $metadata = $cmf->getMetadataFor(get_class($user));
+        $metadata->name = $this->_namespace . "\DDC2372User";
+        $metadata->namespace = $this->_namespace;
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php");
+        require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php";
+
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        $this->assertSame($reflClass->hasProperty('address'), false);
+        $this->assertSame($reflClass->hasMethod('setAddress'), false);
+        $this->assertSame($reflClass->hasMethod('getAddress'), false);
     }
 
     /**
