@@ -44,7 +44,7 @@ implement the ``NotifyPropertyChanged`` interface from the
     }
 
 Then, in each property setter of concrete, derived domain classes,
-you need to invoke \onPropertyChanged as follows to notify
+you need to invoke onPropertyChanged as follows to notify
 listeners:
 
 .. code-block:: php
