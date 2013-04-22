@@ -23,7 +23,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     {
         $entityClassName = 'Doctrine\Tests\ORM\Mapping\Article';
 
-        $extension = $this->getMock('Doctrine\ORM\Mapping\Driver\Configuration\ExtensionInterface');
+        $extension = $this->getMock('Doctrine\ORM\Mapping\Driver\Configuration\YamlExtension');
         $extension
             ->expects($this->once())
             ->method('addConfiguration')

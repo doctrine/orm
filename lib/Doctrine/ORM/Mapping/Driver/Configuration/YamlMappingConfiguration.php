@@ -25,7 +25,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 /**
  * @author Kim Hemsø Rasmussen <kimhemsoe@gmail.com>
  */
-class YamlConfiguration implements ConfigurationInterface
+class YamlMappingConfiguration implements ConfigurationInterface
 {
     private $configurationExtensions = array();
 

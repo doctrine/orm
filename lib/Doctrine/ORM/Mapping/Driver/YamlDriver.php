@@ -24,8 +24,8 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
-use Doctrine\ORM\Mapping\Driver\Configuration\YamlConfiguration;
-use Doctrine\ORM\Mapping\Driver\Configuration\ExtensionInterface;
+use Doctrine\ORM\Mapping\Driver\Configuration\YamlMappingConfiguration;
+use Doctrine\ORM\Mapping\Driver\Configuration\YamlExtension;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -52,9 +52,9 @@ class YamlDriver extends FileDriver
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\Driver\Configuration\ExtensionInterface $extension
+     * @param \Doctrine\ORM\Mapping\Driver\Configuration\YamlExtension $extension
      */
-    public function addConfigurationExtension(ExtensionInterface $extension)
+    public function addConfigurationExtension(YamlExtension $extension)
     {
         $this->configurationExtensions[] = $extension;
     }
@@ -716,7 +716,7 @@ class YamlDriver extends FileDriver
             return $this->configTree;
         }
 
-        $configuration = new YamlConfiguration($this->configurationExtensions);
+        $configuration = new YamlMappingConfiguration($this->configurationExtensions);
         $builder = $configuration->getConfigTreeBuilder();
 
         $this->configTree = $builder->buildTree();

@@ -24,7 +24,7 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 /**
  * @author Kim Hemsø Rasmussen <kimhemsoe@gmail.com>
  */
-abstract class Extension implements ExtensionInterface
+abstract class YamlExtension
 {
     public function addConfiguration(NodeDefinition $builder)
     {
