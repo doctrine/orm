@@ -20,10 +20,12 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
+use Doctrine\ORM\Mapping\Driver\Configuration\YamlMappingConfiguration;
+use Doctrine\ORM\Mapping\Driver\Configuration\YamlExtension;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -38,12 +40,23 @@ class YamlDriver extends FileDriver
 {
     const DEFAULT_FILE_EXTENSION = '.dcm.yml';
 
+    private $configTree;
+    private $configurationExtensions = array();
+
     /**
      * {@inheritDoc}
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * @param \Doctrine\ORM\Mapping\Driver\Configuration\YamlExtension $extension
+     */
+    public function addConfigurationExtension(YamlExtension $extension)
+    {
+        $this->configurationExtensions[] = $extension;
     }
 
     /**
@@ -80,10 +93,6 @@ class YamlDriver extends FileDriver
         // Evaluate named queries
         if (isset($element['namedQueries'])) {
             foreach ($element['namedQueries'] as $name => $queryMapping) {
-                if (is_string($queryMapping)) {
-                    $queryMapping = array('query' => $queryMapping);
-                }
-
                 if ( ! isset($queryMapping['name'])) {
                     $queryMapping['name'] = $name;
                 }
@@ -205,7 +214,7 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->table['indexes'][$index['name']] = array(
-                    'columns' => $columns
+                    'columns' => $index['columns']
                 );
             }
         }
@@ -217,15 +226,8 @@ class YamlDriver extends FileDriver
                     $unique['name'] = $name;
                 }
 
-                if (is_string($unique['columns'])) {
-                    $columns = explode(',', $unique['columns']);
-                    $columns = array_map('trim', $columns);
-                } else {
-                    $columns = $unique['columns'];
-                }
-
                 $metadata->table['uniqueConstraints'][$unique['name']] = array(
-                    'columns' => $columns
+                    'columns' => $unique['columns']
                 );
             }
         }
@@ -380,7 +382,7 @@ class YamlDriver extends FileDriver
                     $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphanRemoval'];
                 }
 
-                if (isset($oneToManyElement['orderBy'])) {
+                if ($oneToManyElement['orderBy']) {
                     $mapping['orderBy'] = $oneToManyElement['orderBy'];
                 }
 
@@ -488,7 +490,7 @@ class YamlDriver extends FileDriver
                     $mapping['cascade'] = $manyToManyElement['cascade'];
                 }
 
-                if (isset($manyToManyElement['orderBy'])) {
+                if ($manyToManyElement['orderBy']) {
                     $mapping['orderBy'] = $manyToManyElement['orderBy'];
                 }
 
@@ -575,17 +577,26 @@ class YamlDriver extends FileDriver
             }
         }
 
+
+
         // Evaluate entityListeners
         if (isset($element['entityListeners'])) {
             foreach ($element['entityListeners'] as $className => $entityListener) {
+                $listeners = array();
+                foreach ($entityListener as $eventName => $callbackElement){
+                    if ($callbackElement) {
+                        $listeners[$eventName] = $callbackElement;
+                    }
+                }
+
                 // Evaluate the listener using naming convention.
-                if (empty($entityListener)) {
+                if (empty($listeners)) {
                     EntityListenerBuilder::bindEntityListener($metadata, $className);
 
                     continue;
                 }
 
-                foreach ($entityListener as $eventName => $callbackElement){
+                foreach ($listeners as $eventName => $callbackElement){
                     foreach ($callbackElement as $methodName){
                         $metadata->addEntityListener($eventName, $className, $methodName);
                     }
@@ -699,11 +710,31 @@ class YamlDriver extends FileDriver
         return $mapping;
     }
 
+    private function getConfigTree()
+    {
+        if ($this->configTree) {
+            return $this->configTree;
+        }
+
+        $configuration = new YamlMappingConfiguration($this->configurationExtensions);
+        $builder = $configuration->getConfigTreeBuilder();
+
+        $this->configTree = $builder->buildTree();
+
+        return $this->configTree;
+    }
+
     /**
      * {@inheritDoc}
      */
     protected function loadMappingFile($file)
     {
-        return Yaml::parse($file);
+        $config = Yaml::parse($file);
+
+        $configTree = $this->getConfigTree();
+        $processedConfig = $configTree->normalize($config);
+        $processedConfig = $configTree->finalize($processedConfig);
+
+        return $processedConfig;
     }
 }

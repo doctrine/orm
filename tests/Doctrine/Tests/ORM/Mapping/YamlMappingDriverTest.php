@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\Driver\XmlDriver,
-    Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -17,6 +17,49 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         }
 
         return new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+    }
+
+    public function testConfigurationExtending()
+    {
+        $entityClassName = 'Doctrine\Tests\ORM\Mapping\Article';
+
+        $extension = $this->getMock('Doctrine\ORM\Mapping\Driver\Configuration\YamlExtension');
+        $extension
+            ->expects($this->once())
+            ->method('addConfiguration')
+            ->with($this->isInstanceOf('Symfony\Component\Config\Definition\Builder\NodeDefinition'));
+
+        $extension
+            ->expects($this->once())
+            ->method('addFieldConfiguration')
+            ->with($this->isInstanceOf('Symfony\Component\Config\Definition\Builder\NodeDefinition'));
+
+        $extension
+            ->expects($this->once())
+            ->method('addOneToOneConfiguration')
+            ->with($this->isInstanceOf('Symfony\Component\Config\Definition\Builder\NodeDefinition'));
+
+        $extension
+            ->expects($this->once())
+            ->method('addManyToOneConfiguration')
+            ->with($this->isInstanceOf('Symfony\Component\Config\Definition\Builder\NodeDefinition'));
+
+        $extension
+            ->expects($this->once())
+            ->method('addOneToManyConfiguration')
+            ->with($this->isInstanceOf('Symfony\Component\Config\Definition\Builder\NodeDefinition'));
+
+        $extension
+            ->expects($this->once())
+            ->method('addManyToManyConfiguration')
+            ->with($this->isInstanceOf('Symfony\Component\Config\Definition\Builder\NodeDefinition'));
+
+        $yamlDriver = $this->_loadDriver();
+        $yamlDriver->addConfigurationExtension($extension);
+        $class = new ClassMetadata($entityClassName);
+        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $yamlDriver->loadMetadataForClass($entityClassName, $class);
     }
 
     /**
@@ -75,7 +118,6 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals(255, $nameField['length']);
         $this->assertEquals(255, $valueField['length']);
     }
-
 }
 
 class DDC2069Entity
@@ -85,4 +127,9 @@ class DDC2069Entity
     public $name;
 
     public $value;
+}
+
+class Article
+{
+
 }
