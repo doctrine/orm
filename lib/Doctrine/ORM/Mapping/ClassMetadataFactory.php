@@ -103,6 +103,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
+            if ( ! empty($parent->customGeneratorDefinition)) {
+                $class->setCustomGeneratorDefinition($parent->customGeneratorDefinition);
+            }
+
             if ($parent->isMappedSuperclass) {
                 $class->setCustomRepositoryClass($parent->customRepositoryClassName);
             }
