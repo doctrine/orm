@@ -2377,7 +2377,7 @@ class Parser
         $peek = $this->peekBeyondClosingParenthesis();
 
         if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
-            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS)) ||
+            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS, Lexer::T_ILIKE,)) ||
             $this->isMathOperator($peek)) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
 
@@ -2396,7 +2396,7 @@ class Parser
      *      ComparisonExpression | BetweenExpression | LikeExpression |
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression |
-     *      InstanceOfExpression
+     *      InstanceOfExpression | IlikeExpression
      */
     public function SimpleConditionalExpression()
     {
@@ -2463,6 +2463,10 @@ class Parser
 
         if ($token['type'] === Lexer::T_LIKE) {
             return $this->LikeExpression();
+        }
+
+        if ($token['type'] === Lexer::T_ILIKE) {
+            return $this->IlikeExpression();
         }
 
         if ($token['type'] === Lexer::T_IN) {
@@ -3099,6 +3103,45 @@ class Parser
         $likeExpr->not = $not;
 
         return $likeExpr;
+    }
+
+        /**
+     * IlikeExpression ::= StringExpression ["NOT"] "ILIKE" StringPrimary ["ESCAPE" char]
+     *
+     * @return \Doctrine\ORM\Query\AST\ILikeExpression
+     */
+    public function IlikeExpression()
+    {
+        $stringExpr = $this->StringExpression();
+        $not = false;
+
+        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $not = true;
+        }
+
+        $this->match(Lexer::T_ILIKE);
+
+        if ($this->lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            $stringPattern = new AST\InputParameter($this->lexer->token['value']);
+        } else {
+            $stringPattern = $this->StringPrimary();
+        }
+
+        $escapeChar = null;
+
+        if ($this->lexer->lookahead['type'] === Lexer::T_ESCAPE) {
+            $this->match(Lexer::T_ESCAPE);
+            $this->match(Lexer::T_STRING);
+
+            $escapeChar = new AST\Literal(AST\Literal::STRING, $this->lexer->token['value']);
+        }
+
+        $ilikeExpr = new AST\ILikeExpression($stringExpr, $stringPattern, $escapeChar);
+        $ilikeExpr->not = $not;
+
+        return $ilikeExpr;
     }
 
     /**

@@ -225,6 +225,23 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsNotIlikeClause()
+    {
+        // "WHERE" Expression LikeExpression
+        $this->assertSqlGeneration(
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username NOT ILIKE ?1',
+            'DELETE FROM cms_users WHERE username NOT ILIKE ?'
+        );
+    }
+
+    public function testSupportsIlikeClauseWithEscapeExpression()
+    {
+        $this->assertSqlGeneration(
+            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username ILIKE ?1 ESCAPE '\\'",
+            "DELETE FROM cms_users WHERE username ILIKE ? ESCAPE '\\'"
+        );
+    }
+
     public function testSupportsIsNullClause()
     {
         // "WHERE" Expression NullComparisonExpression

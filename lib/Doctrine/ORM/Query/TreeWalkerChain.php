@@ -465,6 +465,13 @@ class TreeWalkerChain implements TreeWalker
         }
     }
 
+    public function walkIlikeExpression($ilikeExpr)
+    {
+        foreach ($this->_walkers as $walker) {
+            $walker->walkIlikeExpression($ilikeExpr);
+        }
+    }
+
     /**
      * {@inheritdoc}
      */

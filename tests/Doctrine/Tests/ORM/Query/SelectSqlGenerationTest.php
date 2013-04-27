@@ -925,6 +925,53 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+   public function testStringFunctionIlikeExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) ILIKE '%foo OR bar%'",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) ILIKE '%foo OR bar%'"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) ILIKE :str",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) ILIKE ?"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(UPPER(u.name), '_moo') ILIKE :str",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) || '_moo' ILIKE ?"
+        );
+
+        // DDC-1572
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(u.name) ILIKE UPPER(:str)",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) ILIKE UPPER(?)"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(LOWER(u.name)) ILIKE UPPER(LOWER(:str))",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(LOWER(c0_.name)) ILIKE UPPER(LOWER(?))"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a WITH a.topic ILIKE u.name",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LEFT JOIN cms_articles c1_ ON c0_.id = c1_.user_id AND (c1_.topic ILIKE c0_.name)"
+        );
+    }
+
+    public function testStringFunctionNotIlikeExpression()
+    {
+        $this->assertSqlGeneration(
+                "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) NOT ILIKE '%foo OR bar%'",
+                "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) NOT ILIKE '%foo OR bar%'"
+        );
+
+        $this->assertSqlGeneration(
+                "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(LOWER(u.name)) NOT ILIKE UPPER(LOWER(:str))",
+                "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(LOWER(c0_.name)) NOT ILIKE UPPER(LOWER(?))"
+        );
+        $this->assertSqlGeneration(
+                "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a WITH a.topic NOT ILIKE u.name",
+                "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LEFT JOIN cms_articles c1_ ON c0_.id = c1_.user_id AND (c1_.topic NOT ILIKE c0_.name)"
+        );
+    }
+
     /**
      * @group DDC-338
      */
@@ -1895,7 +1942,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
     	$connMock    = $this->_em->getConnection();
     	$orgPlatform = $connMock->getDatabasePlatform();
-    
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1905,7 +1952,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1915,7 +1962,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT c0_.id || c0_.name || c0_.status AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    	
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1925,7 +1972,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT (c0_.id + c0_.name + c0_.status) AS sclr0 FROM cms_users c0_ WITH (NOLOCK) WHERE c0_.id = ?"
     	);
-    
+
     	$connMock->setDatabasePlatform($orgPlatform);
     }
 

@@ -328,9 +328,19 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE 'z%'");
     }
 
+    public function testIlikeExpression()
+    {
+        $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name ILIKE 'z%'");
+    }
+
     public function testNotLikeExpression()
     {
         $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name NOT LIKE 'z%'");
+    }
+
+    public function testNotIlikeExpression()
+    {
+        $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name NOT ILIKE 'z%'");
     }
 
     public function testLikeExpressionWithCustomEscapeCharacter()
