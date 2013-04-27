@@ -2043,6 +2043,32 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
 
+    public function walkILikeExpression($ilikeExpr)
+    {
+        $stringExpr = $ilikeExpr->stringExpression;
+        $sql = $stringExpr->dispatch($this) . ($ilikeExpr->not ? ' NOT' : '') . ' ILIKE ';
+
+        if ($ilikeExpr->stringPattern instanceof AST\InputParameter) {
+            $inputParam = $ilikeExpr->stringPattern;
+            $dqlParamKey = $inputParam->name;
+            $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
+            $sql .= '?';
+        } elseif ($ilikeExpr->stringPattern instanceof AST\Functions\FunctionNode ) {
+            $sql .= $this->walkFunction($ilikeExpr->stringPattern);
+        } elseif ($ilikeExpr->stringPattern instanceof AST\PathExpression) {
+            $sql .= $this->walkPathExpression($ilikeExpr->stringPattern);
+        } else {
+            $sql .= $this->walkLiteral($ilikeExpr->stringPattern);
+        }
+
+        if ($ilikeExpr->escapeChar) {
+            $sql .= ' ESCAPE ' . $this->walkLiteral($ilikeExpr->escapeChar);
+        }
+
+        return $sql;
+    }
+
+
     /**
      * {@inheritdoc}
      */

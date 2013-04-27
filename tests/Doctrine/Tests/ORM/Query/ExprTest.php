@@ -173,9 +173,19 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('a.description LIKE :description', (string) $this->_expr->like('a.description', ':description'));
     }
 
+    public function testLikeExpr()
+    {
+        $this->assertEquals('a.description ILIKE :description', (string) $this->_expr->ilike('a.description', ':description'));
+    }
+
     public function testNotLikeExpr()
     {
         $this->assertEquals('a.description NOT LIKE :description', (string) $this->_expr->notLike('a.description', ':description'));
+    }
+
+    public function testNotLikeExpr()
+    {
+        $this->assertEquals('a.description NOT ILIKE :description', (string) $this->_expr->notLike('a.description', ':description'));
     }
 
     public function testConcatExpr()
@@ -418,14 +428,14 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testAddEmpty() {
         $andExpr = $this->_expr->andx();
         $andExpr->add($this->_expr->andx());
-        
+
         $this->assertEquals(0, $andExpr->count());
     }
 
     public function testAddNull() {
         $andExpr = $this->_expr->andx();
         $andExpr->add(null);
-        
+
         $this->assertEquals(0, $andExpr->count());
     }
 }

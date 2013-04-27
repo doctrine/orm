@@ -379,6 +379,15 @@ interface TreeWalker
     function walkLikeExpression($likeExpr);
 
     /**
+     * Walks down a IlikeExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param AST\IlikeExpression $ilikeExpr
+     *
+     * @return string The SQL.
+     */
+    function walkIlikeExpression($ilikeExpr);
+
+    /**
      * Walks down a StateFieldPathExpression AST node, thereby generating the appropriate SQL.
      *
      * @param AST\PathExpression $stateFieldPathExpression

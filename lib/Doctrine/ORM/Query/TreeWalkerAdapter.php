@@ -364,6 +364,13 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * {@inheritdoc}
      */
+    public function walkIlikeExpression($likeExpr)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function walkStateFieldPathExpression($stateFieldPathExpression)
     {
     }
