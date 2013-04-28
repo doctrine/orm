@@ -146,6 +146,13 @@ class SqlWalker implements TreeWalker
     private $rootAliases = array();
 
     /**
+     * Any DQL alises used for left joins
+     *
+     * @var array
+     */
+    private $leftJoinAliases = array();
+
+    /**
      * Flag that indicates whether to generate SQL table aliases in the SQL.
      * These should only be generated for SELECT queries, not for UPDATE/DELETE.
      *
@@ -436,8 +443,15 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
-            $sqlParts[] = (($this->useSqlTableAliases) ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.' : '')
-                        . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
+            $field = (($this->useSqlTableAliases) ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.' : '')
+                      . $class->discriminatorColumn['name'];
+            $sql = $field . ' IN (' . implode(', ', $values) . ')';
+
+            if (in_array($dqlAlias, $this->leftJoinAliases)) {
+                $sql = '(' . $sql . ' OR ' . $field . ' IS NULL )';
+            }
+
+            $sqlParts[] = $sql;
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -1025,6 +1039,10 @@ class SqlWalker implements TreeWalker
         $sql = ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER)
             ? ' LEFT JOIN '
             : ' INNER JOIN ';
+
+        if ($joinType == AST\Join::JOIN_TYPE_LEFT) {
+            $this->leftJoinAliases[] = $joinDeclaration->aliasIdentificationVariable;
+        }
 
         switch (true) {
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
