@@ -146,7 +146,7 @@ class SqlWalker implements TreeWalker
     private $rootAliases = array();
 
     /**
-     * Any DQL alises used for left joins
+     * Any DQL aliases used for left joins
      *
      * @var array
      */
