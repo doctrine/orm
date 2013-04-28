@@ -448,7 +448,7 @@ class SqlWalker implements TreeWalker
             $sql = $field . ' IN (' . implode(', ', $values) . ')';
 
             if (in_array($dqlAlias, $this->leftJoinAliases)) {
-                $sql = '(' . $sql . ' OR ' . $field . ' IS NULL )';
+                $sql = '(' . $sql . ' OR ' . $field . ' IS NULL)';
             }
 
             $sqlParts[] = $sql;
