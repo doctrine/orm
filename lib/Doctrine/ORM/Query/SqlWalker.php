@@ -146,13 +146,6 @@ class SqlWalker implements TreeWalker
     private $rootAliases = array();
 
     /**
-     * Any DQL aliases used for left joins
-     *
-     * @var array
-     */
-    private $leftJoinAliases = array();
-
-    /**
      * Flag that indicates whether to generate SQL table aliases in the SQL.
      * These should only be generated for SELECT queries, not for UPDATE/DELETE.
      *
@@ -443,15 +436,8 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
-            $field = (($this->useSqlTableAliases) ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.' : '')
-                      . $class->discriminatorColumn['name'];
-            $sql = $field . ' IN (' . implode(', ', $values) . ')';
-
-            if (in_array($dqlAlias, $this->leftJoinAliases)) {
-                $sql = '(' . $sql . ' OR ' . $field . ' IS NULL)';
-            }
-
-            $sqlParts[] = $sql;
+            $sqlParts[] = (($this->useSqlTableAliases) ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.' : '')
+                      . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -824,12 +810,14 @@ class SqlWalker implements TreeWalker
      *
      * @return string
      */
-    public function walkRangeVariableDeclaration($rangeVariableDeclaration)
+    public function walkRangeVariableDeclaration($rangeVariableDeclaration, $rootAlias = true)
     {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
 
-        $this->rootAliases[] = $dqlAlias;
+        if ($rootAlias) {
+            $this->rootAliases[] = $dqlAlias;
+        }
 
         $sql = $class->getQuotedTableName($this->platform) . ' '
              . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
@@ -1035,14 +1023,11 @@ class SqlWalker implements TreeWalker
     {
         $joinType        = $join->joinType;
         $joinDeclaration = $join->joinAssociationDeclaration;
+        $joinAlias       = $joinDeclaration->aliasIdentificationVariable;
 
         $sql = ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER)
             ? ' LEFT JOIN '
             : ' INNER JOIN ';
-
-        if ($joinType == AST\Join::JOIN_TYPE_LEFT) {
-            $this->leftJoinAliases[] = $joinDeclaration->aliasIdentificationVariable;
-        }
 
         switch (true) {
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
@@ -1051,8 +1036,14 @@ class SqlWalker implements TreeWalker
                     ? ' AND '
                     : ' ON ';
 
-                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration)
+                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration, false)
                       . $condExprConjunction . '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+
+                $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinAlias));
+                if ( ! empty($discrSql)) {
+                    $sql .= ' AND (' . $discrSql . ')';
+                }
+
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
