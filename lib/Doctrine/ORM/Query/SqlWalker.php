@@ -807,7 +807,7 @@ class SqlWalker implements TreeWalker
      * Walks down a RangeVariableDeclaration AST node, thereby generating the appropriate SQL.
      *
      * @param AST\RangeVariableDeclaration $rangeVariableDeclaration
-     * @param boolean @rootAlias
+     * @param boolean $rootAlias
      *
      * @return string
      */
