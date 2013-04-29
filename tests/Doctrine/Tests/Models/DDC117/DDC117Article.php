@@ -29,7 +29,7 @@ class DDC117Article
     private $translations;
 
     /**
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id")
+     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
      */
     private $links;
 
