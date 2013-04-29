@@ -24,7 +24,7 @@ class DDC117Article
     private $details;
 
     /**
-     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", indexBy="language", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
      */
     private $translations;
 
