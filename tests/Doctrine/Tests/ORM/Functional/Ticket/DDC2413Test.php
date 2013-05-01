@@ -16,6 +16,10 @@ class DDC2413Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
+        if (!in_array($this->_em->getConnection()->getDatabasePlatform()->getName(), array('mysql', 'pgsql', 'sqlsrv'))) {
+            $this->markTestSkipped("This test is for relational databases.");
+        }
+
         $schemaTool = new SchemaTool($this->_em);
 
         $metadatas = array(
@@ -47,10 +51,6 @@ class DDC2413Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(1, $foundUser->getGroups()->count());
         $this->assertEquals($group->getName(), $foundUser->getGroups()->first()->getName());
-
-        // Cleanup
-        $this->_em->remove($domain);
-        $this->_em->flush();
     }
 }
 
@@ -185,7 +185,7 @@ class DDC2413UserEntity
     /**
      * @var DDC2413GroupEntity[]|ArrayCollection
      *
-     * @ManyToMany(targetEntity="DDC2413GroupEntity", mappedBy="users", cascade="ALL")
+     * @ManyToMany(targetEntity="DDC2413GroupEntity", mappedBy="users", cascade="ALL", fetch="EXTRA_LAZY")
      */
     protected $groups;
 
