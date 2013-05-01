@@ -101,6 +101,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
         }
 
+        $columns = array_keys(array_flip($columns));
+
         return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
              . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
@@ -139,6 +141,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
             $class2 = $coll->getTypeClass();
         }
+
+        $mapping['joinTableColumns'] = array_keys(array_flip($mapping['joinTableColumns']));
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);

@@ -487,7 +487,7 @@ class SchemaTool
                 // Build second FK constraint (relation table => target table)
                 $this->_gatherRelationJoinColumns($joinTable['inverseJoinColumns'], $theJoinTable, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints, $addedFks, $blacklistedFks);
 
-                $theJoinTable->setPrimaryKey($primaryKeyColumns);
+                $theJoinTable->setPrimaryKey(array_keys(array_flip($primaryKeyColumns)));
 
                 foreach($uniqueConstraints as $indexName => $unique) {
                     $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
