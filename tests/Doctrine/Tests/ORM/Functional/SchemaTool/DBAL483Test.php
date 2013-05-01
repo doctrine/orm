@@ -12,6 +12,10 @@ class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conn = $this->_em->getConnection();
 
+        if ($conn->getDatabasePlatform()->getName() === 'sqlite') {
+            $this->markTestSkipped('Sqlite does not support ALTER TABLE');
+        }
+
         $this->schemaTool = new Tools\SchemaTool($this->_em);
     }
 
