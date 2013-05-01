@@ -2860,7 +2860,7 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::invalidCompositeIdentifier();
         }
 
-        $values = ($this->getEntityState($entity) === UnitOfWork::STATE_MANAGED)
+        $values = $this->isInIdentityMap($entity)
             ? $this->getEntityIdentifier($entity)
             : $class->getIdentifierValues($entity);
 
