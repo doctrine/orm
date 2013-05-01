@@ -170,13 +170,13 @@ class SqlWalker implements TreeWalker
     /**
      * {@inheritDoc}
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct($metadata, $entityManager, $parserResult, array $queryComponents)
     {
-        $this->query            = $query;
+        $this->query            = $metadata;
         $this->parserResult     = $parserResult;
         $this->queryComponents  = $queryComponents;
         $this->rsm              = $parserResult->getResultSetMapping();
-        $this->em               = $query->getEntityManager();
+        $this->em               = $entityManager;
         $this->conn             = $this->em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();

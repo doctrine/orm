@@ -135,20 +135,6 @@ final class Query extends AbstractQuery
     private $_parserResult;
 
     /**
-     * The first result to return (the "offset").
-     *
-     * @var integer
-     */
-    private $_firstResult = null;
-
-    /**
-     * The maximum number of results to return (the "limit").
-     *
-     * @var integer
-     */
-    private $_maxResults = null;
-
-    /**
      * The cache driver used for caching queries.
      *
      * @var \Doctrine\Common\Cache\Cache|null
@@ -207,7 +193,7 @@ final class Query extends AbstractQuery
      */
     public function getAST()
     {
-        $parser = new Parser($this);
+        $parser = new Parser($this->getDQL(), $this->metadata, $this->_em);
 
         return $parser->getAST();
     }
@@ -230,7 +216,7 @@ final class Query extends AbstractQuery
 
         // Check query cache.
         if ( ! ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver()))) {
-            $parser = new Parser($this);
+            $parser = new Parser($this->getDQL(), $this->metadata, $this->_em);
 
             $this->_parserResult = $parser->parse();
 
@@ -248,7 +234,7 @@ final class Query extends AbstractQuery
         }
 
         // Cache miss.
-        $parser = new Parser($this);
+        $parser = new Parser($this->getDQL(), $this->metadata, $this->_em);
 
         $this->_parserResult = $parser->parse();
 
@@ -510,7 +496,7 @@ final class Query extends AbstractQuery
      */
     public function setFirstResult($firstResult)
     {
-        $this->_firstResult = $firstResult;
+        $this->metadata->setFirstResult($firstResult);
         $this->_state       = self::STATE_DIRTY;
 
         return $this;
@@ -524,7 +510,7 @@ final class Query extends AbstractQuery
      */
     public function getFirstResult()
     {
-        return $this->_firstResult;
+        return $this->metadata->getFirstResult();
     }
 
     /**
@@ -536,7 +522,7 @@ final class Query extends AbstractQuery
      */
     public function setMaxResults($maxResults)
     {
-        $this->_maxResults = $maxResults;
+        $this->metadata->setMaxResults($maxResults);
         $this->_state      = self::STATE_DIRTY;
 
         return $this;
@@ -550,7 +536,7 @@ final class Query extends AbstractQuery
      */
     public function getMaxResults()
     {
-        return $this->_maxResults;
+        return $this->metadata->getMaxResults();
     }
 
     /**
@@ -638,13 +624,10 @@ final class Query extends AbstractQuery
      */
     protected function _getQueryCacheId()
     {
-        ksort($this->_hints);
-
         return md5(
-            $this->getDql() . var_export($this->_hints, true) .
-            ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
-            '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
-            '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
+            $this->getDql() .
+            $this->metadata .
+            ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '')
         );
     }
 

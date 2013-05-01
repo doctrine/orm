@@ -67,18 +67,19 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * @param \Doctrine\ORM\Query\ParserResult $parserResult
      * @param array                            $queryComponents
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct($query, $entityManager, $parserResult, array $queryComponents)
     {
-        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->platform = $entityManager->getConnection()->getDatabasePlatform();
         $this->rsm = $parserResult->getResultSetMapping();
         $this->queryComponents = $queryComponents;
 
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
         $this->maxResults = $query->getMaxResults();
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(null);
+        $query->setMaxResults(null);
 
-        parent::__construct($query, $parserResult, $queryComponents);
+        parent::__construct($query, $entityManager, $parserResult, $queryComponents);
     }
 
     /**

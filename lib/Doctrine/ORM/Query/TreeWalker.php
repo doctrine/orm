@@ -34,7 +34,7 @@ interface TreeWalker
      * @param \Doctrine\ORM\Query\ParserResult $parserResult    The result of the parsing process.
      * @param array                            $queryComponents The query components (symbol table).
      */
-    public function __construct($query, $parserResult, array $queryComponents);
+    public function __construct($query, $entityManager, $parserResult, array $queryComponents);
 
     /**
      * Returns internal queryComponents array.

@@ -55,13 +55,13 @@ class CountOutputWalker extends SqlWalker
      * @param \Doctrine\ORM\Query\ParserResult $parserResult
      * @param array                            $queryComponents
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct($query, $entityManager, $parserResult, array $queryComponents)
     {
-        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->platform = $entityManager->getConnection()->getDatabasePlatform();
         $this->rsm = $parserResult->getResultSetMapping();
         $this->queryComponents = $queryComponents;
 
-        parent::__construct($query, $parserResult, $queryComponents);
+        parent::__construct($query, $entityManager, $parserResult, $queryComponents);
     }
 
     /**

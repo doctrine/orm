@@ -92,8 +92,8 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
                         null,
                         false
                     );
-                $meta1 = $this->_getQuery()->getEntityManager()->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-                $meta = $this->_getQuery()->getEntityManager()->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+                $meta1 = $this->getEntityManager()->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+                $meta = $this->getEntityManager()->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
                 $this->setQueryComponent($identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable . 'a',
                     array(
                         'metadata' => $meta,

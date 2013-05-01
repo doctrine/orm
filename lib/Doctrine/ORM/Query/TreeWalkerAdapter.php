@@ -50,13 +50,19 @@ abstract class TreeWalkerAdapter implements TreeWalker
     private $_queryComponents;
 
     /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $entityManager;
+
+    /**
      * {@inheritdoc}
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct($query, $entityManager, $parserResult, array $queryComponents)
     {
         $this->_query = $query;
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -107,6 +113,11 @@ abstract class TreeWalkerAdapter implements TreeWalker
     protected function _getParserResult()
     {
         return $this->_parserResult;
+    }
+
+    protected function getEntityManager()
+    {
+        return $this->entityManager;
     }
 
     /**

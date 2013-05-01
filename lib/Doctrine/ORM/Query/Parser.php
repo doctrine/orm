@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -171,6 +172,11 @@ class Parser
     private $identVariableExpressions = array();
 
     /**
+     * @var string
+     */
+    private $dql;
+
+    /**
      * Checks if a function is internally defined. Used to prevent overwriting
      * of built-in functions through user-defined functions.
      *
@@ -192,11 +198,12 @@ class Parser
      *
      * @param Query $query The Query to parse.
      */
-    public function __construct(Query $query)
+    public function __construct($dql, MetadataBag $query, EntityManager $entityManager)
     {
+        $this->dql          = $dql;
         $this->query        = $query;
-        $this->em           = $query->getEntityManager();
-        $this->lexer        = new Lexer($query->getDql());
+        $this->em           = $entityManager;
+        $this->lexer        = new Lexer($dql);
         $this->parserResult = new ParserResult();
     }
 
@@ -360,7 +367,7 @@ class Parser
 
         // Run any custom tree walkers over the AST
         if ($this->customTreeWalkers) {
-            $treeWalkerChain = new TreeWalkerChain($this->query, $this->parserResult, $this->queryComponents);
+            $treeWalkerChain = new TreeWalkerChain($this->query, $this->em, $this->parserResult, $this->queryComponents);
 
             foreach ($this->customTreeWalkers as $walker) {
                 $treeWalkerChain->addTreeWalker($walker);
@@ -384,7 +391,7 @@ class Parser
         }
 
         $outputWalkerClass = $this->customOutputWalker ?: __NAMESPACE__ . '\SqlWalker';
-        $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
+        $outputWalker      = new $outputWalkerClass($this->query, $this->em, $this->parserResult, $this->queryComponents);
 
         // Assign an SQL executor to the parser result
         $this->parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
@@ -445,7 +452,7 @@ class Parser
         $message .= ($expected !== '') ? "Expected {$expected}, got " : 'Unexpected ';
         $message .= ($this->lexer->lookahead === null) ? 'end of string.' : "'{$token['value']}'";
 
-        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::syntaxError($message, QueryException::dqlError($this->dql));
     }
 
     /**
@@ -468,7 +475,7 @@ class Parser
         $distance = 12;
 
         // Find a position of a final word to display in error string
-        $dql    = $this->query->getDql();
+        $dql    = $this->dql;
         $length = strlen($dql);
         $pos    = $token['position'] + $distance;
         $pos    = strpos($dql, ' ', ($length > $pos) ? $pos : $length);
@@ -480,7 +487,7 @@ class Parser
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;
 
-        throw QueryException::semanticalError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::semanticalError($message, QueryException::dqlError($this->dql));
     }
 
     /**
