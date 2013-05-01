@@ -1848,16 +1848,7 @@ class BasicEntityPersister
             return $value;
         }
 
-        if ($this->em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
-            $idValues = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-
-            return reset($idValues);
-        }
-
-        $class      = $this->em->getClassMetadata(get_class($value));
-        $idValues   = $class->getIdentifierValues($value);
-
-        return reset($idValues);
+        return $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
     }
 
     /**
