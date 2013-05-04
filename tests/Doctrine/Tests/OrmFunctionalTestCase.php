@@ -150,6 +150,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CustomType\CustomTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
         ),
+        'compositekeyinheritance' => array(
+            'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass',
+            'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass',
+            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass',
+            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass',
+        )
     );
 
     /**
@@ -271,6 +277,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM customtype_children');
             $conn->executeUpdate('DELETE FROM customtype_uppercases');
         }
+
+        if (isset($this->_usedModelSets['compositekeyinheritance'])) {
+            $conn->executeUpdate('DELETE FROM JoinedChildClass');
+            $conn->executeUpdate('DELETE FROM JoinedRootClass');
+            $conn->executeUpdate('DELETE FROM SingleRootClass');
+        }
+
 
         $this->_em->clear();
     }
