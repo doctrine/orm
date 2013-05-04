@@ -329,6 +329,7 @@
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="type" type="xs:NMTOKEN" />
     <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="association-key" type="xs:boolean" default="false" />
     <xs:attribute name="column-definition" type="xs:string" />
     <xs:anyAttribute namespace="##other"/>
