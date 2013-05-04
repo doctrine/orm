@@ -102,9 +102,10 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->identifierMap[$dqlAlias] = array();
             $this->idTemplate[$dqlAlias]    = '';
+            $classMetadata                  = $this->_em->getClassMetadata($className);
 
-            if ( ! isset($this->ce[$className])) {
-                $this->ce[$className] = $this->_em->getClassMetadata($className);
+            if ( ! isset($this->ce[$classMetadata->name])) {
+                $this->ce[$classMetadata->name] = $classMetadata;
             }
 
             // Remember which associations are "fetch joined", so that we know where to inject
@@ -136,7 +137,7 @@ class ObjectHydrator extends AbstractHydrator
 
             // handle fetch-joined owning side bi-directional one-to-one associations
             if ($assoc['inversedBy']) {
-                $class        = $this->ce[$className];
+                $class        = $this->ce[$classMetadata->name];
                 $inverseAssoc = $class->associationMappings[$assoc['inversedBy']];
 
                 if ( ! ($inverseAssoc['type'] & ClassMetadata::TO_ONE)) {
@@ -248,7 +249,9 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function getEntity(array $data, $dqlAlias)
     {
-        $className = $this->_rsm->aliasMap[$dqlAlias];
+        $classAliasMap = $this->_rsm->aliasMap[$dqlAlias];
+        $classMetadata = $this->_em->getClassMetadata($classAliasMap);
+        $className     = $classMetadata->name;
 
         if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
 
