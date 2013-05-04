@@ -40,7 +40,7 @@ use Doctrine\Common\Util\ClassUtils;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityManager implements ObjectManager
+/* final */class EntityManager implements EntityManagerInterface
 {
     /**
      * The used Configuration.
@@ -286,7 +286,7 @@ class EntityManager implements ObjectManager
      *
      * @return \Doctrine\ORM\Query
      */
-    public function createQuery($dql = "")
+    public function createQuery($dql = '')
     {
         $query = new Query($this);
 
