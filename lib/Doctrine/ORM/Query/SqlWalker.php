@@ -546,8 +546,18 @@ class SqlWalker implements TreeWalker
     {
         $this->useSqlTableAliases = false;
 
-        return $this->walkUpdateClause($AST->updateClause)
+        $sql = $this->walkUpdateClause($AST->updateClause)
              . $this->walkWhereClause($AST->whereClause);
+        
+        if($AST->orderByClause){
+            $sql .= $this->walkOrderByClause($AST->orderByClause);
+        }
+
+        $sql = $this->platform->modifyLimitQuery(
+            $sql, $this->query->getMaxResults(), $this->query->getFirstResult()
+        );
+
+        return $sql;
     }
 
     /**

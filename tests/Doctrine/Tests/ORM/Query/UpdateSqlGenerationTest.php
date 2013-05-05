@@ -184,6 +184,31 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsOrderByClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 ORDER BY u.status',
+            'UPDATE cms_users SET name = ? ORDER BY status ASC'
+        );
+    }
+
+    public function testSupportsOrderByClauseDesc()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 ORDER BY u.status DESC',
+            'UPDATE cms_users SET name = ? ORDER BY status DESC'
+        );
+    }
+
+    public function testSuportsLimitClause()
+    {
+        $q = $this->_em
+            ->createQuery('UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1')
+            ->setMaxResults(10);
+
+        $this->assertEquals('UPDATE cms_users SET name = ? LIMIT 10', $q->getSql());
+    }
+
     /**
      * @group DDC-980
      */

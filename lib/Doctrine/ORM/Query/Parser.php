@@ -876,7 +876,7 @@ class Parser
     }
 
     /**
-     * UpdateStatement ::= UpdateClause [WhereClause]
+     * UpdateStatement ::= UpdateClause [WhereClause] [OrderByClause]
      *
      * @return \Doctrine\ORM\Query\AST\UpdateStatement
      */
@@ -885,6 +885,7 @@ class Parser
         $updateStatement = new AST\UpdateStatement($this->UpdateClause());
 
         $updateStatement->whereClause = $this->lexer->isNextToken(Lexer::T_WHERE) ? $this->WhereClause() : null;
+        $updateStatement->orderByClause = $this->lexer->isNextToken(Lexer::T_ORDER) ? $this->OrderByClause() : null;
 
         return $updateStatement;
     }
