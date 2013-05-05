@@ -41,6 +41,11 @@ class UpdateStatement extends Node
     public $whereClause;
 
     /**
+     * @var OrderByClause|null
+     */
+    public $orderByClause;
+
+    /**
      * @param UpdateClause $updateClause
      */
     public function __construct($updateClause)
