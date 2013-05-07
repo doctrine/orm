@@ -227,6 +227,15 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // This commit should not raise an E_NOTICE
         $this->_unitOfWork->commit();
     }
+
+    /**
+     * @group DDC-1984
+     */
+    public function testLockWithoutEntityThrowsException()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $this->_unitOfWork->lock(null, null, null);
+    }
 }
 
 /**
