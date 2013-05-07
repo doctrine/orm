@@ -395,6 +395,12 @@ class SchemaTool
                 }
             }
 
+            if (isset($mapping['options']['default'])) {
+                $options['default'] = $mapping['options']['default'];
+
+                unset($mapping['options']['default']);
+            }
+
             $options['customSchemaOptions'] = $mapping['options'];
         }
 

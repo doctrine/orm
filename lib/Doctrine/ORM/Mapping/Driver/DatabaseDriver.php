@@ -168,7 +168,18 @@ class DatabaseDriver implements MappingDriver
         $metadata->table['name'] = $tableName;
 
         $columns = $this->tables[$tableName]->getColumns();
+        /** @var Doctrine\DBAL\Schema\Index $indexes */
         $indexes = $this->tables[$tableName]->getIndexes();
+        foreach($indexes as $index){
+            if ($index->isPrimary()){
+                continue;
+            }
+            if ($index->isSimpleIndex()){
+                $metadata->table['indexes'][$index->getName()]['columns'] = $index->getColumns();
+            }else if($index->isUnique()){
+                $metadata->table['uniqueConstraints'][$index->getName()]['columns'] = $index->getColumns();
+            }
+        }
         try {
             $primaryKeyColumns = $this->tables[$tableName]->getPrimaryKey()->getColumns();
         } catch(SchemaException $e) {
@@ -188,6 +199,7 @@ class DatabaseDriver implements MappingDriver
 
         $ids = array();
         $fieldMappings = array();
+        $is_auto_increment = false;
         foreach ($columns as $column) {
             $fieldMapping = array();
 
@@ -204,10 +216,22 @@ class DatabaseDriver implements MappingDriver
             if ($column->getType() instanceof \Doctrine\DBAL\Types\StringType) {
                 $fieldMapping['length'] = $column->getLength();
                 $fieldMapping['fixed'] = $column->getFixed();
-            } else if ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
-                $fieldMapping['unsigned'] = $column->getUnsigned();
+            }else if ($column->getType() instanceof \Doctrine\DBAL\Types\DecimalType){
+                $fieldMapping['precision'] = $column->getPrecision();
+                $fieldMapping['scale'] = $column->getScale();
             }
+            
+            $fieldMapping['unsigned'] = $column->getUnsigned();
             $fieldMapping['nullable'] = $column->getNotNull() ? false : true;
+
+            $fieldMapping['default'] = $column->getDefault();
+            $comment = $column->getComment();
+            if (!empty($comment)){
+                $fieldMapping['comment'] = $comment;
+            }
+            if ($column->getAutoincrement()){
+                $is_auto_increment = true;
+            }
 
             if (isset($fieldMapping['id'])) {
                 $ids[] = $fieldMapping;
@@ -218,14 +242,17 @@ class DatabaseDriver implements MappingDriver
 
         if ($ids) {
             if (count($ids) == 1) {
-                $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+                if ($is_auto_increment){
+                    $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+                }else{
+                    $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+                }
             }
 
             foreach ($ids as $id) {
                 $metadata->mapField($id);
             }
         }
-
         foreach ($fieldMappings as $fieldMapping) {
             $metadata->mapField($fieldMapping);
         }
@@ -319,6 +346,7 @@ class DatabaseDriver implements MappingDriver
                 $metadata->mapManyToOne($associationMapping);
             }
         }
+
     }
 
     /**

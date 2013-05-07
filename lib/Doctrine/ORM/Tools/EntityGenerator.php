@@ -1197,6 +1197,24 @@ public function __construct()
                 $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
             }
 
+            $options = array();
+            if (!empty($fieldMapping['unsigned'])) {
+                $options[] = '"unsigned"=true';
+            }
+            if (isset($fieldMapping['default'])){
+                $options[] = '"default"=' .json_encode($fieldMapping['default']);
+            }
+            if (!empty($fieldMapping['fixed'])){
+                $options[] = '"fixed"=' .json_encode($fieldMapping['fixed']);
+            }
+            if (!empty($fieldMapping['comment'])){
+                $options[] = '"comment"="' .$fieldMapping['comment'].'"';
+            }
+            if (!empty($options)){
+                $column[] = 'options={'.implode(',',$options).'}';
+            }
+
+
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Column(' . implode(', ', $column) . ')';
 
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
