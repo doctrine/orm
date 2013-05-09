@@ -34,6 +34,28 @@ use Doctrine\Common\Util\ClassUtils;
 /**
  * The EntityManager is the central access point to ORM functionality.
  *
+ * It is a facade to all different ORM subsystems such as UnitOfWork,
+ * Query Language and Repository API. Instantiation is done through
+ * the static create() method. The quickest way to obtain a fully
+ * configured EntityManager is:
+ *
+ *     use Doctrine\ORM\Tools\Setup;
+ *     use Doctrine\ORM\EntityManager;
+ *
+ *     $paths = array('/path/to/entity/mapping/files');
+ *
+ *     $config = Setup::createAnnotationMetadataConfiguration($paths);
+ *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
+ *     $entityManager = EntityManager::create($dbParams, $config);
+ *
+ * For more information see
+ * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
+ *
+ * You should never attempt to inherit from the EntityManager: Inheritance
+ * is not a valid extension point for the EntityManager. Instead you
+ * should take a look at the {@see \Doctrine\ORM\Decorator\EntityManagerDecorator}
+ * and wrap your entity manager in a decorator.
+ *
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
