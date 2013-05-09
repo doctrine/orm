@@ -1583,7 +1583,7 @@ class BasicEntityPersister
             return '';
         }
 
-        $visitor = new SqlExpressionVisitor($this);
+        $visitor = new SqlExpressionVisitor($this, $this->class);
 
         return $visitor->dispatch($expression);
     }
