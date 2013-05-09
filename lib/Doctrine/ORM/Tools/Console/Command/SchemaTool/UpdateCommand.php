@@ -93,6 +93,12 @@ task will drop all database assets (e.g. tables, etc) that are *not* described
 by the current metadata. In other words, without this option, this task leaves
 untouched any "extra" tables that exist in the database, but which aren't
 described by any metadata.
+
+<comment>Hint:</comment> If you have a database with tables that should not be managed
+by the ORM, you can use a DBAL functionality to filter the tables and sequences down
+on a global level:
+
+    \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
         );
     }
