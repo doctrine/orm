@@ -140,9 +140,15 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['columnName'])) {
                     $idXml->addAttribute('column', $field['columnName']);
                 }
+
+                if (isset($field['length'])) {
+                    $idXml->addAttribute('length', $field['length']);
+                }
+
                 if (isset($field['associationKey']) && $field['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
                 }
+
                 if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
                     $generatorXml = $idXml->addChild('generator');
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
