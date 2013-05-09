@@ -155,6 +155,10 @@ class XmlExporter extends AbstractExporter
                     $idXml->addAttribute('column', $field['columnName']);
                 }
 
+                if (isset($field['length'])) {
+                    $idXml->addAttribute('length', $field['length']);
+                }
+
                 if (isset($field['associationKey']) && $field['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
                 }
