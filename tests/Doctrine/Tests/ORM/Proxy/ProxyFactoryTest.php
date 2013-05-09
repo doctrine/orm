@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Proxy;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Common\Proxy\ProxyGenerator;
@@ -79,6 +80,60 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         $num = $this->proxyFactory->generateProxyClasses(array($cm));
 
         $this->assertEquals(0, $num, "No proxies generated.");
+    }
+
+    /**
+     * @group DDC-2432
+     */
+    public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized()
+    {
+        $persister = $this->getMock('Doctrine\ORM\Persisters\BasicEntityPersister', array('load'), array(), '', false);
+        $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
+
+        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', array('id' => 42));
+
+        $persister
+            ->expects($this->atLeastOnce())
+            ->method('load')
+            ->will($this->returnValue(null));
+
+        try {
+            $proxy->getDescription();
+            $this->fail('An exception was expected to be raised');
+        } catch (EntityNotFoundException $exception) {
+        }
+
+        $this->assertFalse($proxy->__isInitialized());
+        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+    }
+
+    /**
+     * @group DDC-2432
+     */
+    public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized()
+    {
+        $persister = $this->getMock('Doctrine\ORM\Persisters\BasicEntityPersister', array('load'), array(), '', false);
+        $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
+
+        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', array('id' => 42));
+
+        $persister
+            ->expects($this->atLeastOnce())
+            ->method('load')
+            ->will($this->returnValue(null));
+
+        try {
+            $cloned = clone $proxy;
+            $this->fail('An exception was expected to be raised');
+        } catch (EntityNotFoundException $exception) {
+        }
+
+        $this->assertFalse($proxy->__isInitialized());
+        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 }
 
