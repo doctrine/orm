@@ -1089,6 +1089,15 @@ public function __construct()
                 $typeOptions[] = 'orphanRemoval=' . ($associationMapping['orphanRemoval'] ? 'true' : 'false');
             }
 
+            if (isset($associationMapping['fetch']) && $associationMapping['fetch'] !== ClassMetadataInfo::FETCH_LAZY) {
+                $fetchMap = array(
+                    ClassMetadataInfo::FETCH_EXTRA_LAZY => 'EXTRA_LAZY',
+                    ClassMetadataInfo::FETCH_EAGER      => 'EAGER',
+                );
+
+                $typeOptions[] = 'fetch="' . $fetchMap[$associationMapping['fetch']] . '"';
+            }
+
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . '' . $type . '(' . implode(', ', $typeOptions) . ')';
 
             if (isset($associationMapping['joinColumns']) && $associationMapping['joinColumns']) {
