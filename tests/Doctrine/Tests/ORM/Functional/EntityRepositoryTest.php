@@ -7,8 +7,7 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Common\Collections\Criteria;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author robo
@@ -779,6 +778,29 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
 
         $this->assertEquals(4, count($users));
+    }
+
+    /**
+     * @group DDC-2430
+     */
+    public function testMatchingCriteriaAssocationByObjectInMemory()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
+
+        $criteria = new Criteria(
+            Criteria::expr()->gte('user', $user)
+        );
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses = $repository->matching($criteria);
+
+        $this->assertEquals(1, count($addresses));
+
+        $addresses = new ArrayCollection($repository->findAll());
+
+        $this->assertEquals(1, count($addresses->matching($criteria)));
     }
 
     public function testMatchingCriteriaContainsComparison()

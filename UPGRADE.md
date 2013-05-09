@@ -28,6 +28,20 @@ Now parenthesis are considered, the previous DQL will generate:
 
     SELECT 100 / (2 * 2) FROM my_entity
 
+## Compatibility Bugfix in PersistentCollection#matching() breaks BC
+
+In Doctrine 2.3 it was possible to use the new ``matching($criteria)``
+functionality by adding constraints for assocations based on ID:
+
+    Criteria::expr()->eq('association', $assocation->getId());
+
+This functionality does not work on InMemory collections however, because
+in memory criteria compares object values based on reference.
+As of 2.4 the above code will throw an exception. You need to change
+offending code to pass the ``$assocation`` reference directly:
+
+    Criteria::expr()->eq('association', $assocation);
+
 # Upgrade to 2.3
 
 ## EntityManager#find() not calls EntityRepository#find() anymore
