@@ -790,7 +790,30 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
 
         $criteria = new Criteria(
-            Criteria::expr()->gte('user', $user)
+            Criteria::expr()->eq('user', $user)
+        );
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses = $repository->matching($criteria);
+
+        $this->assertEquals(1, count($addresses));
+
+        $addresses = new ArrayCollection($repository->findAll());
+
+        $this->assertEquals(1, count($addresses->matching($criteria)));
+    }
+
+    /**
+     * @group DDC-2430
+     */
+    public function testMatchingCriteriaAssocationInWithArray()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
+
+        $criteria = new Criteria(
+            Criteria::expr()->in('user', array($user))
         );
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');

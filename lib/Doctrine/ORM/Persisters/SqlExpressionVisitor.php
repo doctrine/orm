@@ -65,7 +65,10 @@ class SqlExpressionVisitor extends ExpressionVisitor
         $field = $comparison->getField();
         $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
 
-        if (isset($this->classMetadata->associationMappings[$field]) && ! is_object($value)) {
+        if (isset($this->classMetadata->associationMappings[$field]) &&
+            ! is_object($value) &&
+            ! in_array($comparison->getOperator(), array(Comparison::IN, Comparison::NIN))) {
+
             throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->name, $field);
         }
 
