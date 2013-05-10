@@ -303,7 +303,7 @@ themselves.
 -  ``getReflectionProperty($name)``
 -  ``getSingleIdReflectionProperty()``
 -  ``getIdentifierValues($entity)``
--  ``setIdentifierValues($entity, $id)``
+-  ``assignIdentifier($entity, $id)``
 -  ``setFieldValue($entity, $field, $value)``
 -  ``getFieldValue($entity, $field)``
 
