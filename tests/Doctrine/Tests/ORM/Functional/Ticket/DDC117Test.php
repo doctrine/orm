@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\DDC117\DDC117Reference;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC117\DDC117ApproveChanges;
 use Doctrine\Tests\Models\DDC117\DDC117Editor;
+use Doctrine\Tests\Models\DDC117\DDC117Link;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -30,6 +31,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($this->article2);
         $this->_em->flush();
 
+        $link = new DDC117Link($this->article1, $this->article2, "Link-Description");
+        $this->_em->persist($link);
+        
         $this->reference = new DDC117Reference($this->article1, $this->article2, "Test-Description");
         $this->_em->persist($this->reference);
 
@@ -478,5 +482,16 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $reference = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
 
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($reference));
+    }
+    /**
+     * @group DDC-117
+     */
+    public function testIndexByOnCompositeKeyField()
+    {   
+        $article = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article1->id());
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Article', $article);
+        $this->assertEquals(1, count($article->getLinks()));
+        $this->assertTrue($article->getLinks()->offsetExists($this->article2->id()));
     }
 }
