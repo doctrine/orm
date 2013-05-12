@@ -1994,6 +1994,9 @@ class SqlWalker implements TreeWalker
 
             case AST\Literal::NUMERIC:
                 return $literal->value;
+            
+            case AST\Literal::NULL:
+                return 'NULL';
 
             default:
                 throw QueryException::invalidLiteral($literal);
