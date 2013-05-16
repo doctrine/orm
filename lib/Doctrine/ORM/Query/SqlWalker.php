@@ -1029,7 +1029,7 @@ class SqlWalker implements TreeWalker
         switch (true) {
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
                 $class = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
-                $condExprConjunction = $class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER
+                $condExprConjunction = $class->isInheritanceTypeJoined()
                     ? ' AND '
                     : ' ON ';
 
