@@ -45,7 +45,7 @@ class GenerateRepositoriesCommand extends Command
     protected function configure()
     {
         $this
-        ->setName('orm:generate-repositories')
+        ->setName('orm:generate:repositories')
         ->setDescription('Generate repository classes from your mapping information.')
         ->setDefinition(array(
             new InputOption(

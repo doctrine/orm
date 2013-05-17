@@ -44,7 +44,7 @@ class GenerateProxiesCommand extends Command
     protected function configure()
     {
         $this
-        ->setName('orm:generate-proxies')
+        ->setName('orm:generate:proxies')
         ->setDescription('Generates proxy classes for entity classes.')
         ->setDefinition(array(
             new InputOption(
