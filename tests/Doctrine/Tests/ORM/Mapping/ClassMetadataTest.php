@@ -715,6 +715,23 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2451
+     */
+    public function testSerializeEntityListeners()
+    {
+        $metadata = new ClassMetadata('Doctrine\Tests\Models\Company\CompanyContract');
+
+        $metadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
+
+        $serialize   = serialize($metadata);
+        $unserialize = unserialize($serialize);
+
+        $this->assertEquals($unserialize->entityListeners, $metadata->entityListeners);
+    }
+
+    /**
      * @expectedException \Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Query named "userById" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once
      */

@@ -831,6 +831,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'lifecycleCallbacks';
         }
 
+        if ($this->entityListeners) {
+            $serialized[] = 'entityListeners';
+        }
+
         if ($this->namedQueries) {
             $serialized[] = 'namedQueries';
         }
