@@ -728,7 +728,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $serialize   = serialize($metadata);
         $unserialize = unserialize($serialize);
 
-        $this->assertEquals($unserialize->entityListeners, $metadata->entityListeners);
+        $this->assertEquals($metadata->entityListeners, $unserialize->entityListeners);
     }
 
     /**
