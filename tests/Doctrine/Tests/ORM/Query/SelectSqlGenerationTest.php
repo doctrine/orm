@@ -1810,6 +1810,27 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-2435
+     */
+    public function testColumnNameWithNumbersAndNonAlphanumericCharacters()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT t0_."1:1" AS _110, t0_."2:2" AS _221 FROM table t0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT e.value FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT t0_."2:2" AS _220 FROM table t0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT TRIM(t0_."2:2") AS sclr0 FROM table t0_'
+        );
+    }
+
    /**
     * @group DDC-1845
     */
