@@ -131,6 +131,20 @@ The following Commands are currently available:
    update the database schema of EntityManager Storage Connection or
    generate the SQL output.
 
+For these commands are also available aliases:
+
+
+-  ``orm:convert:d1-schema`` is alias for ``orm:convert-d1-schema``.
+-  ``orm:convert:mapping`` is alias for ``orm:convert-mapping``.
+-  ``orm:generate:entities`` is alias for ``orm:generate-entities``.
+-  ``orm:generate:proxies`` is alias for ``orm:generate-proxies``.
+-  ``orm:generate:repositories`` is alias for ``orm:generate-repositories``.
+
+.. note::
+
+    Console also supports auto completion, for example, instead of
+    ``orm:clear-cache:query`` you can use just ``o:c:q``.
+
 Database Schema Generation
 --------------------------
 
