@@ -49,6 +49,7 @@ class ConvertMappingCommand extends Command
     {
         $this
         ->setName('orm:convert-mapping')
+        ->setAliases(array('orm:convert:mapping'))
         ->setDescription('Convert mapping information between supported formats.')
         ->setDefinition(array(
             new InputOption(

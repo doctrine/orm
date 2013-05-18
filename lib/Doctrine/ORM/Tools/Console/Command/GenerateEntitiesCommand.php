@@ -47,6 +47,7 @@ class GenerateEntitiesCommand extends Command
     {
         $this
         ->setName('orm:generate-entities')
+        ->setAliases(array('orm:generate:entities'))
         ->setDescription('Generate entity classes and method stubs from your mapping information.')
         ->setDefinition(array(
             new InputOption(
