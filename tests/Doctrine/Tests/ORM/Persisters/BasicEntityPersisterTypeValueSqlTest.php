@@ -103,7 +103,7 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSelectConditionStatementIsNotNull()
     {
-    	$statement = $this->_persister->getSelectConditionStatementSQL('test', null, array(), Comparison::ISNOT);
+    	$statement = $this->_persister->getSelectConditionStatementSQL('test', null, array(), Comparison::IS_NOT);
     	$this->assertEquals('test IS NOT ?', $statement);
     }
 }
