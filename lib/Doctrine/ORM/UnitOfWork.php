@@ -2470,6 +2470,10 @@ class UnitOfWork implements PropertyChangedListener
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
                     : $data[$fieldName];
             }
+            
+            
+            /* Here, if a field is defined as id, I have an error because it's an object and not a string...
+            Can you please fix this bug ? Thank you. */
 
             $idHash = implode(' ', $id);
         } else {
