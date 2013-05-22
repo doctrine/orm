@@ -86,6 +86,7 @@ class BasicEntityPersister
     static private $comparisonMap = array(
         Comparison::EQ       => '= %s',
         Comparison::IS       => 'IS %s',
+        Comparison::IS_NOT   => 'IS NOT %s',
         Comparison::NEQ      => '!= %s',
         Comparison::GT       => '> %s',
         Comparison::GTE      => '>= %s',
