@@ -88,7 +88,7 @@ class BasicEntityPersister
      */
     static private $comparisonMap = array(
         Comparison::EQ  => '= %s',
-        Comparison::IS  => 'IS %s',
+        Comparison::IS  => '= %s',
         Comparison::NEQ => '!= %s',
         Comparison::GT  => '> %s',
         Comparison::GTE => '>= %s',
@@ -1455,6 +1455,18 @@ class BasicEntityPersister
         if (isset($this->_class->fieldMappings[$field]['requireSQLConversion'])) {
             $type = Type::getType($this->_class->getTypeOfField($field));
             $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->_platform);
+        }
+
+        if ($comparison !== null) {
+
+            // special case null value handling
+            if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
+                return $conditionSql . ' IS NULL';
+            } else if ($comparison === Comparison::NEQ && $value === null) {
+                return $conditionSql . ' IS NOT NULL';
+            }
+
+            return $conditionSql . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
         }
 
         $conditionSql .= ($comparison === null)
