@@ -85,7 +85,7 @@ class BasicEntityPersister
      */
     static private $comparisonMap = array(
         Comparison::EQ       => '= %s',
-        Comparison::IS       => 'IS %s',
+        Comparison::IS       => '= %s',
         Comparison::NEQ      => '!= %s',
         Comparison::GT       => '> %s',
         Comparison::GTE      => '>= %s',
@@ -1608,6 +1608,14 @@ class BasicEntityPersister
         }
 
         if ($comparison !== null) {
+
+            // special case null value handling
+            if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
+                return $condition . ' IS NULL';
+            } else if ($comparison === Comparison::NEQ && $value === null) {
+                return $condition . ' IS NOT NULL';
+            }
+
             return $condition . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
         }
 

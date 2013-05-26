@@ -52,7 +52,14 @@ class SqlValueVisitor extends ExpressionVisitor
     {
         $value          = $this->getValueFromComparison($comparison);
         $field          = $comparison->getField();
-        
+        $operator       = $comparison->getOperator();
+
+        if (($operator === Comparison::EQ || $operator === Comparison::IS) && $value === null) {
+            return;
+        } else if ($operator === Comparison::NEQ && $value === null) {
+            return;
+        }
+
         $this->values[] = $value;
         $this->types[]  = array($field, $value);
     }
