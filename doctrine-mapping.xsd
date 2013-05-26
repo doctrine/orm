@@ -37,6 +37,7 @@
       <xs:element name="cascade-merge" type="orm:emptyType" minOccurs="0"/> 
       <xs:element name="cascade-remove" type="orm:emptyType" minOccurs="0"/> 
       <xs:element name="cascade-refresh" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-detach" type="orm:emptyType" minOccurs="0"/>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:anyAttribute namespace="##other"/>
@@ -86,8 +87,11 @@
   </xs:complexType>
 
   <xs:complexType name="named-native-query">
+    <xs:sequence>
+      <xs:element name="query" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="query" type="xs:string" use="required"/>
     <xs:attribute name="result-class" type="xs:string" />
     <xs:attribute name="result-set-mapping" type="xs:string" />
   </xs:complexType>
@@ -95,14 +99,14 @@
   <xs:complexType name="named-native-queries">
     <xs:sequence>
       <xs:element name="named-native-query" type="orm:named-native-query" minOccurs="1" maxOccurs="unbounded" />
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="entity-listener">
     <xs:sequence>
       <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="class" type="xs:string"/>
   </xs:complexType>
@@ -127,20 +131,24 @@
       <xs:element name="field-result" type="orm:field-result" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="entity-class" type="xs:string" use="required" />
+    <xs:attribute name="discriminator-column" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="sql-result-set-mapping">
     <xs:sequence>
-      <xs:element name="entity-result" type="orm:entity-result" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="column-result" type="orm:column-result" minOccurs="0" maxOccurs="unbounded" />
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="entity-result" type="orm:entity-result"/>
+            <xs:element name="column-result" type="orm:column-result"/>
+            <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+        </xs:choice>
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:complexType name="sql-result-set-mappings">
     <xs:sequence>
       <xs:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping" minOccurs="1" maxOccurs="unbounded" />
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -155,6 +163,7 @@
       <xs:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-native-queries" type="orm:named-native-queries" minOccurs="0" maxOccurs="1" />
+      <xs:element name="sql-result-set-mappings" type="orm:sql-result-set-mappings" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
@@ -221,6 +230,7 @@
   
   <xs:simpleType name="generator-strategy"> 
     <xs:restriction base="xs:token"> 
+      <xs:enumeration value="NONE"/>
       <xs:enumeration value="TABLE"/> 
       <xs:enumeration value="SEQUENCE"/> 
       <xs:enumeration value="IDENTITY"/> 
@@ -380,7 +390,7 @@
     <xs:sequence>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
-    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="name" type="xs:NMTOKEN" use="optional" />
     <xs:attribute name="referenced-column-name" type="xs:NMTOKEN" use="optional" default="id" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
@@ -505,7 +515,7 @@
   <xs:complexType name="association-overrides">
     <xs:sequence>
       <xs:element name="association-override" type="orm:association-override" minOccurs="1" maxOccurs="unbounded" />
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -521,16 +531,33 @@
   <xs:complexType name="attribute-overrides">
     <xs:sequence>
       <xs:element name="attribute-override" type="orm:attribute-override" minOccurs="1" maxOccurs="unbounded" />
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="attribute-override">
     <xs:sequence>
-      <xs:element name="field" type="orm:field" minOccurs="1" />
-      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+      <xs:element name="field" type="orm:attribute-override-field" minOccurs="1" />
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="attribute-override-field">
+    <xs:sequence>
+      <xs:element name="options" type="orm:options" minOccurs="0" />
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
+    <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="length" type="xs:NMTOKEN" />
+    <xs:attribute name="unique" type="xs:boolean" default="false" />
+    <xs:attribute name="nullable" type="xs:boolean" default="false" />
+    <xs:attribute name="version" type="xs:boolean" />
+    <xs:attribute name="column-definition" type="xs:string" />
+    <xs:attribute name="precision" type="xs:integer" use="optional" />
+    <xs:attribute name="scale" type="xs:integer" use="optional" />
+    <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
 </xs:schema>

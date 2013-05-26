@@ -66,23 +66,32 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @param string $xmlMappingFile
      * @dataProvider dataValidSchema
+     * @group DDC-2429
      */
     public function testValidateXmlSchema($xmlMappingFile)
     {
-        $xsdSchemaFile = __DIR__ . "/../../../../../doctrine-mapping.xsd";
+        $xsdSchemaFile  = __DIR__ . '/../../../../../doctrine-mapping.xsd';
+        $dom            = new \DOMDocument('UTF-8');
 
-        $dom = new \DOMDocument('UTF-8');
         $dom->load($xmlMappingFile);
+
         $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
     static public function dataValidSchema()
     {
-        return array(
-            array(__DIR__ . "/xml/Doctrine.Tests.ORM.Mapping.CTI.dcm.xml"),
-            array(__DIR__ . "/xml/Doctrine.Tests.ORM.Mapping.User.dcm.xml"),
-            array(__DIR__ . "/xml/CatNoId.dcm.xml"),
+        $list    = glob(__DIR__ . '/xml/*.xml');
+        $invalid = array(
+            'Doctrine.Tests.Models.DDC889.DDC889Class.dcm'
         );
+
+        $list = array_filter($list, function($item) use ($invalid){
+            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
+        });
+
+        return array_map(function($item){
+            return array($item);
+        }, $list);
     }
 
     /**
