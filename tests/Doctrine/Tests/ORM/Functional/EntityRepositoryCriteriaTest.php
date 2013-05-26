@@ -84,4 +84,60 @@ class EntityRepositoryCriteriaTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(2, count($dates));
     }
+
+    private function loadNullFieldFixtures()
+    {
+        $today = new DateTimeModel();
+        $today->datetime =
+        $today->date =
+            new \DateTime('today');
+
+        $this->_em->persist($today);
+
+        $tomorrow = new DateTimeModel();
+        $tomorrow->datetime =
+        $tomorrow->date =
+        $tomorrow->time =
+            new \DateTime('tomorrow');
+        $this->_em->persist($tomorrow);
+
+        $this->_em->flush();
+        $this->_em->clear();
+    }
+
+    public function testIsNullComparison()
+    {
+        $this->loadNullFieldFixtures();
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+
+        $dates = $repository->matching(new Criteria(
+            Criteria::expr()->isNull('time')
+        ));
+
+        $this->assertEquals(1, count($dates));
+    }
+
+    public function testEqNullComparison()
+    {
+        $this->loadNullFieldFixtures();
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+
+        $dates = $repository->matching(new Criteria(
+            Criteria::expr()->eq('time', null)
+        ));
+
+        $this->assertEquals(1, count($dates));
+    }
+
+    public function testNotEqNullComparison()
+    {
+        $this->loadNullFieldFixtures();
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+
+        $dates = $repository->matching(new Criteria(
+            Criteria::expr()->neq('time', null)
+        ));
+
+        $this->assertEquals(1, count($dates));
+    }
 }
