@@ -277,7 +277,7 @@ detail:
 
 The first parameter is the alias of the entity result to which the
 meta column belongs. A meta result column (foreign key or
-discriminator column) always belongs to to an entity result. The
+discriminator column) always belongs to an entity result. The
 second parameter is the column alias/name of the column in the SQL
 result set and the third parameter is the column name used in the
 mapping.
