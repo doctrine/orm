@@ -122,7 +122,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function __construct(EntityManager $em, $class, $coll)
     {
-        $this->coll      = $coll;
+        $this->coll      = is_array($coll) ? new ArrayCollection($coll) : $coll;
         $this->em        = $em;
         $this->typeClass = $class;
     }
