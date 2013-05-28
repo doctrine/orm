@@ -1041,6 +1041,7 @@ class SqlWalker implements TreeWalker
                       . $condExprConjunction . '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
 
                 $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinAlias));
+
                 if ( ! empty($discrSql)) {
                     $sql .= ' AND (' . $discrSql . ')';
                 }
