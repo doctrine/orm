@@ -175,7 +175,20 @@ class DatabaseDriver implements MappingDriver
         $metadata->table['name'] = $tableName;
 
         $columns = $this->tables[$tableName]->getColumns();
+        /** @var \Doctrine\DBAL\Schema\Index[] $indexes */
         $indexes = $this->tables[$tableName]->getIndexes();
+
+        foreach($indexes as $index){
+            if ($index->isPrimary()){
+                continue;
+            }
+            if ($index->isSimpleIndex()){
+                $metadata->table['indexes'][$index->getName()]['columns'] = $index->getColumns();
+            }else if($index->isUnique()){
+                $metadata->table['uniqueConstraints'][$index->getName()]['columns'] = $index->getColumns();
+            }
+        }
+
         try {
             $primaryKeyColumns = $this->tables[$tableName]->getPrimaryKey()->getColumns();
         } catch(SchemaException $e) {
@@ -197,7 +210,7 @@ class DatabaseDriver implements MappingDriver
         $fieldMappings = array();
         foreach ($columns as $column) {
             $fieldMapping = array();
-
+            /** @var \Doctrine\DBAL\Schema\Column $column */
             if (in_array($column->getName(), $allForeignKeyColumns)) {
                 continue;
             } else if ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
@@ -213,8 +226,20 @@ class DatabaseDriver implements MappingDriver
                 $fieldMapping['fixed'] = $column->getFixed();
             } else if ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
                 $fieldMapping['unsigned'] = $column->getUnsigned();
+            }else if ($column->getType() instanceof \Doctrine\DBAL\Types\DecimalType){
+                $fieldMapping['precision'] = $column->getPrecision();
+                $fieldMapping['scale'] = $column->getScale();
             }
             $fieldMapping['nullable'] = $column->getNotNull() ? false : true;
+
+            $comment = $column->getComment();
+            if ($comment!==null){
+                 $fieldMapping['comment'] = $comment;
+            }
+            $default = $column->getDefault();
+            if ($default!==null){
+                $fieldMapping['default'] = $default;
+            }
 
             if (isset($fieldMapping['id'])) {
                 $ids[] = $fieldMapping;
