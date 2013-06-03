@@ -41,6 +41,7 @@ class EntityListenerBuilder
         Events::postPersist => true,
         Events::preUpdate   => true,
         Events::postUpdate  => true,
+        Events::onLoad      => true,
         Events::postLoad    => true,
         Events::preFlush    => true
     );

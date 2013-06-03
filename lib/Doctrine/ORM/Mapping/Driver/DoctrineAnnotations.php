@@ -51,6 +51,7 @@ require_once __DIR__.'/../PreUpdate.php';
 require_once __DIR__.'/../PostUpdate.php';
 require_once __DIR__.'/../PreRemove.php';
 require_once __DIR__.'/../PostRemove.php';
+require_once __DIR__.'/../OnLoad.php';
 require_once __DIR__.'/../PostLoad.php';
 require_once __DIR__.'/../PreFlush.php';
 require_once __DIR__.'/../FieldResult.php';

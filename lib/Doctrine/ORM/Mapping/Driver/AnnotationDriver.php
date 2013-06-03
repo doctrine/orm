@@ -518,6 +518,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $callbacks[] = array($method->name, Events::postRemove);
             }
 
+            if ($annot instanceof \Doctrine\ORM\Mapping\OnLoad) {
+                $callbacks[] = array($method->name, Events::onLoad);
+            }
+
             if ($annot instanceof \Doctrine\ORM\Mapping\PostLoad) {
                 $callbacks[] = array($method->name, Events::postLoad);
             }
