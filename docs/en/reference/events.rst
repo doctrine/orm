@@ -169,8 +169,11 @@ the life-time of their registered entities.
 -  postUpdate - The postUpdate event occurs after the database
    update operations to entity data. It is not called for a DQL UPDATE statement.
 -  postLoad - The postLoad event occurs for an entity after the
-   entity has been loaded into the current EntityManager from the
-   database or after the refresh operation has been applied to it.
+   entity has been loaded from the database and before it is 
+   loaded into the current EntityManager or after the refresh 
+   operation has been applied to it.
+   You may throw a Doctrine\ORM\CancelLoadEntitiyException 
+   to cancel loading of the entity into the EntityManager.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml).
@@ -718,7 +721,9 @@ postLoad
 ~~~~~~~~
 
 This event is called after an entity is constructed by the
-EntityManager.
+EntityManager and before the entity is loaded into the EntityManager.
+You may throw a Doctrine\ORM\CancelLoadEntitiyException to prevent
+the entity from being loaded into the EntityManager.
 
 Entity listeners
 ----------------
