@@ -132,7 +132,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         $uow    = $this->_em->getUnitOfWork();
         $entity = $uow->createEntity($entityName, $data, $this->_hints);
 
-        $result[] = $entity;
+        if ($entity) $result[] = $entity;
     }
 
     /**

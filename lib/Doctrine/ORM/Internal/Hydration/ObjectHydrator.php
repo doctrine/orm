@@ -440,6 +440,7 @@ class ObjectHydrator extends AbstractHydrator
                                 }
                             } else {
                                 $element = $this->getEntity($data, $dqlAlias);
+                                if (!$element) continue;
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                                     $indexValue = $row[$this->_rsm->indexByMap[$dqlAlias]];
@@ -451,7 +452,7 @@ class ObjectHydrator extends AbstractHydrator
                                     $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
                                 }
                                 // Update result pointer
-                                $this->resultPointers[$dqlAlias] = $element;
+                                if ($element) $this->resultPointers[$dqlAlias] = $element;
                             }
                         } else {
                             // Update result pointer
@@ -471,6 +472,7 @@ class ObjectHydrator extends AbstractHydrator
                         // we refresh the entity or its an unitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->getEntity($data, $dqlAlias);
+                            if (!$element) continue;
                             $reflField->setValue($parentObject, $element);
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->ce[$relation['targetEntity']];
@@ -525,6 +527,7 @@ class ObjectHydrator extends AbstractHydrator
                 // check for existing result from the iterations before
                 if ( ! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
+                    if (!$element) continue;
 
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);

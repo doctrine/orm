@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Common\EventArgs;
 
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
@@ -30,8 +30,55 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
  * @since  2.2
  * @author Tom Anderson <tanderson@soliantconsulting.com>
  */
-class OnLoadEventArgs extends LifecycleEventArgs
+class OnLoadEventArgs extends EventArgs
 {
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
+     * @var object
+     */
+    private $entity;
+
+    /**
+     * Constructor
+     *
+     * @param object $object
+     * @param ObjectManager $objectManager
+     */
+    public function __construct($entity, EntityManager $entityManager)
+    {
+        $this->setEntity($entity);
+        $this->setEntityManager($entityManager);
+    }
+
+    /**
+     * Retrieve associated entity.
+     *
+     * @return object
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
+
+    /**
+     * Retrieve associated ObjectManager.
+     *
+     * @return ObjectManager
+     */
+    public function getObjectManager()
+    {
+        return $this->entityManager;
+    }
+
+    private function setEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     /**
      * Sets associated Entity.
      *
@@ -39,7 +86,7 @@ class OnLoadEventArgs extends LifecycleEventArgs
      */
     public function setEntity($value)
     {
-        $this->object = $value;
+        $this->entity = $value;
         return $this;
     }
 }
