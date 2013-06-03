@@ -168,6 +168,10 @@ the life-time of their registered entities.
    update operations to entity data. It is not called for a DQL UPDATE statement.
 -  postUpdate - The postUpdate event occurs after the database
    update operations to entity data. It is not called for a DQL UPDATE statement.
+-  onLoad - The onLoad event occurs immediatly before postLoad and provides a 
+   mutable entity.  Set the entity to false to cancel loading.  The entity
+   in the event object after the event has fired will replace the 
+   original entity.
 -  postLoad - The postLoad event occurs for an entity after the
    entity has been loaded into the current EntityManager from the
    database or after the refresh operation has been applied to it.
@@ -187,7 +191,7 @@ the life-time of their registered entities.
 
 .. warning::
 
-    Note that the postLoad event occurs for an entity
+    Note that the onLoad and postLoad events occurs for an entity
     before any associations have been initialized. Therefore it is not
     safe to access associations in a postLoad callback or event
     handler.
@@ -264,12 +268,18 @@ event occurs.
             $this->value = 'changed from postPersist callback!';
         }
 
+        /** @OnLoad */
+        public function doStuffOnLoad()
+        {
+            $this->value = 'changed from onLoad callback!';
+        }
+
         /** @PostLoad */
         public function doStuffOnPostLoad()
         {
             $this->value = 'changed from postLoad callback!';
         }
-
+        
         /** @PreUpdate */
         public function doStuffOnPreUpdate()
         {
@@ -713,6 +723,41 @@ Changes in here are not relevant to the persistence in the
 database, but you can use these events to alter non-persistable items,
 like non-mapped fields, logging or even associated classes that are
 directly mapped by Doctrine.
+
+onLoad
+~~~~~~
+
+This event is called immediatly before the postLoad event.  This event
+provides a mutable and cancelable mechanism for the loading entity.  
+
+.. code-block:: php
+
+    <?php
+    class OnLoadListener
+    {
+        public function onLoad(OnLoadEventArgs $args)
+        {
+            $cancelEntity = false;
+            
+            if ($cancelEntity) {
+                // Cancel entity loading
+                $args->setEntity(false);
+                return;
+            }
+            
+            $replaceEntity = new ReplacementEntity;
+            
+            if ($replaceEntity) {
+                // Replace loaded entity with another one
+                $args->setEntity($replacementEntity);
+                return;
+            }
+            
+            // Replace entity values
+            $newValues = array('name' => 'newName');
+            $args->getEntity()->exchangeArray($newValues);            
+        }
+    }
 
 postLoad
 ~~~~~~~~
