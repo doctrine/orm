@@ -32,6 +32,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Proxy;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnLoadEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -2700,6 +2701,16 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($overrideLocalValues) {
+            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::onLoad);
+
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                $onLoadEventArgs = new OnLoadEventArgs($entity, $this->em);
+                $this->listenersInvoker->invoke($class, Events::onLoad, $entity, $onLoadEventArgs, $invoke);
+
+                if ($onLoadEventArgs->getEntity() === false) return false;
+            }
+
+
             $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
@@ -2858,7 +2869,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
- 
+
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.

@@ -98,6 +98,14 @@ final class Events
     const postUpdate = 'postUpdate';
 
     /**
+     * The onLoad event occurs just before the postLoad event.  It allows for a mutable
+     * entity.  If the entity is set to false the entity will not persist to the entity manager.
+     *
+     * @var string
+     */
+     const onLoad = 'onLoad';
+
+    /**
      * The postLoad event occurs for an entity after the entity has been loaded
      * into the current EntityManager from the database or after the refresh operation
      * has been applied to it.
