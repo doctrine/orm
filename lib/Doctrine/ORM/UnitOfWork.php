@@ -78,6 +78,13 @@ class UnitOfWork implements PropertyChangedListener
     const STATE_REMOVED = 4;
 
     /**
+     * Hint used to collect all primary keys of associated entities during hydration
+     * and execute it in a dedicated query afterwards
+     * @see https://doctrine-orm.readthedocs.org/en/latest/reference/dql-doctrine-query-language.html?highlight=eager#temporarily-change-fetch-mode-in-dql
+     */
+    const HINT_DEFEREAGERLOAD = 'deferEagerLoad';
+
+    /**
      * The identity map that holds references to all managed entities that have
      * an identity. The entities are grouped by their class name.
      * Since all classes in a hierarchy must share the same identifier set,
@@ -415,13 +422,15 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeSingleEntityChangeSet($entity)
     {
-        if ( $this->getEntityState($entity) !== self::STATE_MANAGED) {
-            throw new \InvalidArgumentException("Entity has to be managed for single computation " . self::objToStr($entity));
+        $state = $this->getEntityState($entity);
+
+        if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
+            throw new \InvalidArgumentException("Entity has to be managed or scheduled for removal for single computation " . self::objToStr($entity));
         }
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        if ($class->isChangeTrackingDeferredImplicit()) {
+        if ($state === self::STATE_MANAGED && $class->isChangeTrackingDeferredImplicit()) {
             $this->persist($entity);
         }
 
@@ -598,7 +607,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $orgValue = $originalData[$propName];
 
-                // skip if value havent changed
+                // skip if value haven't changed
                 if ($orgValue === $actualValue) {
                     continue;
                 }
@@ -1056,7 +1065,7 @@ class UnitOfWork implements PropertyChangedListener
         $calc = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (dont have a node).
+        // commit order graph yet (don't have a node).
         // We have to inspect changeSet to be able to correctly build dependencies.
         // It is not possible to use IdentityMap here because post inserted ids
         // are not yet available.
@@ -1821,7 +1830,7 @@ class UnitOfWork implements PropertyChangedListener
                 $managedCopyVersion = $reflField->getValue($managedCopy);
                 $entityVersion      = $reflField->getValue($entity);
 
-                // Throw exception if versions dont match.
+                // Throw exception if versions don't match.
                 if ($managedCopyVersion != $entityVersion) {
                     throw OptimisticLockException::lockFailedVersionMismatch($entity, $entityVersion, $managedCopyVersion);
                 }
@@ -1845,7 +1854,7 @@ class UnitOfWork implements PropertyChangedListener
                             // do not merge fields marked lazy that have not been fetched.
                             continue;
                         } else if ( ! $assoc2['isCascadeMerge']) {
-                            if ($this->getEntityState($other, self::STATE_DETACHED) !== self::STATE_MANAGED) {
+                            if ($this->getEntityState($other) === self::STATE_DETACHED) {
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId = $targetClass->getIdentifierValues($other);
 
@@ -1856,6 +1865,7 @@ class UnitOfWork implements PropertyChangedListener
                                     $this->registerManaged($other, $relatedId, array());
                                 }
                             }
+
                             $prop->setValue($managedCopy, $other);
                         }
                     } else {
@@ -2263,6 +2273,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
+        if ($entity === null) {
+            throw new \InvalidArgumentException("No entity passed to UnitOfWork#lock().");
+        }
+
         if ($this->getEntityState($entity, self::STATE_DETACHED) != self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
@@ -2617,7 +2631,7 @@ class UnitOfWork implements PropertyChangedListener
                             // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
                             // then we can append this entity for eager loading!
                             if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
-                                isset($hints['deferEagerLoad']) &&
+                                isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 !$targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
                                 $newValue->__isInitialized__ === false) {
@@ -2642,7 +2656,7 @@ class UnitOfWork implements PropertyChangedListener
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
-                                case (isset($hints['deferEagerLoad']) && ! $targetClass->isIdentifierComposite):
+                                case (isset($hints[self::HINT_DEFEREAGERLOAD]) && ! $targetClass->isIdentifierComposite):
                                     // TODO: Is there a faster approach?
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
 
@@ -2865,7 +2879,7 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::invalidCompositeIdentifier();
         }
 
-        $values = ($this->getEntityState($entity) === UnitOfWork::STATE_MANAGED)
+        $values = $this->isInIdentityMap($entity)
             ? $this->getEntityIdentifier($entity)
             : $class->getIdentifierValues($entity);
 

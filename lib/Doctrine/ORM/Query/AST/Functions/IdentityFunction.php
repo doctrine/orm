@@ -83,9 +83,9 @@ class IdentityFunction extends FunctionNode
         }
 
         $tableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
-        $columName  = $quoteStrategy->getJoinColumnName($joinColumn, $targetEntity, $platform);
+        $columnName  = $quoteStrategy->getJoinColumnName($joinColumn, $targetEntity, $platform);
 
-        return $tableAlias . '.' . $columName;
+        return $tableAlias . '.' . $columnName;
     }
 
     /**

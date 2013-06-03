@@ -475,7 +475,7 @@ public function __construct()
     public function setFieldVisibility($visibility)
     {
         if ($visibility !== self::FIELD_VISIBLE_PRIVATE && $visibility !== self::FIELD_VISIBLE_PROTECTED) {
-            throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
+            throw new \InvalidArgumentException('Invalid provided visibility (only private and protected are allowed): ' . $visibility);
         }
 
         $this->fieldVisibility = $visibility;
@@ -1274,6 +1274,15 @@ public function __construct()
                 $typeOptions[] = 'orphanRemoval=' . ($associationMapping['orphanRemoval'] ? 'true' : 'false');
             }
 
+            if (isset($associationMapping['fetch']) && $associationMapping['fetch'] !== ClassMetadataInfo::FETCH_LAZY) {
+                $fetchMap = array(
+                    ClassMetadataInfo::FETCH_EXTRA_LAZY => 'EXTRA_LAZY',
+                    ClassMetadataInfo::FETCH_EAGER      => 'EAGER',
+                );
+
+                $typeOptions[] = 'fetch="' . $fetchMap[$associationMapping['fetch']] . '"';
+            }
+
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . '' . $type . '(' . implode(', ', $typeOptions) . ')';
 
             if (isset($associationMapping['joinColumns']) && $associationMapping['joinColumns']) {
@@ -1480,7 +1489,7 @@ public function __construct()
     /**
      * @param integer $type The generator to use for the mapped class.
      *
-     * @return string The literal string for the generetor type.
+     * @return string The literal string for the generator type.
      *
      * @throws \InvalidArgumentException    When the generator type does not exists.
      */

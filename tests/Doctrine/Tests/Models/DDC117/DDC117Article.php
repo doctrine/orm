@@ -29,7 +29,7 @@ class DDC117Article
     private $translations;
 
     /**
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source")
+     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
      */
     private $links;
 
@@ -75,6 +75,10 @@ class DDC117Article
         return $this->details;
     }
 
+    public function getLinks()
+    {
+        return $this->links;
+    }
     public function resetText()
     {
         $this->details = null;

@@ -850,12 +850,8 @@ final class PersistentCollection implements Collection, Selectable
             throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany associations at the moment.");
         }
 
-        $id              = $this->em
-            ->getClassMetadata(get_class($this->owner))
-            ->getSingleIdReflectionProperty()
-            ->getValue($this->owner);
         $builder         = Criteria::expr();
-        $ownerExpression = $builder->eq($this->backRefFieldName, $id);
+        $ownerExpression = $builder->eq($this->backRefFieldName, $this->owner);
         $expression      = $criteria->getWhereExpression();
         $expression      = $expression ? $builder->andX($expression, $ownerExpression) : $ownerExpression;
 

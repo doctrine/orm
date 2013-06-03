@@ -318,7 +318,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + 5000) * c0_.id + 3 < 10000000'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE ((c0_.id + 5000) * c0_.id + 3) < 10000000'
         );
     }
 
@@ -482,7 +482,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1",
-            "SELECT c0_.id AS id0, c0_.name AS name1, c0_.discr AS discr2 FROM company_persons c0_ WHERE c0_.discr IN ('employee')",
+            "SELECT c0_.id AS id0, c0_.name AS name1, c0_.discr AS discr2 FROM company_persons c0_ WHERE c0_.discr IN (?)",
             array(), array(1 => $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee'))
         );
     }
@@ -763,7 +763,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id > 10 and u.id < 42 and ((u.id * 2) > 5)",
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id > 10 AND c0_.id < 42 AND (c0_.id * 2 > 5)"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id > 10 AND c0_.id < 42 AND ((c0_.id * 2) > 5)"
         );
     }
 
@@ -771,7 +771,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "select u from Doctrine\Tests\Models\CMS\CmsUser u where (u.id > 10) and (u.id < 42 and ((u.id * 2) > 5)) or u.id <> 42",
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id > 10) AND (c0_.id < 42 AND (c0_.id * 2 > 5)) OR c0_.id <> 42"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id > 10) AND (c0_.id < 42 AND ((c0_.id * 2) > 5)) OR c0_.id <> 42"
         );
     }
 
@@ -1167,7 +1167,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT g.id, CASE WHEN ((g.id / 2) > 18) THEN 1 ELSE 0 END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g",
-            "SELECT c0_.id AS id0, CASE WHEN (c0_.id / 2 > 18) THEN 1 ELSE 0 END AS sclr1 FROM cms_groups c0_"
+            "SELECT c0_.id AS id0, CASE WHEN ((c0_.id / 2) > 18) THEN 1 ELSE 0 END AS sclr1 FROM cms_groups c0_"
         );
     }
 
@@ -1175,7 +1175,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT g.id, CASE WHEN (g.id / 2 < 10) THEN 2 WHEN ((g.id / 2) > 20) THEN 1 ELSE 0 END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g",
-            "SELECT c0_.id AS id0, CASE WHEN (c0_.id / 2 < 10) THEN 2 WHEN (c0_.id / 2 > 20) THEN 1 ELSE 0 END AS sclr1 FROM cms_groups c0_"
+            "SELECT c0_.id AS id0, CASE WHEN (c0_.id / 2 < 10) THEN 2 WHEN ((c0_.id / 2) > 20) THEN 1 ELSE 0 END AS sclr1 FROM cms_groups c0_"
         );
     }
 
@@ -1191,7 +1191,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id = (CASE g.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END)",
-            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id = CASE c0_.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END"
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id = (CASE c0_.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END)"
         );
     }
 
@@ -1199,7 +1199,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN ((g2.id / 2) > 18) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)",
-            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c1_.id / 2 > 18) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN ((c1_.id / 2) > 18) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
         );
     }
 
@@ -1207,7 +1207,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN (g.id / 2 < 10) THEN 3 WHEN ((g.id / 2) > 20) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)",
-            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c0_.id / 2 < 10) THEN 3 WHEN (c0_.id / 2 > 20) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c0_.id / 2 < 10) THEN 3 WHEN ((c0_.id / 2) > 20) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
         );
     }
 
@@ -1234,7 +1234,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT g.id, CASE WHEN ((g.id / 2) > 18) THEN 'Foo' ELSE 'Bar' END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g",
-            "SELECT c0_.id AS id0, CASE WHEN (c0_.id / 2 > 18) THEN 'Foo' ELSE 'Bar' END AS sclr1 FROM cms_groups c0_"
+            "SELECT c0_.id AS id0, CASE WHEN ((c0_.id / 2) > 18) THEN 'Foo' ELSE 'Bar' END AS sclr1 FROM cms_groups c0_"
         );
     }
 
@@ -1255,17 +1255,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             "SELECT CASE g.name WHEN 'admin' THEN (- 1) ELSE (- 2) END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
-            "SELECT CASE c0_.name WHEN 'admin' THEN -1 ELSE -2 END AS sclr0 FROM cms_groups c0_"
+            "SELECT CASE c0_.name WHEN 'admin' THEN (-1) ELSE (-2) END AS sclr0 FROM cms_groups c0_"
         );
 
         $this->assertSqlGeneration(
             "SELECT CASE g.name WHEN 'admin' THEN ( - :value) ELSE ( + :value) END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
-            "SELECT CASE c0_.name WHEN 'admin' THEN -? ELSE +? END AS sclr0 FROM cms_groups c0_"
+            "SELECT CASE c0_.name WHEN 'admin' THEN (-?) ELSE (+?) END AS sclr0 FROM cms_groups c0_"
         );
 
         $this->assertSqlGeneration(
             "SELECT CASE g.name WHEN 'admin' THEN ( - g.id) ELSE ( + g.id) END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
-            "SELECT CASE c0_.name WHEN 'admin' THEN -c0_.id ELSE +c0_.id END AS sclr0 FROM cms_groups c0_"
+            "SELECT CASE c0_.name WHEN 'admin' THEN (-c0_.id) ELSE (+c0_.id) END AS sclr0 FROM cms_groups c0_"
         );
     }
 
@@ -1587,7 +1587,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where ( (u.id + u.id) * u.id ) > 100',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + c0_.id) * c0_.id > 100'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE ((c0_.id + c0_.id) * c0_.id) > 100'
         );
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where (u.id + u.id) * u.id > 100',
@@ -1781,11 +1781,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY ( ( (u.id + 1) * (u.id - 1) ) / 2)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY (c0_.id + 1) * (c0_.id - 1) / 2 ASC'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY (((c0_.id + 1) * (c0_.id - 1)) / 2) ASC'
         );
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY ((u.id + 5000) * u.id + 3) ',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY (c0_.id + 5000) * c0_.id + 3 ASC'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY ((c0_.id + 5000) * c0_.id + 3) ASC'
         );
     }
 
@@ -1807,6 +1807,27 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Quote\SimpleEntity e ORDER BY e.value',
             'SELECT TRIM(d0_."simple-entity-value") AS sclr0 FROM "ddc-1719-simple-entity" d0_ ORDER BY d0_."simple-entity-value" ASC'
+        );
+    }
+
+    /**
+     * @group DDC-2435
+     */
+    public function testColumnNameWithNumbersAndNonAlphanumericCharacters()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT t0_."1:1" AS _110, t0_."2:2" AS _221 FROM table t0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT e.value FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT t0_."2:2" AS _220 FROM table t0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT TRIM(t0_."2:2") AS sclr0 FROM table t0_'
         );
     }
 
@@ -1863,7 +1884,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT SUM(CASE WHEN e.salary <= :value THEN (e.salary - :value) WHEN e.salary >= :value THEN (:value - e.salary) ELSE (e.salary + :value) END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
-            'SELECT SUM(CASE WHEN c0_.salary <= ? THEN c0_.salary - ? WHEN c0_.salary >= ? THEN ? - c0_.salary ELSE c0_.salary + ? END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
+            'SELECT SUM(CASE WHEN c0_.salary <= ? THEN (c0_.salary - ?) WHEN c0_.salary >= ? THEN (? - c0_.salary) ELSE (c0_.salary + ?) END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
         );
     }
 
@@ -1887,49 +1908,69 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT CASE WHEN LENGTH(c0_.name) > ? THEN SUBSTRING(c0_.name FROM 0 FOR ?) ELSE TRIM(c0_.name) END AS sclr0 FROM cms_users c0_'
         );
     }
-    
+
     /**
      * @group DDC-2268
      */
-    
     public function testSupportsMoreThanTwoParametersInConcatFunction()
     {
-    	$connMock = $this->_em->getConnection();
+    	$connMock    = $this->_em->getConnection();
     	$orgPlatform = $connMock->getDatabasePlatform();
     
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
     	$this->assertSqlGeneration(
-    			"SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
-    			"SELECT c0_.id AS id0 FROM cms_users c0_ WHERE CONCAT(c0_.name, c0_.status, 's') = ?"
+            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
+            "SELECT c0_.id AS id0 FROM cms_users c0_ WHERE CONCAT(c0_.name, c0_.status, 's') = ?"
     	);
     	$this->assertSqlGeneration(
-    			"SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
-    			"SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
+            "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
+            "SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
     
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
     	$this->assertSqlGeneration(
-    			"SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
-    			"SELECT c0_.id AS id0 FROM cms_users c0_ WHERE c0_.name || c0_.status || 's' = ?"
+            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
+            "SELECT c0_.id AS id0 FROM cms_users c0_ WHERE c0_.name || c0_.status || 's' = ?"
     	);
     	$this->assertSqlGeneration(
-    			"SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
-    			"SELECT c0_.id || c0_.name || c0_.status AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
+            "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
+            "SELECT c0_.id || c0_.name || c0_.status AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    	
     	
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
     	$this->assertSqlGeneration(
-    			"SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
-    			"SELECT c0_.id AS id0 FROM cms_users c0_ WITH (NOLOCK) WHERE (c0_.name + c0_.status + 's') = ?"
+            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
+            "SELECT c0_.id AS id0 FROM cms_users c0_ WITH (NOLOCK) WHERE (c0_.name + c0_.status + 's') = ?"
     	);
     	$this->assertSqlGeneration(
-    			"SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
-    			"SELECT (c0_.id + c0_.name + c0_.status) AS sclr0 FROM cms_users c0_ WITH (NOLOCK) WHERE c0_.id = ?"
+            "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
+            "SELECT (c0_.id + c0_.name + c0_.status) AS sclr0 FROM cms_users c0_ WITH (NOLOCK) WHERE c0_.id = ?"
     	);
     
     	$connMock->setDatabasePlatform($orgPlatform);
     }
+
+     /**
+     * @group DDC-2188
+     */
+    public function testArithmeticPriority()
+    {
+        $this->assertSqlGeneration(
+            'SELECT 100/(2*2) FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT 100 / (2 * 2) AS sclr0 FROM cms_users c0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT (u.id / (u.id * 2)) FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT (c0_.id / (c0_.id * 2)) AS sclr0 FROM cms_users c0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT 100/(2*2) + (u.id / (u.id * 2)) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id / (u.id * 2)) > 0',
+            'SELECT 100 / (2 * 2) + (c0_.id / (c0_.id * 2)) AS sclr0 FROM cms_users c0_ WHERE (c0_.id / (c0_.id * 2)) > 0'
+        );
+    }
+
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode

@@ -343,15 +343,30 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
         $contracts = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
         $this->assertEquals(3, count($contracts));
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
         $contracts = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
         $this->assertEquals(1, count($contracts));
+    }
+
+    /**
+     * @group DDC-2430
+     */
+    public function testMatchingNonObjectOnAssocationThrowsException()
+    {
+        $this->loadFullFixture();
+
+        $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
+
+        $this->setExpectedException('Doctrine\ORM\Persisters\PersisterException', 'annot match on Doctrine\Tests\Models\Company\CompanyContract::salesPerson with a non-object value.');
+        $contracts = $repository->matching(new Criteria(
+            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+        ));
     }
 
     /**

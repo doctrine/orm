@@ -21,6 +21,7 @@ Index
 -  :ref:`@Id <annref_id>`
 -  :ref:`@InheritanceType <annref_inheritancetype>`
 -  :ref:`@JoinColumn <annref_joincolumn>`
+-  :ref:`@JoinColumns <annref_joincolumns>`
 -  :ref:`@JoinTable <annref_jointable>`
 -  :ref:`@ManyToOne <annref_manytoone>`
 -  :ref:`@ManyToMany <annref_manytomany>`

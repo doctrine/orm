@@ -428,7 +428,7 @@ class SqlWalker implements TreeWalker
             $conn   = $this->em->getConnection();
             $values = array();
 
-            if ($class->discriminatorValue !== null) { // discrimnators can be 0
+            if ($class->discriminatorValue !== null) { // discriminators can be 0
                 $values[] = $conn->quote($class->discriminatorValue);
             }
 
@@ -1216,6 +1216,7 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleArithmeticExpression):
             case ($expr instanceof AST\ArithmeticTerm):
             case ($expr instanceof AST\ArithmeticFactor):
+            case ($expr instanceof AST\ParenthesisExpression):
             case ($expr instanceof AST\Literal):
             case ($expr instanceof AST\NullIfExpression):
             case ($expr instanceof AST\CoalesceExpression):
@@ -1407,6 +1408,16 @@ class SqlWalker implements TreeWalker
     {
         return 'SELECT' . ($simpleSelectClause->isDistinct ? ' DISTINCT' : '')
              . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
+    }
+
+    /**
+     * @param \Doctrine\ORM\Query\AST\ParenthesisExpression $parenthesisExpression
+     *
+     * @return string.
+     */
+    public function walkParenthesisExpression(AST\ParenthesisExpression $parenthesisExpression)
+    {
+        return sprintf('(%s)', $parenthesisExpression->expression->dispatch($this));
     }
 
     /**
@@ -1932,31 +1943,22 @@ class SqlWalker implements TreeWalker
 
         foreach ($instanceOfExpr->value as $parameter) {
             if ($parameter instanceof AST\InputParameter) {
-                // We need to modify the parameter value to be its correspondent mapped value
-                $dqlParamKey = $parameter->name;
-                $dqlParam    = $this->query->getParameter($dqlParamKey);
-                $paramValue  = $this->query->processParameterValue($dqlParam->getValue());
-
-                if ( ! ($paramValue instanceof \Doctrine\ORM\Mapping\ClassMetadata)) {
-                    throw QueryException::invalidParameterType('ClassMetadata', get_class($paramValue));
-                }
-
-                $entityClassName = $paramValue->name;
+                $sqlParameterList[] = $this->walkInputParameter($parameter);
             } else {
                 // Get name from ClassMetadata to resolve aliases.
                 $entityClassName = $this->em->getClassMetadata($parameter)->name;
-            }
 
-            if ($entityClassName == $class->name) {
-                $sqlParameterList[] = $this->conn->quote($class->discriminatorValue);
-            } else {
-                $discrMap = array_flip($class->discriminatorMap);
+                if ($entityClassName == $class->name) {
+                    $sqlParameterList[] = $this->conn->quote($class->discriminatorValue);
+                } else {
+                    $discrMap = array_flip($class->discriminatorMap);
 
-                if (!isset($discrMap[$entityClassName])) {
-                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
+                    if (!isset($discrMap[$entityClassName])) {
+                        throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
+                    }
+
+                    $sqlParameterList[] = $this->conn->quote($discrMap[$entityClassName]);
                 }
-
-                $sqlParameterList[] = $this->conn->quote($discrMap[$entityClassName]);
             }
         }
 

@@ -182,7 +182,7 @@ example we'll use an integer.
         // ...
     }
 
-Alternatively a datetime type can be used (which maps to an SQL
+Alternatively a datetime type can be used (which maps to a SQL
 timestamp or datetime):
 
 .. code-block:: php

@@ -1,0 +1,42 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="SocialLibrary\ReadBundle\Entity\Novel" table="novel__novel" repository-class="SocialLibrary\ReadBundle\Repository\NovelRepository">
+        <association-overrides>
+            <association-override name="owners">
+                <join-table name="novel__owner">
+                    <join-columns>
+                        <join-column name="object_id" />
+                    </join-columns>
+                    <inverse-join-columns>
+                        <join-column name="owner_id" />
+                    </inverse-join-columns>
+                </join-table>
+            </association-override>
+            <association-override name="creators">
+                <join-table name="novel__creator">
+                    <join-columns>
+                        <join-column name="object_id" />
+                    </join-columns>
+                    <inverse-join-columns>
+                        <join-column name="creator_id" />
+                    </inverse-join-columns>
+                </join-table>
+            </association-override>
+            <association-override name="serie">
+                <join-columns>
+                    <join-column name="novel_serie_id" referenced-column-name="id" />
+                </join-columns>
+            </association-override>
+        </association-overrides>
+
+        <attribute-overrides>
+            <attribute-override name="volume">
+                <field column="novel__volume" type="integer" nullable="true" />
+            </attribute-override>
+        </attribute-overrides>
+    </entity>
+
+</doctrine-mapping>

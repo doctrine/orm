@@ -2,7 +2,7 @@
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHARNTABILITY AND FITNESS FOR
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
  * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
@@ -1064,7 +1064,7 @@ class Parser
         // Creating AST node
         $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $field);
 
-        // Defer PathExpression validation if requested to be defered
+        // Defer PathExpression validation if requested to be deferred
         $this->deferredPathExpressions[] = array(
             'expression'   => $pathExpr,
             'nestingLevel' => $this->nestingLevel,
@@ -2413,7 +2413,7 @@ class Parser
         }
 
         if ($token['type'] === Lexer::T_IDENTIFIER || $token['type'] === Lexer::T_INPUT_PARAMETER || $this->isFunction()) {
-            // Peek beyond the matching closing paranthesis.
+            // Peek beyond the matching closing parenthesis.
             $beyond = $this->lexer->peek();
 
             switch ($peek['value']) {
@@ -2704,7 +2704,7 @@ class Parser
     }
 
     /**
-     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
+     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | ParenthesisExpression
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
      *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
      *          | InputParameter | CaseExpression
@@ -2713,11 +2713,12 @@ class Parser
     {
         if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $this->match(Lexer::T_OPEN_PARENTHESIS);
+
             $expr = $this->SimpleArithmeticExpression();
 
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-            return $expr;
+            return new AST\ParenthesisExpression($expr);
         }
 
         switch ($this->lexer->lookahead['type']) {
@@ -2765,7 +2766,7 @@ class Parser
      * StringExpression ::= StringPrimary | "(" Subselect ")"
      *
      * @return \Doctrine\ORM\Query\AST\StringPrimary |
-     *         \Doctrine]ORM\Query\AST\Subselect
+     *         \Doctrine\ORM\Query\AST\Subselect
      */
     public function StringExpression()
     {

@@ -1,5 +1,19 @@
 # Upgrade to 2.4
 
+## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
+
+In Doctrine 2.3 it was possible to use the new ``matching($criteria)``
+functionality by adding constraints for assocations based on ID:
+
+    Criteria::expr()->eq('association', $assocation->getId());
+
+This functionality does not work on InMemory collections however, because
+in memory criteria compares object values based on reference.
+As of 2.4 the above code will throw an exception. You need to change
+offending code to pass the ``$assocation`` reference directly:
+
+    Criteria::expr()->eq('association', $assocation);
+
 ## Composer is now the default autoloader
 
 The test suite now runs with composer autoloading. Support for PEAR, and tarball autoloading is deprecated.
@@ -10,6 +24,23 @@ Support for GIT submodules is removed.
 Before 2.4 the postFlush and onFlush events were only called when there were
 actually entities that changed. Now these events are called no matter if there
 are entities in the UoW or changes are found.
+
+## Parenthesis are now considered in arithmetic expression
+
+Before 2.4 parenthesis are not considered in arithmetic primary expression.
+That's conceptually wrong, since it might result in wrong values. For example:
+
+The DQL:
+
+    SELECT 100 / ( 2 * 2 ) FROM MyEntity
+
+Before 2.4 it generates the SQL:
+
+    SELECT 100 / 2 * 2 FROM my_entity
+
+Now parenthesis are considered, the previous DQL will generate:
+
+    SELECT 100 / (2 * 2) FROM my_entity
 
 # Upgrade to 2.3
 

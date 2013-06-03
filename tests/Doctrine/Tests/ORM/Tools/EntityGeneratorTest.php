@@ -64,6 +64,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $metadata->mapManyToMany(array(
             'fieldName' => 'comments',
             'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
+            'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
             'joinTable' => array(
                 'name' => 'book_comment',
                 'joinColumns' => array(array('name' => 'book_id', 'referencedColumnName' => 'id')),
@@ -223,6 +224,8 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->identifier, $metadata->identifier);
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
+
+        $this->assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $cm->associationMappings['comments']['fetch']);
     }
 
     public function testLoadPrefixedMetadata()

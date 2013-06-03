@@ -284,6 +284,10 @@ abstract class AbstractQuery
             }
         }
 
+        if ($value instanceof Mapping\ClassMetadata) {
+            return $value->name;
+        }
+
         return $value;
     }
 
@@ -305,7 +309,7 @@ abstract class AbstractQuery
     /**
      * Allows to translate entity namespaces to full qualified names.
      *
-     * @param EntityManager $em
+     * @param Query\ResultSetMapping $rsm
      *
      * @return void
      */

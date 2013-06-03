@@ -117,7 +117,7 @@ that consume new memory.
 Now whenever you call ``EntityManager#flush`` Doctrine will iterate over the
 Identity Map and for each object compares the original property and association
 values with the values that are currently set on the object. If changes are
-detected then the object is queued for an SQL UPDATE operation. Only the fields
+detected then the object is queued for a SQL UPDATE operation. Only the fields
 that actually changed are updated.
 
 This process has an obvious performance impact. The larger the size of the

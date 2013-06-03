@@ -137,7 +137,7 @@ step:
 
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
-    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/entities"), $isDevMode);
+    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
@@ -187,9 +187,7 @@ doctrine command. Its a fairly simple file:
     // cli-config.php
     require_once "bootstrap.php";
 
-    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
-    ));
+    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 You can then change into your project directory and call the
 Doctrine command-line tool:
@@ -258,8 +256,8 @@ entity definition in there:
     }
 
 Note how the properties have getter and setter methods defined except
-`$id`. To access data from entities Doctrine 2 uses the Reflection API, so it
-is possible for Doctrine to access the value of `$id`. You don't have to
+``$id``. To access data from entities Doctrine 2 uses the Reflection API, so it
+is possible for Doctrine to access the value of ``$id``. You don't have to
 take Doctrine into account when designing access to the state of your objects.
 
 The next step for persistence with Doctrine is to describe the
@@ -268,9 +266,8 @@ language. The metadata language describes how entities, their
 properties and references should be persisted and what constraints
 should be applied to them.
 
-Metadata for entities are configured using a
-XML, YAML or Docblock Annotations. This
-Getting Started Guide will show the mappings for all Mapping Drivers.
+Metadata for entities are configured using a XML, YAML or Docblock Annotations.
+This Getting Started Guide will show the mappings for all Mapping Drivers.
 References in the text will be made to the XML mapping.
 
 .. configuration-block::
@@ -337,9 +334,12 @@ You have to update the database now, because we have a first Entity now:
 
 ::
 
-    $ php vendor/bin/doctrine orm:schema-tool:update
+    $ php vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
 
-Now create a simple script to create a new product:
+Specifying both flags ``--force`` and ``-dump-sql`` prints and executes the DDL
+statements.
+
+Now create a new script that will insert products into the database:
 
 .. code-block:: php
 
@@ -357,41 +357,37 @@ Now create a simple script to create a new product:
 
     echo "Created Product with ID " . $product->getId() . "\n";
 
-Call this script to see how new products are created:
+Call this script from the command line to see how new products are created:
 
 ::
 
     $ php create_product.php ORM
     $ php create_product.php DBAL
 
-What is happening here? In the code using the Product is pretty standard OOP.
-The interesting bits are the communication with the ``EntityManager``. To
+What is happening here? Using the ``Product`` is pretty standard OOP.
+The interesting bits are the use of the ``EntityManager`` service. To
 notify the EntityManager that a new entity should be inserted into the database
-you have to call ``persist()``. However the EntityManager does not act on this
-command, its merely notified. You have to explicitly call ``flush()`` to have
-the EntityManager write those two entities to the database.
+you have to call ``persist()``. To intiate a transaction to actually perform
+the insertion, You have to explicitly call ``flush()`` on the ``EntityManager``.
 
-You might wonder why does this distinction between persist notification and
-flush exist: Doctrine 2 uses the UnitOfWork pattern to aggregate all writes
+This distinction between persist and flush is allows to aggregate all writes
 (INSERT, UPDATE, DELETE) into one single transaction, which is executed when
-flush is called.  Using this approach the write-performance is significantly
+flush is called. Using this approach the write-performance is significantly
 better than in a scenario where updates are done for each entity in isolation.
-In more complex scenarios than the previous two, you are free to request
-updates on many different entities and all flush them at once.
 
-Doctrine's UnitOfWork detects entities that have changed after retrieval from
-the database automatically when the flush operation is called, so that you only
-have to keep track of those entities that are new or to be removed and pass
-them to ``EntityManager#persist()`` and ``EntityManager#remove()``
-respectively.
+Doctrine follows the UnitOfWork pattern which additionally detects all entities
+that were fetched and have changed during the request. You don't have to keep track of
+entities yourself, when Doctrine already knowns about them.
 
-We want to see a list of all the products now, so lets create a new script for
-this:
+As a next step we want to fetch a list of all the products. Let's create a
+new script for this:
 
 .. code-block:: php
 
     <?php
     // list_products.php
+    require_once "bootstrap.php";
+
     $productRepository = $entityManager->getRepository('Product');
     $products = $productRepository->findAll();
 
@@ -399,65 +395,144 @@ this:
         echo sprintf("-%s\n", $product->getName());
     }
 
-The ``EntityRepository`` fetched through the ``EntityManager#getRepository()``
-method exists for every entity and is provided by Doctrine. It contains
-some finder methods such as ``findAll()`` we used here.
+The ``EntityManager#getRepository()`` method can create a finder object (called
+repository) for every entity. It is provided by Doctrine and contains some
+finder methods such as ``findAll()``.
 
-Lets display the name of a product based on its ID:
+Let's continue with displaying the name of a product based on its ID:
 
 .. code-block:: php
 
     <?php
-    // show_product.php
+    // show_product.php <id>
+    require_once "bootstrap.php";
+
     $id = $argv[1];
     $product = $entityManager->find('Product', $id);
 
+    if ($product === null) {
+        echo "No product found.\n";
+        exit(1);
+    }
+
     echo sprintf("-%s\n", $product->getName());
+
+Updating a product name demonstrates the functionality UnitOfWork of pattern
+discussed before. We only need to find a product entity and all changes to its
+properties are written to the database:
+
+.. code-block:: php
+
+    <?php
+    // update_product.php <id> <new-name>
+    require_once "bootstrap.php";
+
+    $id = $argv[1];
+    $newName = $argv[2];
+
+    $product = $entityManager->find('Product', $id);
+
+    if ($product === null) {
+        echo "Product $id does not exist.\n";
+        exit(1);
+    }
+
+    $product->setName($newName);
+
+    $entityManager->flush();
+
+After calling this script on one of the existing products, you can verify the
+product name changed by calling the ``show_product.php`` script.
 
 Adding Bug and User Entities
 ----------------------------
 
-We continue with the bug tracker domain, by creating the missing
-classes ``Bug``  and ``User`` and putting them into
-`src/Bug.php` and `src/User.php`
-respectively.
+We continue with the bug tracker domain, by creating the missing classes
+``Bug``  and ``User`` and putting them into ``src/Bug.php`` and
+``src/User.php`` respectively.
 
 .. code-block:: php
 
     <?php
     // src/Bug.php
+    /**
+     * @Entity(repositoryClass="BugRepository") @Table(name="bugs")
+     */
     class Bug
     {
         /**
+         * @Id @Column(type="integer") @GeneratedValue
          * @var int
          */
         protected $id;
         /**
+         * @Column(type="string")
          * @var string
          */
         protected $description;
         /**
+         * @Column(type="datetime")
          * @var DateTime
          */
         protected $created;
         /**
+         * @Column(type="string")
          * @var string
          */
         protected $status;
-    }
 
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function getDescription()
+        {
+            return $this->description;
+        }
+
+        public function setDescription($description)
+        {
+            $this->description = $description;
+        }
+
+        public function setCreated(DateTime $created)
+        {
+            $this->created = $created;
+        }
+
+        public function getCreated()
+        {
+            return $this->created;
+        }
+
+        public function setStatus($status)
+        {
+            $this->status = $status;
+        }
+
+        public function getStatus()
+        {
+            return $this->status;
+        }
+    }
 
 .. code-block:: php
 
     <?php
     // src/User.php
+    /**
+     * @Entity @Table(name="users")
+     */
     class User
     {
         /**
+         * @Id @GeneratedValue @Column(type="integer")
          * @var int
          */
         protected $id;
         /**
+         * @Column(type="string")
          * @var string
          */
         protected $name;
@@ -478,24 +553,20 @@ respectively.
         }
     }
 
-All of the properties so far are scalar values, for example the 3 ID
-fields of the entities, their names, description, status and change dates.
+All of the properties discussed so far are simple string and integer values,
+for example the id fields of the entities, their names, description, status and
+change dates. With just the scalar values this model cannot describe the dynamics that we want. We
+want to model references between entities.
 
-With just the scalar values this model is useless. We need to add references
-between entities in this domain model. The semantics of each type of reference
-are now introduced and discussed on a case by case basis
-to explain how Doctrine handles them.
+References between objects are foreign keys in the database. You never have to
+work with the foreign keys directly, only with objects that represent the
+foreign key through their own identity.
 
-In general each OneToOne or ManyToOne Relation in the Database is replaced by
-an instance of the related object in the domain model. Each OneToMany or
-ManyToMany Relation is replaced by a collection of instances in the domain
-model. You never have to work with the foreign keys, only with objects that
-represent the foreign key through their own identity.
-
-To prevent Doctrine 2 from loading up the complete database in memory if you
-access one object, the Lazy Load pattern is implemented. Proxies of entities or
-collections are created of all the relations that haven't been explicitly
-retrieved from the database yet.
+For every foreign key you either have a Doctrine ManyToOne or OneToOne
+association. On the inverse sides of these foreign keys you can have
+OneToMany associations. Obviously you can have ManyToMany associations
+that connect two tables with each other through a join table with 
+two foreign keys.
 
 Now that you know the basics about references in Doctrine, we can extend the
 domain model to match the requirements:

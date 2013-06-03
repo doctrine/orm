@@ -307,6 +307,7 @@ class YamlDriver extends FileDriver
             }
         }
 
+
         // Evaluate oneToOne relationships
         if (isset($element['oneToOne'])) {
             foreach ($element['oneToOne'] as $name => $oneToOneElement) {
