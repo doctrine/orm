@@ -193,7 +193,7 @@ the life-time of their registered entities.
 
     Note that the onLoad and postLoad events occur for an entity
     before any associations have been initialized. Therefore it is not
-    safe to access associations in a postLoad callback or event
+    safe to access associations in an onLoad or postLoad callback or event
     handler.
 
 
