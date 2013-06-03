@@ -115,7 +115,7 @@ class SchemaValidator
             if ($assoc['mappedBy']) {
                 if ($targetMetadata->hasField($assoc['mappedBy'])) {
                     $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the owning side ".
-                            "field " . $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " which is not defined as association.";
+                            "field " . $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " which is not defined as association, but as field.";
                 }
                 if (!$targetMetadata->hasAssociation($assoc['mappedBy'])) {
                     $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the owning side ".
