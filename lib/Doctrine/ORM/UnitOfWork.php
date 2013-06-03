@@ -2708,6 +2708,8 @@ class UnitOfWork implements PropertyChangedListener
                 $this->listenersInvoker->invoke($class, Events::onLoad, $entity, $onLoadEventArgs, $invoke);
 
                 if ($onLoadEventArgs->getEntity() === false) return false;
+
+                $entity = $onLoadEntityArgs->getEntity();
             }
 
 
