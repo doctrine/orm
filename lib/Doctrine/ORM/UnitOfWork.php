@@ -2723,7 +2723,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 if ($onLoadEventArgs->getEntity() === false) return false;
 
-                $entity = $onLoadEntityArgs->getEntity();
+                $entity = $onLoadEventArgs->getEntity();
             }
 
 
