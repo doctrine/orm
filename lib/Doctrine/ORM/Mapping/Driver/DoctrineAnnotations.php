@@ -19,6 +19,8 @@
 
 require_once __DIR__.'/../Annotation.php';
 require_once __DIR__.'/../Entity.php';
+require_once __DIR__.'/../Embeddable.php';
+require_once __DIR__.'/../Embedded.php';
 require_once __DIR__.'/../MappedSuperclass.php';
 require_once __DIR__.'/../InheritanceType.php';
 require_once __DIR__.'/../DiscriminatorColumn.php';
