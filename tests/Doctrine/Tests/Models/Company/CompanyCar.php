@@ -28,12 +28,6 @@ class CompanyCar
     }
 
     public function getBrand() {
-        return $this->brand;
-    }
-
-    public function setBrand($value)
-    {
-        $this->brand = $value;
-        return $this;
+        return $this->title;
     }
 }
