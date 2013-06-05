@@ -1971,6 +1971,21 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+    * @group DDC-2475
+    */
+    public function testOrderByClauseShouldReplaceOrderByRelationMapping()
+    {
+        $this->assertSqlGeneration(
+            'SELECT r, b FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.bookings b',
+            'SELECT r0_.id AS id0, r1_.id AS id1, r1_.passengerName AS passengerName2 FROM RoutingRoute r0_ INNER JOIN RoutingRouteBooking r1_ ON r0_.id = r1_.route_id ORDER BY r1_.passengerName ASC'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT r, b FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.bookings b ORDER BY b.passengerName DESC',
+            'SELECT r0_.id AS id0, r1_.id AS id1, r1_.passengerName AS passengerName2 FROM RoutingRoute r0_ INNER JOIN RoutingRouteBooking r1_ ON r0_.id = r1_.route_id ORDER BY r1_.passengerName DESC'
+        );
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
