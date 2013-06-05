@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -116,6 +117,13 @@ class SqlWalker implements TreeWalker
      * @var array
      */
     private $scalarResultAliasMap = array();
+
+    /**
+     * Map from Table-Alias + Column-Name to OrderBy-Direction.
+     *
+     * @var array
+     */
+    private $orderedColumnsMap = array();
 
     /**
      * Map from DQL-Alias + Field-Name to SQL Column Alias.
@@ -388,25 +396,36 @@ class SqlWalker implements TreeWalker
      */
     private function _generateOrderedCollectionOrderByItems()
     {
-        $sqlParts = array();
+        $orderedColumns = array();
 
         foreach ($this->selectedClasses as $selectedClass) {
-            $dqlAlias = $selectedClass['dqlAlias'];
-            $qComp    = $this->queryComponents[$dqlAlias];
+            $dqlAlias  = $selectedClass['dqlAlias'];
+            $qComp     = $this->queryComponents[$dqlAlias];
+            $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
 
-            if ( ! isset($qComp['relation']['orderBy'])) continue;
+            if ( ! isset($qComp['relation']['orderBy'])) {
+                continue;
+            }
 
             foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
                 $columnName = $this->quoteStrategy->getColumnName($fieldName, $qComp['metadata'], $this->platform);
                 $tableName  = ($qComp['metadata']->isInheritanceTypeJoined())
-                    ? $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name)->getOwningTable($fieldName)
+                    ? $persister->getOwningTable($fieldName)
                     : $qComp['metadata']->getTableName();
 
-                $sqlParts[] = $this->getSQLTableAlias($tableName, $dqlAlias) . '.' . $columnName . ' ' . $orientation;
+                $orderedColumn = $this->getSQLTableAlias($tableName, $dqlAlias) . '.' . $columnName;
+
+                // OrderByClause should replace an ordered relation. see - DDC-2475
+                if (isset($this->orderedColumnsMap[$orderedColumn])) {
+                    continue;
+                }
+
+                $this->orderedColumnsMap[$orderedColumn] = $orientation;
+                $orderedColumns[] = $orderedColumn . ' ' . $orientation;
             }
         }
 
-        return implode(', ', $sqlParts);
+        return implode(', ', $orderedColumns);
     }
 
     /**
@@ -495,44 +514,52 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
-        $sql  = $this->walkSelectClause($AST->selectClause);
-        $sql .= $this->walkFromClause($AST->fromClause);
-        $sql .= $this->walkWhereClause($AST->whereClause);
-        $sql .= $AST->groupByClause ? $this->walkGroupByClause($AST->groupByClause) : '';
-        $sql .= $AST->havingClause ? $this->walkHavingClause($AST->havingClause) : '';
+        $limit    = $this->query->getMaxResults();
+        $offset   = $this->query->getFirstResult();
+        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE);
+        $sql      = $this->walkSelectClause($AST->selectClause)
+            . $this->walkFromClause($AST->fromClause)
+            . $this->walkWhereClause($AST->whereClause);
 
-        if (($orderByClause = $AST->orderByClause) !== null) {
-            $sql .= $AST->orderByClause ? $this->walkOrderByClause($AST->orderByClause) : '';
-        } else if (($orderBySql = $this->_generateOrderedCollectionOrderByItems()) !== '') {
+        if ($AST->groupByClause) {
+            $sql .= $this->walkGroupByClause($AST->groupByClause);
+        }
+
+        if ($AST->havingClause) {
+            $sql .= $this->walkHavingClause($AST->havingClause);
+        }
+
+        if ($AST->orderByClause) {
+            $sql .= $this->walkOrderByClause($AST->orderByClause);
+        }
+
+        if ( ! $AST->orderByClause && ($orderBySql = $this->_generateOrderedCollectionOrderByItems())) {
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
-        $sql = $this->platform->modifyLimitQuery(
-            $sql, $this->query->getMaxResults(), $this->query->getFirstResult()
-        );
+        if ($limit !== null || $offset !== null) {
+            $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
+        }
 
-        if (($lockMode = $this->query->getHint(Query::HINT_LOCK_MODE)) !== false) {
-            switch ($lockMode) {
-                case LockMode::PESSIMISTIC_READ:
-                    $sql .= ' ' . $this->platform->getReadLockSQL();
-                    break;
+        if ($lockMode === false || $lockMode === LockMode::NONE) {
+            return $sql;
+        }
 
-                case LockMode::PESSIMISTIC_WRITE:
-                    $sql .= ' ' . $this->platform->getWriteLockSQL();
-                    break;
+        if ($lockMode === LockMode::PESSIMISTIC_READ) {
+            return $sql . ' ' . $this->platform->getReadLockSQL();
+        }
 
-                case LockMode::OPTIMISTIC:
-                    foreach ($this->selectedClasses as $selectedClass) {
-                        if ( ! $selectedClass['class']->isVersioned) {
-                            throw \Doctrine\ORM\OptimisticLockException::lockFailed($selectedClass['class']->name);
-                        }
-                    }
-                    break;
-                case LockMode::NONE:
-                    break;
+        if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
+            return $sql . ' ' . $this->platform->getWriteLockSQL();
+        }
 
-                default:
-                    throw \Doctrine\ORM\Query\QueryException::invalidLockMode();
+        if ($lockMode !== LockMode::OPTIMISTIC) {
+            throw QueryException::invalidLockMode();
+        }
+
+        foreach ($this->selectedClasses as $selectedClass) {
+            if ( ! $selectedClass['class']->isVersioned) {
+                throw OptimisticLockException::lockFailed($selectedClass['class']->name);
             }
         }
 
@@ -998,12 +1025,15 @@ class SqlWalker implements TreeWalker
      */
     public function walkOrderByItem($orderByItem)
     {
+        $type = strtoupper($orderByItem->type);
         $expr = $orderByItem->expression;
         $sql  = ($expr instanceof AST\Node)
             ? $expr->dispatch($this)
             : $this->walkResultVariable($this->queryComponents[$expr]['token']['value']);
 
-        return $sql . ' ' . strtoupper($orderByItem->type);
+        $this->orderedColumnsMap[$sql] = $type;
+
+        return $sql . ' ' . $type;
     }
 
     /**
