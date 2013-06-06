@@ -844,8 +844,8 @@ class SqlWalker implements TreeWalker
 
         $this->rootAliases[] = $dqlAlias;
 
-        $sql = $class->getQuotedTableName($this->platform) . ' '
-             . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+        $sql = $this->quoteStrategy->getTableName($class,$this->platform) . ' '
+            . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
         if ($class->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
