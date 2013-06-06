@@ -19,8 +19,6 @@ In order to work, this requires certain conventions:
    convention and you are not forced to do this. You can change the
    file extension easily enough.
 
--
-
 .. code-block:: php
 
     <?php
@@ -47,9 +45,9 @@ Simplified YAML Driver
 The Symfony project sponsored a driver that simplifies usage of the YAML Driver.
 The changes between the original driver are:
 
-1. File Extension is .orm.yml
-2. Filenames are shortened, "MyProject\Entities\User" will become User.orm.yml
-3. You can add a global file and add multiple entities in this file.
+- File Extension is .orm.yml
+- Filenames are shortened, "MyProject\\Entities\\User" will become User.orm.yml
+- You can add a global file and add multiple entities in this file.
 
 Configuration of this client works a little bit different:
 
