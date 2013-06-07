@@ -930,7 +930,7 @@ class SqlWalker implements TreeWalker
                 // Join relation table
                 $joinTable      = $assoc['joinTable'];
                 $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
-                $joinTableName  = $sourceClass->getQuotedJoinTableName($assoc, $this->platform);
+                $joinTableName  = $this->quoteStrategy->getJoinTableName($assoc, $sourceClass, $this->platform);
 
                 $conditions      = array();
                 $relationColumns = ($relation['isOwningSide'])
