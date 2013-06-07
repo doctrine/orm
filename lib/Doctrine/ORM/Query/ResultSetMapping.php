@@ -154,6 +154,13 @@ class ResultSetMapping
     public $newObjectMappings = array();
 
     /**
+     * Maps metadata parameter names to the metadata attribute.
+     *
+     * @var array
+     */
+    public $metadataParameterMapping = array();
+
+    /**
      * Adds an entity result to this ResultSetMapping.
      *
      * @param string $class            The class name of the entity.
@@ -369,6 +376,17 @@ class ResultSetMapping
         }
 
         return $this;
+    }
+
+    /**
+     * Adds a metadata parameter mappings.
+     *
+     * @param mixed $parameter      The parameter name in the SQL result set.
+     * @param string $attribute     The metadata attribute.
+     */
+    public function addMetadataParameterMapping($parameter, $attribute)
+    {
+        $this->metadataParameterMapping[$parameter] = $attribute;
     }
 
     /**

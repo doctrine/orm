@@ -3026,4 +3026,18 @@ class ClassMetadataInfo implements ClassMetadata
 
         return $className;
     }
+
+    /**
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function getMetadataValue($name) {
+
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+
+        return null;
+    }
 }

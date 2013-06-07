@@ -26,6 +26,8 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 
 /**
  * A Query object represents a DQL query.
@@ -268,6 +270,10 @@ final class Query extends AbstractQuery
             $executor->setQueryCacheProfile($this->_queryCacheProfile);
         }
 
+        if ($this->_resultSetMapping === null) {
+            $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
+        }
+
         // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
 
@@ -276,10 +282,6 @@ final class Query extends AbstractQuery
         }
 
         list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
-
-        if ($this->_resultSetMapping === null) {
-            $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
-        }
 
         return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
     }
@@ -299,16 +301,21 @@ final class Query extends AbstractQuery
         $types     = array();
 
         foreach ($this->parameters as $parameter) {
-            $key = $parameter->getName();
+            $key    = $parameter->getName();
+            $value  = $parameter->getValue();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            $value = $this->processParameterValue($parameter->getValue());
+            if (isset($this->_resultSetMapping->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
+                $value = $value->getMetadataValue($this->_resultSetMapping->metadataParameterMapping[$key]);
+            }
+
+            $value = $this->processParameterValue($value);
             $type  = ($parameter->getValue() === $value)
                 ? $parameter->getType()
-                : Query\ParameterTypeInferer::inferType($value);
+                : ParameterTypeInferer::inferType($value);
 
             foreach ($paramMappings[$key] as $position) {
                 $types[$position] = $type;
