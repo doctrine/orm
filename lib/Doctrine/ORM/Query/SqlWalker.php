@@ -1972,24 +1972,31 @@ class SqlWalker implements TreeWalker
         $sqlParameterList = array();
 
         foreach ($instanceOfExpr->value as $parameter) {
+
             if ($parameter instanceof AST\InputParameter) {
+
+                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
+
                 $sqlParameterList[] = $this->walkInputParameter($parameter);
-            } else {
-                // Get name from ClassMetadata to resolve aliases.
-                $entityClassName = $this->em->getClassMetadata($parameter)->name;
 
-                if ($entityClassName == $class->name) {
-                    $sqlParameterList[] = $this->conn->quote($class->discriminatorValue);
-                } else {
-                    $discrMap = array_flip($class->discriminatorMap);
-
-                    if (!isset($discrMap[$entityClassName])) {
-                        throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
-                    }
-
-                    $sqlParameterList[] = $this->conn->quote($discrMap[$entityClassName]);
-                }
+                continue;
             }
+
+            // Get name from ClassMetadata to resolve aliases.
+            $entityClassName    = $this->em->getClassMetadata($parameter)->name;
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($entityClassName !== $class->name) {
+                $discrMap = array_flip($class->discriminatorMap);
+
+                if ( ! isset($discrMap[$entityClassName])) {
+                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
+                }
+
+                $discriminatorValue = $discrMap[$entityClassName];
+            }
+
+            $sqlParameterList[] = $this->conn->quote($discriminatorValue);
         }
 
         $sql .= '(' . implode(', ', $sqlParameterList) . ')';
