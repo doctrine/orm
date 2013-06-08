@@ -23,6 +23,7 @@ use PDO;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\CancelLoadEntityException;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
@@ -129,10 +130,13 @@ class SimpleObjectHydrator extends AbstractHydrator
             $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
-        $uow    = $this->_em->getUnitOfWork();
-        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        $uow = $this->_em->getUnitOfWork();
 
-        $result[] = $entity;
+        try {
+            $result[] = $uow->createEntity($entityName, $data, $this->_hints);
+        } catch (CancelLoadEntityException $e) {
+            return;
+        }
     }
 
     /**

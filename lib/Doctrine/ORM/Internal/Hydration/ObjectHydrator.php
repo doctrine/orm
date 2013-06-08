@@ -26,6 +26,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\CancelLoadEntityException;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -440,7 +441,11 @@ class ObjectHydrator extends AbstractHydrator
                                     unset($this->resultPointers[$dqlAlias]);
                                 }
                             } else {
-                                $element = $this->getEntity($data, $dqlAlias);
+                                try {
+                                    $element = $this->getEntity($data, $dqlAlias);
+                                } catch (CancelLoadEntityException $e) {
+                                    continue;
+                                }
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                                     $indexValue = $row[$this->_rsm->indexByMap[$dqlAlias]];
@@ -471,7 +476,12 @@ class ObjectHydrator extends AbstractHydrator
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an unitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
-                            $element = $this->getEntity($data, $dqlAlias);
+                            try {
+                                $element = $this->getEntity($data, $dqlAlias);
+                            } catch (CancelLoadEntityException $e) {
+                                continue;
+                            }
+
                             $reflField->setValue($parentObject, $element);
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->ce[$relation['targetEntity']];
@@ -525,7 +535,11 @@ class ObjectHydrator extends AbstractHydrator
 
                 // check for existing result from the iterations before
                 if ( ! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
-                    $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
+                    try {
+                        $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
+                    } catch (CancelLoadEntityException $e) {
+                        continue;
+                    }
 
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);

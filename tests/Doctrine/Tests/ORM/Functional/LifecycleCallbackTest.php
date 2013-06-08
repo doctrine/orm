@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\CancelLoadEntityException;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -15,6 +16,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestUser'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackCascader'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PostLoadCancelLifecycleCallbackTestEntity'),
             ));
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -128,6 +130,24 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * Post load cancel test
+     */
+    public function testPostLoadCancelException()
+    {
+        $entity = new PostLoadCancelLifecycleCallbackTestEntity;
+        $entity->value = 'hello';
+        $this->_em->persist($entity);
+        $this->_em->flush();
+        $id = $entity->getId();
+
+        $this->_em->clear();
+
+        $reference = $this->_em->find('Doctrine\Tests\ORM\Functional\PostLoadCancelLifecycleCallbackTestEntity', $id);
+
+        $this->assertFalse($reference instanceof PostLoadCancelLifecycleCallbackTestEntity);
+    }
+
+    /**
      * @group DDC-113
      */
     public function testCascadedEntitiesCallsPrePersist()
@@ -200,7 +220,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->refresh($e);
-        
+
         $this->_em->remove($e);
         $this->_em->flush();
 
@@ -243,7 +263,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['postUpdateHandler']
         );
- 
+
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['preRemoveHandler']
@@ -334,6 +354,40 @@ class LifecycleCallbackTestEntity
     /** @PreFlush */
     public function doStuffOnPreFlush() {
         $this->preFlushCallbackInvoked = true;
+    }
+}
+
+/**
+ * @Entity
+ * @HasLifecycleCallbacks
+ * @Table(name="plc_lc_cb_test_entity")
+ */
+class PostLoadCancelLifecycleCallbackTestEntity
+{
+    /* test stuff */
+    public $postLoadCallbackInvoked = false;
+
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    public $value;
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getValue() {
+        return $this->value;
+    }
+
+    /** @PostLoad */
+    public function doStuffOnPostLoad() {
+        throw new CancelLoadEntityException();
     }
 }
 

@@ -2574,7 +2574,8 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
-            if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
+            if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])
+                && isset($assoc['fetch']) && $assoc['fetch'] !== 3) {
                 continue;
             }
 
@@ -2872,7 +2873,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
- 
+
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
