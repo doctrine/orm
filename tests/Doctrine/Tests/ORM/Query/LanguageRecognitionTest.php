@@ -590,6 +590,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDQL("select COALESCE(NULLIF(u.name, ''), u.username) as Display FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
+
+    /**
+     * @gorup DDC-1858
+     */
+    public function testHavingSupportIsNullExpression()
+    {
+        $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL");
+    }
 }
 
 /** @Entity */

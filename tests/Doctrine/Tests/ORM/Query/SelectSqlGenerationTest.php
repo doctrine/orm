@@ -1916,7 +1916,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
     	$connMock    = $this->_em->getConnection();
     	$orgPlatform = $connMock->getDatabasePlatform();
-    
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1926,7 +1926,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1936,7 +1936,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT c0_.id || c0_.name || c0_.status AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    	
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1946,7 +1946,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT (c0_.id + c0_.name + c0_.status) AS sclr0 FROM cms_users c0_ WITH (NOLOCK) WHERE c0_.id = ?"
     	);
-    
+
     	$connMock->setDatabasePlatform($orgPlatform);
     }
 
@@ -1984,6 +1984,28 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT r, b FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.bookings b ORDER BY b.passengerName DESC',
             'SELECT r0_.id AS id0, r1_.id AS id1, r1_.passengerName AS passengerName2 FROM RoutingRoute r0_ INNER JOIN RoutingRouteBooking r1_ ON r0_.id = r1_.route_id ORDER BY r1_.passengerName DESC'
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportIsNullExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL',
+            'SELECT c0_.name AS name0 FROM cms_users c0_ HAVING c0_.username IS NULL'
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportResultVariableInExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING foo IN (?1)',
+            'SELECT c0_.name AS name0 FROM cms_users c0_ HAVING name0 IN (?)'
         );
     }
 }
