@@ -178,14 +178,9 @@ class SimpleObjectHydrator extends AbstractHydrator
         }
 
         if (isset($this->_rsm->metaMappings[$column])) {
-            $name   = $this->_rsm->metaMappings[$column];
-            $type   = isset($this->_rsm->typeMappings[$column])
-                ? $this->_rsm->typeMappings[$column]
-                : null;
-
             return array(
-                'name'  => $name,
-                'type'  => $type
+                'name'  => $this->_rsm->metaMappings[$column],
+                'type'  => (isset($this->_rsm->typeMappings[$column]) ? $this->_rsm->typeMappings[$column] : null)
             );
         }
 
