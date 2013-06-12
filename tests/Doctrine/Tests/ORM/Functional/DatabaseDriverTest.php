@@ -145,4 +145,57 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $this->assertEquals(0, count($metadatas['DbdriverBaz']->associationMappings), "no association mappings should be detected.");
     }
+
+    public function testLoadMetadataFromDatabaseDetail()
+    {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+
+        $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
+        $table->addColumn('id', 'integer',array('unsigned'=>true));
+        $table->setPrimaryKey(array('id'));
+        $table->addColumn('column_unsigned','integer',array('unsigned'=>true));
+        $table->addColumn('column_comment','string',array('comment'=>'test_comment'));
+        $table->addColumn('column_default','string',array('default'=>'test_default'));
+        $table->addColumn('column_decimal','decimal',array('precision'=>4,'scale'=>3));
+
+        $table->addColumn('column_index1','string');
+        $table->addColumn('column_index2','string');
+        $table->addIndex(array('column_index1','column_index2'),'index1');
+
+        $table->addColumn('column_unique_index1','string');
+        $table->addColumn('column_unique_index2','string');
+        $table->addUniqueIndex(array('column_unique_index1','column_unique_index2'),'unique_index1');
+        $this->_sm->dropAndCreateTable($table);
+
+        $metadatas = $this->extractClassMetadata(array("DbdriverFoo"));
+
+        $this->assertArrayHasKey('DbdriverFoo', $metadatas);
+        $metadata = $metadatas['DbdriverFoo'];
+
+        $this->assertArrayHasKey('id',          $metadata->fieldMappings);
+        $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
+        $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
+
+        $this->assertArrayHasKey('columnUnsigned',         $metadata->fieldMappings);
+        $this->assertTrue($metadata->fieldMappings['columnUnsigned']['unsigned']);
+
+        $this->assertArrayHasKey('columnComment',         $metadata->fieldMappings);
+        $this->assertEquals('test_comment',               $metadata->fieldMappings['columnComment']['comment']);
+
+        $this->assertArrayHasKey('columnDefault',         $metadata->fieldMappings);
+        $this->assertEquals('test_default',               $metadata->fieldMappings['columnDefault']['default']);
+
+        $this->assertArrayHasKey('columnDecimal',         $metadata->fieldMappings);
+        $this->assertEquals(4,               $metadata->fieldMappings['columnDecimal']['precision']);
+        $this->assertEquals(3,               $metadata->fieldMappings['columnDecimal']['scale']);
+
+        $this->assertTrue(!empty($metadata->table['indexes']['index1']['columns']));
+        $this->assertEquals(array('column_index1','column_index2'),$metadata->table['indexes']['index1']['columns']);
+
+        $this->assertTrue(!empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
+        $this->assertEquals(array('column_unique_index1','column_unique_index2'),$metadata->table['uniqueConstraints']['unique_index1']['columns']);
+    }
 }
