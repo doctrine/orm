@@ -1303,7 +1303,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testIdenityFunctionInJoinedSubclass()
+    public function testIdentityFunctionInJoinedSubclass()
     {
         //relation is in the subclass (CompanyManager) we are querying
         $this->assertSqlGeneration(
