@@ -1303,6 +1303,21 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testIdentityFunctionInJoinedSubclass()
+    {
+        //relation is in the subclass (CompanyManager) we are querying
+        $this->assertSqlGeneration(
+            'SELECT m, IDENTITY(m.car) as car_id FROM Doctrine\Tests\Models\Company\CompanyManager m',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c2_.car_id AS sclr6, c0_.discr AS discr7 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id'
+        );
+
+        //relation is in the base class (CompanyPerson).
+        $this->assertSqlGeneration(
+            'SELECT m, IDENTITY(m.spouse) as spouse_id FROM Doctrine\Tests\Models\Company\CompanyManager m',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c0_.spouse_id AS sclr6, c0_.discr AS discr7 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id'
+        );
+    }
+
     /**
      * @group DDC-1339
      */
