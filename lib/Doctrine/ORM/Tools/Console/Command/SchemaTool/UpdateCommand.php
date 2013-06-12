@@ -123,7 +123,7 @@ EOT
         $force   = true === $input->getOption('force');
 
         if ($dumpSql) {
-            $output->writeln(implode(';' . PHP_EOL, $sqls));
+            $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
         }
 
         if ($force) {
@@ -138,7 +138,7 @@ EOT
         if ($dumpSql || $force) {
             return 0;
         }
-        	
+
         $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
         $output->writeln('           Use the incremental update to detect changes during development and use');
         $output->writeln('           the SQL DDL provided to manually update your database in production.');
