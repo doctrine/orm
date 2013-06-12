@@ -146,8 +146,8 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
 
         if (isset($this->_rsm->fieldMappings[$column])) {
-            $name   = $this->_rsm->fieldMappings[$column];
-            $class  = isset($this->declaringClasses[$column])
+            $name  = $this->_rsm->fieldMappings[$column];
+            $class = isset($this->declaringClasses[$column])
                 ? $this->declaringClasses[$column]
                 : $this->class;
 
@@ -162,26 +162,16 @@ class SimpleObjectHydrator extends AbstractHydrator
             );
         }
 
-        if (isset($this->_rsm->relationMap[$column])) {
-            $class = isset($this->_rsm->relationMap[$column])
-                ? $this->_rsm->relationMap[$column]
-                : $this->class;
-
-            // If class is not self referencing, ignore
-            if ( ! ($class === $entityName || is_subclass_of($entityName, $class))) {
-                return null;
-            }
-
-            // TODO: Decide what to do with associations. It seems original code is incomplete.
-            // One solution is to load the association, but it might require extra efforts.
-            return array('name' => $column);
-        }
-
         if (isset($this->_rsm->metaMappings[$column])) {
             return array(
                 'name'  => $this->_rsm->metaMappings[$column],
                 'type'  => (isset($this->_rsm->typeMappings[$column]) ? $this->_rsm->typeMappings[$column] : null)
             );
+        }
+
+        // An ObjectHydrator should be used instead of SimpleObjectHydrator
+        if (isset($this->_rsm->relationMap[$column])) {
+            throw new \Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
         }
 
         return null;
