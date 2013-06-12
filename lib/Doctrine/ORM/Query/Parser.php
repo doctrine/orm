@@ -1472,6 +1472,10 @@ class Parser
                 $expr = $this->ScalarExpression();
 
                 break;
+            case ($this->isFunction()):
+                $expr = $this->FunctionDeclaration();
+
+                break;
             default:
                 $expr = $this->ResultVariable();
 

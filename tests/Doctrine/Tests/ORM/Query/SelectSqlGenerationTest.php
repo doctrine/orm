@@ -1804,6 +1804,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testOrderByClauseSupportsFunctionExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY LENGTH(u.username)',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY LENGTH(c0_.username) ASC'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY LENGTH(u.username) DESC, u.id',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY LENGTH(c0_.username) DESC, c0_.id ASC'
+        );
+    }
+
     /**
      * @group DDC-1719
      */
