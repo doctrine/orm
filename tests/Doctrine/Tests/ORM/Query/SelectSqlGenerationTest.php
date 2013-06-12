@@ -1846,6 +1846,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1845
+     */
+    public function testQuotedTableDeclaration()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Quote\User u',
+            'SELECT q0_."user-id" AS userid0, q0_."user-name" AS username1 FROM "quote-user" q0_'
+        );
+    }
+
    /**
     * @group DDC-1845
     */
