@@ -32,7 +32,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * The list of EntityRepository instances.
      *
-     * @var array<\Doctrine\ORM\EntityRepository>
+     * @var array<\Doctrine\Common\Persistence\ObjectRepository>
      */
     private $repositoryList = array();
 
@@ -60,7 +60,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
      * @param string                               $entityName    The name of the entity.
      *
-     * @return \Doctrine\ORM\EntityRepository
+     * @return \Doctrine\Common\Persistence\ObjectRepository
      */
     protected function createRepository(EntityManagerInterface $entityManager, $entityName)
     {

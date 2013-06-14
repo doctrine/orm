@@ -35,7 +35,7 @@ interface RepositoryFactory
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
      * @param string                               $entityName    The name of the entity.
      *
-     * @return \Doctrine\ORM\EntityRepository
+     * @return \Doctrine\Common\Persistence\ObjectRepository
      */
     public function getRepository(EntityManagerInterface $entityManager, $entityName);
 }
