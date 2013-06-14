@@ -16,10 +16,12 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $userId;
     private $groupId;
     private $articleId;
+    private $ddcClassId;
 
     public function setUp()
     {
         $this->useModelSet('cms');
+        $this->useModelSet('ddcxxx');
         parent::setUp();
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
@@ -115,6 +117,17 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Pre-Condition");
 
         $this->assertEquals(2, count($user->articles));
+    }
+
+    /**
+     * @group DDCxxx
+     */
+    public function testCountOneToManyJoinedInheritance()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDCxxx\DDCxxxOtherClass', $this->ddcClassId);
+        $this->assertFalse($otherClass->getChildClasses()->isInitialized(), "Pre-Condition");
+
+        $this->assertEquals(2, count($otherClass->getChildClasses()));
     }
 
     /**
@@ -573,11 +586,30 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article1);
         $this->_em->persist($article2);
 
+        // DDCxxx
+        $otherClass = new \Doctrine\Tests\Models\DDCxxx\DDCxxxOtherClass();
+
+        $childClass1 = new \Doctrine\Tests\Models\DDCxxx\DDCxxxChildClass();
+        $childClass2 = new \Doctrine\Tests\Models\DDCxxx\DDCxxxChildClass();
+
+        $childClass1->other = $otherClass;
+        $childClass2->other = $otherClass;
+
+        $otherClass->addChildClass($childClass1);
+        $otherClass->addChildClass($childClass2);
+
+        $this->_em->persist($childClass1);
+        $this->_em->persist($childClass2);
+
+        $this->_em->persist($otherClass);
+
+
         $this->_em->flush();
         $this->_em->clear();
 
         $this->articleId = $article1->id;
         $this->userId = $user1->getId();
         $this->groupId = $group1->id;
+        $this->ddcClassId = $otherClass->id;
     }
 }
