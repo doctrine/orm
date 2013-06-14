@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides an API for querying/managing the second level cache regions.
@@ -33,9 +33,9 @@ interface Cache
     /**
      * Construct
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORMEntityManagerInterface $em
      */
-    public function __construct(EntityManager $em);
+    public function __construct(EntityManagerInterface $em);
 
     /**
      * @param string $className The entity class.
@@ -137,11 +137,11 @@ interface Cache
     public function containsQuery($regionName);
 
     /**
-     * Evicts all cached query results under the given name.
+     * Evicts all cached query results under the given name, or default query cache if the region name is NULL.
      *
      * @param string $regionName The cache name associated to the queries being cached.
      */
-    public function evictQueryRegion($regionName);
+    public function evictQueryRegion($regionName = null);
 
     /**
      * Evict data from all query regions.
@@ -153,9 +153,9 @@ interface Cache
     /**
      * Get query cache by region name or create a new one if none exist.
      *
-     * @param regionName Query cache region name.
+     * @param regionName Query cache region name, or default query cache if the region name is NULL.
      *
      * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
      */
-    public function getQueryCache($regionName);
+    public function getQueryCache($regionName = null);
 }

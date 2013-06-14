@@ -5,9 +5,10 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\ORM\Cache\EntityEntryStructure;
+use Doctrine\ORM\Cache\DefaultEntityEntryStructure;
 
 /**
  * @group DDC-2183
@@ -29,15 +30,20 @@ class EntityEntryStructureTest extends OrmTestCase
         parent::setUp();
 
         $this->em        = $this->_getTestEntityManager();
-        $this->structure = new EntityEntryStructure($this->em);
+        $this->structure = new DefaultEntityEntryStructure($this->em);
+    }
+
+    public function testImplementsEntityEntryStructure()
+    {
+        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityEntryStructure', $this->structure);
     }
 
     public function testCreateEntity()
     {
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
         $key      = new EntityCacheKey($metadata->name, array('id'=>1));
-        $cache    = array('id'=>1, 'name'=>'Foo');
-        $entity   = $this->structure->loadCacheEntry($metadata, $key, $cache);
+        $entry    = new EntityCacheEntry(array('id'=>1, 'name'=>'Foo'));
+        $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry);
 
         $this->assertInstanceOf($metadata->name, $entity);
 
@@ -50,9 +56,9 @@ class EntityEntryStructureTest extends OrmTestCase
     {
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
         $key      = new EntityCacheKey($metadata->name, array('id'=>1));
+        $entry    = new EntityCacheEntry(array('id'=>1, 'name'=>'Foo'));
         $proxy    = $this->em->getReference($metadata->name, $key->identifier);
-        $cache    = array('id'=>1, 'name'=>'Foo');
-        $entity   = $this->structure->loadCacheEntry($metadata, $key, $cache, $proxy);
+        $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
 
         $this->assertInstanceOf($metadata->name, $entity);
         $this->assertSame($proxy, $entity);
@@ -75,12 +81,15 @@ class EntityEntryStructureTest extends OrmTestCase
 
         $cache  = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertArrayHasKey('id', $cache);
-        $this->assertArrayHasKey('name', $cache);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+
+        $this->assertArrayHasKey('id', $cache->data);
+        $this->assertArrayHasKey('name', $cache->data);
         $this->assertEquals(array(
             'id'   => 1,
             'name' => 'Foo',
-        ), $cache);
+        ), $cache->data);
     }
 
     public function testBuildCacheEntryOwningSide()
@@ -101,13 +110,16 @@ class EntityEntryStructureTest extends OrmTestCase
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $state);
 
-        $this->assertArrayHasKey('id', $cache);
-        $this->assertArrayHasKey('name', $cache);
-        $this->assertArrayHasKey('country', $cache);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+
+        $this->assertArrayHasKey('id', $cache->data);
+        $this->assertArrayHasKey('name', $cache->data);
+        $this->assertArrayHasKey('country', $cache->data);
         $this->assertEquals(array(
             'id'        => 11,
             'name'      => 'Bar',
             'country'   => array ('id' => 11),
-        ), $cache);
+        ), $cache->data);
     }
 }

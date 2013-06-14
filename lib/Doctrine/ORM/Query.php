@@ -354,8 +354,8 @@ final class Query extends AbstractQuery
             throw new ORMException("Second level cache does not suport mixed results");
         }
 
-        $queryCache = $this->_em->getConfiguration()->getSecondLevelCacheAccessProvider()->buildQueryCache($this->_em, $this->cacheRegion);
         $querykey   = new QueryCacheKey($this->_getQueryCacheId());
+        $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
         $result     = $queryCache->get($querykey, $this->_resultSetMapping);
 
         if ($result === null) {

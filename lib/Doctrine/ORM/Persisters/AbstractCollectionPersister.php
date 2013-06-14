@@ -26,7 +26,6 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\ConcurrentRegionAccess;
-use Doctrine\ORM\Cache\CollectionEntryStructure;
 
 /**
  * Base class for all collection persisters.
@@ -112,12 +111,10 @@ abstract class AbstractCollectionPersister
         $this->hasCache         = isset($association['cache']) && $em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
-            $sourceClass             = $em->getClassMetadata($association['sourceEntity']);
-            $this->cacheRegionAccess = $em->getConfiguration()
-                ->getSecondLevelCacheAccessProvider()
-                ->buildCollectionRegionAccessStrategy($sourceClass, $association['fieldName']);
-
-            $this->cacheEntryStructure  = new CollectionEntryStructure($em);
+            $sourceClass                = $em->getClassMetadata($association['sourceEntity']);
+            $cacheFactory               = $em->getConfiguration()->getSecondLevelCacheFactory();
+            $this->cacheRegionAccess    = $cacheFactory->buildCollectionRegionAccessStrategy($sourceClass, $association['fieldName']);
+            $this->cacheEntryStructure  = $cacheFactory->buildCollectionEntryStructure($em);
             $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
         }
     }
@@ -281,9 +278,9 @@ abstract class AbstractCollectionPersister
         $targetClass        = $this->association['targetEntity'];
         $targetPersister    = $this->uow->getEntityPersister($targetClass);
         $targetRegionAcess  = $targetPersister->getCacheRegionAcess();
-        $listData           = $this->cacheEntryStructure->buildCacheEntry($targetMetadata, $key, $elements);
+        $entry              = $this->cacheEntryStructure->buildCacheEntry($targetMetadata, $key, $elements);
 
-        foreach ($listData as $index => $identifier) {
+        foreach ($entry->dataList as $index => $identifier) {
             $entityKey = new EntityCacheKey($targetClass, $identifier);
 
             if ($targetRegionAcess->getRegion()->contains($entityKey)) {
@@ -296,7 +293,7 @@ abstract class AbstractCollectionPersister
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
 
-        $this->cacheRegionAccess->put($key, $listData);
+        $this->cacheRegionAccess->put($key, $entry);
     }
 
     /**

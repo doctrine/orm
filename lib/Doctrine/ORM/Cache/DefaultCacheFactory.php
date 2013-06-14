@@ -20,9 +20,10 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Configuration;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Access\ReadOnlyRegionAccess;
 use Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy;
@@ -31,16 +32,22 @@ use Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class CacheAccessProvider implements AccessProvider
+class DefaultCacheFactory implements CacheFactory
 {
     /**
      * @var \Doctrine\Common\Cache\Cache
      */
     private $cache;
 
-    public function __construct(Cache $cache)
+    /**
+     * @var \Doctrine\ORM\Configuration
+     */
+    private $configuration;
+
+    public function __construct(Configuration $configuration, Cache $cache)
     {
-        $this->cache = $cache;
+        $this->cache         = $cache;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -48,16 +55,15 @@ class CacheAccessProvider implements AccessProvider
      */
     public function buildEntityRegionAccessStrategy(ClassMetadata $metadata)
     {
-        $properties = $metadata->cache['properties'];
         $regionName = $metadata->cache['region'];
         $usage      = $metadata->cache['usage'];
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyRegionAccess(new DefaultRegion($regionName, $this->cache, $properties));
+            return new ReadOnlyRegionAccess($this->createRegion($regionName));
         }
 
         if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteRegionAccessStrategy(new DefaultRegion($regionName, $this->cache, $properties));
+            return new NonStrictReadWriteRegionAccessStrategy($this->createRegion($regionName));
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
@@ -69,16 +75,15 @@ class CacheAccessProvider implements AccessProvider
     public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName)
     {
         $mapping    = $metadata->getAssociationMapping($fieldName);
-        $properties = $mapping['cache']['properties'];
         $regionName = $mapping['cache']['region'];
         $usage      = $mapping['cache']['usage'];
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyRegionAccess(new DefaultRegion($regionName, $this->cache, $properties));
+            return new ReadOnlyRegionAccess($this->createRegion($regionName));
         }
 
         if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteRegionAccessStrategy(new DefaultRegion($regionName, $this->cache, $properties));
+            return new NonStrictReadWriteRegionAccessStrategy($this->createRegion($regionName));
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
@@ -87,8 +92,36 @@ class CacheAccessProvider implements AccessProvider
     /**
      * {@inheritdoc}
      */
-    public function buildQueryCache(EntityManager $em, $regionName)
+    public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
-        return new DefaultQueryCache($em, new DefaultRegion($regionName ?: 'query.cache.region', $this->cache));
+        return new DefaultQueryCache($em, $this->createRegion($regionName ?: 'query.cache.region'));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildCollectionEntryStructure(EntityManagerInterface $em)
+    {
+        return new DefaultCollectionEntryStructure($em);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEntityEntryStructure(EntityManagerInterface $em)
+    {
+        return new DefaultEntityEntryStructure($em);
+    }
+
+    /**
+     * @param string $regionName
+     * @return \Doctrine\ORM\Cache\Region\DefaultRegion
+     */
+    public function createRegion($regionName)
+    {
+        return new DefaultRegion($regionName, $this->cache, array(
+            'lifetime' => $this->configuration->getSecondLevelCacheRegionLifetime($regionName)
+        ));
+    }
+
 }

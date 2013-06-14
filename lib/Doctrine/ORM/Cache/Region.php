@@ -49,7 +49,7 @@ interface Region
      *
      * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to be retrieved.
      *
-     * @return array The cached data or NULL
+     * @return \Doctrine\ORM\Cache\CacheEntry The cached entry or NULL
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the item or region.
      */
@@ -58,12 +58,12 @@ interface Region
     /**
      * Put an item into the cache.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $key   The key under which to cache the item.
-     * @param array                        $value The item to cache.
+     * @param \Doctrine\ORM\Cache\CacheKey   $key   The key under which to cache the item.
+     * @param \Doctrine\ORM\Cache\CacheEntry $entry The entry to cache.
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the region.
      */
-    public function put(CacheKey $key, array $value);
+    public function put(CacheKey $key, CacheEntry $entry);
 
     /**
      * Remove an item from the cache.

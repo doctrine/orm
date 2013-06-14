@@ -7,7 +7,9 @@ use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
  * @group DDC-2183
@@ -30,12 +32,13 @@ class DefaultCacheTest extends OrmFunctionalTestCase
     /**
      * @param string $className
      * @param array $identifier
-     * @param array $cacheEntry
+     * @param array $data
      */
-    private function putEntityCacheEntry($className, array $identifier, array $cacheEntry)
+    private function putEntityCacheEntry($className, array $identifier, array $data)
     {
         $metadata   = $this->_em->getClassMetadata($className);
         $cacheKey   = new EntityCacheKey($metadata->rootEntityName, $identifier);
+        $cacheEntry = new EntityCacheEntry($data);
         $persister  = $this->_em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
 
         $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
@@ -45,12 +48,13 @@ class DefaultCacheTest extends OrmFunctionalTestCase
      * @param string $className
      * @param string $association
      * @param array $ownerIdentifier
-     * @param array $cacheEntry
+     * @param array $data
      */
-    private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $cacheEntry)
+    private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $data)
     {
         $metadata   = $this->_em->getClassMetadata($className);
         $cacheKey   = new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
+        $cacheEntry = new CollectionCacheEntry($data);
         $persister  = $this->_em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
 
         $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);

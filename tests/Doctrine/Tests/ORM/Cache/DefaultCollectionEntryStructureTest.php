@@ -4,12 +4,13 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Cache\CollectionEntryStructure;
+use Doctrine\ORM\Cache\DefaultCollectionEntryStructure;
 
 /**
  * @group DDC-2183
@@ -31,21 +32,26 @@ class CollectionEntryStructureTest extends OrmTestCase
         parent::setUp();
 
         $this->em        = $this->_getTestEntityManager();
-        $this->structure = new CollectionEntryStructure($this->em);
+        $this->structure = new DefaultCollectionEntryStructure($this->em);
+    }
+
+    public function testImplementsCollectionEntryStructure()
+    {
+        $this->assertInstanceOf('Doctrine\ORM\Cache\CollectionEntryStructure', $this->structure);
     }
 
     public function testLoadCacheCollection()
     {
-        $cache = array(
+        $entry = new CollectionCacheEntry(array(
             array('id'=>31),
             array('id'=>32),
-        );
+        ));
 
         $sourceClass    = $this->em->getClassMetadata(State::CLASSNAME);
         $targetClass    = $this->em->getClassMetadata(City::CLASSNAME);
         $key            = new CollectionCacheKey($sourceClass->name, 'cities', array('id'=>21));
         $collection     = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
-        $list           = $this->structure->loadCacheEntry($sourceClass, $key, $cache, $collection);
+        $list           = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
 
         $this->assertCount(2, $list);
         $this->assertCount(2, $collection);

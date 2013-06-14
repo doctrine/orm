@@ -20,81 +20,32 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Query;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
- * Structured cache entry for entities
+ * Structure cache entry for entities
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class EntityEntryStructure
+interface EntityEntryStructure
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $em;
-
-    /**
-     * @var \Doctrine\ORM\UnitOfWork
-     */
-    private $uow;
-
-    /**
-     * @param \Doctrine\ORM\EntityManager $em The entity manager.
-     */
-    public function __construct(EntityManager $em)
-    {
-        $this->em   = $em;
-        $this->uow  = $em->getUnitOfWork();
-    }
-
     /**
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
      * @param \Doctrine\ORM\Cache\EntityCacheKey  $key      The entity cache key.
      * @param object                              $entity   The entity.
      *
-     * @return array
+     * @return \Doctrine\ORM\Cache\EntityCacheEntry
      */
-    public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
-    {
-        $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $key->identifier); // why update has no identifier values ?
-
-        foreach ($metadata->associationMappings as $name => $assoc) {
-
-            if ( ! isset($data[$name]) || $data[$name] === null) {
-                continue;
-            }
-
-            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
-
-                continue;
-            }
-
-            unset($data[$name]);
-        }
-
-        return $data;
-    }
+    public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity);
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
-     * @param \Doctrine\ORM\Cache\EntityCacheKey  $key      The entity cache key.
-     * @param array                               $cache    The entity data.
-     * @param object                              $entity   The entity to load the cache into. If not specified, a new entity is created.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata   $metadata The entity metadata.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey    $key      The entity cache key.
+     * @param \Doctrine\ORM\Cache\EntityCacheEntry  $entry    The entity cache entry.
+     * @param object                                $entity   The entity to load the cache into. If not specified, a new entity is created.
      */
-    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, array $cache, $entity = null)
-    {
-        if ($entity !== null) {
-            $hints[Query::HINT_REFRESH]         = true;
-            $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
-        }
-
-        return $this->uow->createEntity($metadata->name, $cache, $hints);
-    }
+    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null);
 }

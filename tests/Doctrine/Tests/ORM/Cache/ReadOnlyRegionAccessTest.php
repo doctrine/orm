@@ -21,6 +21,6 @@ class ReadOnlyRegionAccessTest extends AbstractRegionAccessTest
      */
     public function testAfterUpdate()
     {
-        $this->regionAccess->afterUpdate(new DefaultRegionTestKey('key'), array('value' => 'foo'));
+        $this->regionAccess->afterUpdate(new DefaultRegionTestKey('key'), new DefaultRegionTestEntry(array('value' => 'foo')));
     }
 }

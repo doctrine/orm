@@ -21,8 +21,9 @@
 namespace Doctrine\ORM\Cache\Region;
 
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\ORM\Cache\CacheKey;
+use Doctrine\ORM\Cache\CacheEntry;
 
 /**
  * The simplest cache region compatible with all doctrine-cache drivers.
@@ -50,15 +51,15 @@ class DefaultRegion implements Region
     /**
      * @param strgin                       $name
      * @param \Doctrine\Common\Cache\Cache $cache
-     * @param array                        $properties
+     * @param array                        $configuration
      */
-    public function __construct($name, Cache $cache, array $properties = array())
+    public function __construct($name, Cache $cache, array $configuration = array())
     {
         $this->name   = $name;
         $this->cache  = $cache;
 
-        if (isset($properties['lifetime']) && $properties['lifetime'] > 0) {
-            $this->lifetime = (integer) $properties['lifetime'];
+        if (isset($configuration['lifetime']) && $configuration['lifetime'] > 0) {
+            $this->lifetime = (integer) $configuration['lifetime'];
         }
     }
 
@@ -113,7 +114,7 @@ class DefaultRegion implements Region
     /**
      * {@inheritdoc}
      */
-    public function put(CacheKey $key, array $value)
+    public function put(CacheKey $key, CacheEntry $entry)
     {
         $entriesKey = $this->entriesMapKey();
         $entryKey   = $this->entryKey($key);
@@ -121,7 +122,7 @@ class DefaultRegion implements Region
 
         $entries[$entryKey] = true;
 
-        if ($this->cache->save($entryKey, $value, $this->lifetime)) {
+        if ($this->cache->save($entryKey, $entry, $this->lifetime)) {
             $this->cache->save($entriesKey, $entries);
 
             return true;

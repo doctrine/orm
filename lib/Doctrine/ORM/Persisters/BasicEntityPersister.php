@@ -253,12 +253,10 @@ class BasicEntityPersister
         $this->hasCache         = ($class->cache !== null) && $em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
-            $this->cacheRegionAccess = $em->getConfiguration()
-                ->getSecondLevelCacheAccessProvider()
-                ->buildEntityRegionAccessStrategy($this->class);
-
-            $this->cacheEntryStructure = new EntityEntryStructure($em);
-            $this->isConcurrentRegion  = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
+            $cacheFactory               = $em->getConfiguration()->getSecondLevelCacheFactory();
+            $this->cacheRegionAccess    = $cacheFactory->buildEntityRegionAccessStrategy($this->class);
+            $this->cacheEntryStructure  = $cacheFactory->buildEntityEntryStructure($em);
+            $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
         }
     }
 

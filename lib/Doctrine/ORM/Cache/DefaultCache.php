@@ -21,10 +21,10 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
@@ -37,7 +37,7 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 class DefaultCache implements Cache
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -46,13 +46,29 @@ class DefaultCache implements Cache
      */
     private $uow;
 
+     /**
+     * @var \Doctrine\ORM\Cache\CacheFactory
+     */
+    private $cacheFactory;
+
+    /**
+     * @var array<\Doctrine\ORM\Cache\QueryCache>
+     */
+    private $queryCaches;
+
+    /**
+     * @var \Doctrine\ORM\Cache\QueryCache
+     */
+    private $defaultQueryCache;
+
     /**
      * {@inheritdoc}
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->em  = $em;
-        $this->uow = $this->em->getUnitOfWork();
+        $this->em           = $em;
+        $this->uow          = $em->getUnitOfWork();
+        $this->cacheFactory = $em->getConfiguration()->getSecondLevelCacheFactory();
     }
 
     /**
@@ -227,15 +243,23 @@ class DefaultCache implements Cache
      */
     public function containsQuery($regionName)
     {
-        throw new \BadMethodCallException("Not implemented.");
+        return isset($this->queryCaches[$regionName]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function evictQueryRegion($regionName)
+    public function evictQueryRegion($regionName = null)
     {
-        throw new \BadMethodCallException("Not implemented.");
+        if ($regionName === null && $this->defaultQueryCache !== null) {
+            $this->defaultQueryCache->clear();
+
+            return;
+        }
+
+        if (isset($this->queryCaches[$regionName])) {
+            $this->queryCaches[$regionName]->clear();
+        }
     }
 
     /**
@@ -243,15 +267,30 @@ class DefaultCache implements Cache
      */
     public function evictQueryRegions()
     {
-        throw new \BadMethodCallException("Not implemented.");
+        if ($this->defaultQueryCache !== null) {
+            $this->defaultQueryCache->clear();
+        }
+
+        foreach ($this->queryCaches as $queryCache) {
+            $queryCache->clear();
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getQueryCache($regionName)
+    public function getQueryCache($regionName = null)
     {
-        throw new \BadMethodCallException("Not implemented.");
+        if ($regionName === null) {
+            return $this->defaultQueryCache ?:
+                $this->defaultQueryCache = $this->cacheFactory->buildQueryCache($this->em);
+        }
+
+        if (isset($this->queryCaches[$regionName])) {
+            $this->queryCaches[$regionName] = $this->cacheFactory->buildQueryCache($this->em, $regionName);
+        }
+
+        return $this->queryCaches[$regionName];
     }
 
      /**

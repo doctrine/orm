@@ -21,13 +21,13 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface AccessProvider
+interface CacheFactory
 {
     /**
      * Build an entity RegionAccess for the input entity.
@@ -53,12 +53,29 @@ interface AccessProvider
     public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
 
     /**
-     * @param \Doctrine\ORM\EntityManager   $em         The Entity manager.
-     * @param string                        $regionName The region name.
+     * @param \Doctrine\ORM\EntityManagerInterface  $em         The Entity manager.
+     * @param string                                $regionName The region name.
      *
-     * @return \Doctrine\ORM\Cache\QueryCache The built query cache.
+     * @return \Doctrine\ORM\Cache\QueryCache The built query cache, or default query cache if the region name is NULL.
      * 
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
      */
-    public function buildQueryCache(EntityManager $em, $regionName);
+    public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $em  The Entity manager.
+     * @return \Doctrine\ORM\Cache\EntityEntryStructure The built entity entry structure.
+     *
+     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     */
+    public function buildEntityEntryStructure(EntityManagerInterface $em);
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+     * @return \Doctrine\ORM\Cache\CollectionEntryStructure The built collection entry structure.
+     *
+     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     */
+    public function buildCollectionEntryStructure(EntityManagerInterface $em);
+
 }

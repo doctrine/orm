@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -62,16 +63,16 @@ class DefaultQueryCache implements QueryCache
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm)
     {
-        $data = $this->region->get($key);
+        $entry = $this->region->get($key);
 
-        if (empty($data)) {
+        if ( ! $entry instanceof QueryCacheEntry) {
             return null;
         }
 
         $entityName = reset($rsm->aliasMap); //@TODO find root entity
         $result     = array();
 
-        foreach ($data as $index => $value) {
+        foreach ($entry->result as $index => $value) {
             $result[$index] = $this->em->getReference($entityName, $value);
 
             //@TODO - handle associations ?
@@ -93,7 +94,7 @@ class DefaultQueryCache implements QueryCache
             //@TODO - handle associations ?
         }
 
-        return $this->region->put($key, $data);;
+        return $this->region->put($key, new QueryCacheEntry($data));
     }
 
     /**

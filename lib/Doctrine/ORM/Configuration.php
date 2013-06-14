@@ -35,7 +35,7 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\ORM\Cache\AccessProvider;
+use Doctrine\ORM\Cache\CacheFactory;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -255,23 +255,64 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\AccessProvider|null
+     * @return \Doctrine\ORM\Cache\CacheFactory|null
      */
-    public function getSecondLevelCacheAccessProvider()
+    public function getSecondLevelCacheFactory()
     {
-        return isset($this->_attributes['secondLevelCacheAccessProvider'])
-            ? $this->_attributes['secondLevelCacheAccessProvider']
+        return isset($this->_attributes['secondLevelCacheFactory'])
+            ? $this->_attributes['secondLevelCacheFactory']
             : null;
     }
 
     /**
-     * @param \Doctrine\ORM\Cache\AccessProvider $provider
+     * @param \Doctrine\ORM\Cache\CacheFactory $factory
      *
      * @return void
      */
-    public function setSecondLevelCacheAccessProvider(AccessProvider $provider)
+    public function setSecondLevelCacheFactory(CacheFactory $factory)
     {
-        $this->_attributes['secondLevelCacheAccessProvider'] = $provider;
+        $this->_attributes['secondLevelCacheFactory'] = $factory;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return integer
+     */
+    public function getSecondLevelCacheRegionLifetime($name)
+    {
+        if (isset($this->_attributes['secondLevelCacheRegionLifetime'][$name])) {
+            return $this->_attributes['secondLevelCacheRegionLifetime'][$name];
+        }
+
+        return $this->getSecondLevelCacheDefaultRegionLifetime();
+    }
+
+    /**
+     * @param string $name
+     * @param integer $lifetime
+     */
+    public function setSecondLevelCacheRegionLifetime($name, $lifetime)
+    {
+        $this->_attributes['secondLevelCacheRegionLifetime'][$name] = (integer) $lifetime;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getSecondLevelCacheDefaultRegionLifetime()
+    {
+         return isset($this->_attributes['secondLevelCacheDefaultRegionLifetime'])
+            ? $this->_attributes['secondLevelCacheDefaultRegionLifetime']
+            : 0;
+    }
+
+    /**
+     * @param integer $lifetime
+     */
+    public function setSecondLevelCacheDefaultRegionLifetime($lifetime)
+    {
+        $this->_attributes['secondLevelCacheDefaultRegionLifetime'] = (integer) $lifetime;
     }
 
     /**

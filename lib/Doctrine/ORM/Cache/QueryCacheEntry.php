@@ -18,26 +18,29 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Access;
+namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\CacheException;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Lock;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Specific read-only region access strategy
+ * Query cache entry
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class ReadOnlyRegionAccess extends NonStrictReadWriteRegionAccessStrategy
+class QueryCacheEntry implements CacheEntry
 {
     /**
-     * {@inheritdoc}
+     * @var array
      */
-    public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null)
+    public $result;
+
+    /**
+     * @param array $result
+     */
+    public function __construct($result)
     {
-        throw CacheException::updateReadOnlyobject();
+        $this->result = $result;
     }
 }

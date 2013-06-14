@@ -5,6 +5,8 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Cache\CacheEntry;
+use Doctrine\ORM\Cache\CacheKey;
 
 /**
  * @group DDC-2183
@@ -38,8 +40,8 @@ class DefaultRegionTest extends OrmFunctionalTestCase
     static public function dataProviderCacheValues()
     {
         return array(
-            array(new DefaultRegionTestKey('key.1'), array('id'=>1, 'name' => 'bar')),
-            array(new DefaultRegionTestKey('key.2'), array('id'=>2, 'name' => 'foo')),
+            array(new DefaultRegionTestKey('key.1'), new DefaultRegionTestEntry(array('id'=>1, 'name' => 'bar'))),
+            array(new DefaultRegionTestKey('key.2'), new DefaultRegionTestEntry(array('id'=>2, 'name' => 'foo'))),
         );
     }
 
@@ -71,8 +73,8 @@ class DefaultRegionTest extends OrmFunctionalTestCase
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
 
-        $this->region->put($key1, array('value' => 'foo'));
-        $this->region->put($key2, array('value' => 'bar'));
+        $this->region->put($key1, new DefaultRegionTestEntry(array('value' => 'foo')));
+        $this->region->put($key2, new DefaultRegionTestEntry(array('value' => 'bar')));
 
         $this->assertTrue($this->region->contains($key1));
         $this->assertTrue($this->region->contains($key2));
@@ -84,7 +86,7 @@ class DefaultRegionTest extends OrmFunctionalTestCase
     }
 }
 
-class DefaultRegionTestKey implements \Doctrine\ORM\Cache\CacheKey
+class DefaultRegionTestKey implements CacheKey
 {
 
     function __construct($hash)
@@ -98,3 +100,7 @@ class DefaultRegionTestKey implements \Doctrine\ORM\Cache\CacheKey
     }
 }
 
+class DefaultRegionTestEntry extends \ArrayObject implements CacheEntry
+{
+
+}

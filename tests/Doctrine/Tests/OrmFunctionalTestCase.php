@@ -3,7 +3,7 @@
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\Cache;
-use Doctrine\ORM\Cache\CacheAccessProvider;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -18,9 +18,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     private $isSecondLevelCacheEnabled = false;
 
     /**
-     * @var \Doctrine\Common\Cache\CacheProvider
+     * @var \Doctrine\ORM\Cache\CacheFactory
      */
-    private $secondLevelCacheAccessProvider;
+    private $secondLevelCacheFactory;
 
     /**
      * The metadata cache shared between all functional tests.
@@ -441,8 +441,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
         if ($this->isSecondLevelCacheEnabled) {
+
+            $cache   = self::getSharedSecondLevelCacheDriverImpl();
+            $factory = new DefaultCacheFactory($config, $cache);
+
+            $this->secondLevelCacheFactory = $factory;
+
             $config->setSecondLevelCacheEnabled();
-            $config->setSecondLevelCacheAccessProvider($this->secondLevelCacheAccessProvider);
+            $config->setSecondLevelCacheFactory($factory);
         }
 
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
@@ -474,17 +480,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }
 
-
-    /**
-     * @param \Doctrine\Common\Cache\Cache $cache
-     */
-    protected function enableSecondLevelCache(Cache $cache = null)
+    protected function enableSecondLevelCache()
     {
-        $cache      = $cache ?: self::getSharedSecondLevelCacheDriverImpl();
-        $provider   = new CacheAccessProvider($cache);
-
-        $this->secondLevelCacheAccessProvider   = $provider;
-        $this->isSecondLevelCacheEnabled        = true;
+        $this->isSecondLevelCacheEnabled = true;
     }
 
     /**

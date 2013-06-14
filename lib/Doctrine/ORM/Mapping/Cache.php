@@ -41,9 +41,4 @@ final class Cache implements Annotation
      * @var string Cache region name.
      */
     public $region;
-
-    /**
-     * @var array Cache options.
-     */
-    public $properties;
 }

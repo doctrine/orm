@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache\Access;
 
 use Doctrine\ORM\Cache\RegionAccess;
+use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Lock;
@@ -57,17 +58,17 @@ class NonStrictReadWriteRegionAccessStrategy implements RegionAccess
     /**
      * {@inheritdoc}
      */
-    public function afterInsert(CacheKey $key, array $value)
+    public function afterInsert(CacheKey $key, CacheEntry $entry)
     {
-        return $this->region->put($key, $value);
+        return $this->region->put($key, $entry);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function afterUpdate(CacheKey $key, array $value, Lock $lock = null)
+    public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
-        return $this->region->put($key, $value);
+        return $this->region->put($key, $entry);
     }
 
     /**
@@ -81,9 +82,9 @@ class NonStrictReadWriteRegionAccessStrategy implements RegionAccess
     /**
      * {@inheritdoc}
      */
-    public function put(CacheKey $key, array $value)
+    public function put(CacheKey $key, CacheEntry $entry)
     {
-        return $this->region->put($key, $value);
+        return $this->region->put($key, $entry);
     }
 
     /**

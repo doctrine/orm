@@ -38,9 +38,9 @@ interface RegionAccess
     /**
      * Attempt to retrieve an object from the cache.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The identifier of the item to be retrieved.
+     * @param \Doctrine\ORM\Cache\CacheKey $key The cache key of the item to be retrieved.
      *
-     * @return the cached object or <tt>null</tt>
+     * @return \Doctrine\ORM\Cache\CacheEntry The cached entry or <tt>null</tt>
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
@@ -49,44 +49,44 @@ interface RegionAccess
     /**
      * Attempt to cache an object, after loading from the database.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The item identifier.
-     * @param array                        $value      The item.
+     * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
+     * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
      *
      * @return <tt>true</tt> if the object was successfully cached.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
-    public function put(CacheKey $key, array $value);
+    public function put(CacheKey $key, CacheEntry $entry);
 
     /**
      * Called after an item has been inserted (after the transaction completes).
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The item identifier.
-     * @param array                        $value      The item.
+     * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
+     * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
      *
      * @return boolean <tt>true</tt> If the contents of the cache actual were changed.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
-    public function afterInsert(CacheKey $key, array $value);
+    public function afterInsert(CacheKey $key, CacheEntry $entry);
 
     /**
      * Called after an item has been updated (after the transaction completes).
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The item identifier.
-     * @param array                        $value      The item.
-     * @param \Doctrine\ORM\Cache\Lock     $lock       The lock previously obtained from {@link lockItem}
+     * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
+     * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
+     * @param \Doctrine\ORM\Cache\Lock          $lock   The lock previously obtained from {@link lockItem}
      *
      * @return boolean <tt>true</tt> If the contents of the cache actual were changed.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
-    public function afterUpdate(CacheKey $key, array $value, Lock $lock = null);
+    public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null);
 
     /**
      * Forcibly evict an item from the cache immediately without regard for locks.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The identifier of the item to remove.
+     * @param \Doctrine\ORM\Cache\CacheKey $key The cache key of the item to remove.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
