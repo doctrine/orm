@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
-use Doctrine\ORM\Repository\RepositoryFactoryInterface;
+use Doctrine\ORM\Repository\RepositoryFactory;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -786,9 +786,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Set the entity repository factory.
      *
      * @since 2.5
-     * @param \Doctrine\ORM\Repository\RepositoryFactoryInterface $repositoryFactory
+     * @param \Doctrine\ORM\Repository\RepositoryFactory $repositoryFactory
      */
-    public function setRepositoryFactory(RepositoryFactoryInterface $repositoryFactory)
+    public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
     {
         $this->_attributes['repositoryFactory'] = $repositoryFactory;
     }
@@ -797,7 +797,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Get the entity repository factory.
      *
      * @since 2.5
-     * @return \Doctrine\ORM\Repository\RepositoryFactoryInterface
+     * @return \Doctrine\ORM\Repository\RepositoryFactory
      */
     public function getRepositoryFactory()
     {
