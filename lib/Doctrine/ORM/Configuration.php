@@ -785,7 +785,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Set the entity repository factory.
      *
-     * @since 2.5
+     * @since 2.4
      * @param \Doctrine\ORM\Repository\RepositoryFactory $repositoryFactory
      */
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
@@ -796,7 +796,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Get the entity repository factory.
      *
-     * @since 2.5
+     * @since 2.4
      * @return \Doctrine\ORM\Repository\RepositoryFactory
      */
     public function getRepositoryFactory()

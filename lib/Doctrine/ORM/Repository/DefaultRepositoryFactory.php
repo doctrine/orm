@@ -25,7 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * This factory is used to create default repository objects for entities at runtime.
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.5
+ * @since 2.4
  */
 class DefaultRepositoryFactory implements RepositoryFactory
 {
