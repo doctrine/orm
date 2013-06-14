@@ -30,18 +30,12 @@ use Doctrine\ORM\EntityManagerInterface;
 interface RepositoryFactory
 {
     /**
-     * Set the entity manager.
-     *
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
-     */
-    public function setEntityManager(EntityManagerInterface $entityManager);
-
-    /**
      * Gets the repository for an entity class.
      *
-     * @param string $entityName The name of the entity.
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
+     * @param string                               $entityName    The name of the entity.
      *
      * @return \Doctrine\ORM\EntityRepository
      */
-    public function getRepository($entityName);
+    public function getRepository(EntityManagerInterface $entityManager, $entityName);
 }

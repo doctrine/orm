@@ -161,13 +161,9 @@ use Doctrine\Common\Util\ClassUtils;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
-        $repositoryFactory = $config->getRepositoryFactory();
-
-        $this->repositoryFactory = $repositoryFactory;
-        $this->repositoryFactory->setEntityManager($this);
-
-        $this->unitOfWork   = new UnitOfWork($this);
-        $this->proxyFactory = new ProxyFactory(
+        $this->repositoryFactory = $config->getRepositoryFactory();
+        $this->unitOfWork        = new UnitOfWork($this);
+        $this->proxyFactory      = new ProxyFactory(
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
@@ -767,7 +763,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getRepository($entityName)
     {
-        return $this->repositoryFactory->getRepository($entityName);
+        return $this->repositoryFactory->getRepository($this, $entityName);
     }
 
     /**
