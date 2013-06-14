@@ -405,7 +405,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
         $ad = $config->newDefaultAnnotationDriver(array(), true);
-        $ad->addPaths(array(__DIR__ . '\\Models\\DDCxxx'));
+        $ad->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'Models' . DIRECTORY_SEPARATOR . 'DDCxxx'));
 
         $config->setMetadataDriverImpl($ad);
 
