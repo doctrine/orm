@@ -187,6 +187,8 @@ doctrine command. Its a fairly simple file:
     // cli-config.php
     require_once "bootstrap.php";
 
+    // the next line is assuming Doctrine 2.4 Beta2 and above
+    // Doctrine 2.3.x solution available at http://www.doctrine-project.org/jira/browse/DDC-2486
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 You can then change into your project directory and call the
@@ -1108,10 +1110,10 @@ the first read-only use-case:
 
     foreach($bugs AS $bug) {
         echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
-        echo "    Reported by: ".$bug->getReporter()->name."\n";
-        echo "    Assigned to: ".$bug->getEngineer()->name."\n";
+        echo "    Reported by: ".$bug->getReporter()->getName()."\n";
+        echo "    Assigned to: ".$bug->getEngineer()->getName()."\n";
         foreach($bug->getProducts() AS $product) {
-            echo "    Platform: ".$product->name."\n";
+            echo "    Platform: ".$product->getName()."\n";
         }
         echo "\n";
     }
