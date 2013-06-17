@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use Doctrine\ORM\Events;
 
 /**
  * @group DDC-2183
@@ -155,5 +156,147 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($s2->getId(), $c4->getId());
         $this->assertEquals("NEW NAME 2", $c4->getName());
+    }
+
+    public function testPostFlushFailure()
+    {
+        $listener = new ListenerSecondLevelCacheTest(array(Events::postFlush => function(){
+            throw new \RuntimeException('pre insert failure');
+        }));
+
+        $this->_em->getEventManager()
+            ->addEventListener(Events::postFlush, $listener);
+
+        $country = new Country("Brazil");
+
+        $this->cache->evictEntityRegion(Country::CLASSNAME);
+
+        try {
+            
+            $this->_em->persist($country);
+            $this->_em->flush();
+            $this->fail('Should throw exception');
+
+        } catch (\RuntimeException $exc) {
+            $this->assertNotNull($country->getId());
+            $this->assertEquals('pre insert failure', $exc->getMessage());
+            $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $country->getId()));
+        }
+    }
+
+    public function testPostUpdateFailure()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->_em->clear();
+
+        $listener = new ListenerSecondLevelCacheTest(array(Events::postUpdate => function(){
+            throw new \RuntimeException('post update failure');
+        }));
+
+        $this->_em->getEventManager()
+            ->addEventListener(Events::postUpdate, $listener);
+
+        $this->cache->evictEntityRegion(State::CLASSNAME);
+
+        $stateId    = $this->states[0]->getId();
+        $stateName  = $this->states[0]->getName();
+        $state      = $this->_em->find(State::CLASSNAME, $stateId);
+        
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $stateId));
+        $this->assertInstanceOf(State::CLASSNAME, $state);
+        $this->assertEquals($stateName, $state->getName());
+
+        $state->setName($stateName . uniqid());
+
+        $this->_em->persist($state);
+
+        try {
+            $this->_em->flush();
+            $this->fail('Should throw exception');
+
+        } catch (\Exception $exc) {
+            $this->assertEquals('post update failure', $exc->getMessage());
+        }
+
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $stateId));
+
+        $state = $this->_em->find(State::CLASSNAME, $stateId);
+
+        $this->assertInstanceOf(State::CLASSNAME, $state);
+        $this->assertEquals($stateName, $state->getName());
+    }
+
+    public function testPostRemoveFailure()
+    {
+        $this->loadFixturesCountries();
+        $this->_em->clear();
+
+        $listener = new ListenerSecondLevelCacheTest(array(Events::postRemove => function(){
+            throw new \RuntimeException('post remove failure');
+        }));
+
+        $this->_em->getEventManager()
+            ->addEventListener(Events::postRemove, $listener);
+
+        $this->cache->evictEntityRegion(Country::CLASSNAME);
+
+        $countryId  = $this->countries[0]->getId();
+        $country    = $this->_em->find(Country::CLASSNAME, $countryId);
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $countryId));
+        $this->assertInstanceOf(Country::CLASSNAME, $country);
+
+        $this->_em->remove($country);
+
+        try {
+            $this->_em->flush();
+            $this->fail('Should throw exception');
+
+        } catch (\Exception $exc) {
+            $this->assertEquals('post remove failure', $exc->getMessage());
+        }
+
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $countryId));
+
+        $country = $this->_em->find(Country::CLASSNAME, $countryId);
+        $this->assertInstanceOf(Country::CLASSNAME, $country);
+    }
+}
+
+
+class ListenerSecondLevelCacheTest
+{
+    public $callbacks;
+
+    public function __construct(array $callbacks = array())
+    {
+        $this->callbacks = $callbacks;
+    }
+
+    private function dispatch($eventName, $args)
+    {
+        if (isset($this->callbacks[$eventName])) {
+            call_user_func($this->callbacks[$eventName], $args);
+        }
+    }
+
+    public function postFlush($args)
+    {
+        $this->dispatch(__FUNCTION__, $args);
+    }
+
+    public function postUpdate($args)
+    {
+        $this->dispatch(__FUNCTION__, $args);
+    }
+
+    public function postRemove($args)
+    {
+        $this->dispatch(__FUNCTION__, $args);
     }
 }
