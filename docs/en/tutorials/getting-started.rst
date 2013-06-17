@@ -25,7 +25,7 @@ The code of this tutorial is `available on Github <https://github.com/doctrine/d
 
 .. note::
 
-    This tutorial assumes you work with Doctrine 2.3 and above.
+    This tutorial assumes you work with Doctrine 2.4 and above.
     Some of the code will not work with lower versions.
 
 What is Doctrine?
