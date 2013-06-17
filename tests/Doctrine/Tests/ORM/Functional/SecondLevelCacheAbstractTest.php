@@ -11,6 +11,10 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Traveler;
 use Doctrine\Tests\Models\Cache\Travel;
 
+use Doctrine\Tests\Models\Cache\Restaurant;
+use Doctrine\Tests\Models\Cache\Beach;
+use Doctrine\Tests\Models\Cache\Bar;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -18,11 +22,12 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
-    protected $countries = array();
-    protected $states    = array();
-    protected $cities    = array();
-    protected $travels   = array();
-    protected $travelers = array();
+    protected $countries    = array();
+    protected $states       = array();
+    protected $cities       = array();
+    protected $travels      = array();
+    protected $travelers    = array();
+    protected $attractions  = array();
 
     /**
      * @var \Doctrine\ORM\Cache
@@ -132,6 +137,23 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
     }
+
+    protected function loadFixturesAttractions()
+    {
+        $this->attractions[] = new Bar('Boteco São Bento', $this->cities[0]);
+        $this->attractions[] = new Bar('Prainha Paulista', $this->cities[0]);
+        $this->attractions[] = new Beach('Copacabana', $this->cities[1]);
+        $this->attractions[] = new Beach('Ipanema', $this->cities[1]);
+        $this->attractions[] = new Restaurant('Reinstoff', $this->cities[3]);
+        $this->attractions[] = new Restaurant('Fischers Fritz', $this->cities[2]);
+
+        foreach ($this->attractions as $attraction) {
+            $this->_em->persist($attraction);
+        }
+
+        $this->_em->flush();
+    }
+
 
     protected function evictRegions()
     {

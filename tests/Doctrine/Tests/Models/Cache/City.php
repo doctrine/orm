@@ -37,11 +37,17 @@ class City
      */
     public $travels;
 
+     /**
+     * @OneToMany(targetEntity="Attraction", mappedBy="city")
+     */
+    public $attractions;
+
     public function __construct($name, State $state)
     {
-        $this->name     = $name;
-        $this->state    = $state;
-        $this->travels  = new ArrayCollection();
+        $this->name         = $name;
+        $this->state        = $state;
+        $this->travels      = new ArrayCollection();
+        $this->attractions  = new ArrayCollection();
     }
 
     public function getId()
@@ -82,5 +88,15 @@ class City
     public function getTravels()
     {
         return $this->travels;
+    }
+
+    public function addAttraction(Attraction $attraction)
+    {
+        $this->attractions[] = $attraction;
+    }
+
+    public function getAttractions()
+    {
+        return $this->attractions;
     }
 }

@@ -181,6 +181,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\City',
             'Doctrine\Tests\Models\Cache\Traveler',
             'Doctrine\Tests\Models\Cache\Travel',
+            'Doctrine\Tests\Models\Cache\Attraction',
+            'Doctrine\Tests\Models\Cache\Restaurant',
+            'Doctrine\Tests\Models\Cache\Beach',
+            'Doctrine\Tests\Models\Cache\Bar',
         ),
     );
 
@@ -324,6 +328,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
+            $conn->executeUpdate('DELETE FROM cache_attraction');
         }
 
         $this->_em->clear();
