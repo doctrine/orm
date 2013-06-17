@@ -21,7 +21,7 @@ class City
     protected $id;
 
     /**
-     * @Column
+     * @Column(unique=true)
      */
     protected $name;
 

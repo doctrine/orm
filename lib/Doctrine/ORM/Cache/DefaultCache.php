@@ -54,7 +54,7 @@ class DefaultCache implements Cache
     /**
      * @var array<\Doctrine\ORM\Cache\QueryCache>
      */
-    private $queryCaches;
+    private $queryCaches = array();
 
     /**
      * @var \Doctrine\ORM\Cache\QueryCache
@@ -267,9 +267,7 @@ class DefaultCache implements Cache
      */
     public function evictQueryRegions()
     {
-        if ($this->defaultQueryCache !== null) {
-            $this->defaultQueryCache->clear();
-        }
+        $this->getQueryCache()->clear();
 
         foreach ($this->queryCaches as $queryCache) {
             $queryCache->clear();

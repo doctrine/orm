@@ -132,4 +132,11 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
     }
+
+    protected function evictRegions()
+    {
+        $this->cache->evictQueryRegions();
+        $this->cache->evictEntityRegions();
+        $this->cache->evictCollectionRegions();
+    }
 }

@@ -19,7 +19,7 @@ class Country
     protected $id;
 
     /**
-     * @Column
+     * @Column(unique=true)
      */
     protected $name;
 
