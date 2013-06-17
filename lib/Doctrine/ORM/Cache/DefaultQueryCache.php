@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Cache\QueryCacheEntry;
+use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -69,10 +70,17 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        $entityName = reset($rsm->aliasMap); //@TODO find root entity
         $result     = array();
-
+        $entityName = reset($rsm->aliasMap); //@TODO find root entity
+        $persister  = $this->uow->getEntityPersister($entityName);
+        $region     = $persister->getCacheRegionAcess()->getRegion();
+        
         foreach ($entry->result as $index => $value) {
+
+            if ( ! $region->contains(new EntityCacheKey($entityName, $value))) {
+                return null;
+            }
+
             $result[$index] = $this->em->getReference($entityName, $value);
 
             //@TODO - handle associations ?
