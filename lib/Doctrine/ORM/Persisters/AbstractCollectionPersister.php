@@ -65,6 +65,16 @@ abstract class AbstractCollectionPersister
     protected $quoteStrategy;
 
     /**
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     */
+    protected $sourceEntity;
+
+    /**
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     */
+    protected $targetEntity;
+
+    /**
      * @var array
      */
     protected $association;
@@ -108,12 +118,13 @@ abstract class AbstractCollectionPersister
         $this->conn             = $em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
+        $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
         $this->hasCache         = isset($association['cache']) && $em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
-            $sourceClass                = $em->getClassMetadata($association['sourceEntity']);
             $cacheFactory               = $em->getConfiguration()->getSecondLevelCacheFactory();
-            $this->cacheRegionAccess    = $cacheFactory->buildCollectionRegionAccessStrategy($sourceClass, $association['fieldName']);
+            $this->cacheRegionAccess    = $cacheFactory->buildCollectionRegionAccessStrategy($this->sourceEntity, $association['fieldName']);
             $this->cacheEntryStructure  = $cacheFactory->buildCollectionEntryStructure($em);
             $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
         }
@@ -254,41 +265,43 @@ abstract class AbstractCollectionPersister
      *
      * @return \Doctrine\ORM\PersistentCollection|null
      */
-    public function loadCachedCollection(PersistentCollection $collection, CollectionCacheKey $key)
+    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
-        $metadata   = $collection->getTypeClass();
-        $cache      = $this->cacheRegionAccess->get($key);
 
-        if ($cache === null) {
+        if (($cache = $this->cacheRegionAccess->get($key)) === null) {
             return null;
         }
 
-        return $this->cacheEntryStructure->loadCacheEntry($metadata, $key, $cache, $collection);
+        if (($cache = $this->cacheEntryStructure->loadCacheEntry($this->sourceEntity, $key, $cache, $collection)) === null) {
+            return null;
+        }
+
+        return $cache;
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata           $targetMetadata
      * @param \Doctrine\ORM\Cache\CollectionCacheKey        $key
      * @param array|\Doctrine\Common\Collections\Collection $elements
      *
      * @return void
      */
-    public function saveLoadedCollection(ClassMetadata $targetMetadata, CollectionCacheKey $key, $elements)
+    public function saveCollectionCache(CollectionCacheKey $key, $elements)
     {
-        $targetClass        = $this->association['targetEntity'];
-        $targetPersister    = $this->uow->getEntityPersister($targetClass);
+        $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
         $targetRegionAcess  = $targetPersister->getCacheRegionAcess();
-        $entry              = $this->cacheEntryStructure->buildCacheEntry($targetMetadata, $key, $elements);
+        $targetStructure    = $targetPersister->getCacheEntryStructure();
+        $targetRegion       = $targetRegionAcess->getRegion();
+        $entry              = $this->cacheEntryStructure->buildCacheEntry($this->targetEntity, $key, $elements);
 
         foreach ($entry->dataList as $index => $identifier) {
-            $entityKey = new EntityCacheKey($targetClass, $identifier);
+            $entityKey = new EntityCacheKey($this->targetEntity->rootEntityName, $identifier);
 
-            if ($targetRegionAcess->getRegion()->contains($entityKey)) {
+            if ($targetRegion->contains($entityKey)) {
                 continue;
             }
 
             $entity       = $elements[$index];
-            $entityEntry  = $targetPersister->getCacheEntryStructure()->buildCacheEntry($targetMetadata, $entityKey, $entity);
+            $entityEntry  = $targetStructure->buildCacheEntry($this->targetEntity, $entityKey, $entity);
 
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
@@ -307,18 +320,12 @@ abstract class AbstractCollectionPersister
 
         $uow = $this->em->getUnitOfWork();
 
-        if ( ! empty($this->queuedCache)) {
+        foreach ($this->queuedCache as $item) {
+            $elements       = $item['elements'];
+            $ownerId        = $uow->getEntityIdentifier($item['owner']);
+            $key            = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
 
-            $association  = $this->association['fieldName'];
-            $mapping      = $this->em->getClassMetadata($this->association['sourceEntity']);
-
-            foreach ($this->queuedCache as $item) {
-                $elements       = $item['elements'];
-                $ownerId        = $uow->getEntityIdentifier($item['owner']);
-                $key            = new CollectionCacheKey($mapping->rootEntityName, $association, $ownerId);
-
-                $this->saveLoadedCollection($mapping, $key, $elements);
-            }
+            $this->saveCollectionCache($key, $elements);
         }
 
         $this->queuedCache = array();

@@ -230,7 +230,7 @@ class DefaultCache implements Cache
                 $persister = $this->uow->getCollectionPersister($association);
 
                 if ( ! $persister->hasCache()) {
-                    return;
+                    continue;
                 }
 
                 $persister->getCacheRegionAcess()->evictAll();

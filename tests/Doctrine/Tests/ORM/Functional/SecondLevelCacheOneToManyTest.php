@@ -174,4 +174,41 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($queryCount2 + 1, $this->getCurrentQueryCount());
     }
+
+    public function testLoadOnoToManyCollectionFromDatabaseWhenEntityMissing()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->_em->clear();
+        
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(0)->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(1)->getId()));
+       
+        $queryCount = $this->getCurrentQueryCount();
+        $stateId    = $this->states[0]->getId();
+        $state      = $this->_em->find(State::CLASSNAME, $stateId);
+        $cityId     = $this->states[0]->getCities()->get(1)->getId();
+
+        //trigger lazy load from cache
+        $this->assertCount(2, $state->getCities());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $cityId));
+
+        $this->cache->evictEntity(City::CLASSNAME, $cityId);
+
+        $this->assertFalse($this->cache->containsEntity(City::CLASSNAME, $cityId));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $stateId));
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $stateId));
+
+        $this->_em->clear();
+
+        $state = $this->_em->find(State::CLASSNAME, $stateId);
+
+        //trigger lazy load from database
+        $this->assertCount(2, $state->getCities());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
 }

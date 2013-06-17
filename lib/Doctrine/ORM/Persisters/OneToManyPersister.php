@@ -62,10 +62,8 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteRowSQL(PersistentCollection $coll)
     {
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata($mapping['targetEntity']);
-        $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
-        $idColumns  = $class->getIdentifierColumnNames();
+        $tableName  = $this->quoteStrategy->getTableName($this->targetEntity, $this->platform);
+        $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($this->targetEntity, $this->platform);
 
         return 'DELETE FROM ' . $tableName
              . ' WHERE ' . implode('= ? AND ', $idColumns) . ' = ?';
@@ -135,8 +133,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function count(PersistentCollection $coll)
     {
         $mapping     = $coll->getMapping();
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass = $this->targetEntity;
+        $sourceClass = $this->sourceEntity;
         $id          = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
 
         $whereClauses = array();
@@ -237,10 +235,9 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $mapping = $coll->getMapping();
-        $class   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sql     = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-                 . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        $tableName  = $this->quoteStrategy->getTableName($this->targetEntity, $this->platform);
+        $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($this->targetEntity, $this->platform);
+        $sql        = 'DELETE FROM ' . $tableName . ' WHERE ' . implode('= ? AND ', $idColumns) . ' = ?';
 
         return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
     }

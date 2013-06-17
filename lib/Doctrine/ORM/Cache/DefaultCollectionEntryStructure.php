@@ -60,8 +60,8 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
     {
         $data = array();
 
-        foreach ($collection as $key => $entity) {
-            $data[$key] = $this->uow->getEntityIdentifier($entity);
+        foreach ($collection as $index => $entity) {
+            $data[$index] = $this->uow->getEntityIdentifier($entity);
         }
 
         return new CollectionCacheEntry($data);
@@ -72,14 +72,24 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
      */
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
-        $list = array();
+        $targetEntity    = $metadata->associationMappings[$key->association]['targetEntity'];
+        $targetPersister = $this->uow->getEntityPersister($targetEntity);
+        $targetRegion    = $targetPersister->getCacheRegionAcess()->getRegion();
+        $list            = array();
 
-        foreach ($entry->dataList as $key => $entry) {
-            $entity     = $this->em->getReference($metadata->rootEntityName, $entry);
-            $list[$key] = $entity;
+        foreach ($entry->dataList as $index => $entry) {
 
-            $collection->hydrateSet($key, $entity);
+            if ( ! $targetRegion->contains(new EntityCacheKey($targetEntity, $entry))) {
+                return null;
+            }
+
+            $entity     = $this->em->getReference($targetEntity, $entry);
+            $list[$index] = $entity;
         }
+
+        array_walk($list, function($entity, $index) use ($collection){
+            $collection->hydrateSet($index, $entity);
+        });
 
         return $list;
     }
