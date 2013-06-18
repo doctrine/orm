@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\Restaurant;
 use Doctrine\Tests\Models\Cache\Beach;
+use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Bar;
 
 /**
@@ -146,5 +147,61 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         foreach ($result2 as $entity) {
             $this->assertInstanceOf(Attraction::CLASSNAME, $entity);
         }
+    }
+
+    public function testPutOneToManyRelationOnPersist()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+
+        $this->_em->clear();
+
+        foreach ($this->cities as $city) {
+            $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $city->getId()));
+            $this->assertTrue($this->cache->containsCollection(City::CLASSNAME, 'attractions', $city->getId()));
+        }
+
+        foreach ($this->attractions as $attraction) {
+            $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $attraction->getId()));
+        }
+    }
+
+    public function testOneToManyRelation()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+        $this->evictRegions();
+        $this->_em->clear();
+
+        $entity = $this->_em->find(City::CLASSNAME, $this->cities[0]->getId());
+        $this->assertCount(2, $entity->getAttractions());
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
+
+        $ownerId    = $this->cities[0]->getId();
+        $queryCount = $this->getCurrentQueryCount();
+
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $ownerId));
+        $this->assertTrue($this->cache->containsCollection(City::CLASSNAME, 'attractions', $ownerId));
+
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(0));
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(1));
+        $this->assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
+        $this->assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
+
+        $city = $this->_em->find(City::CLASSNAME, $ownerId);
+
+        $this->assertInstanceOf(City::CLASSNAME, $city);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $city->getAttractions());
+        $this->assertCount(2, $city->getAttractions());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertInstanceOf(Bar::CLASSNAME, $city->getAttractions()->get(0));
+        $this->assertInstanceOf(Bar::CLASSNAME, $city->getAttractions()->get(1));
+        $this->assertEquals($this->attractions[0]->getName(), $city->getAttractions()->get(0)->getName());
+        $this->assertEquals($this->attractions[1]->getName(), $city->getAttractions()->get(1)->getName());
     }
 }

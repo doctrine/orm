@@ -38,6 +38,8 @@ class City
     public $travels;
 
      /**
+     * @Cache
+     * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="Attraction", mappedBy="city")
      */
     public $attractions;

@@ -211,4 +211,46 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $state->getCities());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
+
+
+    public function testShoudNotPutOneToManyRelationOnPersistIfTheCollectionIsEmpty()
+    {
+        $this->loadFixturesCountries();
+        $this->evictRegions();
+
+        $state = new State("State Foo", $this->countries[0]);
+
+        $this->_em->persist($state);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $state->getId()));
+        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, 'cities', $state->getId()));
+
+        $state = $this->_em->find(State::CLASSNAME, $state);
+        $this->assertInstanceOf(State::CLASSNAME, $state);
+
+        $city = new City("City Bar", $state);
+
+        $state->addCity($city);
+
+        $this->_em->persist($city);
+        $this->_em->persist($state);
+        $this->_em->flush();
+
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $state->getId()));
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $state->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $city->getId()));
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $state      = $this->_em->find(State::CLASSNAME, $state);
+
+        $this->assertInstanceOf(State::CLASSNAME, $state);
+        $this->assertCount(1, $state->getCities());
+        $this->assertInstanceOf(City::CLASSNAME, $state->getCities()->get(0));
+        $this->assertEquals($city->getName(), $state->getCities()->get(0)->getName());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+    }
 }

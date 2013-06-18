@@ -366,7 +366,7 @@ class UnitOfWork implements PropertyChangedListener
                 $collectionPersister->delete($collectionToDelete);
 
                 if ($collectionPersister->hasCache()) {
-                    $this->cachedPersisters[] = $collectionPersister;
+                    $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
                 }
             }
 
@@ -377,7 +377,7 @@ class UnitOfWork implements PropertyChangedListener
                 $collectionPersister->update($collectionToUpdate);
 
                 if ($collectionPersister->hasCache()) {
-                    $this->cachedPersisters[] = $collectionPersister;
+                    $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
                 }
             }
 
@@ -817,13 +817,13 @@ class UnitOfWork implements PropertyChangedListener
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         // Handle colection cache
-        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && isset($assoc['cache'])) {
-            
+        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && isset($assoc['cache']) && count($value) > 0) {
+
             $collectionPersister = $this->getCollectionPersister($assoc);
 
             $collectionPersister->queuedCachedCollectionChange($entity, $value);
 
-            $this->cachedPersisters[] = $collectionPersister;
+            $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
         }
 
         foreach ($unwrappedValue as $key => $entry) {
@@ -1022,7 +1022,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($persister->hasCache()) {
-            $this->cachedPersisters[$className] = $persister;
+            $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
 
@@ -1061,7 +1061,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($persister->hasCache()) {
-                $this->cachedPersisters[$className] = $persister;
+                $this->cachedPersisters[spl_object_hash($persister)] = $persister;
             }
         }
     }
@@ -1105,7 +1105,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($persister->hasCache()) {
-                $this->cachedPersisters[$className] = $persister;
+                $this->cachedPersisters[spl_object_hash($persister)] = $persister;
             }
         }
     }

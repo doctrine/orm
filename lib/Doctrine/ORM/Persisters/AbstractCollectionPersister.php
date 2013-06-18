@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\Common\Collections\Collection;
@@ -166,7 +165,7 @@ abstract class AbstractCollectionPersister
         $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
 
         if ($this->hasCache) {
-            $this->queuedCachedCollectionChange($coll->getOwner(), $coll->toArray());
+            $this->queuedCachedCollectionChange($coll->getOwner(), null);
         }
     }
 
@@ -208,8 +207,8 @@ abstract class AbstractCollectionPersister
         $this->deleteRows($coll);
         $this->insertRows($coll);
 
-        if ($this->hasCache) {
-            $this->queuedCachedCollectionChange($coll->getOwner(), $coll->toArray());
+        if ($this->hasCache && $coll->isDirty()) {
+            $this->queuedCachedCollectionChange($coll->getOwner(), $coll);
         }
     }
 
@@ -305,7 +304,7 @@ abstract class AbstractCollectionPersister
 
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
-
+        
         $this->cacheRegionAccess->put($key, $entry);
     }
 
@@ -324,6 +323,12 @@ abstract class AbstractCollectionPersister
             $elements       = $item['elements'];
             $ownerId        = $uow->getEntityIdentifier($item['owner']);
             $key            = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+
+            if ($elements === null) {
+                $this->cacheRegionAccess->evict($key);
+
+                continue;
+            }
 
             $this->saveCollectionCache($key, $elements);
         }

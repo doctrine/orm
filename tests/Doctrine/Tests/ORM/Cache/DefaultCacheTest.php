@@ -209,4 +209,19 @@ class DefaultCacheTest extends OrmFunctionalTestCase
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
     }
 
+    public function testToIdentifierArrayShoudLookupForEntityIdentifier()
+    {
+        $identifier = 123;
+        $entity     = new Country('Foo');
+        $metadata   = $this->_em->getClassMetadata(Country::CLASSNAME);
+        $method     = new \ReflectionMethod($this->cache, 'toIdentifierArray');
+        $property   = new \ReflectionProperty($entity, 'id');
+
+        $property->setAccessible(true);
+        $method->setAccessible(true);
+        $property->setValue($entity, $identifier);
+
+        $this->assertEquals(array('id'=>$identifier), $method->invoke($this->cache, $metadata, $identifier));
+    }
+
 }
