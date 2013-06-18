@@ -255,7 +255,7 @@ class ORMException extends Exception
      */
     public static function invalidSecondLevelCache($className)
     {
-        return new self(sprintf('Invalid repository class "%s". It must be a Doctrine\ORM\Cache.', $className));
+        return new self(sprintf('Invalid cache class "%s". It must be a Doctrine\ORM\Cache.', $className));
     }
 
     /**
