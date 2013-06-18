@@ -482,7 +482,7 @@ use Doctrine\Common\Util\ClassUtils;
                     throw OptimisticLockException::notVersioned($class->name);
                 }
 
-                $entity = $persister->loadById($sortedId);
+                $entity = $persister->load($sortedId);
 
                 $unitOfWork->lock($entity, $lockMode, $lockVersion);
 
@@ -493,7 +493,7 @@ use Doctrine\Common\Util\ClassUtils;
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                return $persister->loadById($sortedId, $lockMode);
+                return $persister->load($sortedId, null, null, array(), $lockMode);
         }
     }
 

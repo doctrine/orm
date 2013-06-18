@@ -866,13 +866,12 @@ class BasicEntityPersister
      *
      * @param array       $identifier   The entity identifier.
      * @param object|null $entity       The entity to load the data into. If not specified, a new entity is created.
-     * @param int         $lockMode
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      *
      * @todo Check parameters
      */
-    public function loadById(array $identifier, $entity = null, $lockMode = 0)
+    public function loadById(array $identifier, $entity = null)
     {
         $cacheKey = null;
 
@@ -885,7 +884,7 @@ class BasicEntityPersister
             }
         }
 
-        $entity = $this->load($identifier, $entity, null, array(), $lockMode);
+        $entity = $this->load($identifier, $entity);
 
         if ($this->hasCache && $entity !== null) {
             $class      = $this->em->getClassMetadata(ClassUtils::getClass($entity));
