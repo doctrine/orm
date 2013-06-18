@@ -323,12 +323,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($this->_usedModelSets['cache'])) {
             $conn->executeUpdate('DELETE FROM cache_visited_cities');
+            $conn->executeUpdate('DELETE FROM cache_attraction');
             $conn->executeUpdate('DELETE FROM cache_travel');
             $conn->executeUpdate('DELETE FROM cache_traveler');
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
-            $conn->executeUpdate('DELETE FROM cache_attraction');
         }
 
         $this->_em->clear();
