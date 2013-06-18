@@ -44,8 +44,8 @@ class EntityCacheKey implements CacheKey
     private $hash;
 
     /**
-     * @param string $entityClass
-     * @param array  $identifier
+     * @param string $entityClass   The entity class name. In a inheritance hierarchy it should always be the root entity class.
+     * @param array  $identifier    The entity identifier
      */
     public function __construct($entityClass, array $identifier)
     {

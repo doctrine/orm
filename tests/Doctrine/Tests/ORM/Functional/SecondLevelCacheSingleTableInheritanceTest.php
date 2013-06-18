@@ -24,6 +24,19 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->assertEquals($attractionRegion->getName(), $barRegion->getName());
     }
 
+    public function testPutOnPersistXXX()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $this->attractions[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $this->attractions[1]->getId()));
+    }
+
     public function testCountaisRootClass()
     {
         $this->loadFixturesCountries();
@@ -36,6 +49,102 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         foreach ($this->attractions as $attraction) {
             $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $attraction->getId()));
             $this->assertTrue($this->cache->containsEntity(get_class($attraction), $attraction->getId()));
+        }
+    }
+
+    /**
+     * @group menina
+     */
+    public function testPutAndLoadEntities()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+
+        $this->_em->clear();
+
+        $this->cache->evictEntityRegion(Attraction::CLASSNAME);
+
+        $entityId1 = $this->attractions[0]->getId();
+        $entityId2 = $this->attractions[1]->getId();
+
+        $this->assertFalse($this->cache->containsEntity(Attraction::CLASSNAME, $entityId1));
+        $this->assertFalse($this->cache->containsEntity(Attraction::CLASSNAME, $entityId2));
+        $this->assertFalse($this->cache->containsEntity(Bar::CLASSNAME, $entityId1));
+        $this->assertFalse($this->cache->containsEntity(Bar::CLASSNAME, $entityId2));
+
+        $entity1 = $this->_em->find(Attraction::CLASSNAME, $entityId1);
+        $entity2 = $this->_em->find(Attraction::CLASSNAME, $entityId2);
+
+        $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $entityId1));
+        $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $entityId2));
+        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $entityId1));
+        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $entityId2));
+
+        $this->assertInstanceOf(Attraction::CLASSNAME, $entity1);
+        $this->assertInstanceOf(Attraction::CLASSNAME, $entity2);
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity1);
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity2);
+
+        $this->assertEquals($this->attractions[0]->getId(), $entity1->getId());
+        $this->assertEquals($this->attractions[0]->getName(), $entity1->getName());
+
+        $this->assertEquals($this->attractions[1]->getId(), $entity2->getId());
+        $this->assertEquals($this->attractions[1]->getName(), $entity2->getName());
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $entity3 = $this->_em->find(Attraction::CLASSNAME, $entityId1);
+        $entity4 = $this->_em->find(Attraction::CLASSNAME, $entityId2);
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertInstanceOf(Attraction::CLASSNAME, $entity3);
+        $this->assertInstanceOf(Attraction::CLASSNAME, $entity4);
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity3);
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity4);
+
+        $this->assertNotSame($entity1, $entity3);
+        $this->assertEquals($entity1->getId(), $entity3->getId());
+        $this->assertEquals($entity1->getName(), $entity3->getName());
+
+        $this->assertNotSame($entity2, $entity4);
+        $this->assertEquals($entity2->getId(), $entity4->getId());
+        $this->assertEquals($entity2->getName(), $entity4->getName());
+    }
+
+    public function testQueryCacheFindAll()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT a FROM Doctrine\Tests\Models\Cache\Attraction a';
+        $result1    = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(count($this->attractions), $result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->_em->clear();
+
+        $result2 = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(count($this->attractions), $result2);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        foreach ($result2 as $entity) {
+            $this->assertInstanceOf(Attraction::CLASSNAME, $entity);
         }
     }
 }

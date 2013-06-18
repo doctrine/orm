@@ -75,8 +75,8 @@ abstract class AbstractRegionAccessTest extends \Doctrine\Tests\OrmTestCase
         $entityName = '\Doctrine\Tests\Models\Cache\Country';
         
         return array(
-            array(new EntityCacheKey($entityName, array('id'=>1)), new EntityCacheEntry(array('id'=>1, 'name' => 'bar'))),
-            array(new EntityCacheKey($entityName, array('id'=>2)), new EntityCacheEntry(array('id'=>2, 'name' => 'foo'))),
+            array(new EntityCacheKey($entityName, array('id'=>1)), new EntityCacheEntry($entityName, array('id'=>1, 'name' => 'bar'))),
+            array(new EntityCacheKey($entityName, array('id'=>2)), new EntityCacheEntry($entityName, array('id'=>2, 'name' => 'foo'))),
         );
     }
 
@@ -98,17 +98,18 @@ abstract class AbstractRegionAccessTest extends \Doctrine\Tests\OrmTestCase
 
     public function testEvictAll()
     {
-        $key1 = new DefaultRegionTestKey('key.1');
-        $key2 = new DefaultRegionTestKey('key.2');
+        $key1  = new DefaultRegionTestKey('key.1');
+        $key2  = new DefaultRegionTestKey('key.2');
+        $class = '\Doctrine\Tests\Models\Cache\Country';
 
         $this->assertNull($this->regionAccess->get($key1));
         $this->assertNull($this->regionAccess->get($key2));
 
-        $this->regionAccess->put($key1, new EntityCacheEntry(array('value' => 'foo')));
-        $this->regionAccess->put($key2, new EntityCacheEntry(array('value' => 'bar')));
+        $this->regionAccess->put($key1, new EntityCacheEntry($class, array('value' => 'foo')));
+        $this->regionAccess->put($key2, new EntityCacheEntry($class, array('value' => 'bar')));
 
-        $this->assertEquals(new EntityCacheEntry(array('value' => 'foo')), $this->regionAccess->get($key1));
-        $this->assertEquals(new EntityCacheEntry(array('value' => 'bar')), $this->regionAccess->get($key2));
+        $this->assertEquals(new EntityCacheEntry($class, array('value' => 'foo')), $this->regionAccess->get($key1));
+        $this->assertEquals(new EntityCacheEntry($class, array('value' => 'bar')), $this->regionAccess->get($key2));
 
         $this->regionAccess->evictAll();
 
@@ -118,31 +119,33 @@ abstract class AbstractRegionAccessTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAfterInsert()
     {
-        $key1 = new DefaultRegionTestKey('key.1');
-        $key2 = new DefaultRegionTestKey('key.2');
+        $key1  = new DefaultRegionTestKey('key.1');
+        $key2  = new DefaultRegionTestKey('key.2');
+        $class = '\Doctrine\Tests\Models\Cache\Country';
 
         $this->assertNull($this->regionAccess->get($key1));
         $this->assertNull($this->regionAccess->get($key2));
 
-        $this->regionAccess->afterInsert($key1, new EntityCacheEntry(array('value' => 'foo')));
-        $this->regionAccess->afterInsert($key2, new EntityCacheEntry(array('value' => 'bar')));
+        $this->regionAccess->afterInsert($key1, new EntityCacheEntry($class, array('value' => 'foo')));
+        $this->regionAccess->afterInsert($key2, new EntityCacheEntry($class, array('value' => 'bar')));
 
-        $this->assertEquals(new EntityCacheEntry(array('value' => 'foo')), $this->regionAccess->get($key1));
-        $this->assertEquals(new EntityCacheEntry(array('value' => 'bar')), $this->regionAccess->get($key2));
+        $this->assertEquals(new EntityCacheEntry($class, array('value' => 'foo')), $this->regionAccess->get($key1));
+        $this->assertEquals(new EntityCacheEntry($class, array('value' => 'bar')), $this->regionAccess->get($key2));
     }
 
     public function testAfterUpdate()
     {
-        $key1 = new DefaultRegionTestKey('key.1');
-        $key2 = new DefaultRegionTestKey('key.2');
+        $key1  = new DefaultRegionTestKey('key.1');
+        $key2  = new DefaultRegionTestKey('key.2');
+        $class = '\Doctrine\Tests\Models\Cache\Country';
 
         $this->assertNull($this->regionAccess->get($key1));
         $this->assertNull($this->regionAccess->get($key2));
 
-        $this->regionAccess->afterUpdate($key1, new EntityCacheEntry(array('value' => 'foo')));
-        $this->regionAccess->afterUpdate($key2, new EntityCacheEntry(array('value' => 'bar')));
+        $this->regionAccess->afterUpdate($key1, new EntityCacheEntry($class, array('value' => 'foo')));
+        $this->regionAccess->afterUpdate($key2, new EntityCacheEntry($class, array('value' => 'bar')));
 
-        $this->assertEquals(new EntityCacheEntry(array('value' => 'foo')), $this->regionAccess->get($key1));
-        $this->assertEquals(new EntityCacheEntry(array('value' => 'bar')), $this->regionAccess->get($key2));
+        $this->assertEquals(new EntityCacheEntry($class, array('value' => 'foo')), $this->regionAccess->get($key1));
+        $this->assertEquals(new EntityCacheEntry($class, array('value' => 'bar')), $this->regionAccess->get($key2));
     }
 }

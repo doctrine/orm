@@ -34,10 +34,17 @@ class EntityCacheEntry implements CacheEntry
     public $data;
 
     /**
-     * @param array $data
+     * @var string
      */
-    public function __construct(array $data)
+    public $class;
+
+    /**
+     * @param string $class The entity class.
+     * @param array  $data  The entity data.
+     */
+    public function __construct($class, array $data)
     {
-        $this->data = $data;
+        $this->class = $class;
+        $this->data  = $data;
     }
 }

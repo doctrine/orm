@@ -42,7 +42,7 @@ class EntityEntryStructureTest extends OrmTestCase
     {
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
         $key      = new EntityCacheKey($metadata->name, array('id'=>1));
-        $entry    = new EntityCacheEntry(array('id'=>1, 'name'=>'Foo'));
+        $entry    = new EntityCacheEntry($metadata->name, array('id'=>1, 'name'=>'Foo'));
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry);
 
         $this->assertInstanceOf($metadata->name, $entity);
@@ -56,7 +56,7 @@ class EntityEntryStructureTest extends OrmTestCase
     {
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
         $key      = new EntityCacheKey($metadata->name, array('id'=>1));
-        $entry    = new EntityCacheEntry(array('id'=>1, 'name'=>'Foo'));
+        $entry    = new EntityCacheEntry($metadata->name, array('id'=>1, 'name'=>'Foo'));
         $proxy    = $this->em->getReference($metadata->name, $key->identifier);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
 

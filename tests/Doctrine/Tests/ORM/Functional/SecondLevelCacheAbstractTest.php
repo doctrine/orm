@@ -145,7 +145,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->attractions[] = new Beach('Copacabana', $this->cities[1]);
         $this->attractions[] = new Beach('Ipanema', $this->cities[1]);
         $this->attractions[] = new Restaurant('Reinstoff', $this->cities[3]);
-        $this->attractions[] = new Restaurant('Fischers Fritz', $this->cities[2]);
+        $this->attractions[] = new Restaurant('Fischers Fritz', $this->cities[3]);
 
         foreach ($this->attractions as $attraction) {
             $this->_em->persist($attraction);

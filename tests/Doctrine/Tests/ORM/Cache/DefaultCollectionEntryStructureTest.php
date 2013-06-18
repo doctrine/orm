@@ -45,8 +45,8 @@ class CollectionEntryStructureTest extends OrmFunctionalTestCase
             array('id'=>32),
         ));
 
-        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>31)), new EntityCacheEntry(array('id'=>31, 'name'=>'Foo')));
-        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>32)), new EntityCacheEntry(array('id'=>32, 'name'=>'Bar')));
+        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>31)), new EntityCacheEntry(City::CLASSNAME, array('id'=>31, 'name'=>'Foo')));
+        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>32)), new EntityCacheEntry(City::CLASSNAME, array('id'=>32, 'name'=>'Bar')));
 
         $sourceClass    = $this->_em->getClassMetadata(State::CLASSNAME);
         $targetClass    = $this->_em->getClassMetadata(City::CLASSNAME);

@@ -76,7 +76,7 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
             unset($data[$name]);
         }
 
-        return new EntityCacheEntry($data);
+        return new EntityCacheEntry($metadata->name, $data);
     }
 
     /**
@@ -89,6 +89,6 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        return $this->uow->createEntity($metadata->name, $entry->data, $hints);
+        return $this->uow->createEntity($entry->class, $entry->data, $hints);
     }
 }
