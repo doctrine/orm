@@ -31,7 +31,7 @@ interface ConcurrentRegionAccess extends RegionAccess
     /**
      * We are going to attempt to update/delete the keyed object.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The key of the item to lock.
+     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
      *
      * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item
      *
@@ -42,8 +42,8 @@ interface ConcurrentRegionAccess extends RegionAccess
     /**
      * Called when we have finished the attempted update/delete (which may or may not have been successful), after transaction completion.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $identifier The item identifier.
-     * @param \Doctrine\ORM\Cache\Lock     $lock       The lock previously obtained from {@link lockItem}
+     * @param \Doctrine\ORM\Cache\CacheKey $key     The cache key of the item to unlock.
+     * @param \Doctrine\ORM\Cache\Lock     $lock    The lock previously obtained from {@link lockItem}
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */

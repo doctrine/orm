@@ -25,7 +25,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->assertEquals($attractionRegion->getName(), $barRegion->getName());
     }
 
-    public function testPutOnPersistXXX()
+    public function testPutOnPersistSingleTableInheritance()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

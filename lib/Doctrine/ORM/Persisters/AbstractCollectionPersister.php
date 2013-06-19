@@ -104,6 +104,11 @@ abstract class AbstractCollectionPersister
     protected $cacheEntryStructure;
 
     /**
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     */
+    protected $cacheLogger;
+
+    /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param \Doctrine\ORM\EntityManager $em
@@ -115,14 +120,16 @@ abstract class AbstractCollectionPersister
         $this->association      = $association;
         $this->uow              = $em->getUnitOfWork();
         $this->conn             = $em->getConnection();
+        $configuration          = $em->getConfiguration();
+        $this->quoteStrategy    = $configuration->getQuoteStrategy();
         $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
         $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
         $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
         $this->hasCache         = isset($association['cache']) && $em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
-            $cacheFactory               = $em->getConfiguration()->getSecondLevelCacheFactory();
+            $cacheFactory               = $configuration->getSecondLevelCacheFactory();
+            $this->cacheLogger          = $configuration->getSecondLevelCacheLogger();
             $this->cacheRegionAccess    = $cacheFactory->buildCollectionRegionAccessStrategy($this->sourceEntity, $association['fieldName']);
             $this->cacheEntryStructure  = $cacheFactory->buildCollectionEntryStructure($em);
             $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
@@ -304,8 +311,12 @@ abstract class AbstractCollectionPersister
 
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
-        
-        $this->cacheRegionAccess->put($key, $entry);
+
+        $cached = $this->cacheRegionAccess->put($key, $entry);
+
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->collectionCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
+        }
     }
 
     /**

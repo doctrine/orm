@@ -36,6 +36,7 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\ORM\Cache\CacheFactory;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -313,6 +314,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSecondLevelCacheDefaultRegionLifetime($lifetime)
     {
         $this->_attributes['secondLevelCacheDefaultRegionLifetime'] = (integer) $lifetime;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
+     */
+    public function getSecondLevelCacheLogger()
+    {
+         return isset($this->_attributes['secondLevelCacheLogger'])
+            ? $this->_attributes['secondLevelCacheLogger']
+            : null;
+    }
+
+    /**
+     * @param \Doctrine\ORM\Cache\Logging\CacheLogger $logger
+     */
+    public function setSecondLevelCacheLogger(CacheLogger $logger)
+    {
+        $this->_attributes['secondLevelCacheLogger'] = $logger;
     }
 
     /**
