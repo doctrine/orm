@@ -23,7 +23,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\ConcurrentRegionAccess;
 
 /**
@@ -32,7 +31,7 @@ use Doctrine\ORM\Cache\ConcurrentRegionAccess;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractCollectionPersister
+abstract class AbstractCollectionPersister implements CachedPersister
 {
     /**
      * @var EntityManager

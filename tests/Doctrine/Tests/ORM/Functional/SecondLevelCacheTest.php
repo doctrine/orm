@@ -76,13 +76,19 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+
         $this->cache->evictEntityRegion(Country::CLASSNAME);
+        $this->secondLevelCacheLogger->clearRegionStats($this->getEntityRegion(Country::CLASSNAME));
 
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
 
         $c1 = $this->_em->find(Country::CLASSNAME, $this->countries[0]->getId());
         $c2 = $this->_em->find(Country::CLASSNAME, $this->countries[1]->getId());
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
@@ -106,6 +112,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertNull($this->_em->find(Country::CLASSNAME, $this->countries[0]->getId()));
         $this->assertNull($this->_em->find(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
     }
 
     public function testUpdateEntities()
@@ -119,12 +128,17 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::CLASSNAME)));
 
         $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->secondLevelCacheLogger->clearRegionStats($this->getEntityRegion(State::CLASSNAME));
 
         $this->assertFalse($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
         $this->assertFalse($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
 
         $s1 = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
         $s2 = $this->_em->find(State::CLASSNAME, $this->states[1]->getId());
+
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::CLASSNAME)));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::CLASSNAME)));
 
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
@@ -149,14 +163,17 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
 
-        //$this->assertEquals(8, $this->secondLevelCacheLogger->getPutCount());
-        //$this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::CLASSNAME)));
-        //$this->assertEquals(6, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::CLASSNAME)));
+        $this->assertEquals(6, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::CLASSNAME)));
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::CLASSNAME)));
 
         $queryCount = $this->getCurrentQueryCount();
 
         $c3 = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
         $c4 = $this->_em->find(State::CLASSNAME, $this->states[1]->getId());
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
@@ -171,6 +188,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($s2->getId(), $c4->getId());
         $this->assertEquals("NEW NAME 2", $c4->getName());
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
     }
 
     public function testPostFlushFailure()

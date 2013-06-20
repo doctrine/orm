@@ -42,6 +42,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTravels();
 
         $this->_em->clear();
+        $this->secondLevelCacheLogger->clearStats();
 
         $this->cache->evictEntityRegion(Travel::CLASSNAME);
         $this->cache->evictEntityRegion(City::CLASSNAME);
@@ -61,9 +62,19 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $t1 = $this->_em->find(Travel::CLASSNAME, $this->travels[0]->getId());
         $t2 = $this->_em->find(Travel::CLASSNAME, $this->travels[1]->getId());
 
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Travel::CLASSNAME)));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionMissCount($this->getEntityRegion(Travel::CLASSNAME)));
+
         //trigger lazy load
         $this->assertCount(3, $t1->getVisitedCities());
         $this->assertCount(2, $t2->getVisitedCities());
+
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getCollectionRegion(Travel::CLASSNAME, 'visitedCities')));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionMissCount($this->getCollectionRegion(Travel::CLASSNAME, 'visitedCities')));
 
         $this->assertInstanceOf(City::CLASSNAME, $t1->getVisitedCities()->get(0));
         $this->assertInstanceOf(City::CLASSNAME, $t1->getVisitedCities()->get(1));
@@ -84,6 +95,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[3]->getId()));
 
         $this->_em->clear();
+        $this->secondLevelCacheLogger->clearStats();
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -100,6 +112,10 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 
         $this->assertInstanceOf(City::CLASSNAME, $t4->getVisitedCities()->get(0));
         $this->assertInstanceOf(City::CLASSNAME, $t4->getVisitedCities()->get(1));
+
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(Travel::CLASSNAME)));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(Travel::CLASSNAME, 'visitedCities')));
 
         $this->assertNotSame($t1->getVisitedCities()->get(0), $t3->getVisitedCities()->get(0));
         $this->assertEquals($t1->getVisitedCities()->get(0)->getId(), $t3->getVisitedCities()->get(0)->getId());
@@ -121,6 +137,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($t2->getVisitedCities()->get(1)->getId(), $t4->getVisitedCities()->get(1)->getId());
         $this->assertEquals($t2->getVisitedCities()->get(1)->getName(), $t4->getVisitedCities()->get(1)->getName());
 
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(City::CLASSNAME)));
+        $this->assertEquals(8, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 

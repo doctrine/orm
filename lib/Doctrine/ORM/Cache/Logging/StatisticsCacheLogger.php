@@ -174,6 +174,28 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
+     * Clear region statistics
+     *
+     * @param string $regionName The name of the cache region.
+     */
+    public function clearRegionStats($regionName)
+    {
+        $this->cachePutCountMap[$regionName]  = 0;
+        $this->cacheHitCountMap[$regionName]  = 0;
+        $this->cacheMissCountMap[$regionName] = 0;
+    }
+
+    /**
+     * Clear all statistics
+     */
+    public function clearStats()
+    {
+        $this->cachePutCountMap  = array();
+        $this->cacheHitCountMap  = array();
+        $this->cacheMissCountMap = array();
+    }
+
+    /**
      * Get the total number of put in cache.
      *
      * @return integer

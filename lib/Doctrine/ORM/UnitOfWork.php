@@ -262,7 +262,7 @@ class UnitOfWork implements PropertyChangedListener
     private $eagerLoadingEntities = array();
 
     /**
-     * @var array
+     * @var array<\Doctrine\ORM\Persisters\CachedPersister>
      */
     private $cachedPersisters = array();
 
