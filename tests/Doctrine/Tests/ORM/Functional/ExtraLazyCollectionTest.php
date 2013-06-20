@@ -532,6 +532,9 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->articles->isInitialized());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertSame($article, $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId));
+
+        $article = $user->articles->get($this->articleId);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
     }
 
     /**
@@ -549,6 +552,9 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertSame($group, $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId));
+
+        $group = $user->groups->get($this->groupId);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
     }
 
     /**
