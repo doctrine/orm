@@ -30,6 +30,8 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 interface Cache
 {
+    const DEFAULT_QUERY_REGION_NAME = 'query.cache.region';
+
     /**
      * Construct
      *

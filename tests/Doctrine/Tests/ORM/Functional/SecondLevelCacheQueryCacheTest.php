@@ -13,6 +13,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
+
+        $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
@@ -29,6 +31,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
         $this->assertEquals($this->countries[1]->getName(), $result1[1]->getName());
 
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
         $this->_em->clear();
 
@@ -38,6 +44,14 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertCount(2, $result2);
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
         $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[0]);
         $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[1]);
@@ -49,6 +63,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($result1[0]->getName(), $result2[0]->getName());
         $this->assertEquals($result1[1]->getName(), $result2[1]->getName());
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(Country::CLASSNAME)));
     }
 
     public function testSelectParams()
@@ -110,6 +133,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
         $this->assertEquals($this->countries[1]->getName(), $result1[1]->getName());
         
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
+
         $this->cache->evictEntity(Country::CLASSNAME, $result1[0]->getId());
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $result1[0]->getId()));
 
@@ -121,6 +149,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
         $this->assertCount(2, $result2);
+
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
         $this->assertNotInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[0]);
         $this->assertNotInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[1]);

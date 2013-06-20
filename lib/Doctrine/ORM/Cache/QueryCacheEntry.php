@@ -20,9 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\EntityManagerInterface;
-
 /**
  * Query cache entry
  *
@@ -37,10 +34,16 @@ class QueryCacheEntry implements CacheEntry
     public $result;
 
     /**
+     * @var integer
+     */
+    public $time;
+
+    /**
      * @param array $result
      */
     public function __construct($result)
     {
         $this->result = $result;
+        $this->time   = time();
     }
 }

@@ -191,6 +191,11 @@ final class Query extends AbstractQuery
      */
     protected $cacheRegion;
 
+    /**
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     */
+    protected $cacheLogger;
+
      /**
      *
      * Enable/disable second level query (result) caching for this query.
@@ -243,14 +248,14 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * Initializes a new Query instance.
-     *
-     * @param \Doctrine\ORM\EntityManager $entityManager
+     * {@inheritdoc}
      */
-    /*public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $em)
     {
-        parent::__construct($entityManager);
-    }*/
+        parent::__construct($em);
+
+        $this->cacheLogger = $em->getConfiguration()->getSecondLevelCacheLogger();
+    }
 
     /**
      * Gets the SQL query/queries that correspond to this DQL query.
@@ -276,6 +281,19 @@ final class Query extends AbstractQuery
         $parser = new Parser($this);
 
         return $parser->getAST();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResultSetMapping()
+    {
+        // parse query or load from cache
+        if ($this->_resultSetMapping === null) {
+            $this->_resultSetMapping = $this->_parse()->getResultSetMapping();
+        }
+
+        return $this->_resultSetMapping;
     }
 
     /**
@@ -345,23 +363,32 @@ final class Query extends AbstractQuery
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
-        // parse query or load from cache
-        if ($this->_resultSetMapping === null) {
-            $this->_resultSetMapping = $this->_parse()->getResultSetMapping();
-        }
-
-        if ($this->_resultSetMapping->isMixed) {
-            throw new ORMException("Second level cache does not suport mixed results");
+        if ($this->getResultSetMapping()->isMixed) {
+            throw new ORMException("Second level cache does not suport mixed results yet.");
         }
 
         $querykey   = new QueryCacheKey($this->_getQueryCacheId());
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
-        $result     = $queryCache->get($querykey, $this->_resultSetMapping);
+        $result     = $queryCache->get($querykey, $this);
 
-        if ($result === null) {
-            $result = parent::execute($parameters, $hydrationMode);
+        if ($result !== null) {
 
-            $queryCache->put($querykey, $this->_resultSetMapping, $result);
+            if ($this->cacheLogger) {
+                $this->cacheLogger->queryCacheHit($queryCache->getRegion()->getName(), $querykey);
+            }
+
+            return $result;
+        }
+
+        $result = parent::execute($parameters, $hydrationMode);
+        $cached = $queryCache->put($querykey, $this, $result);
+
+        if ($this->cacheLogger && $result) {
+            $this->cacheLogger->queryCacheMiss($queryCache->getRegion()->getName(), $querykey);
+        }
+
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->queryCachePut($queryCache->getRegion()->getName(), $querykey);
         }
 
         return $result;
@@ -411,13 +438,14 @@ final class Query extends AbstractQuery
         foreach ($this->parameters as $parameter) {
             $key    = $parameter->getName();
             $value  = $parameter->getValue();
+            $rsm    = $this->_resultSetMapping ?: $this->getResultSetMapping();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            if (isset($this->_resultSetMapping->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
-                $value = $value->getMetadataValue($this->_resultSetMapping->metadataParameterMapping[$key]);
+            if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
+                $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
             }
 
             $value = $this->processParameterValue($value);

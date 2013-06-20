@@ -20,11 +20,12 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
-use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\ORM\Cache\Access\ReadOnlyRegionAccess;
 use Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy;
 
@@ -44,7 +45,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     private $configuration;
 
-    public function __construct(Configuration $configuration, Cache $cache)
+    public function __construct(Configuration $configuration, CacheDriver $cache)
     {
         $this->cache         = $cache;
         $this->configuration = $configuration;
@@ -94,7 +95,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
-        return new DefaultQueryCache($em, $this->createRegion($regionName ?: 'query.cache.region'));
+        return new DefaultQueryCache($em, $this->createRegion($regionName ?: Cache::DEFAULT_QUERY_REGION_NAME));
     }
 
     /**

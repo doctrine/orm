@@ -307,6 +307,16 @@ abstract class AbstractQuery
     }
 
     /**
+     * Gets the ResultSetMapping used for hydration.
+     *
+     * @return \Doctrine\ORM\Query\ResultSetMapping
+     */
+    public function getResultSetMapping()
+    {
+        return $this->_resultSetMapping;
+    }
+
+    /**
      * Allows to translate entity namespaces to full qualified names.
      *
      * @param Query\ResultSetMapping $rsm
@@ -742,11 +752,10 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
+        $rsm  = $this->_resultSetMapping ?: $this->getResultSetMapping();
         $stmt = $this->_doExecute();
 
-        return $this->_em->newHydrator($this->_hydrationMode)->iterate(
-            $stmt, $this->_resultSetMapping, $this->_hints
-        );
+        return $this->_em->newHydrator($this->_hydrationMode)->iterate($stmt, $rsm, $this->_hints);
     }
 
     /**
@@ -799,9 +808,8 @@ abstract class AbstractQuery
             return $stmt;
         }
 
-        $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll(
-            $stmt, $this->_resultSetMapping, $this->_hints
-        );
+        $rsm  = $this->_resultSetMapping ?: $this->getResultSetMapping();
+        $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll($stmt, $rsm, $this->_hints);
 
         $setCacheEntry($data);
 

@@ -20,10 +20,10 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 
 /**
  * Default query cache implementation.
@@ -34,7 +34,7 @@ use Doctrine\ORM\EntityManager;
 class DefaultQueryCache implements QueryCache
 {
      /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -49,20 +49,26 @@ class DefaultQueryCache implements QueryCache
     private $region;
 
     /**
-     * @param \Doctrine\ORM\EntityManager   $em     The entity manager.
-     * @param \Doctrine\ORM\Cache\Region    $region
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
      */
-    public function __construct(EntityManager $em, Region $region)
+    private $logger;
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface  $em     The entity manager.
+     * @param \Doctrine\ORM\Cache\Region            $region The query region.
+     */
+    public function __construct(EntityManagerInterface $em, Region $region)
     {
         $this->em       = $em;
         $this->region   = $region;
         $this->uow      = $em->getUnitOfWork();
+        $this->logger   = $em->getConfiguration()->getSecondLevelCacheLogger();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm)
+    public function get(QueryCacheKey $key, Query $query)
     {
         $entry = $this->region->get($key);
 
@@ -71,6 +77,7 @@ class DefaultQueryCache implements QueryCache
         }
 
         $result     = array();
+        $rsm        = $query->getResultSetMapping();
         $entityName = reset($rsm->aliasMap); //@TODO find root entity
         $persister  = $this->uow->getEntityPersister($entityName);
         $region     = $persister->getCacheRegionAcess()->getRegion();
@@ -92,7 +99,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function put(QueryCacheKey $key, ResultSetMapping $rsm, array $result)
+    public function put(QueryCacheKey $key, Query $query, array $result)
     {
         $data = array();
 
