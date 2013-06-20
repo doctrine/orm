@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\Cache\State;
+use Doctrine\Tests\Models\Cache\City;
 
 /**
  * @group DDC-2183
@@ -168,6 +170,78 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[1]->getName(), $result2[1]->getName());
 
         $this->assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
+    }
+
+    public function testBasicQueryFetchJoinsOneToMany()
+    {
+        $this->evictRegions();
+
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c';
+        $result1    = $this->_em->createQuery($dql)
+                ->setCacheable(true)
+                ->getResult();
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertInstanceOf(State::CLASSNAME, $result1[0]);
+        $this->assertInstanceOf(State::CLASSNAME, $result1[1]);
+        $this->assertCount(2, $result1[0]->getCities());
+        $this->assertCount(2, $result1[1]->getCities());
+
+        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(1));
+
+        $this->assertNotNull($result1[0]->getCities()->get(0)->getId());
+        $this->assertNotNull($result1[0]->getCities()->get(1)->getId());
+        $this->assertNotNull($result1[1]->getCities()->get(0)->getId());
+        $this->assertNotNull($result1[1]->getCities()->get(1)->getId());
+
+        $this->assertNotNull($result1[0]->getCities()->get(0)->getName());
+        $this->assertNotNull($result1[0]->getCities()->get(1)->getName());
+        $this->assertNotNull($result1[1]->getCities()->get(0)->getName());
+        $this->assertNotNull($result1[1]->getCities()->get(1)->getName());
+
+        $this->_em->clear();
+
+        $result2  = $this->_em->createQuery($dql)
+                ->setCacheable(true)
+                ->getResult();
+
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[0]);
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[1]);
+        $this->assertInstanceOf(State::CLASSNAME, $result2[0]);
+        $this->assertInstanceOf(State::CLASSNAME, $result2[1]);
+        $this->assertCount(2, $result2[0]->getCities());
+        $this->assertCount(2, $result2[1]->getCities());
+
+        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(1));
+
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[0]->getCities()->get(0));
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[0]->getCities()->get(1));
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[1]->getCities()->get(0));
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $result2[1]->getCities()->get(1));
+
+        $this->assertNotNull($result2[0]->getCities()->get(0)->getId());
+        $this->assertNotNull($result2[0]->getCities()->get(1)->getId());
+        $this->assertNotNull($result2[1]->getCities()->get(0)->getId());
+        $this->assertNotNull($result2[1]->getCities()->get(1)->getId());
+
+        $this->assertNotNull($result2[0]->getCities()->get(0)->getName());
+        $this->assertNotNull($result2[0]->getCities()->get(1)->getName());
+        $this->assertNotNull($result2[1]->getCities()->get(0)->getName());
+        $this->assertNotNull($result2[1]->getCities()->get(1)->getName());
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     public function testBasicNativeQueryCache()
