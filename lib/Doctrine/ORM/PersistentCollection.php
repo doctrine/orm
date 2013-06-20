@@ -521,10 +521,8 @@ final class PersistentCollection implements Collection, Selectable
             && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])
         ) {
-            $class = $this->em->getClassMetadata($this->association['targetEntity']);
-
-            if (!$class->isIdentifierComposite && $class->isIdentifier($this->association['indexBy'])) {
-                return $this->em->find($class->name, $key);
+            if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
+                return $this->em->find($this->typeClass->name, $key);
             }
 
             return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
