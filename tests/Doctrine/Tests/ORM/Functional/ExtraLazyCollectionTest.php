@@ -527,10 +527,11 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $user->articles->get($this->articleId);
+        $article = $user->articles->get($this->articleId);
 
         $this->assertFalse($user->articles->isInitialized());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($article, $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId));
     }
 
     /**
@@ -543,10 +544,11 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $user->groups->get($this->groupId);
+        $group = $user->groups->get($this->groupId);
 
         $this->assertFalse($user->groups->isInitialized());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($group, $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId));
     }
 
     /**
