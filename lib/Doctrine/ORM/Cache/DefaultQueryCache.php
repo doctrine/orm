@@ -21,8 +21,11 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\AbstractQuery;
 
 /**
@@ -111,6 +114,7 @@ class DefaultQueryCache implements QueryCache
         $data        = array();
         $rsm         = $query->getResultSetMapping();
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
+        $metadata    = $this->em->getClassMetadata($entityName);
         $persister   = $this->uow->getEntityPersister($entityName);
         $region      = $persister->getCacheRegionAcess()->getRegion();
 
@@ -122,12 +126,46 @@ class DefaultQueryCache implements QueryCache
                 continue;
             }
 
-            //cancel put result if entity is not cached
+            // Cancel put result if entity is not cached
             if ( ! $persister->putEntityCache($entity, $entityKey)) {
                 return;
             }
 
-            //@TODO - handle associations ?
+            // @TODO - save relations into query cache
+            foreach ($rsm->relationMap as $name) {
+                $assoc = $metadata->associationMappings[$name];
+
+                if (($assocValue = $metadata->getFieldValue($entity, $name)) === null) {
+                    continue;
+                }
+
+                $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                if ($assoc['type'] & ClassMetadata::TO_ONE) {
+
+                    $assocPersister  = $this->uow->getEntityPersister($assocMetadata->name);
+                    $assocRegion     = $assocPersister->getCacheRegionAcess()->getRegion();
+                    $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
+
+                    if ($assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
+                        continue;
+                    }
+
+                    // Cancel put result if entity is not cached
+                    if ( ! $assocPersister->putEntityCache($assocValue, $entityKey)) {
+                        return;
+                    }
+
+                    continue;
+                }
+
+                if ($assocValue instanceof PersistentCollection && $assocValue->isInitialized()) {
+                    $assocPersister  = $this->uow->getCollectionPersister($assoc);
+                    $assocRegion     = $assocPersister->getCacheRegionAcess()->getRegion();
+
+                    continue;
+                }
+            }
         }
 
         return $this->region->put($key, new QueryCacheEntry($data));
