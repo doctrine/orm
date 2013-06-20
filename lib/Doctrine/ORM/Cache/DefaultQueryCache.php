@@ -108,10 +108,24 @@ class DefaultQueryCache implements QueryCache
      */
     public function put(QueryCacheKey $key, AbstractQuery $query, array $result)
     {
-        $data = array();
+        $data        = array();
+        $rsm         = $query->getResultSetMapping();
+        $entityName  = reset($rsm->aliasMap); //@TODO find root entity
+        $persister   = $this->uow->getEntityPersister($entityName);
+        $region      = $persister->getCacheRegionAcess()->getRegion();
 
-        foreach ($result as $index => $value) {
-            $data[$index] = $this->uow->getEntityIdentifier($value);
+        foreach ($result as $index => $entity) {
+            $identifier   = $this->uow->getEntityIdentifier($entity);
+            $data[$index] = $identifier;
+
+            if ($region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
+                continue;
+            }
+
+            //cancel put result if entity is not cached
+            if ( ! $persister->putEntityCache($entity, $entityKey)) {
+                return;
+            }
 
             //@TODO - handle associations ?
         }
