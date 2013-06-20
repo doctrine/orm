@@ -24,7 +24,9 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']['indexBy'] = 'id';
         $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['articles']['indexBy'] = 'id';
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
@@ -39,6 +41,9 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
         $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+
+        unset($class->associationMappings['groups']['indexBy']);
+        unset($class->associationMappings['articles']['indexBy']);
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
@@ -174,8 +179,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->assertEquals(2, count($someGroups));
-        $this->assertTrue($user->groups->contains($someGroups[0]));
-        $this->assertTrue($user->groups->contains($someGroups[1]));
+        $this->assertTrue($user->groups->contains(array_shift($someGroups)));
+        $this->assertTrue($user->groups->contains(array_shift($someGroups)));
     }
 
     /**
@@ -510,6 +515,38 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(4, count($groups));
         $this->assertEquals($qc + 1, $this->getCurrentQueryCount());
+    }
+
+    /**
+     * @group DDC-1398
+     */
+    public function testGetIndexByOneToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $user->articles->get($this->articleId);
+
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+
+    /**
+     * @group DDC-1398
+     */
+    public function testGetIndexByManyToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $user->groups->get($this->groupId);
+
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     private function loadFixture()
