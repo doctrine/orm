@@ -1293,6 +1293,22 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2519
+     */
+    public function testPartialWithAssociationIdentifier()
+    {
+        $this->assertSqlGeneration(
+            "SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l",
+            'SELECT l0_.iUserIdSource AS iUserIdSource0, l0_.iUserIdTarget AS iUserIdTarget1 FROM legacy_users_reference l0_'
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT PARTIAL l.{_description, _source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l",
+            'SELECT l0_.description AS description0, l0_.iUserIdSource AS iUserIdSource1, l0_.iUserIdTarget AS iUserIdTarget2 FROM legacy_users_reference l0_'
+        );
+    }
+
+    /**
      * @group DDC-1339
      */
     public function testIdentityFunctionInSelectClause()
