@@ -549,6 +549,18 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
+    /**
+     * @group DDC-1398
+     */
+    public function testGetNonExistentIndexBy()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $this->assertNull($user->articles->get(-1));
+        $this->assertNull($user->groups->get(-1));
+    }
+
     private function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();
