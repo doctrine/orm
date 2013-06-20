@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Query;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Defines the contract for caches capable of storing query results.
@@ -38,20 +38,20 @@ interface QueryCache
 
     /**
      * @param \Doctrine\ORM\Cache\QueryCacheKey $key
-     * @param \Doctrine\ORM\Query\Query         $query
+     * @param \Doctrine\ORM\Query\AbstractQuery $query
      * @param array                             $result
      *
      * @return boolean
      */
-    public function put(QueryCacheKey $key, Query $query, array $result);
+    public function put(QueryCacheKey $key, AbstractQuery $query, array $result);
 
     /**
      * @param \Doctrine\ORM\Cache\QueryCacheKey $key
-     * @param \Doctrine\ORM\Query\Query         $query
+     * @param \Doctrine\ORM\Query\AbstractQuery $query
      *
      * @return void
      */
-    public function get(QueryCacheKey $key, Query $rsm);
+    public function get(QueryCacheKey $key, AbstractQuery $query);
 
     /**
      * @return \Doctrine\ORM\Cache\Region

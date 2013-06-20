@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Default query cache implementation.
@@ -68,11 +68,18 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function get(QueryCacheKey $key, Query $query)
+    public function get(QueryCacheKey $key, AbstractQuery $query)
     {
-        $entry = $this->region->get($key);
+        $entry      = $this->region->get($key);
+        $lifetime   = $query->getResultCacheLifetime();
 
         if ( ! $entry instanceof QueryCacheEntry) {
+            return null;
+        }
+
+        if ($lifetime > 0 && ($entry->time + $lifetime) < time()) {
+            $this->region->evict($key);
+
             return null;
         }
 
@@ -99,7 +106,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function put(QueryCacheKey $key, Query $query, array $result)
+    public function put(QueryCacheKey $key, AbstractQuery $query, array $result)
     {
         $data = array();
 

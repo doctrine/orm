@@ -23,6 +23,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Query\QueryException;
@@ -121,14 +122,85 @@ abstract class AbstractQuery
     protected $_hydrationCacheProfile;
 
     /**
+     * Whether to use second level cache, if available. Defaults to TRUE.
+     *
+     * @var boolean
+     */
+    protected $cacheable;
+
+    /**
+     * Second level cache region name.
+     *
+     * @var string
+     */
+    protected $cacheRegion;
+
+    /**
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     */
+    protected $cacheLogger;
+
+     /**
+     *
+     * Enable/disable second level query (result) caching for this query.
+     *
+     * @param boolean $cacheable
+     * @return \Doctrine\ORM\Query
+     */
+    public function setCacheable($cacheable)
+    {
+        $this->cacheable = (boolean) $cacheable;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if the query results are enable for second level cache, FALSE otherwise.
+     */
+    public function isCacheable()
+    {
+        return $this->cacheable;
+    }
+
+    /**
+     * @param string $cacheRegion
+     * @return \Doctrine\ORM\Query
+     */
+    public function setCacheRegion($cacheRegion)
+    {
+        $this->cacheRegion = $cacheRegion;
+
+        return $this;
+    }
+
+    /**
+    * Obtain the name of the second level query cache region in which query results will be stored
+    *
+    * @return The cache region name; NULL indicates the default region.
+    */
+    public function getCacheRegion()
+    {
+        return $this->cacheRegion;
+    }
+
+    /**
+     * @return boolean TRUE if the query cache and second level cache are anabled, FALSE otherwise.
+     */
+    protected function isCacheEnabled()
+    {
+        return $this->cacheable && $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
+    }
+
+    /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
      *
      * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
-        $this->_em = $em;
-        $this->parameters = new ArrayCollection();
+        $this->_em          = $em;
+        $this->parameters   = new ArrayCollection();
+        $this->cacheLogger  = $em->getConfiguration()->getSecondLevelCacheLogger();
     }
 
     /**
@@ -768,6 +840,23 @@ abstract class AbstractQuery
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
+        if ($this->cacheable && $this->isCacheEnabled()) {
+            return $this->executeUsingQueryCache($parameters, $hydrationMode);
+        }
+
+        return $this->executeIgnoreQueryCache($parameters, $hydrationMode);
+    }
+
+    /**
+     * Execute query ignoring second level cache.
+     *
+     * @param ArrayCollection|array|null $parameters
+     * @param integer|null               $hydrationMode
+     *
+     * @return mixed
+     */
+    private function executeIgnoreQueryCache($parameters = null, $hydrationMode = null)
+    {
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
@@ -814,6 +903,47 @@ abstract class AbstractQuery
         $setCacheEntry($data);
 
         return $data;
+    }
+
+    /**
+     * Load from second level cache or executes the query and put into cache.
+     *
+     * @param ArrayCollection|array|null $parameters
+     * @param integer|null               $hydrationMode
+     *
+     * @return mixed
+     */
+    private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
+    {
+        if ($this->getResultSetMapping()->isMixed) {
+            throw new ORMException("Second level cache does not suport mixed results yet.");
+        }
+
+        $querykey   = new QueryCacheKey($this->getHash());
+        $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
+        $result     = $queryCache->get($querykey, $this);
+
+        if ($result !== null) {
+
+            if ($this->cacheLogger) {
+                $this->cacheLogger->queryCacheHit($queryCache->getRegion()->getName(), $querykey);
+            }
+
+            return $result;
+        }
+
+        $result = $this->executeIgnoreQueryCache($parameters, $hydrationMode);
+        $cached = $queryCache->put($querykey, $this, $result);
+
+        if ($this->cacheLogger) {
+            $this->cacheLogger->queryCacheMiss($queryCache->getRegion()->getName(), $querykey);
+        }
+
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->queryCachePut($queryCache->getRegion()->getName(), $querykey);
+        }
+
+        return $result;
     }
 
     /**
@@ -888,5 +1018,25 @@ abstract class AbstractQuery
         $this->parameters = new ArrayCollection();
 
         $this->_hints = array();
+    }
+
+    /**
+     * Generates a string of currently query to use for the cache second level cache.
+     * 
+     * @return string
+     */
+    protected function getHash()
+    {
+        $hints  = $this->getHints();
+        $query  = $this->getSQL();
+        $params = array();
+
+        foreach ($this->parameters as $parameter) {
+            $params[$parameter->getName()] = $this->processParameterValue($parameter->getValue());
+        }
+
+        ksort($hints);
+
+        return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
     }
 }
