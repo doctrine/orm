@@ -24,8 +24,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\AbstractQuery;
 
 /**
@@ -126,7 +124,7 @@ class DefaultQueryCache implements QueryCache
                 continue;
             }
 
-            // Cancel put result if entity is not cached
+            // Cancel put result if entity put fail
             if ( ! $persister->putEntityCache($entity, $entityKey)) {
                 return;
             }
@@ -151,7 +149,7 @@ class DefaultQueryCache implements QueryCache
                         continue;
                     }
 
-                    // Cancel put result if entity is not cached
+                    // Cancel put result if entity put fail
                     if ( ! $assocPersister->putEntityCache($assocValue, $entityKey)) {
                         return;
                     }
@@ -159,12 +157,7 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                if ($assocValue instanceof PersistentCollection && $assocValue->isInitialized()) {
-                    $assocPersister  = $this->uow->getCollectionPersister($assoc);
-                    $assocRegion     = $assocPersister->getCacheRegionAcess()->getRegion();
-
-                    continue;
-                }
+                throw new \RuntimeException('Second level cache query does not support collections yet.');
             }
         }
 
