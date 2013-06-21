@@ -28,6 +28,9 @@ namespace Doctrine\ORM\Cache;
  */
 class Lock
 {
+    const LOCK_READ  = 1;
+    const LOCK_WRITE = 2;
+
     /**
      * @var string
      */
@@ -39,13 +42,35 @@ class Lock
     public $time;
 
     /**
-     * @param string  $value
+     * @var integer
+     */
+    public $type;
+
+    /**
+     * @param string $value
+     * @param integer $type
      * @param integer $time
      */
-    public function __construct($value, $time = null)
+    public function __construct($value, $type, $time = null)
     {
         $this->value = $value;
+        $this->type  = $type;
         $this->time  = $time ? : time();
     }
 
+    /**
+     * @return \Doctrine\ORM\Cache\Lock
+     */
+    public static function createLockWrite()
+    {
+        return new self(uniqid(time() . self::LOCK_WRITE), self::LOCK_WRITE);
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache\Lock
+     */
+    public static function createLockRead()
+    {
+        return new self(uniqid(time() . self::LOCK_READ), self::LOCK_READ);
+    }
 }

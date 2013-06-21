@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 /**
- * Region access strategy
+ * Interface for region access strategies.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>

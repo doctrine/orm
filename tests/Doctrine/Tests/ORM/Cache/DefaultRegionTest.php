@@ -2,11 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\Mocks\CacheEntryMock;
+use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\ORM\Cache\CacheKey;
 
 /**
  * @group DDC-2183
@@ -40,8 +40,8 @@ class DefaultRegionTest extends OrmFunctionalTestCase
     static public function dataProviderCacheValues()
     {
         return array(
-            array(new DefaultRegionTestKey('key.1'), new DefaultRegionTestEntry(array('id'=>1, 'name' => 'bar'))),
-            array(new DefaultRegionTestKey('key.2'), new DefaultRegionTestEntry(array('id'=>2, 'name' => 'foo'))),
+            array(new CacheKeyMock('key.1'), new CacheEntryMock(array('id'=>1, 'name' => 'bar'))),
+            array(new CacheKeyMock('key.2'), new CacheEntryMock(array('id'=>2, 'name' => 'foo'))),
         );
     }
 
@@ -67,14 +67,14 @@ class DefaultRegionTest extends OrmFunctionalTestCase
 
     public function testEvictAll()
     {
-        $key1 = new DefaultRegionTestKey('key.1');
-        $key2 = new DefaultRegionTestKey('key.2');
+        $key1 = new CacheKeyMock('key.1');
+        $key2 = new CacheKeyMock('key.2');
 
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
 
-        $this->region->put($key1, new DefaultRegionTestEntry(array('value' => 'foo')));
-        $this->region->put($key2, new DefaultRegionTestEntry(array('value' => 'bar')));
+        $this->region->put($key1, new CacheEntryMock(array('value' => 'foo')));
+        $this->region->put($key2, new CacheEntryMock(array('value' => 'bar')));
 
         $this->assertTrue($this->region->contains($key1));
         $this->assertTrue($this->region->contains($key2));
@@ -84,23 +84,4 @@ class DefaultRegionTest extends OrmFunctionalTestCase
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
     }
-}
-
-class DefaultRegionTestKey implements CacheKey
-{
-
-    function __construct($hash)
-    {
-        $this->hash = $hash;
-    }
-
-    public function hash()
-    {
-        return $this->hash;
-    }
-}
-
-class DefaultRegionTestEntry extends \ArrayObject implements CacheEntry
-{
-
 }

@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Cache\Lock;
+
 /**
  * Defines a contract for accessing a particular named region.
  *
@@ -60,10 +62,11 @@ interface Region
      *
      * @param \Doctrine\ORM\Cache\CacheKey   $key   The key under which to cache the item.
      * @param \Doctrine\ORM\Cache\CacheEntry $entry The entry to cache.
+     * @param \Doctrine\ORM\Cache\Lock       $lock  The lock previously obtained.
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the region.
      */
-    public function put(CacheKey $key, CacheEntry $entry);
+    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null);
 
     /**
      * Remove an item from the cache.

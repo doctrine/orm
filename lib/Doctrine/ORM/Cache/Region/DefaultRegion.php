@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache\Region;
 
+use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Cache\CacheKey;
@@ -114,7 +115,7 @@ class DefaultRegion implements Region
     /**
      * {@inheritdoc}
      */
-    public function put(CacheKey $key, CacheEntry $entry)
+    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
         $entriesKey = $this->entriesMapKey();
         $entryKey   = $this->entryKey($key);

@@ -457,7 +457,7 @@ class BasicEntityPersister implements CachedPersister
             $this->assignDefaultVersionValue($entity, $id);
         }
 
-        if ($this->hasCache) {
+        if ($this->hasCache && ( ! $this->isConcurrentRegion || $cacheLock !== null)) {
             $this->queuedCache['update'][] = array(
                 'entity' => $entity,
                 'lock'   => $cacheLock,
@@ -2253,7 +2253,7 @@ class BasicEntityPersister implements CachedPersister
                     $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
                 }
 
-                if ($this->isConcurrentRegion && $item['lock'] !== null) {
+                if ($item['lock'] !== null) {
                     $this->cacheRegionAccess->unlockItem($key, $item['lock']);
                 }
             }

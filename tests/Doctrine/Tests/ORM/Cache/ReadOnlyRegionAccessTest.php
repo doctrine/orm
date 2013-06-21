@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\Region;
+use Doctrine\Tests\Mocks\CacheKeyMock;
+use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\ORM\Cache\Access\ReadOnlyRegionAccess;
 
 /**
@@ -21,6 +23,6 @@ class ReadOnlyRegionAccessTest extends AbstractRegionAccessTest
      */
     public function testAfterUpdate()
     {
-        $this->regionAccess->afterUpdate(new DefaultRegionTestKey('key'), new DefaultRegionTestEntry(array('value' => 'foo')));
+        $this->regionAccess->afterUpdate(new CacheKeyMock('key'), new CacheEntryMock(array('value' => 'foo')));
     }
 }
