@@ -137,6 +137,19 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
         );
     }
+    
+    public function testComplexInnerJoinWithIndexBy()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'a')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id', 'a.name');
+
+        $this->assertValidQueryBuilder(
+            $qb,
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a INDEX BY a.name ON u.id = a.author_id'
+        );
+    }    
 
     public function testLeftJoin()
     {

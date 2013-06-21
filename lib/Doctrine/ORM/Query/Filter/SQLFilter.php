@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-use Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping\ClassMetaData,
-    Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 
 /**
  * The base class that user defined filters should extend.

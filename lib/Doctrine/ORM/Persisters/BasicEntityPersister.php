@@ -88,7 +88,7 @@ class BasicEntityPersister
      */
     static private $comparisonMap = array(
         Comparison::EQ  => '= %s',
-        Comparison::IS  => 'IS %s',
+        Comparison::IS  => '= %s',
         Comparison::NEQ => '!= %s',
         Comparison::GT  => '> %s',
         Comparison::GTE => '>= %s',
@@ -790,7 +790,7 @@ class BasicEntityPersister
 
         $hydrator = $this->_em->newHydrator(($this->_selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->_rsm, array('deferEagerLoads' => true));
+        return $hydrator->hydrateAll($stmt, $this->_rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**
@@ -845,7 +845,7 @@ class BasicEntityPersister
 
         $hydrator = $this->_em->newHydrator(($this->_selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->_rsm, array('deferEagerLoads' => true));
+        return $hydrator->hydrateAll($stmt, $this->_rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**
@@ -874,7 +874,7 @@ class BasicEntityPersister
      */
     private function loadArrayFromStatement($assoc, $stmt)
     {
-        $hints = array('deferEagerLoads' => true);
+        $hints = array(UnitOfWork::HINT_DEFEREAGERLOAD => true);
 
         if (isset($assoc['indexBy'])) {
             $rsm = clone ($this->_rsm); // this is necessary because the "default rsm" should be changed.
@@ -899,7 +899,7 @@ class BasicEntityPersister
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {
-        $hints = array('deferEagerLoads' => true, 'collection' => $coll);
+        $hints = array(UnitOfWork::HINT_DEFEREAGERLOAD => true, 'collection' => $coll);
 
         if (isset($assoc['indexBy'])) {
             $rsm = clone ($this->_rsm); // this is necessary because the "default rsm" should be changed.
@@ -1455,6 +1455,18 @@ class BasicEntityPersister
         if (isset($this->_class->fieldMappings[$field]['requireSQLConversion'])) {
             $type = Type::getType($this->_class->getTypeOfField($field));
             $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->_platform);
+        }
+
+        if ($comparison !== null) {
+
+            // special case null value handling
+            if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
+                return $conditionSql . ' IS NULL';
+            } else if ($comparison === Comparison::NEQ && $value === null) {
+                return $conditionSql . ' IS NOT NULL';
+            }
+
+            return $conditionSql . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
         }
 
         $conditionSql .= ($comparison === null)
