@@ -76,7 +76,8 @@ class ConcurrentRegionAccessTest extends AbstractRegionAccessTest
         $this->assertNull($this->regionAccess->get($key));
         $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock);
 
-        $region->locks[$key->hash()] = Lock::createLockRead(); //Somehow another proc get the lock
+         //Somehow another proc get the lock
+        $region->setLock($key, Lock::createLockRead());
 
         $this->assertFalse($this->regionAccess->afterUpdate($key, $entry1, $lock));
     }

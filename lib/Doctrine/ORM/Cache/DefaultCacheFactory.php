@@ -118,7 +118,7 @@ class DefaultCacheFactory implements CacheFactory
      * @param string $regionName
      * @return \Doctrine\ORM\Cache\Region\DefaultRegion
      */
-    public function createRegion($regionName)
+    private function createRegion($regionName)
     {
         return new DefaultRegion($regionName, $this->cache, array(
             'lifetime' => $this->configuration->getSecondLevelCacheRegionLifetime($regionName)

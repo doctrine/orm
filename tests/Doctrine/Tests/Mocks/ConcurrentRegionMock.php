@@ -42,6 +42,11 @@ class ConcurrentRegionMock implements ConcurrentRegion
         $this->exceptions[$method][] = $e;
     }
 
+    public function setLock(CacheKey $key, Lock $lock)
+    {
+        $this->locks[$key->hash()] = $lock;
+    }
+
     public function contains(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
