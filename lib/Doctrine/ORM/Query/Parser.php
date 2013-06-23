@@ -670,6 +670,12 @@ class Parser
                     continue;
                 }
 
+                if (isset($class->associationMappings[$field]) &&
+                    $class->associationMappings[$field]['isOwningSide'] &&
+                    $class->associationMappings[$field]['type'] & ClassMetadata::TO_ONE) {
+                    continue;
+                }
+
                 $this->semanticalError(
                     "There is no mapped field named '$field' on class " . $class->name . ".", $deferredItem['token']
                 );
