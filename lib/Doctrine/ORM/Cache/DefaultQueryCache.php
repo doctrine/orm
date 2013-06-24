@@ -77,7 +77,7 @@ class DefaultQueryCache implements QueryCache
     public function get(QueryCacheKey $key, AbstractQuery $query)
     {
         $entry      = $this->region->get($key);
-        $lifetime   = $query->getResultCacheLifetime();
+        $lifetime   = $query->getLifetime();
 
         if ( ! $entry instanceof QueryCacheEntry) {
             return null;

@@ -284,7 +284,7 @@ class DefaultCache implements Cache
                 $this->defaultQueryCache = $this->cacheFactory->buildQueryCache($this->em);
         }
 
-        if (isset($this->queryCaches[$regionName])) {
+        if ( ! isset($this->queryCaches[$regionName])) {
             $this->queryCaches[$regionName] = $this->cacheFactory->buildQueryCache($this->em, $regionName);
         }
 

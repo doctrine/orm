@@ -6,6 +6,7 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\ORM\Cache\QueryCacheKey;
 
 /**
  * @group DDC-2183
@@ -494,5 +495,124 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
         $this->assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
         $this->assertEquals(3, $this->secondLevelCacheLogger->getMissCount());
+    }
+
+    public function testQueryCacheLifetime()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->_em->clear();
+
+        $getHash = function(\Doctrine\ORM\AbstractQuery $query){
+            $method = new \ReflectionMethod($query, 'getHash');
+            $method->setAccessible(true);
+
+            return $method->invoke($query);
+        };
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $query      = $this->_em->createQuery($dql);
+        $result1    = $query->setCacheable(true)
+            ->setLifetime(3600)
+            ->getResult();
+
+        $this->assertNotEmpty($result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+
+        $this->_em->clear();
+
+        $key   = new QueryCacheKey($getHash($query));
+        $entry = $this->cache->getQueryCache()
+            ->getRegion()
+            ->get($key);
+
+        $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCacheEntry', $entry);
+        $entry->time = $entry->time / 2;
+
+        $this->cache->getQueryCache()
+            ->getRegion()
+            ->put($key, $entry);
+
+        $result2  = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->setLifetime(3600)
+            ->getResult();
+
+        $this->assertNotEmpty($result2);
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+    }
+
+    public function testQueryCacheRegion()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $query      = $this->_em->createQuery($dql);
+
+        $query1     = clone $query;
+        $result1    = $query1->setCacheable(true)
+            ->setCacheRegion('foo_region')
+            ->getResult();
+
+        $this->assertNotEmpty($result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertEquals(0, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('foo_region'));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('foo_region'));
+
+        $query2     = clone $query;
+        $result2    = $query2->setCacheable(true)
+            ->setCacheRegion('bar_region')
+            ->getResult();
+
+        $this->assertNotEmpty($result2);
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals(0, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('bar_region'));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
+
+        $query3     = clone $query;
+        $result3    = $query3->setCacheable(true)
+            ->setCacheRegion('foo_region')
+            ->getResult();
+
+        $this->assertNotEmpty($result3);
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount('foo_region'));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('foo_region'));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('foo_region'));
+
+        $query4     = clone $query;
+        $result4    = $query4->setCacheable(true)
+            ->setCacheRegion('bar_region')
+            ->getResult();
+
+        $this->assertNotEmpty($result3);
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount('bar_region'));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('bar_region'));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
     }
 }

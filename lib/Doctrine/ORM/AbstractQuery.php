@@ -140,6 +140,11 @@ abstract class AbstractQuery
      */
     protected $cacheLogger;
 
+    /**
+     * @var integer
+     */
+    protected $lifetime = 0;
+
      /**
      *
      * Enable/disable second level query (result) caching for this query.
@@ -189,6 +194,26 @@ abstract class AbstractQuery
     protected function isCacheEnabled()
     {
         return $this->cacheable && $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
+    }
+
+    /**
+     * @return integer
+     */
+    public function getLifetime()
+    {
+        return $this->lifetime;
+    }
+
+    /**
+     * Sets the life-time for this query into second level cache.
+     *
+     * @param integer $lifetime
+     */
+    public function setLifetime($lifetime)
+    {
+        $this->lifetime = $lifetime;
+
+        return $this;
     }
 
     /**
