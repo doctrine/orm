@@ -239,10 +239,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Second level cache query does not support collections yet.
-     */
     public function testBasicQueryFetchJoinsOneToMany()
     {
         $this->loadFixturesCountries();
@@ -291,8 +287,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::CLASSNAME, $result2[1]);
         $this->assertCount(2, $result2[0]->getCities());
         $this->assertCount(2, $result2[1]->getCities());
-
-        $this->markTestIncomplete();
 
         $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(0));
         $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(1));

@@ -60,6 +60,11 @@ final class Query extends AbstractQuery
     const HINT_REFRESH = 'doctrine.refresh';
 
     /**
+     * @var string
+     */
+    const HINT_CACHE_ENABLED = 'doctrine.cache.enabled';
+
+    /**
      * Internal hint: is set to the proxy entity that is currently triggered for loading
      *
      * @var string

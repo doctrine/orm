@@ -29,7 +29,6 @@ namespace Doctrine\ORM\Cache;
  */
 interface CacheKey
 {
-
     /**
      * @return string Unique identifier
      */

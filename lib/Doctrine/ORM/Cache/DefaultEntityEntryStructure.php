@@ -84,6 +84,8 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
      */
     public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null)
     {
+        $hints[Query::HINT_CACHE_ENABLED] = true;
+
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH]         = true;
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
