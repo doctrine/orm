@@ -662,6 +662,14 @@ final class Query extends AbstractQuery
         );
     }
 
+     /**
+     * {@inheritdoc}
+     */
+    protected function getHash()
+    {
+        return sha1(parent::getHash(). '-'. $this->_firstResult . '-' . $this->_maxResults);
+    }
+
     /**
      * Cleanup Query resource when clone is called.
      *
