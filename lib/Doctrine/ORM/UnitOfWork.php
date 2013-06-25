@@ -2708,6 +2708,8 @@ class UnitOfWork implements PropertyChangedListener
                 $persister->loadManyToManyCollection($assoc, $collection->getOwner(), $collection);
                 break;
         }
+
+        $collection->setInitialized(true);
     }
 
     /**
