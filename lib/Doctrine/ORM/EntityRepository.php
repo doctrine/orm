@@ -282,6 +282,14 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
+     * @return EntityManager
+     */
+    protected function getManager()
+    {
+        return $this->_em;
+    }
+
+    /**
      * @return Mapping\ClassMetadata
      */
     protected function getClassMetadata()
