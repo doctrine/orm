@@ -335,10 +335,11 @@ class SqlWalker implements TreeWalker
      *
      * @param ClassMetadata $class    The class for which to generate the joins.
      * @param string        $dqlAlias The DQL alias of the class.
+     * @param ClassMetadata $subClass If we know the subclass we want already
      *
      * @return string The SQL.
      */
-    private function _generateClassTableInheritanceJoins($class, $dqlAlias)
+    private function _generateClassTableInheritanceJoins($class, $dqlAlias, $subClass = null)
     {
         $sql = '';
 
@@ -372,12 +373,26 @@ class SqlWalker implements TreeWalker
             return $sql;
         }
 
-        // LEFT JOIN child class tables
-        foreach ($class->subClasses as $subClassName) {
-            $subClass   = $this->em->getClassMetadata($subClassName);
+        if (null === $subClass) {
+            // LEFT JOIN child class tables
+            foreach ($class->subClasses as $subClassName) {
+                $subClass   = $this->em->getClassMetadata($subClassName);
+                $tableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
+
+                $sql .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
+
+                $sqlParts = array();
+
+                foreach ($this->quoteStrategy->getIdentifierColumnNames($subClass, $this->platform) as $columnName) {
+                    $sqlParts[] = $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
+                }
+
+                $sql .= implode(' AND ', $sqlParts);
+            }
+        } else {
             $tableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
-            $sql .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
+            $sql .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
             $sqlParts = array();
 
@@ -874,14 +889,24 @@ class SqlWalker implements TreeWalker
 
         $relation        = $this->queryComponents[$joinedDqlAlias]['relation'];
         $targetClass     = $this->em->getClassMetadata($relation['targetEntity']);
+        $subClass        = null;
+
+        // Ensure we got the owning side, since it has all mapping info
+        $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
+
+        // Make sure that we got the correct targetClass (inheritance can muck this up)
+        if ($targetClass->isInheritanceTypeJoined() && !$relation['isOwningSide']) {
+            if ($relation['targetEntity'] !== $assoc['sourceEntity']) {
+                $subClass = $targetClass;
+                $targetClass = $this->em->getClassMetadata($assoc['sourceEntity']);
+            }
+        }
+
         $sourceClass     = $this->em->getClassMetadata($relation['sourceEntity']);
         $targetTableName = $this->quoteStrategy->getTableName($targetClass,$this->platform);
 
         $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $joinedDqlAlias);
         $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $associationPathExpression->identificationVariable);
-
-        // Ensure we got the owning side, since it has all mapping info
-        $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
 
         if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) == true && (!$this->query->getHint(self::HINT_DISTINCT) || isset($this->selectedClasses[$joinedDqlAlias]))) {
             if ($relation['type'] == ClassMetadata::ONE_TO_MANY || $relation['type'] == ClassMetadata::MANY_TO_MANY) {
@@ -896,7 +921,7 @@ class SqlWalker implements TreeWalker
             case ($assoc['type'] & ClassMetadata::TO_ONE):
                 $conditions = array();
 
-                 foreach ($assoc['joinColumns'] as $joinColumn) {
+                foreach ($assoc['joinColumns'] as $joinColumn) {
                     $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
                     $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
@@ -981,7 +1006,7 @@ class SqlWalker implements TreeWalker
 
         // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
         if ($targetClass->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias, $subClass);
         }
 
         // Apply the indexes
