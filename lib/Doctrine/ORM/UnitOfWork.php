@@ -267,6 +267,11 @@ class UnitOfWork implements PropertyChangedListener
     private $cachedPersisters = array();
 
     /**
+     * @var boolean
+     */
+    protected $hasCache = false;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param \Doctrine\ORM\EntityManager $em
@@ -276,6 +281,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->em               = $em;
         $this->evm              = $em->getEventManager();
         $this->listenersInvoker = new ListenersInvoker($em);
+        $this->hasCache         = $em->getConfiguration()->isSecondLevelCacheEnabled();
     }
 
     /**
@@ -365,7 +371,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $collectionPersister->delete($collectionToDelete);
 
-                if ($collectionPersister->hasCache()) {
+                if ($this->hasCache && $collectionPersister->hasCache()) {
                     $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
                 }
             }
@@ -376,7 +382,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $collectionPersister->update($collectionToUpdate);
 
-                if ($collectionPersister->hasCache()) {
+                if ($this->hasCache && $collectionPersister->hasCache()) {
                     $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
                 }
             }
@@ -817,7 +823,7 @@ class UnitOfWork implements PropertyChangedListener
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         // Handle colection cache
-        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && isset($assoc['cache']) && count($value) > 0) {
+        if ($this->hasCache && $assoc['type'] === ClassMetadata::ONE_TO_MANY && isset($assoc['cache']) && count($value) > 0) {
 
             $collectionPersister = $this->getCollectionPersister($assoc);
 
@@ -1021,7 +1027,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
-        if ($persister->hasCache()) {
+        if ($this->hasCache && $persister->hasCache()) {
             $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
@@ -1060,7 +1066,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new LifecycleEventArgs($entity, $this->em), $postUpdateInvoke);
             }
 
-            if ($persister->hasCache()) {
+            if ($this->hasCache && $persister->hasCache()) {
                 $this->cachedPersisters[spl_object_hash($persister)] = $persister;
             }
         }
@@ -1104,7 +1110,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
             }
 
-            if ($persister->hasCache()) {
+            if ($this->hasCache && $persister->hasCache()) {
                 $this->cachedPersisters[spl_object_hash($persister)] = $persister;
             }
         }
@@ -2417,6 +2423,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->extraUpdates =
             $this->readOnlyObjects =
+            $this->cachedPersisters =
             $this->visitedCollections =
             $this->orphanRemovals = array();
 

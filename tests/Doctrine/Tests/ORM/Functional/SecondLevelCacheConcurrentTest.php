@@ -17,7 +17,6 @@ use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Cache\Lock;
 
-
 /**
  * @group DDC-2183
  */
