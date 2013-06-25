@@ -92,7 +92,25 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $innerSql = parent::walkSelectStatement($AST);
+        if ($this->platform instanceof PostgreSqlPlatform) {
+            // Set every select expression as visible(hidden = false) to
+            // make $AST to have scalar mappings properly
+            $hiddens = array();
+            foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
+                $hiddens[$idx] = $expr->hiddenAliasResultVariable;
+                $expr->hiddenAliasResultVariable = false;
+            }
+            
+            $innerSql = parent::walkSelectStatement($AST);
+    
+            // Restore hiddens
+            foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
+                $expr->hiddenAliasResultVariable = $hiddens[$idx];
+            }
+        } else {
+            $innerSql = parent::walkSelectStatement($AST);
+        }
+
 
         // Find out the SQL alias of the identifier column of the root entity.
         // It may be possible to make this work with multiple root entities but that
