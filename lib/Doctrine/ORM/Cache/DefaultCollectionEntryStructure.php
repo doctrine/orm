@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,6 +44,11 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
      * @var \Doctrine\ORM\UnitOfWork
      */
     private $uow;
+
+    /**
+     * @var array
+     */
+    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
@@ -77,14 +83,15 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
         $targetRegion    = $targetPersister->getCacheRegionAcess()->getRegion();
         $list            = array();
 
-        foreach ($entry->dataList as $index => $entry) {
+        foreach ($entry->identifiers as $index => $identifier) {
 
-            if ( ! $targetRegion->contains(new EntityCacheKey($targetEntity, $entry))) {
+            $entityEntry = $targetRegion->get(new EntityCacheKey($targetEntity, $identifier));
+
+            if ($entityEntry === null) {
                 return null;
             }
 
-            $entity     = $this->em->getReference($targetEntity, $entry);
-            $list[$index] = $entity;
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
         }
 
         array_walk($list, function($entity, $index) use ($collection){

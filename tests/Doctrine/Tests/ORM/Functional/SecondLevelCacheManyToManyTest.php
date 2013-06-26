@@ -12,7 +12,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutOnPersist()
+    public function testPutManyToManyOnPersist()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -137,8 +137,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($t2->getVisitedCities()->get(1)->getId(), $t4->getVisitedCities()->get(1)->getId());
         $this->assertEquals($t2->getVisitedCities()->get(1)->getName(), $t4->getVisitedCities()->get(1)->getName());
 
-        $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(City::CLASSNAME)));
-        $this->assertEquals(8, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 

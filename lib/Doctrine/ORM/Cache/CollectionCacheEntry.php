@@ -31,13 +31,13 @@ class CollectionCacheEntry implements CacheEntry
     /**
      * @var array
      */
-    public $dataList;
+    public $identifiers;
 
     /**
-     * @param array $dataList
+     * @param array $identifiers
      */
-    public function __construct(array $dataList)
+    public function __construct(array $identifiers)
     {
-        $this->dataList = $dataList;
+        $this->identifiers = $identifiers;
     }
 }

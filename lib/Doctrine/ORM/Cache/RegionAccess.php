@@ -52,7 +52,7 @@ interface RegionAccess
      * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
      * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
      *
-     * @return <tt>true</tt> if the object was successfully cached.
+     * @return TRUE if the object was successfully cached.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
@@ -64,7 +64,7 @@ interface RegionAccess
      * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
      * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
      *
-     * @return boolean <tt>true</tt> If the contents of the cache actual were changed.
+     * @return boolean TRUE If the contents of the cache actual were changed.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */
@@ -77,7 +77,7 @@ interface RegionAccess
      * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
      * @param \Doctrine\ORM\Cache\Lock          $lock   The lock previously obtained from {@link lockItem}
      *
-     * @return boolean <tt>true</tt> If the contents of the cache actual were changed.
+     * @return boolean TRUE If the contents of the cache actual were changed.
      *
      * @throws \Doctrine\ORM\Cache\CacheException
      */

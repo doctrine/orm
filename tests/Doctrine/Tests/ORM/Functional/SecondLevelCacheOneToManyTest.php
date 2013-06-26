@@ -133,8 +133,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($s2->getCities()->get(1)->getId(), $s4->getCities()->get(1)->getId());
         $this->assertEquals($s2->getCities()->get(1)->getName(), $s4->getCities()->get(1)->getName());
 
-        $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(City::CLASSNAME)));
-        $this->assertEquals(8, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
@@ -175,7 +174,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $t1->removeTravel($t1->getTravels()->get(1));
 
         $this->_em->persist($t1);
-        $this->_em->flush();
+        $this->_em->flush($t1);
         $this->_em->clear();
 
         $queryCount2 = $this->getCurrentQueryCount();
