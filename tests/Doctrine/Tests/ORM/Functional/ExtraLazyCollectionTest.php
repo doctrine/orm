@@ -17,7 +17,6 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $groupId;
     private $articleId;
 
-    private $groupname;
     private $topic;
     private $phonenumber;
 
@@ -565,30 +564,10 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
-    public function testGetIndexByManyToMany()
-    {
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
-        /* @var $user CmsUser */
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $group = $user->groups->get($this->groupname);
-
-        $this->assertFalse($user->groups->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertSame($group, $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId));
-    }
-
-    /**
-     * @group DDC-1398
-     */
     public function testGetNonExistentIndexBy()
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
-        /* @var $user CmsUser */
-
         $this->assertNull($user->articles->get(-1));
-        $this->assertNull($user->groups->get(-1));
     }
 
     private function loadFixture()
@@ -668,7 +647,6 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->userId = $user1->getId();
         $this->groupId = $group1->id;
 
-        $this->groupname = $group1->name;
         $this->topic = $article1->topic;
         $this->phonenumber = $phonenumber1->phonenumber;
     }
