@@ -53,9 +53,6 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         }
     }
 
-    /**
-     * @group menina
-     */
     public function testPutAndLoadEntities()
     {
         $this->loadFixturesCountries();
@@ -168,7 +165,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         }
     }
 
-    public function testOneToManyRelation()
+    public function testOneToManyRelationSingleTable()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -178,8 +175,10 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->_em->clear();
 
         $entity = $this->_em->find(City::CLASSNAME, $this->cities[0]->getId());
-        $this->assertCount(2, $entity->getAttractions());
+
+        $this->assertInstanceOf(City::CLASSNAME, $entity);
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
+        $this->assertCount(2, $entity->getAttractions());
 
         $ownerId    = $this->cities[0]->getId();
         $queryCount = $this->getCurrentQueryCount();
@@ -192,16 +191,19 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
         $this->assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
 
-        $city = $this->_em->find(City::CLASSNAME, $ownerId);
+        $this->_em->clear();
 
-        $this->assertInstanceOf(City::CLASSNAME, $city);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $city->getAttractions());
-        $this->assertCount(2, $city->getAttractions());
+        $entity = $this->_em->find(City::CLASSNAME, $ownerId);
+
+        $this->assertInstanceOf(City::CLASSNAME, $entity);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
+        $this->assertCount(2, $entity->getAttractions());
+
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertInstanceOf(Bar::CLASSNAME, $city->getAttractions()->get(0));
-        $this->assertInstanceOf(Bar::CLASSNAME, $city->getAttractions()->get(1));
-        $this->assertEquals($this->attractions[0]->getName(), $city->getAttractions()->get(0)->getName());
-        $this->assertEquals($this->attractions[1]->getName(), $city->getAttractions()->get(1)->getName());
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(0));
+        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(1));
+        $this->assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
+        $this->assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
     }
 }

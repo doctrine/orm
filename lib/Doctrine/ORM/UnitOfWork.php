@@ -2769,6 +2769,17 @@ class UnitOfWork implements PropertyChangedListener
                         break;
                     }
 
+                    // use the given collection
+                    if (isset($data[$field]) && $data[$field] instanceof PersistentCollection) {
+
+                        $data[$field]->setOwner($entity, $assoc);
+
+                        $class->reflFields[$field]->setValue($entity, $data[$field]);
+                        $this->originalEntityData[$oid][$field] = $data[$field];
+
+                        break;
+                    }
+
                     // Inject collection
                     $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
                     $pColl->setOwner($entity, $assoc);

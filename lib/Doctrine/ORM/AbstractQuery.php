@@ -122,7 +122,7 @@ abstract class AbstractQuery
     protected $_hydrationCacheProfile;
 
     /**
-     * Whether to use second level cache, if available. Defaults to TRUE.
+     * Whether to use second level cache, if available.
      *
      * @var boolean
      */
@@ -150,6 +150,7 @@ abstract class AbstractQuery
      * Enable/disable second level query (result) caching for this query.
      *
      * @param boolean $cacheable
+     *
      * @return \Doctrine\ORM\Query
      */
     public function setCacheable($cacheable)
@@ -169,6 +170,7 @@ abstract class AbstractQuery
 
     /**
      * @param string $cacheRegion
+     * 
      * @return \Doctrine\ORM\Query
      */
     public function setCacheRegion($cacheRegion)

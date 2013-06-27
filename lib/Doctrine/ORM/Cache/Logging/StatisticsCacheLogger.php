@@ -202,13 +202,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getPutCount()
     {
-        $total = 0;
-
-        foreach ($this->cachePutCountMap as $count) {
-            $total = $total + $count;
-        }
-
-        return $total;
+        return array_sum($this->cachePutCountMap);
     }
 
     /**
@@ -218,13 +212,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getHitCount()
     {
-        $total = 0;
-
-        foreach ($this->cacheHitCountMap as $count) {
-            $total = $total + $count;
-        }
-
-        return $total;
+        return array_sum($this->cacheHitCountMap);
     }
 
     /**
@@ -234,12 +222,6 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getMissCount()
     {
-        $total = 0;
-
-        foreach ($this->cacheMissCountMap as $count) {
-            $total = $total + $count;
-        }
-
-        return $total;
+        return array_sum($this->cacheMissCountMap);
     }
 }

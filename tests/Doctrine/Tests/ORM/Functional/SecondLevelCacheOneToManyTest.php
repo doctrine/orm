@@ -241,7 +241,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
     public function testShoudNotPutOneToManyRelationOnPersistIfTheCollectionIsEmpty()
     {
         $this->loadFixturesCountries();
-        $this->evictRegions();
+        $this->cache->evictEntityRegion(State::CLASSNAME);
 
         $state = new State("State Foo", $this->countries[0]);
 

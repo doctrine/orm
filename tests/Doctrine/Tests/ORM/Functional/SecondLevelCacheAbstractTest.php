@@ -15,6 +15,9 @@ use Doctrine\Tests\Models\Cache\Restaurant;
 use Doctrine\Tests\Models\Cache\Beach;
 use Doctrine\Tests\Models\Cache\Bar;
 
+use Doctrine\Tests\Models\Cache\AttractionContactInfo;
+use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -22,12 +25,13 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
-    protected $countries    = array();
-    protected $states       = array();
-    protected $cities       = array();
-    protected $travels      = array();
-    protected $travelers    = array();
-    protected $attractions  = array();
+    protected $countries        = array();
+    protected $states           = array();
+    protected $cities           = array();
+    protected $travels          = array();
+    protected $travelers        = array();
+    protected $attractions      = array();
+    protected $attractionsInfo  = array();
 
     /**
      * @var \Doctrine\ORM\Cache
@@ -158,6 +162,20 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         foreach ($this->attractions as $attraction) {
             $this->_em->persist($attraction);
+        }
+
+        $this->_em->flush();
+    }
+
+    protected function loadFixturesAttractionsInfo()
+    {
+        $this->attractionsInfo[] = new AttractionContactInfo('0000-0000', $this->attractions[0]);
+        $this->attractionsInfo[] = new AttractionContactInfo('1111-1111', $this->attractions[1]);
+        $this->attractionsInfo[] = new AttractionLocationInfo('Some St 1', $this->attractions[2]);
+        $this->attractionsInfo[] = new AttractionLocationInfo('Some St 2', $this->attractions[3]);
+
+        foreach ($this->attractionsInfo as $info) {
+            $this->_em->persist($info);
         }
 
         $this->_em->flush();

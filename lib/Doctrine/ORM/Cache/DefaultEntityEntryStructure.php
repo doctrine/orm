@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Query;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,6 +46,11 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
     private $uow;
 
     /**
+     * @var array
+     */
+    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
+
+    /**
      * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
      */
     public function __construct(EntityManagerInterface $em)
@@ -63,11 +69,11 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
 
         foreach ($metadata->associationMappings as $name => $assoc) {
 
-            if ( ! isset($data[$name]) || $data[$name] === null) {
+            if ( ! isset($data[$name])) {
                 continue;
             }
 
-            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+            if (isset($assoc['cache']) && $assoc['type'] & ClassMetadata::TO_ONE && ! $data[$name] instanceof Proxy) {
                 $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
 
                 continue;
@@ -84,15 +90,36 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
      */
     public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null)
     {
-        $hints = array(
-            Query::HINT_CACHE_ENABLED => true
-        );
+        $data  = $entry->data;
+        $hints = self::$hints;
 
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH]         = true;
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        return $this->uow->createEntity($entry->class, $entry->data, $hints);
+        foreach ($metadata->associationMappings as $name => $assoc) {
+
+            if ( ! isset($assoc['cache']) ||  ! isset($data[$name])) {
+                continue;
+            }
+
+            if ( ! $assoc['type'] & ClassMetadata::TO_ONE) {
+                continue;
+            }
+
+            $assocId        = $data[$name];
+            $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+            $assocRegion    = $assocPersister->getCacheRegionAcess()->getRegion();
+            $assocEntry     = $assocRegion->get(new EntityCacheKey($assoc['targetEntity'], $assocId));
+
+            if ($assocEntry === null) {
+                return null;
+            }
+
+            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+        }
+
+        return $this->uow->createEntity($entry->class, $data, $hints);
     }
 }

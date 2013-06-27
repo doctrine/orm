@@ -95,12 +95,13 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        $result     = array();
-        $rsm        = $query->getResultSetMapping();
-        $entityName = reset($rsm->aliasMap); //@TODO find root entity
-        $metadata   = $this->em->getClassMetadata($entityName);
-        $persister  = $this->uow->getEntityPersister($entityName);
-        $region     = $persister->getCacheRegionAcess()->getRegion();
+        $result      = array();
+        $rsm         = $query->getResultSetMapping();
+        $entityName  = reset($rsm->aliasMap); //@TODO find root entity
+        $hasRelation = ( ! empty($rsm->relationMap));
+        $metadata    = $this->em->getClassMetadata($entityName);
+        $persister   = $this->uow->getEntityPersister($entityName);
+        $region      = $persister->getCacheRegionAcess()->getRegion();
 
         // @TODO - move to cache hydration componente
         foreach ($entry->result as $index => $entry) {
@@ -109,8 +110,13 @@ class DefaultQueryCache implements QueryCache
                 return null;
             }
 
-            $entity         = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
-            $result[$index] = $entity;
+            if ( ! $hasRelation) {
+                $result[$index]  = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
+
+                continue;
+            }
+
+            $data = $entityEntry->data;
 
             foreach ($entry['associations'] as $name => $assoc) {
 
@@ -123,7 +129,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $metadata->setFieldValue($entity, $name, $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints));
+                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
 
                     continue;
                 }
@@ -132,9 +138,7 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                $oid         = spl_object_hash($entity);
                 $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-                $relation    = $metadata->associationMappings[$name];
                 $collection  = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
@@ -148,11 +152,12 @@ class DefaultQueryCache implements QueryCache
                     $collection->hydrateSet($assocIndex, $element);
                 }
 
+                $data[$name] = $collection;
+
                 $collection->setInitialized(true);
-                $collection->setOwner($entity, $relation);
-                $metadata->setFieldValue($entity, $name, $collection);
-                $this->uow->setOriginalEntityProperty($oid, $name, $collection);
             }
+
+            $result[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);;
         }
 
         return $result;

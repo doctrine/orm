@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * @Cache
  * @Entity
@@ -36,10 +38,17 @@ abstract class Attraction
      */
     protected $city;
 
+    /**
+     * @Cache
+     * @OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
+     */
+    protected $infos;
+
     public function __construct($name, City $city)
     {
-        $this->name = $name;
-        $this->city = $city;
+        $this->name  = $name;
+        $this->city  = $city;
+        $this->infos = new ArrayCollection();
     }
 
     public function getId()
@@ -70,5 +79,17 @@ abstract class Attraction
     public function setCity(City $city)
     {
         $this->city = $city;
+    }
+
+    public function getInfos()
+    {
+        return $this->infos;
+    }
+
+    public function addInfo(AttractionInfo $info)
+    {
+        if ( ! $this->infos->contains($info)) {
+            $this->infos->add($info);
+        }
     }
 }

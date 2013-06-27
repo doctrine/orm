@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
@@ -306,7 +307,8 @@ abstract class AbstractCollectionPersister implements CachedPersister
             }
 
             $entity       = $elements[$index];
-            $entityEntry  = $targetStructure->buildCacheEntry($this->targetEntity, $entityKey, $entity);
+            $class        = $this->em->getClassMetadata(ClassUtils::getClass($entity));
+            $entityEntry  = $targetStructure->buildCacheEntry($class, $entityKey, $entity);
 
             $targetRegionAcess->put($entityKey, $entityEntry);
         }
