@@ -20,7 +20,8 @@
         "symfony/console": "2.*"
     },
     "require-dev": {
-        "symfony/yaml": "2.1"
+        "symfony/yaml": "2.1",
+        "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"

@@ -16,6 +16,10 @@
         <var name="tmpdb_port" value="3306"/>
     </php>
 
+    <logging>
+        <log type="coverage-clover" target="../../build/logs/clover.xml"/>
+    </logging>
+
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./../Doctrine/Tests/ORM</directory>
