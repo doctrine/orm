@@ -47,7 +47,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
-        return $persister->load(array($mapping['indexBy'] => $index), null, null, array(), 0, 1);
+        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, null, array(), 0, 1);
     }
 
     /**
