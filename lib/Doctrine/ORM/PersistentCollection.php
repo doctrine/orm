@@ -518,9 +518,9 @@ final class PersistentCollection implements Collection, Selectable
     public function get($key)
     {
         if ( ! $this->initialized
-            && $this->association['type'] === Mapping\ClassMetadataInfo::ONE_TO_MANY
             && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])
+            && ! $this->association['isOwningSide']
         ) {
             if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
                 return $this->em->find($this->typeClass->name, $key);

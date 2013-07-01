@@ -17,6 +17,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $groupId;
     private $articleId;
 
+    private $username;
     private $topic;
     private $phonenumber;
 
@@ -35,6 +36,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['users']['indexBy'] = 'username';
 
         $this->loadFixture();
     }
@@ -54,6 +56,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+
+        unset($class->associationMappings['users']['indexBy']);
     }
 
     /**
@@ -564,6 +568,23 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
+    public function testGetIndexByManyToMany()
+    {
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+        /* @var $group CmsGroup */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $user = $group->users->get($this->username);
+
+        $this->assertFalse($group->users->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($user, $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId));
+    }
+
+    /**
+     * @group DDC-1398
+     */
     public function testGetNonExistentIndexBy()
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
@@ -647,6 +668,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->userId = $user1->getId();
         $this->groupId = $group1->id;
 
+        $this->username = $user1->username;
         $this->topic = $article1->topic;
         $this->phonenumber = $phonenumber1->phonenumber;
     }
