@@ -167,12 +167,27 @@ abstract class AbstractCollectionPersister implements CachedPersister
             return; // ignore inverse side
         }
 
-        $sql = $this->getDeleteSQL($coll);
+        $cacheKey  = null;
+        $cacheLock = null;
+        $sql       = $this->getDeleteSQL($coll);
+
+        if ($this->hasCache) {
+            $ownerId  = $this->uow->getEntityIdentifier($coll->getOwner());
+            $cacheKey = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        }
+
+        if ($this->isConcurrentRegion) {
+            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
+        }
 
         $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
 
         if ($this->hasCache) {
-            $this->queuedCachedCollectionChange($coll->getOwner(), null);
+            $this->queuedCache[] = array(
+                'list'  => null,
+                'key'   => $cacheKey,
+                'lock'  => $cacheLock
+            );
         }
     }
 
@@ -211,24 +226,28 @@ abstract class AbstractCollectionPersister implements CachedPersister
             return; // ignore inverse side
         }
 
+        $cacheKey  = null;
+        $cacheLock = null;
+
+        if ($this->hasCache) {
+            $ownerId  = $this->uow->getEntityIdentifier($coll->getOwner());
+            $cacheKey = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        }
+
+        if ($this->isConcurrentRegion) {
+            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
+        }
+
         $this->deleteRows($coll);
         $this->insertRows($coll);
 
         if ($this->hasCache && $coll->isDirty()) {
-            $this->queuedCachedCollectionChange($coll->getOwner(), $coll);
+            $this->queuedCache[] = array(
+                'list'  => $coll,
+                'key'   => $cacheKey,
+                'lock'  => $cacheLock
+            );
         }
-    }
-
-    /**
-     * @param object $owner
-     * @param array|\Doctrine\Common\Collections\Collection  $elements
-     */
-    public function queuedCachedCollectionChange($owner, $elements)
-    {
-        $this->queuedCache[] = array(
-            'owner'         => $owner,
-            'elements'      => $elements,
-        );
     }
 
     /**
@@ -327,22 +346,21 @@ abstract class AbstractCollectionPersister implements CachedPersister
      */
     public function afterTransactionComplete()
     {
-        // @TODO - handle locks ?
-
-        $uow = $this->em->getUnitOfWork();
-
         foreach ($this->queuedCache as $item) {
-            $elements       = $item['elements'];
-            $ownerId        = $uow->getEntityIdentifier($item['owner']);
-            $key            = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+            $list = $item['list'];
+            $key  = $item['key'];
 
-            if ($elements === null) {
+            if ($list === null) {
                 $this->cacheRegionAccess->evict($key);
 
                 continue;
             }
 
-            $this->saveCollectionCache($key, $elements);
+            $this->saveCollectionCache($key, $list);
+
+            if ($item['lock'] !== null) {
+                $this->cacheRegionAccess->unlockItem($key, $item['lock']);
+            }
         }
 
         $this->queuedCache = array();
@@ -355,12 +373,14 @@ abstract class AbstractCollectionPersister implements CachedPersister
      */
     public function afterTransactionRolledBack()
     {
-        // @TODO - handle locks ?
-
         if ( ! $this->isConcurrentRegion) {
             $this->queuedCache = array();
 
             return;
+        }
+
+        foreach ($this->queuedCache as $item) {
+            $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
         }
 
         $this->queuedCache = array();

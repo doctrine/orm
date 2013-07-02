@@ -33,10 +33,10 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(AttractionContactInfo::CLASSNAME, $this->attractionsInfo[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(AttractionContactInfo::CLASSNAME, $this->attractionsInfo[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(AttractionContactInfo::CLASSNAME, $this->attractionsInfo[2]->getId()));
-        $this->assertTrue($this->cache->containsEntity(AttractionContactInfo::CLASSNAME, $this->attractionsInfo[3]->getId()));
+        $this->assertTrue($this->cache->containsEntity(AttractionInfo::CLASSNAME, $this->attractionsInfo[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(AttractionInfo::CLASSNAME, $this->attractionsInfo[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(AttractionInfo::CLASSNAME, $this->attractionsInfo[2]->getId()));
+        $this->assertTrue($this->cache->containsEntity(AttractionInfo::CLASSNAME, $this->attractionsInfo[3]->getId()));
     }
 
     public function testJoinTableCountaisRootClass()

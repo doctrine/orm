@@ -822,29 +822,11 @@ class UnitOfWork implements PropertyChangedListener
         $unwrappedValue = ($assoc['type'] & ClassMetadata::TO_ONE) ? array($value) : $value->unwrap();
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
-        // Handle colection cache
-        if ($this->hasCache && $assoc['type'] === ClassMetadata::ONE_TO_MANY && isset($assoc['cache']) && count($value) > 0) {
-
-            $collectionPersister = $this->getCollectionPersister($assoc);
-
-            $collectionPersister->queuedCachedCollectionChange($entity, $value);
-
-            $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
-        }
-
         foreach ($unwrappedValue as $key => $entry) {
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
             if ( ! ($entry instanceof $assoc['targetEntity'])) {
-                throw new ORMException(
-                    sprintf(
-                        'Found entity of type %s on association %s#%s, but expecting %s',
-                        get_class($entry),
-                        $assoc['sourceEntity'],
-                        $assoc['fieldName'],
-                        $targetClass->name
-                    )
-                );
+                throw ORMException::unexpectedAssociationValue($assoc['sourceEntity'], $assoc['fieldName'], get_class($entry), $assoc['targetEntity']);
             }
 
             switch ($state) {
@@ -986,6 +968,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts($class)
     {
+        $inserted   = false;
         $entities   = array();
         $className  = $class->name;
         $persister  = $this->getEntityPersister($className);
@@ -997,6 +980,8 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $persister->addInsert($entity);
+
+            $inserted  = true;
 
             unset($this->entityInsertions[$oid]);
 
@@ -1027,7 +1012,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
-        if ($this->hasCache && $persister->hasCache()) {
+        if ($this->hasCache && $inserted && $persister->hasCache()) {
             $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
@@ -1041,6 +1026,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeUpdates($class)
     {
+        $updated            = false;
         $className          = $class->name;
         $persister          = $this->getEntityPersister($className);
         $preUpdateInvoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
@@ -1058,6 +1044,8 @@ class UnitOfWork implements PropertyChangedListener
 
             if ( ! empty($this->entityChangeSets[$oid])) {
                 $persister->update($entity);
+
+                $updated = true;
             }
 
             unset($this->entityUpdates[$oid]);
@@ -1065,10 +1053,10 @@ class UnitOfWork implements PropertyChangedListener
             if ($postUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new LifecycleEventArgs($entity, $this->em), $postUpdateInvoke);
             }
+        }
 
-            if ($this->hasCache && $persister->hasCache()) {
-                $this->cachedPersisters[spl_object_hash($persister)] = $persister;
-            }
+        if ($this->hasCache && $updated && $persister->hasCache()) {
+            $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
 
@@ -1081,6 +1069,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeDeletions($class)
     {
+        $deleted    = false;
         $className  = $class->name;
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
@@ -1110,9 +1099,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
             }
 
-            if ($this->hasCache && $persister->hasCache()) {
-                $this->cachedPersisters[spl_object_hash($persister)] = $persister;
-            }
+            $deleted = true;
+        }
+
+        if ($this->hasCache && $deleted && $persister->hasCache()) {
+            $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
 

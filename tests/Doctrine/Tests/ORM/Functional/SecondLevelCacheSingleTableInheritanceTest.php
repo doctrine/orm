@@ -146,7 +146,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         }
     }
 
-    public function testPutOneToManyRelationOnPersist()
+    public function testShouldNotPutOneToManyRelationOnPersist()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -157,7 +157,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         foreach ($this->cities as $city) {
             $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $city->getId()));
-            $this->assertTrue($this->cache->containsCollection(City::CLASSNAME, 'attractions', $city->getId()));
+            $this->assertFalse($this->cache->containsCollection(City::CLASSNAME, 'attractions', $city->getId()));
         }
 
         foreach ($this->attractions as $attraction) {

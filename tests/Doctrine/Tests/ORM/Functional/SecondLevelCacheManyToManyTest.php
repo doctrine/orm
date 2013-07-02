@@ -12,7 +12,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutManyToManyOnPersist()
+    public function testShouldPutManyToManyCollectionOwningSideOnPersist()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
