@@ -60,6 +60,11 @@ class DefaultQueryCache implements QueryCache
     private $logger;
 
     /**
+     * @var \Doctrine\ORM\Cache\QueryCacheValidator
+     */
+    private $validator;
+
+    /**
      * @var array
      */
     private static $hints = array(Query::HINT_CACHE_ENABLED => true);
@@ -70,10 +75,11 @@ class DefaultQueryCache implements QueryCache
      */
     public function __construct(EntityManagerInterface $em, Region $region)
     {
-        $this->em       = $em;
-        $this->region   = $region;
-        $this->uow      = $em->getUnitOfWork();
-        $this->logger   = $em->getConfiguration()->getSecondLevelCacheLogger();
+        $this->em        = $em;
+        $this->region    = $region;
+        $this->uow       = $em->getUnitOfWork();
+        $this->logger    = $em->getConfiguration()->getSecondLevelCacheLogger();
+        $this->validator = $em->getConfiguration()->getSecondLevelCacheQueryValidator();
     }
 
     /**
@@ -90,7 +96,7 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        if ($lifetime > 0 && ($entry->time + $lifetime) < time()) {
+        if ( ! $this->validator->isValid($entry, $query)) {
             $this->region->evict($key);
 
             return null;

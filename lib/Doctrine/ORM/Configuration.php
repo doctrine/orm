@@ -37,6 +37,8 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\ORM\Cache\QueryCacheValidator;
+use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -332,6 +334,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSecondLevelCacheLogger(CacheLogger $logger)
     {
         $this->_attributes['secondLevelCacheLogger'] = $logger;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache\QueryCacheValidator
+     */
+    public function getSecondLevelCacheQueryValidator()
+    {
+         return isset($this->_attributes['secondLevelCacheQueryValidator'])
+            ? $this->_attributes['secondLevelCacheQueryValidator']
+            : $this->_attributes['secondLevelCacheQueryValidator'] = new TimestampQueryCacheValidator();
+    }
+
+    /**
+     * @param \Doctrine\ORM\Cache\QueryCacheValidator $validator
+     */
+    public function setSecondLevelQueryValidator(QueryCacheValidator $validator)
+    {
+        $this->_attributes['secondLevelCacheQueryValidator'] = $validator;
     }
 
     /**
