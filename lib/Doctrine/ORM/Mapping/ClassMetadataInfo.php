@@ -1013,10 +1013,6 @@ class ClassMetadataInfo implements ClassMetadata
             $cache['region'] = strtolower(str_replace('\\', '.', $this->rootEntityName));
         }
 
-        if ( ! isset($cache['properties'])) {
-            $cache['properties'] = array();
-        }
-
         $this->cache = $cache;
     }
 
@@ -1033,10 +1029,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ( ! isset($cache['region'])) {
             $cache['region'] = strtolower(str_replace('\\', '.', $this->rootEntityName)) . '::' . $fieldName;
-        }
-
-        if ( ! isset($cache['properties'])) {
-            $cache['properties'] = array();
         }
 
         $this->associationMappings[$fieldName]['cache'] = $cache;

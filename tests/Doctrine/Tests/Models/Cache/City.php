@@ -101,4 +101,9 @@ class City
     {
         return $this->attractions;
     }
+
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    {
+        include __DIR__ . '/../../ORM/Mapping/php/Doctrine.Tests.Models.Cache.City.php';
+    }
 }
