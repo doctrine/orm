@@ -50,7 +50,7 @@ class CreateCommand extends AbstractCommand
         ->setDefinition(array(
             new InputOption(
                 'dump-sql', null, InputOption::VALUE_NONE,
-                'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
+                'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
             )
         ))
         ->setHelp(<<<EOT
