@@ -591,4 +591,57 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('bar_region'));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
     }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.
+     */
+    public function testQueryNotCacheableEntityException()
+    {
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel'),
+            ));
+        } catch (\Doctrine\ORM\Tools\ToolsException $exc) {
+        }
+
+        $dql   = 'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b';
+        $query = $this->_em->createQuery($dql);
+
+        $query->setCacheable(true)
+            ->getResult();
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Entity association field "Doctrine\Tests\Models\Cache\City#travels" not configured as part of the second-level cache.
+     */
+    public function testQueryNotCacheableAssociationException()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesTraveler();
+        $this->loadFixturesTravels();
+
+        $dql   = 'SELECT c, t FROM Doctrine\Tests\Models\Cache\City c LEFT JOIN c.travels t';
+        $query = $this->_em->createQuery($dql);
+
+        $query->setCacheable(true)
+            ->getResult();
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Second level cache does not suport scalar results.
+     */
+    public function testQueryScalarResultException()
+    {
+        $dql   = 'SELECT c, c.id, c.name FROM Doctrine\Tests\Models\Cache\Country c';
+        $query = $this->_em->createQuery($dql);
+
+        $query->setCacheable(true)
+            ->getResult();
+    }
+
 }

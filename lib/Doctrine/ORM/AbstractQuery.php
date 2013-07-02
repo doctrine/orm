@@ -942,10 +942,6 @@ abstract class AbstractQuery
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
-        if ($this->getResultSetMapping()->isMixed) {
-            throw new ORMException("Second level cache does not suport mixed results yet.");
-        }
-
         $querykey   = new QueryCacheKey($this->getHash());
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
         $result     = $queryCache->get($querykey, $this);

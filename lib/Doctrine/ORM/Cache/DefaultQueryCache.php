@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 
@@ -170,26 +171,34 @@ class DefaultQueryCache implements QueryCache
      */
     public function put(QueryCacheKey $key, AbstractQuery $query, array $result)
     {
-        $data        = array();
-        $rsm         = $query->getResultSetMapping();
+        $data = array();
+        $rsm  = $query->getResultSetMapping();
+
+        if ($rsm->scalarMappings) {
+            throw new CacheException("Second level cache does not suport scalar results.");
+        }
+
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
         $hasRelation = ( ! empty($rsm->relationMap));
         $metadata    = $this->em->getClassMetadata($entityName);
         $persister   = $this->uow->getEntityPersister($entityName);
-        $region      = $persister->getCacheRegionAcess()->getRegion();
+
+        if ( ! $persister->hasCache()) {
+            throw CacheException::nonCacheableEntity($entityName);
+        }
+
+        $region = $persister->getCacheRegionAcess()->getRegion();
 
         foreach ($result as $index => $entity) {
             $identifier                     = $this->uow->getEntityIdentifier($entity);
             $data[$index]['identifier']     = $identifier;
             $data[$index]['associations']   = array();
 
-            if ($region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
-                continue;
-            }
-
-            // Cancel put result if entity put fail
-            if ( ! $persister->putEntityCache($entity, $entityKey)) {
-                return;
+            if ( ! $region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
+                // Cancel put result if entity put fail
+                if ( ! $persister->putEntityCache($entity, $entityKey)) {
+                    return;
+                }
             }
 
             if ( ! $hasRelation) {
@@ -199,6 +208,10 @@ class DefaultQueryCache implements QueryCache
             // @TODO - move to cache hydration componente
             foreach ($rsm->relationMap as $name) {
                 $assoc = $metadata->associationMappings[$name];
+
+                if ( ! isset($assoc['cache'])) {
+                    throw CacheException::nonCacheableEntityAssociation($entityName, $name);
+                }
 
                 if (($assocValue = $metadata->getFieldValue($entity, $name)) === null) {
                     continue;

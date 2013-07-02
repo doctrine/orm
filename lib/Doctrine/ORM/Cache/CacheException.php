@@ -36,4 +36,22 @@ class CacheException extends ORMException
     {
         return new self("Can't update a readonly object");
     }
+
+    /**
+     * @param string $entityName
+     * @return \Doctrine\ORM\Cache\CacheException
+     */
+    public static function nonCacheableEntity($entityName)
+    {
+        return new self(sprintf('Entity "%s" not configured as part of the second-level cache.', $entityName));
+    }
+
+    /**
+     * @param string $entityName
+     * @return \Doctrine\ORM\Cache\CacheException
+     */
+    public static function nonCacheableEntityAssociation($entityName, $field)
+    {
+        return new self(sprintf('Entity association field "%s#%s" not configured as part of the second-level cache.', $entityName, $field));
+    }
 }
