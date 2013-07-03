@@ -252,6 +252,7 @@ final class PersistentCollection implements Collection, Selectable
             $this->isDirty = true;
         }
 
+        $this->indexByCache = array();
         $this->initialized = true;
     }
 
