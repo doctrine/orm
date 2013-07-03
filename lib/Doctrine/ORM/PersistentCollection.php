@@ -114,6 +114,13 @@ final class PersistentCollection implements Collection, Selectable
     private $coll;
 
     /**
+     * A cache of items loaded from an indexed extra lazy collection
+     *
+     * @var array
+     */
+    private $indexByCache = array();
+
+    /**
      * Creates a new persistent collection.
      *
      * @param EntityManager $em    The EntityManager the collection will be associated with.
@@ -522,8 +529,8 @@ final class PersistentCollection implements Collection, Selectable
             && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])
         ) {
-            if ($this->coll->containsKey($key)) {
-                return $this->coll->get($key);
+            if (isset($this->indexByCache[$key])) {
+                return $this->indexByCache[$key];
             }
 
             if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
@@ -532,7 +539,7 @@ final class PersistentCollection implements Collection, Selectable
                 $value = $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
             }
 
-            $this->coll->set($key, $value);
+            $this->indexByCache[$key] = $value;
 
             return $value;
         }

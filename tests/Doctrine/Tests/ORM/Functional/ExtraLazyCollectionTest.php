@@ -555,13 +555,15 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
 
         $article = $user->articles->get($this->topic);
+        $expected = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId);
 
         $this->assertFalse($user->articles->isInitialized());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertSame($article, $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId));
+        $this->assertSame($expected, $article);
 
         $article = $user->articles->get($this->topic);
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
+        $this->assertSame($expected, $article);
     }
 
     /**
