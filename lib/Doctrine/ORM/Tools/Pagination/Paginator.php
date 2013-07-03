@@ -232,6 +232,12 @@ class Paginator implements \Countable, \IteratorAggregate
         return $this->useOutputWalkers;
     }
 
+    /**
+     * Appends a custom tree walker to the tree walkers hint.
+     *
+     * @param Query $query
+     * @param string $walkerClass
+     */
     private function appendTreeWalker(Query $query, $walkerClass)
     {
         $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
