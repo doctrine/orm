@@ -1377,9 +1377,9 @@ Document syntax:
 -  non-terminals begin with an upper case character
 -  terminals begin with a lower case character
 -  parentheses (...) are used for grouping
--  square brackets [...] are used for defining an optional part,
+-  question mark "?" are used for defining an optional part,
    e.g. zero or one time
--  curly brackets {...} are used for repetition, e.g. zero or more
+-  asterisk "*" are used for repetition, e.g. zero or more
    times
 -  double quotation marks "..." define a terminal string a vertical
    bar \| represents an alternative
@@ -1395,11 +1395,14 @@ Terminals
 -  float (-0.23, 0.007, 1.245342E+8, ...)
 -  boolean (false, true)
 
+.. note::
+
+    You may use http://railroad.my28msec.com/rr/ui to generate a railroad diagram
+
 Query Language
 ~~~~~~~~~~~~~~
 
 .. code-block:: php
-
     QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
 
 Statements
@@ -1407,9 +1410,9 @@ Statements
 
 .. code-block:: php
 
-    SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
-    UpdateStatement ::= UpdateClause [WhereClause]
-    DeleteStatement ::= DeleteClause [WhereClause]
+    SelectStatement ::= SelectClause FromClause WhereClause? GroupByClause? HavingClause? OrderByClause?
+    UpdateStatement ::= UpdateClause WhereClause?
+    DeleteStatement ::= DeleteClause WhereClause?
 
 Identifiers
 ~~~~~~~~~~~
@@ -1420,7 +1423,7 @@ Identifiers
     IdentificationVariable ::= identifier
 
     /* Alias Identification declaration (the "u" of "FROM User u") */
-    AliasIdentificationVariable :: = identifier
+    AliasIdentificationVariable ::= identifier
 
     /* identifier that must be a class name (the "User" of "FROM User u") */
     AbstractSchemaName ::= identifier
@@ -1435,7 +1438,7 @@ Identifiers
     /* identifier that must be a single-valued association field (to-one) (the "Group" of "u.Group") */
     SingleValuedAssociationField ::= FieldIdentificationVariable
 
-    /* identifier that must be an embedded class state field (for the future) */
+    /* identifier that must be an embedded class state field (for the future) */    
     EmbeddedClassStateField ::= FieldIdentificationVariable
 
     /* identifier that must be a simple state field (name, email, ...) (the "name" of "u.name") */
@@ -1443,10 +1446,10 @@ Identifiers
     SimpleStateField ::= FieldIdentificationVariable
 
     /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
-    AliasResultVariable = identifier
+    AliasResultVariable ::= identifier
 
     /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
-    ResultVariable = identifier
+    ResultVariable ::= identifier
 
 Path Expressions
 ~~~~~~~~~~~~~~~~
@@ -1472,24 +1475,34 @@ Path Expressions
     CollectionValuedPathExpression            ::= IdentificationVariable "." CollectionValuedAssociationField
 
     /* "name" */
-    StateField                                ::= {EmbeddedClassStateField "."}* SimpleStateField
+    StateField                                ::= (EmbeddedClassStateField ".")* "*" SimpleStateField
 
 Clauses
 ~~~~~~~
 
 .. code-block:: php
 
-    SelectClause        ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}*
-    SimpleSelectClause  ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
-    UpdateClause        ::= "UPDATE" AbstractSchemaName ["AS"] AliasIdentificationVariable "SET" UpdateItem {"," UpdateItem}*
-    DeleteClause        ::= "DELETE" ["FROM"] AbstractSchemaName ["AS"] AliasIdentificationVariable
-    FromClause          ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
-    SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
+    SelectClause        ::= "SELECT" "DISTINCT"? SelectExpression ("," SelectExpression)*
+
+    SimpleSelectClause  ::= "SELECT" "DISTINCT"? SimpleSelectExpression
+
+    UpdateClause        ::= "UPDATE" AbstractSchemaName "AS"? AliasIdentificationVariable "SET" UpdateItem ("," UpdateItem)*
+
+    DeleteClause        ::= "DELETE" "FROM"? AbstractSchemaName "AS"? AliasIdentificationVariable
+
+    FromClause          ::= "FROM" IdentificationVariableDeclaration ("," IdentificationVariableDeclaration)*
+
+    SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration ("," SubselectIdentificationVariableDeclaration)*
+
     WhereClause         ::= "WHERE" ConditionalExpression
+
     HavingClause        ::= "HAVING" ConditionalExpression
-    GroupByClause       ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
-    OrderByClause       ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
-    Subselect           ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+
+    GroupByClause       ::= "GROUP" "BY" GroupByItem ("," GroupByItem)*
+
+    OrderByClause       ::= "ORDER" "BY" OrderByItem ("," OrderByItem)*
+
+    Subselect           ::= SimpleSelectClause SubselectFromClause WhereClause? GroupByClause? HavingClause? OrderByClause?
 
 Items
 ~~~~~
@@ -1497,8 +1510,11 @@ Items
 .. code-block:: php
 
     UpdateItem  ::= SingleValuedPathExpression "=" NewValue
-    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable) ["ASC" | "DESC"]
+
+    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable) ("ASC" | "DESC")?
+
     GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
+
     NewValue    ::= SimpleArithmeticExpression | "NULL"
 
 From, Join and Index by
@@ -1506,11 +1522,16 @@ From, Join and Index by
 
 .. code-block:: php
 
-    IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
-    SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
-    JoinVariableDeclaration                    ::= Join [IndexBy]
-    RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
-    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]
+    IdentificationVariableDeclaration          ::= RangeVariableDeclaration IndexBy? JoinVariableDeclaration*
+
+    SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression "AS"? AliasIdentificationVariable)
+
+    JoinVariableDeclaration                    ::= Join IndexBy?
+
+    RangeVariableDeclaration                   ::= AbstractSchemaName "AS"? AliasIdentificationVariable
+
+    Join                                       ::= ("LEFT" "OUTER"? | "INNER") "JOIN" JoinAssociationPathExpression "AS"? AliasIdentificationVariable ("WITH" ConditionalExpression)?
+
     IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
 
 Select Expressions
@@ -1518,33 +1539,32 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
-    SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
+    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression) ("AS"? "HIDDEN"? AliasResultVariable)?
+    SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) ("AS"? AliasResultVariable)?
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
-    PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
+    PartialFieldSet         ::= "{" SimpleStateField ("," SimpleStateField)* "*" "}"
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
-    ConditionalExpression       ::= ConditionalTerm {"OR" ConditionalTerm}*
-    ConditionalTerm             ::= ConditionalFactor {"AND" ConditionalFactor}*
-    ConditionalFactor           ::= ["NOT"] ConditionalPrimary
+    ConditionalExpression       ::= ConditionalTerm ("OR" ConditionalTerm)*
+    ConditionalTerm             ::= ConditionalFactor ("AND" ConditionalFactor)*
+    ConditionalFactor           ::= "NOT"? ConditionalPrimary
     ConditionalPrimary          ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
     SimpleConditionalExpression ::= ComparisonExpression | BetweenExpression | LikeExpression |
                                     InExpression | NullComparisonExpression | ExistsExpression |
                                     EmptyCollectionComparisonExpression | CollectionMemberExpression |
                                     InstanceOfExpression
 
-
 Collection Expressions
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
-    EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
-    CollectionMemberExpression          ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
+    EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" "NOT"? "EMPTY"
+    CollectionMemberExpression          ::= EntityExpression "NOT"? "MEMBER" "OF"? CollectionValuedPathExpression
 
 Literal Values
 ~~~~~~~~~~~~~~
@@ -1569,9 +1589,9 @@ Arithmetic Expressions
 .. code-block:: php
 
     ArithmeticExpression       ::= SimpleArithmeticExpression | "(" Subselect ")"
-    SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
-    ArithmeticTerm             ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
-    ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
+    SimpleArithmeticExpression ::= ArithmeticTerm (("+" | "-") ArithmeticTerm)*
+    ArithmeticTerm             ::= ArithmeticFactor (("*" | "/") ArithmeticFactor)*
+    ArithmeticFactor           ::= ("+" | "-")? ArithmeticPrimary
     ArithmeticPrimary          ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
                                    | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
                                    | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
@@ -1601,8 +1621,8 @@ Aggregate Expressions
 
 .. code-block:: php
 
-    AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-                            "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+    AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" "DISTINCT"? StateFieldPathExpression ")" |
+                            "COUNT" "(" "DISTINCT"? (IdentificationVariable | SingleValuedPathExpression) ")"
 
 Case Expressions
 ~~~~~~~~~~~~~~~~
@@ -1610,12 +1630,12 @@ Case Expressions
 .. code-block:: php
 
     CaseExpression        ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression
-    GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
+    GeneralCaseExpression ::= "CASE" WhenClause (WhenClause)* "ELSE" ScalarExpression "END"
     WhenClause            ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
-    SimpleCaseExpression  ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
+    SimpleCaseExpression  ::= "CASE" CaseOperand SimpleWhenClause SimpleWhenClause* "*" "ELSE" ScalarExpression "END"
     CaseOperand           ::= StateFieldPathExpression | TypeDiscriminator
     SimpleWhenClause      ::= "WHEN" ScalarExpression "THEN" ScalarExpression
-    CoalesceExpression    ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
+    CoalesceExpression    ::= "COALESCE" "(" ScalarExpression ("," ScalarExpression)* ")"
     NullifExpression      ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
 
 Other Expressions
@@ -1626,14 +1646,14 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
 .. code-block:: php
 
     QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
-    BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
+    BetweenExpression        ::= ArithmeticExpression "NOT"? "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-    InExpression             ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
-    InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
+    InExpression             ::= SingleValuedPathExpression "NOT"? "IN" "(" (InParameter ("," InParameter)* | Subselect) ")"
+    InstanceOfExpression     ::= IdentificationVariable "NOT"? "INSTANCE" "OF"? (InstanceOfParameter | "(" InstanceOfParameter ("," InstanceOfParameter)* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
-    LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
-    NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
-    ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
+    LikeExpression           ::= StringExpression "NOT"? "LIKE" StringPrimary ("ESCAPE" char)?
+    NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" "NOT"? "NULL"
+    ExistsExpression         ::= "NOT"? "EXISTS" "(" Subselect ")"
     ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
 
 Functions
@@ -1645,7 +1665,7 @@ Functions
 
     FunctionsReturningNumerics ::=
             "LENGTH" "(" StringPrimary ")" |
-            "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
+            "LOCATE" "(" StringPrimary "," StringPrimary ("," SimpleArithmeticExpression)?")" |
             "ABS" "(" SimpleArithmeticExpression ")" |
             "SQRT" "(" SimpleArithmeticExpression ")" |
             "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
@@ -1664,9 +1684,7 @@ Functions
     FunctionsReturningStrings ::=
             "CONCAT" "(" StringPrimary "," StringPrimary ")" |
             "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
-            "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
+            "TRIM" "(" (("LEADING" | "TRAILING" | "BOTH")? char? "FROM")? StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
-            "IDENTITY" "(" SingleValuedAssociationPathExpression ")"
-
-
+            "IDENTITY" "(" SingleValuedAssociationPathExpression ")"                        
