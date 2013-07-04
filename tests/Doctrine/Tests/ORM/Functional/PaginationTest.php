@@ -143,7 +143,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomTreeWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker'));
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);
@@ -179,7 +179,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-class CustomTreeWalker extends Query\TreeWalkerAdapter
+class CustomPaginationTestTreeWalker extends Query\TreeWalkerAdapter
 {
     public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
     {
