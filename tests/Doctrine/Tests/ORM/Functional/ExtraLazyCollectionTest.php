@@ -572,7 +572,14 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testGetNonExistentIndexBy()
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $queryCount = $this->getCurrentQueryCount();
+
         $this->assertNull($user->articles->get(-1));
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $user->articles->get(-1);
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
     }
 
     private function loadFixture()

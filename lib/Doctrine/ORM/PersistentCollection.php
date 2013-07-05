@@ -530,7 +530,7 @@ final class PersistentCollection implements Collection, Selectable
             && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])
         ) {
-            if (isset($this->indexByCache[$key])) {
+            if (array_key_exists($key, $this->indexByCache)) {
                 return $this->indexByCache[$key];
             }
 
