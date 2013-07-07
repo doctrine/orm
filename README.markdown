@@ -5,6 +5,11 @@ Master: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?bra
 2.2: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.2)](http://travis-ci.org/doctrine/doctrine2)
 2.1: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x)](http://travis-ci.org/doctrine/doctrine2)
 
+Master: [![Coverage Status](https://coveralls.io/repos/doctrine/doctrine2/badge.png?branch=master)](https://coveralls.io/r/doctrine/doctrine2?branch=master)
+
+[![Latest Stable Version](https://poser.pugx.org/doctrine/orm/v/stable.png)](https://packagist.org/packages/doctrine/orm) [![Total Downloads](https://poser.pugx.org/doctrine/orm/downloads.png)](https://packagist.org/packages/doctrine/orm)
+
+
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.2+ that provides transparent persistence
 for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features
 is the option to write database queries in a proprietary object oriented SQL dialect called Doctrine Query Language (DQL),

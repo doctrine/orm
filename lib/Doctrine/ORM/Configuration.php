@@ -19,20 +19,22 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
-use Doctrine\ORM\Mapping\NamingStrategy;
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\EntityListenerResolver;
-use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\EntityListenerResolver;
+use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Repository\DefaultRepositoryFactory;
+use Doctrine\ORM\Repository\RepositoryFactory;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -778,5 +780,29 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         return $this->_attributes['entityListenerResolver'];
+    }
+
+    /**
+     * Set the entity repository factory.
+     *
+     * @since 2.4
+     * @param \Doctrine\ORM\Repository\RepositoryFactory $repositoryFactory
+     */
+    public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
+    {
+        $this->_attributes['repositoryFactory'] = $repositoryFactory;
+    }
+
+    /**
+     * Get the entity repository factory.
+     *
+     * @since 2.4
+     * @return \Doctrine\ORM\Repository\RepositoryFactory
+     */
+    public function getRepositoryFactory()
+    {
+        return isset($this->_attributes['repositoryFactory'])
+            ? $this->_attributes['repositoryFactory']
+            : new DefaultRepositoryFactory();
     }
 }

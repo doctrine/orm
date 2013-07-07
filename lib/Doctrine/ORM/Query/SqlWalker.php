@@ -844,8 +844,8 @@ class SqlWalker implements TreeWalker
 
         $this->rootAliases[] = $dqlAlias;
 
-        $sql = $class->getQuotedTableName($this->platform) . ' '
-             . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+        $sql = $this->quoteStrategy->getTableName($class,$this->platform) . ' '
+            . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
         if ($class->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
@@ -875,7 +875,7 @@ class SqlWalker implements TreeWalker
         $relation        = $this->queryComponents[$joinedDqlAlias]['relation'];
         $targetClass     = $this->em->getClassMetadata($relation['targetEntity']);
         $sourceClass     = $this->em->getClassMetadata($relation['sourceEntity']);
-        $targetTableName = $targetClass->getQuotedTableName($this->platform);
+        $targetTableName = $this->quoteStrategy->getTableName($targetClass,$this->platform);
 
         $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $joinedDqlAlias);
         $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $associationPathExpression->identificationVariable);
@@ -930,7 +930,7 @@ class SqlWalker implements TreeWalker
                 // Join relation table
                 $joinTable      = $assoc['joinTable'];
                 $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
-                $joinTableName  = $sourceClass->getQuotedJoinTableName($assoc, $this->platform);
+                $joinTableName  = $this->quoteStrategy->getJoinTableName($assoc, $sourceClass, $this->platform);
 
                 $conditions      = array();
                 $relationColumns = ($relation['isOwningSide'])

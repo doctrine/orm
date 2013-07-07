@@ -66,6 +66,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
         $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
 
         if (isset($this->classMetadata->associationMappings[$field]) &&
+            $value !== null &&
             ! is_object($value) &&
             ! in_array($comparison->getOperator(), array(Comparison::IN, Comparison::NIN))) {
 

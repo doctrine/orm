@@ -18,6 +18,9 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $articleId;
     private $ddcClassId;
 
+    private $topic;
+    private $phonenumber;
+
     public function setUp()
     {
         $this->useModelSet('cms');
@@ -26,7 +29,11 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']['indexBy'] = 'name';
         $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['articles']['indexBy'] = 'topic';
+        $class->associationMappings['phonenumbers']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['phonenumbers']['indexBy'] = 'phonenumber';
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
@@ -41,6 +48,11 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
         $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['phonenumbers']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+
+        unset($class->associationMappings['groups']['indexBy']);
+        unset($class->associationMappings['articles']['indexBy']);
+        unset($class->associationMappings['phonenumbers']['indexBy']);
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
@@ -187,8 +199,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->assertEquals(2, count($someGroups));
-        $this->assertTrue($user->groups->contains($someGroups[0]));
-        $this->assertTrue($user->groups->contains($someGroups[1]));
+        $this->assertTrue($user->groups->contains(array_shift($someGroups)));
+        $this->assertTrue($user->groups->contains(array_shift($someGroups)));
     }
 
     /**
@@ -525,6 +537,52 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($qc + 1, $this->getCurrentQueryCount());
     }
 
+    /**
+     * @group DDC-1398
+     */
+    public function testGetIndexByIdentifier()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $phonenumber = $user->phonenumbers->get($this->phonenumber);
+
+        $this->assertFalse($user->phonenumbers->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($phonenumber, $this->_em->find('Doctrine\Tests\Models\CMS\CmsPhonenumber', $this->phonenumber));
+
+        $article = $user->phonenumbers->get($this->phonenumber);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
+    }
+
+    /**
+     * @group DDC-1398
+     */
+    public function testGetIndexByOneToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $article = $user->articles->get($this->topic);
+
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($article, $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId));
+    }
+
+    /**
+     * @group DDC-1398
+     */
+    public function testGetNonExistentIndexBy()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $this->assertNull($user->articles->get(-1));
+    }
+
     private function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();
@@ -574,17 +632,26 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($group3);
 
         $article1 = new \Doctrine\Tests\Models\CMS\CmsArticle();
-        $article1->topic = "Test";
-        $article1->text = "Test";
+        $article1->topic = "Test1";
+        $article1->text = "Test1";
         $article1->setAuthor($user1);
 
         $article2 = new \Doctrine\Tests\Models\CMS\CmsArticle();
-        $article2->topic = "Test";
-        $article2->text = "Test";
+        $article2->topic = "Test2";
+        $article2->text = "Test2";
         $article2->setAuthor($user1);
 
         $this->_em->persist($article1);
         $this->_em->persist($article2);
+
+        $phonenumber1 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $phonenumber1->phonenumber = '12345';
+
+        $phonenumber2 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $phonenumber2->phonenumber = '67890';
+
+        $this->_em->persist($phonenumber1);
+        $this->_em->persist($phonenumber2);
 
         // DDC-2504
         $otherClass = new \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass();
@@ -603,13 +670,14 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($otherClass);
 
-
         $this->_em->flush();
         $this->_em->clear();
 
         $this->articleId = $article1->id;
         $this->userId = $user1->getId();
         $this->groupId = $group1->id;
+        $this->topic = $article1->topic;
+        $this->phonenumber = $phonenumber1->phonenumber;
         $this->ddcClassId = $otherClass->id;
     }
 }

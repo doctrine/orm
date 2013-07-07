@@ -1334,16 +1334,22 @@ class BasicEntityPersister
             return '';
         }
 
-        $columnList = array();
+        $columnList  = array();
+        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
-
+            $type             = null;
+            $isIdentifier     = isset($assoc['id']) && $assoc['id'] === true;
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
             $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
 
-            $this->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, isset($assoc['id']) && $assoc['id'] === true);
+            if (isset($targetClass->fieldNames[$joinColumn['referencedColumnName']])) {
+                $type  = $targetClass->fieldMappings[$targetClass->fieldNames[$joinColumn['referencedColumnName']]]['type'];
+            }
+
+            $this->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
         }
 
         return implode(', ', $columnList);

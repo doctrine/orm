@@ -843,6 +843,35 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-2478
+     */
+    public function testMatchingCriteriaNullAssocComparison()
+    {
+        $fixtures       = $this->loadFixtureUserEmail();
+        $user           = $this->_em->merge($fixtures[0]);
+        $repository     = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $criteriaIsNull = Criteria::create()->where(Criteria::expr()->isNull('email'));
+        $criteriaEqNull = Criteria::create()->where(Criteria::expr()->eq('email', null));
+
+        $user->setEmail(null);
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $usersIsNull = $repository->matching($criteriaIsNull);
+        $usersEqNull = $repository->matching($criteriaEqNull);
+
+        $this->assertCount(1, $usersIsNull);
+        $this->assertCount(1, $usersEqNull);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $usersIsNull[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $usersEqNull[0]);
+
+        $this->assertNull($usersIsNull[0]->getEmail());
+        $this->assertNull($usersEqNull[0]->getEmail());
+    }
+
+    /**
      * @group DDC-2055
      */
     public function testCreateResultSetMappingBuilder()

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit>
+
+    <logging>
+        <log type="coverage-clover" target="../../build/logs/clover.xml"/>
+    </logging>
+
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
         <directory>./../Doctrine/Tests/ORM</directory>
      </testsuite>
     </testsuites>
+
     <groups>
       <exclude>
          <group>performance</group>

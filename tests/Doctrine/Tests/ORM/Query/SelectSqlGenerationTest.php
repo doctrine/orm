@@ -1293,6 +1293,22 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2519
+     */
+    public function testPartialWithAssociationIdentifier()
+    {
+        $this->assertSqlGeneration(
+            "SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l",
+            'SELECT l0_.iUserIdSource AS iUserIdSource0, l0_.iUserIdTarget AS iUserIdTarget1 FROM legacy_users_reference l0_'
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT PARTIAL l.{_description, _source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l",
+            'SELECT l0_.description AS description0, l0_.iUserIdSource AS iUserIdSource1, l0_.iUserIdTarget AS iUserIdTarget2 FROM legacy_users_reference l0_'
+        );
+    }
+
+    /**
      * @group DDC-1339
      */
     public function testIdentityFunctionInSelectClause()
@@ -1843,6 +1859,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Quote\NumericEntity e',
             'SELECT TRIM(t0_."2:2") AS sclr0 FROM table t0_'
+        );
+    }
+
+    /**
+     * @group DDC-1845
+     */
+    public function testQuotedTableDeclaration()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Quote\User u',
+            'SELECT q0_."user-id" AS userid0, q0_."user-name" AS username1 FROM "quote-user" q0_'
         );
     }
 
