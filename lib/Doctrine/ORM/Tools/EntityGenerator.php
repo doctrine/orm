@@ -709,6 +709,13 @@ public function __construct()
             }
         }
 
+        // check traits for existing property
+        foreach ($this->getTraits($metadata) as $trait) {
+            if ($trait->hasProperty($property)) {
+                return true;
+            }
+        }
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($property, $this->staticReflection[$metadata->name]['properties'])
@@ -732,10 +739,35 @@ public function __construct()
             }
         }
 
+        // check traits for existing method
+        foreach ($this->getTraits($metadata) as $trait) {
+            if ($trait->hasMethod($method)) {
+                return true;
+            }
+        }
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($method, $this->staticReflection[$metadata->name]['methods'])
         );
+    }
+
+    /**
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return array
+     */
+    protected function getTraits(ClassMetadataInfo $metadata)
+    {
+        if (PHP_VERSION_ID >= 50400 && ($metadata->reflClass !== null || class_exists($metadata->name))) {
+            $reflClass = $metadata->reflClass === null
+                ? new \ReflectionClass($metadata->name)
+                : $metadata->reflClass;
+
+            return $reflClass->getTraits();
+        }
+
+        return array();
     }
 
     /**
