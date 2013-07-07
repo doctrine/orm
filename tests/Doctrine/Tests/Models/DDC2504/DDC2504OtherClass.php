@@ -1,11 +1,11 @@
 <?php
 
-namespace Doctrine\Tests\Models\DDCxxx;
+namespace Doctrine\Tests\Models\DDC2504;
 
 /**
  * @Entity
  */
-class DDCxxxOtherClass
+class DDC2504OtherClass
 {
     /**
      * @Column(type="integer")
@@ -14,9 +14,9 @@ class DDCxxxOtherClass
     public $id;
 
     /**
-     * @var Doctrine\Tests\Models\DDC\DDCxxxChildClass
+     * @var Doctrine\Tests\Models\DDC\DDC2504ChildClass
      *
-     * @OneToMany(targetEntity="DDCxxxChildClass", mappedBy="other", fetch="EXTRA_LAZY")
+     * @OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
      */
     private $childClasses;
 

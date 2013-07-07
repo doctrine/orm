@@ -21,7 +21,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('cms');
-        $this->useModelSet('ddcxxx');
+        $this->useModelSet('ddc2504');
         parent::setUp();
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
@@ -120,11 +120,11 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group DDCxxx
+     * @group DDC2504
      */
     public function testCountOneToManyJoinedInheritance()
     {
-        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDCxxx\DDCxxxOtherClass', $this->ddcClassId);
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddcClassId);
         $this->assertFalse($otherClass->getChildClasses()->isInitialized(), "Pre-Condition");
 
         $this->assertEquals(2, count($otherClass->getChildClasses()));
@@ -586,11 +586,11 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article1);
         $this->_em->persist($article2);
 
-        // DDCxxx
-        $otherClass = new \Doctrine\Tests\Models\DDCxxx\DDCxxxOtherClass();
+        // DDC-2504
+        $otherClass = new \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass();
 
-        $childClass1 = new \Doctrine\Tests\Models\DDCxxx\DDCxxxChildClass();
-        $childClass2 = new \Doctrine\Tests\Models\DDCxxx\DDCxxxChildClass();
+        $childClass1 = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+        $childClass2 = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
 
         $childClass1->other = $otherClass;
         $childClass2->other = $otherClass;
