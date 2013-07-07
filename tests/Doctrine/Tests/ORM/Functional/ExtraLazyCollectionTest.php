@@ -16,6 +16,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $userId;
     private $groupId;
     private $articleId;
+    private $ddcClassId;
 
     private $topic;
     private $phonenumber;
@@ -23,6 +24,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('cms');
+        $this->useModelSet('ddc2504');
         parent::setUp();
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
@@ -127,6 +129,17 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Pre-Condition");
 
         $this->assertEquals(2, count($user->articles));
+    }
+
+    /**
+     * @group DDC2504
+     */
+    public function testCountOneToManyJoinedInheritance()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddcClassId);
+        $this->assertFalse($otherClass->getChildClasses()->isInitialized(), "Pre-Condition");
+
+        $this->assertEquals(2, count($otherClass->getChildClasses()));
     }
 
     /**
@@ -640,14 +653,31 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($phonenumber1);
         $this->_em->persist($phonenumber2);
 
+        // DDC-2504
+        $otherClass = new \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass();
+
+        $childClass1 = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+        $childClass2 = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+
+        $childClass1->other = $otherClass;
+        $childClass2->other = $otherClass;
+
+        $otherClass->addChildClass($childClass1);
+        $otherClass->addChildClass($childClass2);
+
+        $this->_em->persist($childClass1);
+        $this->_em->persist($childClass2);
+
+        $this->_em->persist($otherClass);
+
         $this->_em->flush();
         $this->_em->clear();
 
         $this->articleId = $article1->id;
         $this->userId = $user1->getId();
         $this->groupId = $group1->id;
-
         $this->topic = $article1->topic;
         $this->phonenumber = $phonenumber1->phonenumber;
+        $this->ddcClassId = $otherClass->id;
     }
 }

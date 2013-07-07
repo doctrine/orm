@@ -155,6 +155,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass',
             'Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass',
             'Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass',
+        ),
+        'ddc2504' => array(
+            'Doctrine\Tests\Models\DDC2504\DDC2504RootClass',
+            'Doctrine\Tests\Models\DDC2504\DDC2504ChildClass',
+            'Doctrine\Tests\Models\DDC2504\DDC2504OtherClass',
         )
     );
 
@@ -399,7 +404,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
+        $ad = $config->newDefaultAnnotationDriver(array(), true);
+        $ad->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'Models' . DIRECTORY_SEPARATOR . 'DDC2504'));
+
+        $config->setMetadataDriverImpl($ad);
 
         $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
