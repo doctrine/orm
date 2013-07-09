@@ -122,7 +122,7 @@ class Paginator implements \Countable, \IteratorAggregate
             /* @var $countQuery Query */
             $countQuery = $this->cloneQuery($this->query);
 
-            if ( ! $countQuery->getHint(CountWalker::HINT_DISTINCT)) {
+            if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
                 $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
             }
 

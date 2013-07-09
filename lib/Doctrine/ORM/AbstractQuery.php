@@ -663,6 +663,18 @@ abstract class AbstractQuery
     }
 
     /**
+     * Check if the query has a hint
+     *
+     * @param  string $name The name of the hint
+     *
+     * @return bool False if the query does not have any hint
+     */
+    public function hasHint($name)
+    {
+        return isset($this->_hints[$name]);
+    }
+
+    /**
      * Return the key value map of query hints that are currently set.
      *
      * @return array
