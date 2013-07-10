@@ -26,6 +26,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Persisters\CachedPersister;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
@@ -79,7 +80,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return null;
         }
 
@@ -94,7 +95,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return null;
         }
 
@@ -110,7 +111,7 @@ class DefaultCache implements Cache
         $persister  = $this->uow->getEntityPersister($metadata->rootEntityName);
         $key        = $this->buildEntityCacheKey($metadata, $identifier);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return false;
         }
 
@@ -126,7 +127,7 @@ class DefaultCache implements Cache
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
         $key       = $this->buildEntityCacheKey($metadata, $identifier);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -141,7 +142,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -158,7 +159,7 @@ class DefaultCache implements Cache
         foreach ($metadatas as $metadata) {
             $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
 
-            if ( ! $persister->hasCache()) {
+            if ( ! ($persister instanceof CachedPersister)) {
                 continue;
             }
 
@@ -175,7 +176,7 @@ class DefaultCache implements Cache
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
         $key       = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return false;
         }
 
@@ -191,7 +192,7 @@ class DefaultCache implements Cache
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
         $key       = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -206,7 +207,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -229,7 +230,7 @@ class DefaultCache implements Cache
 
                 $persister = $this->uow->getCollectionPersister($association);
 
-                if ( ! $persister->hasCache()) {
+                if ( ! ($persister instanceof CachedPersister)) {
                     continue;
                 }
 

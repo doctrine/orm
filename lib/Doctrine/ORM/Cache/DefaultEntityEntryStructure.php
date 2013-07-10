@@ -73,7 +73,7 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
                 continue;
             }
 
-            if (isset($assoc['cache']) && $assoc['type'] & ClassMetadata::TO_ONE && ! $data[$name] instanceof Proxy) {
+            if (isset($assoc['cache']) && $assoc['type'] & ClassMetadata::TO_ONE && ( ! $data[$name] instanceof Proxy || $data[$name]->__isInitialized__)) {
                 $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
 
                 continue;

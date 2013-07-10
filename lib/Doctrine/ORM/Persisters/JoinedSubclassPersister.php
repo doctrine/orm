@@ -204,14 +204,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 $stmt->execute();
             }
-
-            if ($this->hasCache) {
-                $this->queuedCache['insert'][] = array(
-                    'entity' => $entity,
-                    'lock'   => null,
-                    'key'    => null
-                );
-            }
         }
 
         $rootTableStmt->closeCursor();

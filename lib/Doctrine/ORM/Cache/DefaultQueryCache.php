@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Persisters\CachedPersister;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -189,7 +190,7 @@ class DefaultQueryCache implements QueryCache
         $metadata    = $this->em->getClassMetadata($entityName);
         $persister   = $this->uow->getEntityPersister($entityName);
 
-        if ( ! $persister->hasCache()) {
+        if ( ! ($persister instanceof CachedPersister)) {
             throw CacheException::nonCacheableEntity($entityName);
         }
 

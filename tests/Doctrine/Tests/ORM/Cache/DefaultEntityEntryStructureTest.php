@@ -8,6 +8,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\DefaultEntityEntryStructure;
 
 /**

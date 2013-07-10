@@ -20,11 +20,7 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\ConcurrentRegionAccess;
 
 /**
  * Base class for all collection persisters.
@@ -32,7 +28,7 @@ use Doctrine\ORM\Cache\ConcurrentRegionAccess;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractCollectionPersister implements CachedPersister
+abstract class AbstractCollectionPersister implements CollectionPersister
 {
     /**
      * @var EntityManager
@@ -79,36 +75,6 @@ abstract class AbstractCollectionPersister implements CachedPersister
     protected $association;
 
     /**
-     * @var array
-     */
-    protected $queuedCache = array();
-
-    /**
-     * @var boolean
-     */
-    protected $hasCache = false;
-
-    /**
-     * @var boolean
-     */
-    protected $isConcurrentRegion = false;
-
-    /**
-     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\ConcurrentRegionAccess
-     */
-    protected $cacheRegionAccess;
-
-    /**
-     * @var \Doctrine\ORM\Cache\CollectionEntryStructure
-     */
-    protected $cacheEntryStructure;
-
-    /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
-     */
-    protected $cacheLogger;
-
-    /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param \Doctrine\ORM\EntityManager $em
@@ -120,44 +86,30 @@ abstract class AbstractCollectionPersister implements CachedPersister
         $this->association      = $association;
         $this->uow              = $em->getUnitOfWork();
         $this->conn             = $em->getConnection();
-        $configuration          = $em->getConfiguration();
-        $this->quoteStrategy    = $configuration->getQuoteStrategy();
         $this->platform         = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
         $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
         $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
-        $this->hasCache         = isset($association['cache']) && $em->getConfiguration()->isSecondLevelCacheEnabled();
-
-        if ($this->hasCache) {
-            $cacheFactory               = $configuration->getSecondLevelCacheFactory();
-            $this->cacheLogger          = $configuration->getSecondLevelCacheLogger();
-            $this->cacheRegionAccess    = $cacheFactory->buildCollectionRegionAccessStrategy($this->sourceEntity, $association['fieldName']);
-            $this->cacheEntryStructure  = $cacheFactory->buildCollectionEntryStructure($em);
-            $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
-        }
     }
 
     /**
-     * @return boolean
+     * {@inheritdoc}
      */
-    public function hasCache()
+    public function getSourceEntityMetadata()
     {
-        return $this->hasCache;
+        return $this->sourceEntity;
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\RegionAccess
+     * {@inheritdoc}
      */
-    public function getCacheRegionAcess()
+    public function getTargetEntityMetadata()
     {
-        return $this->cacheRegionAccess;
+        return $this->targetEntity;
     }
 
     /**
-     * Deletes the persistent state represented by the given collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function delete(PersistentCollection $coll)
     {
@@ -167,28 +119,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
             return; // ignore inverse side
         }
 
-        $cacheKey  = null;
-        $cacheLock = null;
-        $sql       = $this->getDeleteSQL($coll);
-
-        if ($this->hasCache) {
-            $ownerId  = $this->uow->getEntityIdentifier($coll->getOwner());
-            $cacheKey = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
-        }
-
-        if ($this->isConcurrentRegion) {
-            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
-        }
-
-        $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
-
-        if ($this->hasCache) {
-            $this->queuedCache[] = array(
-                'list'  => null,
-                'key'   => $cacheKey,
-                'lock'  => $cacheLock
-            );
-        }
+        $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
     }
 
     /**
@@ -211,12 +142,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     abstract protected function getDeleteSQLParameters(PersistentCollection $coll);
 
     /**
-     * Updates the given collection, synchronizing its state with the database
-     * by inserting, updating and deleting individual elements.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function update(PersistentCollection $coll)
     {
@@ -226,36 +152,12 @@ abstract class AbstractCollectionPersister implements CachedPersister
             return; // ignore inverse side
         }
 
-        $cacheKey  = null;
-        $cacheLock = null;
-
-        if ($this->hasCache) {
-            $ownerId  = $this->uow->getEntityIdentifier($coll->getOwner());
-            $cacheKey = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
-        }
-
-        if ($this->isConcurrentRegion) {
-            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
-        }
-
         $this->deleteRows($coll);
         $this->insertRows($coll);
-
-        if ($this->hasCache && $coll->isDirty()) {
-            $this->queuedCache[] = array(
-                'list'  => $coll,
-                'key'   => $cacheKey,
-                'lock'  => $cacheLock
-            );
-        }
     }
 
     /**
-     * Deletes rows.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function deleteRows(PersistentCollection $coll)
     {
@@ -268,11 +170,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Inserts rows.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function insertRows(PersistentCollection $coll)
     {
@@ -285,115 +183,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
-     *
-     * @return \Doctrine\ORM\PersistentCollection|null
-     */
-    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
-    {
-
-        if (($cache = $this->cacheRegionAccess->get($key)) === null) {
-            return null;
-        }
-
-        if (($cache = $this->cacheEntryStructure->loadCacheEntry($this->sourceEntity, $key, $cache, $collection)) === null) {
-            return null;
-        }
-
-        return $cache;
-    }
-
-    /**
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey        $key
-     * @param array|\Doctrine\Common\Collections\Collection $elements
-     *
-     * @return void
-     */
-    public function saveCollectionCache(CollectionCacheKey $key, $elements)
-    {
-        $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
-        $targetRegionAcess  = $targetPersister->getCacheRegionAcess();
-        $targetStructure    = $targetPersister->getCacheEntryStructure();
-        $targetRegion       = $targetRegionAcess->getRegion();
-        $entry              = $this->cacheEntryStructure->buildCacheEntry($this->targetEntity, $key, $elements);
-
-        foreach ($entry->identifiers as $index => $identifier) {
-            $entityKey = new EntityCacheKey($this->targetEntity->rootEntityName, $identifier);
-
-            if ($targetRegion->contains($entityKey)) {
-                continue;
-            }
-
-            $entity       = $elements[$index];
-            $class        = $this->em->getClassMetadata(ClassUtils::getClass($entity));
-            $entityEntry  = $targetStructure->buildCacheEntry($class, $entityKey, $entity);
-
-            $targetRegionAcess->put($entityKey, $entityEntry);
-        }
-
-        $cached = $this->cacheRegionAccess->put($key, $entry);
-
-        if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->collectionCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
-        }
-    }
-
-    /**
-     * Execute operations after transaction complete
-     *
-     * @return void
-     */
-    public function afterTransactionComplete()
-    {
-        foreach ($this->queuedCache as $item) {
-            $list = $item['list'];
-            $key  = $item['key'];
-
-            if ($list === null) {
-                $this->cacheRegionAccess->evict($key);
-
-                continue;
-            }
-
-            $this->saveCollectionCache($key, $list);
-
-            if ($item['lock'] !== null) {
-                $this->cacheRegionAccess->unlockItem($key, $item['lock']);
-            }
-        }
-
-        $this->queuedCache = array();
-    }
-
-    /**
-     * Execute operations after transaction rollback
-     *
-     * @return void
-     */
-    public function afterTransactionRolledBack()
-    {
-        if ( ! $this->isConcurrentRegion) {
-            $this->queuedCache = array();
-
-            return;
-        }
-
-        foreach ($this->queuedCache as $item) {
-            $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-        }
-
-        $this->queuedCache = array();
-    }
-
-    /**
-     * Counts the size of this persistent collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * 
-     * @return integer
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function count(PersistentCollection $coll)
     {
@@ -401,15 +191,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Slices elements.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param integer                            $offset
-     * @param integer                            $length
-     *
-     * @return  array
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
@@ -417,14 +199,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Checks for existence of an element.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return boolean
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function contains(PersistentCollection $coll, $element)
     {
@@ -432,14 +207,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Checks for existence of a key.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param mixed                              $key
-     *
-     * @return boolean
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
@@ -447,14 +215,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Removes an element.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return mixed
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
@@ -462,14 +223,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Removes an element by key.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param mixed                              $key
-     *
-     * @return void
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function removeKey(PersistentCollection $coll, $key)
     {
@@ -477,14 +231,7 @@ abstract class AbstractCollectionPersister implements CachedPersister
     }
 
     /**
-     * Gets an element by key.
-     * 
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param mixed                              $index
-     * 
-     * @return mixed
-     *
-     * @throws \BadMethodCallException
+     * {@inheritdoc}
      */
     public function get(PersistentCollection $coll, $index)
     {

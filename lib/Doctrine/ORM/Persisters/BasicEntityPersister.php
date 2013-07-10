@@ -36,10 +36,6 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\ConcurrentRegionAccess;
-
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
  *
@@ -82,7 +78,7 @@ use Doctrine\ORM\Cache\ConcurrentRegionAccess;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.0
  */
-class BasicEntityPersister implements CachedPersister
+class BasicEntityPersister implements EntityPersister
 {
     /**
      * @var array
@@ -211,36 +207,6 @@ class BasicEntityPersister implements CachedPersister
     protected $quoteStrategy;
 
     /**
-     * @var array
-     */
-    protected $queuedCache = array();
-
-    /**
-     * @var boolean
-     */
-    protected $hasCache = false;
-
-    /**
-     * @var boolean
-     */
-    private $isConcurrentRegion = false;
-
-    /**
-     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\ConcurrentRegionAccess
-     */
-    protected $cacheRegionAccess;
-
-    /**
-     * @var \Doctrine\ORM\Cache\EntityEntryStructure
-     */
-    protected $cacheEntryStructure;
-
-    /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
-     */
-    protected $cacheLogger;
-
-    /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
@@ -255,19 +221,10 @@ class BasicEntityPersister implements CachedPersister
         $configuration          = $em->getConfiguration();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $configuration->getQuoteStrategy();
-        $this->hasCache         = ($class->cache !== null) && $em->getConfiguration()->isSecondLevelCacheEnabled();
-
-        if ($this->hasCache) {
-            $cacheFactory               = $configuration->getSecondLevelCacheFactory();
-            $this->cacheLogger          = $configuration->getSecondLevelCacheLogger();
-            $this->cacheEntryStructure  = $cacheFactory->buildEntityEntryStructure($em);
-            $this->cacheRegionAccess    = $cacheFactory->buildEntityRegionAccessStrategy($this->class);
-            $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
-        }
     }
 
-    /**
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     /**
+     * {@inheritdoc}
      */
     public function getClassMetadata()
     {
@@ -275,36 +232,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * @return boolean
-     */
-    public function hasCache()
-    {
-        return $this->hasCache;
-    }
-
-    /**
-     * @return \Doctrine\ORM\Cache\RegionAccess
-     */
-    public function getCacheRegionAcess()
-    {
-        return $this->cacheRegionAccess;
-    }
-
-    /**
-     * @return \Doctrine\ORM\Cache\EntityEntryStructure
-     */
-    public function getCacheEntryStructure()
-    {
-        return $this->cacheEntryStructure;
-    }
-
-    /**
-     * Adds an entity to the queued insertions.
-     * The entity remains queued until {@link executeInserts} is invoked.
-     *
-     * @param object $entity The entity to queue for insertion.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function addInsert($entity)
     {
@@ -312,13 +240,15 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Executes all queued entity insertions and returns any generated post-insert
-     * identifiers that were created as a result of the insertions.
-     *
-     * If no inserts are queued, invoking this method is a NOOP.
-     *
-     * @return array An array of any generated post-insert IDs. This will be an empty array
-     *               if the entity class does not use the IDENTITY generation strategy.
+     * {@inheritdoc}
+     */
+    public function getInserts()
+    {
+        return $this->queuedInserts;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function executeInserts()
     {
@@ -355,14 +285,6 @@ class BasicEntityPersister implements CachedPersister
 
             if ($this->class->isVersioned) {
                 $this->assignDefaultVersionValue($entity, $id);
-            }
-
-            if ($this->hasCache) {
-                $this->queuedCache['insert'][] = array(
-                    'entity' => $entity,
-                    'lock'   => null,
-                    'key'    => null
-                );
             }
         }
 
@@ -415,35 +337,15 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Updates a managed entity. The entity is updated according to its current changeset
-     * in the running UnitOfWork. If there is no changeset, nothing is updated.
-     *
-     * The data to update is retrieved through {@link prepareUpdateData}.
-     * Subclasses that override this method are supposed to obtain the update data
-     * in the same way, through {@link prepareUpdateData}.
-     *
-     * Subclasses are also supposed to take care of versioning when overriding this method,
-     * if necessary. The {@link updateTable} method can be used to apply the data retrieved
-     * from {@prepareUpdateData} on the target tables, thereby optionally applying versioning.
-     *
-     * @param object $entity The entity to update.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function update($entity)
     {
-        $cacheKey   = null;
-        $cacheLock  = null;
         $tableName  = $this->class->getTableName();
         $updateData = $this->prepareUpdateData($entity);
 
         if ( ! isset($updateData[$tableName]) || ! ($data = $updateData[$tableName])) {
             return;
-        }
-
-        if ($this->isConcurrentRegion) {
-            $cacheKey  = new EntityCacheKey($this->class->rootEntityName, $this->em->getUnitOfWork()->getEntityIdentifier($entity));
-            $cacheLock = $this->cacheRegionAccess->lockItem($cacheKey);
         }
 
         $isVersioned     = $this->class->isVersioned;
@@ -455,14 +357,6 @@ class BasicEntityPersister implements CachedPersister
             $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
 
             $this->assignDefaultVersionValue($entity, $id);
-        }
-
-        if ($this->hasCache && ( ! $this->isConcurrentRegion || $cacheLock !== null)) {
-            $this->queuedCache['update'][] = array(
-                'entity' => $entity,
-                'lock'   => $cacheLock,
-                'key'    => $cacheKey
-            );
         }
     }
 
@@ -640,16 +534,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Deletes a managed entity.
-     *
-     * The entity to delete must be managed and have a persistent identifier.
-     * The deletion happens instantaneously.
-     *
-     * Subclasses may override this method to customize the semantics of entity deletion.
-     *
-     * @param object $entity The entity to delete.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function delete($entity)
     {
@@ -660,7 +545,7 @@ class BasicEntityPersister implements CachedPersister
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
         $types      = array_map(function ($identifier) use ($class, $em) {
-            if (isset($class->fieldMappings[$identifier])) {
+           if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
 
@@ -691,14 +576,6 @@ class BasicEntityPersister implements CachedPersister
 
         $this->deleteJoinTableRecords($identifier);
         $this->conn->delete($tableName, $id, $types);
-
-        if ($this->hasCache) {
-            $this->queuedCache['delete'][] = array(
-                'lock'   => $cacheLock,
-                'key'    => $cacheKey,
-                'entity' => null,
-            );
-        }
     }
 
     /**
@@ -821,15 +698,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Gets the name of the table that owns the column the given field is mapped to.
-     *
-     * The default implementation in BasicEntityPersister always returns the name
-     * of the table the entity type of this persister is mapped to, since an entity
-     * is always persisted to a single table with a BasicEntityPersister.
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return string The table name.
+     * {@inheritdoc}
      */
     public function getOwningTable($fieldName)
     {
@@ -837,19 +706,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Loads an entity by a list of field criteria.
-     *
-     * @param array       $criteria The criteria by which to load the entity.
-     * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
-     * @param array|null  $assoc    The association that connects the entity to load to another entity, if any.
-     * @param array       $hints    Hints for entity creation.
-     * @param int         $lockMode
-     * @param int|null    $limit    Limit number of results.
-     * @param array|null  $orderBy  Criteria to order by.
-     *
-     * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
-     *
-     * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
+     * {@inheritdoc}
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
     {
@@ -869,65 +726,15 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Loads an entity by identifier.
-     *
-     * @param array       $identifier   The entity identifier.
-     * @param object|null $entity       The entity to load the data into. If not specified, a new entity is created.
-     *
-     * @return object The loaded and managed entity instance or NULL if the entity can not be found.
-     *
-     * @todo Check parameters
+     * {@inheritdoc}
      */
     public function loadById(array $identifier, $entity = null)
     {
-        $cacheKey = null;
-
-        if ($this->hasCache) {
-            $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
-            $cacheEntry = $this->cacheRegionAccess->get($cacheKey);
-
-            if ($cacheEntry !== null && ($entity = $this->cacheEntryStructure->loadCacheEntry($this->class, $cacheKey, $cacheEntry, $entity)) !== null) {
-
-                if ($this->cacheLogger) {
-                    $this->cacheLogger->entityCacheHit($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
-                }
-
-                return $entity;
-            }
-        }
-
-        $entity = $this->load($identifier, $entity);
-
-        if ($this->hasCache && $entity !== null) {
-            $class      = $this->em->getClassMetadata(ClassUtils::getClass($entity));
-            $cacheEntry = $this->cacheEntryStructure->buildCacheEntry($class, $cacheKey, $entity);
-            $cached     = $this->cacheRegionAccess->put($cacheKey, $cacheEntry);
-
-            if ($this->cacheLogger && $cached) {
-                $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
-            }
-
-            if ($this->cacheLogger) {
-                $this->cacheLogger->entityCacheMiss($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
-            }
-        }
-
-        return $entity;
+        return $this->load($identifier, $entity);;
     }
 
     /**
-     * Loads an entity of this persister's mapped class as part of a single-valued
-     * association from another entity.
-     *
-     * @param array  $assoc        The association to load.
-     * @param object $sourceEntity The entity that owns the association (not necessarily the "owning side").
-     * @param array  $identifier   The identifier of the entity to load. Must be provided if
-     *                             the association to load represents the owning side, otherwise
-     *                             the identifier is derived from the $sourceEntity.
-     *
-     * @return object The loaded and managed entity instance or NULL if the entity can not be found.
-     *
-     * @throws \Doctrine\ORM\Mapping\MappingException
+     * {@inheritdoc}
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = array())
     {
@@ -993,14 +800,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Refreshes a managed entity.
-     *
-     * @param array  $id       The identifier of the entity as an associative array from
-     *                         column or field names to values.
-     * @param object $entity   The entity to refresh.
-     * @param int    $lockMode
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function refresh(array $id, $entity, $lockMode = 0)
     {
@@ -1013,11 +813,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Loads Entities matching the given Criteria object.
-     *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function loadCriteria(Criteria $criteria)
     {
@@ -1071,14 +867,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Loads a list of entities by a list of field criteria.
-     *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
@@ -1092,14 +881,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Gets (sliced or full) elements of the given collection.
-     *
-     * @param array    $assoc
-     * @param object   $sourceEntity
-     * @param int|null $offset
-     * @param int|null $limit
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
@@ -1155,50 +937,12 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Loads a collection of entities of a many-to-many association.
-     *
-     * @param array                $assoc        The association mapping of the association being loaded.
-     * @param object               $sourceEntity The entity that owns the collection.
-     * @param PersistentCollection $coll         The collection to fill.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
-        $hasCache  = false;
-        $key       = null;
-        $persister = null;
-
-        if ($this->hasCache) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($assoc);
-            $hasCache  = $persister->hasCache();
-
-            if ($hasCache) {
-                $ownerId = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
-                $key     = new CollectionCacheKey($assoc['sourceEntity'], $assoc['fieldName'], $ownerId);
-                $list    = $persister->loadCollectionCache($coll, $key);
-
-                if ($list !== null) {
-
-                    if ($this->cacheLogger) {
-                        $this->cacheLogger->collectionCacheHit($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
-                    }
-
-                    return $list;
-                }
-            }
-        }
-        
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
         $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
-
-        if ($hasCache && ! empty($list)) {
-            $persister->saveCollectionCache($key, $list);
-
-            if ($this->cacheLogger) {
-                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
-            }
-        }
 
         return $list;
     }
@@ -1579,11 +1323,9 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Gets the INSERT SQL used by the persister to persist a new entity.
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    protected function getInsertSQL()
+    public function getInsertSQL()
     {
         if ($this->insertSql !== null) {
             return $this->insertSql;
@@ -1717,12 +1459,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
-     *
-     * @param array $criteria
-     * @param int   $lockMode
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function lock(array $criteria, $lockMode)
     {
@@ -1785,14 +1522,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Gets the SQL WHERE condition for matching a field with a given value.
-     *
-     * @param string      $field
-     * @param mixed       $value
-     * @param array|null  $assoc
-     * @param string|null $comparison
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null)
     {
@@ -1895,14 +1625,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Returns an array with (sliced or full list) of elements in the specified collection.
-     *
-     * @param array    $assoc
-     * @param object   $sourceEntity
-     * @param int|null $offset
-     * @param int|null $limit
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
@@ -1912,51 +1635,13 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Loads a collection of entities in a one-to-many association.
-     *
-     * @param array                $assoc
-     * @param object               $sourceEntity
-     * @param PersistentCollection $coll         The collection to load/fill.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
-        $hasCache  = false;
-        $key       = null;
-        $persister = null;
-
-        if ($this->hasCache) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($assoc);
-            $hasCache  = $persister->hasCache();
-
-           if ($hasCache) {
-                $ownerId = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
-                $key     = new CollectionCacheKey($assoc['sourceEntity'], $assoc['fieldName'], $ownerId);
-                $list    = $persister->loadCollectionCache($coll, $key);
-
-                if ($list !== null) {
-
-                    if ($this->cacheLogger) {
-                        $this->cacheLogger->collectionCacheHit($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
-                    }
-
-                    return $list;
-                }
-            }
-        }
-
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
         $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
         
-        if ($hasCache && ! empty($list)) {
-            $persister->saveCollectionCache($key, $list);
-
-            if ($this->cacheLogger) {
-                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
-            }
-        }
-
         return $list;
     }
 
@@ -2111,12 +1796,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Checks whether the given managed entity exists in the database.
-     *
-     * @param object $entity
-     * @param array  $extraConditions
-     *
-     * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
+     * {@inheritdoc}
      */
     public function exists($entity, array $extraConditions = array())
     {
@@ -2165,11 +1845,7 @@ class BasicEntityPersister implements CachedPersister
     }
 
     /**
-     * Gets an SQL column alias for a column name.
-     *
-     * @param string $columnName
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getSQLColumnAlias($columnName)
     {
@@ -2196,102 +1872,5 @@ class BasicEntityPersister implements CachedPersister
 
         $sql = implode(' AND ', $filterClauses);
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
-    }
-
-    /**
-     * @param object $entity
-     * @param \Doctrine\ORM\Cache\EntityCacheKey $key
-     * 
-     * @return boolean
-     */
-    public function putEntityCache($entity, EntityCacheKey $key)
-    {
-        $class  = $this->em->getClassMetadata(ClassUtils::getClass($entity));
-        $entry  = $this->cacheEntryStructure->buildCacheEntry($class, $key, $entity);
-        $cached = $this->cacheRegionAccess->put($key, $entry);
-
-        if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
-        }
-
-        return $cached;
-    }
-
-    /**
-     * Execute operations after transaction complete
-     *
-     * @return void
-     */
-    public function afterTransactionComplete()
-    {
-        $uow = $this->em->getUnitOfWork();
-
-        if (isset($this->queuedCache['insert'])) {
-            foreach ($this->queuedCache['insert'] as $item) {
-
-                $class  = $this->em->getClassMetadata(ClassUtils::getClass($item['entity']));
-                $key    = $item['key'] ?: new EntityCacheKey($class->rootEntityName, $uow->getEntityIdentifier($item['entity']));
-                $entry  = $this->cacheEntryStructure->buildCacheEntry($class, $key, $item['entity']);
-                $cached = $this->cacheRegionAccess->afterInsert($key, $entry);
-
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
-                }
-            }
-        }
-
-        if (isset($this->queuedCache['update'])) {
-            foreach ($this->queuedCache['update'] as $item) {
-
-                $class  = $this->em->getClassMetadata(ClassUtils::getClass($item['entity']));
-                $key    = $item['key'] ?: new EntityCacheKey($class->rootEntityName, $uow->getEntityIdentifier($item['entity']));
-                $entry  = $this->cacheEntryStructure->buildCacheEntry($class, $key, $item['entity']);
-                $cached = $this->cacheRegionAccess->afterUpdate($key, $entry);
-
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
-                }
-
-                if ($item['lock'] !== null) {
-                    $this->cacheRegionAccess->unlockItem($key, $item['lock']);
-                }
-            }
-        }
-
-        if (isset($this->queuedCache['delete'])) {
-            foreach ($this->queuedCache['delete'] as $item) {
-                $this->cacheRegionAccess->evict($item['key']);
-            }
-        }
-
-        $this->queuedCache = array();
-    }
-
-    /**
-     * Execute operations after transaction rollback
-     *
-     * @return void
-     */
-    public function afterTransactionRolledBack()
-    {
-        if ( ! $this->isConcurrentRegion) {
-            $this->queuedCache = array();
-
-            return;
-        }
-
-        if (isset($this->queuedCache['update'])) {
-            foreach ($this->queuedCache['update'] as $item) {
-                $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-            }
-        }
-
-        if (isset($this->queuedCache['delete'])) {
-            foreach ($this->queuedCache['delete'] as $item) {
-                $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-            }
-        }
-
-        $this->queuedCache = array();
     }
 }

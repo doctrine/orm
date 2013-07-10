@@ -43,10 +43,4 @@ interface CachedPersister
      */
     public function getCacheRegionAcess();
 
-    /**
-     * Returns TRUE if the persists is cacheable, FALSE otherwise
-     *
-     * @return boolean
-     */
-    public function hasCache();
 }

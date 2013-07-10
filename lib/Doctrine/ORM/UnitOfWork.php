@@ -38,6 +38,9 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
+use Doctrine\ORM\Persisters\CachedPersister;
+use Doctrine\ORM\Persisters\CachedCollectionPersister;
+use Doctrine\ORM\Persisters\CachedEntityPersister;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\ORM\Persisters\SingleTablePersister;
 use Doctrine\ORM\Persisters\JoinedSubclassPersister;
@@ -371,7 +374,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $collectionPersister->delete($collectionToDelete);
 
-                if ($this->hasCache && $collectionPersister->hasCache()) {
+                if ($this->hasCache && ($collectionPersister instanceof CachedPersister)) {
                     $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
                 }
             }
@@ -382,7 +385,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $collectionPersister->update($collectionToUpdate);
 
-                if ($this->hasCache && $collectionPersister->hasCache()) {
+                if ($this->hasCache && ($collectionPersister instanceof CachedPersister)) {
                     $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
                 }
             }
@@ -720,7 +723,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $this->computeAssociationChanges($entity, $assoc, $val);
+            $this->computeAssociationChanges($assoc, $val);
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
                 $assoc['isOwningSide'] &&
@@ -791,7 +794,6 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changes of an association.
      *
-     * @param mixed $entity The owner entity.
      * @param array $assoc  The association mapping.
      * @param mixed $value  The value of the association.
      *
@@ -800,7 +802,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return void
      */
-    private function computeAssociationChanges($entity, $assoc, $value)
+    private function computeAssociationChanges($assoc, $value)
     {
         if ($value instanceof Proxy && ! $value->__isInitialized__) {
             return;
@@ -1012,7 +1014,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
-        if ($this->hasCache && $inserted && $persister->hasCache()) {
+        if ($this->hasCache && $inserted && ($persister instanceof CachedPersister)) {
             $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
@@ -1055,7 +1057,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if ($this->hasCache && $updated && $persister->hasCache()) {
+        if ($this->hasCache && $updated && ($persister instanceof CachedPersister)) {
             $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
@@ -1102,7 +1104,7 @@ class UnitOfWork implements PropertyChangedListener
             $deleted = true;
         }
 
-        if ($this->hasCache && $deleted && $persister->hasCache()) {
+        if ($this->hasCache && $deleted && ($persister instanceof CachedPersister)) {
             $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
@@ -3016,7 +3018,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string $entityName The name of the Entity.
      *
-     * @return \Doctrine\ORM\Persisters\BasicEntityPersister
+     * @return \Doctrine\ORM\Persisters\EntityPersister
      */
     public function getEntityPersister($entityName)
     {
@@ -3043,6 +3045,10 @@ class UnitOfWork implements PropertyChangedListener
                 throw new \RuntimeException('No persister found for entity.');
         }
 
+        if ($this->hasCache && $class->cache !== null) {
+            $persister = new CachedEntityPersister($persister, $this->em, $class);
+        }
+
         $this->persisters[$entityName] = $persister;
 
         return $this->persisters[$entityName];
@@ -3053,7 +3059,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param array $association
      *
-     * @return \Doctrine\ORM\Persisters\AbstractCollectionPersister
+     * @return \Doctrine\ORM\Persisters\CollectionPersister
      */
     public function getCollectionPersister(array $association)
     {
@@ -3066,6 +3072,10 @@ class UnitOfWork implements PropertyChangedListener
         $persister = ClassMetadata::ONE_TO_MANY === $association['type']
             ? new OneToManyPersister($this->em, $association)
             : new ManyToManyPersister($this->em, $association);
+
+        if ($this->hasCache && isset($association['cache'])) {
+            $persister = new CachedCollectionPersister($persister, $this->em, $association);
+        }
 
         $this->collectionPersisters[$role] = $persister;
 

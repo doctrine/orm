@@ -26,7 +26,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persisters\EntityPersister;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 
@@ -107,13 +107,13 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of initializing a proxy
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     * @param \Doctrine\ORM\Persisters\EntityPersister           $entityPersister
      *
      * @return \Closure
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createInitializer(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
+    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
             return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
@@ -183,13 +183,13 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of finalizing state a cloned proxy
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     * @param \Doctrine\ORM\Persisters\EntityPersister           $entityPersister
      *
      * @return \Closure
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createCloner(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
+    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
         return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             if ($proxy->__isInitialized()) {
