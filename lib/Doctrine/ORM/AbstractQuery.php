@@ -942,9 +942,10 @@ abstract class AbstractQuery
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
-        $querykey   = new QueryCacheKey($this->getHash());
+        $rsm        = $this->_resultSetMapping ?: $this->getResultSetMapping();
+        $querykey   = new QueryCacheKey($this->getHash(), $this->lifetime);
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
-        $result     = $queryCache->get($querykey, $this);
+        $result     = $queryCache->get($querykey, $rsm);
 
         if ($result !== null) {
 
@@ -956,7 +957,7 @@ abstract class AbstractQuery
         }
 
         $result = $this->executeIgnoreQueryCache($parameters, $hydrationMode);
-        $cached = $queryCache->put($querykey, $this, $result);
+        $cached = $queryCache->put($querykey, $rsm, $result);
 
         if ($this->cacheLogger) {
             $this->cacheLogger->queryCacheMiss($queryCache->getRegion()->getName(), $querykey);

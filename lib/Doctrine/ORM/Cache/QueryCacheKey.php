@@ -35,11 +35,19 @@ class QueryCacheKey implements CacheKey
     private $hash;
 
     /**
-     * @param string $hash The result cache id
+     * @var integer
      */
-    public function __construct($hash)
+    private $lifetime;
+
+    /**
+     *
+     * @param string  $hash     Result cache id
+     * @param integer $lifetime Query lifetime
+     */
+    public function __construct($hash, $lifetime)
     {
-        $this->hash = $hash;
+        $this->hash     = $hash;
+        $this->lifetime = $lifetime;
     }
 
     /**
@@ -48,5 +56,10 @@ class QueryCacheKey implements CacheKey
     public function hash()
     {
         return $this->hash;
+    }
+
+    public function getLifetime()
+    {
+        return $this->lifetime;
     }
 }

@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache\QueryCacheEntry;
-use Doctrine\ORM\AbstractQuery;
 
 /**
  * Cache query validator interface.
@@ -34,10 +33,10 @@ interface QueryCacheValidator
     /**
      * Checks if the query entry is valid
      *
+     * @param \Doctrine\ORM\Cache\QueryCacheEntry $key
      * @param \Doctrine\ORM\Cache\QueryCacheEntry $entry
-     * @param \Doctrine\ORM\AbstractQuery $query
      *
      * @return boolean
      */
-    public function isValid(QueryCacheEntry $entry, AbstractQuery $query);
+    public function isValid(QueryCacheKey $key, QueryCacheEntry $entry);
 }

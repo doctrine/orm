@@ -502,7 +502,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $key   = new QueryCacheKey($getHash($query));
+        $key   = new QueryCacheKey($getHash($query), 3600);
         $entry = $this->cache->getQueryCache()
             ->getRegion()
             ->get($key);

@@ -24,12 +24,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Persisters\CachedPersister;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\CacheException;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 
 /**
@@ -88,23 +88,21 @@ class DefaultQueryCache implements QueryCache
      *
      * @TODO - does not work recursively yet
      */
-    public function get(QueryCacheKey $key, AbstractQuery $query)
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm)
     {
-        $entry      = $this->region->get($key);
-        $lifetime   = $query->getLifetime();
+        $entry = $this->region->get($key);
 
         if ( ! $entry instanceof QueryCacheEntry) {
             return null;
         }
 
-        if ( ! $this->validator->isValid($entry, $query)) {
+        if ( ! $this->validator->isValid($key, $entry)) {
             $this->region->evict($key);
 
             return null;
         }
 
         $result      = array();
-        $rsm         = $query->getResultSetMapping();
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
         $hasRelation = ( ! empty($rsm->relationMap));
         $metadata    = $this->em->getClassMetadata($entityName);
@@ -176,15 +174,13 @@ class DefaultQueryCache implements QueryCache
      *
      * @TODO - does not work recursively yet
      */
-    public function put(QueryCacheKey $key, AbstractQuery $query, array $result)
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, array $result)
     {
-        $data = array();
-        $rsm  = $query->getResultSetMapping();
-
         if ($rsm->scalarMappings) {
             throw new CacheException("Second level cache does not suport scalar results.");
         }
 
+        $data        = array();
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
         $hasRelation = ( ! empty($rsm->relationMap));
         $metadata    = $this->em->getClassMetadata($entityName);

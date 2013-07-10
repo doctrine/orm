@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache\QueryCacheEntry;
-use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Cache\QueryCacheKey;
 
 /**
  * @since   2.5
@@ -32,9 +32,9 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
     /**
      * {@inheritdoc}
      */
-    public function isValid(QueryCacheEntry $entry, AbstractQuery $query)
+    public function isValid(QueryCacheKey $key, QueryCacheEntry $entry)
     {
-        $lifetime = $query->getLifetime();
+        $lifetime = $key->getLifetime();
 
         if ($lifetime == 0) {
             return true;
