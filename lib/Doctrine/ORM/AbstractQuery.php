@@ -26,6 +26,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
+use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
@@ -136,6 +137,13 @@ abstract class AbstractQuery
     protected $cacheRegion;
 
     /**
+     * Second level query cache mode.
+     *
+     * @var integer
+     */
+    protected $cacheMode;
+
+    /**
      * @var \Doctrine\ORM\Cache\Logging\CacheLogger
      */
     protected $cacheLogger;
@@ -145,13 +153,25 @@ abstract class AbstractQuery
      */
     protected $lifetime = 0;
 
-     /**
+    /**
+     * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
+     *
+     * @param \Doctrine\ORM\EntityManager $em
+     */
+    public function __construct(EntityManager $em)
+    {
+        $this->_em          = $em;
+        $this->parameters   = new ArrayCollection();
+        $this->cacheLogger  = $em->getConfiguration()->getSecondLevelCacheLogger();
+    }
+
+    /**
      *
      * Enable/disable second level query (result) caching for this query.
      *
      * @param boolean $cacheable
      *
-     * @return \Doctrine\ORM\Query
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setCacheable($cacheable)
     {
@@ -170,8 +190,8 @@ abstract class AbstractQuery
 
     /**
      * @param string $cacheRegion
-     * 
-     * @return \Doctrine\ORM\Query
+     *
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setCacheRegion($cacheRegion)
     {
@@ -210,6 +230,7 @@ abstract class AbstractQuery
      * Sets the life-time for this query into second level cache.
      *
      * @param integer $lifetime
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -219,15 +240,22 @@ abstract class AbstractQuery
     }
 
     /**
-     * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
-     *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @return integer
      */
-    public function __construct(EntityManager $em)
+    public function getCacheMode()
     {
-        $this->_em          = $em;
-        $this->parameters   = new ArrayCollection();
-        $this->cacheLogger  = $em->getConfiguration()->getSecondLevelCacheLogger();
+        return $this->cacheMode;
+    }
+
+    /**
+     * @param integer $cacheMode
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     */
+    public function setCacheMode($cacheMode)
+    {
+        $this->cacheMode = $cacheMode;
+
+        return $this;
     }
 
     /**
@@ -943,7 +971,7 @@ abstract class AbstractQuery
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
         $rsm        = $this->_resultSetMapping ?: $this->getResultSetMapping();
-        $querykey   = new QueryCacheKey($this->getHash(), $this->lifetime);
+        $querykey   = new QueryCacheKey($this->getHash(), $this->lifetime, $this->cacheMode ?: Cache::MODE_NORMAL);
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
         $result     = $queryCache->get($querykey, $rsm);
 

@@ -30,6 +30,7 @@ use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 
 /**
@@ -90,6 +91,10 @@ class DefaultQueryCache implements QueryCache
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm)
     {
+        if ( ! ($key->cacheMode & Cache::MODE_GET)) {
+            return null;
+        }
+
         $entry = $this->region->get($key);
 
         if ( ! $entry instanceof QueryCacheEntry) {
@@ -105,7 +110,6 @@ class DefaultQueryCache implements QueryCache
         $result      = array();
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
         $hasRelation = ( ! empty($rsm->relationMap));
-        $metadata    = $this->em->getClassMetadata($entityName);
         $persister   = $this->uow->getEntityPersister($entityName);
         $region      = $persister->getCacheRegionAcess()->getRegion();
 
@@ -180,6 +184,10 @@ class DefaultQueryCache implements QueryCache
             throw new CacheException("Second level cache does not suport scalar results.");
         }
 
+        if ( ! ($key->cacheMode & Cache::MODE_PUT)) {
+            return false;
+        }
+
         $data        = array();
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
         $hasRelation = ( ! empty($rsm->relationMap));
@@ -197,10 +205,10 @@ class DefaultQueryCache implements QueryCache
             $data[$index]['identifier']     = $identifier;
             $data[$index]['associations']   = array();
 
-            if ( ! $region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
+            if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
                 // Cancel put result if entity put fail
                 if ( ! $persister->putEntityCache($entity, $entityKey)) {
-                    return;
+                    return false;
                 }
             }
 
@@ -229,11 +237,11 @@ class DefaultQueryCache implements QueryCache
 
                     $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
 
-                    if ( ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
+                    if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
 
                         // Cancel put result if entity put fail
                         if ( ! $assocPersister->putEntityCache($assocValue, $entityKey)) {
-                            return;
+                            return false;
                         }
                     }
 
@@ -256,11 +264,11 @@ class DefaultQueryCache implements QueryCache
                 foreach ($assocValue as $assocItemIndex => $assocItem) {
                     $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
 
-                    if ( ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
+                    if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
 
                         // Cancel put result if entity put fail
                         if ( ! $assocPersister->putEntityCache($assocItem, $entityKey)) {
-                            return;
+                            return false;
                         }
                     }
 

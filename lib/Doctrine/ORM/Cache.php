@@ -33,6 +33,28 @@ interface Cache
     const DEFAULT_QUERY_REGION_NAME = 'query.cache.region';
 
     /**
+     * May read items from the cache, but will not add items.
+     */
+    const MODE_GET = 1;
+
+    /**
+     * Will never read items from the cache,
+     * but will add items to the cache as it reads them from the database.
+     */
+    const MODE_PUT = 2;
+
+    /**
+     * May read items from the cache, and add items to the cache.
+     */
+    const MODE_NORMAL = 3;
+
+    /**
+     * The session will never read items from the cache,
+     * but will refresh items to the cache as it reads them from the database.
+     */
+    const MODE_REFRESH = 4;
+
+    /**
      * Construct
      *
      * @param \Doctrine\ORMEntityManagerInterface $em

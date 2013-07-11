@@ -34,12 +34,10 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
      */
     public function isValid(QueryCacheKey $key, QueryCacheEntry $entry)
     {
-        $lifetime = $key->getLifetime();
-
-        if ($lifetime == 0) {
+        if ($key->lifetime == 0) {
             return true;
         }
 
-        return ($entry->time + $lifetime) > time();
+        return ($entry->time + $key->lifetime) > time();
     }
 }

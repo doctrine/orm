@@ -7,6 +7,9 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityCacheEntry;
+use Doctrine\ORM\Cache;
 
 /**
  * @group DDC-2183
@@ -73,6 +76,145 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
+    }
+
+    public function testQueryCacheModeGet()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+        $this->evictRegions();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->_em->clear();
+
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $queryGet   = $this->_em->createQuery($dql)
+            ->setCacheMode(Cache::MODE_GET)
+            ->setCacheable(true);
+
+        // MODE_GET should never add items to the cache.
+        $this->assertCount(2, $queryGet->getResult());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->assertCount(2, $queryGet->getResult());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+
+        $result = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(2, $result);
+        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        // MODE_GET should read items if exists.
+        $this->assertCount(2, $queryGet->getResult());
+        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+    }
+
+    public function testQueryCacheModePut()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+        $this->evictRegions();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->_em->clear();
+
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result     = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $this->assertCount(2, $result);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $queryPut = $this->_em->createQuery($dql)
+            ->setCacheMode(Cache::MODE_PUT)
+            ->setCacheable(true);
+
+        // MODE_PUT should never read itens from cache.
+        $this->assertCount(2, $queryPut->getResult());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $this->assertCount(2, $queryPut->getResult());
+        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+    }
+
+    public function testQueryCacheModeRefresh()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+        $this->evictRegions();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->_em->clear();
+
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $region     = $this->cache->getEntityCacheRegionAccess(Country::CLASSNAME)->getRegion();
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result     = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+
+        $this->assertCount(2, $result);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $countryId1     = $this->countries[0]->getId();
+        $countryId2     = $this->countries[1]->getId();
+        $countryName1   = $this->countries[0]->getName();
+        $countryName2   = $this->countries[1]->getName();
+        
+        $key1           = new EntityCacheKey(Country::CLASSNAME, array('id'=>$countryId1));
+        $key2           = new EntityCacheKey(Country::CLASSNAME, array('id'=>$countryId2));
+        $entry1         = new EntityCacheEntry(Country::CLASSNAME, array('id'=>$countryId1, 'name'=>'outdated'));
+        $entry2         = new EntityCacheEntry(Country::CLASSNAME, array('id'=>$countryId2, 'name'=>'outdated'));
+
+        $region->put($key1, $entry1);
+        $region->put($key2, $entry2);
+        $this->_em->clear();
+
+        $queryRefresh = $this->_em->createQuery($dql)
+            ->setCacheMode(Cache::MODE_REFRESH)
+            ->setCacheable(true);
+
+        // MODE_REFRESH should never read itens from cache.
+        $result1 = $queryRefresh->getResult();
+        $this->assertCount(2, $result1);
+        $this->assertEquals($countryName1, $result1[0]->getName());
+        $this->assertEquals($countryName2, $result1[1]->getName());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+
+        $this->_em->clear();
+
+        $result2 = $queryRefresh->getResult();
+        $this->assertCount(2, $result2);
+        $this->assertEquals($countryName1, $result2[0]->getName());
+        $this->assertEquals($countryName2, $result2[1]->getName());
+        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
 
     public function testBasicQueryCachePutEntityCache()
