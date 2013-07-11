@@ -52,22 +52,22 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
-    protected $sourceEntity;
+    private $sourceEntity;
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
-    protected $targetEntity;
+    private $targetEntity;
 
     /**
      * @var array
      */
-    protected $association;
+    private $association;
 
      /**
      * @var array
      */
-    protected $queuedCache = array();
+    private $queuedCache = array();
 
     /**
      * @var boolean
@@ -77,17 +77,17 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
     /**
      * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\ConcurrentRegionAccess
      */
-    protected $cacheRegionAccess;
+    private $cacheRegionAccess;
 
     /**
      * @var \Doctrine\ORM\Cache\CollectionEntryStructure
      */
-    protected $cacheEntryStructure;
+    private $cacheEntryStructure;
 
     /**
      * @var \Doctrine\ORM\Cache\Logging\CacheLogger
      */
-    protected $cacheLogger;
+    private $cacheLogger;
 
     public function __construct(CollectionPersister $persister, EntityManagerInterface $em, array $association)
     {
@@ -282,7 +282,7 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
 
         $this->persister->delete($collection);
 
-        $this->queuedCache['delete'][] = array(
+        $this->queuedCache['delete'][spl_object_hash($collection)] = array(
             'list'  => null,
             'key'   => $key,
             'lock'  => $lock
@@ -304,7 +304,7 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
 
         $this->persister->update($collection);
 
-        $this->queuedCache['update'][] = array(
+        $this->queuedCache['update'][spl_object_hash($collection)] = array(
             'list'  => $collection,
             'key'   => $key,
             'lock'  => $lock

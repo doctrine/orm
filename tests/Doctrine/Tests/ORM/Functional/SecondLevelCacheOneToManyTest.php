@@ -178,4 +178,131 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $state->getId()));
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, 'cities', $state->getId()));
     }
+
+    public function testOneToManyRemove()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->_em->clear();
+        $this->secondLevelCacheLogger->clearStats();
+        $this->evictRegions();
+
+        $this->assertFalse($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
+        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(0)->getId()));
+        $this->assertFalse($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(1)->getId()));
+
+        $entity = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::CLASSNAME)));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getEntityRegion(State::CLASSNAME)));
+
+        //trigger lazy load
+        $this->assertCount(2, $entity->getCities());
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+
+        $this->assertInstanceOf(City::CLASSNAME, $entity->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $entity->getCities()->get(1));
+
+        $this->_em->clear();
+        $this->secondLevelCacheLogger->clearStats();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $state      = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+
+        //trigger lazy load from cache
+        $this->assertCount(2, $state->getCities());
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+
+        $city0 = $state->getCities()->get(0);
+        $city1 = $state->getCities()->get(1);
+
+        $this->assertInstanceOf(City::CLASSNAME, $city0);
+        $this->assertInstanceOf(City::CLASSNAME, $city1);
+
+        $this->assertEquals($entity->getCities()->get(0)->getName(), $city0->getName());
+        $this->assertEquals($entity->getCities()->get(1)->getName(), $city1->getName());
+
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $state->getCities()->removeElement($city0);
+
+        $this->_em->remove($city0);
+        $this->_em->persist($state);
+        $this->_em->flush();
+
+        $this->_em->clear();
+        $this->secondLevelCacheLogger->clearStats();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $state      = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+
+        //trigger lazy load from cache
+        $this->assertCount(1, $state->getCities());
+
+        $city1 = $state->getCities()->get(0);
+        $this->assertInstanceOf(City::CLASSNAME, $city1);
+        $this->assertEquals($entity->getCities()->get(1)->getName(), $city1->getName());
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
+        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $state->getCities()->remove(0);
+
+        $this->_em->remove($city1);
+        $this->_em->persist($state);
+        $this->_em->flush();
+
+        $this->_em->clear();
+        $this->secondLevelCacheLogger->clearStats();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $state      = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+
+        $this->assertCount(0, $state->getCities());
+
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
+        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+    }
+
+    public function testOneToManyCount()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->evictRegions();
+        $this->_em->clear();
+
+        $entitiId   = $this->states[0]->getId();
+        $queryCount = $this->getCurrentQueryCount();
+        $entity     = $this->_em->find(State::CLASSNAME, $entitiId);
+
+        $this->assertEquals(2, $entity->getCities()->count());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $entity     = $this->_em->find(State::CLASSNAME, $entitiId);
+
+        $this->assertEquals(2, $entity->getCities()->count());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+    }
 }
