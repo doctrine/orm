@@ -234,6 +234,14 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
+    public function getResultSetMapping()
+    {
+        return $this->rsm;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function addInsert($entity)
     {
         $this->queuedInserts[spl_object_hash($entity)] = $entity;
@@ -1015,18 +1023,9 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * Gets the SELECT SQL to select one or more entities by a set of field criteria.
-     *
-     * @param array|\Doctrine\Common\Collections\Criteria $criteria
-     * @param array|null                                  $assoc
-     * @param int                                         $lockMode
-     * @param int|null                                    $limit
-     * @param int|null                                    $offset
-     * @param array|null                                  $orderBy
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    protected function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
     {
         $lockSql    = '';
         $joinSql    = '';
@@ -1688,13 +1687,9 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * Expands the parameters from the given criteria and use the correct binding types if found.
-     *
-     * @param array $criteria
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    private function expandParameters($criteria)
+    public function expandParameters($criteria)
     {
         $params = array();
         $types  = array();

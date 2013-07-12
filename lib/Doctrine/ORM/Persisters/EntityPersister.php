@@ -38,6 +38,13 @@ interface EntityPersister
     public function getClassMetadata();
 
     /**
+     * Gets the ResultSetMapping used for hydration.
+     *
+     * @return \Doctrine\ORM\Query\ResultSetMapping
+     */
+    public function getResultSetMapping();
+
+    /**
      * Get all queued inserts.
      *
      * @return array
@@ -53,6 +60,29 @@ interface EntityPersister
      * @return string
      */
     public function getInsertSQL();
+
+    /**
+     * Gets the SELECT SQL to select one or more entities by a set of field criteria.
+     *
+     * @param array|\Doctrine\Common\Collections\Criteria $criteria
+     * @param array|null                                  $assoc
+     * @param int                                         $lockMode
+     * @param int|null                                    $limit
+     * @param int|null                                    $offset
+     * @param array|null                                  $orderBy
+     *
+     * @return string
+     */
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null);
+
+    /** 
+     * Expands the parameters from the given criteria and use the correct binding types if found.
+     *
+     * @param $criteria
+     *
+     * @return array
+     */
+    public function expandParameters($criteria);
 
     /**
      * Gets the SQL WHERE condition for matching a field with a given value.

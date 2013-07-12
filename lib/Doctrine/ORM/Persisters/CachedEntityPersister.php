@@ -31,6 +31,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache;
+
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
@@ -78,9 +81,19 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     protected $cacheEntryStructure;
 
     /**
+     * @var \Doctrine\ORM\Cache
+     */
+    protected $cache;
+
+    /**
      * @var \Doctrine\ORM\Cache\Logging\CacheLogger
      */
     protected $cacheLogger;
+
+    /**
+     * @var string
+     */
+    protected $cacheRegionName;
 
     public function __construct(EntityPersister $persister, EntityManagerInterface $em, ClassMetadata $class)
     {
@@ -89,11 +102,13 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
 
         $this->class                = $class;
         $this->persister            = $persister;
+        $this->cache                = $em->getCache();
         $this->uow                  = $em->getUnitOfWork();
         $this->metadataFactory      = $em->getMetadataFactory();
         $this->cacheLogger          = $config->getSecondLevelCacheLogger();
         $this->cacheEntryStructure  = $factory->buildEntityEntryStructure($em);
         $this->cacheRegionAccess    = $factory->buildEntityRegionAccessStrategy($this->class);
+        $this->cacheRegionName      = $this->cacheRegionAccess->getRegion()->getName();
         $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
     }
 
@@ -116,9 +131,25 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     /**
      * {@inheritdoc}
      */
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
+    {
+        return $this->persister->getSelectSQL($orderBy, $assoc, $lockMode, $limit, $offset, $orderBy);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getInsertSQL()
     {
         return $this->persister->getInsertSQL();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResultSetMapping()
+    {
+        return $this->persister->getResultSetMapping();
     }
 
     /**
@@ -298,11 +329,19 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         return $this->cacheRegionAccess;
     }
 
+    /**
+     * @return \Doctrine\ORM\Cache\EntityEntryStructure
+     */
     public function getCacheEntryStructure()
     {
         return $this->cacheEntryStructure;
     }
 
+    /**
+     * @param object $entity
+     * @param \Doctrine\ORM\Cache\EntityCacheKey $key
+     * @return boolean
+     */
     public function putEntityCache($entity, EntityCacheKey $key)
     {
         $class      = $this->class;
@@ -320,6 +359,26 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         }
 
         return $cached;
+    }
+
+    /**
+     * Generates a string of currently query
+     *
+     * @return string
+     */
+    protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null)
+    {
+        list($params) = $this->expandParameters($criteria);
+
+        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function expandParameters($criteria)
+    {
+        return $this->persister->expandParameters($criteria);
     }
 
     /**
@@ -359,7 +418,40 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
     {
-        return $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
+        //@TODO - Should throw exception ?
+        if ($entity !== null || $assoc !== null || ! empty($hints) || $lockMode !== 0) {
+            return $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
+        }
+
+        //handle only EntityRepository#findOneBy
+        $query      = $this->persister->getSelectSQL($criteria, null, 0, $limit, 0, $orderBy);
+        $hash       = $this->getHash($query, $criteria);
+        $rsm        = $this->getResultSetMapping();
+        $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
+        $queryCache = $this->cache->getQueryCache($this->cacheRegionName);
+        $result     = $queryCache->get($querykey, $rsm);
+
+        if ($result !== null) {
+
+            if ($this->cacheLogger) {
+                $this->cacheLogger->queryCacheHit($this->cacheRegionName, $querykey);
+            }
+
+            return $result[0];
+        }
+
+        $result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
+        $cached = $queryCache->put($querykey, $rsm, array($result));
+
+        if ($this->cacheLogger && $result) {
+            $this->cacheLogger->queryCacheMiss($this->cacheRegionName, $querykey);
+        }
+
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->queryCachePut($this->cacheRegionName, $querykey);
+        }
+
+        return $result;
     }
 
     /**
@@ -367,7 +459,34 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
-        return $this->persister->loadAll($criteria, $orderBy, $limit, $offset);
+        $query      = $this->persister->getSelectSQL($criteria, null, 0, $limit, $offset, $orderBy);
+        $hash       = $this->getHash($query, $criteria);
+        $rsm        = $this->getResultSetMapping();
+        $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
+        $queryCache = $this->cache->getQueryCache($this->cacheRegionName);
+        $result     = $queryCache->get($querykey, $rsm);
+
+        if ($result !== null) {
+
+            if ($this->cacheLogger) {
+                $this->cacheLogger->queryCacheHit($this->cacheRegionName, $querykey);
+            }
+
+            return $result;
+        }
+
+        $result = $this->persister->loadAll($criteria, $orderBy, $limit, $offset);
+        $cached = $queryCache->put($querykey, $rsm, $result);
+
+        if ($this->cacheLogger && $result) {
+            $this->cacheLogger->queryCacheMiss($this->cacheRegionName, $querykey);
+        }
+
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->queryCachePut($this->cacheRegionName, $querykey);
+        }
+
+        return $result;
     }
 
     /**

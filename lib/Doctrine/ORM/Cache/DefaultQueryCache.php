@@ -30,6 +30,7 @@ use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 
@@ -220,12 +221,12 @@ class DefaultQueryCache implements QueryCache
             foreach ($rsm->relationMap as $name) {
                 $assoc = $metadata->associationMappings[$name];
 
-                if ( ! isset($assoc['cache'])) {
-                    throw CacheException::nonCacheableEntityAssociation($entityName, $name);
+                if (($assocValue = $metadata->getFieldValue($entity, $name)) === null || $assocValue instanceof Proxy) {
+                    continue;
                 }
 
-                if (($assocValue = $metadata->getFieldValue($entity, $name)) === null) {
-                    continue;
+                if ( ! isset($assoc['cache'])) {
+                    throw CacheException::nonCacheableEntityAssociation($entityName, $name);
                 }
 
                 $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
