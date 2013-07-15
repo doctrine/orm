@@ -1056,29 +1056,49 @@ class BasicEntityPersister
      */
     protected final function _getOrderBySQL(array $orderBy, $baseTableAlias)
     {
-        $orderBySql = '';
+        $orderByList = array();
 
         foreach ($orderBy as $fieldName => $orientation) {
-            if ( ! isset($this->_class->fieldMappings[$fieldName])) {
-                throw ORMException::unrecognizedField($fieldName);
-            }
 
             $orientation = strtoupper(trim($orientation));
+
             if ($orientation != 'ASC' && $orientation != 'DESC') {
                 throw ORMException::invalidOrientation($this->_class->name, $fieldName);
             }
 
-            $tableAlias = isset($this->_class->fieldMappings[$fieldName]['inherited']) ?
-                    $this->_getSQLTableAlias($this->_class->fieldMappings[$fieldName]['inherited'])
+            if (isset($this->_class->fieldMappings[$fieldName])) {
+                $tableAlias = isset($this->_class->fieldMappings[$fieldName]['inherited'])
+                    ? $this->getSQLTableAlias($this->_class->fieldMappings[$fieldName]['inherited'])
                     : $baseTableAlias;
 
-            $columnName = $this->quoteStrategy->getColumnName($fieldName, $this->_class, $this->_platform);
+                $columnName = $this->quoteStrategy->getColumnName($fieldName, $this->_class, $this->_platform);
+                $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
 
-            $orderBySql .= $orderBySql ? ', ' : ' ORDER BY ';
-            $orderBySql .= $tableAlias . '.' . $columnName . ' ' . $orientation;
+                continue;
+            }
+
+            if (isset($this->_class->associationMappings[$fieldName])) {
+
+                if ( ! $this->_class->associationMappings[$fieldName]['isOwningSide']) {
+                    throw ORMException::invalidFindByInverseAssociation($this->_class->name, $fieldName);
+                }
+
+                $tableAlias = isset($this->_class->associationMappings[$fieldName]['inherited'])
+                    ? $this->getSQLTableAlias($this->_class->associationMappings[$fieldName]['inherited'])
+                    : $baseTableAlias;
+
+                foreach ($this->_class->associationMappings[$fieldName]['joinColumns'] as $joinColumn) {
+                    $columnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
+                    $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
+                }
+
+                continue;
+            }
+
+            throw ORMException::unrecognizedField($fieldName);
         }
 
-        return $orderBySql;
+        return ' ORDER BY ' . implode(', ', $orderByList);
     }
 
     /**
