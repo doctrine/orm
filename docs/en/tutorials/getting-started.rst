@@ -187,7 +187,9 @@ doctrine command. Its a fairly simple file:
     // cli-config.php
     require_once "bootstrap.php";
 
-    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
+    ));
 
 You can then change into your project directory and call the
 Doctrine command-line tool:
