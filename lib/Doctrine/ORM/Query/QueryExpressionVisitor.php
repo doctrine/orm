@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
@@ -58,10 +59,16 @@ class QueryExpressionVisitor extends ExpressionVisitor
     private $parameters = array();
 
     /**
-     * Constructor with internal initialization.
+     * @var string|null
      */
-    public function __construct()
+    private $alias;
+
+    /**
+     * Constructor with internal initialization
+     */
+    public function __construct($alias = null)
     {
+        $this->alias = $alias;
         $this->expr = new Expr();
     }
 
@@ -73,7 +80,13 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function getParameters()
     {
-        return new ArrayCollection($this->parameters);
+        return new ArrayCollection(array_reduce(
+            $this->parameters,
+            function ($parameters, $fieldParameters) {
+                return array_merge($parameters, $fieldParameters);
+            },
+            array()
+        ));
     }
 
     /**
@@ -84,6 +97,18 @@ class QueryExpressionVisitor extends ExpressionVisitor
     public function clearParameters()
     {
         $this->parameters = array();
+    }
+
+    /**
+     * Add field parameter
+     *
+     * @param string $field
+     * @param string $value
+     * @param string $parameter
+     */
+    private function addParameter($field, $parameter, $value)
+    {
+        $this->parameters[$field][] = new Parameter($parameter ?: $field, $value);
     }
 
     /**
@@ -117,7 +142,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 return new Expr\Orx($expressionList);
 
             default:
-                throw new \RuntimeException("Unknown composite " . $expr->getType());
+                throw new \RuntimeException(sprintf('Unknown composite expression "%s"', $expr->getType()));
         }
     }
 
@@ -126,46 +151,47 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $parameterName = str_replace('.', '_', $comparison->getField());
-        $parameter = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
-        $placeholder = ':' . $parameterName;
+        $alias = $this->aliasField($comparison->getField());
+        $parameter = $this->parametrizeField($alias);
+        $value = $this->walkValue($comparison->getValue());
+        $placeholder = ':' . $parameter;
 
         switch ($comparison->getOperator()) {
             case Comparison::IN:
-                $this->parameters[] = $parameter;
-                return $this->expr->in($comparison->getField(), $placeholder);
+                $this->addParameter($alias, $parameter, $value);
+                return $this->expr->in($alias, $placeholder);
 
             case Comparison::NIN:
-                $this->parameters[] = $parameter;
-                return $this->expr->notIn($comparison->getField(), $placeholder);
+                $this->addParameter($alias, $parameter, $value);
+                return $this->expr->notIn($alias, $placeholder);
 
             case Comparison::EQ:
             case Comparison::IS:
-                if ($this->walkValue($comparison->getValue()) === null) {
-                    return $this->expr->isNull($comparison->getField());
+                if ($value === null) {
+                    return $this->expr->isNull($alias);
                 }
-                $this->parameters[] = $parameter;
-                return $this->expr->eq($comparison->getField(), $placeholder);
+                $this->addParameter($alias, $parameter, $value);
+                return $this->expr->eq($alias, $placeholder);
 
             case Comparison::NEQ:
                 if ($this->walkValue($comparison->getValue()) === null) {
-                    return $this->expr->isNotNull($comparison->getField());
+                    return $this->expr->isNotNull($alias);
                 }
-                $this->parameters[] = $parameter;
-                return $this->expr->neq($comparison->getField(), $placeholder);
+                $this->addParameter($alias, $parameter, $value);
+                return $this->expr->neq($alias, $placeholder);
 
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());
                 if ($operator) {
-                    $this->parameters[] = $parameter;
+                    $this->addParameter($alias, $parameter, $value);
                     return new Expr\Comparison(
-                        $comparison->getField(),
+                        $alias,
                         $operator,
                         $placeholder
                     );
                 }
 
-                throw new \RuntimeException("Unknown comparison operator: " . $comparison->getOperator());
+                throw new \RuntimeException(sprintf('Unknown comparison operator "%s"', $comparison->getOperator()));
         }
     }
 
@@ -175,5 +201,79 @@ class QueryExpressionVisitor extends ExpressionVisitor
     public function walkValue(Value $value)
     {
         return $value->getValue();
+    }
+
+    /**
+     * Convert criteria orderings to query expressions
+     *
+     * @param array $orderings
+     *
+     * @return Expr\OrderBy[]
+     */
+    public function dispatchOrderings(array $orderings)
+    {
+        $expressions = array();
+        foreach ($orderings as $field => $order) {
+            $expressions[] = $this->walkOrdering($field, $order);
+        }
+
+        return $expressions;
+    }
+
+    /**
+     * Convert field ordering to query expression
+     *
+     * @param string      $field
+     * @param string|null $order Criteria::ASC or Criteria::DESC
+     *
+     * @return Expr\OrderBy
+     *
+     * @see Criteria
+     */
+    public function walkOrdering($field, $order = null)
+    {
+        if ($order !== null && $order !== Criteria::ASC && $order !== Criteria::DESC) {
+            throw new \InvalidArgumentException(sprintf('Unknown order "%s"', $order));
+        }
+
+        return new Expr\OrderBy($this->aliasField($field), $order);
+    }
+
+    /**
+     * Create parameter name for field
+     *
+     * @param string $field
+     *
+     * @return string
+     */
+    private function parametrizeField($field)
+    {
+        // Parameter for field "foo.bar.baz" is "foo_bar_baz_$i"
+        return sprintf(
+            '%s_%d',
+            str_replace('.', '_', $field),
+            isset($this->parameters[$field]) ? count($this->parameters[$field]) : 0
+        );
+    }
+
+    /**
+     * Create alias for field
+     *
+     * @param string $field
+     *
+     * @return string
+     */
+    private function aliasField($field)
+    {
+        // Simple property - use rootAlias or return as is
+        if (strpos($field, '.') === false) {
+            return $this->alias ? $this->alias . '.' . $field : $field;
+        }
+
+        // Reduce property path to last 2 elements
+        $parts = explode('.', $field);
+        $partCount = count($parts);
+
+        return $parts[$partCount - 2] . '.' . $parts[$partCount - 1];
     }
 }

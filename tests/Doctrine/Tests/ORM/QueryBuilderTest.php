@@ -405,10 +405,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->eq('field', 'value'));
 
-        $qb->addCriteria($criteria);
+        $qb->addCriteria($criteria, 'u');
 
-        $this->assertEquals('field = :field', (string) $qb->getDQLPart('where'));
-        $this->assertNotNull($qb->getParameter('field'));
+        $this->assertEquals('u.field = :u_field_0', (string) $qb->getDQLPart('where'));
+        $this->assertNotNull($qb->getParameter('u_field_0'));
     }
 
     public function testAddCriteriaOrder()
@@ -417,10 +417,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $criteria = new Criteria();
         $criteria->orderBy(array('field' => Criteria::DESC));
 
-        $qb->addCriteria($criteria);
+        $qb->addCriteria($criteria, 'u');
 
         $this->assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
-        $this->assertEquals('field DESC', (string) $orderBy[0]);
+        $this->assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
     public function testAddCriteriaLimit()

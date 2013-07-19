@@ -1082,12 +1082,13 @@ class QueryBuilder
      * Overrides firstResult and maxResults if they're set.
      *
      * @param Criteria $criteria
+     * @param string|null $alias
      *
      * @return QueryBuilder
      */
-    public function addCriteria(Criteria $criteria)
+    public function addCriteria(Criteria $criteria, $alias = null)
     {
-        $visitor = new QueryExpressionVisitor();
+        $visitor = new QueryExpressionVisitor($alias);
 
         if ($whereExpression = $criteria->getWhereExpression()) {
             $this->andWhere($visitor->dispatch($whereExpression));
@@ -1096,9 +1097,9 @@ class QueryBuilder
             }
         }
 
-        if ($criteria->getOrderings()) {
-            foreach ($criteria->getOrderings() as $sort => $order) {
-                $this->addOrderBy($sort, $order);
+        if ($orderings = $criteria->getOrderings()) {
+            foreach ($visitor->dispatchOrderings($orderings) as $orderBy) {
+                $this->addOrderBy($orderBy);
             }
         }
 
