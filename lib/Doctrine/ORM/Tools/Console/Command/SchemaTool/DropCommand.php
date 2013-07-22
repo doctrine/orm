@@ -106,7 +106,7 @@ EOT
             return 0;
         }
 
-        $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
+        $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.' . PHP_EOL);
 
         if ($isFullDatabaseDrop) {
             $sqls = $schemaTool->getDropDatabaseSQL();
