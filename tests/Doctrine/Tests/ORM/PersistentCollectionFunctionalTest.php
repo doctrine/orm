@@ -36,15 +36,6 @@ class PersistentCollectionFunctionalTest extends OrmFunctionalTestCase
     }
 
     /**
-     * Test that PersistentCollection::add() initializes the collection.
-     */
-    public function testAddInitializesCollection()
-    {
-        $this->collection->add(new ECommerceProduct);
-        $this->assertTrue($this->collection->isInitialized());
-    }
-
-    /**
      * Test that PersistentCollection::current() initializes the collection.
      */
     public function testCurrentInitializesCollection()
