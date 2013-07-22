@@ -106,7 +106,7 @@ EOT
             return 0;
         }
 
-        $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
+        $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.' . PHP_EOL);
 
         if ($isFullDatabaseDrop) {
             $sqls = $schemaTool->getDropDatabaseSQL();
@@ -115,8 +115,11 @@ EOT
         }
 
         if (count($sqls)) {
-            $output->writeln('Schema-Tool would execute ' . count($sqls) . ' queries to drop the database.');
-            $output->writeln('Please run the operation with --force to execute these queries or use --dump-sql to see them.');
+            $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
+            $output->writeln('Please run the operation by passing one - or both - of the following options:');
+
+            $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
+            $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
 
             return 1;
         }
