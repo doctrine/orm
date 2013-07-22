@@ -234,6 +234,7 @@ public function <methodName>()
  * <description>
  *
  * @param <variableType>$<variableName>
+ *
  * @return <entity>
  */
 public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
@@ -251,6 +252,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
  * <description>
  *
  * @param <variableType>$<variableName>
+ *
  * @return <entity>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
