@@ -551,8 +551,6 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function add($value)
     {
-        $this->initialize();
-
         $this->coll->add($value);
 
         $this->changed();
