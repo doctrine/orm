@@ -630,7 +630,7 @@ large collections.
 
     $criteria = Criteria::create()
         ->where(Criteria::expr()->eq("birthday", "1982-02-17"))
-        ->orderBy(array("username" => "ASC"))
+        ->orderBy(array("username" => Criteria::ASC))
         ->setFirstResult(0)
         ->setMaxResults(20)
     ;
