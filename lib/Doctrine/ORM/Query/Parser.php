@@ -2552,7 +2552,7 @@ class Parser
     /**
      * Literal ::= string | char | integer | float | boolean
      *
-     * @return string
+     * @return \Doctrine\ORM\Query\AST\Literal
      */
     public function Literal()
     {
