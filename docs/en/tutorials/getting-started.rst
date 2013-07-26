@@ -394,7 +394,7 @@ new script for this:
         echo sprintf("-%s\n", $product->getName());
     }
 
-The ``EntityManager::getRepository()`` method can create a finder object (called
+The ``EntityManager#getRepository()`` method can create a finder object (called
 a repository) for every entity. It is provided by Doctrine and contains some
 finder methods such as ``findAll()``.
 
@@ -728,14 +728,14 @@ methods are only used for ensuring consistency of the references.
 This approach is my personal preference, you can choose whatever
 method to make this work.
 
-You can see from ``User::addReportedBug()`` and
-``User::assignedToBug()`` that using this method in userland alone
+You can see from ``User#addReportedBug()`` and
+``User#assignedToBug()`` that using this method in userland alone
 would not add the Bug to the collection of the owning side in
 ``Bug::$reporter`` or ``Bug::$engineer``. Using these methods and
 calling Doctrine for persistence would not update the collections
 representation in the database.
 
-Only using ``Bug::setEngineer()`` or ``Bug::setReporter()``
+Only using ``Bug#setEngineer()`` or ``Bug#setReporter()``
 correctly saves the relation information. We also set both
 collection instance variables to protected, however with PHP 5.3's
 new features Doctrine is still able to use Reflection to set and
@@ -1071,7 +1071,7 @@ Since we only have one user and product, probably with the ID of 1, we can call 
     php create_bug.php 1 1 1
 
 This is the first contact with the read API of the EntityManager,
-showing that a call to ``EntityManager::find($name, $id)`` returns a
+showing that a call to ``EntityManager#find($name, $id)`` returns a
 single instance of an entity queried by primary key. Besides this
 we see the persist + flush pattern again to save the Bug into the
 database.
@@ -1373,7 +1373,7 @@ should be able to close a bug. This looks like:
 When retrieving the Bug from the database it is inserted into the
 IdentityMap inside the UnitOfWork of Doctrine. This means your Bug
 with exactly this id can only exist once during the whole request
-no matter how often you call ``EntityManager::find()``. It even
+no matter how often you call ``EntityManager#find()``. It even
 detects entities that are hydrated using DQL and are already
 present in the Identity Map.
 
