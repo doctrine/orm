@@ -66,17 +66,17 @@ Bug Tracker domain model from the
 documentation. Reading their documentation we can extract the
 requirements:
 
--  A Bugs has a description, creation date, status, reporter and
+-  A Bug has a description, creation date, status, reporter and
    engineer
--  A bug can occur on different products (platforms)
--  Products have a name.
--  Bug Reporter and Engineers are both Users of the System.
--  A user can create new bugs.
--  The assigned engineer can close a bug.
--  A user can see all his reported or assigned bugs.
+-  A Bug can occur on different Products (platforms)
+-  A Product has a name.
+-  Bug reporters and engineers are both Users of the system.
+-  A User can create new Bugs.
+-  The assigned engineer can close a Bug.
+-  A User can see all his reported or assigned Bugs.
 -  Bugs can be paginated through a list-view.
 
-Setup Project
+Project Setup
 -------------
 
 Create a new empty folder for this tutorial project, for example
@@ -171,9 +171,9 @@ factory method.
 Generating the Database Schema
 ------------------------------
 
-Now that we have defined the Metadata Mappings and bootstrapped the
+Now that we have defined the Metadata mappings and bootstrapped the
 EntityManager we want to generate the relational database schema
-from it. Doctrine has a Command-Line-Interface that allows you to
+from it. Doctrine has a Command-Line Interface that allows you to
 access the SchemaTool, a component that generates the required
 tables to work with the metadata.
 
@@ -220,9 +220,8 @@ its not available in SQLite since it does not support ALTER TABLE.
 Starting with the Product
 -------------------------
 
-We start with the Product entity requirements, because it is the most simple one
-to get started. Create a ``src/Product.php`` file and put the ``Product``
-entity definition in there:
+We start with the simplest entity, the Product. Create a ``src/Product.php`` file to contain the ``Product``
+entity definition:
 
 .. code-block:: php
 
@@ -323,14 +322,14 @@ References in the text will be made to the XML mapping.
 
 The top-level ``entity`` definition tag specifies information about
 the class and table-name. The primitive type ``Product::$name`` is
-defined as ``field`` attributes. The Id property is defined with
-the ``id`` tag. The id has a ``generator`` tag nested inside which
+defined as a ``field`` attribute. The ``id`` property is defined with
+the ``id`` tag, this has a ``generator`` tag nested inside which
 defines that the primary key generation mechanism automatically
-uses the database platforms native id generation strategy, for
+uses the database platforms native id generation strategy (for
 example AUTO INCREMENT in the case of MySql or Sequences in the
-case of PostgreSql and Oracle.
+case of PostgreSql and Oracle).
 
-You have to update the database now, because we have a first Entity now:
+Now that we have defined our first entity, lets update the database:
 
 ::
 
@@ -357,7 +356,7 @@ Now create a new script that will insert products into the database:
 
     echo "Created Product with ID " . $product->getId() . "\n";
 
-Call this script from the command line to see how new products are created:
+Call this script from the command-line to see how new products are created:
 
 ::
 
@@ -379,7 +378,7 @@ Doctrine follows the UnitOfWork pattern which additionally detects all entities
 that were fetched and have changed during the request. You don't have to keep track of
 entities yourself, when Doctrine already knowns about them.
 
-As a next step we want to fetch a list of all the products. Let's create a
+As a next step we want to fetch a list of all the Products. Let's create a
 new script for this:
 
 .. code-block:: php
@@ -395,8 +394,8 @@ new script for this:
         echo sprintf("-%s\n", $product->getName());
     }
 
-The ``EntityManager#getRepository()`` method can create a finder object (called
-repository) for every entity. It is provided by Doctrine and contains some
+The ``EntityManager::getRepository()`` method can create a finder object (called
+a repository) for every entity. It is provided by Doctrine and contains some
 finder methods such as ``findAll()``.
 
 Let's continue with displaying the name of a product based on its ID:
@@ -555,12 +554,12 @@ We continue with the bug tracker domain, by creating the missing classes
 
 All of the properties discussed so far are simple string and integer values,
 for example the id fields of the entities, their names, description, status and
-change dates. With just the scalar values this model cannot describe the dynamics that we want. We
-want to model references between entities.
+change dates. Next we will model the dynamic relationships between the entities
+by defining the references between entities.
 
 References between objects are foreign keys in the database. You never have to
-work with the foreign keys directly, only with objects that represent the
-foreign key through their own identity.
+(and never should) work with the foreign keys directly, only with the objects 
+that represent the foreign key through their own identity.
 
 For every foreign key you either have a Doctrine ManyToOne or OneToOne
 association. On the inverse sides of these foreign keys you can have
@@ -778,8 +777,8 @@ the database that points from Bugs to Products.
     }
 
 We are now finished with the domain model given the requirements.
-Now we continue adding metadata mappings for the ``User`` and ``Bug``
-as we did for the ``Product`` before:
+Lets add metadata mappings for the ``User`` and ``Bug`` as we did for 
+the ``Product`` before:
 
 .. configuration-block::
     .. code-block:: php
@@ -1072,7 +1071,7 @@ Since we only have one user and product, probably with the ID of 1, we can call 
     php create_bug.php 1 1 1
 
 This is the first contact with the read API of the EntityManager,
-showing that a call to ``EntityManager#find($name, $id)`` returns a
+showing that a call to ``EntityManager::find($name, $id)`` returns a
 single instance of an entity queried by primary key. Besides this
 we see the persist + flush pattern again to save the Bug into the
 database.
@@ -1129,7 +1128,7 @@ The console output of this script is then:
 
 .. note::
 
-    **Dql is not Sql**
+    **DQL is not SQL**
 
     You may wonder why we start writing SQL at the beginning of this
     use-case. Don't we use an ORM to get rid of all the endless
@@ -1142,6 +1141,7 @@ The console output of this script is then:
     of Entity-Class and property. Using the Metadata we defined before
     it allows for very short distinctive and powerful queries.
 
+
     An important reason why DQL is favourable to the Query API of most
     ORMs is its similarity to SQL. The DQL language allows query
     constructs that most ORMs don't, GROUP BY even with HAVING,
@@ -1151,30 +1151,31 @@ The console output of this script is then:
     throw your ORM into the dumpster, because it doesn't support some
     the more powerful SQL concepts.
 
-    Besides handwriting DQL you can however also use the
-    ``QueryBuilder`` retrieved by calling
-    ``$entityManager->createQueryBuilder()`` which is a Query Object
-    around the DQL language.
 
-    As a last resort you can however also use Native SQL and a
-    description of the result set to retrieve entities from the
-    database. DQL boils down to a Native SQL statement and a
-    ``ResultSetMapping`` instance itself. Using Native SQL you could
-    even use stored procedures for data retrieval, or make use of
-    advanced non-portable database queries like PostgreSql's recursive
-    queries.
+    Instead of handwriting DQL you can use the ``QueryBuilder`` retrieved
+    by calling ``$entityManager->createQueryBuilder()``. There are more
+    details about this in the relevant part of the documentation.
+
+
+    As a last resort you can still use Native SQL and a description of the
+    result set to retrieve entities from the database. DQL boils down to a 
+    Native SQL statement and a ``ResultSetMapping`` instance itself. Using 
+    Native SQL you could even use stored procedures for data retrieval, or 
+    make use of advanced non-portable database queries like PostgreSql's 
+    recursive queries.
 
 
 Array Hydration of the Bug List
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the previous use-case we retrieved the result as their
+In the previous use-case we retrieved the results as their
 respective object instances. We are not limited to retrieving
 objects only from Doctrine however. For a simple list view like the
 previous one we only need read access to our entities and can
 switch the hydration from objects to simple PHP arrays instead.
-This can obviously yield considerable performance benefits for
-read-only requests.
+
+Hydration can be an expensive process so only retrieving what you need can 
+yield considerable performance benefits for read-only requests.
 
 Implementing the same list view as before using array hydration we
 can rewrite our code:
@@ -1228,7 +1229,7 @@ write scenarios:
     echo "Bug: ".$bug->getDescription()."\n";
     echo "Engineer: ".$bug->getEngineer()->getName()."\n";
 
-The output of the engineers name is fetched from the database! What is happening?
+The output of the engineer’s name is fetched from the database! What is happening?
 
 Since we only retrieved the bug by primary key both the engineer and reporter
 are not immediately loaded from the database but are replaced by LazyLoading
@@ -1273,6 +1274,14 @@ The call prints:
     $ php show_bug.php 1
     Bug: Something does not work!
     Engineer: beberlei
+
+.. warning::
+
+    Lazy loading additional data can be very convenient but the additional
+    queries create an overhead. If you know that certain fields will always
+    (or usually) be required by the query then you will get better performance
+    by explicitly retrieving them all in the first query.
+
 
 Dashboard of the User
 ---------------------
@@ -1364,7 +1373,7 @@ should be able to close a bug. This looks like:
 When retrieving the Bug from the database it is inserted into the
 IdentityMap inside the UnitOfWork of Doctrine. This means your Bug
 with exactly this id can only exist once during the whole request
-no matter how often you call ``EntityManager#find()``. It even
+no matter how often you call ``EntityManager::find()``. It even
 detects entities that are hydrated using DQL and are already
 present in the Identity Map.
 
