@@ -546,14 +546,16 @@ class BasicEntityPersister implements EntityPersister
      */
     public function delete($entity)
     {
-        $em         = $this->em;
         $class      = $this->class;
+        $em         = $this->em;
+
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
         $types      = array_map(function ($identifier) use ($class, $em) {
-           if (isset($class->fieldMappings[$identifier])) {
+
+            if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
 
@@ -570,17 +572,6 @@ class BasicEntityPersister implements EntityPersister
             throw ORMException::unrecognizedField($targetMapping->identifier[0]);
 
         }, $class->identifier);
-
-        $cacheKey   = null;
-        $cacheLock  = null;
-
-        if ($this->hasCache) {
-            $cacheKey = new EntityCacheKey($this->class->rootEntityName, $identifier);
-        }
-
-        if ($this->isConcurrentRegion) {
-            $cacheLock = $this->cacheRegionAccess->lockItem();
-        }
 
         $this->deleteJoinTableRecords($identifier);
         $this->conn->delete($tableName, $id, $types);
@@ -738,7 +729,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadById(array $identifier, $entity = null)
     {
-        return $this->load($identifier, $entity);;
+        return $this->load($identifier, $entity);
     }
 
     /**

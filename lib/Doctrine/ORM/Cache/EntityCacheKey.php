@@ -61,7 +61,7 @@ class EntityCacheKey implements CacheKey
         if ($this->hash === null) {
             ksort($this->identifier);
 
-            return sprintf('%s[%s]', str_replace('\\', '.', strtolower($this->entityClass)) , implode(' ', $this->identifier));
+            $this->hash = sprintf('%s[%s]', str_replace('\\', '.', strtolower($this->entityClass)) , implode(' ', $this->identifier));
         }
 
         return $this->hash;

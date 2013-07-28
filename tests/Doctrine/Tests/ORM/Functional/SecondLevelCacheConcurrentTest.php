@@ -35,7 +35,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest(self::getSharedSecondLevelCacheDriverImpl());
+        $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest($this->getSharedSecondLevelCacheDriverImpl());
 
         $this->_em->getConfiguration()->setSecondLevelCacheFactory($this->cacheFactory);
     }

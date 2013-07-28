@@ -4,7 +4,6 @@ namespace Doctrine\Tests;
 
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
-use Doctrine\Common\Cache\CacheProvider;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -13,26 +12,6 @@ use Doctrine\Common\Cache\CacheProvider;
  */
 abstract class OrmFunctionalTestCase extends OrmTestCase
 {
-    /**
-     * @var boolean
-     */
-    private $isSecondLevelCacheEnabled = false;
-
-    /**
-     * @var boolean
-     */
-    private $isSecondLevelCacheLogEnabled = false;
-
-    /**
-     * @var \Doctrine\ORM\Cache\CacheFactory
-     */
-    private $secondLevelCacheFactory;
-
-    /**
-     * @var \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger
-     */
-    protected $secondLevelCacheLogger;
-
     /**
      * The metadata cache shared between all functional tests.
      *
@@ -348,13 +327,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_country');
         }
 
-
         $this->_em->clear();
-
-        if($this->isSecondLevelCacheEnabled && self::$sharedSecondLevelCacheDriverImpl instanceof CacheProvider) {
-            self::$sharedSecondLevelCacheDriverImpl->flushAll();
-        }
-
     }
 
     /**
@@ -468,7 +441,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        if ($this->isSecondLevelCacheEnabled) {
+        $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
+
+        if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
 
             $cache   = self::getSharedSecondLevelCacheDriverImpl();
             $factory = new DefaultCacheFactory($config, $cache);
@@ -482,6 +457,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             
             $config->setSecondLevelCacheEnabled();
             $config->setSecondLevelCacheFactory($factory);
+
+            $this->isSecondLevelCacheEnabled = true;
         }
 
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
@@ -499,6 +476,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
 
+        if ( ! $this->isSecondLevelCacheEnabled && $enableSecondLevelCache) {
+            $evm->addEventListener('loadClassMetadata', new EventListener\CacheMetadataListener(get_called_class()));
+        }
+
         if (isset($GLOBALS['db_event_subscribers'])) {
             foreach (explode(",", $GLOBALS['db_event_subscribers']) AS $subscriberClass) {
                 $subscriberInstance = new $subscriberClass();
@@ -511,12 +492,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return \Doctrine\ORM\EntityManager::create($conn, $config);
-    }
-
-    protected function enableSecondLevelCache($log = true)
-    {
-        $this->isSecondLevelCacheEnabled    = true;
-        $this->isSecondLevelCacheLogEnabled = $log;
     }
 
     /**

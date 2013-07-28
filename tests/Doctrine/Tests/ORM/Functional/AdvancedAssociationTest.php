@@ -28,6 +28,9 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testIssue()
     {
         //setup

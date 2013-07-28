@@ -78,14 +78,14 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
      */
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
-        $targetEntity    = $metadata->associationMappings[$key->association]['targetEntity'];
-        $targetPersister = $this->uow->getEntityPersister($targetEntity);
+        $assoc           = $metadata->associationMappings[$key->association];
+        $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
         $targetRegion    = $targetPersister->getCacheRegionAcess()->getRegion();
         $list            = array();
 
         foreach ($entry->identifiers as $index => $identifier) {
 
-            $entityEntry = $targetRegion->get(new EntityCacheKey($targetEntity, $identifier));
+            $entityEntry = $targetRegion->get(new EntityCacheKey($assoc['targetEntity'], $identifier));
 
             if ($entityEntry === null) {
                 return null;

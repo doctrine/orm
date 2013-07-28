@@ -740,9 +740,12 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
      */
     public function testQueryNotCacheableEntityException()
     {
+        $metadata        = $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel');
+        $metadata->cache = null;
+
         try {
             $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel'),
+                $metadata,
             ));
         } catch (\Doctrine\ORM\Tools\ToolsException $exc) {
         }

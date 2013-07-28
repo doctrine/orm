@@ -73,13 +73,37 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
                 continue;
             }
 
-            if (isset($assoc['cache']) && $assoc['type'] & ClassMetadata::TO_ONE && ( ! $data[$name] instanceof Proxy || $data[$name]->__isInitialized__)) {
+            if ( ! isset($assoc['cache']) ||
+                ($assoc['type'] & ClassMetadata::TO_ONE) === 0 ||
+                ($data[$name] instanceof Proxy && ! $data[$name]->__isInitialized__)) {
+
+                unset($data[$name]);
+
+                continue;
+            }
+
+            if ( ! isset($assoc['id'])) {
                 $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
 
                 continue;
             }
 
-            unset($data[$name]);
+            // handle association identifier
+            $targetId = is_object($data[$name]) && $this->em->getMetadataFactory()->hasMetadataFor(get_class($data[$name]))
+                ? $this->uow->getEntityIdentifier($data[$name])
+                : $data[$name];
+
+            // @TODO - fix it !
+            // hande UnitOfWork#createEntity hash generation
+            if ( ! is_array($targetId)) {
+
+                $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
+
+                $targetEntity = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetId     = array($targetEntity->identifier[0] => $targetId);
+            }
+
+            $data[$name] = $targetId;
         }
 
         return new EntityCacheEntry($metadata->name, $data);
@@ -117,7 +141,13 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
                 return null;
             }
 
-            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+            $data[$name] = $assoc['fetch'] === ClassMetadata::FETCH_EAGER
+                ? $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints)
+                : $this->em->getReference($assocEntry->class, $assocId);
+        }
+
+        if ($entity !== null) {
+            $this->uow->registerManaged($entity, $key->identifier, $data);
         }
 
         return $this->uow->createEntity($entry->class, $data, $hints);

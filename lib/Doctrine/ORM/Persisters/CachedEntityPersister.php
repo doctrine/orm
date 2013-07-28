@@ -23,6 +23,8 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegionAccess;
+use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Criteria;
@@ -30,9 +32,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
-
-use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\ORM\Cache;
 
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -133,7 +132,7 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
     {
-        return $this->persister->getSelectSQL($orderBy, $assoc, $lockMode, $limit, $offset, $orderBy);
+        return $this->persister->getSelectSQL($criteria, $assoc, $lockMode, $limit, $offset, $orderBy);
     }
 
     /**
@@ -311,7 +310,7 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         if (empty($extraConditions)) {
 
             $region = $this->cacheRegionAccess->getRegion();
-            $key    = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+            $key    = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
 
             if ($region->contains($key)) {
                 return true;
@@ -440,7 +439,10 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
             return $result[0];
         }
 
-        $result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
+        if(($result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy)) === null) {
+            return null;
+        }
+
         $cached = $queryCache->put($querykey, $rsm, array($result));
 
         if ($this->cacheLogger && $result) {
@@ -496,14 +498,22 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     {
         $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
         $cacheEntry = $this->cacheRegionAccess->get($cacheKey);
+        $class      = $this->class;
 
-        if ($cacheEntry !== null && ($entity = $this->cacheEntryStructure->loadCacheEntry($this->class, $cacheKey, $cacheEntry, $entity)) !== null) {
+        if ($cacheEntry !== null) {
 
-            if ($this->cacheLogger) {
-                $this->cacheLogger->entityCacheHit($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
+            if ($cacheEntry->class !== $this->class->name) {
+                $class = $this->metadataFactory->getMetadataFor($cacheEntry->class);
             }
 
-            return $entity;
+            if (($entity = $this->cacheEntryStructure->loadCacheEntry($class, $cacheKey, $cacheEntry, $entity)) !== null) {
+
+                if ($this->cacheLogger) {
+                    $this->cacheLogger->entityCacheHit($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
+                }
+
+                return $entity;
+            }
         }
 
         $entity = $this->persister->loadById($identifier, $entity);

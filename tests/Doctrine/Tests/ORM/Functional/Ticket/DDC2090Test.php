@@ -6,6 +6,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 
 /**
  * @group DDC-2090
+ * @group non-cacheable
  */
 class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

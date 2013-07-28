@@ -409,16 +409,16 @@ class UnitOfWork implements PropertyChangedListener
             throw $e;
         }
 
+        foreach ($this->cachedPersisters as $persister) {
+            $persister->afterTransactionComplete();
+        }
+
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
             $coll->takeSnapshot();
         }
 
         $this->dispatchPostFlushEvent();
-
-        foreach ($this->cachedPersisters as $persister) {
-            $persister->afterTransactionComplete();
-        }
 
         // Clear up
         $this->entityInsertions =
@@ -2649,6 +2649,14 @@ class UnitOfWork implements PropertyChangedListener
                         $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
 
                         continue 2;
+                    }
+
+                    // use the entity association
+                    if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_hash($data[$field])])) {
+                        $class->reflFields[$field]->setValue($entity, $data[$field]);
+                        $this->originalEntityData[$oid][$field] = $data[$field];
+
+                        continue;
                     }
 
                     $associatedId = array();

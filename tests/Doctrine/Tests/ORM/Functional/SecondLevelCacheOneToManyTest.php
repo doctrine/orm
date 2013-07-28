@@ -5,6 +5,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
+use Doctrine\Tests\Models\Cache\Travel;
+use Doctrine\Tests\Models\Cache\Traveler;
 
 /**
  * @group DDC-2183
@@ -167,7 +169,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
     public function testShoudNotPutOneToManyRelationOnPersist()
     {
         $this->loadFixturesCountries();
-        $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->evictRegions();
 
         $state = new State("State Foo", $this->countries[0]);
 
@@ -304,5 +306,46 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals(2, $entity->getCities()->count());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+    }
+
+    public function testCacheInitializeCollectionWithNewObjects()
+    {
+        $this->_em->clear();
+        $this->evictRegions();
+
+        $traveler = new Traveler("Doctrine Bot");
+
+        for ($i=0; $i<3; ++$i) {
+            $traveler->getTravels()->add(new Travel($traveler));
+        }
+
+        $this->_em->persist($traveler);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertCount(3, $traveler->getTravels());
+
+        $travelerId = $traveler->getId();
+        $queryCount = $this->getCurrentQueryCount();
+        $entity     = $this->_em->find(Traveler::CLASSNAME, $travelerId);
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertFalse($entity->getTravels()->isInitialized());
+
+        $newItem = new Travel($entity);
+        $entity->getTravels()->add($newItem);
+
+        $this->assertFalse($entity->getTravels()->isInitialized());
+        $this->assertCount(4, $entity->getTravels());
+        $this->assertTrue($entity->getTravels()->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query  = "SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = $travelerId";
+        $result = $this->_em->createQuery($query)->getSingleResult();
+
+        $this->assertEquals(4, $result->getTravels()->count());
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Country;
@@ -14,19 +14,25 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
 /**
  * @group DDC-2183
  */
-class DefaultCacheTest extends OrmFunctionalTestCase
+class DefaultCacheTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\ORM\Cache
      */
     private $cache;
 
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    private $em;
+
     protected function setUp()
     {
         parent::enableSecondLevelCache();
         parent::setUp();
 
-        $this->cache = new DefaultCache($this->_em);
+        $this->em    = $this->_getTestEntityManager();
+        $this->cache = new DefaultCache($this->em);
     }
 
     /**
@@ -36,10 +42,10 @@ class DefaultCacheTest extends OrmFunctionalTestCase
      */
     private function putEntityCacheEntry($className, array $identifier, array $data)
     {
-        $metadata   = $this->_em->getClassMetadata($className);
+        $metadata   = $this->em->getClassMetadata($className);
         $cacheKey   = new EntityCacheKey($metadata->name, $identifier);
         $cacheEntry = new EntityCacheEntry($metadata->name, $data);
-        $persister  = $this->_em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
+        $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
 
         $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
     }
@@ -52,10 +58,10 @@ class DefaultCacheTest extends OrmFunctionalTestCase
      */
     private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $data)
     {
-        $metadata   = $this->_em->getClassMetadata($className);
+        $metadata   = $this->em->getClassMetadata($className);
         $cacheKey   = new CollectionCacheKey($metadata->name, $association, $ownerIdentifier);
         $cacheEntry = new CollectionCacheEntry($data);
-        $persister  = $this->_em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
 
         $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
     }
@@ -213,7 +219,7 @@ class DefaultCacheTest extends OrmFunctionalTestCase
     {
         $identifier = 123;
         $entity     = new Country('Foo');
-        $metadata   = $this->_em->getClassMetadata(Country::CLASSNAME);
+        $metadata   = $this->em->getClassMetadata(Country::CLASSNAME);
         $method     = new \ReflectionMethod($this->cache, 'toIdentifierArray');
         $property   = new \ReflectionProperty($entity, 'id');
 

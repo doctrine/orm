@@ -196,7 +196,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
     public function testPostFlushFailure()
     {
         $listener = new ListenerSecondLevelCacheTest(array(Events::postFlush => function(){
-            throw new \RuntimeException('pre insert failure');
+            throw new \RuntimeException('post flush failure');
         }));
 
         $this->_em->getEventManager()
@@ -207,15 +207,15 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->cache->evictEntityRegion(Country::CLASSNAME);
 
         try {
-            
+
             $this->_em->persist($country);
             $this->_em->flush();
             $this->fail('Should throw exception');
 
         } catch (\RuntimeException $exc) {
             $this->assertNotNull($country->getId());
-            $this->assertEquals('pre insert failure', $exc->getMessage());
-            $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $country->getId()));
+            $this->assertEquals('post flush failure', $exc->getMessage());
+            $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $country->getId()));
         }
     }
 
@@ -300,6 +300,20 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $country = $this->_em->find(Country::CLASSNAME, $countryId);
         $this->assertInstanceOf(Country::CLASSNAME, $country);
+    }
+
+    public function testCachedNewEntityExists()
+    {
+        $this->loadFixturesCountries();
+
+        $persister  = $this->_em->getUnitOfWork()->getEntityPersister(Country::CLASSNAME);
+        $queryCount = $this->getCurrentQueryCount();
+
+        $this->assertTrue($persister->exists($this->countries[0]));
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertFalse($persister->exists(new Country('Foo')));
     }
 }
 

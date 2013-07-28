@@ -42,11 +42,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTravels();
 
         $this->_em->clear();
+        $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
-
-        $this->cache->evictEntityRegion(Travel::CLASSNAME);
-        $this->cache->evictEntityRegion(City::CLASSNAME);
-        $this->cache->evictCollectionRegion(Travel::CLASSNAME, 'visitedCities');
 
         $this->assertFalse($this->cache->containsEntity(Travel::CLASSNAME, $this->travels[0]->getId()));
         $this->assertFalse($this->cache->containsEntity(Travel::CLASSNAME, $this->travels[1]->getId()));

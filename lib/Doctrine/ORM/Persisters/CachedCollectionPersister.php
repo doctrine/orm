@@ -264,6 +264,14 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
      */
     public function count(PersistentCollection $collection)
     {
+        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $entry   = $this->cacheRegionAccess->get($key);
+
+        if ($entry !== null) {
+            return count($entry->identifiers);
+        }
+
         return $this->persister->count($collection);
     }
 
@@ -294,6 +302,13 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
      */
     public function update(PersistentCollection $collection)
     {
+        $isInitialized = $collection->isInitialized();
+        $isDirty       = $collection->isDirty();
+
+        if ( ! $isInitialized && ! $isDirty) {
+            return;
+        }
+
         $lock    = null;
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
@@ -302,13 +317,27 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
             $lock = $this->cacheRegionAccess->lockItem($key);
         }
 
-        $this->persister->update($collection);
-
-        $this->queuedCache['update'][spl_object_hash($collection)] = array(
-            'list'  => $collection,
+        $data = array(
+            'list'  => null,
             'key'   => $key,
             'lock'  => $lock
         );
+
+       // Invalidate non initialized collections OR odered collection
+        if ($isDirty &&  ! $isInitialized || isset($this->association['orderBy'])) {
+
+            $this->persister->update($collection);
+
+            $this->queuedCache['delete'][spl_object_hash($collection)] = $data;
+
+            return;
+        }
+
+        $this->persister->update($collection);
+
+        $data['list'] = $collection;
+
+        $this->queuedCache['update'][spl_object_hash($collection)] = $data;
     }
 
     /**
