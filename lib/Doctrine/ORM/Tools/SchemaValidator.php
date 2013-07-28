@@ -238,6 +238,11 @@ class SchemaValidator
             if ($publicAttr->isStatic()) {
                 continue;
             }
+
+            if (!isset($class->fieldMappings[$publicAttr->getName()]) && !isset($class->associationMappings[$publicAttr->getName()])) {
+                continue;
+            }
+
             $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private ".
                     "or protected. Public fields may break lazy-loading.";
         }
