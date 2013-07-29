@@ -518,13 +518,34 @@ class BasicEntityPersister
      */
     public function delete($entity)
     {
+        $class      = $this->_class;
+        $em         = $this->_em;
+
         $identifier = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+        $tableName  = $this->quoteStrategy->getTableName($class, $this->_platform);
+        $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->_platform);
+        $id         = array_combine($idColumns, $identifier);
+        $types      = array_map(function ($identifier) use ($class, $em) {
+
+            if (isset($class->fieldMappings[$identifier])) {
+                return $class->fieldMappings[$identifier]['type'];
+            }
+
+            $targetMapping = $em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+
+            if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
+                return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
+            }
+
+            if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
+                return $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
+            }
+
+            throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+        }, $class->identifier);
 
         $this->deleteJoinTableRecords($identifier);
-
-        $id = array_combine($this->quoteStrategy->getIdentifierColumnNames($this->_class, $this->_platform), $identifier);
-
-        $this->_conn->delete($this->quoteStrategy->getTableName($this->_class, $this->_platform), $id);
+        $this->_conn->delete($tableName, $id, $types);
     }
 
     /**
