@@ -567,8 +567,8 @@ class BasicEntityPersister
         $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
+        $types      = array_map(function ($identifier) use ($class, $em) {
 
-        $types = array_map(function ($identifier) use ($class, $em) {
             if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
@@ -580,7 +580,7 @@ class BasicEntityPersister
             }
 
             if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
-                $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
+                return $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
             }
 
             throw ORMException::unrecognizedField($targetMapping->identifier[0]);
