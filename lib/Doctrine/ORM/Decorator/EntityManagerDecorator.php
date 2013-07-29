@@ -224,14 +224,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function getHydrator($hydrationMode)
-    {
-        return $this->wrapped->getHydrator($hydrationMode);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function newHydrator($hydrationMode)
     {
         return $this->wrapped->newHydrator($hydrationMode);
