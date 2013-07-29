@@ -158,6 +158,15 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(':name', $token['value']);
     }
 
+    public function testScannerRecognizesNamedInputParameterStartingWithUnderscore()
+    {
+        $lexer = new Lexer(':_name');
+        $lexer->moveNext();
+        $token = $lexer->lookahead;
+        $this->assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        $this->assertEquals(':_name', $token['value']);
+    }
+
     public function testScannerTokenizesASimpleQueryCorrectly()
     {
         $dql = "SELECT u FROM My\Namespace\User u WHERE u.name = 'Jack O''Neil'";
