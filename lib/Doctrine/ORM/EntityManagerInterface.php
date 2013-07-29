@@ -51,6 +51,7 @@ interface EntityManagerInterface extends ObjectManager
     public function getConfiguration();
     public function isOpen();
     public function getUnitOfWork();
+    public function getHydrator($hydrationMode);
     public function newHydrator($hydrationMode);
     public function getProxyFactory();
     public function getFilters();
