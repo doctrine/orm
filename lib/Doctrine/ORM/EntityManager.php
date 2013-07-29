@@ -828,6 +828,23 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
+     * Gets a hydrator for the given hydration mode.
+     *
+     * This method caches the hydrator instances which is used for all queries that don't
+     * selectively iterate over the result.
+     *
+     * @deprecated
+     *
+     * @param int $hydrationMode
+     *
+     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     */
+    public function getHydrator($hydrationMode)
+    {
+        return $this->newHydrator($hydrationMode);
+    }
+
+    /**
      * Create a new instance for the given hydration mode.
      *
      * @param int $hydrationMode
