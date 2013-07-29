@@ -787,7 +787,7 @@ abstract class AbstractQuery
             return $stmt;
         }
 
-        $data = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+        $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll(
             $stmt, $this->_resultSetMapping, $this->_hints
         );
 
