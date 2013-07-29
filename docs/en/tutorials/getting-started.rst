@@ -254,10 +254,16 @@ entity definition:
         }
     }
 
-Note how the properties have getter and setter methods defined except
-``$id``. To access data from entities Doctrine 2 uses the Reflection API, so it
-is possible for Doctrine to access the value of ``$id``. You don't have to
-take Doctrine into account when designing access to the state of your objects.
+Note that all fields are set to protected (not public) with a 
+mutator (getter and setter) defined for every field except $id. 
+The use of mutators allows Doctrine to hook into calls which 
+manipulate the entities in ways that it could not if you just 
+directly set the values with ``entity#field = foo;``
+
+The id field has no setter since, generally speaking, your code 
+should not set this value since it represents a database id value. 
+(Note that Doctrine itself can still set the value using the 
+Reflection API instead of a defined setter function)
 
 The next step for persistence with Doctrine is to describe the
 structure of the ``Product`` entity to Doctrine using a metadata
@@ -321,7 +327,7 @@ References in the text will be made to the XML mapping.
               type: string
 
 The top-level ``entity`` definition tag specifies information about
-the class and table-name. The primitive type ``Product::$name`` is
+the class and table-name. The primitive type ``Product#name`` is
 defined as a ``field`` attribute. The ``id`` property is defined with
 the ``id`` tag, this has a ``generator`` tag nested inside which
 defines that the primary key generation mechanism automatically
@@ -731,7 +737,7 @@ method to make this work.
 You can see from ``User#addReportedBug()`` and
 ``User#assignedToBug()`` that using this method in userland alone
 would not add the Bug to the collection of the owning side in
-``Bug::$reporter`` or ``Bug::$engineer``. Using these methods and
+``Bug#reporter`` or ``Bug#engineer``. Using these methods and
 calling Doctrine for persistence would not update the collections
 representation in the database.
 
@@ -741,7 +747,7 @@ collection instance variables to protected, however with PHP 5.3's
 new features Doctrine is still able to use Reflection to set and
 get values from protected and private properties.
 
-The ``Bug::$reporter`` and ``Bug::$engineer`` properties are
+The ``Bug#reporter`` and ``Bug#engineer`` properties are
 Many-To-One relations, which point to a User. In a normalized
 relational model the foreign key is saved on the Bug's table, hence
 in our object-relation model the Bug is at the owning side of the
@@ -880,11 +886,9 @@ the ``Product`` before:
 
 
 Here we have the entity, id and primitive type definitions.
-The column names are used from the Zend\_Db\_Table examples and
-have different names than the properties on the Bug class.
-Additionally for the "created" field it is specified that it is of
-the Type "DATETIME", which translates the YYYY-mm-dd HH:mm:ss
-Database format into a PHP DateTime instance and back.
+For the "created" field we have used the ``datetime`` type, 
+which translates the YYYY-mm-dd HH:mm:ss database format 
+into a PHP DateTime instance and back.
 
 After the field definitions the two qualified references to the
 user entity are defined. They are created by the ``many-to-one``
@@ -898,14 +902,10 @@ side of the relationship. We will see in the next example that the ``inversed-by
 attribute has a counterpart ``mapped-by`` which makes that
 the inverse side.
 
-The last missing property is the ``Bug::$products`` collection. It
-holds all products where the specific bug is occurring in. Again
+The last definition is for the ``Bug#products`` collection. It
+holds all products where the specific bug occurs. Again
 you have to define the ``target-entity`` and ``field`` attributes
-on the ``many-to-many`` tag. Furthermore you have to specify the
-details of the many-to-many join-table and its foreign key columns.
-The definition is rather complex, however relying on the XML
-auto-completion I got it working easily, although I forget the
-schema details all the time.
+on the ``many-to-many`` tag.
 
 The last missing definition is that of the User entity:
 
