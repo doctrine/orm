@@ -100,13 +100,6 @@ use Doctrine\Common\Util\ClassUtils;
     private $eventManager;
 
     /**
-     * The maintained (cached) hydrators. One instance per type.
-     *
-     * @var array
-     */
-    private $hydrators = array();
-
-    /**
      * The proxy factory used to create dynamic proxies.
      *
      * @var \Doctrine\ORM\Proxy\ProxyFactory
@@ -832,25 +825,6 @@ use Doctrine\Common\Util\ClassUtils;
     public function getUnitOfWork()
     {
         return $this->unitOfWork;
-    }
-
-    /**
-     * Gets a hydrator for the given hydration mode.
-     *
-     * This method caches the hydrator instances which is used for all queries that don't
-     * selectively iterate over the result.
-     *
-     * @param int $hydrationMode
-     *
-     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
-     */
-    public function getHydrator($hydrationMode)
-    {
-        if ( ! isset($this->hydrators[$hydrationMode])) {
-            $this->hydrators[$hydrationMode] = $this->newHydrator($hydrationMode);
-        }
-
-        return $this->hydrators[$hydrationMode];
     }
 
     /**
