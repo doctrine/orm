@@ -185,7 +185,7 @@ class ArrayHydrator extends AbstractHydrator
 
                     if ( ! isset($nonemptyComponents[$dqlAlias]) && ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = null;
-                    } else if ( ! isset($baseElement[$relationAlias])) {
+                    } else if ( ! isset($baseElement[$relationAlias]) || ! isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]])) {
                         $baseElement[$relationAlias] = $data;
                     }
                 }
@@ -204,19 +204,20 @@ class ArrayHydrator extends AbstractHydrator
 
                 // if this row has a NULL value for the root result id then make it a null result.
                 if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
-                    if ($this->_rsm->isMixed) {
-                        $result[] = array($entityKey => null);
-                    } else {
-                        $result[] = null;
-                    }
+                    $result[] = ($this->_rsm->isMixed)
+                        ? array($entityKey => null)
+                        : null;
+
                     $resultKey = $this->_resultCounter;
                     ++$this->_resultCounter;
+
                     continue;
                 }
 
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
+
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);
                     }
@@ -239,6 +240,7 @@ class ArrayHydrator extends AbstractHydrator
                         ++$this->_resultCounter;
                     }*/
                 }
+
                 $this->updateResultPointer($result, $index, $dqlAlias, false);
             }
         }
@@ -279,6 +281,12 @@ class ArrayHydrator extends AbstractHydrator
             return;
         }
 
+        if ($oneToOne) {
+            $this->_resultPointers[$dqlAlias] =& $coll;
+
+            return;
+        }
+
         if ($index !== false) {
             $this->_resultPointers[$dqlAlias] =& $coll[$index];
 
@@ -286,12 +294,6 @@ class ArrayHydrator extends AbstractHydrator
         }
 
         if ( ! $coll) {
-            return;
-        }
-
-        if ($oneToOne) {
-            $this->_resultPointers[$dqlAlias] =& $coll;
-
             return;
         }
 
