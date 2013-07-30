@@ -124,6 +124,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CustomType\CustomTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
         ),
+        'taxi' => array(
+            'Doctrine\Tests\Models\Taxi\PaidRide',
+            'Doctrine\Tests\Models\Taxi\Ride',
+            'Doctrine\Tests\Models\Taxi\Car',
+            'Doctrine\Tests\Models\Taxi\Driver',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -237,6 +243,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM customtype_parents');
             $conn->executeUpdate('DELETE FROM customtype_children');
             $conn->executeUpdate('DELETE FROM customtype_uppercases');
+        }
+
+
+        if (isset($this->_usedModelSets['taxi'])) {
+            $conn->executeUpdate('DELETE FROM taxi_paid_ride');
+            $conn->executeUpdate('DELETE FROM taxi_ride');
+            $conn->executeUpdate('DELETE FROM taxi_car');
+            $conn->executeUpdate('DELETE FROM taxi_driver');
         }
 
         $this->_em->clear();
