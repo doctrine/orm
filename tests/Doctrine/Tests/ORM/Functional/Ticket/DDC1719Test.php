@@ -11,18 +11,24 @@ require_once __DIR__ . '/../../../TestInit.php';
  */
 class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
-    const CLASS_NAME = '\Doctrine\Tests\Models\Quote\SimpleEntity';
+    const CLASS_NAME = 'Doctrine\Tests\Models\Quote\SimpleEntity';
 
     protected function setUp()
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(self::CLASS_NAME),
-            ));
-        } catch(\Exception $e) {
-        }
+
+        $this->_schemaTool->createSchema(array(
+            $this->_em->getClassMetadata(self::CLASS_NAME),
+        ));
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $this->_schemaTool->dropSchema(array(
+            $this->_em->getClassMetadata(self::CLASS_NAME),
+        ));
     }
 
     public function testCreateRetrieveUpdateDelete()
