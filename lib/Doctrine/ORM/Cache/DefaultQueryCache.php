@@ -58,11 +58,6 @@ class DefaultQueryCache implements QueryCache
     private $region;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
-     */
-    private $logger;
-
-    /**
      * @var \Doctrine\ORM\Cache\QueryCacheValidator
      */
     private $validator;
@@ -81,7 +76,6 @@ class DefaultQueryCache implements QueryCache
         $this->em        = $em;
         $this->region    = $region;
         $this->uow       = $em->getUnitOfWork();
-        $this->logger    = $em->getConfiguration()->getSecondLevelCacheLogger();
         $this->validator = $em->getConfiguration()->getSecondLevelCacheQueryValidator();
     }
 
@@ -158,7 +152,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);;
+                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
 
                     $collection->hydrateSet($assocIndex, $element);
                 }
@@ -240,7 +234,7 @@ class DefaultQueryCache implements QueryCache
 
                     if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
 
-                        // Cancel put result if entity put fail
+                        // Cancel put result if association entity put fail
                         if ( ! $assocPersister->putEntityCache($assocValue, $entityKey)) {
                             return false;
                         }
@@ -256,7 +250,7 @@ class DefaultQueryCache implements QueryCache
                 }
 
                 // Handle *-to-many associations
-                if (is_array($assocValue) && ! $assocValue instanceof Collection) {
+                if ( ! is_array($assocValue) && ! $assocValue instanceof Collection) {
                     continue;
                 }
 

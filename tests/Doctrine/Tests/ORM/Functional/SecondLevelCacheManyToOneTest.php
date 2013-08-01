@@ -93,4 +93,29 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->states[1]->getCountry()->getId(), $c4->getCountry()->getId());
         $this->assertEquals($this->states[1]->getCountry()->getName(), $c4->getCountry()->getName());
     }
+
+    public function testLoadFromDatabaseWhenAssociationIsMissing()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->states[0]->getCountry()->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->states[1]->getCountry()->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
+
+        $this->cache->evictEntityRegion(Country::CLASSNAME);
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->states[0]->getCountry()->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->states[1]->getCountry()->getId()));
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $state1 = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+        $state2 = $this->_em->find(State::CLASSNAME, $this->states[1]->getId());
+
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+    }
 }

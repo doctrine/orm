@@ -44,7 +44,7 @@ class City
      */
     public $attractions;
 
-    public function __construct($name, State $state)
+    public function __construct($name, State $state = null)
     {
         $this->name         = $name;
         $this->state        = $state;

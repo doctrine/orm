@@ -128,10 +128,6 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
                 continue;
             }
 
-            if ( ! $assoc['type'] & ClassMetadata::TO_ONE) {
-                continue;
-            }
-
             $assocId        = $data[$name];
             $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
             $assocRegion    = $assocPersister->getCacheRegionAcess()->getRegion();

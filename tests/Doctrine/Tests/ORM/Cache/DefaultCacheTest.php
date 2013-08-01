@@ -26,6 +26,8 @@ class DefaultCacheTest extends OrmTestCase
      */
     private $em;
 
+    const NON_CACHEABLE_ENTITY = 'Doctrine\Tests\Models\CMS\CmsUser';
+
     protected function setUp()
     {
         parent::enableSecondLevelCache();
@@ -74,13 +76,13 @@ class DefaultCacheTest extends OrmTestCase
     public function testGetEntityCacheRegionAccess()
     {
         $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccess', $this->cache->getEntityCacheRegionAccess(State::CLASSNAME));
-        $this->assertNull($this->cache->getEntityCacheRegionAccess('Doctrine\Tests\Models\CMS\CmsUser'));
+        $this->assertNull($this->cache->getEntityCacheRegionAccess(self::NON_CACHEABLE_ENTITY));
     }
 
     public function testGetCollectionCacheRegionAccess()
     {
         $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccess', $this->cache->getCollectionCacheRegionAccess(State::CLASSNAME, 'cities'));
-        $this->assertNull($this->cache->getCollectionCacheRegionAccess('Doctrine\Tests\Models\CMS\CmsUser', 'phonenumbers'));
+        $this->assertNull($this->cache->getCollectionCacheRegionAccess(self::NON_CACHEABLE_ENTITY, 'phonenumbers'));
     }
 
     public function testContainsEntity()
@@ -94,6 +96,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertFalse($this->cache->containsEntity(self::NON_CACHEABLE_ENTITY, 1));
     }
 
     public function testEvictEntity()
@@ -107,6 +110,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
 
         $this->cache->evictEntity(Country::CLASSNAME, 1);
+        $this->cache->evictEntity(self::NON_CACHEABLE_ENTITY, 1);
 
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
     }
@@ -122,6 +126,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
 
         $this->cache->evictEntityRegion(Country::CLASSNAME);
+        $this->cache->evictEntityRegion(self::NON_CACHEABLE_ENTITY);
 
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
     }
@@ -156,6 +161,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertFalse($this->cache->containsCollection(self::NON_CACHEABLE_ENTITY, 'phonenumbers', 1));
     }
 
     public function testEvictCollection()
@@ -173,6 +179,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
 
         $this->cache->evictCollection($className, $association, $ownerId);
+        $this->cache->evictCollection(self::NON_CACHEABLE_ENTITY, 'phonenumbers', 1);
 
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
     }
@@ -192,6 +199,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
 
         $this->cache->evictCollectionRegion($className, $association);
+        $this->cache->evictCollectionRegion(self::NON_CACHEABLE_ENTITY, 'phonenumbers');
 
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
     }
@@ -213,6 +221,28 @@ class DefaultCacheTest extends OrmTestCase
         $this->cache->evictCollectionRegions();
 
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+    }
+
+    public function testQueryCache()
+    {
+        $this->assertFalse($this->cache->containsQuery('foo'));
+
+        $defaultQueryCache = $this->cache->getQueryCache();
+        $fooQueryCache     = $this->cache->getQueryCache('foo');
+
+        $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCache', $defaultQueryCache);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCache', $fooQueryCache);
+        $this->assertSame($defaultQueryCache, $this->cache->getQueryCache());
+        $this->assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
+
+        $this->cache->evictQueryRegion();
+        $this->cache->evictQueryRegion('foo');
+        $this->cache->evictQueryRegions();
+
+        $this->assertTrue($this->cache->containsQuery('foo'));
+
+        $this->assertSame($defaultQueryCache, $this->cache->getQueryCache());
+        $this->assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
     }
 
     public function testToIdentifierArrayShoudLookupForEntityIdentifier()

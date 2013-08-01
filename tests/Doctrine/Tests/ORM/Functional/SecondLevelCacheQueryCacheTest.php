@@ -281,7 +281,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
-    public function testBasicQueryParamsParams()
+    public function testBasicQueryParams()
     {
         $this->evictRegions();
 
@@ -503,6 +503,98 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[1]->getState()->getName(), $result2[1]->getState()->getName());
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+
+    public function testReloadQueryIfToOneIsNotFound()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->_em->clear();
+
+        $this->evictRegions();
+        $this->secondLevelCacheLogger->clearStats();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s';
+        $result1    = $this->_em->createQuery($dql)
+                ->setCacheable(true)
+                ->getResult();
+
+        $this->assertCount(4, $result1);
+        $this->assertInstanceOf(City::CLASSNAME, $result1[0]);
+        $this->assertInstanceOf(City::CLASSNAME, $result1[1]);
+        $this->assertInstanceOf(State::CLASSNAME, $result1[0]->getState());
+        $this->assertInstanceOf(State::CLASSNAME, $result1[1]->getState());
+
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $result1[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $result1[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $result1[0]->getState()->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $result1[1]->getState()->getId()));
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->_em->clear();
+
+        $this->cache->evictEntityRegion(State::CLASSNAME);
+
+        $result2  = $this->_em->createQuery($dql)
+                ->setCacheable(true)
+                ->getResult();
+
+        $this->assertCount(4, $result1);
+        $this->assertInstanceOf(City::CLASSNAME, $result2[0]);
+        $this->assertInstanceOf(City::CLASSNAME, $result2[1]);
+        $this->assertInstanceOf(State::CLASSNAME, $result2[0]->getState());
+        $this->assertInstanceOf(State::CLASSNAME, $result2[1]->getState());
+
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+    }
+
+    public function testReloadQueryIfToManyAssociationItemIsNotFound()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+
+        $this->evictRegions();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c';
+        $result1    = $this->_em->createQuery($dql)
+                ->setCacheable(true)
+                ->getResult();
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertInstanceOf(State::CLASSNAME, $result1[0]);
+        $this->assertInstanceOf(State::CLASSNAME, $result1[1]);
+        $this->assertCount(2, $result1[0]->getCities());
+        $this->assertCount(2, $result1[1]->getCities());
+
+        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(1));
+
+        $this->_em->clear();
+
+        $this->cache->evictEntityRegion(City::CLASSNAME);
+
+        $result2  = $this->_em->createQuery($dql)
+                ->setCacheable(true)
+                ->getResult();
+
+        $this->assertInstanceOf(State::CLASSNAME, $result2[0]);
+        $this->assertInstanceOf(State::CLASSNAME, $result2[1]);
+        $this->assertCount(2, $result2[0]->getCities());
+        $this->assertCount(2, $result2[1]->getCities());
+
+        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(1));
+
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
     public function testBasicNativeQueryCache()
@@ -733,60 +825,4 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('bar_region'));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
     }
-
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.
-     */
-    public function testQueryNotCacheableEntityException()
-    {
-        $metadata        = $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel');
-        $metadata->cache = null;
-
-        try {
-            $this->_schemaTool->createSchema(array(
-                $metadata,
-            ));
-        } catch (\Doctrine\ORM\Tools\ToolsException $exc) {
-        }
-
-        $dql   = 'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b';
-        $query = $this->_em->createQuery($dql);
-
-        $query->setCacheable(true)
-            ->getResult();
-    }
-
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\Models\Cache\City#travels" not configured as part of the second-level cache.
-     */
-    public function testQueryNotCacheableAssociationException()
-    {
-        $this->loadFixturesCountries();
-        $this->loadFixturesStates();
-        $this->loadFixturesCities();
-        $this->loadFixturesTraveler();
-        $this->loadFixturesTravels();
-
-        $dql   = 'SELECT c, t FROM Doctrine\Tests\Models\Cache\City c LEFT JOIN c.travels t';
-        $query = $this->_em->createQuery($dql);
-
-        $query->setCacheable(true)
-            ->getResult();
-    }
-
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second level cache does not suport scalar results.
-     */
-    public function testQueryScalarResultException()
-    {
-        $dql   = 'SELECT c, c.id, c.name FROM Doctrine\Tests\Models\Cache\Country c';
-        $query = $this->_em->createQuery($dql);
-
-        $query->setCacheable(true)
-            ->getResult();
-    }
-
 }

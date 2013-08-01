@@ -38,7 +38,7 @@ class State
      */
     protected $cities;
 
-    public function __construct($name, Country $country)
+    public function __construct($name, Country $country = null)
     {
         $this->name     = $name;
         $this->country  = $country;
