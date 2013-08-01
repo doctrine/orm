@@ -228,7 +228,8 @@ Lifecycle Callbacks
 Lifecycle Callbacks are defined on an entity class. They allow you to 
 trigger callbacks whenever an instance of that entity class experiences 
 a relevant lifecycle event. More than one callback can be defined for each 
-lifecycle event.
+lifecycle event. Lifecycle Callbacks are best used for simple operations
+specific to a particular entity class's lifecycle.
 
 .. code-block:: php
 
@@ -278,8 +279,9 @@ lifecycle event.
         }
     }
 
-Note that when using annotations you have to apply the
-@HasLifecycleCallbacks marker annotation on the entity class.
+Note that the methods set as lifecycle callbacks need to be public and,
+when using these annotations, you have to apply the 
+``@HasLifecycleCallbacks`` marker annotation on the entity class.
 
 If you want to register lifecycle callbacks from YAML or XML you
 can do it with the following.
@@ -297,8 +299,8 @@ can do it with the following.
         postPersist: [ doStuffOnPostPersist ]
 
 In YAML the ``key`` of the lifecycleCallbacks entry is the event that you
-are triggering on and the values are the methods to call. The allowed event 
-types are the ones listed in the previous Lifecycle Events section.
+are triggering on and the value is the method (or methods) to call. The allowed 
+event types are the ones listed in the previous Lifecycle Events section.
 
 XML would look something like this:
 
