@@ -218,12 +218,11 @@ class BasicEntityPersister implements EntityPersister
         $this->em               = $em;
         $this->class            = $class;
         $this->conn             = $em->getConnection();
-        $configuration          = $em->getConfiguration();
         $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $configuration->getQuoteStrategy();
+        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
     }
 
-     /**
+    /**
      * {@inheritdoc}
      */
     public function getClassMetadata()
@@ -941,9 +940,8 @@ class BasicEntityPersister implements EntityPersister
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
-        $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
 
-        return $list;
+        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
     }
 
     /**
@@ -1630,9 +1628,8 @@ class BasicEntityPersister implements EntityPersister
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
-        $list = $this->loadCollectionFromStatement($assoc, $stmt, $coll);
-        
-        return $list;
+
+        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
     }
 
     /**

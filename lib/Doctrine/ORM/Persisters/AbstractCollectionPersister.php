@@ -60,52 +60,17 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     protected $quoteStrategy;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    protected $sourceEntity;
-
-    /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    protected $targetEntity;
-
-    /**
-     * @var array
-     */
-    protected $association;
-
-    /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param \Doctrine\ORM\EntityManager $em
-     * @param array $association
      */
-    public function __construct(EntityManager $em, array $association)
+    public function __construct(EntityManager $em)
     {
         $this->em               = $em;
-        $this->association      = $association;
         $this->uow              = $em->getUnitOfWork();
         $this->conn             = $em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
-        $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
-        $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSourceEntityMetadata()
-    {
-        return $this->sourceEntity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTargetEntityMetadata()
-    {
-        return $this->targetEntity;
     }
 
     /**

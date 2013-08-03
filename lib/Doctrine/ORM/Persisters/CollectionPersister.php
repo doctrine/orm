@@ -31,20 +31,6 @@ use Doctrine\ORM\PersistentCollection;
 interface CollectionPersister
 {
     /**
-     * The class name of the source entity.
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function getSourceEntityMetadata();
-
-    /**
-     * The class name of the target entity.
-     * 
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function getTargetEntityMetadata();
-
-    /**
      * Deletes the persistent state represented by the given collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection

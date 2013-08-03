@@ -265,11 +265,6 @@ class UnitOfWork implements PropertyChangedListener
     private $eagerLoadingEntities = array();
 
     /**
-     * @var array<\Doctrine\ORM\Persisters\CachedPersister>
-     */
-    private $cachedPersisters = array();
-
-    /**
      * @var boolean
      */
     protected $hasCache = false;
@@ -370,24 +365,12 @@ class UnitOfWork implements PropertyChangedListener
 
             // Collection deletions (deletions of complete collections)
             foreach ($this->collectionDeletions as $collectionToDelete) {
-                $collectionPersister = $this->getCollectionPersister($collectionToDelete->getMapping());
-
-                $collectionPersister->delete($collectionToDelete);
-
-                if ($this->hasCache && ($collectionPersister instanceof CachedPersister)) {
-                    $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
-                }
+                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
             }
 
             // Collection updates (deleteRows, updateRows, insertRows)
             foreach ($this->collectionUpdates as $collectionToUpdate) {
-                $collectionPersister = $this->getCollectionPersister($collectionToUpdate->getMapping());
-
-                $collectionPersister->update($collectionToUpdate);
-
-                if ($this->hasCache && ($collectionPersister instanceof CachedPersister)) {
-                    $this->cachedPersisters[spl_object_hash($collectionPersister)] = $collectionPersister;
-                }
+                $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
             }
 
             // Entity deletions come last and need to be in reverse commit order
@@ -402,16 +385,12 @@ class UnitOfWork implements PropertyChangedListener
             $this->em->close();
             $conn->rollback();
 
-            foreach ($this->cachedPersisters as $persister) {
-                $persister->afterTransactionRolledBack();
-            }
+            $this->afterTransactionRolledBack();
 
             throw $e;
         }
 
-        foreach ($this->cachedPersisters as $persister) {
-            $persister->afterTransactionComplete();
-        }
+        $this->afterTransactionComplete();
 
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
@@ -430,7 +409,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
-        $this->cachedPersisters =
         $this->orphanRemovals = array();
     }
 
@@ -970,20 +948,18 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts($class)
     {
-        $inserted   = false;
         $entities   = array();
         $className  = $class->name;
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
 
         foreach ($this->entityInsertions as $oid => $entity) {
+
             if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
 
             $persister->addInsert($entity);
-
-            $inserted  = true;
 
             unset($this->entityInsertions[$oid]);
 
@@ -1013,10 +989,6 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($entities as $entity) {
             $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
-
-        if ($this->hasCache && $inserted && ($persister instanceof CachedPersister)) {
-            $this->cachedPersisters[spl_object_hash($persister)] = $persister;
-        }
     }
 
     /**
@@ -1028,13 +1000,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeUpdates($class)
     {
-        $updated            = false;
         $className          = $class->name;
         $persister          = $this->getEntityPersister($className);
         $preUpdateInvoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
         $postUpdateInvoke   = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
 
         foreach ($this->entityUpdates as $oid => $entity) {
+
             if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
@@ -1056,10 +1028,6 @@ class UnitOfWork implements PropertyChangedListener
                 $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new LifecycleEventArgs($entity, $this->em), $postUpdateInvoke);
             }
         }
-
-        if ($this->hasCache && $updated && ($persister instanceof CachedPersister)) {
-            $this->cachedPersisters[spl_object_hash($persister)] = $persister;
-        }
     }
 
     /**
@@ -1071,7 +1039,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeDeletions($class)
     {
-        $deleted    = false;
         $className  = $class->name;
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
@@ -1100,12 +1067,6 @@ class UnitOfWork implements PropertyChangedListener
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
             }
-
-            $deleted = true;
-        }
-
-        if ($this->hasCache && $deleted && ($persister instanceof CachedPersister)) {
-            $this->cachedPersisters[spl_object_hash($persister)] = $persister;
         }
     }
 
@@ -2416,7 +2377,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->extraUpdates =
             $this->readOnlyObjects =
-            $this->cachedPersisters =
             $this->visitedCollections =
             $this->orphanRemovals = array();
 
@@ -3071,15 +3031,17 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getCollectionPersister(array $association)
     {
-        $role = $association['sourceEntity'] . '::' . $association['fieldName'];
+        $role = isset($association['cache'])
+            ? $association['sourceEntity'] . '::' . $association['fieldName']
+            : $association['type'];
 
         if (isset($this->collectionPersisters[$role])) {
             return $this->collectionPersisters[$role];
         }
 
         $persister = ClassMetadata::ONE_TO_MANY === $association['type']
-            ? new OneToManyPersister($this->em, $association)
-            : new ManyToManyPersister($this->em, $association);
+            ? new OneToManyPersister($this->em)
+            : new ManyToManyPersister($this->em);
 
         if ($this->hasCache && isset($association['cache'])) {
             $persister = new CachedCollectionPersister($persister, $this->em, $association);
@@ -3278,6 +3240,50 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return isset($this->readOnlyObjects[spl_object_hash($object)]);
+    }
+
+    /**
+     * Perform whatever processing is encapsulated here after completion of the transaction.
+     */
+    private function afterTransactionComplete()
+    {
+        if ( ! $this->hasCache) {
+            return;
+        }
+
+        foreach ($this->persisters as $persister) {
+            if($persister instanceof CachedPersister) {
+                $persister->afterTransactionComplete();
+            }
+        }
+
+        foreach ($this->collectionPersisters as $persister) {
+            if($persister instanceof CachedPersister) {
+                $persister->afterTransactionComplete();
+            }
+        }
+    }
+
+    /**
+     * Perform whatever processing is encapsulated here after completion of the rolled-back.
+     */
+    private function afterTransactionRolledBack()
+    {
+        if ( ! $this->hasCache) {
+            return;
+        }
+
+        foreach ($this->persisters as $persister) {
+            if($persister instanceof CachedPersister) {
+                $persister->afterTransactionRolledBack();
+            }
+        }
+
+        foreach ($this->collectionPersisters as $persister) {
+            if($persister instanceof CachedPersister) {
+                $persister->afterTransactionRolledBack();
+            }
+        }
     }
 
     private function dispatchOnFlushEvent()

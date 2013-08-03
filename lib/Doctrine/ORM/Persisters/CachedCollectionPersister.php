@@ -98,10 +98,10 @@ class CachedCollectionPersister implements CachedPersister, CollectionPersister
         $this->association          = $association;
         $this->uow                  = $em->getUnitOfWork();
         $this->metadataFactory      = $em->getMetadataFactory();
-        $this->sourceEntity         = $persister->getSourceEntityMetadata();
-        $this->targetEntity         = $persister->getTargetEntityMetadata();
         $this->cacheLogger          = $configuration->getSecondLevelCacheLogger();
         $this->cacheEntryStructure  = $cacheFactory->buildCollectionEntryStructure($em);
+        $this->sourceEntity         = $em->getClassMetadata($association['sourceEntity']);
+        $this->targetEntity         = $em->getClassMetadata($association['targetEntity']);
         $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
         $this->cacheRegionAccess    = $cacheFactory->buildCollectionRegionAccessStrategy($this->sourceEntity, $association['fieldName']);
     }
