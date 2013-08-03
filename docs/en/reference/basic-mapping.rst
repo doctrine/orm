@@ -297,7 +297,7 @@ list:
 
 -  ``type``: (optional, defaults to 'string') The mapping type to
    use for the column.
--  ``column``: (optional, defaults to field name) The name of the
+-  ``name``: (optional, defaults to field name) The name of the
    column in the database.
 -  ``length``: (optional, default 255) The length of the column in
    the database. (Applies only if a string-valued column is used).
