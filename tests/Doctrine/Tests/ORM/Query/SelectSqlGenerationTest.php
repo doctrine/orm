@@ -2050,6 +2050,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.name AS name0 FROM cms_users c0_ HAVING name0 IN (?)'
         );
     }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportResultVariableInAggregateFunction()
+    {
+        $this->assertSqlGeneration(
+            'SELECT COUNT(u.name) AS countName FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING countName IS NULL',
+            'SELECT COUNT(c0_.name) AS sclr0 FROM cms_users c0_ HAVING sclr0 IS NULL'
+        );
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode

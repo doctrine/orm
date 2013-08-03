@@ -1921,9 +1921,15 @@ class SqlWalker implements TreeWalker
      */
     public function walkNullComparisonExpression($nullCompExpr)
     {
-        $expression = $nullCompExpr->expression;
-        $comparison = ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
+        $expression    = $nullCompExpr->expression;
+        $comparison    = ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
 
+        // Handle ResultVariable
+        if (is_string($expression) && isset($this->queryComponents[$expression]['resultVariable'])) {
+            return $this->walkResultVariable($expression) . $comparison;
+        }
+
+        // Handle InputParameter mapping inclusion to ParserResult
         if ($expression instanceof AST\InputParameter) {
             $this->parserResult->addParameterMapping($expression->name, $this->sqlParamIndex++);
 

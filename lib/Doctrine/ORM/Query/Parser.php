@@ -3108,7 +3108,7 @@ class Parser
     }
 
     /**
-     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression) "IS" ["NOT"] "NULL"
+     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
      *
      * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
      */
@@ -3134,7 +3134,29 @@ class Parser
                 break;
 
             default:
-                $expr = $this->SingleValuedPathExpression();
+                // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
+                $glimpse = $this->lexer->glimpse();
+
+                if ($glimpse['type'] === Lexer::T_DOT) {
+                    $expr = $this->SingleValuedPathExpression();
+
+                    // Leave switch statement
+                    break;
+                }
+
+                $lookaheadValue = $this->lexer->lookahead['value'];
+
+                // Validate existing component
+                if ( ! isset($this->queryComponents[$lookaheadValue])) {
+                    $this->semanticalError('Cannot add having condition on undefined result variable.');
+                }
+
+                // Validating ResultVariable
+                if ( ! isset($this->queryComponents[$lookaheadValue]['resultVariable'])) {
+                    $this->semanticalError('Cannot add having condition on a non result variable.');
+                }
+
+                $expr = $this->ResultVariable();
                 break;
         }
 
