@@ -38,9 +38,9 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
-use Doctrine\ORM\Persisters\CachedPersister;
-use Doctrine\ORM\Persisters\CachedCollectionPersister;
-use Doctrine\ORM\Persisters\CachedEntityPersister;
+use Doctrine\ORM\Cache\Persisters\CachedCollectionPersister;
+use Doctrine\ORM\Cache\Persisters\CachedEntityPersister;
+use Doctrine\ORM\Cache\Persisters\CachedPersister;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\ORM\Persisters\SingleTablePersister;
 use Doctrine\ORM\Persisters\JoinedSubclassPersister;
@@ -1018,8 +1018,6 @@ class UnitOfWork implements PropertyChangedListener
 
             if ( ! empty($this->entityChangeSets[$oid])) {
                 $persister->update($entity);
-
-                $updated = true;
             }
 
             unset($this->entityUpdates[$oid]);
@@ -3004,7 +3002,7 @@ class UnitOfWork implements PropertyChangedListener
             case ($class->isInheritanceTypeSingleTable()):
                 $persister = new SingleTablePersister($this->em, $class);
                 break;
- 
+
             case ($class->isInheritanceTypeJoined()):
                 $persister = new JoinedSubclassPersister($this->em, $class);
                 break;

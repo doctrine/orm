@@ -16,7 +16,8 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-namespace Doctrine\ORM\Persisters;
+
+namespace Doctrine\ORM\Cache\Persisters;
 
 /**
  * Interface for persister that support second level cache.

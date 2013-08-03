@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Persisters\CachedPersister;
+use Doctrine\ORM\Cache\Persisters\CachedPersister;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;

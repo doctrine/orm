@@ -18,15 +18,15 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Cache\Persisters;
 
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegionAccess;
-
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Persisters\CollectionPersister;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>

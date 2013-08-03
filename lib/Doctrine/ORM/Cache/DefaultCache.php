@@ -26,7 +26,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Persisters\CachedPersister;
+use Doctrine\ORM\Cache\Persisters\CachedPersister;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**

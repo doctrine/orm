@@ -874,6 +874,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = "customGeneratorDefinition";
         }
 
+        if ($this->cache) {
+            $serialized[] = "cache";
+        }
+
         return $serialized;
     }
 
