@@ -28,7 +28,11 @@
             <directory>./../Doctrine/Tests/ORM</directory>
         </testsuite>
     </testsuites>
-
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./../../lib/Doctrine</directory>
+        </whitelist>
+    </filter>
     <groups>
         <exclude>
             <group>performance</group>
