@@ -250,10 +250,6 @@ class DefaultQueryCache implements QueryCache
                 }
 
                 // Handle *-to-many associations
-                if ( ! is_array($assocValue) && ! $assocValue instanceof Collection) {
-                    continue;
-                }
-
                 $list = array();
 
                 foreach ($assocValue as $assocItemIndex => $assocItem) {

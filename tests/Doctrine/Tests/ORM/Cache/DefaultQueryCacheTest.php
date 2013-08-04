@@ -181,6 +181,41 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCacheKey', $this->region->calls['put'][4]['key']);
     }
 
+    public function testPutToManyAssociationQueryResult()
+    {
+        $result     = array();
+        $uow        = $this->em->getUnitOfWork();
+        $key        = new QueryCacheKey('query.key1', 0);
+        $rsm        = new ResultSetMappingBuilder($this->em);
+        $cityClass  = $this->em->getClassMetadata(City::CLASSNAME);
+        $stateClass = $this->em->getClassMetadata(State::CLASSNAME);
+
+        $rsm->addRootEntityFromClassMetadata(State::CLASSNAME, 's');
+        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', array('id'=>'c_id', 'name'=>'c_name'));
+
+        for ($i = 0; $i < 4; $i++) {
+            $state    = new State("State $i");
+            $city1    = new City("City 1", $state);
+            $city2    = new City("City 2", $state);
+            $result[] = $state;
+
+            $cityClass->setFieldValue($city1, 'id', $i + 11);
+            $cityClass->setFieldValue($city2, 'id', $i + 22);
+            $stateClass->setFieldValue($state, 'id', $i);
+
+            $state->addCity($city1);
+            $state->addCity($city2);
+
+            $uow->registerManaged($city1, array('id' => $city1->getId()), array('name' => $city1->getName(), 'state' => $state));
+            $uow->registerManaged($city2, array('id' => $city2->getId()), array('name' => $city2->getName(), 'state' => $state));
+            $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $state->getName(), 'cities' => $state->getCities()));
+        }
+
+        $this->assertTrue($this->queryCache->put($key, $rsm, $result));
+        $this->assertArrayHasKey('put', $this->region->calls);
+        $this->assertCount(13, $this->region->calls['put']);
+    }
+
     public function testgGetBasicQueryResult()
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
@@ -263,6 +298,42 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->region->addReturn('put', false); // association fails
 
         $this->assertFalse($this->queryCache->put($key, $rsm, $result));
+    }
+
+    public function testCancelPutToManyAssociationQueryResult()
+    {
+        $result     = array();
+        $uow        = $this->em->getUnitOfWork();
+        $key        = new QueryCacheKey('query.key1', 0);
+        $rsm        = new ResultSetMappingBuilder($this->em);
+        $cityClass  = $this->em->getClassMetadata(City::CLASSNAME);
+        $stateClass = $this->em->getClassMetadata(State::CLASSNAME);
+
+        $rsm->addRootEntityFromClassMetadata(State::CLASSNAME, 's');
+        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', array('id'=>'c_id', 'name'=>'c_name'));
+
+        $state    = new State("State");
+        $city1    = new City("City 1", $state);
+        $city2    = new City("City 2", $state);
+        $result[] = $state;
+
+        $stateClass->setFieldValue($state, 'id', 1);
+        $cityClass->setFieldValue($city1, 'id', 11);
+        $cityClass->setFieldValue($city2, 'id', 22);
+
+        $state->addCity($city1);
+        $state->addCity($city2);
+
+        $uow->registerManaged($city1, array('id' => $city1->getId()), array('name' => $city1->getName(), 'state' => $state));
+        $uow->registerManaged($city2, array('id' => $city2->getId()), array('name' => $city2->getName(), 'state' => $state));
+        $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $state->getName(), 'cities' => $state->getCities()));
+
+        $this->region->addReturn('put', true);  // put root entity
+        $this->region->addReturn('put', false); // collection association fails
+
+        $this->assertFalse($this->queryCache->put($key, $rsm, $result));
+        $this->assertArrayHasKey('put', $this->region->calls);
+        $this->assertCount(2, $this->region->calls['put']);
     }
 
     public function testIgnoreCacheNonGetMode()
