@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 
@@ -478,8 +479,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
 
-        if ( ! $this->isSecondLevelCacheEnabled && $enableSecondLevelCache) {
-            $evm->addEventListener('loadClassMetadata', new EventListener\CacheMetadataListener(get_called_class()));
+        if ($enableSecondLevelCache) {
+            $evm->addEventListener('loadClassMetadata', new CacheMetadataListener());
         }
 
         if (isset($GLOBALS['db_event_subscribers'])) {

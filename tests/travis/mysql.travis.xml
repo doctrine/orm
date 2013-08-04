@@ -28,6 +28,7 @@
     <groups>
         <exclude>
             <group>performance</group>
+            <group>non-cacheable</group>
             <group>locking_functional</group>
         </exclude>
     </groups>

@@ -8,7 +8,6 @@ require_once __DIR__ . '/../../TestInit.php';
  * MappedSuperclassTest
  *
  * @author robo
- * @group non-cacheable
  */
 class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {

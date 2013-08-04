@@ -118,9 +118,6 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $expected) {}
     }
 
-    /**
-     * @group non-cacheable
-     */
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
     {
         $user = new CmsUser;
