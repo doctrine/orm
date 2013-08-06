@@ -58,7 +58,7 @@ class DateSubFunction extends DateAddFunction
 
             default:
                 throw QueryException::semanticalError(
-                    'DATE_SUB() only supports units of type day and month.'
+                    'DATE_SUB() only supports units of type hour, day and month.'
                 );
         }
     }
