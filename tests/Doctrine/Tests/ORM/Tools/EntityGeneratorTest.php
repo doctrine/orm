@@ -518,7 +518,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
                 'fieldName' => 'decimal',
                 'phpType' => 'string',
                 'dbType' => 'decimal',
-                'value' => '33.33'
+                'value' => '12.34'
             ),
         ));
     }
