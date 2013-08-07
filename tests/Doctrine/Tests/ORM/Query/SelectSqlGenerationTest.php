@@ -1866,6 +1866,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT SUM(CASE WHEN c0_.salary <= ? THEN c0_.salary - ? WHEN c0_.salary >= ? THEN ? - c0_.salary ELSE c0_.salary + ? END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
         );
     }
+
+    /**
+     * @group DDC-2599
+     *
+     */
+    public function testSupportsOrderByColumnIndex()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY 0 asc',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ ORDER BY 0 ASC'
+        );
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
