@@ -61,7 +61,7 @@ class OrderBy
      */
     public function __construct($sort = null, $order = null)
     {
-        if ($sort) {
+        if ($sort !== null) {
             $this->add($sort, $order);
         }
     }
