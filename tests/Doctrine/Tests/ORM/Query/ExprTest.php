@@ -405,6 +405,10 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         // OrderBy
         $order = new Expr\OrderBy('foo', 'DESC');
         $this->assertEquals(array('foo DESC'), $order->getParts());
+        $order = new Expr\OrderBy('0', 'DESC');
+        $this->assertEquals(array('0 DESC'), $order->getParts());
+        $order = new Expr\OrderBy(0, 'DESC');
+        $this->assertEquals(array('0 DESC'), $order->getParts());
 
         // Andx
         $orx = new Expr\Orx(array('foo = 1', 'bar = 2'));

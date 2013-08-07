@@ -2061,6 +2061,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT COUNT(c0_.name) AS sclr0 FROM cms_users c0_ HAVING sclr0 IS NULL'
         );
     }
+
+    /**
+     * @group DDC-2599
+     *
+     */
+    public function testSupportsOrderByColumnIndex()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY 0 asc',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ ORDER BY 0 ASC'
+        );
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
