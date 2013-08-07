@@ -2475,7 +2475,7 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             $idHash = isset($class->associationMappings[$class->identifier[0]])
                 ? $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]
-                : $data[$class->identifier[0]];
+                : (string) $data[$class->identifier[0]];
 
             $id = array($class->identifier[0] => $idHash);
         }
