@@ -116,13 +116,14 @@ the targetEntity resolution will occur reliably:
 
 .. code-block:: php
 
-    $evm = new \Doctrine\Common\EventManager;
-
+    $evm  = new \Doctrine\Common\EventManager;
     $rtel = new \Doctrine\ORM\Tools\ResolveTargetEntityListener;
+
+    // Adds a target-entity class
     $rtel->addResolveTargetEntity('Acme\\InvoiceModule\\Model\\InvoiceSubjectInterface', 'Acme\\CustomerModule\\Entity\\Customer', array());
 
     // Add the ResolveTargetEntityListener
-    $evm->addEventSubscriber($rtel);
+    $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $rtel);
 
     $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
 
