@@ -173,7 +173,7 @@ the life-time of their registered entities.
    database or after the refresh operation has been applied to it.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml).
+   (annotations/xml/yaml). This event is not a lifecycle callback.
 -  preFlush - The preFlush event occurs at the very beginning of a flush
    operation. This event is not a lifecycle callback.
 -  onFlush - The onFlush event occurs after the change-sets of all
@@ -183,7 +183,7 @@ the life-time of their registered entities.
    event is not a lifecycle callback.
 -  onClear - The onClear event occurs when the EntityManager#clear() operation is
    invoked, after all references to entities have been removed from the unit of
-   work.
+   work. This event is not a lifecycle callback.
 
 .. warning::
 
