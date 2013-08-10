@@ -105,6 +105,8 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('bar', $q->getHint('foo'));
         $this->assertEquals('baz', $q->getHint('bar'));
         $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+        $this->assertTrue($q->hasHint('foo'));
+        $this->assertFalse($q->hasHint('barFooBaz'));
     }
 
     /**
