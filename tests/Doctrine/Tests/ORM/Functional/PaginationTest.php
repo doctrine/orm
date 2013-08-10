@@ -139,6 +139,18 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($query->getParameters()->isEmpty());
     }
 
+    public function testQueryWalkerIsKept()
+    {
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $query = $this->_em->createQuery($dql);
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker'));
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(false);
+        $this->assertCount(1, $paginator->getIterator());
+        $this->assertEquals(1, $paginator->count());
+    }
+
     public function populate()
     {
         for ($i = 0; $i < 3; $i++) {
@@ -164,5 +176,24 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             array(true),
             array(false),
         );
+    }
+}
+
+class CustomPaginationTestTreeWalker extends Query\TreeWalkerAdapter
+{
+    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
+    {
+        $condition = new Query\AST\ConditionalPrimary();
+
+        $path = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, 'u', 'name');
+        $path->type = Query\AST\PathExpression::TYPE_STATE_FIELD;
+
+        $condition->simpleConditionalExpression = new Query\AST\ComparisonExpression(
+            $path,
+            '=',
+            new Query\AST\Literal(Query\AST\Literal::STRING, 'Name1')
+        );
+
+        $selectStatement->whereClause = new Query\AST\WhereClause($condition);
     }
 }
