@@ -474,6 +474,7 @@ removed from the system:
 
 .. code-block:: php
 
+    <?php
     $user = $em->find('User', $deleteUserId);
     
     foreach ($user->getAuthoredComments() AS $comment) {
