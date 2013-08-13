@@ -87,4 +87,4 @@ The case for just extending a class would be just the same but:
         // ...
     }
 
-Overriding is also supported via XML and YAML.
+Overriding is also supported via XML and YAML (:ref:`examples <inheritence_mapping_overrides>`).
