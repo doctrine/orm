@@ -1710,6 +1710,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT q0_."group-id" AS groupid0, q0_."group-name" AS groupname1, q1_."group-id" AS groupid2, q1_."group-name" AS groupname3 FROM "quote-group" q0_ INNER JOIN "quote-group" q1_ ON q0_."parent-id" = q1_."group-id"'
         );
     }
+
+    /**
+     * @group DDC-2506
+     */
+    public function testClassTableInheritanceJoinWithConditionAppliesToBaseTable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e.id FROM Doctrine\Tests\Models\Company\CompanyOrganization o JOIN o.events e WITH e.id = ?1',
+            'SELECT c0_.id AS id0 FROM company_organizations c1_ INNER JOIN company_events c0_ ON c1_.id = c0_.org_id AND (c0_.id = ?) LEFT JOIN company_auctions c2_ ON c0_.id = c2_.id LEFT JOIN company_raffles c3_ ON c0_.id = c3_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
