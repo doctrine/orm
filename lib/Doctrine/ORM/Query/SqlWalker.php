@@ -858,13 +858,14 @@ class SqlWalker implements TreeWalker
      * Walks down a JoinAssociationDeclaration AST node, thereby generating the appropriate SQL.
      *
      * @param AST\JoinAssociationDeclaration $joinAssociationDeclaration
-     * @param int $joinType
+     * @param int                            $joinType
+     * @param AST\ConditionalExpression      $condExpr
      *
      * @return string
      *
      * @throws QueryException
      */
-    public function walkJoinAssociationDeclaration($joinAssociationDeclaration, $joinType = AST\Join::JOIN_TYPE_INNER)
+    public function walkJoinAssociationDeclaration($joinAssociationDeclaration, $joinType = AST\Join::JOIN_TYPE_INNER, $condExpr = null)
     {
         $sql = '';
 
@@ -979,6 +980,13 @@ class SqlWalker implements TreeWalker
                 break;
         }
 
+        // Handle WITH clause
+        if ($condExpr !== null) {
+            // Phase 2 AST optimization: Skip processing of ConditionalExpression
+            // if only one ConditionalTerm is defined
+            $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
+        }
+
         // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
         if ($targetClass->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
@@ -1068,14 +1076,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
-                $sql .= $this->walkJoinAssociationDeclaration($joinDeclaration, $joinType);
-
-                // Handle WITH clause
-                if (($condExpr = $join->conditionalExpression) !== null) {
-                    // Phase 2 AST optimization: Skip processing of ConditionalExpression
-                    // if only one ConditionalTerm is defined
-                    $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
-                }
+                $sql .= $this->walkJoinAssociationDeclaration($joinDeclaration, $joinType, $join->conditionalExpression);
                 break;
         }
 
