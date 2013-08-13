@@ -1493,7 +1493,7 @@ public function __construct()
      *
      * @return string The literal string for the inheritance type.
      *
-     * @throws \InvalidArgumentException When the inheritance type does not exists.
+     * @throws \InvalidArgumentException When the inheritance type does not exist.
      */
     protected function getInheritanceTypeString($type)
     {
@@ -1509,7 +1509,7 @@ public function __construct()
      *
      * @return string The literal string for the change-tracking type.
      *
-     * @throws \InvalidArgumentException When the change-tracking type does not exists.
+     * @throws \InvalidArgumentException When the change-tracking type does not exist.
      */
     protected function getChangeTrackingPolicyString($type)
     {
@@ -1525,7 +1525,7 @@ public function __construct()
      *
      * @return string The literal string for the generator type.
      *
-     * @throws \InvalidArgumentException    When the generator type does not exists.
+     * @throws \InvalidArgumentException    When the generator type does not exist.
      */
     protected function getIdGeneratorTypeString($type)
     {
