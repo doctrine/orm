@@ -40,6 +40,7 @@ A Customer entity
 
 .. code-block:: php
 
+    <?php
     // src/Acme/AppModule/Entity/Customer.php
 
     namespace Acme\AppModule\Entity;
@@ -62,6 +63,7 @@ An Invoice entity
 
 .. code-block:: php
 
+    <?php
     // src/Acme/InvoiceModule/Entity/Invoice.php
 
     namespace Acme\InvoiceModule\Entity;
@@ -88,6 +90,7 @@ An InvoiceSubjectInterface
 
 .. code-block:: php
 
+    <?php
     // src/Acme/InvoiceModule/Model/InvoiceSubjectInterface.php
 
     namespace Acme\InvoiceModule\Model;
@@ -116,6 +119,7 @@ the targetEntity resolution will occur reliably:
 
 .. code-block:: php
 
+    <?php
     $evm  = new \Doctrine\Common\EventManager;
     $rtel = new \Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
