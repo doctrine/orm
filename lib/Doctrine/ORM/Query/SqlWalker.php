@@ -834,15 +834,18 @@ class SqlWalker implements TreeWalker
      * Walks down a RangeVariableDeclaration AST node, thereby generating the appropriate SQL.
      *
      * @param AST\RangeVariableDeclaration $rangeVariableDeclaration
+     * @param boolean $rootAlias
      *
      * @return string
      */
-    public function walkRangeVariableDeclaration($rangeVariableDeclaration)
+    public function walkRangeVariableDeclaration($rangeVariableDeclaration, $rootAlias = true)
     {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
 
-        $this->rootAliases[] = $dqlAlias;
+        if ($rootAlias) {
+            $this->rootAliases[] = $dqlAlias;
+        }
 
         $sql = $this->quoteStrategy->getTableName($class,$this->platform) . ' '
             . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
@@ -1059,6 +1062,7 @@ class SqlWalker implements TreeWalker
     {
         $joinType        = $join->joinType;
         $joinDeclaration = $join->joinAssociationDeclaration;
+        $joinAlias       = $joinDeclaration->aliasIdentificationVariable;
 
         $sql = ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER)
             ? ' LEFT JOIN '
@@ -1071,8 +1075,15 @@ class SqlWalker implements TreeWalker
                     ? ' AND '
                     : ' ON ';
 
-                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration)
+                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration, false)
                       . $condExprConjunction . '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+
+                $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinAlias));
+
+                if ( ! empty($discrSql)) {
+                    $sql .= ' AND (' . $discrSql . ')';
+                }
+
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
