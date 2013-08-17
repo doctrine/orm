@@ -113,7 +113,7 @@ This is the current directory structure:
     |-- composer.json
     `-- vendor
 
-Next we'll create a basic bootsrapped application that uses the Symfony 
+Next we'll create a basic bootstrapped application that uses the Symfony 
 Console to interact with Doctrine via the command line.
 
 Here's a preview of what we'll add:
