@@ -87,13 +87,15 @@ the following contents:
 
     {
         "require": {
-            "doctrine/orm": "2.*",
+            "doctrine/orm": "2.4.*",
             "symfony/yaml": "2.*"
         },
         "autoload": {
             "psr-0": {"": "src/"}
-        }
+        },
+        "minimum-stability" : "dev"
     }
+
 
 Install Doctrine using the Composer Dependency Management tool, by calling:
 
@@ -105,30 +107,14 @@ This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
 Symfony YAML and Symfony Console into the `vendor` directory. The Symfony 
 dependencies are not required by Doctrine but will be used in this tutorial.
 
-This is the current directory structure:
-
+Add the following directories:
 ::
 
     doctrine2-tutorial
-    |-- composer.json
-    `-- vendor
-
-Next we'll create a basic bootstrapped application that uses the Symfony 
-Console to interact with Doctrine via the command line.
-
-Here's a preview of what we'll add:
-  
-::
-
-    doctrine2-tutorial
-    |-- bootstrap.php
-    |-- cli-config.php
-    |-- composer.json
     |-- config
     |   |-- xml
     |   `-- yaml
-    |-- src
-    `-- vendor
+    `-- src
 
 Obtaining the EntityManager
 ---------------------------
@@ -145,13 +131,14 @@ step:
     <?php
     // bootstrap.php
     use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
     
     require_once "vendor/autoload.php";
     
-    // Create a simple "default" Doctrine ORM configuration for XML Mapping
+    // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
-    // or if you prefer yaml or annotations
+    // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
     
@@ -162,7 +149,7 @@ step:
     );
     
     // obtaining the entity manager
-    $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
+    $entityManager = EntityManager::create($conn, $config);
 
 The first require statement sets up the autoloading capabilities of Doctrine
 using the Composer autoload.
@@ -200,9 +187,7 @@ doctrine command. Its a fairly simple file:
     // cli-config.php
     require_once "bootstrap.php";
     
-    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
-    ));
+    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 You can then change into your project directory and call the
 Doctrine command-line tool:
