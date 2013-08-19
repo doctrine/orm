@@ -1954,9 +1954,7 @@ class SqlWalker implements TreeWalker
 
         // Handle InputParameter mapping inclusion to ParserResult
         if ($expression instanceof AST\InputParameter) {
-            $this->parserResult->addParameterMapping($expression->name, $this->sqlParamIndex++);
-
-            return '?' . $comparison;
+            return $this->walkInputParameter($expression) . $comparison;
         }
 
         return $expression->dispatch($this) . $comparison;
@@ -2094,10 +2092,7 @@ class SqlWalker implements TreeWalker
         $sql = $leftExpr . ($likeExpr->not ? ' NOT' : '') . ' LIKE ';
 
         if ($likeExpr->stringPattern instanceof AST\InputParameter) {
-            $inputParam = $likeExpr->stringPattern;
-            $dqlParamKey = $inputParam->name;
-            $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
-            $sql .= '?';
+            $sql .= $this->walkInputParameter($likeExpr->stringPattern);
         } elseif ($likeExpr->stringPattern instanceof AST\Functions\FunctionNode) {
             $sql .= $this->walkFunction($likeExpr->stringPattern);
         } elseif ($likeExpr->stringPattern instanceof AST\PathExpression) {
