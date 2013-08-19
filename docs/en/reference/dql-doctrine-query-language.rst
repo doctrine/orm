@@ -1583,7 +1583,7 @@ Scalar and Type Expressions
 .. code-block:: php
 
     ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression | BooleanPrimary | CaseExpression | InstanceOfExpression
-    StringExpression       ::= StringPrimary | "(" Subselect ")"
+    StringExpression       ::= StringPrimary | ResultVariable | "(" Subselect ")"
     StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
     BooleanPrimary         ::= StateFieldPathExpression | boolean | InputParameter

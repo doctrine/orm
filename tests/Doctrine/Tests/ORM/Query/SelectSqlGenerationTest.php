@@ -2145,6 +2145,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-1858
      */
+    public function testHavingSupportResultVariableLikeExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING foo LIKE '3'",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ HAVING name0 LIKE '3'"
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
     public function testHavingSupportResultVariableInAggregateFunction()
     {
         $this->assertSqlGeneration(

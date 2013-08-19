@@ -1944,8 +1944,8 @@ class SqlWalker implements TreeWalker
      */
     public function walkNullComparisonExpression($nullCompExpr)
     {
-        $expression    = $nullCompExpr->expression;
-        $comparison    = ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
+        $expression = $nullCompExpr->expression;
+        $comparison = ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
 
         // Handle ResultVariable
         if (is_string($expression) && isset($this->queryComponents[$expression]['resultVariable'])) {
@@ -2001,9 +2001,7 @@ class SqlWalker implements TreeWalker
         $sqlParameterList = array();
 
         foreach ($instanceOfExpr->value as $parameter) {
-
             if ($parameter instanceof AST\InputParameter) {
-
                 $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
 
                 $sqlParameterList[] = $this->walkInputParameter($parameter);
@@ -2073,7 +2071,9 @@ class SqlWalker implements TreeWalker
     {
         $sql = $this->walkArithmeticExpression($betweenExpr->expression);
 
-        if ($betweenExpr->not) $sql .= ' NOT';
+        if ($betweenExpr->not) {
+            $sql .= ' NOT';
+        }
 
         $sql .= ' BETWEEN ' . $this->walkArithmeticExpression($betweenExpr->leftBetweenExpression)
               . ' AND ' . $this->walkArithmeticExpression($betweenExpr->rightBetweenExpression);
@@ -2087,14 +2087,18 @@ class SqlWalker implements TreeWalker
     public function walkLikeExpression($likeExpr)
     {
         $stringExpr = $likeExpr->stringExpression;
-        $sql = $stringExpr->dispatch($this) . ($likeExpr->not ? ' NOT' : '') . ' LIKE ';
+        $leftExpr   = (is_string($stringExpr) && isset($this->queryComponents[$stringExpr]['resultVariable']))
+            ? $this->walkResultVariable($stringExpr)
+            : $stringExpr->dispatch($this);
+
+        $sql = $leftExpr . ($likeExpr->not ? ' NOT' : '') . ' LIKE ';
 
         if ($likeExpr->stringPattern instanceof AST\InputParameter) {
             $inputParam = $likeExpr->stringPattern;
             $dqlParamKey = $inputParam->name;
             $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
             $sql .= '?';
-        } elseif ($likeExpr->stringPattern instanceof AST\Functions\FunctionNode ) {
+        } elseif ($likeExpr->stringPattern instanceof AST\Functions\FunctionNode) {
             $sql .= $this->walkFunction($likeExpr->stringPattern);
         } elseif ($likeExpr->stringPattern instanceof AST\PathExpression) {
             $sql .= $this->walkPathExpression($likeExpr->stringPattern);

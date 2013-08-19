@@ -2776,23 +2776,29 @@ class Parser
     }
 
     /**
-     * StringExpression ::= StringPrimary | "(" Subselect ")"
+     * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
      * @return \Doctrine\ORM\Query\AST\StringPrimary |
-     *         \Doctrine\ORM\Query\AST\Subselect
+     *         \Doctrine\ORM\Query\AST\Subselect |
+     *         string
      */
     public function StringExpression()
     {
-        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
-            $peek = $this->lexer->glimpse();
+        $peek = $this->lexer->glimpse();
 
-            if ($peek['type'] === Lexer::T_SELECT) {
-                $this->match(Lexer::T_OPEN_PARENTHESIS);
-                $expr = $this->Subselect();
-                $this->match(Lexer::T_CLOSE_PARENTHESIS);
+        // Subselect
+        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && $peek['type'] === Lexer::T_SELECT) {
+            $this->match(Lexer::T_OPEN_PARENTHESIS);
+            $expr = $this->Subselect();
+            $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-                return $expr;
-            }
+            return $expr;
+        }
+
+        // ResultVariable (string)
+        if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER) &&
+            isset($this->queryComponents[$this->lexer->lookahead['value']]['resultVariable'])) {
+            return $this->ResultVariable();
         }
 
         return $this->StringPrimary();
