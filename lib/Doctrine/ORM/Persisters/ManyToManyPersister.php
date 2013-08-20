@@ -235,7 +235,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($joinColumns as $joinColumn) {
             $columnName     = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
             $referencedName = $joinColumn['referencedColumnName'];
-            $conditions[]   = $columnName . ' = ?';
+            $conditions[]   = 't.' . $columnName . ' = ?';
             $params[]       = ($class->containsForeignIdentifier)
                 ? $id[$class->getFieldForColumn($referencedName)]
                 : $id[$class->fieldNames[$referencedName]];
@@ -361,7 +361,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params          = array();
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            $whereClauses[] = $joinTableColumn . ' = ?';
+            $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
                 $params[] = ($targetClass->containsForeignIdentifier)
