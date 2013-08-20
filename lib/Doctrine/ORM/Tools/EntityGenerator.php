@@ -766,7 +766,15 @@ public function __construct()
                 ? new \ReflectionClass($metadata->name)
                 : $metadata->reflClass;
 
-            return $reflClass->getTraits();
+            $traits = array();
+
+            while ($reflClass !== false) {
+                $traits = array_merge($traits, $reflClass->getTraits());
+
+                $reflClass = $reflClass->getParentClass();
+            }
+
+            return $traits;
         }
 
         return array();
