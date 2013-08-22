@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Models\CMS;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @Entity
+ * @Entity(persisterClass="Doctrine\Tests\Models\CMS\CmsUserPersister")
  * @Table(name="cms_users")
  * @NamedQueries({
  *     @NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")
@@ -434,4 +434,9 @@ class CmsUser
         ));
 
     }
+}
+
+/** With this we check if usage throws no errors (very evil indirect test?) */
+class CmsUserPersister extends \Doctrine\ORM\Persisters\BasicEntityPersister
+{
 }
