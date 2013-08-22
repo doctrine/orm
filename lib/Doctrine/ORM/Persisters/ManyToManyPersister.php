@@ -235,7 +235,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($joinColumns as $joinColumn) {
             $columnName     = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
             $referencedName = $joinColumn['referencedColumnName'];
-            $conditions[]   = $columnName . ' = ?';
+            $conditions[]   = 't.' . $columnName . ' = ?';
             $params[]       = ($class->containsForeignIdentifier)
                 ? $id[$class->getFieldForColumn($referencedName)]
                 : $id[$class->fieldNames[$referencedName]];
@@ -361,12 +361,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params          = array();
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            $whereClauses[] = $joinTableColumn . ' = ?';
+            $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
                 $params[] = ($targetClass->containsForeignIdentifier)
                     ? $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])]
                     : $targetId[$targetClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+
                 continue;
             }
 
@@ -377,9 +378,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         if ($addFilters) {
+            $quotedJoinTable .= ' t';
+
             list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
+
             if ($filterSql) {
-                $quotedJoinTable .= ' t ' . $joinTargetEntitySQL;
+                $quotedJoinTable .= ' ' . $joinTargetEntitySQL;
                 $whereClauses[] = $filterSql;
             }
         }
