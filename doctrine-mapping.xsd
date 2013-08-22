@@ -178,6 +178,7 @@
     <xs:attribute name="table" type="xs:NMTOKEN" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
     <xs:attribute name="repository-class" type="xs:string"/>
+    <xs:attribute name="persister-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="orm:change-tracking-policy" />
     <xs:attribute name="read-only" type="xs:boolean" default="false" />

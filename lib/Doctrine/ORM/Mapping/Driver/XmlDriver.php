@@ -61,6 +61,9 @@ class XmlDriver extends FileDriver
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string)$xmlRoot['repository-class']);
             }
+            if (isset($xmlRoot['persister-class'])) {
+                $metadata->setCustomPersisterClass((string)$xmlRoot['persister-class']);
+            }
             if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
                 $metadata->markReadOnly();
             }
