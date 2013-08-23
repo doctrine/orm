@@ -2449,11 +2449,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setCustomPersisterClass($persisterClassName)
     {
-        if ($persisterClassName !== null && strpos($persisterClassName, '\\') === false
-                && strlen($this->namespace) > 0) {
-            $persisterClassName = $this->namespace . '\\' . $persisterClassName;
-        }
-        $this->customPersisterClassName = $persisterClassName;
+        $this->customPersisterClassName = $this->fullyQualifiedClassName($persisterClassName);
     }
 
     /**

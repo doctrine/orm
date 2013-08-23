@@ -2953,7 +2953,7 @@ class UnitOfWork implements PropertyChangedListener
         switch (true) {
             case ($class->customPersisterClassName):
                 $persisterClass = $class->customPersisterClassName;
-                $persister = new $persisterClass($this->em, $class);
+                $persister      = new $persisterClass($this->em, $class);
                 break;
 
             case ($class->isInheritanceTypeNone()):
