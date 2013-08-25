@@ -25,7 +25,7 @@ The code of this tutorial is `available on Github <https://github.com/doctrine/d
 
 .. note::
 
-    This tutorial assumes you work with Doctrine 2.4 and above.
+    This tutorial assumes you work with **Doctrine 2.4** and above.
     Some of the code will not work with lower versions.
 
 What is Doctrine?
@@ -87,13 +87,15 @@ the following contents:
 
     {
         "require": {
-            "doctrine/orm": "2.*",
+            "doctrine/orm": "2.4.*",
             "symfony/yaml": "2.*"
         },
         "autoload": {
             "psr-0": {"": "src/"}
-        }
+        },
+        "minimum-stability" : "dev"
     }
+
 
 Install Doctrine using the Composer Dependency Management tool, by calling:
 
@@ -102,15 +104,13 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
     $ composer install
 
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-Symfony YAML and Symfony Console. Both Symfony dependencies are optional
-but will be used in this tutorial.
+Symfony YAML and Symfony Console into the `vendor` directory. The Symfony 
+dependencies are not required by Doctrine but will be used in this tutorial.
 
-You can prepare the directory structure:
-
+Add the following directories:
 ::
 
-    project
-    |-- composer.json
+    doctrine2-tutorial
     |-- config
     |   |-- xml
     |   `-- yaml
@@ -132,22 +132,22 @@ step:
     // bootstrap.php
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
-
+    
     require_once "vendor/autoload.php";
-
+    
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
-
+    
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
     );
-
+    
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
 
@@ -186,7 +186,7 @@ doctrine command. Its a fairly simple file:
     <?php
     // cli-config.php
     require_once "bootstrap.php";
-
+    
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 You can then change into your project directory and call the
