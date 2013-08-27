@@ -32,7 +32,7 @@ use Doctrine\Common\Collections\Criteria;
  * @since 2.0
  * @link http://martinfowler.com/eaaCatalog/singleTableInheritance.html
  */
-class SingleTablePersister extends AbstractEntityInheritancePersister
+class SingleTableEntityPersister extends AbstractInheritanceEntityPersister
 {
     /**
      * {@inheritdoc}

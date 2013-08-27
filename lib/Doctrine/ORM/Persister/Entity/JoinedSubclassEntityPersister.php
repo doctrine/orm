@@ -37,7 +37,7 @@ use Doctrine\Common\Collections\Criteria;
  * @since 2.0
  * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
-class JoinedSubclassPersister extends AbstractEntityInheritancePersister
+class JoinedSubclassEntityPersister extends AbstractInheritanceEntityPersister
 {
     /**
      * Map that maps column names to the table names that own them.

@@ -2961,15 +2961,15 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             case ($class->isInheritanceTypeSingleTable()):
-                $persister = new Persister\Entity\SingleTablePersister($this->em, $class);
+                $persister = new Persister\Entity\SingleTableEntityPersister($this->em, $class);
                 break;
 
             case ($class->isInheritanceTypeJoined()):
-                $persister = new Persister\Entity\JoinedSubclassPersister($this->em, $class);
+                $persister = new Persister\Entity\JoinedSubclassEntityPersister($this->em, $class);
                 break;
 
             default:
-                $persister = new Persister\Entity\UnionSubclassPersister($this->em, $class);
+                $persister = new Persister\Entity\UnionSubclassEntityPersister($this->em, $class);
         }
 
         $this->persisters[$entityName] = $persister;

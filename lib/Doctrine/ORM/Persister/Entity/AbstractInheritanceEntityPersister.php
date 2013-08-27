@@ -31,7 +31,7 @@ use Doctrine\DBAL\Types\Type;
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @since 2.0
  */
-abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
+abstract class AbstractInheritanceEntityPersister extends BasicEntityPersister
 {
     /**
      * {@inheritdoc}

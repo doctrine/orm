@@ -19,6 +19,6 @@
 
 namespace Doctrine\ORM\Persister\Entity;
 
-class UnionSubclassPersister extends BasicEntityPersister
+class UnionSubclassEntityPersister extends BasicEntityPersister
 {
 }
