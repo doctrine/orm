@@ -2940,7 +2940,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string $entityName The name of the Entity.
      *
-     * @return \Doctrine\ORM\Persisters\BasicEntityPersister
+     * @return \Doctrine\ORM\Persister\Entity\BasicEntityPersister
      */
     public function getEntityPersister($entityName)
     {
@@ -2957,19 +2957,19 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             case ($class->isInheritanceTypeNone()):
-                $persister = new Persisters\BasicEntityPersister($this->em, $class);
+                $persister = new Persister\Entity\BasicEntityPersister($this->em, $class);
                 break;
 
             case ($class->isInheritanceTypeSingleTable()):
-                $persister = new Persisters\SingleTablePersister($this->em, $class);
+                $persister = new Persister\Entity\SingleTablePersister($this->em, $class);
                 break;
 
             case ($class->isInheritanceTypeJoined()):
-                $persister = new Persisters\JoinedSubclassPersister($this->em, $class);
+                $persister = new Persister\Entity\JoinedSubclassPersister($this->em, $class);
                 break;
 
             default:
-                $persister = new Persisters\UnionSubclassPersister($this->em, $class);
+                $persister = new Persister\Entity\UnionSubclassPersister($this->em, $class);
         }
 
         $this->persisters[$entityName] = $persister;
@@ -2994,11 +2994,11 @@ class UnitOfWork implements PropertyChangedListener
 
         switch ($type) {
             case ClassMetadata::ONE_TO_MANY:
-                $persister = new Persisters\OneToManyPersister($this->em);
+                $persister = new Persister\Collection\OneToManyCollectionPersister($this->em);
                 break;
 
             case ClassMetadata::MANY_TO_MANY:
-                $persister = new Persisters\ManyToManyPersister($this->em);
+                $persister = new Persister\Collection\ManyToManyCollectionPersister($this->em);
                 break;
         }
 

@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Collection;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -31,7 +31,7 @@ use Doctrine\ORM\UnitOfWork;
  * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
-class ManyToManyPersister extends AbstractCollectionPersister
+class ManyToManyCollectionPersister extends AbstractCollectionPersister
 {
     /**
      * {@inheritdoc}

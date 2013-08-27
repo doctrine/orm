@@ -1,9 +1,9 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Persisters;
+namespace Doctrine\Tests\ORM\Persister\Entity;
 
 use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persister\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;

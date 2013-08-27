@@ -32,7 +32,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @param array $fieldNames
      *
-     * @return OneToManyAssociationBuilder
+     * @return \Doctrine\ORM\Mapping\Builder\OneToManyAssociationBuilder
      */
     public function setOrderBy(array $fieldNames)
     {
@@ -43,7 +43,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @param string $fieldName
      *
-     * @return OneToManyAssociationBuilder
+     * @return \Doctrine\ORM\Mapping\Builder\OneToManyAssociationBuilder
      */
     public function setIndexBy($fieldName)
     {
@@ -52,7 +52,18 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     }
 
     /**
-     * @return ClassMetadataBuilder
+     * @param string $persisterClass
+     *
+     * @return \Doctrine\ORM\Mapping\Builder\OneToManyAssociationBuilder
+     */
+    public function setPersisterClass($persisterClass)
+    {
+        $this->mapping['persisterClass'] = $persisterClass;
+        return $this;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder
      */
     public function build()
     {

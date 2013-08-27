@@ -26,7 +26,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persister\Entity\BasicEntityPersister;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 
@@ -106,8 +106,8 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata  $classMetadata
+     * @param \Doctrine\ORM\Persister\Entity\BasicEntityPersister $entityPersister
      *
      * @return \Closure
      *
@@ -182,8 +182,8 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of finalizing state a cloned proxy
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata  $classMetadata
+     * @param \Doctrine\ORM\Persister\Entity\BasicEntityPersister $entityPersister
      *
      * @return \Closure
      *

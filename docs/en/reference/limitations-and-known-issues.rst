@@ -39,7 +39,7 @@ possible either. See the following example:
         name VARCHAR,
         PRIMARY KEY(id)
     );
-    
+
     CREATE TABLE product_attributes (
         product_id INTEGER,
         attribute_name VARCHAR,
@@ -85,20 +85,6 @@ Make sure to study the behavior of cascade merge if you are using it:
 
 -  `DDC-875 <http://www.doctrine-project.org/jira/browse/DDC-875>`_ Merge can sometimes add the same entity twice into a collection
 -  `DDC-763 <http://www.doctrine-project.org/jira/browse/DDC-763>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
-
-Custom Persisters
-~~~~~~~~~~~~~~~~~
-
-A Persister in Doctrine is an object that is responsible for the
-hydration and write operations of an entity against the database.
-Currently there is no way to overwrite the persister implementation
-for a given entity, however there are several use-cases that can
-benefit from custom persister implementations:
-
-
--  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
--  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
--  The previous Filter Rules Feature Request
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

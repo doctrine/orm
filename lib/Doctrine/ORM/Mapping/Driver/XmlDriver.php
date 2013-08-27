@@ -368,6 +368,10 @@ class XmlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['persister-class'])) {
+                    $mapping['persisterClass'] = (string) $oneToManyElement['persister-class'];
+                }
+
                 if (isset($oneToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
@@ -475,6 +479,10 @@ class XmlDriver extends FileDriver
                     }
 
                     $mapping['joinTable'] = $joinTable;
+                }
+
+                if (isset($manyToManyElement['persister-class'])) {
+                    $mapping['persisterClass'] = (string) $manyToManyElement['persister-class'];
                 }
 
                 if (isset($manyToManyElement->cascade)) {

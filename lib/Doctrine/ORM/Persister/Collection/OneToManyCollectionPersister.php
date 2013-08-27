@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Collection;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
@@ -30,7 +30,7 @@ use Doctrine\ORM\UnitOfWork;
  * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
-class OneToManyPersister extends AbstractCollectionPersister
+class OneToManyCollectionPersister extends AbstractCollectionPersister
 {
     /**
      * {@inheritdoc}

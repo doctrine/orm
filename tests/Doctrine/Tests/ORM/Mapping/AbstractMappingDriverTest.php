@@ -1094,7 +1094,7 @@ class User
     }
 }
 
-class UserPersister extends \Doctrine\ORM\Persisters\BasicEntityPersister
+class UserPersister extends \Doctrine\ORM\Persister\Entity\BasicEntityPersister
 {
 }
 

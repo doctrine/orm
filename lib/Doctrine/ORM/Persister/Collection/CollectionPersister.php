@@ -17,50 +17,14 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Persister\Collection;
 
 /**
- * @Annotation
- * @Target("PROPERTY")
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ *
+ * @since 2.5
  */
-final class OneToMany implements Annotation
+interface CollectionPersister
 {
-    /**
-     * @var string
-     */
-    public $mappedBy;
 
-    /**
-     * @var string
-     */
-    public $targetEntity;
-
-    /**
-     * @var string
-     */
-    public $persisterClass;
-
-    /**
-     * @var array<string>
-     */
-    public $cascade;
-
-    /**
-     * The fetching strategy to use for the association.
-     *
-     * @var string
-     *
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
-     */
-    public $fetch = 'LAZY';
-
-    /**
-     * @var boolean
-     */
-    public $orphanRemoval = false;
-
-    /**
-     * @var string
-     */
-    public $indexBy;
 }

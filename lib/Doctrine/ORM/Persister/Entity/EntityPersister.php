@@ -16,14 +16,15 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-namespace Doctrine\ORM\Persisters;
+
+namespace Doctrine\ORM\Persister\Entity;
 
 /**
- * Persister for collections of basic elements / value types.
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  *
- * @author robo
- * @todo Implementation once support for collections of basic elements (i.e. strings) is added.
+ * @since 2.5
  */
-abstract class ElementCollectionPersister extends AbstractCollectionPersister
+interface EntityPersister
 {
+
 }

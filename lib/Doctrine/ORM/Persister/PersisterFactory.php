@@ -17,50 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Persister;
+
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @Annotation
- * @Target("PROPERTY")
+ * Interface for persister factory.
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ *
+ * @since 2.5
  */
-final class OneToMany implements Annotation
+interface PersisterFactory
 {
     /**
-     * @var string
-     */
-    public $mappedBy;
-
-    /**
-     * @var string
-     */
-    public $targetEntity;
-
-    /**
-     * @var string
-     */
-    public $persisterClass;
-
-    /**
-     * @var array<string>
-     */
-    public $cascade;
-
-    /**
-     * The fetching strategy to use for the association.
+     * Gets the entity persister for an given class.
      *
-     * @var string
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
      *
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
+     * @return \Doctrine\ORM\Persister\Entity\EntityPersister
      */
-    public $fetch = 'LAZY';
+    public function createEntityPersister(EntityManagerInterface $entityManager);
 
     /**
-     * @var boolean
+     * Gets the entity persister for an given collection association.
+     *
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
+     *
+     * @return \Doctrine\ORM\Persister\Collection\CollectionPersister
      */
-    public $orphanRemoval = false;
-
-    /**
-     * @var string
-     */
-    public $indexBy;
+    public function createCollectionPersister(EntityManagerInterface $entityManager);
 }

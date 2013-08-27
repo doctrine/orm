@@ -17,50 +17,8 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Persister\Entity;
 
-/**
- * @Annotation
- * @Target("PROPERTY")
- */
-final class OneToMany implements Annotation
+class UnionSubclassPersister extends BasicEntityPersister
 {
-    /**
-     * @var string
-     */
-    public $mappedBy;
-
-    /**
-     * @var string
-     */
-    public $targetEntity;
-
-    /**
-     * @var string
-     */
-    public $persisterClass;
-
-    /**
-     * @var array<string>
-     */
-    public $cascade;
-
-    /**
-     * The fetching strategy to use for the association.
-     *
-     * @var string
-     *
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
-     */
-    public $fetch = 'LAZY';
-
-    /**
-     * @var boolean
-     */
-    public $orphanRemoval = false;
-
-    /**
-     * @var string
-     */
-    public $indexBy;
 }

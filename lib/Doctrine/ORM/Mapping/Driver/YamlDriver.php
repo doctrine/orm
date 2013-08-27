@@ -376,6 +376,10 @@ class YamlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['persisterClass'])) {
+                    $mapping['persisterClass'] = $oneToManyElement['persisterClass'];
+                }
+
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $oneToManyElement['cascade'];
                 }
@@ -486,6 +490,10 @@ class YamlDriver extends FileDriver
 
                 if (isset($manyToManyElement['inversedBy'])) {
                     $mapping['inversedBy'] = $manyToManyElement['inversedBy'];
+                }
+
+                if (isset($manyToManyElement['persisterClass'])) {
+                    $mapping['persisterClass'] = $manyToManyElement['persisterClass'];
                 }
 
                 if (isset($manyToManyElement['cascade'])) {

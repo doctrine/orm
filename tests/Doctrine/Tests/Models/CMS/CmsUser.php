@@ -387,7 +387,7 @@ class CmsUser
                   )
             )
         ));
-        
+
         $metadata->addSqlResultSetMapping(array(
             'name'      => 'mappingMultipleJoinsEntityResults',
             'entities'  => array(array(
@@ -437,6 +437,6 @@ class CmsUser
 }
 
 /** With this we check if usage throws no errors (very evil indirect test?) */
-class CmsUserPersister extends \Doctrine\ORM\Persisters\BasicEntityPersister
+class CmsUserPersister extends \Doctrine\ORM\Persister\Entity\BasicEntityPersister
 {
 }

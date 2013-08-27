@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
@@ -43,7 +43,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc} 
+     * {@inheritdoc}
      */
     protected function getSelectColumnsSQL()
     {
@@ -80,7 +80,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if ( ! $assoc['isOwningSide'] 
+                if ( ! $assoc['isOwningSide']
                         || ! ($assoc['type'] & ClassMetadata::TO_ONE)
                         || isset($assoc['inherited'])) {
                     continue;
