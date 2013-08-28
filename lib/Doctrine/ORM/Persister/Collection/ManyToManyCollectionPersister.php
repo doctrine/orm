@@ -265,9 +265,10 @@ class ManyToManyCollectionPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
-        $mapping = $coll->getMapping();
+        $mapping   = $coll->getMapping();
+        $persister = $this->em->getEntityPersister($mapping['targetEntity']);
 
-        return $this->em->getUnitOfWork()->getEntityPersister($mapping['targetEntity'])->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+        return $persister->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 
     /**

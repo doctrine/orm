@@ -152,6 +152,22 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
+    public function getEntityPersister($entityName)
+    {
+        return $this->wrapped->getEntityPersister($entityName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCollectionPersister($association)
+    {
+        return $this->wrapped->getCollectionPersister($association);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function close()
     {
         return $this->wrapped->close();

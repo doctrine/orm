@@ -114,6 +114,13 @@ use Doctrine\Common\Util\ClassUtils;
     private $repositoryFactory;
 
     /**
+     * The persister factory used to create persisters.
+     *
+     * @var \Doctrine\ORM\Persister\PersisterFactory
+     */
+    private $persisterFactory;
+
+    /**
      * The expression builder instance used to generate query expressions.
      *
      * @var \Doctrine\ORM\Query\Expr
@@ -155,6 +162,7 @@ use Doctrine\Common\Util\ClassUtils;
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
         $this->repositoryFactory = $config->getRepositoryFactory();
+        $this->persisterFactory  = $config->getPersisterFactory();
         $this->unitOfWork        = new UnitOfWork($this);
         $this->proxyFactory      = new ProxyFactory(
             $this,
@@ -445,7 +453,7 @@ use Doctrine\Common\Util\ClassUtils;
 
                 case LockMode::PESSIMISTIC_READ:
                 case LockMode::PESSIMISTIC_WRITE:
-                    $persister = $unitOfWork->getEntityPersister($class->name);
+                    $persister = $this->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
             }
@@ -453,7 +461,7 @@ use Doctrine\Common\Util\ClassUtils;
             return $entity; // Hit!
         }
 
-        $persister = $unitOfWork->getEntityPersister($class->name);
+        $persister = $this->getEntityPersister($class->name);
 
         switch ($lockMode) {
             case LockMode::NONE:
@@ -757,6 +765,32 @@ use Doctrine\Common\Util\ClassUtils;
     public function getRepository($entityName)
     {
         return $this->repositoryFactory->getRepository($this, $entityName);
+    }
+
+    /**
+     * Gets the persister for an entity class.
+     *
+     * @param string $entityName The name of the entity.
+     *
+     * @return \Doctrine\ORM\Persister\Entity\EntityPersister
+     */
+    public function getEntityPersister($entityName)
+    {
+        $classMetadata = $this->getClassMetadata($entityName);
+
+        return $this->persisterFactory->createEntityPersister($this, $classMetadata);
+    }
+
+    /**
+     * Gets the persister for a collection.
+     *
+     * @param array $association The association mapping.
+     *
+     * @return \Doctrine\ORM\Persister\Collection\CollectionPersister
+     */
+    public function getCollectionPersister($association)
+    {
+        return $this->persisterFactory->createCollectionPersister($this, $association);
     }
 
     /**

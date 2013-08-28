@@ -13,20 +13,6 @@ class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
     private $_mockDataChangeSets = array();
 
     /**
-     * @var array|null
-     */
-    private $_persisterMock;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEntityPersister($entityName)
-    {
-        return isset($this->_persisterMock[$entityName]) ?
-                $this->_persisterMock[$entityName] : parent::getEntityPersister($entityName);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getEntityChangeSet($entity)

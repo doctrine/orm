@@ -138,7 +138,7 @@ class JoinedSubclassEntityPersister extends AbstractInheritanceEntityPersister
             : $this->class;
 
         // Prepare statement for the root table
-        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->name);
+        $rootPersister = $this->em->getEntityPersister($rootClass->name);
         $rootTableName = $rootClass->getTableName();
         $rootTableStmt = $this->conn->prepare($rootPersister->getInsertSQL());
 
@@ -150,11 +150,12 @@ class JoinedSubclassEntityPersister extends AbstractInheritanceEntityPersister
         }
 
         foreach ($this->class->parentClasses as $parentClassName) {
-            $parentClass = $this->em->getClassMetadata($parentClassName);
+            $parentClass     = $this->em->getClassMetadata($parentClassName);
             $parentTableName = $parentClass->getTableName();
 
             if ($parentClass !== $rootClass) {
-                $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClassName);
+                $parentPersister = $this->em->getEntityPersister($parentClassName);
+
                 $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
             }
         }

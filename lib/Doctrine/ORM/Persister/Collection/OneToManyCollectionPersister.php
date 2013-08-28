@@ -40,14 +40,25 @@ class OneToManyCollectionPersister extends AbstractCollectionPersister
     public function get(PersistentCollection $coll, $index)
     {
         $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->em->getEntityPersister($mapping['targetEntity']);
 
-        if (!isset($mapping['indexBy'])) {
-            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+        if ( ! isset($mapping['indexBy'])) {
+            throw new \BadMethodCallException(
+                "Selecting a collection by index is only supported on indexed collections."
+            );
         }
 
-        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, null, array(), 0, 1);
+        return $persister->load(
+            array(
+                $mapping['mappedBy'] => $coll->getOwner(),
+                $mapping['indexBy'] => $index
+            ),
+            null,
+            null,
+            array(),
+            0,
+            1
+        );
     }
 
     /**
@@ -175,8 +186,7 @@ class OneToManyCollectionPersister extends AbstractCollectionPersister
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
         $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->em->getEntityPersister($mapping['targetEntity']);
 
         return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
@@ -204,12 +214,12 @@ class OneToManyCollectionPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->em->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $id = current( $uow->getEntityIdentifier($coll->getOwner()));
+        $id = current($uow->getEntityIdentifier($coll->getOwner()));
 
         return $persister->exists($element, array($mapping['mappedBy'] => $id));
     }

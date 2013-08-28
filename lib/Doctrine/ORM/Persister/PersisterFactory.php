@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Persister;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Interface for persister factory.
@@ -34,17 +35,19 @@ interface PersisterFactory
      * Gets the entity persister for an given class.
      *
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata  $classMetadata The ClassMetadata instance.
      *
      * @return \Doctrine\ORM\Persister\Entity\EntityPersister
      */
-    public function createEntityPersister(EntityManagerInterface $entityManager);
+    public function createEntityPersister(EntityManagerInterface $entityManager, ClassMetadata $classMetadata);
 
     /**
      * Gets the entity persister for an given collection association.
      *
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
+     * @param array                                $association   Association mapping.
      *
      * @return \Doctrine\ORM\Persister\Collection\CollectionPersister
      */
-    public function createCollectionPersister(EntityManagerInterface $entityManager);
+    public function createCollectionPersister(EntityManagerInterface $entityManager, array $association);
 }

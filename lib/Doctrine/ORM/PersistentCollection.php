@@ -778,7 +778,7 @@ final class PersistentCollection implements Collection, Selectable
     public function next()
     {
         $this->initialize();
-        
+
         return $this->coll->next();
     }
 
@@ -875,7 +875,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $criteria->where($expression);
 
-        $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
+        $persister = $this->em->getEntityPersister($this->association['targetEntity']);
 
         return new ArrayCollection($persister->loadCriteria($criteria));
     }

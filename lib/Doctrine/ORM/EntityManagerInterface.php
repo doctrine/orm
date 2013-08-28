@@ -27,7 +27,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
  * EntityManager interface
  *
  * @since   2.4
- * @author  Lars Strojny <lars@strojny.net
+ * @author  Lars Strojny <lars@strojny.net>
  */
 interface EntityManagerInterface extends ObjectManager
 {
@@ -44,6 +44,8 @@ interface EntityManagerInterface extends ObjectManager
     public function createQueryBuilder();
     public function getReference($entityName, $id);
     public function getPartialReference($entityName, $identifier);
+    public function getEntityPersister($entityName);
+    public function getCollectionPersister($association);
     public function close();
     public function copy($entity, $deep = false);
     public function lock($entity, $lockMode, $lockVersion = null);

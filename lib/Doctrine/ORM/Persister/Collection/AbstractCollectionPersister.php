@@ -26,9 +26,11 @@ use Doctrine\ORM\PersistentCollection;
  * Base class for all collection persisters.
  *
  * @since 2.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractCollectionPersister
+abstract class AbstractCollectionPersister implements CollectionPersister
 {
     /**
      * @var EntityManager
