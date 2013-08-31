@@ -47,7 +47,7 @@ access point to ORM functionality provided by Doctrine.
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
 
-    $paths = array("/path/to/entities-or-mapping-files");
+    $paths = array("/path/to/entity-files");
     $isDevMode = false;
 
     // the connection configuration
@@ -66,6 +66,7 @@ Or if you prefer XML:
 .. code-block:: php
 
     <?php
+    $paths = array("/path/to/xml-mappings");
     $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
@@ -74,15 +75,15 @@ Or if you prefer YAML:
 .. code-block:: php
 
     <?php
+    $paths = array("/path/to/yml-mappings");
     $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 Inside the ``Setup`` methods several assumptions are made:
 
--  If `$devMode` is true always use an ``ArrayCache`` (in-memory) and regenerate proxies on every request.
--  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
--  If `$devMode` is false, set then proxy classes have to be explicitly created
-  through the command line.
+-  If `$isDevMode` is true caching is done in memory with the ``ArrayCache``. Proxy objects are recreated on every request.
+-  If `$isDevMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
+-  If `$isDevMode` is false, set then proxy classes have to be explicitly created through the command line.
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
 If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced
