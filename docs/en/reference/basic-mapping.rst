@@ -2,8 +2,8 @@ Basic Mapping
 =============
 
 This chapter explains the basic mapping of objects and properties.
-Mapping of associations will be covered in the next chapter
-"Association Mapping".
+Mapping of associations will be covered in the next chapter on
+:doc:`Association Mapping <association-mapping>`.
 
 Mapping Drivers
 ---------------
@@ -11,30 +11,27 @@ Mapping Drivers
 Doctrine provides several different ways for specifying
 object-relational mapping metadata:
 
-
 -  Docblock Annotations
 -  XML
 -  YAML
+-  PHP code
 
-This manual usually mentions docblock annotations in all the examples
-that are spread throughout all chapters, however for many examples
-alternative YAML and XML examples are given as well. There are dedicated
-reference chapters for XML and YAML mapping, respectively that explain them
-in more detail. There is also an Annotation reference chapter.
+This manual usually mentions docblock annotations in all the examples that are
+spread throughout all chapters, however for many examples alternative YAML and
+XML examples are given as well. There are dedicated reference chapters for
+:doc:`XML <xml-mapping>` and :doc:`YAML <yml-mapping>` mapping, respectively
+that explain them in more detail. There is also a reference chapter for
+:doc:`Annotations <annotations-reference>`.
 
 .. note::
 
-    If you're wondering which mapping driver gives the best
-    performance, the answer is: They all give exactly the same performance.
-    Once the metadata of a class has
-    been read from the source (annotations, xml or yaml) it is stored
-    in an instance of the ``Doctrine\ORM\Mapping\ClassMetadata`` class
-    and these instances are stored in the metadata cache. Therefore at
-    the end of the day all drivers perform equally well. If you're not
-    using a metadata cache (not recommended!) then the XML driver might
-    have a slight edge in performance due to the powerful native XML
-    support in PHP.
-
+    All metadata drivers give exactly the same performance.  Once the metadata
+    of a class has been read from the source (annotations, xml or yaml) it is
+    stored in an instance of the ``Doctrine\ORM\Mapping\ClassMetadata`` class
+    and these instances are stored in the metadata cache. Therefore at the end
+    of the day all drivers perform equally well. If you're not using a metadata
+    cache (not recommended!) then the XML driver is the fastest by using PHP's
+    native XML support.
 
 Introduction to Docblock Annotations
 ------------------------------------
@@ -69,9 +66,8 @@ annotations for supplying object-relational mapping metadata.
 Persistent classes
 ------------------
 
-In order to mark a class for object-relational persistence it needs
-to be designated as an entity. This can be done through the
-``@Entity`` marker annotation.
+Every PHP Classthat you want to save in the database using Doctrine
+need to be configured as "Entity".
 
 .. configuration-block::
 
@@ -98,9 +94,9 @@ to be designated as an entity. This can be done through the
           type: entity
           # ...
 
-By default, the entity will be persisted to a table with the same
-name as the class name. In order to change that, you can use the
-``@Table`` annotation as follows:
+With no additional information given Doctrine expects the entity to be saved
+into a table with the same name as the class. You can change this assumption
+by adding more information about the used table:
 
 .. configuration-block::
 
@@ -131,23 +127,21 @@ name as the class name. In order to change that, you can use the
           table: my_persistent_class
           # ...
 
-Now instances of MyPersistentClass will be persisted into a table
-named ``my_persistent_class``.
+In this example the class ``MyPersistentClass`` will be saved and fetched from
+the table ``my_persistent_class``.
 
 Doctrine Mapping Types
 ----------------------
 
-A Doctrine Mapping Type defines the mapping between a PHP type and
-a SQL type. All Doctrine Mapping Types that ship with Doctrine are
-fully portable between different RDBMS. You can even write your own
-custom mapping types that might or might not be portable, which is
-explained later in this chapter.
+A Doctrine Mapping Type defines the conversion the type of a PHP variable and
+an SQL type. All Mapping Types that ship with Doctrine are fully portable
+between the supported database systems. You can add your own custom mapping
+types to add more conversions.
 
-For example, the Doctrine Mapping Type ``string`` defines the
+As an example the Doctrine Mapping Type ``string`` defines the
 mapping from a PHP string to a SQL VARCHAR (or VARCHAR2 etc.
 depending on the RDBMS brand). Here is a quick overview of the
 built-in mapping types:
-
 
 -  ``string``: Type that maps a SQL VARCHAR to a PHP string.
 -  ``integer``: Type that maps a SQL INT to a PHP integer.
@@ -182,14 +176,6 @@ built-in mapping types:
 
 .. note::
 
-    Doctrine Mapping Types are NOT SQL types and NOT PHP
-    types! They are mapping types between 2 types.
-    Additionally Mapping types are *case-sensitive*. For example, using
-    a DateTime column will NOT match the datetime type that ships with
-    Doctrine 2.
-
-.. note::
-
     DateTime and Object types are compared by reference, not by value. Doctrine updates this values
     if the reference changes and therefore behaves as if these objects are immutable value objects.
 
@@ -206,21 +192,17 @@ built-in mapping types:
     on working with datetimes that gives hints for implementing
     multi timezone applications.
 
-
 Property Mapping
 ----------------
 
-After a class has been marked as an entity it can specify mappings
-for its instance fields. Here we will only look at simple fields
-that hold scalar values like strings, numbers, etc. Associations to
-other objects are covered in the chapter "Association Mapping".
+Properties of an entity class can be mapped to columns of the
+SQL table of that entity.
 
-To mark a property for relational persistence the ``@Column``
-docblock annotation is used. This annotation usually requires at
-least 1 attribute to be set, the ``type``. The ``type`` attribute
-specifies the Doctrine Mapping Type to use for the field. If the
-type is not specified, 'string' is used as the default mapping type
-since it is the most flexible.
+To configure a property use the ``@Column`` docblock annotation. This
+annotation usually requires at least 1 attribute to be set, the ``type``. The
+``type`` attribute specifies the Doctrine Mapping Type to use for the field. If
+the type is not specified, ``string`` is used as the default mapping type.
+
 
 Example:
 
@@ -258,13 +240,11 @@ Example:
             name:
               length: 50
 
-In that example we mapped the field ``id`` to the column ``id``
-using the mapping type ``integer`` and the field ``name`` is mapped
-to the column ``name`` with the default mapping type ``string``. As
-you can see, by default the column names are assumed to be the same
-as the field names. To specify a different name for the column, you
-can use the ``name`` attribute of the Column annotation as
-follows:
+In that example we configured the property ``id`` to map to the column ``id``
+using the mapping type ``integer``. The field ``name`` is mapped to the column
+``name`` with the default mapping type ``string``. Column names are assumed to
+be the same as the field names unless you pecify a different name for the
+column using the ``name`` attribute of the Column annotation:
 
 .. configuration-block::
 
@@ -294,7 +274,6 @@ follows:
 The Column annotation has some more attributes. Here is a complete
 list:
 
-
 -  ``type``: (optional, defaults to 'string') The mapping type to
    use for the column.
 -  ``name``: (optional, defaults to field name) The name of the
@@ -310,129 +289,12 @@ list:
 -  ``scale``: (optional, default 0) The scale for a decimal (exact
    numeric) column. (Applies only if a decimal column is used.)
 
-.. _reference-basic-mapping-custom-mapping-types:
-
-Custom Mapping Types
---------------------
-
-Doctrine allows you to create new mapping types. This can come in
-handy when you're missing a specific mapping type or when you want
-to replace the existing implementation of a mapping type.
-
-In order to create a new mapping type you need to subclass
-``Doctrine\DBAL\Types\Type`` and implement/override the methods as
-you wish. Here is an example skeleton of such a custom type class:
-
-.. code-block:: php
-
-    <?php
-    namespace My\Project\Types;
-    
-    use Doctrine\DBAL\Types\Type;
-    use Doctrine\DBAL\Platforms\AbstractPlatform;
-    
-    /**
-     * My custom datatype.
-     */
-    class MyType extends Type
-    {
-        const MYTYPE = 'mytype'; // modify to match your type name
-    
-        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-        {
-            // return the SQL used to create your column type. To create a portable column type, use the $platform.
-        }
-    
-        public function convertToPHPValue($value, AbstractPlatform $platform)
-        {
-            // This is executed when the value is read from the database. Make your conversions here, optionally using the $platform.
-        }
-    
-        public function convertToDatabaseValue($value, AbstractPlatform $platform)
-        {
-            // This is executed when the value is written to the database. Make your conversions here, optionally using the $platform.
-        }
-    
-        public function getName()
-        {
-            return self::MYTYPE; // modify to match your constant name
-        }
-    }
-
-Restrictions to keep in mind:
-
-
--  If the value of the field is *NULL* the method
-   ``convertToDatabaseValue()`` is not called.
--  The ``UnitOfWork`` never passes values to the database convert
-   method that did not change in the request.
-
-When you have implemented the type you still need to let Doctrine
-know about it. This can be achieved through the
-``Doctrine\DBAL\Types\Type#addType($name, $className)``
-method. See the following example:
-
-.. code-block:: php
-
-    <?php
-    // in bootstrapping code
-    
-    // ...
-    
-    use Doctrine\DBAL\Types\Type;
-    
-    // ...
-    
-    // Register my type
-    Type::addType('mytype', 'My\Project\Types\MyType');
-
-As can be seen above, when registering the custom types in the
-configuration you specify a unique name for the mapping type and
-map that to the corresponding fully qualified class name. Now you
-can use your new type in your mapping like this:
-
-.. code-block:: php
-
-    <?php
-    class MyPersistentClass
-    {
-        /** @Column(type="mytype") */
-        private $field;
-    }
-
-To have Schema-Tool convert the underlying database type of your
-new "mytype" directly into an instance of ``MyType`` you have to
-additionally register this mapping with your database platform:
-
-.. code-block:: php
-
-    <?php
-    $conn = $em->getConnection();
-    $conn->getDatabasePlatform()->registerDoctrineTypeMapping('db_mytype', 'mytype');
-
-Now using Schema-Tool, whenever it detects a column having the
-``db_mytype`` it will convert it into a ``mytype`` Doctrine Type
-instance for Schema representation. Keep in mind that you can
-easily produce clashes this way, each database type can only map to
-exactly one Doctrine mapping type.
-
-Custom ColumnDefinition
------------------------
-
-You can define a custom definition for each column using the "columnDefinition"
-attribute of ``@Column``. You have to define all the definitions that follow
-the name of a column here.
-
-.. note::
-
-    Using columnDefinition will break change-detection in SchemaTool.
-
 Identifiers / Primary Keys
 --------------------------
 
 Every entity class needs an identifier/primary key. You designate
-the field that serves as the identifier with the ``@Id`` marker
-annotation. Here is an example:
+the field that serves as the identifier with the ``@Id``
+annotation:
 
 .. configuration-block::
 
@@ -466,14 +328,12 @@ annotation. Here is an example:
             name:
               length: 50
 
-Without doing anything else, the identifier is assumed to be
-manually assigned. That means your code would need to properly set
-the identifier property before passing a new entity to
+This definition is missing an ID generation strategy, which means that your code needs to assign
+the identifier manually before passing a new entity to
 ``EntityManager#persist($entity)``.
 
-A common alternative strategy is to use a generated value as the
-identifier. To do this, you use the ``@GeneratedValue`` annotation
-like this:
+Doctrine can alternatively generate identifiers for entities using generation strategies,
+using database sequences or auto incrementing numbers.
 
 .. configuration-block::
 
@@ -530,7 +390,6 @@ identifier generation strategy more explicitly, which allows to
 make use of some additional features.
 
 Here is the list of possible generation strategies:
-
 
 -  ``AUTO`` (default): Tells Doctrine to pick the strategy that is
    preferred by the used database platform. The preferred strategies
@@ -648,12 +507,10 @@ To designate a composite primary key / identifier, simply put the
 Quoting Reserved Words
 ----------------------
 
-It may sometimes be necessary to quote a column or table name
-because it conflicts with a reserved word of the particular RDBMS
-in use. This is often referred to as "Identifier Quoting". To let
-Doctrine know that you would like a table or column name to be
-quoted in all SQL statements, enclose the table or column name in
-backticks. Here is an example:
+Sometimes it is necessary to quote a column or table name because of reserved
+word conflicts. Doctrine does not quote identifiers automatically, because it
+leads to more problems then it would solve. Quoting tables and column names
+needs to be done explicitly using ticks in the definition.
 
 .. code-block:: php
 
@@ -666,18 +523,116 @@ according to the used database platform.
 
 .. warning::
 
-    Identifier Quoting is not supported for join column
-    names or discriminator column names.
+    Identifier Quoting does not work for join column names or discriminator
+    column names.
 
-.. warning::
+.. _reference-basic-mapping-custom-mapping-types:
 
-    Identifier Quoting is a feature that is mainly intended
-    to support legacy database schemas. The use of reserved words and
-    identifier quoting is generally discouraged. Identifier quoting
-    should not be used to enable the use non-standard-characters such
-    as a dash in a hypothetical column ``test-name``. Also Schema-Tool
-    will likely have troubles when quoting is used for case-sensitivity
-    reasons (in Oracle for example).
+Custom Mapping Types
+--------------------
 
+Doctrine allows you to create new mapping types. This can come in
+handy when you're missing a specific mapping type or when you want
+to replace the existing implementation of a mapping type.
 
+In order to create a new mapping type you need to subclass
+``Doctrine\DBAL\Types\Type`` and implement/override the methods as
+you wish. Here is an example skeleton of such a custom type class:
+
+.. code-block:: php
+
+    <?php
+    namespace My\Project\Types;
+    
+    use Doctrine\DBAL\Types\Type;
+    use Doctrine\DBAL\Platforms\AbstractPlatform;
+    
+    /**
+     * My custom datatype.
+     */
+    class MyType extends Type
+    {
+        const MYTYPE = 'mytype'; // modify to match your type name
+    
+        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        {
+            // return the SQL used to create your column type. To create a portable column type, use the $platform.
+        }
+    
+        public function convertToPHPValue($value, AbstractPlatform $platform)
+        {
+            // This is executed when the value is read from the database. Make your conversions here, optionally using the $platform.
+        }
+    
+        public function convertToDatabaseValue($value, AbstractPlatform $platform)
+        {
+            // This is executed when the value is written to the database. Make your conversions here, optionally using the $platform.
+        }
+    
+        public function getName()
+        {
+            return self::MYTYPE; // modify to match your constant name
+        }
+    }
+
+The following assumptions are apply to mapping types by the ORM:
+
+-  If the value of the field is *NULL* the method
+   ``convertToDatabaseValue()`` is not called.
+-  The ``UnitOfWork`` never passes values to the database convert
+   method that did not change in the request.
+
+When you have implemented the type you still need to let Doctrine
+know about it. This can be achieved through the
+``Doctrine\DBAL\Types\Type#addType($name, $className)``
+method. See the following example:
+
+.. code-block:: php
+
+    <?php
+    // in bootstrapping code
+
+    // ...
+
+    use Doctrine\DBAL\Types\Type;
+
+    // ...
+
+    // Register my type
+    Type::addType('mytype', 'My\Project\Types\MyType');
+
+To convert the underlying database type of your
+new "mytype" directly into an instance of ``MyType`` when performing
+schema operations, the type has to be registered with the database
+platform as well:
+
+.. code-block:: php
+
+    <?php
+    $conn = $em->getConnection();
+    $conn->getDatabasePlatform()->registerDoctrineTypeMapping('db_mytype', 'mytype');
+
+When registering the custom types in the configuration you specify a unique
+name for the mapping type and map that to the corresponding fully qualified
+class name. Now the new type can be used when mapping columns:
+
+.. code-block:: php
+
+    <?php
+    class MyPersistentClass
+    {
+        /** @Column(type="mytype") */
+        private $field;
+    }
+
+Custom ColumnDefinition
+-----------------------
+
+You can define a custom definition for each column using the "columnDefinition"
+attribute of ``@Column``. You have to define all the definitions that follow
+the name of a column here.
+
+.. note::
+
+    Using columnDefinition will break change-detection in SchemaTool.
 
