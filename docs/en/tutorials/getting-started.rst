@@ -1037,7 +1037,7 @@ like this:
     require_once "bootstrap.php";
 
     $theReporterId = $argv[1];
-    $theDefaultEngineerId = $argv[1];
+    $theDefaultEngineerId = $argv[2];
     $productIds = explode(",", $argv[3]);
 
     $reporter = $entityManager->find("User", $theReporterId);
