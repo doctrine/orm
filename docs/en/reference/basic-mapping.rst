@@ -243,7 +243,7 @@ Example:
 In that example we configured the property ``id`` to map to the column ``id``
 using the mapping type ``integer``. The field ``name`` is mapped to the column
 ``name`` with the default mapping type ``string``. Column names are assumed to
-be the same as the field names unless you pecify a different name for the
+be the same as the field names unless you specify a different name for the
 column using the ``name`` attribute of the Column annotation:
 
 .. configuration-block::
