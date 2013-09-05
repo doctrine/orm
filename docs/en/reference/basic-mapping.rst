@@ -66,7 +66,7 @@ annotations for supplying object-relational mapping metadata.
 Persistent classes
 ------------------
 
-Every PHP Classthat you want to save in the database using Doctrine
+Every PHP Class that you want to save in the database using Doctrine
 need to be configured as "Entity".
 
 .. configuration-block::
