@@ -575,7 +575,7 @@ you wish. Here is an example skeleton of such a custom type class:
         }
     }
 
-The following assumptions are apply to mapping types by the ORM:
+The following assumptions are applied to mapping types by the ORM:
 
 -  If the value of the field is *NULL* the method
    ``convertToDatabaseValue()`` is not called.
