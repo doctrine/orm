@@ -16,11 +16,11 @@
         "php": ">=5.3.2",
         "ext-pdo": "*",
         "doctrine/collections": "~1.1",
-        "doctrine/dbal": ">=2.4-beta,<2.5-dev",
-        "symfony/console": "2.*"
+        "doctrine/dbal": "~2.4",
+        "symfony/console": "~2.0"
     },
     "require-dev": {
-        "symfony/yaml": "2.1",
+        "symfony/yaml": "~2.1",
         "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {
