@@ -35,6 +35,6 @@
         }
     },
     "archive": {
-        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor"]
+        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp", "*coveralls.yml"]
     }
 }
