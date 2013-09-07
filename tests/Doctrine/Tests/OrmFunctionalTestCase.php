@@ -479,6 +479,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         throw $e;
     }
 
+    public function assertSQLEquals($expectedSql, $actualSql)
+    {
+        return $this->assertEquals(strtolower($expectedSql), strtolower($actualSql), "Lowercase comparison of SQL statements failed.");
+    }
+
     /**
      * Using the SQL Logger Stack this method retrieves the current query count executed in this test.
      *
