@@ -53,7 +53,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entities = $entity1->getEntities()->count();
 
         $this->assertSQLEquals(
-            "SELECT COUNT(*) FROM entity1_entity2 t WHERE parent = ?",
+            "SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?",
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
     }
