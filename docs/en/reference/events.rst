@@ -742,9 +742,9 @@ Entity listeners
 
 .. versionadded:: 2.4
 
-An entity listeners is a lifecycle listener classes used for an entity.
+An entity listener is a lifecycle listener class used for an entity.
 
-- The entity listeners mapping may be applied to an entity class or mapped superclass.
+- The entity listener's mapping may be applied to an entity class or mapped superclass.
 - An entity listener is defined by mapping the entity class with the corresponding mapping.
 
 .. configuration-block::
