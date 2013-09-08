@@ -1018,17 +1018,3 @@ class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStra
         return strtolower($className);
     }
 }
-<<<<<<< HEAD
-=======
-
-class MyPrefixNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function propertyToColumnName($propertyName, $className = null)
-    {
-        return strtolower($this->classToTableName($className)) . '_' . $propertyName;
-    }
-}
->>>>>>> [DDC-2608][DDC-2662] Fix SequenceGenerator requiring "sequenceName" and now throw exception. Fix a bug in quoting the sequenceName.
