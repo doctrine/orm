@@ -977,6 +977,31 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $cm->setAttributeOverride('name', array('type'=>'date'));
     }
+
+    /**
+     * @group DDC-2608
+     */
+    public function testSetSequenceGeneratorThrowsExceptionWhenSequenceNameIsMissing()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->setSequenceGeneratorDefinition(array());
+    }
+
+    /**
+     * @group DDC-2662
+     */
+    public function testQuotedSequenceName()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $cm->setSequenceGeneratorDefinition(array('sequenceName' => '`foo`'));
+
+        $this->assertEquals(array('sequenceName' => 'foo', 'quoted' => true), $cm->sequenceGeneratorDefinition);
+    }
 }
 
 class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
