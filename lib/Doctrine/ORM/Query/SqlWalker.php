@@ -401,7 +401,7 @@ class SqlWalker implements TreeWalker
         foreach ($this->selectedClasses as $selectedClass) {
             $dqlAlias  = $selectedClass['dqlAlias'];
             $qComp     = $this->queryComponents[$dqlAlias];
-            $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
+            $persister = $this->em->getEntityPersister($qComp['metadata']->name);
 
             if ( ! isset($qComp['relation']['orderBy'])) {
                 continue;
@@ -1238,7 +1238,7 @@ class SqlWalker implements TreeWalker
 
                 $resultAlias = $selectExpression->fieldIdentificationVariable ?: $fieldName;
                 $tableName   = ($class->isInheritanceTypeJoined())
-                    ? $this->em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName)
+                    ? $this->em->getEntityPersister($class->name)->getOwningTable($fieldName)
                     : $class->getTableName();
 
                 $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);

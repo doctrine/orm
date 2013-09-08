@@ -35,6 +35,8 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\ORM\Persister\DefaultPersisterFactory;
+use Doctrine\ORM\Persister\PersisterFactory;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -804,5 +806,31 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['repositoryFactory'])
             ? $this->_attributes['repositoryFactory']
             : new DefaultRepositoryFactory();
+    }
+
+    /**
+     * Set the persister factory.
+     *
+     * @since 2.5
+     *
+     * @param \Doctrine\ORM\Persister\PersisterFactory $persisterFactory
+     */
+    public function setPersisterFactory(PersisterFactory $persisterFactory)
+    {
+        $this->_attributes['persisterFactory'] = $persisterFactory;
+    }
+
+    /**
+     * Get the persister factory.
+     *
+     * @since 2.5
+     *
+     * @return \Doctrine\ORM\Persister\PersisterFactory
+     */
+    public function getPersisterFactory()
+    {
+        return isset($this->_attributes['persisterFactory'])
+            ? $this->_attributes['persisterFactory']
+            : new DefaultPersisterFactory();
     }
 }

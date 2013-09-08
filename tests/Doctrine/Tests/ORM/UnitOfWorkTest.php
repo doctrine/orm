@@ -7,6 +7,7 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
+use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 
@@ -26,22 +27,23 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     protected function setUp() {
         parent::setUp();
-        $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
-        // SUT
-        $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
-        $this->_emMock->setUnitOfWork($this->_unitOfWork);
-    }
 
-    protected function tearDown() {
+        $this->_connectionMock = new ConnectionMock(array(), new DriverMock());
+        $this->_emMock         = EntityManagerMock::create($this->_connectionMock);
+        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
+
+        $this->_emMock->setUnitOfWork($this->_unitOfWork);
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
         $user = new ForumUser();
         $user->username = 'romanb';
+
         $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
+
         $this->_unitOfWork->scheduleForDelete($user);
+
         $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
     }
 
@@ -52,7 +54,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         // Setup fake persister and id generator for identity generation
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
         $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
@@ -90,22 +94,28 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testCascadedIdentityColumnInsert()
     {
         // Setup fake persister and id generator for identity generation
-        //ForumUser
+        // ForumUser
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
         $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+
         // ForumAvatar
         $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumAvatar"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarPersister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarPersister);
+
         $avatarPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
         $user = new ForumUser();
         $user->username = 'romanb';
+
         $avatar = new ForumAvatar();
         $user->avatar = $avatar;
-        $this->_unitOfWork->persist($user); // save cascaded to avatar
 
+        $this->_unitOfWork->persist($user); // save cascaded to avatar
         $this->_unitOfWork->commit();
 
         $this->assertTrue(is_numeric($user->id));
@@ -123,16 +133,21 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testChangeTrackingNotify()
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
+
         $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedRelatedItem"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
 
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
-        $this->_unitOfWork->persist($entity);
 
+        $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->commit();
+
         $this->assertEquals(1, count($persister->getInserts()));
+
         $persister->reset();
 
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
@@ -141,25 +156,29 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $entity->setTransient('newtransientvalue');
 
         $this->assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
-
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
         $entity->getItems()->add($item);
         $item->setOwner($entity);
-        $this->_unitOfWork->persist($item);
 
+        $this->_unitOfWork->persist($item);
         $this->_unitOfWork->commit();
+
         $this->assertEquals(1, count($itemPersister->getInserts()));
+
         $persister->reset();
         $itemPersister->reset();
 
-
         $entity->getItems()->removeElement($item);
         $item->setOwner(null);
+
         $this->assertTrue($entity->getItems()->isDirty());
+
         $this->_unitOfWork->commit();
+
         $updates = $itemPersister->getUpdates();
+
         $this->assertEquals(1, count($updates));
         $this->assertTrue($updates[0] === $item);
     }
@@ -167,10 +186,12 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
 
         $e = new VersionedAssignedIdentifierEntity();
         $e->id = 42;
+
         $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($e));
         $this->assertFalse($persister->isExistsCalled());
     }
@@ -178,7 +199,8 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testGetEntityStateWithAssignedIdentity()
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\CMS\CmsPhonenumber"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
 
         $ph = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
         $ph->phonenumber = '12345';
@@ -190,10 +212,13 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
         // if the entity is already managed the exists() check should be skipped
         $this->_unitOfWork->registerManaged($ph, array('phonenumber' => '12345'), array());
+
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
         $this->assertFalse($persister->isExistsCalled());
+
         $ph2 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
         $ph2->phonenumber = '12345';
+
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
@@ -206,11 +231,13 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
         $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
+        $this->_emMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
 
         // Create a test user
         $user = new ForumUser();
         $user->name = 'Jasper';
+
         $this->_unitOfWork->persist($user);
         $this->_unitOfWork->commit();
 
@@ -227,6 +254,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testLockWithoutEntityThrowsException()
     {
         $this->setExpectedException('InvalidArgumentException');
+        
         $this->_unitOfWork->lock(null, null, null);
     }
 }

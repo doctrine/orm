@@ -78,6 +78,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($entityAnnot->repositoryClass !== null) {
                 $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
             }
+            if ($entityAnnot->persisterClass !== null) {
+                $metadata->setCustomPersisterClass($entityAnnot->persisterClass);
+            }
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
@@ -311,6 +314,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } else if ($oneToManyAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
+                $mapping['persisterClass'] = $oneToManyAnnot->persisterClass;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $mapping['indexBy'] = $oneToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
@@ -354,6 +358,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['targetEntity'] = $manyToManyAnnot->targetEntity;
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $mapping['inversedBy'] = $manyToManyAnnot->inversedBy;
+                $mapping['persisterClass'] = $manyToManyAnnot->persisterClass;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;

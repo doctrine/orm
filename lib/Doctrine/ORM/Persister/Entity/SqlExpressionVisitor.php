@@ -17,29 +17,41 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Entity;
 
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persister\PersisterException;
 
 /**
- * Extract the values from a criteria/expression
+ * Visit Expressions and generate SQL WHERE conditions from them.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @since 2.3
  */
-class SqlValueVisitor extends ExpressionVisitor
+class SqlExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * @var array
+     * @var \Doctrine\ORM\Persister\Entity\BasicEntityPersister
      */
-    private $values = array();
+    private $persister;
 
     /**
-     * @var array
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
-    private $types  = array();
+    private $classMetadata;
+
+    /**
+     * @param \Doctrine\ORM\Persister\Entity\BasicEntityPersister $persister
+     */
+    public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)
+    {
+        $this->persister = $persister;
+        $this->classMetadata = $classMetadata;
+    }
 
     /**
      * Converts a comparison expression into the target query language output.
@@ -50,18 +62,18 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $value          = $this->getValueFromComparison($comparison);
-        $field          = $comparison->getField();
-        $operator       = $comparison->getOperator();
+        $field = $comparison->getField();
+        $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
 
-        if (($operator === Comparison::EQ || $operator === Comparison::IS) && $value === null) {
-            return;
-        } else if ($operator === Comparison::NEQ && $value === null) {
-            return;
+        if (isset($this->classMetadata->associationMappings[$field]) &&
+            $value !== null &&
+            ! is_object($value) &&
+            ! in_array($comparison->getOperator(), array(Comparison::IN, Comparison::NIN))) {
+
+            throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->name, $field);
         }
 
-        $this->values[] = $value;
-        $this->types[]  = array($field, $value);
+        return $this->persister->getSelectConditionStatementSQL($field, $value, null, $comparison->getOperator());
     }
 
     /**
@@ -70,11 +82,26 @@ class SqlValueVisitor extends ExpressionVisitor
      * @param \Doctrine\Common\Collections\Expr\CompositeExpression $expr
      *
      * @return mixed
+     *
+     * @throws \RuntimeException
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
+        $expressionList = array();
+
         foreach ($expr->getExpressionList() as $child) {
-            $this->dispatch($child);
+            $expressionList[] = $this->dispatch($child);
+        }
+
+        switch($expr->getType()) {
+            case CompositeExpression::TYPE_AND:
+                return '(' . implode(' AND ', $expressionList) . ')';
+
+            case CompositeExpression::TYPE_OR:
+                return '(' . implode(' OR ', $expressionList) . ')';
+
+            default:
+                throw new \RuntimeException("Unknown composite " . $expr->getType());
         }
     }
 
@@ -87,32 +114,7 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function walkValue(Value $value)
     {
-        return;
-    }
-
-    /**
-     * Returns the Parameters and Types necessary for matching the last visited expression.
-     *
-     * @return array
-     */
-    public function getParamsAndTypes()
-    {
-        return array($this->values, $this->types);
-    }
-
-    /**
-     * Returns the value from a Comparison. In case of a CONTAINS comparison,
-     * the value is wrapped in %-signs, because it will be used in a LIKE clause.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
-     * @return mixed
-     */
-    protected function getValueFromComparison(Comparison $comparison)
-    {
-        $value = $comparison->getValue()->getValue();
-
-        return $comparison->getOperator() == Comparison::CONTAINS
-            ? "%{$value}%"
-            : $value;
+        return '?';
     }
 }
+

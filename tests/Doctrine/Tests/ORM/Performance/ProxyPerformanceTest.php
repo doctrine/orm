@@ -24,7 +24,7 @@ use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persister\Entity\BasicEntityPersister;
 
 /**
  * Performance test used to measure performance of proxy instantiation

@@ -17,8 +17,26 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister;
 
-class UnionSubclassPersister extends BasicEntityPersister
+use Doctrine\ORM\ORMException;
+
+/**
+ * Persister Exception
+ *
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ */
+class PersisterException extends ORMException
 {
+    /**
+     * @return PersisterException
+     */
+    static public function matchingAssocationFieldRequiresObject($class, $associationName)
+    {
+        return new self(sprintf(
+            "Cannot match on %s::%s with a non-object value. Matching objects by id is " .
+            "not compatible with matching on an in-memory collection, which compares objects by reference.",
+            $class, $associationName
+        ));
+    }
 }

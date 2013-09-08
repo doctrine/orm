@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Collection;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -31,7 +31,7 @@ use Doctrine\ORM\UnitOfWork;
  * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
-class ManyToManyPersister extends AbstractCollectionPersister
+class ManyToManyCollectionPersister extends AbstractCollectionPersister
 {
     /**
      * {@inheritdoc}
@@ -265,9 +265,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
-        $mapping = $coll->getMapping();
+        $mapping   = $coll->getMapping();
+        $persister = $this->em->getEntityPersister($mapping['targetEntity']);
 
-        return $this->em->getUnitOfWork()->getEntityPersister($mapping['targetEntity'])->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+        return $persister->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 
     /**

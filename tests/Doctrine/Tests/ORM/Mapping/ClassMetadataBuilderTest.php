@@ -56,6 +56,12 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsGroup', $this->cm->customRepositoryClassName);
     }
 
+    public function testSetCustomPersisterClass()
+    {
+        $this->assertIsFluent($this->builder->setCustomPersisterClass('Doctrine\Tests\Models\CMS\CmsGroup'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsGroup', $this->cm->customPersisterClassName);
+    }
+
     public function testSetReadOnly()
     {
         $this->assertIsFluent($this->builder->setReadOnly());
@@ -193,7 +199,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array('groups' => array (
                 'fieldName' => 'groups',
-                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'targetEntity' => 'Doctrine\Tests\Models\CMS\CmsGroup',
                 'cascade' => array (
                   0 => 'remove',
                   1 => 'persist',
@@ -217,7 +223,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
                 'isOwningSide' => true,
-                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'sourceEntity' => 'Doctrine\Tests\Models\CMS\CmsUser',
                 'isCascadeRemove' => true,
                 'isCascadePersist' => true,
                 'isCascadeRefresh' => true,
@@ -252,7 +258,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array('groups' => array (
                 'fieldName' => 'groups',
-                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'targetEntity' => 'Doctrine\Tests\Models\CMS\CmsGroup',
                 'cascade' => array (
                   0 => 'remove',
                   1 => 'persist',
@@ -276,7 +282,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
                 'isOwningSide' => true,
-                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'sourceEntity' => 'Doctrine\Tests\Models\CMS\CmsUser',
                 'isCascadeRemove' => true,
                 'isCascadePersist' => true,
                 'isCascadeRefresh' => true,
@@ -306,6 +312,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                               ->setJoinTable('groups_users')
                               ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                               ->addInverseJoinColumn('user_id', 'id')
+                              ->setPersisterClass('Doctrine\ORM\Persister\Collection\ManyToManyCollectionPersister')
                               ->cascadeAll()
                               ->fetchExtraLazy()
                               ->build()
@@ -315,7 +322,8 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
             'groups' =>
             array(
                 'fieldName' => 'groups',
-                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'targetEntity' => 'Doctrine\Tests\Models\CMS\CmsGroup',
+                'persisterClass' => 'Doctrine\ORM\Persister\Collection\ManyToManyCollectionPersister',
                 'cascade' =>
                 array(
                     0 => 'remove',
@@ -357,7 +365,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
                 'isOwningSide' => true,
-                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'sourceEntity' => 'Doctrine\Tests\Models\CMS\CmsUser',
                 'isCascadeRemove' => true,
                 'isCascadePersist' => true,
                 'isCascadeRefresh' => true,
@@ -387,6 +395,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertIsFluent(
                 $this->builder->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                         ->mappedBy('test')
+                        ->setPersisterClass('Doctrine\ORM\Persister\Collection\OneToManyCollectionPersister')
                         ->setOrderBy(array('test'))
                         ->setIndexBy('test')
                         ->build()
@@ -396,7 +405,8 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
             'groups' =>
             array(
                 'fieldName' => 'groups',
-                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'targetEntity' => 'Doctrine\Tests\Models\CMS\CmsGroup',
+                'persisterClass' => 'Doctrine\ORM\Persister\Collection\OneToManyCollectionPersister',
                 'mappedBy' => 'test',
                 'orderBy' =>
                 array(
@@ -406,7 +416,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'type' => 4,
                 'inversedBy' => NULL,
                 'isOwningSide' => false,
-                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'sourceEntity' => 'Doctrine\Tests\Models\CMS\CmsUser',
                 'fetch' => 2,
                 'cascade' =>
                 array(

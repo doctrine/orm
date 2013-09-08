@@ -13,20 +13,6 @@ class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
     private $_mockDataChangeSets = array();
 
     /**
-     * @var array|null
-     */
-    private $_persisterMock;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEntityPersister($entityName)
-    {
-        return isset($this->_persisterMock[$entityName]) ?
-                $this->_persisterMock[$entityName] : parent::getEntityPersister($entityName);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getEntityChangeSet($entity)
@@ -42,8 +28,8 @@ class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
      * Sets a (mock) persister for an entity class that will be returned when
      * getEntityPersister() is invoked for that class.
      *
-     * @param string                                        $entityName
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister $persister
+     * @param string                                              $entityName
+     * @param \Doctrine\ORM\Persister\Entity\BasicEntityPersister $persister
      *
      * @return void
      */

@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Collection;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
@@ -26,9 +26,11 @@ use Doctrine\ORM\PersistentCollection;
  * Base class for all collection persisters.
  *
  * @since 2.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractCollectionPersister
+abstract class AbstractCollectionPersister implements CollectionPersister
 {
     /**
      * @var EntityManager
@@ -51,7 +53,7 @@ abstract class AbstractCollectionPersister
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $platform;
-    
+
     /**
      * The quote strategy.
      *
@@ -170,7 +172,7 @@ abstract class AbstractCollectionPersister
      * Counts the size of this persistent collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * 
+     *
      * @return integer
      *
      * @throws \BadMethodCallException
@@ -258,10 +260,10 @@ abstract class AbstractCollectionPersister
 
     /**
      * Gets an element by key.
-     * 
+     *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed                              $index
-     * 
+     *
      * @return mixed
      *
      * @throws \BadMethodCallException

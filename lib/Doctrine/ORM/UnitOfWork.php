@@ -461,8 +461,11 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->extraUpdates as $oid => $update) {
             list ($entity, $changeset) = $update;
 
+            $persister = $this->em->getEntityPersister(get_class($entity));
+
             $this->entityChangeSets[$oid] = $changeset;
-            $this->getEntityPersister(get_class($entity))->update($entity);
+
+            $persister->update($entity);
         }
     }
 
@@ -932,7 +935,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $entities   = array();
         $className  = $class->name;
-        $persister  = $this->getEntityPersister($className);
+        $persister  = $this->em->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
 
         foreach ($this->entityInsertions as $oid => $entity) {
@@ -982,7 +985,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeUpdates($class)
     {
         $className          = $class->name;
-        $persister          = $this->getEntityPersister($className);
+        $persister          = $this->em->getEntityPersister($className);
         $preUpdateInvoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
         $postUpdateInvoke   = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
 
@@ -1018,7 +1021,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeDeletions($class)
     {
         $className  = $class->name;
-        $persister  = $this->getEntityPersister($className);
+        $persister  = $this->em->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
 
         foreach ($this->entityDeletions as $oid => $entity) {
@@ -1411,7 +1414,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // db lookup
-                if ($this->getEntityPersister($class->name)->exists($entity)) {
+                if ($this->em->getEntityPersister($class->name)->exists($entity)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1428,7 +1431,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // db lookup
-                if ($this->getEntityPersister($class->name)->exists($entity)) {
+                if ($this->em->getEntityPersister($class->name)->exists($entity)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -2030,13 +2033,14 @@ class UnitOfWork implements PropertyChangedListener
 
         $visited[$oid] = $entity; // mark visited
 
-        $class = $this->em->getClassMetadata(get_class($entity));
+        $class     = $this->em->getClassMetadata(get_class($entity));
+        $persister = $this->em->getEntityPersister($class->name);
 
         if ($this->getEntityState($entity) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
-        $this->getEntityPersister($class->name)->refresh(
+        $persister->refresh(
             array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
             $entity
         );
@@ -2305,9 +2309,10 @@ class UnitOfWork implements PropertyChangedListener
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                $oid = spl_object_hash($entity);
+                $oid       = spl_object_hash($entity);
+                $persister = $this->em->getEntityPersister($class->name);
 
-                $this->getEntityPersister($class->name)->lock(
+                $persister->lock(
                     array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
                     $lockMode
                 );
@@ -2584,7 +2589,9 @@ class UnitOfWork implements PropertyChangedListener
                 case ($assoc['type'] & ClassMetadata::TO_ONE):
                     if ( ! $assoc['isOwningSide']) {
                         // Inverse side of x-to-one can never be lazy
-                        $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
+                        $persister = $this->em->getEntityPersister($assoc['targetEntity']);
+
+                        $class->reflFields[$field]->setValue($entity, $persister->loadOneToOneEntity($assoc, $entity));
 
                         continue 2;
                     }
@@ -2644,7 +2651,8 @@ class UnitOfWork implements PropertyChangedListener
                             // If it might be a subtype, it can not be lazy. There isn't even
                             // a way to solve this with deferred eager loading, which means putting
                             // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
-                            $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                            $persister = $this->em->getEntityPersister($assoc['targetEntity']);
+                            $newValue  = $persister->loadOneToOneEntity($assoc, $entity, $associatedId);
                             break;
 
                         default:
@@ -2742,9 +2750,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $class = $this->em->getClassMetadata($entityName);
+            $class     = $this->em->getClassMetadata($entityName);
+            $persister = $this->em->getEntityPersister($entityName);
 
-            $this->getEntityPersister($entityName)->loadAll(
+            $persister->loadAll(
                 array_combine($class->identifier, array(array_values($ids)))
             );
         }
@@ -2762,7 +2771,7 @@ class UnitOfWork implements PropertyChangedListener
     public function loadCollection(PersistentCollection $collection)
     {
         $assoc     = $collection->getMapping();
-        $persister = $this->getEntityPersister($assoc['targetEntity']);
+        $persister = $this->em->getEntityPersister($assoc['targetEntity']);
 
         switch ($assoc['type']) {
             case ClassMetadata::ONE_TO_MANY:
@@ -2938,68 +2947,29 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the EntityPersister for an Entity.
      *
+     * @deprecated
+     *
      * @param string $entityName The name of the Entity.
      *
-     * @return \Doctrine\ORM\Persisters\BasicEntityPersister
+     * @return \Doctrine\ORM\Persister\Entity\EntityPersister
      */
     public function getEntityPersister($entityName)
     {
-        if (isset($this->persisters[$entityName])) {
-            return $this->persisters[$entityName];
-        }
-
-        $class = $this->em->getClassMetadata($entityName);
-
-        switch (true) {
-            case ($class->isInheritanceTypeNone()):
-                $persister = new Persisters\BasicEntityPersister($this->em, $class);
-                break;
-
-            case ($class->isInheritanceTypeSingleTable()):
-                $persister = new Persisters\SingleTablePersister($this->em, $class);
-                break;
-
-            case ($class->isInheritanceTypeJoined()):
-                $persister = new Persisters\JoinedSubclassPersister($this->em, $class);
-                break;
-
-            default:
-                $persister = new Persisters\UnionSubclassPersister($this->em, $class);
-        }
-
-        $this->persisters[$entityName] = $persister;
-
-        return $this->persisters[$entityName];
+        return $this->em->getEntityPersister($entityName);
     }
 
     /**
      * Gets a collection persister for a collection-valued association.
      *
-     * @param array $association
+     * @deprecated
      *
-     * @return \Doctrine\ORM\Persisters\AbstractCollectionPersister
+     * @param array $association The association mapping.
+     *
+     * @return \Doctrine\ORM\Persisters\Collection\CollectionPersister
      */
-    public function getCollectionPersister(array $association)
+    public function getCollectionPersister($association)
     {
-        $type = $association['type'];
-
-        if (isset($this->collectionPersisters[$type])) {
-            return $this->collectionPersisters[$type];
-        }
-
-        switch ($type) {
-            case ClassMetadata::ONE_TO_MANY:
-                $persister = new Persisters\OneToManyPersister($this->em);
-                break;
-
-            case ClassMetadata::MANY_TO_MANY:
-                $persister = new Persisters\ManyToManyPersister($this->em);
-                break;
-        }
-
-        $this->collectionPersisters[$type] = $persister;
-
-        return $this->collectionPersisters[$type];
+        return $this->em->getCollectionPersister($association);
     }
 
     /**

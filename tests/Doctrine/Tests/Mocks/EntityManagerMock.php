@@ -21,6 +21,8 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\Common\EventManager;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Proxy\ProxyFactory;
 
 /**
@@ -37,6 +39,11 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
      * @var \Doctrine\ORM\Proxy\ProxyFactory|null
      */
     private $_proxyFactoryMock;
+
+    /**
+     * @var array|null
+     */
+    private $_persisterMock;
 
     /**
      * {@inheritdoc}
@@ -83,19 +90,46 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
      *
      * {@inheritdoc}
      */
-    public static function create($conn, \Doctrine\ORM\Configuration $config = null,
-            \Doctrine\Common\EventManager $eventManager = null)
+    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
     {
         if (is_null($config)) {
             $config = new \Doctrine\ORM\Configuration();
+            
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
         }
+
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();
         }
 
         return new EntityManagerMock($conn, $config, $eventManager);
+    }
+
+    /* MOCK API */
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEntityPersister($entityName)
+    {
+        return isset($this->_persisterMock[$entityName])
+            ? $this->_persisterMock[$entityName]
+            : parent::getEntityPersister($entityName);
+    }
+
+    /**
+     * Sets a (mock) persister for an entity class that will be returned when
+     * getEntityPersister() is invoked for that class.
+     *
+     * @param string                                              $entityName
+     * @param \Doctrine\ORM\Persister\Entity\BasicEntityPersister $persister
+     *
+     * @return void
+     */
+    public function setEntityPersister($entityName, $persister)
+    {
+        $this->_persisterMock[$entityName] = $persister;
     }
 }

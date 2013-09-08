@@ -81,6 +81,20 @@ class ClassMetadataBuilder
     }
 
     /**
+     * Sets custom Persister class name.
+     *
+     * @param string $persisterClassName
+     *
+     * @return ClassMetadataBuilder
+     */
+    public function setCustomPersisterClass($persisterClassName)
+    {
+        $this->cm->setCustomPersisterClass($persisterClassName);
+
+        return $this;
+    }
+
+    /**
      * Marks class read only.
      *
      * @return ClassMetadataBuilder

@@ -16,51 +16,14 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Persister\Collection;
 
 /**
- * @Annotation
- * @Target("PROPERTY")
+ * Persister for collections of basic elements / value types.
+ *
+ * @author robo
+ * @todo Implementation once support for collections of basic elements (i.e. strings) is added.
  */
-final class OneToMany implements Annotation
+abstract class ElementCollectionPersister extends AbstractCollectionPersister
 {
-    /**
-     * @var string
-     */
-    public $mappedBy;
-
-    /**
-     * @var string
-     */
-    public $targetEntity;
-
-    /**
-     * @var string
-     */
-    public $persisterClass;
-
-    /**
-     * @var array<string>
-     */
-    public $cascade;
-
-    /**
-     * The fetching strategy to use for the association.
-     *
-     * @var string
-     *
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
-     */
-    public $fetch = 'LAZY';
-
-    /**
-     * @var boolean
-     */
-    public $orphanRemoval = false;
-
-    /**
-     * @var string
-     */
-    public $indexBy;
 }

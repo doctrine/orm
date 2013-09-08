@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persister\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -37,7 +37,7 @@ use Doctrine\Common\Collections\Criteria;
  * @since 2.0
  * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
-class JoinedSubclassPersister extends AbstractEntityInheritancePersister
+class JoinedSubclassEntityPersister extends AbstractInheritanceEntityPersister
 {
     /**
      * Map that maps column names to the table names that own them.
@@ -138,7 +138,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             : $this->class;
 
         // Prepare statement for the root table
-        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->name);
+        $rootPersister = $this->em->getEntityPersister($rootClass->name);
         $rootTableName = $rootClass->getTableName();
         $rootTableStmt = $this->conn->prepare($rootPersister->getInsertSQL());
 
@@ -150,11 +150,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         foreach ($this->class->parentClasses as $parentClassName) {
-            $parentClass = $this->em->getClassMetadata($parentClassName);
+            $parentClass     = $this->em->getClassMetadata($parentClassName);
             $parentTableName = $parentClass->getTableName();
 
             if ($parentClass !== $rootClass) {
-                $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClassName);
+                $parentPersister = $this->em->getEntityPersister($parentClassName);
+
                 $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
             }
         }
@@ -288,7 +289,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->class->parentClasses as $parentClass) {
             $parentMetadata = $this->em->getClassMetadata($parentClass);
             $parentTable    = $this->quoteStrategy->getTableName($parentMetadata, $this->platform);
-            
+
             $this->conn->delete($parentTable, $id);
         }
     }
@@ -342,7 +343,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // If the current class in the root entity, add the filters
         if ($filterSql = $this->generateFilterConditionSQL($this->em->getClassMetadata($this->class->rootEntityName), $this->getSQLTableAlias($this->class->rootEntityName))) {
-            $conditionSql .= $conditionSql 
+            $conditionSql .= $conditionSql
                 ? ' AND ' . $filterSql
                 : $filterSql;
         }
@@ -488,8 +489,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add join columns (foreign keys)
             foreach ($subClass->associationMappings as $mapping) {
-                if ( ! $mapping['isOwningSide'] 
-                        || ! ($mapping['type'] & ClassMetadata::TO_ONE) 
+                if ( ! $mapping['isOwningSide']
+                        || ! ($mapping['type'] & ClassMetadata::TO_ONE)
                         || isset($mapping['inherited'])) {
                     continue;
                 }
@@ -505,17 +506,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $this->selectColumnListSql = implode(', ', $columnList);
-        
+
         return $this->selectColumnListSql;
     }
 
     /**
-     * {@inheritdoc} 
+     * {@inheritdoc}
      */
     protected function getInsertColumnList()
     {
         // Identifier columns must always come first in the column list of subclasses.
-        $columns = $this->class->parentClasses 
+        $columns = $this->class->parentClasses
             ? $this->class->getIdentifierColumnNames()
             : array();
 

@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Mocks;
 /**
  * EntityPersister implementation used for mocking during tests.
  */
-class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
+class EntityPersisterMock extends \Doctrine\ORM\Persister\Entity\BasicEntityPersister
 {
     /**
      * @var array

@@ -61,6 +61,9 @@ class XmlDriver extends FileDriver
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string)$xmlRoot['repository-class']);
             }
+            if (isset($xmlRoot['persister-class'])) {
+                $metadata->setCustomPersisterClass((string)$xmlRoot['persister-class']);
+            }
             if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
                 $metadata->markReadOnly();
             }
@@ -365,6 +368,10 @@ class XmlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['persister-class'])) {
+                    $mapping['persisterClass'] = (string) $oneToManyElement['persister-class'];
+                }
+
                 if (isset($oneToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
@@ -472,6 +479,10 @@ class XmlDriver extends FileDriver
                     }
 
                     $mapping['joinTable'] = $joinTable;
+                }
+
+                if (isset($manyToManyElement['persister-class'])) {
+                    $mapping['persisterClass'] = (string) $manyToManyElement['persister-class'];
                 }
 
                 if (isset($manyToManyElement->cascade)) {
