@@ -977,6 +977,31 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $cm->setAttributeOverride('name', array('type'=>'date'));
     }
+
+    /**
+     * @group DDC-2608
+     */
+    public function testSetSequenceGeneratorThrowsExceptionWhenSequenceNameIsMissing()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->setSequenceGeneratorDefinition(array());
+    }
+
+    /**
+     * @group DDC-2662
+     */
+    public function testQuotedSequenceName()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $cm->setSequenceGeneratorDefinition(array('sequenceName' => '`foo`'));
+
+        $this->assertEquals(array('sequenceName' => 'foo', 'quoted' => true), $cm->sequenceGeneratorDefinition);
+    }
 }
 
 class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
@@ -993,3 +1018,17 @@ class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStra
         return strtolower($className);
     }
 }
+<<<<<<< HEAD
+=======
+
+class MyPrefixNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function propertyToColumnName($propertyName, $className = null)
+    {
+        return strtolower($this->classToTableName($className)) . '_' . $propertyName;
+    }
+}
+>>>>>>> [DDC-2608][DDC-2662] Fix SequenceGenerator requiring "sequenceName" and now throw exception. Fix a bug in quoting the sequenceName.
