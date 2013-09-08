@@ -433,6 +433,9 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->like('u.firstname', $qb->expr()->literal('Gui%'))
         public function like($x, $y); // Returns Expr\Comparison instance
 
+        // Example - $qb->expr()->notLike('u.firstname', $qb->expr()->literal('Gui%'))
+        public function notLike($x, $y); // Returns Expr\Comparison instance
+
         // Example - $qb->expr()->between('u.id', '1', '10')
         public function between($val, $x, $y); // Returns Expr\Func
 
