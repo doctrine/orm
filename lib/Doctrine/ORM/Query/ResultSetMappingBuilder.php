@@ -101,7 +101,13 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     if (isset($this->metaMappings[$renamedColumnName])) {
                         throw new \InvalidArgumentException("The column '$renamedColumnName' conflicts with another column in the mapper.");
                     }
-                    $this->addMetaResult($alias, $renamedColumnName, $columnName);
+
+                    $this->addMetaResult(
+                        $alias,
+                        $renamedColumnName,
+                        $columnName,
+                        (isset($associationMapping['id']) && $associationMapping['id'] === true)
+                    );
                 }
             }
         }
