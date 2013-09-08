@@ -114,4 +114,22 @@ of several common elements:
 Be aware that class-names specified in the YAML files should be
 fully qualified.
 
+Reference
+~~~~~~~~~~~~~~~~~~~~~~
+
+Unique Constraints
+------------------
+
+It is possible to define unique constraints by the following declaration:
+
+.. code-block:: yaml
+
+    # ECommerceProduct.orm.yml
+    ECommerceProduct:
+      type: entity
+      fields:
+        # definition of some fields
+      uniqueConstraints:
+        search_idx:
+          columns: [ name, email ]
 
