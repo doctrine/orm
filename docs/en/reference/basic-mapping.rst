@@ -19,39 +19,52 @@ Guide Assumptions
 You should have already :doc:`installed and configure <configuration>`
 Doctrine.
 
-Mapping Drivers
----------------
+Creating Classes for the Database
+---------------------------------
 
-Doctrine provides several different ways for specifying
-object-relational mapping metadata:
+Every PHP Class that you want to save in the database using Doctrine
+need to be marked as "Entity". The term "Entity" describes objects
+that have identity over many independent requests. This identity is
+usually achieved by assigning a unique identifier to an entity.
+In this tutorial the following ``Message`` PHP class will serve as
+example Entity:
 
--  Docblock Annotations
--  XML
--  YAML
+.. code-block:: php
+
+    <?php
+    class Message
+    {
+        private $id;
+        private $text;
+        private $postedAt;
+    }
+
+Because Doctrine is a generic library, it can only know about your
+entities when you are describing their existance and structure using
+Metadata Configuration.
+
+Doctrine provides several different ways for specifying object-relational
+mapping metadata:
+
+-  :doc:`Docblock Annotations <annotations-reference>`
+-  :doc:`XML <xml-mapping>`
+-  :doc:`YAML <yml-mapping>`
 -  PHP code
 
 This manual usually mentions docblock annotations in all the examples that are
 spread throughout all chapters, however for many examples alternative YAML and
-XML examples are given as well. There are dedicated reference chapters for
-:doc:`XML <xml-mapping>` and :doc:`YAML <yml-mapping>` mapping, respectively
-that explain them in more detail. There is also a reference chapter for
-:doc:`Annotations <annotations-reference>`.
+XML examples are given as well.
 
 .. note::
 
-    All metadata drivers give exactly the same performance.  Once the metadata
-    of a class has been read from the source (annotations, xml or yaml) it is
-    stored in an instance of the ``Doctrine\ORM\Mapping\ClassMetadata`` class
-    and these instances are stored in the metadata cache. Therefore at the end
-    of the day all drivers perform equally well. If you're not using a metadata
-    cache (not recommended!) then the XML driver is the fastest by using PHP's
-    native XML support.
+    All metadata drivers perform equally. Once the metadata of a class has been
+    read from the source (annotations, xml or yaml) it is stored in an instance
+    of the ``Doctrine\ORM\Mapping\ClassMetadata`` class and these instances are
+    stored in the metadata cache.  If you're not using a metadata cache (not
+    recommended!) then the XML driver is the fastest by using PHP's native XML
+    support.
 
-Persistent classes
-------------------
-
-Every PHP Class that you want to save in the database using Doctrine
-need to be configured as "Entity".
+Marking our ``Message`` entity for Doctrine is straightforward:
 
 .. configuration-block::
 
@@ -59,7 +72,7 @@ need to be configured as "Entity".
 
         <?php
         /** @Entity */
-        class MyPersistentClass
+        class Message
         {
             //...
         }
@@ -67,20 +80,20 @@ need to be configured as "Entity".
     .. code-block:: xml
 
         <doctrine-mapping>
-          <entity name="MyPersistentClass">
+          <entity name="Message">
               <!-- ... -->
           </entity>
         </doctrine-mapping>
 
     .. code-block:: yaml
 
-        MyPersistentClass:
+        Message:
           type: entity
           # ...
 
 With no additional information given Doctrine expects the entity to be saved
-into a table with the same name as the class. You can change this assumption
-by adding more information about the used table:
+into a table with the same name as the class in our case ``Message``.
+You can change this by configuring information about the table:
 
 .. configuration-block::
 
@@ -89,9 +102,9 @@ by adding more information about the used table:
         <?php
         /**
          * @Entity
-         * @Table(name="my_persistent_class")
+         * @Table(name="message")
          */
-        class MyPersistentClass
+        class Message
         {
             //...
         }
@@ -99,20 +112,97 @@ by adding more information about the used table:
     .. code-block:: xml
 
         <doctrine-mapping>
-          <entity name="MyPersistentClass" table="my_persistent_class">
+          <entity name="Message" table="message">
               <!-- ... -->
           </entity>
         </doctrine-mapping>
 
     .. code-block:: yaml
 
-        MyPersistentClass:
+        Message:
           type: entity
-          table: my_persistent_class
+          table: message
           # ...
 
-In this example the class ``MyPersistentClass`` will be saved and fetched from
-the table ``my_persistent_class``.
+Now the class ``Message`` will be saved and fetched from the table ``message``.
+
+Property Mapping
+----------------
+
+The next step after defining a PHP class as entity is mapping of properties
+to columns in a table.
+
+To configure a property use the ``@Column`` docblock annotation. The ``type``
+attribute specifies the Doctrine Mapping Type to use for the field. If the type
+is not specified, ``string`` is used as the default mapping type.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class Message
+        {
+            /** @Column(type="integer") */
+            private $id;
+            /** @Column(length=140) */
+            private $text;
+            /** @Column(type="datetime", name="posted_at") */
+            private $postedAt;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="Message">
+            <field name="id" type="integer" />
+            <field name="text" length="140" />
+            <field name="postedAt" column="posted_at" type="datetime" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Message:
+          type: entity
+          fields:
+            id:
+              type: integer
+            text:
+              length: 140
+            postedAt:
+              type: datetime
+              name: posted_at
+
+Because we don't explicitly specify a column name, Doctrine assumes the field
+name is also the column name. In the example we configured the property ``id`` to map to the column ``id``
+using the mapping type ``integer``. The field ``text`` is mapped to the column
+``text`` with the default mapping type ``string`` and ``postedAt`` is of the
+datetime type, but mapped to a column called ``posted_at``.
+
+The Column annotation has some more attributes. Here is a complete
+list:
+
+-  ``type``: (optional, defaults to 'string') The mapping type to
+   use for the column.
+-  ``name``: (optional, defaults to field name) The name of the
+   column in the database.
+-  ``length``: (optional, default 255) The length of the column in
+   the database. (Applies only if a string-valued column is used).
+-  ``unique``: (optional, default FALSE) Whether the column is a
+   unique key.
+-  ``nullable``: (optional, default FALSE) Whether the database
+   column is nullable.
+-  ``precision``: (optional, default 0) The precision for a decimal
+   (exact numeric) column. (Applies only if a decimal column is used.)
+-  ``scale``: (optional, default 0) The scale for a decimal (exact
+   numeric) column. (Applies only if a decimal column is used.)
+-  ``columnDefinition``: (optional) Allows to define a custom
+   DDL snippet that is used to create the column. Warning: This normally
+   confuses the SchemaTool to always detect the column as changed.
+- ``options``: (optional) Key-value pairs of options that get passed
+   to the underlying database platform when generating DDL statements.
 
 Doctrine Mapping Types
 ----------------------
@@ -176,102 +266,6 @@ built-in mapping types:
     on working with datetimes that gives hints for implementing
     multi timezone applications.
 
-Property Mapping
-----------------
-
-Properties of an entity class can be mapped to columns of the
-SQL table of that entity.
-
-To configure a property use the ``@Column`` docblock annotation. This
-annotation usually requires at least 1 attribute to be set, the ``type``. The
-``type`` attribute specifies the Doctrine Mapping Type to use for the field. If
-the type is not specified, ``string`` is used as the default mapping type.
-
-
-Example:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        /** @Entity */
-        class MyPersistentClass
-        {
-            /** @Column(type="integer") */
-            private $id;
-            /** @Column(length=50) */
-            private $name; // type defaults to string
-            //...
-        }
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-          <entity name="MyPersistentClass">
-            <field name="id" type="integer" />
-            <field name="name" length="50" />
-          </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        MyPersistentClass:
-          type: entity
-          fields:
-            id:
-              type: integer
-            name:
-              length: 50
-
-In that example we configured the property ``id`` to map to the column ``id``
-using the mapping type ``integer``. The field ``name`` is mapped to the column
-``name`` with the default mapping type ``string``. Column names are assumed to
-be the same as the field names unless you specify a different name for the
-column using the ``name`` attribute of the Column annotation:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        /** @Column(name="db_name") */
-        private $name;
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-          <entity name="MyPersistentClass">
-            <field name="name" column="db_name" />
-          </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        MyPersistentClass:
-          type: entity
-          fields:
-            name:
-              length: 50
-              column: db_name
-
-The Column annotation has some more attributes. Here is a complete
-list:
-
--  ``type``: (optional, defaults to 'string') The mapping type to
-   use for the column.
--  ``name``: (optional, defaults to field name) The name of the
-   column in the database.
--  ``length``: (optional, default 255) The length of the column in
-   the database. (Applies only if a string-valued column is used).
--  ``unique``: (optional, default FALSE) Whether the column is a
-   unique key.
--  ``nullable``: (optional, default FALSE) Whether the database
-   column is nullable.
--  ``precision``: (optional, default 0) The precision for a decimal
-   (exact numeric) column. (Applies only if a decimal column is used.)
--  ``scale``: (optional, default 0) The scale for a decimal (exact
-   numeric) column. (Applies only if a decimal column is used.)
 
 Identifiers / Primary Keys
 --------------------------
