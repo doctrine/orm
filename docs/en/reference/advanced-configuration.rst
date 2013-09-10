@@ -373,15 +373,15 @@ using the Doctrine Console:
 The other options are interesting in development environment:
 
 - ``AUTOGENERATE_ALWAYS`` will require you to create and configure
-a proxy directory. Proxies will be generated and written to file
-on each request, so any modification to your code will be acknowledged.
+  a proxy directory. Proxies will be generated and written to file
+  on each request, so any modification to your code will be acknowledged.
 
 - ``AUTOGENERATE_FILE_NOT_EXISTS`` will not overwrite an existing
-proxy file. If your code changes, you will need to regenerate the
-proxies manually.
+  proxy file. If your code changes, you will need to regenerate the
+  proxies manually.
 
 - ``AUTOGENERATE_EVAL`` will regenerate each proxy on each request,
-but without writing them to disk.
+  but without writing them to disk.
 
 Autoloading Proxies
 -------------------

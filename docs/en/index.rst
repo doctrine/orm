@@ -14,7 +14,7 @@ Doctrine ORM don't panic. You can get help from different sources:
 
 -  There is a :doc:`FAQ <reference/faq>` with answers to frequent questions.
 -  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
--  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
+-  Internet Relay Chat (IRC) in #doctrine on Freenode
 -  Report a bug on `JIRA <http://www.doctrine-project.org/jira>`_.
 -  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine2``
 -  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine2>`_
@@ -120,3 +120,4 @@ Cookbook
   :doc:`MySQL Enums <cookbook/mysql-enums>`
   :doc:`Advanced Field Value Conversion <cookbook/advanced-field-value-conversion-using-custom-mapping-types>`
 
+.. include:: toc.rst
