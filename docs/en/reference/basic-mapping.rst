@@ -368,30 +368,31 @@ besides specifying the sequence's name:
     .. code-block:: php
 
         <?php
-        class User
+        class Message
         {
             /**
              * @Id
              * @GeneratedValue(strategy="SEQUENCE")
-             * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
+             * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
              */
             protected $id = null;
+            //...
         }
 
     .. code-block:: xml
 
         <doctrine-mapping>
-          <entity name="User">
+          <entity name="Message">
             <id name="id" type="integer">
                 <generator strategy="SEQUENCE" />
-                <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+                <sequence-generator sequence-name="message_seq" allocation-size="100" initial-value="1" />
             </id>
           </entity>
         </doctrine-mapping>
  
     .. code-block:: yaml
 
-        MyPersistentClass:
+        Message:
           type: entity
           id:
             id:
@@ -399,7 +400,7 @@ besides specifying the sequence's name:
               generator:
                 strategy: SEQUENCE
               sequenceGenerator:
-                sequenceName: tablename_seq
+                sequenceName: message_seq
                 allocationSize: 100
                 initialValue: 1
 
@@ -439,15 +440,14 @@ need to access the sequence once to generate the identifiers for
 Composite Keys
 ~~~~~~~~~~~~~~
 
-Doctrine 2 allows to use composite primary keys. There are however
-some restrictions opposed to using a single identifier. The use of
-the ``@GeneratedValue`` annotation is only supported for simple
-(not composite) primary keys, which means you can only use
-composite keys if you generate the primary key values yourself
-before calling ``EntityManager#persist()`` on the entity.
+with Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
+one column. Some restrictions exist opposed to using a single identifier in
+this case: The use of the ``@GeneratedValue`` annotation is not supported,
+which means you can only use composite keys if you generate the primary key
+values yourself before calling ``EntityManager#persist()`` on the entity.
 
-To designate a composite primary key / identifier, simply put the
-@Id marker annotation on all fields that make up the primary key.
+More details on composite primary keys are discussed in a :doc:`dedicated tutorial
+<../tutorials/composite-primary-keys>`.
 
 Quoting Reserved Words
 ----------------------
