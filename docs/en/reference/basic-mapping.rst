@@ -52,8 +52,8 @@ mapping metadata:
 
 -  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
--  :doc:`YAML <yml-mapping>`
--  PHP code
+-  :doc:`YAML <yaml-mapping>`
+-  :doc:`PHP code <php-mapping>`
 
 This manual usually mentions docblock annotations in all the examples that are
 spread throughout all chapters, however for many examples alternative YAML and
@@ -188,25 +188,25 @@ datetime type, but mapped to a column called ``posted_at``.
 The Column annotation has some more attributes. Here is a complete
 list:
 
--  ``type``: (optional, defaults to 'string') The mapping type to
-   use for the column.
--  ``name``: (optional, defaults to field name) The name of the
-   column in the database.
--  ``length``: (optional, default 255) The length of the column in
-   the database. (Applies only if a string-valued column is used).
--  ``unique``: (optional, default FALSE) Whether the column is a
-   unique key.
--  ``nullable``: (optional, default FALSE) Whether the database
-   column is nullable.
--  ``precision``: (optional, default 0) The precision for a decimal
-   (exact numeric) column. (Applies only if a decimal column is used.)
--  ``scale``: (optional, default 0) The scale for a decimal (exact
-   numeric) column. (Applies only if a decimal column is used.)
--  ``columnDefinition``: (optional) Allows to define a custom
-   DDL snippet that is used to create the column. Warning: This normally
-   confuses the SchemaTool to always detect the column as changed.
+- ``type``: (optional, defaults to 'string') The mapping type to
+  use for the column.
+- ``name``: (optional, defaults to field name) The name of the
+  column in the database.
+- ``length``: (optional, default 255) The length of the column in
+  the database. (Applies only if a string-valued column is used).
+- ``unique``: (optional, default FALSE) Whether the column is a
+  unique key.
+- ``nullable``: (optional, default FALSE) Whether the database
+  column is nullable.
+- ``precision``: (optional, default 0) The precision for a decimal
+  (exact numeric) column. (Applies only if a decimal column is used.)
+- ``scale``: (optional, default 0) The scale for a decimal (exact
+  numeric) column. (Applies only if a decimal column is used.)
+- ``columnDefinition``: (optional) Allows to define a custom
+  DDL snippet that is used to create the column. Warning: This normally
+  confuses the SchemaTool to always detect the column as changed.
 - ``options``: (optional) Key-value pairs of options that get passed
-   to the underlying database platform when generating DDL statements.
+  to the underlying database platform when generating DDL statements.
 
 Doctrine Mapping Types
 ----------------------
