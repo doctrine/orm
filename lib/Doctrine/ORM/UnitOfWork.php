@@ -2964,7 +2964,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             default:
-                $persister = new Persisters\UnionSubclassPersister($this->em, $class);
+                throw new \RuntimeException('No persister found for entity.');
         }
 
         $this->persisters[$entityName] = $persister;
