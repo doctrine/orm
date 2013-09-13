@@ -4,7 +4,7 @@ Basic Mapping
 This guide explains the basic mapping of entities and properties.
 After working through this guide you should know:
 
-- How to create PHP classes that can be saved to the database with Doctrine;
+- How to create PHP objects that can be saved to the database with Doctrine;
 - How to configure the mapping between columns on tables and properties on
   entities;
 - What Doctrine mapping types are;
@@ -23,7 +23,7 @@ Doctrine.
 Creating Classes for the Database
 ---------------------------------
 
-Every PHP class that you want to save in the database using Doctrine
+Every PHP object that you want to save in the database using Doctrine
 is called an "Entity". The term "Entity" describes objects
 that have an identity over many independent requests. This identity is
 usually achieved by assigning a unique identifier to an entity.
@@ -47,7 +47,7 @@ entity should be stored in the database. The documentation will often
 speak of "mapping something", which means writing the mapping metadata
 that describes your entity.
 
-Doctrine provides several different ways to specifying object-relational
+Doctrine provides several different ways to specify object-relational
 mapping metadata:
 
 -  :doc:`Docblock Annotations <annotations-reference>`
