@@ -44,9 +44,9 @@ class CountOutputWalkerTest extends PaginationTestCase
 
     public function testCountQueryOrderBySqlServer()
     {
-        if ($this->entityManager->getConnection()->getDatabasePlatform()->getName() !== "mssql") {
-            $this->markTestSkipped('SQLServer only test.');
-        }
+        $originalPlatform = $this->entityManager->getConnection()->getDatabasePlatform();
+
+        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServer2008Platform());
 
         $query = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id');
@@ -54,9 +54,11 @@ class CountOutputWalkerTest extends PaginationTestCase
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
-            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT b0_.id AS id0, b0_.author_id AS author_id1, b0_.category_id AS category_id2 FROM BlogPost b0_) dctrn_result) dctrn_table",
+            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT b0_.id AS id0, b0_.author_id AS author_id1, b0_.category_id AS category_id2 FROM BlogPost b0_ WITH (NOLOCK)) dctrn_result) dctrn_table",
             $query->getSql()
         );
+
+        $this->entityManager->getConnection()->setDatabasePlatform($originalPlatform);
     }
 }
 
