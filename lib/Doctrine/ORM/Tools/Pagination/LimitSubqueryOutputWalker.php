@@ -149,7 +149,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
             }
         }
 
-        if (count($rootIdentifier) != count($sqlIdentifier)) {
+        if (count($sqlIdentifier) === 0) {
+            throw new \RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
+        } elseif (count($rootIdentifier) != count($sqlIdentifier)) {
             throw new \RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
                 implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
