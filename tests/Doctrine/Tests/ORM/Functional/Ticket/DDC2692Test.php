@@ -4,11 +4,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\PreFlushEventArgs;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @group
+ * @group DDC-2692
  */
 class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -29,7 +27,7 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testListenerCalledOneOnPreFlush()
+    public function testIsListenerCalledOnlyOnceOnPreFlush()
     {
         $listener = $this->getMock('Doctrine\Tests\ORM\Functional\Ticket\Listener', array('preFlush'));
         $listener->expects($this->once())->method('preFlush');
