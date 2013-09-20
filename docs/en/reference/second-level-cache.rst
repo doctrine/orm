@@ -208,17 +208,20 @@ Built-in Strategies
 
 Caching Strategies are responsible for access cache regions.
 
-* ``Doctrine\ORM\Cache\Access\ReadOnlyRegionAccess`` implements ``READ_ONLY``
-* ``Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy`` implements ``NONSTRICT_READ_WRITE``
-* ``Doctrine\ORM\Cache\Access\ConcurrentRegionAccessStrategy`` implements ``READ_WRITE`` requires a ``ConcurrentRegion``
+* ``Doctrine\ORM\Cache\Access\ReadOnlyEntityRegionAccessStrategy`` implements ``READ_ONLY`` for entities
+* ``Doctrine\ORM\Cache\Access\ReadOnlyCollectionRegionAccessStrategy`` implements ``READ_ONLY`` for collections
+* ``Doctrine\ORM\Cache\Access\NonStrictReadWriteEntityRegionAccessStrategy`` implements ``NONSTRICT_READ_WRITE`` for entities
+* ``Doctrine\ORM\Cache\Access\NonStrictReadWriteCollectionRegionAccessStrategy`` implements ``NONSTRICT_READ_WRITE`` for collections
+* ``Doctrine\ORM\Cache\Access\ReadWriteEntityRegionAccessStrategy`` implements ``READ_WRITE`` requires a ``ConcurrentRegion`` for entities
+* ``Doctrine\ORM\Cache\Access\ReadWriteCollectionRegionAccessStrategy`` implements ``READ_WRITE`` requires a ``ConcurrentRegion`` for collections
 
-``Doctrine\ORM\Cache\RegionAccess`` and ``Doctrine\ORM\Cache\ConcurrentRegionAccess``
+``Doctrine\ORM\Cache\RegionAccessStrategy``, ``Doctrine\ORM\Cache\CollectionRegionAccessStrategy`` and ``Doctrine\ORM\Cache\ConcurrentRegionAccessStrategy``
 Defines contracts that should be implemented by caching strategies.
 
-If you want to support locking for ``READ_WRITE`` strategies you should implement ``ConcurrentRegionAccess``; ``RegionAccess`` otherwise.
+If you want to support locking for ``READ_WRITE`` strategies you should implement ``ConcurrentRegionAccessStrategy``; ``RegionAccessStrategy`` otherwise.
 
 
-``Doctrine\ORM\Cache\RegionAccess``
+``Doctrine\ORM\Cache\RegionAccessStrategy``
 
 Interface for all region access strategies.
 
@@ -226,7 +229,7 @@ Interface for all region access strategies.
 
     <?php
 
-    interface RegionAccess
+    interface RegionAccessStrategy
     {
         /**
          * Get the wrapped data cache region
@@ -257,31 +260,6 @@ Interface for all region access strategies.
          * @throws \Doctrine\ORM\Cache\CacheException
          */
         public function put(CacheKey $key, CacheEntry $entry);
-
-        /**
-         * Called after an item has been inserted (after the transaction completes).
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
-         * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
-         *
-         * @return boolean TRUE If the contents of the cache actual were changed.
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function afterInsert(CacheKey $key, CacheEntry $entry);
-
-        /**
-         * Called after an item has been updated (after the transaction completes).
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
-         * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
-         * @param \Doctrine\ORM\Cache\Lock          $lock   The lock obtained from lockItem
-         *
-         * @return boolean TRUE If the contents of the cache actual were changed.
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null);
 
         /**
          * Forcibly evict an item from the cache immediately without regard for locks.
@@ -384,7 +362,7 @@ It allows you to provide a specific implementation of the following components :
          * Build an entity RegionAccess for the input entity.
          *
          * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
-         * @return \Doctrine\ORM\Cache\RegionAccess The built region access.
+         * @return \Doctrine\ORM\Cache\EntityRegionAccessStrategy The built region access.
          */
         public function buildEntityRegionAccessStrategy(ClassMetadata $metadata);
 
@@ -393,7 +371,7 @@ It allows you to provide a specific implementation of the following components :
          *
          * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
          * @param string                              $fieldName The association field name.
-         * @return \Doctrine\ORM\Cache\RegionAccess The built region access.
+         * @return \Doctrine\ORM\Cache\CollectionRegionAccessStrategy The built region access.
          */
         public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
 

@@ -75,13 +75,13 @@ class DefaultCacheTest extends OrmTestCase
     
     public function testGetEntityCacheRegionAccess()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccess', $this->cache->getEntityCacheRegionAccess(State::CLASSNAME));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccessStrategy', $this->cache->getEntityCacheRegionAccess(State::CLASSNAME));
         $this->assertNull($this->cache->getEntityCacheRegionAccess(self::NON_CACHEABLE_ENTITY));
     }
 
     public function testGetCollectionCacheRegionAccess()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccess', $this->cache->getCollectionCacheRegionAccess(State::CLASSNAME, 'cities'));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccessStrategy', $this->cache->getCollectionCacheRegionAccess(State::CLASSNAME, 'cities'));
         $this->assertNull($this->cache->getCollectionCacheRegionAccess(self::NON_CACHEABLE_ENTITY, 'phonenumbers'));
     }
 

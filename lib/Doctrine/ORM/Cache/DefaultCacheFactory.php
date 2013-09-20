@@ -26,8 +26,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Common\Cache\Cache as CacheDriver;
-use Doctrine\ORM\Cache\Access\ReadOnlyRegionAccess;
-use Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\ReadOnlyEntityRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\ReadOnlyCollectionRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\NonStrictReadWriteEntityRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\NonStrictReadWriteCollectionRegionAccessStrategy;
 
 /**
  * @since   2.5
@@ -60,11 +62,11 @@ class DefaultCacheFactory implements CacheFactory
         $usage      = $metadata->cache['usage'];
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyRegionAccess($this->createRegion($regionName));
+            return new ReadOnlyEntityRegionAccessStrategy($this->createRegion($regionName));
         }
 
         if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteRegionAccessStrategy($this->createRegion($regionName));
+            return new NonStrictReadWriteEntityRegionAccessStrategy($this->createRegion($regionName));
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
@@ -80,11 +82,11 @@ class DefaultCacheFactory implements CacheFactory
         $usage      = $mapping['cache']['usage'];
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyRegionAccess($this->createRegion($regionName));
+            return new ReadOnlyCollectionRegionAccessStrategy($this->createRegion($regionName));
         }
 
         if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteRegionAccessStrategy($this->createRegion($regionName));
+            return new NonStrictReadWriteCollectionRegionAccessStrategy($this->createRegion($regionName));
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));

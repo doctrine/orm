@@ -20,10 +20,9 @@
 
 namespace Doctrine\ORM\Cache\Access;
 
-use Doctrine\ORM\Cache\RegionAccess;
+use Doctrine\ORM\Cache\EntityRegionAccessStrategy;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Lock;
 
 /**
@@ -32,29 +31,8 @@ use Doctrine\ORM\Cache\Lock;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class NonStrictReadWriteRegionAccessStrategy implements RegionAccess
+class NonStrictReadWriteEntityRegionAccessStrategy  extends AbstractRegionAccessStrategy implements EntityRegionAccessStrategy
 {
-    /**
-     * @var \Doctrine\ORM\Cache\Region
-     */
-    private $region;
-
-    /**
-     * @param \Doctrine\ORM\Cache\Region $region
-     */
-    public function __construct(Region $region)
-    {
-        $this->region = $region;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRegion()
-    {
-        return $this->region;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -69,37 +47,5 @@ class NonStrictReadWriteRegionAccessStrategy implements RegionAccess
     public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
         return $this->region->put($key, $entry);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get(CacheKey $key)
-    {
-        return $this->region->get($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function put(CacheKey $key, CacheEntry $entry)
-    {
-        return $this->region->put($key, $entry);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function evict(CacheKey $key)
-    {
-        return $this->region->evict($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function evictAll()
-    {
-        return $this->region->evictAll();
     }
 }

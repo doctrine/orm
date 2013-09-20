@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit>
+<phpunit bootstrap="../Doctrine/Tests/TestInit.php">
 
     <logging>
         <log type="coverage-clover" target="../../build/logs/clover.xml"/>

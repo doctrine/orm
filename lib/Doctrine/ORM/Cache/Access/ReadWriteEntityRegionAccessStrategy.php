@@ -20,7 +20,8 @@
 
 namespace Doctrine\ORM\Cache\Access;
 
-use Doctrine\ORM\Cache\ConcurrentRegionAccess;
+use Doctrine\ORM\Cache\ConcurrentRegionAccessStrategy;
+use Doctrine\ORM\Cache\EntityRegionAccessStrategy;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\Cache\LockException;
@@ -34,27 +35,14 @@ use Doctrine\ORM\Cache\Lock;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class ConcurrentRegionAccessStrategy implements ConcurrentRegionAccess
+class ReadWriteEntityRegionAccessStrategy  extends AbstractRegionAccessStrategy implements ConcurrentRegionAccessStrategy, EntityRegionAccessStrategy
 {
-    /**
-     * @var \Doctrine\ORM\Cache\ConcurrentRegion
-     */
-    private $region;
-
     /**
      * @param \Doctrine\ORM\Cache\ConcurrentRegion $region
      */
     public function __construct(ConcurrentRegion $region)
     {
         $this->region = $region;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRegion()
-    {
-        return $this->region;
     }
 
     /**
@@ -157,37 +145,5 @@ class ConcurrentRegionAccessStrategy implements ConcurrentRegionAccess
     public function unlockItem(CacheKey $key, Lock $lock)
     {
         return $this->region->readUnlock($key, $lock);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get(CacheKey $key)
-    {
-        return $this->region->get($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function put(CacheKey $key, CacheEntry $entry)
-    {
-        return $this->region->put($key, $entry);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function evict(CacheKey $key)
-    {
-        return $this->region->evict($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function evictAll()
-    {
-        return $this->region->evictAll();
     }
 }

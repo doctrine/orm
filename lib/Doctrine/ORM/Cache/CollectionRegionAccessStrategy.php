@@ -1,5 +1,4 @@
 <?php
-
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,31 +20,12 @@
 namespace Doctrine\ORM\Cache;
 
 /**
- * Defines contract for regions which hold concurrently managed data.
+ * Interface for entity region access.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface ConcurrentRegionAccess extends RegionAccess
+interface CollectionRegionAccessStrategy extends RegionAccessStrategy
 {
-    /**
-     * We are going to attempt to update/delete the keyed object.
-     *
-     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
-     *
-     * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException
-     */
-    public function lockItem(CacheKey $key);
 
-    /**
-     * Called when we have finished the attempted update/delete (which may or may not have been successful), after transaction completion.
-     *
-     * @param \Doctrine\ORM\Cache\CacheKey $key     The cache key of the item to unlock.
-     * @param \Doctrine\ORM\Cache\Lock     $lock    The lock previously obtained from {@link lockItem}
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException
-     */
-    public function unlockItem(CacheKey $key, Lock $lock);
 }

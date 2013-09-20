@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 
-use Doctrine\ORM\Cache\Access\ConcurrentRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\ReadWriteCollectionRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\ReadWriteEntityRegionAccessStrategy;
 use Doctrine\ORM\Cache\DefaultCollectionEntryStructure;
 use Doctrine\ORM\Cache\DefaultEntityEntryStructure;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
@@ -15,7 +16,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Cache\Lock;
@@ -26,7 +26,7 @@ use Doctrine\ORM\Cache\Lock;
 class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 {
     /**
-     * @var \Doctrine\ORM\Cache\Access\ConcurrentRegionAccessStrategy\CacheFactorySecondLevelCacheConcurrentTest
+     * @var \Doctrine\Tests\ORM\Functional\CacheFactorySecondLevelCacheConcurrentTest
      */
     private $cacheFactory;
 
@@ -250,7 +250,7 @@ class CacheFactorySecondLevelCacheConcurrentTest implements CacheFactory
     {
         $regionName = $metadata->cache['region'];
         $region     = $this->createRegion($regionName);
-        $access     = new ConcurrentRegionAccessStrategy($region);
+        $access     = new ReadWriteEntityRegionAccessStrategy($region);
 
         return $access;
     }
@@ -260,7 +260,7 @@ class CacheFactorySecondLevelCacheConcurrentTest implements CacheFactory
         $mapping    = $metadata->getAssociationMapping($fieldName);
         $regionName = $mapping['cache']['region'];
         $region     = $this->createRegion($regionName);
-        $access     = new ConcurrentRegionAccessStrategy($region);
+        $access     = new ReadWriteCollectionRegionAccessStrategy($region);
 
         return $access;
     }

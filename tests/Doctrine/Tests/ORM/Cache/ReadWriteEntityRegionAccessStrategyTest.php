@@ -8,14 +8,13 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
-use Doctrine\ORM\Cache\Access\ConcurrentRegionAccessStrategy;
+use Doctrine\ORM\Cache\Access\ReadWriteEntityRegionAccessStrategy;
 
 /**
  * @group DDC-2183
  */
-class ConcurrentRegionAccessTest extends AbstractRegionAccessTest
+class ReadWriteEntityRegionAccessStrategyTest extends AbstractEntityRegionAccessTest
 {
-
     /**
      * @var Doctrine\Tests\Mocks\ConcurrentRegionMock
      */
@@ -23,7 +22,7 @@ class ConcurrentRegionAccessTest extends AbstractRegionAccessTest
 
     protected function createRegionAccess(Region $region)
     {
-        return new ConcurrentRegionAccessStrategy($region);
+        return new ReadWriteEntityRegionAccessStrategy($region);
     }
 
     protected function createRegion(Cache $cache)

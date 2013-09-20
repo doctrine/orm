@@ -34,7 +34,7 @@ interface CacheFactory
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
      *
-     * @return \Doctrine\ORM\Cache\RegionAccess The built region access.
+     * @return \Doctrine\ORM\Cache\EntityRegionAccessStrategy The built region access.
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
      */
@@ -46,7 +46,7 @@ interface CacheFactory
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
      * @param string                              $fieldName The field name that represents the association.
      *
-     * @return \Doctrine\ORM\Cache\RegionAccess The built region access.
+     * @return \Doctrine\ORM\Cache\CollectionRegionAccessStrategy The built region access.
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
      */

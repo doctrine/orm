@@ -40,7 +40,7 @@ class DefaultQueryCacheTest extends OrmTestCase
     private $region;
 
     /**
-     * @var \Doctrine\ORM\Cache\Access\ConcurrentRegionAccessStrategy\CacheFactorySecondLevelCacheConcurrentTest
+     * @var \Doctrine\Tests\ORM\Cache\CacheFactoryDefaultQueryCacheTest
      */
     private $cacheFactory;
 
@@ -518,12 +518,12 @@ class CacheFactoryDefaultQueryCacheTest implements CacheFactory
 
     public function buildEntityRegionAccessStrategy(ClassMetadata $metadata)
     {
-        return new \Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy($this->region);
+        return new \Doctrine\ORM\Cache\Access\NonStrictReadWriteEntityRegionAccessStrategy($this->region);
     }
 
     public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName)
     {
-        return new \Doctrine\ORM\Cache\Access\NonStrictReadWriteRegionAccessStrategy($this->region);
+        return new \Doctrine\ORM\Cache\Access\NonStrictReadWriteCollectionRegionAccessStrategy($this->region);
     }
 
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)

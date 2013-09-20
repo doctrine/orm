@@ -18,26 +18,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Access;
-
-use Doctrine\ORM\Cache\CacheException;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Lock;
+namespace Doctrine\ORM\Cache;
 
 /**
- * Specific read-only region access strategy
+ * Defines contract for regions which hold concurrently managed data.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class ReadOnlyRegionAccess extends NonStrictReadWriteRegionAccessStrategy
+interface ConcurrentRegionAccessStrategy extends RegionAccessStrategy
 {
     /**
-     * {@inheritdoc}
+     * We are going to attempt to update/delete the keyed object.
+     *
+     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
+     *
+     * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item
+     *
+     * @throws \Doctrine\ORM\Cache\CacheException
      */
-    public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null)
-    {
-        throw CacheException::updateReadOnlyobject();
-    }
+    public function lockItem(CacheKey $key);
+
+    /**
+     * Called when we have finished the attempted update/delete (which may or may not have been successful), after transaction completion.
+     *
+     * @param \Doctrine\ORM\Cache\CacheKey $key     The cache key of the item to unlock.
+     * @param \Doctrine\ORM\Cache\Lock     $lock    The lock previously obtained from {@link lockItem}
+     *
+     * @throws \Doctrine\ORM\Cache\CacheException
+     */
+    public function unlockItem(CacheKey $key, Lock $lock);
 }

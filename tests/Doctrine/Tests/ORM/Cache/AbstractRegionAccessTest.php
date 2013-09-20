@@ -3,18 +3,17 @@
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\Region;
+use Doctrine\Tests\OrmTestCase;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-2183
  */
-abstract class AbstractRegionAccessTest extends \Doctrine\Tests\OrmTestCase
+abstract class AbstractRegionAccessTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\Common\Cache\Cache
@@ -115,38 +114,5 @@ abstract class AbstractRegionAccessTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertNull($this->regionAccess->get($key1));
         $this->assertNull($this->regionAccess->get($key2));
-    }
-
-    public function testAfterInsert()
-    {
-        $key1  = new CacheKeyMock('key.1');
-        $key2  = new CacheKeyMock('key.2');
-
-        $this->assertNull($this->regionAccess->get($key1));
-        $this->assertNull($this->regionAccess->get($key2));
-
-        $this->regionAccess->afterInsert($key1, new CacheEntryMock(array('value' => 'foo')));
-        $this->regionAccess->afterInsert($key2, new CacheEntryMock(array('value' => 'bar')));
-
-        $this->assertNotNull($this->regionAccess->get($key1));
-        $this->assertNotNull($this->regionAccess->get($key2));
-        
-        $this->assertEquals(new CacheEntryMock(array('value' => 'foo')), $this->regionAccess->get($key1));
-        $this->assertEquals(new CacheEntryMock(array('value' => 'bar')), $this->regionAccess->get($key2));
-    }
-
-    public function testAfterUpdate()
-    {
-        $key1  = new CacheKeyMock('key.1');
-        $key2  = new CacheKeyMock('key.2');
-
-        $this->assertNull($this->regionAccess->get($key1));
-        $this->assertNull($this->regionAccess->get($key2));
-
-        $this->regionAccess->afterUpdate($key1, new CacheEntryMock(array('value' => 'foo')));
-        $this->regionAccess->afterUpdate($key2, new CacheEntryMock(array('value' => 'bar')));
-
-        $this->assertEquals(new CacheEntryMock(array('value' => 'foo')), $this->regionAccess->get($key1));
-        $this->assertEquals(new CacheEntryMock(array('value' => 'bar')), $this->regionAccess->get($key2));
     }
 }
