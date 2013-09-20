@@ -448,8 +448,8 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->concat('u.firstname', $qb->expr()->concat($qb->expr()->literal(' '), 'u.lastname'))
         public function concat($x, $y); // Returns Expr\Func
 
-        // Example - $qb->expr()->substr('u.firstname', 0, 1)
-        public function substr($x, $from, $len); // Returns Expr\Func
+        // Example - $qb->expr()->substring('u.firstname', 0, 1)
+        public function substring($x, $from, $len); // Returns Expr\Func
 
         // Example - $qb->expr()->lower('u.firstname')
         public function lower($x); // Returns Expr\Func
