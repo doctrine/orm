@@ -162,7 +162,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         if ($this->platform instanceof PostgreSqlPlatform ||
             $this->platform instanceof OraclePlatform) {
-            //http://www.doctrine-project.org/jira/browse/DDC-1958
+            // http://www.doctrine-project.org/jira/browse/DDC-1958
             $this->preserveSqlOrdering($AST, $sqlIdentifier, $innerSql, $sql);
         }
 
@@ -211,7 +211,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                     }
                 }
             }
-            //remove identifier aliases
+            // remove identifier aliases
             $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
         }
 
