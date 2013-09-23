@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,15 +18,24 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache;
+namespace Doctrine\ORM\Cache\Persister;
+
+use Doctrine\ORM\Cache\CacheException;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
- * Interface for entity region access.
+ * Specific read-only region entity persister
  *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since 2.5
  */
-interface CollectionRegionAccessStrategy extends RegionAccessStrategy
+class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersister
 {
-
+    /**
+     * {@inheritdoc}
+     */
+    public function update($entity)
+    {
+        throw CacheException::updateReadOnlyEntity(ClassUtils::getClass($entity));
+    }
 }

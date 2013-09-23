@@ -64,17 +64,17 @@ interface Cache
     /**
      * @param string $className The entity class.
      *
-     * @return \Doctrine\ORM\Cache\RegionAccess|null
+     * @return \Doctrine\ORM\Cache\Region|null
      */
-    public function getEntityCacheRegionAccess($className);
+    public function getEntityCacheRegion($className);
 
     /**
      * @param string $className   The entity class.
      * @param string $association The field name that represents the association.
      *
-     * @return \Doctrine\ORM\Cache\RegionAccess|null
+     * @return \Doctrine\ORM\Cache\Region|null
      */
-    public function getCollectionCacheRegionAccess($className, $association);
+    public function getCollectionCacheRegion($className, $association);
 
     /**
      * Determine whether the cache contains data for the given entity "instance".

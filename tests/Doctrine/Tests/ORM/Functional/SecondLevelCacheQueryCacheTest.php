@@ -170,7 +170,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
 
-        $region     = $this->cache->getEntityCacheRegionAccess(Country::CLASSNAME)->getRegion();
+        $region     = $this->cache->getEntityCacheRegion(Country::CLASSNAME);
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $result     = $this->_em->createQuery($dql)

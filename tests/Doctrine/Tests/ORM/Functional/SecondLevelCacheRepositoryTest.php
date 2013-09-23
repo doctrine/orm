@@ -7,7 +7,7 @@ use Doctrine\Tests\Models\Cache\Country;
 /**
  * @group DDC-2183
  */
-class getSelectSQLTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 {
     public function testRepositoryCacheFind()
     {

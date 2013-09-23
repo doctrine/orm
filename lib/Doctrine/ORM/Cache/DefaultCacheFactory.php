@@ -26,10 +26,15 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Common\Cache\Cache as CacheDriver;
-use Doctrine\ORM\Cache\Access\ReadOnlyEntityRegionAccessStrategy;
-use Doctrine\ORM\Cache\Access\ReadOnlyCollectionRegionAccessStrategy;
-use Doctrine\ORM\Cache\Access\NonStrictReadWriteEntityRegionAccessStrategy;
-use Doctrine\ORM\Cache\Access\NonStrictReadWriteCollectionRegionAccessStrategy;
+
+use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Persisters\CollectionPersister;
+use Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister;
+use Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister;
+use Doctrine\ORM\Cache\Persister\ReadOnlyCachedCollectionPersister;
+use Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister;
+use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedEntityPersister;
+use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedCollectionPersister;
 
 /**
  * @since   2.5
@@ -47,6 +52,10 @@ class DefaultCacheFactory implements CacheFactory
      */
     private $configuration;
 
+    /**
+     * @param \Doctrine\ORM\Configuration  $configuration
+     * @param \Doctrine\Common\Cache\Cache $cache
+     */
     public function __construct(Configuration $configuration, CacheDriver $cache)
     {
         $this->cache         = $cache;
@@ -56,17 +65,22 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function buildEntityRegionAccessStrategy(ClassMetadata $metadata)
+    public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
     {
         $regionName = $metadata->cache['region'];
         $usage      = $metadata->cache['usage'];
+        $region     = $this->createRegion($regionName);
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyEntityRegionAccessStrategy($this->createRegion($regionName));
+            return new ReadOnlyCachedEntityPersister($persister, $region, $em, $metadata);
         }
 
         if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteEntityRegionAccessStrategy($this->createRegion($regionName));
+            return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
+        }
+
+        if ($usage === ClassMetadata::CACHE_USAGE_READ_WRITE) {
+            return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
@@ -75,18 +89,22 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName)
+    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, $mapping)
     {
-        $mapping    = $metadata->getAssociationMapping($fieldName);
         $regionName = $mapping['cache']['region'];
         $usage      = $mapping['cache']['usage'];
+        $region     = $this->createRegion($regionName);
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyCollectionRegionAccessStrategy($this->createRegion($regionName));
+            return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
         }
 
         if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteCollectionRegionAccessStrategy($this->createRegion($regionName));
+            return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+        }
+
+        if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
+            return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
         }
 
         throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
@@ -103,28 +121,28 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function buildCollectionEntryStructure(EntityManagerInterface $em)
+    public function buildCollectionHydrator(EntityManagerInterface $em)
     {
-        return new DefaultCollectionEntryStructure($em);
+        return new DefaultCollectionHydrator($em);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function buildEntityEntryStructure(EntityManagerInterface $em)
+    public function buildEntityHydrator(EntityManagerInterface $em)
     {
-        return new DefaultEntityEntryStructure($em);
+        return new DefaultEntityHydrator($em);
     }
 
     /**
      * @param string $regionName
-     * @return \Doctrine\ORM\Cache\Region\DefaultRegion
+     *
+     * @return \Doctrine\ORM\Cache\Region
      */
-    private function createRegion($regionName)
+    protected function createRegion($regionName)
     {
         return new DefaultRegion($regionName, $this->cache, array(
             'lifetime' => $this->configuration->getSecondLevelCacheRegionLifetime($regionName)
         ));
     }
-
 }

@@ -37,17 +37,17 @@ interface QueryCache
     public function clear();
 
     /**
-     * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
-     * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
-     * @param array                                 $result
+     * @param \Doctrine\ORM\Cache\QueryCacheKey    $key
+     * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
+     * @param array                                $result
      *
      * @return boolean
      */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, array $result);
 
     /**
-     * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
-     * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
+     * @param \Doctrine\ORM\Cache\QueryCacheKey    $key
+     * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
      *
      * @return void
      */

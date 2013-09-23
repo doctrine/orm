@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Cache;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class EntityCacheKey implements CacheKey
+class EntityCacheKey extends CacheKey
 {
     /**
      * @var array
@@ -39,31 +39,15 @@ class EntityCacheKey implements CacheKey
     public $entityClass;
 
     /**
-     * @var string
-     */
-    private $hash;
-
-    /**
-     * @param string $entityClass   The entity class name. In a inheritance hierarchy it should always be the root entity class.
-     * @param array  $identifier    The entity identifier
+     * @param string $entityClass The entity class name. In a inheritance hierarchy it should always be the root entity class.
+     * @param array  $identifier  The entity identifier
      */
     public function __construct($entityClass, array $identifier)
     {
+        ksort($identifier);
+
         $this->identifier  = $identifier;
         $this->entityClass = $entityClass;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hash()
-    {
-        if ($this->hash === null) {
-            ksort($this->identifier);
-
-            $this->hash = sprintf('%s[%s]', str_replace('\\', '.', strtolower($this->entityClass)) , implode(' ', $this->identifier));
-        }
-
-        return $this->hash;
+        $this->hash        = sprintf('%s[%s]', str_replace('\\', '.', strtolower($entityClass)) , implode(' ', $identifier));
     }
 }

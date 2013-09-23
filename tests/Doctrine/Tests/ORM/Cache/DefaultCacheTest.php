@@ -49,7 +49,7 @@ class DefaultCacheTest extends OrmTestCase
         $cacheEntry = new EntityCacheEntry($metadata->name, $data);
         $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
 
-        $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
+        $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }
 
     /**
@@ -65,7 +65,7 @@ class DefaultCacheTest extends OrmTestCase
         $cacheEntry = new CollectionCacheEntry($data);
         $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
 
-        $persister->getCacheRegionAcess()->put($cacheKey, $cacheEntry);
+        $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }
 
     public function testImplementsCache()
@@ -75,14 +75,14 @@ class DefaultCacheTest extends OrmTestCase
     
     public function testGetEntityCacheRegionAccess()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccessStrategy', $this->cache->getEntityCacheRegionAccess(State::CLASSNAME));
-        $this->assertNull($this->cache->getEntityCacheRegionAccess(self::NON_CACHEABLE_ENTITY));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(State::CLASSNAME));
+        $this->assertNull($this->cache->getEntityCacheRegion(self::NON_CACHEABLE_ENTITY));
     }
 
     public function testGetCollectionCacheRegionAccess()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\RegionAccessStrategy', $this->cache->getCollectionCacheRegionAccess(State::CLASSNAME, 'cities'));
-        $this->assertNull($this->cache->getCollectionCacheRegionAccess(self::NON_CACHEABLE_ENTITY, 'phonenumbers'));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getCollectionCacheRegion(State::CLASSNAME, 'cities'));
+        $this->assertNull($this->cache->getCollectionCacheRegion(self::NON_CACHEABLE_ENTITY, 'phonenumbers'));
     }
 
     public function testContainsEntity()

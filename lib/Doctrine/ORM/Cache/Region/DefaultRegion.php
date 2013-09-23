@@ -85,7 +85,7 @@ class DefaultRegion implements Region
      */
     private function entryKey(CacheKey $key)
     {
-        return sprintf("%s.values[%s]", $this->name, $key->hash());
+        return sprintf("%s.values[%s]", $this->name, $key->hash);
     }
 
     /**

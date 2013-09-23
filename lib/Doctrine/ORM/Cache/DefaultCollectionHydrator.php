@@ -28,12 +28,12 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
- * Default structure cache entry for collections
+ * Default hidrator cache for collections
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class DefaultCollectionEntryStructure implements CollectionEntryStructure
+class DefaultCollectionHydrator implements CollectionHydrator
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -80,7 +80,7 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
     {
         $assoc           = $metadata->associationMappings[$key->association];
         $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
-        $targetRegion    = $targetPersister->getCacheRegionAcess()->getRegion();
+        $targetRegion    = $targetPersister->getCacheRegion();
         $list            = array();
 
         foreach ($entry->identifiers as $index => $identifier) {
@@ -94,7 +94,7 @@ class DefaultCollectionEntryStructure implements CollectionEntryStructure
             $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
         }
 
-        array_walk($list, function($entity, $index) use ($collection){
+        array_walk($list, function($entity, $index) use ($collection) {
             $collection->hydrateSet($index, $entity);
         });
 

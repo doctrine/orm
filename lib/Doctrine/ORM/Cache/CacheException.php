@@ -30,15 +30,29 @@ use Doctrine\ORM\ORMException;
 class CacheException extends ORMException
 {
     /**
+     * @param string $sourceEntity
+     * @param string $fieldName
+     *
      * @return \Doctrine\ORM\Cache\CacheException
      */
-    public static function updateReadOnlyobject()
+    public static function updateReadOnlyCollection($sourceEntity, $fieldName)
     {
-        return new self("Can't update a readonly object");
+        return new self(sprintf('Cannot update a readonly collection "%s#%s"', $sourceEntity, $fieldName));
     }
 
     /**
      * @param string $entityName
+     *
+     * @return \Doctrine\ORM\Cache\CacheException
+     */
+    public static function updateReadOnlyEntity($entityName)
+    {
+        return new self(sprintf('Cannot update a readonly entity "%s"', $entityName));
+    }
+
+    /**
+     * @param string $entityName
+     *
      * @return \Doctrine\ORM\Cache\CacheException
      */
     public static function nonCacheableEntity($entityName)
@@ -48,6 +62,7 @@ class CacheException extends ORMException
 
     /**
      * @param string $entityName
+     *
      * @return \Doctrine\ORM\Cache\CacheException
      */
     public static function nonCacheableEntityAssociation($entityName, $field)

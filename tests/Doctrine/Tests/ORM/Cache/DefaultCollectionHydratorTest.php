@@ -12,15 +12,15 @@ use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Cache\DefaultCollectionEntryStructure;
+use Doctrine\ORM\Cache\DefaultCollectionHydrator;
 
 /**
  * @group DDC-2183
  */
-class CollectionEntryStructureTest extends OrmFunctionalTestCase
+class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 {
     /**
-     * @var \Doctrine\ORM\Cache\CollectionEntryStructure
+     * @var \Doctrine\ORM\Cache\CollectionHydrator
      */
     private $structure;
 
@@ -29,17 +29,17 @@ class CollectionEntryStructureTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->structure = new DefaultCollectionEntryStructure($this->_em);
+        $this->structure = new DefaultCollectionHydrator($this->_em);
     }
 
     public function testImplementsCollectionEntryStructure()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\CollectionEntryStructure', $this->structure);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultCollectionHydrator', $this->structure);
     }
 
     public function testLoadCacheCollection()
     {
-        $targetRegion   = $this->_em->getCache()->getEntityCacheRegionAccess(City::CLASSNAME);
+        $targetRegion   = $this->_em->getCache()->getEntityCacheRegion(City::CLASSNAME);
         $entry          = new CollectionCacheEntry(array(
             array('id'=>31),
             array('id'=>32),

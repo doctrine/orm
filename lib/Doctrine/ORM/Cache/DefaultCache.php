@@ -26,7 +26,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\Persisters\CachedPersister;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
@@ -75,7 +75,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function getEntityCacheRegionAccess($className)
+    public function getEntityCacheRegion($className)
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
@@ -84,13 +84,13 @@ class DefaultCache implements Cache
             return null;
         }
 
-        return $persister->getCacheRegionAcess();
+        return $persister->getCacheRegion();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getCollectionCacheRegionAccess($className, $association)
+    public function getCollectionCacheRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
@@ -99,7 +99,7 @@ class DefaultCache implements Cache
             return null;
         }
 
-        return $persister->getCacheRegionAcess();
+        return $persister->getCacheRegion();
     }
 
     /**
@@ -115,7 +115,7 @@ class DefaultCache implements Cache
             return false;
         }
 
-        return $persister->getCacheRegionAcess()->getRegion()->contains($key);
+        return $persister->getCacheRegion()->contains($key);
     }
 
     /**
@@ -131,7 +131,7 @@ class DefaultCache implements Cache
             return;
         }
 
-        $persister->getCacheRegionAcess()->evict($key);
+        $persister->getCacheRegion()->evict($key);
     }
 
     /**
@@ -146,7 +146,7 @@ class DefaultCache implements Cache
             return;
         }
 
-        $persister->getCacheRegionAcess()->evictAll();
+        $persister->getCacheRegion()->evictAll();
     }
 
     /**
@@ -163,7 +163,7 @@ class DefaultCache implements Cache
                 continue;
             }
 
-            $persister->getCacheRegionAcess()->evictAll();
+            $persister->getCacheRegion()->evictAll();
         }
     }
 
@@ -180,7 +180,7 @@ class DefaultCache implements Cache
             return false;
         }
 
-        return $persister->getCacheRegionAcess()->getRegion()->contains($key);
+        return $persister->getCacheRegion()->contains($key);
     }
 
     /**
@@ -196,7 +196,7 @@ class DefaultCache implements Cache
             return;
         }
 
-        $persister->getCacheRegionAcess()->evict($key);
+        $persister->getCacheRegion()->evict($key);
     }
 
     /**
@@ -211,7 +211,7 @@ class DefaultCache implements Cache
             return;
         }
 
-        $persister->getCacheRegionAcess()->evictAll();
+        $persister->getCacheRegion()->evictAll();
     }
 
     /**
@@ -224,6 +224,7 @@ class DefaultCache implements Cache
         foreach ($metadatas as $metadata) {
 
             foreach ($metadata->associationMappings as $association) {
+
                 if ( ! $association['type'] & ClassMetadata::TO_MANY) {
                     continue;
                 }
@@ -234,7 +235,7 @@ class DefaultCache implements Cache
                     continue;
                 }
 
-                $persister->getCacheRegionAcess()->evictAll();
+                $persister->getCacheRegion()->evictAll();
             }
         }
     }

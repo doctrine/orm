@@ -14,6 +14,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 {
     public function testShouldPutManyToManyCollectionOwningSideOnPersist()
     {
+        $this->evictRegions();
+
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
@@ -35,6 +37,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 
     public function testPutAndLoadManyToManyRelation()
     {
+        $this->evictRegions();
+
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
@@ -140,6 +144,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 
     public function testStoreManyToManyAssociationWhitCascade()
     {
+        $this->evictRegions();
+
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
@@ -175,25 +181,34 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(Travel::CLASSNAME, $t1);
         $this->assertCount(3, $t1->getVisitedCities());
         $this->assertEquals($queryCount1, $this->getCurrentQueryCount());
+    }
 
-        $t1->removeVisitedCity($t1->getVisitedCities()->get(1));
+    /**
+     * @expectedException \Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Cannot update a readonly collection "Doctrine\Tests\Models\Cache\Travel#visitedCities
+     */
+    public function testReadOnlyCollection()
+    {
+        $this->evictRegions();
 
-        $this->_em->persist($t1);
-        $this->_em->flush();
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesTraveler();
+        $this->loadFixturesTravels();
+
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $travel->getId()));
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $traveler->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[3]->getId()));
-        $this->assertTrue($this->cache->containsCollection(Travel::CLASSNAME, 'visitedCities', $travel->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $this->travels[0]->getId()));
+        $this->assertTrue($this->cache->containsCollection(Travel::CLASSNAME, 'visitedCities', $this->travels[0]->getId()));
 
-        $queryCount2 = $this->getCurrentQueryCount();
-        $t2          = $this->_em->find(Travel::CLASSNAME, $travel->getId());
+        $travel = $this->_em->find(Travel::CLASSNAME, $this->travels[0]->getId());
 
-        $this->assertInstanceOf(Travel::CLASSNAME, $t1);
-        $this->assertCount(2, $t2->getVisitedCities());
-        $this->assertEquals($queryCount2, $this->getCurrentQueryCount());
+        $this->assertCount(3, $travel->getVisitedCities());
+
+        $travel->getVisitedCities()->remove(0);
+
+        $this->_em->persist($travel);
+        $this->_em->flush();
     }
 }

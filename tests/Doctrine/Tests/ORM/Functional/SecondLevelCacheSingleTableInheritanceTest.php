@@ -15,10 +15,10 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 {
     public function testUseSameRegion()
     {
-        $attractionRegion   = $this->cache->getEntityCacheRegionAccess(Attraction::CLASSNAME)->getRegion();
-        $restaurantRegion   = $this->cache->getEntityCacheRegionAccess(Restaurant::CLASSNAME)->getRegion();
-        $beachRegion        = $this->cache->getEntityCacheRegionAccess(Beach::CLASSNAME)->getRegion();
-        $barRegion          = $this->cache->getEntityCacheRegionAccess(Bar::CLASSNAME)->getRegion();
+        $attractionRegion   = $this->cache->getEntityCacheRegion(Attraction::CLASSNAME);
+        $restaurantRegion   = $this->cache->getEntityCacheRegion(Restaurant::CLASSNAME);
+        $beachRegion        = $this->cache->getEntityCacheRegion(Beach::CLASSNAME);
+        $barRegion          = $this->cache->getEntityCacheRegion(Bar::CLASSNAME);
 
         $this->assertEquals($attractionRegion->getName(), $restaurantRegion->getName());
         $this->assertEquals($attractionRegion->getName(), $beachRegion->getName());

@@ -21,8 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Cache\Persisters\CachedPersister;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -68,8 +67,8 @@ class DefaultQueryCache implements QueryCache
     private static $hints = array(Query::HINT_CACHE_ENABLED => true);
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface  $em     The entity manager.
-     * @param \Doctrine\ORM\Cache\Region            $region The query region.
+     * @param \Doctrine\ORM\EntityManagerInterface $em     The entity manager.
+     * @param \Doctrine\ORM\Cache\Region           $region The query region.
      */
     public function __construct(EntityManagerInterface $em, Region $region)
     {
@@ -106,7 +105,7 @@ class DefaultQueryCache implements QueryCache
         $entityName  = reset($rsm->aliasMap); //@TODO find root entity
         $hasRelation = ( ! empty($rsm->relationMap));
         $persister   = $this->uow->getEntityPersister($entityName);
-        $region      = $persister->getCacheRegionAcess()->getRegion();
+        $region      = $persister->getCacheRegion();
 
         // @TODO - move to cache hydration componente
         foreach ($entry->result as $index => $entry) {
@@ -126,7 +125,7 @@ class DefaultQueryCache implements QueryCache
             foreach ($entry['associations'] as $name => $assoc) {
 
                 $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
-                $assocRegion     = $assocPersister->getCacheRegionAcess()->getRegion();
+                $assocRegion     = $assocPersister->getCacheRegion();
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
 
@@ -193,7 +192,7 @@ class DefaultQueryCache implements QueryCache
             throw CacheException::nonCacheableEntity($entityName);
         }
 
-        $region = $persister->getCacheRegionAcess()->getRegion();
+        $region = $persister->getCacheRegion();
 
         foreach ($result as $index => $entity) {
             $identifier                     = $this->uow->getEntityIdentifier($entity);
@@ -202,7 +201,7 @@ class DefaultQueryCache implements QueryCache
 
             if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
                 // Cancel put result if entity put fail
-                if ( ! $persister->putEntityCache($entity, $entityKey)) {
+                if ( ! $persister->storeEntityCache($entity, $entityKey)) {
                     return false;
                 }
             }
@@ -224,7 +223,7 @@ class DefaultQueryCache implements QueryCache
                 }
 
                 $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
-                $assocRegion     = $assocPersister->getCacheRegionAcess()->getRegion();
+                $assocRegion     = $assocPersister->getCacheRegion();
                 $assocMetadata   = $assocPersister->getClassMetadata();
 
                 // Handle *-to-one associations
@@ -235,7 +234,7 @@ class DefaultQueryCache implements QueryCache
                     if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
 
                         // Cancel put result if association entity put fail
-                        if ( ! $assocPersister->putEntityCache($assocValue, $entityKey)) {
+                        if ( ! $assocPersister->storeEntityCache($assocValue, $entityKey)) {
                             return false;
                         }
                     }
@@ -258,7 +257,7 @@ class DefaultQueryCache implements QueryCache
                     if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
 
                         // Cancel put result if entity put fail
-                        if ( ! $assocPersister->putEntityCache($assocItem, $entityKey)) {
+                        if ( ! $assocPersister->storeEntityCache($assocItem, $entityKey)) {
                             return false;
                         }
                     }

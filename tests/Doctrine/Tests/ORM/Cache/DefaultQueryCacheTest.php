@@ -12,8 +12,6 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
-use Doctrine\ORM\Cache\CacheFactory;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\ORM\Cache\EntityCacheEntry;
@@ -505,7 +503,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
 }
 
-class CacheFactoryDefaultQueryCacheTest implements CacheFactory
+class CacheFactoryDefaultQueryCacheTest extends \Doctrine\ORM\Cache\DefaultCacheFactory
 {
     private $queryCache;
     private $region;
@@ -516,34 +514,13 @@ class CacheFactoryDefaultQueryCacheTest implements CacheFactory
         $this->region     = $region;
     }
 
-    public function buildEntityRegionAccessStrategy(ClassMetadata $metadata)
-    {
-        return new \Doctrine\ORM\Cache\Access\NonStrictReadWriteEntityRegionAccessStrategy($this->region);
-    }
-
-    public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName)
-    {
-        return new \Doctrine\ORM\Cache\Access\NonStrictReadWriteCollectionRegionAccessStrategy($this->region);
-    }
-
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
         return $this->queryCache;
     }
 
-    public function buildCollectionEntryStructure(EntityManagerInterface $em)
+    protected function createRegion($regionName)
     {
-        return new \Doctrine\ORM\Cache\DefaultCollectionEntryStructure($em);
-    }
-
-    public function buildEntityEntryStructure(EntityManagerInterface $em)
-    {
-        return new \Doctrine\ORM\Cache\DefaultEntityEntryStructure($em);
-    }
-
-    private function createRegion($regionName)
-    {
-
         return $this->region;
     }
 }

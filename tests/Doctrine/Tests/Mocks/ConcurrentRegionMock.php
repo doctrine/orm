@@ -44,14 +44,14 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
     public function setLock(CacheKey $key, Lock $lock)
     {
-        $this->locks[$key->hash()] = $lock;
+        $this->locks[$key->hash] = $lock;
     }
 
     public function contains(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
 
-        if (isset($this->locks[$key->hash()])) {
+        if (isset($this->locks[$key->hash])) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
         $this->throwException(__FUNCTION__);
 
-        if (isset($this->locks[$key->hash()])) {
+        if (isset($this->locks[$key->hash])) {
             return null;
         }
 
@@ -106,9 +106,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
         $this->throwException(__FUNCTION__);
 
-        if (isset($this->locks[$key->hash()])) {
+        if (isset($this->locks[$key->hash])) {
 
-            if ($lock !== null && $this->locks[$key->hash()]->value === $lock->value) {
+            if ($lock !== null && $this->locks[$key->hash]->value === $lock->value) {
                 return $this->region->put($key, $entry);
             }
 
@@ -124,11 +124,11 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
         $this->throwException(__FUNCTION__);
 
-        if (isset($this->locks[$key->hash()])) {
+        if (isset($this->locks[$key->hash])) {
             return null;
         }
 
-        return $this->locks[$key->hash()] = Lock::createLockRead();
+        return $this->locks[$key->hash] = Lock::createLockRead();
     }
 
     public function readUnlock(CacheKey $key, Lock $lock)
@@ -137,48 +137,14 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
         $this->throwException(__FUNCTION__);
 
-        if ( ! isset($this->locks[$key->hash()])) {
+        if ( ! isset($this->locks[$key->hash])) {
             return;
         }
 
-        if ($this->locks[$key->hash()]->value !== $lock->value) {
+        if ($this->locks[$key->hash]->value !== $lock->value) {
             throw LockException::unexpectedLockValue($lock);
         }
 
-        unset($this->locks[$key->hash()]);
-    }
-
-    public function writeLock(CacheKey $key, Lock $lock = null)
-    {
-        $this->calls[__FUNCTION__][] = array('key' => $key, 'lock' => $lock);
-
-        $this->throwException(__FUNCTION__);
-
-        if (isset($this->locks[$key->hash()])) {
-            if ($lock !== null && $this->locks[$key->hash()]->value === $lock->value) {
-                return $this->locks[$key->hash()] = Lock::createLockWrite();
-            }
-
-            return null;
-        }
-
-        return $this->locks[$key->hash()] = Lock::createLockWrite();
-    }
-
-    public function writeUnlock(CacheKey $key, Lock $lock)
-    {
-        $this->calls[__FUNCTION__][] = array('key' => $key, 'lock' => $lock);
-
-        $this->throwException(__FUNCTION__);
-
-        if ( ! isset($this->locks[$key->hash()])) {
-            return;
-        }
-
-        if ($this->locks[$key->hash()]->value !== $lock->value) {
-            throw LockException::unexpectedLockValue($lock);
-        }
-
-        unset($this->locks[$key->hash()]);
+        unset($this->locks[$key->hash]);
     }
 }

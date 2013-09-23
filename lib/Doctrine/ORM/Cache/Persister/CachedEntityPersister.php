@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,31 +18,28 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persisters;
+namespace Doctrine\ORM\Cache\Persister;
+
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Persisters\EntityPersister;
 
 /**
- * Interface for persister that support second level cache.
+ * Interface for second level cache entity persisters.
  *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since 2.5
  */
-interface CachedPersister
+interface CachedEntityPersister extends CachedPersister, EntityPersister
 {
     /**
-     * Perform whatever processing is encapsulated here after completion of the transaction.
+     * @return \Doctrine\ORM\Cache\EntityHydrator
      */
-    public function afterTransactionComplete();
+    public function getEntityHydrator();
 
     /**
-     * Perform whatever processing is encapsulated here after completion of the rolled-back.
+     * @param  object                             $entity
+     * @param  \Doctrine\ORM\Cache\EntityCacheKey $key
+     * @return boolean
      */
-    public function afterTransactionRolledBack();
-
-    /**
-     * Gets the The region access.
-     *
-     *@return \Doctrine\ORM\Cache\RegionAccess
-     */
-    public function getCacheRegionAcess();
-
+    public function storeEntityCache($entity, EntityCacheKey $key);
 }

@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Cache;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class CollectionCacheKey implements CacheKey
+class CollectionCacheKey extends CacheKey
 {
     /**
      * @var array
@@ -44,34 +44,17 @@ class CollectionCacheKey implements CacheKey
     public $association;
 
     /**
-     * @var string
-     */
-    private $hash;
-
-    /**
      * @param string $entityClass     The entity class.
      * @param string $association     The field name that represents the association.
      * @param array  $ownerIdentifier The identifier of the owning entity.
      */
     public function __construct($entityClass, $association, array $ownerIdentifier)
     {
+        ksort($ownerIdentifier);
+
         $this->entityClass      = $entityClass;
         $this->association      = $association;
         $this->ownerIdentifier  = $ownerIdentifier;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hash()
-    {
-        if ($this->hash === null) {
-
-            ksort($this->ownerIdentifier);
-
-            $this->hash = sprintf('%s[%s].%s', str_replace('\\', '.', strtolower($this->entityClass)), implode(' ', $this->ownerIdentifier), $this->association);
-        }
-
-        return $this->hash;
+        $this->hash             = sprintf('%s[%s].%s', str_replace('\\', '.', strtolower($entityClass)), implode(' ', $ownerIdentifier), $association);
     }
 }

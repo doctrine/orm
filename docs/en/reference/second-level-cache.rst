@@ -75,7 +75,6 @@ It allows you to provide your own cache implementation that might take advantage
 If you want to support locking for ``READ_WRITE`` strategies you should implement ``ConcurrentRegion``; ``CacheRegion`` otherwise.
 
 
-
 ``Doctrine\ORM\Cache\Region``
 
 Defines a contract for accessing a particular cache region.
@@ -179,8 +178,8 @@ Defines contract for concurrently managed data region.
        public function readUnlock(CacheKey $key, Lock $lock);
     }
 
-Caching Strategies
-------------------
+Caching mode
+------------
 
 * ``READ_ONLY`` (DEFAULT)
 
@@ -203,115 +202,26 @@ Caching Strategies
   * To use it a the cache region implementation must support locking.
 
 
-Built-in Strategies
+Built-in cached persisters
 ~~~~~~~~~~~~~~~~~~~
 
-Caching Strategies are responsible for access cache regions.
+Cached persisters are responsible to access cache regions.
 
-* ``Doctrine\ORM\Cache\Access\ReadOnlyEntityRegionAccessStrategy`` implements ``READ_ONLY`` for entities
-* ``Doctrine\ORM\Cache\Access\ReadOnlyCollectionRegionAccessStrategy`` implements ``READ_ONLY`` for collections
-* ``Doctrine\ORM\Cache\Access\NonStrictReadWriteEntityRegionAccessStrategy`` implements ``NONSTRICT_READ_WRITE`` for entities
-* ``Doctrine\ORM\Cache\Access\NonStrictReadWriteCollectionRegionAccessStrategy`` implements ``NONSTRICT_READ_WRITE`` for collections
-* ``Doctrine\ORM\Cache\Access\ReadWriteEntityRegionAccessStrategy`` implements ``READ_WRITE`` requires a ``ConcurrentRegion`` for entities
-* ``Doctrine\ORM\Cache\Access\ReadWriteCollectionRegionAccessStrategy`` implements ``READ_WRITE`` requires a ``ConcurrentRegion`` for collections
-
-``Doctrine\ORM\Cache\RegionAccessStrategy``, ``Doctrine\ORM\Cache\CollectionRegionAccessStrategy`` and ``Doctrine\ORM\Cache\ConcurrentRegionAccessStrategy``
-Defines contracts that should be implemented by caching strategies.
-
-If you want to support locking for ``READ_WRITE`` strategies you should implement ``ConcurrentRegionAccessStrategy``; ``RegionAccessStrategy`` otherwise.
-
-
-``Doctrine\ORM\Cache\RegionAccessStrategy``
-
-Interface for all region access strategies.
-
-.. code-block:: php
-
-    <?php
-
-    interface RegionAccessStrategy
-    {
-        /**
-         * Get the wrapped data cache region
-         *
-         * @return \Doctrine\ORM\Cache\Region The underlying region
-         */
-        public function getRegion();
-
-        /**
-         * Attempt to retrieve an object from the cache.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The cache key of the item to be retrieved.
-         *
-         * @return \Doctrine\ORM\Cache\CacheEntry The cached entry or <tt>null</tt>
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function get(CacheKey $key);
-
-        /**
-         * Attempt to cache an object, after loading from the database.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey      $key    The cache key.
-         * @param \Doctrine\ORM\Cache\CacheEntry    $entry  The cache entry.
-         *
-         * @return TRUE if the object was successfully cached.
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function put(CacheKey $key, CacheEntry $entry);
-
-        /**
-         * Forcibly evict an item from the cache immediately without regard for locks.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The cache key of the item to remove.
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function evict(CacheKey $key);
-
-        /**
-         * Forcibly evict all items from the cache immediately without regard for locks.
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function evictAll();
-    }
-
-
-``Doctrine\ORM\Cache\RegionAccess``
-
-Defines contract for regions which hold concurrently managed data.
-
-.. code-block:: php
-
-    <?php
-
-    interface ConcurrentRegionAccess extends RegionAccess
-    {
-        /**
-         * We are going to attempt to update/delete the keyed object.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
-         *
-         * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function lockItem(CacheKey $key);
-
-        /**
-         * Called when we have finished the attempted update/delete
-         * (which may or may not have been successful).
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key     The cache key of the item to unlock.
-         * @param \Doctrine\ORM\Cache\Lock     $lock    The lock obtained from lockItem
-         *
-         * @throws \Doctrine\ORM\Cache\CacheException
-         */
-        public function unlockItem(CacheKey $key, Lock $lock);
-    }
-
++-----------------------+---------------------------------------------------------------------------+
+| Cache Usage           | Persister                                                                 |
++=======================+===========================================================================+
+| READ_ONLY             | Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister                |
++-----------------------+---------------------------------------------------------------------------+
+| READ_WRITE            | Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister               |
++-----------------------+---------------------------------------------------------------------------+
+| NONSTRICT_READ_WRITE  | Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedEntityPersister      |
++-----------------------+---------------------------------------------------------------------------+
+| READ_ONLY             | Doctrine\ORM\Cache\Persister\ReadOnlyCachedCollectionPersister            |
++-----------------------+---------------------------------------------------------------------------+
+| READ_WRITE            | Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister           |
++-----------------------+---------------------------------------------------------------------------+
+| NONSTRICT_READ_WRITE  | Doctrine\ORM\Cache\Persister\NonStrictReadWriteCacheCollectionPersister   |
++-----------------------+---------------------------------------------------------------------------+
 
 Configuration
 -------------
@@ -348,9 +258,10 @@ Cache Factory is the main point of extension.
 It allows you to provide a specific implementation of the following components :
 
 * ``QueryCache`` Store and retrieve query cache results.
-* ``RegionAccess`` Store query entities and collection.
-* ``EntityEntryStructure``  Transform an entity into a cache entry and cache entry into entities
-* ``CollectionEntryStructure`` Transform a collection into a cache entry and cache entry into collection
+* ``CachedEntityPersister`` Store and retrieve entity results.
+* ``CachedCollectionPersister`` Store and retrieve query results.
+* ``EntityHydrator``  Transform an entity into a cache entry and cache entry into entities
+* ``CollectionHydrator`` Transform a collection into a cache entry and cache entry into collection
 
 .. code-block:: php
 
@@ -359,41 +270,54 @@ It allows you to provide a specific implementation of the following components :
     interface CacheFactory
     {
         /**
-         * Build an entity RegionAccess for the input entity.
-         *
-         * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
-         * @return \Doctrine\ORM\Cache\EntityRegionAccessStrategy The built region access.
-         */
-        public function buildEntityRegionAccessStrategy(ClassMetadata $metadata);
+        * Build an entity persister for the given entity metadata.
+        *
+        * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
+        * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister that will be cached.
+        * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata  The entity metadata.
+        *
+        * @return \Doctrine\ORM\Cache\Persister\CachedEntityPersister
+        */
+       public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata);
 
-        /**
-         * Build an collection RegionAccess for the input entity accociation.
-         *
-         * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
-         * @param string                              $fieldName The association field name.
-         * @return \Doctrine\ORM\Cache\CollectionRegionAccessStrategy The built region access.
-         */
-        public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
+       /**
+        * Build a collection persister for the given relation mapping.
+        *
+        * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager.
+        * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister that will be cached.
+        * @param array                                        $mapping   The association mapping.
+        *
+        * @return \Doctrine\ORM\Cache\Persister\CachedCollectionPersister
+        */
+       public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, $mapping);
 
-        /**
-         * @param \Doctrine\ORM\EntityManagerInterface  $em         The Entity manager.
-         * @param string                                $regionName The region name.
-         * @return \Doctrine\ORM\Cache\QueryCache The built query cache, or default if is NULL.
-         */
-        public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
+       /**
+        * Build a query cache based on the given region name
+        *
+        * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager.
+        * @param string                               $regionName The region name.
+        *
+        * @return \Doctrine\ORM\Cache\QueryCache The built query cache, or default query cache if the region name is NULL.
+        */
+       public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 
-        /**
-         * @param \Doctrine\ORM\EntityManagerInterface $em  The Entity manager.
-         * @return \Doctrine\ORM\Cache\EntityEntryStructure The built entity entry structure.
-         */
-        public function buildEntityEntryStructure(EntityManagerInterface $em);
+       /**
+        * Build an entity hidrator
+        *
+        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+        *
+        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
+        */
+       public function buildEntityHydrator(EntityManagerInterface $em);
 
-        /**
-         * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
-         * @return \Doctrine\ORM\Cache\CollectionEntryStructure The collection entry structure.
-         */
-        public function buildCollectionEntryStructure(EntityManagerInterface $em);
-
+       /**
+        * Build a collection hidrator
+        *
+        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+        *
+        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
+        */
+       public function buildCollectionHydrator(EntityManagerInterface $em);
     }
 
 Region Lifetime

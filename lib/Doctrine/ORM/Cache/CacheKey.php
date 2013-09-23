@@ -27,10 +27,10 @@ namespace Doctrine\ORM\Cache;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface CacheKey
+abstract class CacheKey
 {
     /**
-     * @return string Unique identifier
+     * @var string Unique identifier
      */
-    public function hash();
+    public $hash;
 }

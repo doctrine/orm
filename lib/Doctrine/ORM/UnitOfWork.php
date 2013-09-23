@@ -38,13 +38,10 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
-use Doctrine\ORM\Cache\Persisters\CachedCollectionPersister;
-use Doctrine\ORM\Cache\Persisters\CachedEntityPersister;
-use Doctrine\ORM\Cache\Persisters\CachedPersister;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\ORM\Persisters\SingleTablePersister;
 use Doctrine\ORM\Persisters\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\UnionSubclassPersister;
 use Doctrine\ORM\Persisters\OneToManyPersister;
 use Doctrine\ORM\Persisters\ManyToManyPersister;
 
@@ -3012,7 +3009,9 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($this->hasCache && $class->cache !== null) {
-            $persister = new CachedEntityPersister($persister, $this->em, $class);
+            $persister = $this->em->getConfiguration()
+                ->getSecondLevelCacheFactory()
+                ->buildCachedEntityPersister($this->em, $persister, $class);
         }
 
         $this->persisters[$entityName] = $persister;
@@ -3042,7 +3041,9 @@ class UnitOfWork implements PropertyChangedListener
             : new ManyToManyPersister($this->em);
 
         if ($this->hasCache && isset($association['cache'])) {
-            $persister = new CachedCollectionPersister($persister, $this->em, $association);
+            $persister = $this->em->getConfiguration()
+                ->getSecondLevelCacheFactory()
+                ->buildCachedCollectionPersister($this->em, $persister, $association);
         }
 
         $this->collectionPersisters[$role] = $persister;

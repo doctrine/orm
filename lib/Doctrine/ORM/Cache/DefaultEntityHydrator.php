@@ -28,12 +28,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
- * Default cache entry structure for entities
+ * Default hidrator cache for entities
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class DefaultEntityEntryStructure implements EntityEntryStructure
+class DefaultEntityHydrator implements EntityHydrator
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -130,7 +130,7 @@ class DefaultEntityEntryStructure implements EntityEntryStructure
 
             $assocId        = $data[$name];
             $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
-            $assocRegion    = $assocPersister->getCacheRegionAcess()->getRegion();
+            $assocRegion    = $assocPersister->getCacheRegion();
             $assocEntry     = $assocRegion->get(new EntityCacheKey($assoc['targetEntity'], $assocId));
 
             if ($assocEntry === null) {

@@ -18,12 +18,12 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persisters;
+namespace Doctrine\ORM\Cache\Persister;
 
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\ConcurrentRegionAccess;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -37,22 +37,22 @@ use Doctrine\Common\Collections\Criteria;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
  */
-class CachedEntityPersister implements CachedPersister, EntityPersister
+abstract class AbstractEntityPersister implements CachedEntityPersister
 {
      /**
      * @var \Doctrine\ORM\UnitOfWork
      */
-    private $uow;
+    protected $uow;
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
      */
-    private $metadataFactory;
+    protected $metadataFactory;
 
     /**
      * @var \Doctrine\ORM\Persisters\EntityPersister
      */
-    private $persister;
+    protected $persister;
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
@@ -65,19 +65,14 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     protected $queuedCache = array();
 
     /**
-     * @var boolean
+     * @var \Doctrine\ORM\Cache\Region
      */
-    private $isConcurrentRegion = false;
+    protected $region;
 
     /**
-     * @var \Doctrine\ORM\Cache\RegionAccess|Doctrine\ORM\Cache\ConcurrentRegionAccess
+     * @var \Doctrine\ORM\Cache\EntityHydrator
      */
-    protected $cacheRegionAccess;
-
-    /**
-     * @var \Doctrine\ORM\Cache\EntityEntryStructure
-     */
-    protected $cacheEntryStructure;
+    protected $hidrator;
 
     /**
      * @var \Doctrine\ORM\Cache
@@ -92,23 +87,28 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     /**
      * @var string
      */
-    protected $cacheRegionName;
+    protected $regionName;
 
-    public function __construct(EntityPersister $persister, EntityManagerInterface $em, ClassMetadata $class)
+    /**
+     * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister to cache.
+     * @param \Doctrine\ORM\Cache\Region               $region    The entity cache region.
+     * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata      $class     The entity metadata.
+     */
+    public function __construct(EntityPersister $persister, Region $region, EntityManagerInterface $em, ClassMetadata $class)
     {
         $config  = $em->getConfiguration();
         $factory = $config->getSecondLevelCacheFactory();
 
-        $this->class                = $class;
-        $this->persister            = $persister;
-        $this->cache                = $em->getCache();
-        $this->uow                  = $em->getUnitOfWork();
-        $this->metadataFactory      = $em->getMetadataFactory();
-        $this->cacheLogger          = $config->getSecondLevelCacheLogger();
-        $this->cacheEntryStructure  = $factory->buildEntityEntryStructure($em);
-        $this->cacheRegionAccess    = $factory->buildEntityRegionAccessStrategy($this->class);
-        $this->cacheRegionName      = $this->cacheRegionAccess->getRegion()->getName();
-        $this->isConcurrentRegion   = ($this->cacheRegionAccess instanceof ConcurrentRegionAccess);
+        $this->class            = $class;
+        $this->region           = $region;
+        $this->persister        = $persister;
+        $this->cache            = $em->getCache();
+        $this->regionName       = $region->getName();
+        $this->uow              = $em->getUnitOfWork();
+        $this->metadataFactory  = $em->getMetadataFactory();
+        $this->cacheLogger      = $config->getSecondLevelCacheLogger();
+        $this->hidrator         = $factory->buildEntityHydrator($em);
     }
 
     /**
@@ -162,157 +162,13 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function afterTransactionComplete()
-    {
-        if (isset($this->queuedCache['insert'])) {
-            foreach ($this->queuedCache['insert'] as $item) {
-
-                $class      = $this->class;
-                $className  = ClassUtils::getClass($item['entity']);
-
-                if ($className !== $this->class->name) {
-                    $class = $this->metadataFactory->getMetadataFor($className);
-                }
-
-                $key    = $item['key'] ?: new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($item['entity']));
-                $entry  = $this->cacheEntryStructure->buildCacheEntry($class, $key, $item['entity']);
-                $cached = $this->cacheRegionAccess->afterInsert($key, $entry);
-
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
-                }
-            }
-        }
-
-        if (isset($this->queuedCache['update'])) {
-            foreach ($this->queuedCache['update'] as $item) {
-
-                $class      = $this->class;
-                $className  = ClassUtils::getClass($item['entity']);
-
-                if ($className !== $this->class->name) {
-                    $class = $this->metadataFactory->getMetadataFor($className);
-                }
-
-                $key    = $item['key'] ?: new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($item['entity']));
-                $entry  = $this->cacheEntryStructure->buildCacheEntry($class, $key, $item['entity']);
-                $cached = $this->cacheRegionAccess->afterUpdate($key, $entry);
-
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
-                }
-
-                if ($item['lock'] !== null) {
-                    $this->cacheRegionAccess->unlockItem($key, $item['lock']);
-                }
-            }
-        }
-
-        if (isset($this->queuedCache['delete'])) {
-            foreach ($this->queuedCache['delete'] as $item) {
-                $this->cacheRegionAccess->evict($item['key']);
-            }
-        }
-
-        $this->queuedCache = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function afterTransactionRolledBack()
-    {
-        if ( ! $this->isConcurrentRegion) {
-            $this->queuedCache = array();
-
-            return;
-        }
-
-        if (isset($this->queuedCache['update'])) {
-            foreach ($this->queuedCache['update'] as $item) {
-                $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-            }
-        }
-
-        if (isset($this->queuedCache['delete'])) {
-            foreach ($this->queuedCache['delete'] as $item) {
-                $this->cacheRegionAccess->unlockItem($item['key'], $item['lock']);
-            }
-        }
-
-        $this->queuedCache = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($entity)
-    {
-        $key   = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-        $lock  = null;
-
-        if ($this->isConcurrentRegion) {
-            $lock = $this->cacheRegionAccess->lockItem($key);
-        }
-
-        $this->persister->delete($entity);
-
-        $this->queuedCache['delete'][] = array(
-            'entity' => $entity,
-            'lock'   => $lock,
-            'key'    => $key
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function update($entity)
-    {
-        $key   = null;
-        $lock  = null;
-
-        if ($this->isConcurrentRegion) {
-            $key  = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-            $lock = $this->cacheRegionAccess->lockItem($key);
-        }
-
-        $this->persister->update($entity);
-
-        $this->queuedCache['update'][] = array(
-            'entity' => $entity,
-            'lock'   => $lock,
-            'key'    => $key
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function executeInserts()
-    {
-        foreach ($this->persister->getInserts() as $entity) {
-            $this->queuedCache['insert'][] = array(
-                'entity' => $entity,
-                'lock'   => null,
-                'key'    => null
-            );
-        }
-
-        return $this->persister->executeInserts();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function exists($entity, array $extraConditions = array())
     {
         if (empty($extraConditions)) {
 
-            $region = $this->cacheRegionAccess->getRegion();
-            $key    = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
+            $key = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
 
-            if ($region->contains($key)) {
+            if ($this->region->contains($key)) {
                 return true;
             }
         }
@@ -323,25 +179,23 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getCacheRegionAcess()
+    public function getCacheRegion()
     {
-        return $this->cacheRegionAccess;
+        return $this->region;
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\EntityEntryStructure
+     * @return \Doctrine\ORM\Cache\EntityHydrator
      */
-    public function getCacheEntryStructure()
+    public function getEntityHydrator()
     {
-        return $this->cacheEntryStructure;
+        return $this->hidrator;
     }
 
     /**
-     * @param object $entity
-     * @param \Doctrine\ORM\Cache\EntityCacheKey $key
-     * @return boolean
+     * {@inheritdoc}
      */
-    public function putEntityCache($entity, EntityCacheKey $key)
+    public function storeEntityCache($entity, EntityCacheKey $key)
     {
         $class      = $this->class;
         $className  = ClassUtils::getClass($entity);
@@ -350,11 +204,11 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 
-        $entry  = $this->cacheEntryStructure->buildCacheEntry($class, $key, $entity);
-        $cached = $this->cacheRegionAccess->put($key, $entry);
+        $entry  = $this->hidrator->buildCacheEntry($class, $key, $entity);
+        $cached = $this->region->put($key, $entry);
 
         if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $key);
+            $this->cacheLogger->entityCachePut($this->regionName, $key);
         }
 
         return $cached;
@@ -415,6 +269,16 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     /**
      * {@inheritdoc}
      */
+    public function executeInserts()
+    {
+        $this->queuedCache['insert'] = $this->persister->getInserts();
+
+        return $this->persister->executeInserts();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
     {
         //@TODO - Should throw exception ?
@@ -427,30 +291,30 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         $hash       = $this->getHash($query, $criteria);
         $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
-        $queryCache = $this->cache->getQueryCache($this->cacheRegionName);
+        $queryCache = $this->cache->getQueryCache($this->regionName);
         $result     = $queryCache->get($querykey, $rsm);
 
         if ($result !== null) {
 
             if ($this->cacheLogger) {
-                $this->cacheLogger->queryCacheHit($this->cacheRegionName, $querykey);
+                $this->cacheLogger->queryCacheHit($this->regionName, $querykey);
             }
 
             return $result[0];
         }
 
-        if(($result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy)) === null) {
+        if (($result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy)) === null) {
             return null;
         }
 
         $cached = $queryCache->put($querykey, $rsm, array($result));
 
         if ($this->cacheLogger && $result) {
-            $this->cacheLogger->queryCacheMiss($this->cacheRegionName, $querykey);
+            $this->cacheLogger->queryCacheMiss($this->regionName, $querykey);
         }
 
         if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->queryCachePut($this->cacheRegionName, $querykey);
+            $this->cacheLogger->queryCachePut($this->regionName, $querykey);
         }
 
         return $result;
@@ -465,13 +329,13 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         $hash       = $this->getHash($query, $criteria);
         $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
-        $queryCache = $this->cache->getQueryCache($this->cacheRegionName);
+        $queryCache = $this->cache->getQueryCache($this->regionName);
         $result     = $queryCache->get($querykey, $rsm);
 
         if ($result !== null) {
 
             if ($this->cacheLogger) {
-                $this->cacheLogger->queryCacheHit($this->cacheRegionName, $querykey);
+                $this->cacheLogger->queryCacheHit($this->regionName, $querykey);
             }
 
             return $result;
@@ -481,11 +345,11 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         $cached = $queryCache->put($querykey, $rsm, $result);
 
         if ($this->cacheLogger && $result) {
-            $this->cacheLogger->queryCacheMiss($this->cacheRegionName, $querykey);
+            $this->cacheLogger->queryCacheMiss($this->regionName, $querykey);
         }
 
         if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->queryCachePut($this->cacheRegionName, $querykey);
+            $this->cacheLogger->queryCachePut($this->regionName, $querykey);
         }
 
         return $result;
@@ -497,7 +361,7 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
     public function loadById(array $identifier, $entity = null)
     {
         $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
-        $cacheEntry = $this->cacheRegionAccess->get($cacheKey);
+        $cacheEntry = $this->region->get($cacheKey);
         $class      = $this->class;
 
         if ($cacheEntry !== null) {
@@ -506,10 +370,10 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
                 $class = $this->metadataFactory->getMetadataFor($cacheEntry->class);
             }
 
-            if (($entity = $this->cacheEntryStructure->loadCacheEntry($class, $cacheKey, $cacheEntry, $entity)) !== null) {
+            if (($entity = $this->hidrator->loadCacheEntry($class, $cacheKey, $cacheEntry, $entity)) !== null) {
 
                 if ($this->cacheLogger) {
-                    $this->cacheLogger->entityCacheHit($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
+                    $this->cacheLogger->entityCacheHit($this->regionName, $cacheKey);
                 }
 
                 return $entity;
@@ -529,15 +393,15 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 
-        $cacheEntry = $this->cacheEntryStructure->buildCacheEntry($class, $cacheKey, $entity);
-        $cached     = $this->cacheRegionAccess->put($cacheKey, $cacheEntry);
+        $cacheEntry = $this->hidrator->buildCacheEntry($class, $cacheKey, $entity);
+        $cached     = $this->region->put($cacheKey, $cacheEntry);
 
         if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->entityCachePut($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
+            $this->cacheLogger->entityCachePut($this->regionName, $cacheKey);
         }
 
         if ($this->cacheLogger) {
-            $this->cacheLogger->entityCacheMiss($this->cacheRegionAccess->getRegion()->getName(), $cacheKey);
+            $this->cacheLogger->entityCacheMiss($this->regionName, $cacheKey);
         }
 
         return $entity;
@@ -568,7 +432,7 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
             if ($list !== null) {
 
                 if ($this->cacheLogger) {
-                    $this->cacheLogger->collectionCacheHit($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
+                    $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
                 }
 
                 return $list;
@@ -578,10 +442,10 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         $list = $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);
 
         if ($hasCache && ! empty($list)) {
-            $persister->saveCollectionCache($key, $list);
+            $persister->storeCollectionCache($key, $list);
 
             if ($this->cacheLogger) {
-                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
+                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegion()->getName(), $key);
             }
         }
 
@@ -604,7 +468,7 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
             if ($list !== null) {
 
                 if ($this->cacheLogger) {
-                    $this->cacheLogger->collectionCacheHit($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
+                    $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
                 }
 
                 return $list;
@@ -614,10 +478,10 @@ class CachedEntityPersister implements CachedPersister, EntityPersister
         $list = $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $coll);
 
         if ($hasCache && ! empty($list)) {
-            $persister->saveCollectionCache($key, $list);
+            $persister->storeCollectionCache($key, $list);
 
             if ($this->cacheLogger) {
-                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegionAcess()->getRegion()->getName(), $key);
+                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegion()->getName(), $key);
             }
         }
 

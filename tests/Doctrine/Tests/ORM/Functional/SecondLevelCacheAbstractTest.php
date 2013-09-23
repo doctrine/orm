@@ -183,12 +183,12 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function getEntityRegion($className)
     {
-        return $this->cache->getEntityCacheRegionAccess($className)->getRegion()->getName();
+        return $this->cache->getEntityCacheRegion($className)->getName();
     }
 
     protected function getCollectionRegion($className, $association)
     {
-        return $this->cache->getCollectionCacheRegionAccess($className, $association)->getRegion()->getName();
+        return $this->cache->getCollectionCacheRegion($className, $association)->getName();
     }
 
     protected function getDefaultQueryRegionName()

@@ -20,32 +20,32 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Cache\EntityCacheEntry;
+
 /**
- * Defines contract for regions which hold concurrently managed data.
+ * Hidrator cache entry for entities
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface ConcurrentRegionAccessStrategy extends RegionAccessStrategy
+interface EntityHydrator
 {
     /**
-     * We are going to attempt to update/delete the keyed object.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey  $key      The entity cache key.
+     * @param object                              $entity   The entity.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
-     *
-     * @return \Doctrine\ORM\Cache\Lock A representation of our lock on the item
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException
+     * @return \Doctrine\ORM\Cache\EntityCacheEntry
      */
-    public function lockItem(CacheKey $key);
+    public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity);
 
     /**
-     * Called when we have finished the attempted update/delete (which may or may not have been successful), after transaction completion.
-     *
-     * @param \Doctrine\ORM\Cache\CacheKey $key     The cache key of the item to unlock.
-     * @param \Doctrine\ORM\Cache\Lock     $lock    The lock previously obtained from {@link lockItem}
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException
+     * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey   $key      The entity cache key.
+     * @param \Doctrine\ORM\Cache\EntityCacheEntry $entry    The entity cache entry.
+     * @param object                               $entity   The entity to load the cache into. If not specified, a new entity is created.
      */
-    public function unlockItem(CacheKey $key, Lock $lock);
+    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null);
 }

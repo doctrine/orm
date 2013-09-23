@@ -1,5 +1,4 @@
 <?php
-
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -18,26 +17,30 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Access;
-
-use Doctrine\ORM\Cache\CacheException;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Lock;
+namespace Doctrine\ORM\Cache\Persister;
 
 /**
- * Specific read-only region access strategy
+ * Interface for persister that support second level cache.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class ReadOnlyEntityRegionAccessStrategy extends NonStrictReadWriteEntityRegionAccessStrategy
+interface CachedPersister
 {
     /**
-     * {@inheritdoc}
+     * Perform whatever processing is encapsulated here after completion of the transaction.
      */
-    public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null)
-    {
-        throw CacheException::updateReadOnlyobject();
-    }
+    public function afterTransactionComplete();
+
+    /**
+     * Perform whatever processing is encapsulated here after completion of the rolled-back.
+     */
+    public function afterTransactionRolledBack();
+
+    /**
+     * Gets the The region access.
+     *
+     * @return \Doctrine\ORM\Cache\Region
+     */
+    public function getCacheRegion();
 }

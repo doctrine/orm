@@ -34,7 +34,7 @@ class Travel
 
     /**
      * @Cache
-     * 
+     *
      * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
      * @JoinTable(name="cache_visited_cities",
      *  joinColumns={

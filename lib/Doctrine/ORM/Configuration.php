@@ -39,6 +39,7 @@ use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
+use Doctrine\ORM\Cache\Persisters\CachedPersisterFactory;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -352,6 +353,34 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSecondLevelQueryValidator(QueryCacheValidator $validator)
     {
         $this->_attributes['secondLevelCacheQueryValidator'] = $validator;
+    }
+
+    /**
+     * Set the persister factory.
+     *
+     * @since 2.5
+     *
+     * @param \Doctrine\ORM\Persister\PersisterFactory $persisterFactory
+     */
+    public function setSecondLevelCachePersisterFactory($persisterFactory)
+    {
+        $this->_attributes['persisterFactory'] = $persisterFactory;
+    }
+
+    /**
+     * Get the persister factory.
+     *
+     * @since 2.5
+     *
+     * @return \Doctrine\ORM\Persister\PersisterFactory
+     */
+    public function getSecondLevelCachePersisterFactory()
+    {
+        if ( ! isset($this->_attributes['cachedPersisterFactory'])){
+            $this->_attributes['cachedPersisterFactory'] = new CachedPersisterFactory();
+        }
+
+        return $this->_attributes['cachedPersisterFactory'];
     }
 
     /**

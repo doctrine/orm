@@ -26,12 +26,12 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
- * Structure cache entry for collections
+ * Hidrator cache entry for collections
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface CollectionEntryStructure
+interface CollectionHydrator
 {
     /**
      * @param \Doctrine\ORM\Mapping\ClassMetadata           $metadata   The entity metadata.
@@ -43,10 +43,10 @@ interface CollectionEntryStructure
     public function buildCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, $collection);
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata               $metadata   The owning entity metadata.
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey            $key        The cached collection key.
-     * @param \Doctrine\ORM\Cache\CollectionCacheEntry          $entry      The cached collection entry.
-     * @param Doctrine\ORM\PersistentCollection                 $collection The collection to load the cache into.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata   The owning entity metadata.
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey   $key        The cached collection key.
+     * @param \Doctrine\ORM\Cache\CollectionCacheEntry $entry      The cached collection entry.
+     * @param Doctrine\ORM\PersistentCollection        $collection The collection to load the cache into.
      *
      * @return array
      */

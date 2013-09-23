@@ -27,13 +27,8 @@ namespace Doctrine\ORM\Cache;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class QueryCacheKey implements CacheKey
+class QueryCacheKey extends CacheKey
 {
-    /**
-     * @var string
-     */
-    private $hash;
-
     /**
      * @var integer
      */
@@ -54,13 +49,5 @@ class QueryCacheKey implements CacheKey
         $this->hash      = $hash;
         $this->lifetime  = $lifetime;
         $this->cacheMode = $cacheMode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hash()
-    {
-        return $this->hash;
     }
 }

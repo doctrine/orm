@@ -31,30 +31,6 @@ use Doctrine\ORM\Cache\Lock;
 interface ConcurrentRegion extends Region
 {
     /**
-     * Attempts to write lock the mapping for the given key.
-     *
-     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
-     * @param \Doctrine\ORM\Cache\Lock     $lock The lock previously obtained from {@link writeLock}
-     *
-     * @return \Doctrine\ORM\Cache\Lock A lock instance or NULL if the lock already exists.
-     *
-     * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
-     */
-    public function writeLock(CacheKey $key, Lock $lock = null);
-
-    /**
-     * Attempts to write unlock the mapping for the given key.
-     *
-     * @param \Doctrine\ORM\Cache\CacheKey $key  The key of the item to unlock.
-     * @param \Doctrine\ORM\Cache\Lock     $lock The lock previously obtained from {@link writeLock}
-     *
-     * @return void
-     *
-     * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
-     */
-    public function writeUnlock(CacheKey $key, Lock $lock);
-
-    /**
      * Attempts to read lock the mapping for the given key.
      *
      * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
@@ -68,8 +44,8 @@ interface ConcurrentRegion extends Region
     /**
      * Attempts to read unlock the mapping for the given key.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey  $key  The key of the item to unlock.
-     * @param \Doctrine\ORM\Cache\Lock      $lock The lock previously obtained from {@link readLock}
+     * @param \Doctrine\ORM\Cache\CacheKey $key  The key of the item to unlock.
+     * @param \Doctrine\ORM\Cache\Lock     $lock The lock previously obtained from {@link readLock}
      *
      * @return void
      *

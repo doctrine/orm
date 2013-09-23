@@ -4,16 +4,11 @@ namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\Cache\CacheKey;
 
-class CacheKeyMock implements CacheKey
+class CacheKeyMock extends CacheKey
 {
 
     function __construct($hash)
     {
         $this->hash = $hash;
-    }
-
-    public function hash()
-    {
-        return $this->hash;
     }
 }

@@ -18,34 +18,27 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Access;
+namespace Doctrine\ORM\Cache\Persister;
 
-use Doctrine\ORM\Cache\EntityRegionAccessStrategy;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Lock;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Cache\CacheException;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
- * Specific non-strict read/write region access strategy
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since 2.5
  */
-class NonStrictReadWriteEntityRegionAccessStrategy  extends AbstractRegionAccessStrategy implements EntityRegionAccessStrategy
+class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
 {
-    /**
+     /**
      * {@inheritdoc}
      */
-    public function afterInsert(CacheKey $key, CacheEntry $entry)
+    public function update(PersistentCollection $collection)
     {
-        return $this->region->put($key, $entry);
-    }
+        if ($collection->isDirty() && count($collection->getSnapshot()) > 0) {
+            throw CacheException::updateReadOnlyCollection(ClassUtils::getClass($collection->getOwner()), $this->association['fieldName']);
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function afterUpdate(CacheKey $key, CacheEntry $entry, Lock $lock = null)
-    {
-        return $this->region->put($key, $entry);
+        parent::update($collection);
     }
 }

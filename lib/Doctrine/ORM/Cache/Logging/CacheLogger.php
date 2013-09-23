@@ -35,54 +35,54 @@ interface CacheLogger
     /**
      * Log an entity put into second level cache.
      *
-     * @param string                                $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\EntityCacheKey    $key        The cache key of the entity.
+     * @param string                             $regionName The name of the cache region.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey $key        The cache key of the entity.
      */
     public function entityCachePut($regionName, EntityCacheKey $key);
 
     /**
      * Log an entity get from second level cache resulted in a hit.
      *
-     * @param string                                $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\EntityCacheKey    $key        The cache key of the entity.
+     * @param string                             $regionName The name of the cache region.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey $key        The cache key of the entity.
      */
     public function entityCacheHit($regionName, EntityCacheKey $key);
 
     /**
      * Log an entity get from second level cache resulted in a miss.
      *
-     * @param string                                $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\EntityCacheKey    $key        The cache key of the entity.
+     * @param string                             $regionName The name of the cache region.
+     * @param \Doctrine\ORM\Cache\EntityCacheKey $key        The cache key of the entity.
      */
     public function entityCacheMiss($regionName, EntityCacheKey $key);
 
      /**
      * Log an entity put into second level cache.
      *
-     * @param string                                    $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey    $key        The cache key of the collection.
+     * @param string                                 $regionName The name of the cache region.
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key        The cache key of the collection.
      */
     public function collectionCachePut($regionName, CollectionCacheKey $key);
 
     /**
      * Log an entity get from second level cache resulted in a hit.
      *
-     * @param string                                    $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey    $key        The cache key of the collection.
+     * @param string                                 $regionName The name of the cache region.
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key        The cache key of the collection.
      */
     public function collectionCacheHit($regionName, CollectionCacheKey $key);
 
     /**
      * Log an entity get from second level cache resulted in a miss.
      *
-     * @param string                                    $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey    $key        The cache key of the collection.
+     * @param string                                 $regionName The name of the cache region.
+     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key        The cache key of the collection.
      */
     public function collectionCacheMiss($regionName, CollectionCacheKey $key);
 
     /**
      * Log a query put into the query cache.
-     * 
+     *
      * @param string                            $regionName The name of the cache region.
      * @param \Doctrine\ORM\Cache\QueryCacheKey $key        The cache key of the query.
      */

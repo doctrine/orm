@@ -15,9 +15,9 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 {
     public function testUseSameRegion()
     {
-        $infoRegion     = $this->cache->getEntityCacheRegionAccess(AttractionInfo::CLASSNAME)->getRegion();
-        $contactRegion  = $this->cache->getEntityCacheRegionAccess(AttractionContactInfo::CLASSNAME)->getRegion();
-        $locationRegion = $this->cache->getEntityCacheRegionAccess(AttractionLocationInfo::CLASSNAME)->getRegion();
+        $infoRegion     = $this->cache->getEntityCacheRegion(AttractionInfo::CLASSNAME);
+        $contactRegion  = $this->cache->getEntityCacheRegion(AttractionContactInfo::CLASSNAME);
+        $locationRegion = $this->cache->getEntityCacheRegion(AttractionLocationInfo::CLASSNAME);
 
         $this->assertEquals($infoRegion->getName(), $contactRegion->getName());
         $this->assertEquals($infoRegion->getName(), $locationRegion->getName());

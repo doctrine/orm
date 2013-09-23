@@ -139,7 +139,7 @@ class StatisticsCacheLogger implements CacheLogger
 
     /**
      * Get the number of entries successfully retrieved from cache.
-     * 
+     *
      * @param string $regionName The name of the cache region.
      *
      * @return integer

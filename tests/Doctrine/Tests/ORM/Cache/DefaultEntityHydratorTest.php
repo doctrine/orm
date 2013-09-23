@@ -8,16 +8,15 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\ORM\Cache\DefaultCacheFactory;
-use Doctrine\ORM\Cache\DefaultEntityEntryStructure;
+use Doctrine\ORM\Cache\DefaultEntityHydrator;
 
 /**
  * @group DDC-2183
  */
-class EntityEntryStructureTest extends OrmTestCase
+class DefaultEntityHydratorTest extends OrmTestCase
 {
     /**
-     * @var \Doctrine\ORM\Cache\EntityEntryStructure
+     * @var \Doctrine\ORM\Cache\EntityHydrator
      */
     private $structure;
 
@@ -31,12 +30,12 @@ class EntityEntryStructureTest extends OrmTestCase
         parent::setUp();
 
         $this->em        = $this->_getTestEntityManager();
-        $this->structure = new DefaultEntityEntryStructure($this->em);
+        $this->structure = new DefaultEntityHydrator($this->em);
     }
 
     public function testImplementsEntityEntryStructure()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityEntryStructure', $this->structure);
+        $this->assertInstanceOf('\Doctrine\ORM\Cache\EntityHydrator', $this->structure);
     }
 
     public function testCreateEntity()

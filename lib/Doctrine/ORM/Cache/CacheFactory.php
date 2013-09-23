@@ -23,6 +23,9 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Doctrine\ORM\Persisters\CollectionPersister;
+use Doctrine\ORM\Persisters\EntityPersister;
+
 /**
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -30,52 +33,52 @@ use Doctrine\ORM\EntityManagerInterface;
 interface CacheFactory
 {
     /**
-     * Build an entity RegionAccess for the input entity.
+     * Build an entity persister for the given entity metadata.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
+     * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
+     * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister that will be cached.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata  The entity metadata.
      *
-     * @return \Doctrine\ORM\Cache\EntityRegionAccessStrategy The built region access.
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     * @return \Doctrine\ORM\Cache\Persister\CachedEntityPersister
      */
-    public function buildEntityRegionAccessStrategy(ClassMetadata $metadata);
+    public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata);
 
     /**
-     * Build an collection RegionAccess for the input entity accociation.
+     * Build a collection persister for the given relation mapping.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
-     * @param string                              $fieldName The field name that represents the association.
+     * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager.
+     * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister that will be cached.
+     * @param array                                        $mapping   The association mapping.
      *
-     * @return \Doctrine\ORM\Cache\CollectionRegionAccessStrategy The built region access.
-     *
-     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     * @return \Doctrine\ORM\Cache\Persister\CachedCollectionPersister
      */
-    public function buildCollectionRegionAccessStrategy(ClassMetadata $metadata, $fieldName);
+    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, $mapping);
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface  $em         The Entity manager.
-     * @param string                                $regionName The region name.
+     * Build a query cache based on the given region name
+     *
+     * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager.
+     * @param string                               $regionName The region name.
      *
      * @return \Doctrine\ORM\Cache\QueryCache The built query cache, or default query cache if the region name is NULL.
-     * 
-     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em  The Entity manager.
-     * @return \Doctrine\ORM\Cache\EntityEntryStructure The built entity entry structure.
+     * Build an entity hidrator
      *
-     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+     *
+     * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
      */
-    public function buildEntityEntryStructure(EntityManagerInterface $em);
+    public function buildEntityHydrator(EntityManagerInterface $em);
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
-     * @return \Doctrine\ORM\Cache\CollectionEntryStructure The built collection entry structure.
+     * Build a collection hidrator
      *
-     * @throws \Doctrine\ORM\Cache\CacheException Indicates problems building the region access.
+     * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+     *
+     * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
      */
-    public function buildCollectionEntryStructure(EntityManagerInterface $em);
-
+    public function buildCollectionHydrator(EntityManagerInterface $em);
 }
