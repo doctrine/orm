@@ -885,21 +885,21 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertArrayHasKey('usage', $class->cache);
         $this->assertArrayHasKey('region', $class->cache);
         $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->cache['usage']);
-        $this->assertEquals('doctrine.tests.models.cache.city', $class->cache['region']);
+        $this->assertEquals('doctrine_tests_models_cache_city', $class->cache['region']);
 
         $this->assertArrayHasKey('state', $class->associationMappings);
         $this->assertArrayHasKey('cache', $class->associationMappings['state']);
         $this->assertArrayHasKey('usage', $class->associationMappings['state']['cache']);
         $this->assertArrayHasKey('region', $class->associationMappings['state']['cache']);
         $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['state']['cache']['usage']);
-        $this->assertEquals('doctrine.tests.models.cache.city::state', $class->associationMappings['state']['cache']['region']);
+        $this->assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']['region']);
 
         $this->assertArrayHasKey('attractions', $class->associationMappings);
         $this->assertArrayHasKey('cache', $class->associationMappings['attractions']);
         $this->assertArrayHasKey('usage', $class->associationMappings['attractions']['cache']);
         $this->assertArrayHasKey('region', $class->associationMappings['attractions']['cache']);
         $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['attractions']['cache']['usage']);
-        $this->assertEquals('doctrine.tests.models.cache.city::attractions', $class->associationMappings['attractions']['cache']['region']);
+        $this->assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
     }
 }
 

@@ -34,6 +34,8 @@ use Doctrine\ORM\Cache\CacheEntry;
  */
 class DefaultRegion implements Region
 {
+    const ENTRY_KEY = '_entry_';
+
     /**
      * @var \Doctrine\Common\Cache\Cache
      */
@@ -45,12 +47,17 @@ class DefaultRegion implements Region
     private $name;
 
     /**
+     * @var string
+     */
+    private $mapKey;
+
+    /**
      * @var integer
      */
     private $lifetime = 0;
 
     /**
-     * @param strgin                       $name
+     * @param string                       $name
      * @param \Doctrine\Common\Cache\Cache $cache
      * @param array                        $configuration
      */
@@ -58,6 +65,7 @@ class DefaultRegion implements Region
     {
         $this->name   = $name;
         $this->cache  = $cache;
+        $this->mapKey = "{$this->name}_map";
 
         if (isset($configuration['lifetime']) && $configuration['lifetime'] > 0) {
             $this->lifetime = (integer) $configuration['lifetime'];
@@ -81,27 +89,11 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @return string
-     */
-    private function entryKey(CacheKey $key)
-    {
-        return sprintf("%s.values[%s]", $this->name, $key->hash);
-    }
-
-    /**
-     * @return string
-     */
-    private function entriesMapKey()
-    {
-        return sprintf("%s[entries]", $this->name);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function contains(CacheKey $key)
     {
-        return $this->cache->contains($this->entryKey($key));
+        return $this->cache->contains($this->name . self::ENTRY_KEY . $key->hash);
     }
 
     /**
@@ -109,7 +101,7 @@ class DefaultRegion implements Region
      */
     public function get(CacheKey $key)
     {
-        return $this->cache->fetch($this->entryKey($key)) ?: null;
+        return $this->cache->fetch($this->name . self::ENTRY_KEY . $key->hash) ?: null;
     }
 
     /**
@@ -117,14 +109,13 @@ class DefaultRegion implements Region
      */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
-        $entriesKey = $this->entriesMapKey();
-        $entryKey   = $this->entryKey($key);
-        $entries    = $this->cache->fetch($entriesKey);
+        $entryKey   = $this->name . self::ENTRY_KEY . $key->hash;
+        $entries    = $this->cache->fetch($this->mapKey);
 
-        $entries[$entryKey] = true;
+        $entries[$entryKey] = 1;
 
         if ($this->cache->save($entryKey, $entry, $this->lifetime)) {
-            $this->cache->save($entriesKey, $entries);
+            $this->cache->save($this->mapKey, $entries);
 
             return true;
         }
@@ -137,15 +128,14 @@ class DefaultRegion implements Region
      */
     public function evict(CacheKey $key)
     {
-        $entriesKey = $this->entriesMapKey();
-        $entryKey   = $this->entryKey($key);
-        $entries    = $this->cache->fetch($entriesKey);
+        $entryKey   = $this->name . self::ENTRY_KEY . $key->hash;
+        $entries    = $this->cache->fetch($this->mapKey);
 
         if ($this->cache->delete($entryKey)) {
 
             unset($entries[$entryKey]);
 
-            $this->cache->save($entriesKey, $entries);
+            $this->cache->save($this->mapKey, $entries);
 
             return true;
         }
@@ -158,8 +148,7 @@ class DefaultRegion implements Region
      */
     public function evictAll()
     {
-        $entriesKey = $this->entriesMapKey();
-        $entries    = $this->cache->fetch($entriesKey);
+        $entries = $this->cache->fetch($this->mapKey);
 
         if ( ! is_array($entries) || empty($entries)) {
             return true;
@@ -171,7 +160,7 @@ class DefaultRegion implements Region
             }
         }
 
-        $this->cache->save($entriesKey, $entries);
+        $this->cache->save($this->mapKey, $entries);
 
         return empty($entries);
     }

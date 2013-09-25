@@ -24,7 +24,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     /**
      * @var \Doctrine\ORM\Persisters\CollectionPersister
      */
-    private $collectionPersister;
+    protected $collectionPersister;
 
     /**
      * @var \Doctrine\ORM\EntityManager

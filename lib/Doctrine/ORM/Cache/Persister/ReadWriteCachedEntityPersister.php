@@ -56,12 +56,6 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function afterTransactionComplete()
     {
-        if (isset($this->queuedCache['insert'])) {
-            foreach ($this->queuedCache['insert'] as $item) {
-                $this->region->evict($item['key']);
-            }
-        }
-
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
                 $this->region->evict($item['key']);
@@ -107,6 +101,10 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         $this->persister->delete($entity);
 
+        if ($lock === null) {
+            return;
+        }
+
         $this->queuedCache['delete'][] = array(
             'lock'   => $lock,
             'key'    => $key
@@ -122,6 +120,10 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
         $lock = $this->region->readLock($key);
 
         $this->persister->update($entity);
+
+        if ($lock === null) {
+            return;
+        }
 
         $this->queuedCache['update'][] = array(
             'lock'   => $lock,

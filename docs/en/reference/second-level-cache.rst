@@ -144,27 +144,10 @@ Defines contract for concurrently managed data region.
     interface ConcurrentRegion extends Region
     {
        /**
-        * Attempts to write lock the mapping for the given key.
-        *
-        * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
-        * @param \Doctrine\ORM\Cache\Lock     $lock The lock previously obtained from writeLock
-        *
-        * @return \Doctrine\ORM\Cache\Lock
-        */
-       public function writeLock(CacheKey $key, Lock $lock = null);
-
-       /**
-        * Attempts to write unlock the mapping for the given key.
-        *
-        * @param \Doctrine\ORM\Cache\CacheKey $key  The key of the item to unlock.
-        * @param \Doctrine\ORM\Cache\Lock     $lock The lock previously obtained from writeLock
-        */
-       public function writeUnlock(CacheKey $key, Lock $lock);
-
-       /**
         * Attempts to read lock the mapping for the given key.
         *
         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
+        *
         * @return \Doctrine\ORM\Cache\Lock A lock instance or NULL if the lock already exists.
         */
        public function readLock(CacheKey $key);

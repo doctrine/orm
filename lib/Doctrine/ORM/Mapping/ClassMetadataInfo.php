@@ -1014,7 +1014,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ( ! isset($cache['region'])) {
-            $cache['region'] = strtolower(str_replace('\\', '.', $this->rootEntityName));
+            $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName));
         }
 
         $this->cache = $cache;
@@ -1028,11 +1028,13 @@ class ClassMetadataInfo implements ClassMetadata
     public function enableAssociationCache($fieldName, array $cache)
     {
         if ( ! isset($cache['usage'])) {
-            $cache['usage'] = self::CACHE_USAGE_READ_ONLY;
+            $cache['usage'] = isset($this->cache['usage'])
+                ? $this->cache['usage']
+                : self::CACHE_USAGE_READ_ONLY;
         }
 
         if ( ! isset($cache['region'])) {
-            $cache['region'] = strtolower(str_replace('\\', '.', $this->rootEntityName)) . '::' . $fieldName;
+            $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
         }
 
         $this->associationMappings[$fieldName]['cache'] = $cache;

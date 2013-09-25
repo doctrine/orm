@@ -26,7 +26,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Cache\Lock;
 
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -101,6 +100,10 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 
         $this->persister->delete($collection);
 
+        if ($lock === null) {
+            return;
+        }
+
         $this->queuedCache['delete'][spl_object_hash($collection)] = array(
             'key'   => $key,
             'lock'  => $lock
@@ -124,11 +127,14 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
         $lock    = $this->region->readLock($key);
-        $data    = array(
+
+        if ($lock === null) {
+            return;
+        }
+
+        $this->queuedCache['update'][spl_object_hash($collection)] = array(
             'key'   => $key,
             'lock'  => $lock
         );
-
-        $this->queuedCache['delete'][spl_object_hash($collection)] = $data;
     }
 }

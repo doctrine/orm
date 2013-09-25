@@ -161,7 +161,7 @@ class DefaultQueryCache implements QueryCache
                 $collection->setInitialized(true);
             }
 
-            $result[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);;
+            $result[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
         }
 
         return $result;

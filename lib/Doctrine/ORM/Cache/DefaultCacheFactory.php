@@ -67,9 +67,8 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
     {
-        $regionName = $metadata->cache['region'];
         $usage      = $metadata->cache['usage'];
-        $region     = $this->createRegion($regionName);
+        $region     = $this->createRegion($metadata->cache);
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
             return new ReadOnlyCachedEntityPersister($persister, $region, $em, $metadata);
@@ -91,9 +90,8 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, $mapping)
     {
-        $regionName = $mapping['cache']['region'];
         $usage      = $mapping['cache']['usage'];
-        $region     = $this->createRegion($regionName);
+        $region     = $this->createRegion($mapping['cache']);
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
             return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
@@ -103,7 +101,7 @@ class DefaultCacheFactory implements CacheFactory
             return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
         }
 
-        if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
+        if ($usage === ClassMetadata::CACHE_USAGE_READ_WRITE) {
             return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
         }
 
@@ -115,7 +113,10 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
-        return new DefaultQueryCache($em, $this->createRegion($regionName ?: Cache::DEFAULT_QUERY_REGION_NAME));
+        return new DefaultQueryCache($em, $this->createRegion(array(
+            'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
+            'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+        )));
     }
 
     /**
@@ -135,14 +136,14 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * @param string $regionName
+     * @param array $cache
      *
-     * @return \Doctrine\ORM\Cache\Region
+     * @return \Doctrine\ORM\Cache\Region\DefaultRegion
      */
-    protected function createRegion($regionName)
+    protected function createRegion(array $cache)
     {
-        return new DefaultRegion($regionName, $this->cache, array(
-            'lifetime' => $this->configuration->getSecondLevelCacheRegionLifetime($regionName)
+        return new DefaultRegion($cache['region'], $this->cache, array(
+            'lifetime' => $this->configuration->getSecondLevelCacheRegionLifetime($cache['region'])
         ));
     }
 }

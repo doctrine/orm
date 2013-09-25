@@ -52,7 +52,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntity($em, __FUNCTION__);
 
-        $this->assertEquals(1002, $this->countQuery($em));
+        $this->assertEquals(5502, $this->countQuery($em));
     }
 
     public function testFindEntityWithCache()
@@ -72,7 +72,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findAllEntity($em, __FUNCTION__);
 
-        $this->assertEquals(152, $this->countQuery($em));
+        $this->assertEquals(153, $this->countQuery($em));
     }
 
     public function testFindAllEntityWithCache()
@@ -83,7 +83,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findAllEntity($em, __FUNCTION__);
 
-        $this->assertEquals(103, $this->countQuery($em));
+        $this->assertEquals(53, $this->countQuery($em));
     }
 
     public function testFindEntityOneToManyWithoutCache()
@@ -218,7 +218,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
     private function findEntity(EntityManagerInterface $em, $label)
     {
-        $times        = 50;
+        $times        = 10;
         $size         = 500;
         $countries    = array();
         $startPersist = microtime(true);
@@ -240,9 +240,10 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $startFind  = microtime(true);
 
-        for ($i = 0; $i < $times; $i++) {
+        for ($i = 0; $i <= $times; $i++) {
             foreach ($countries as $country) {
                 $em->find(Country::CLASSNAME, $country->getId());
+                $em->clear();
             }
         }
 
@@ -252,8 +253,8 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
     private function findAllEntity(EntityManagerInterface $em, $label)
     {
-        $times        = 50;
-        $size         = 100;
+        $times        = 100;
+        $size         = 50;
         $startPersist = microtime(true);
         $rep          = $em->getRepository(Country::CLASSNAME);
 
@@ -269,8 +270,9 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $startFind  = microtime(true);
 
-        for ($i = 0; $i < $times; $i++) {
+        for ($i = 0; $i <= $times; $i++) {
             $rep->findAll();
+            $em->clear();
         }
 
         printf("\n[%s] find %s countries (%s times)", number_format(microtime(true) - $startFind, 6), $size, $times);
