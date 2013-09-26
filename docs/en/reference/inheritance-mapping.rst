@@ -260,6 +260,7 @@ or auto-increment details). Furthermore each child table has to
 have a foreign key pointing from the id column to the root table id
 column and cascading on delete.
 
+.. _inheritence_mapping_overrides:
 
 Overrides
 ---------

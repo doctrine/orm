@@ -210,17 +210,56 @@ implementation that logs to the standard output using ``echo`` and
 Auto-generating Proxy Classes (***OPTIONAL***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Proxy classes can either be generated manually through the Doctrine
+Console or automatically at runtime by Doctrine. The configuration
+option that controls this behavior is:
+
 .. code-block:: php
 
     <?php
-    $config->setAutoGenerateProxyClasses($bool);
-    $config->getAutoGenerateProxyClasses();
+    $config->setAutoGenerateProxyClasses($mode);
 
-Gets or sets whether proxy classes should be generated
-automatically at runtime by Doctrine. If set to ``FALSE``, proxy
-classes must be generated manually through the doctrine command
-line task ``generate-proxies``. The strongly recommended value for
-a production environment is ``FALSE``.
+Possible values for ``$mode`` are:
+
+-  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_NEVER``
+
+Never autogenerate a proxy. You will need to generate the proxies
+manually, for this use the Doctrine Console like so:
+
+.. code-block:: php
+
+    $ ./doctrine orm:generate-proxies
+
+When you do this in a development environment,
+be aware that you may get class/file not found errors if certain proxies
+are not yet generated. You may also get failing lazy-loads if new
+methods were added to the entity class that are not yet in the proxy class.
+In such a case, simply use the Doctrine Console to (re)generate the
+proxy classes.
+
+-  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_ALWAYS``
+
+Always generates a new proxy in every request and writes it to disk.
+
+-  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS``
+
+Generate the proxy class when the proxy file does not exist.
+This strategy causes a file exists call whenever any proxy is
+used the first time in a request.
+
+-  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_EVAL``
+
+Generate the proxy classes and evaluate them on the fly via eval(),
+avoiding writing the proxies to disk.
+This strategy is only sane for development.
+
+In a production environment, it is highly recommended to use
+AUTOGENERATE_NEVER to allow for optimal performances. The other
+options are interesting in development environment.
+
+Before v2.4, ``setAutoGenerateProxyClasses`` would accept a boolean
+value. This is still possible, ``FALSE`` being equivalent to
+AUTOGENERATE_NEVER and ``TRUE`` to AUTOGENERATE_ALWAYS.
 
 Development vs Production Configuration
 ---------------------------------------
@@ -322,30 +361,27 @@ transparently initialize itself on first access.
 Generating Proxy classes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Proxy classes can either be generated manually through the Doctrine
-Console or automatically by Doctrine. The configuration option that
-controls this behavior is:
-
-.. code-block:: php
-
-    <?php
-    $config->setAutoGenerateProxyClasses($bool);
-    $config->getAutoGenerateProxyClasses();
-
-The default value is ``TRUE`` for convenient development. However,
-this setting is not optimal for performance and therefore not
-recommended for a production environment. To eliminate the overhead
-of proxy class generation during runtime, set this configuration
-option to ``FALSE``. When you do this in a development environment,
-note that you may get class/file not found errors if certain proxy
-classes are not available or failing lazy-loads if new methods were
-added to the entity class that are not yet in the proxy class. In
-such a case, simply use the Doctrine Console to (re)generate the
-proxy classes like so:
+In a production environment, it is highly recommended to use
+``AUTOGENERATE_NEVER`` to allow for optimal performances.
+However you will be required to generate the proxies manually
+using the Doctrine Console:
 
 .. code-block:: php
 
     $ ./doctrine orm:generate-proxies
+
+The other options are interesting in development environment:
+
+- ``AUTOGENERATE_ALWAYS`` will require you to create and configure
+  a proxy directory. Proxies will be generated and written to file
+  on each request, so any modification to your code will be acknowledged.
+
+- ``AUTOGENERATE_FILE_NOT_EXISTS`` will not overwrite an existing
+  proxy file. If your code changes, you will need to regenerate the
+  proxies manually.
+
+- ``AUTOGENERATE_EVAL`` will regenerate each proxy on each request,
+  but without writing them to disk.
 
 Autoloading Proxies
 -------------------

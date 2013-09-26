@@ -2,26 +2,24 @@ Working with Associations
 =========================
 
 Associations between entities are represented just like in regular
-object-oriented PHP, with references to other objects or
-collections of objects. When it comes to persistence, it is
-important to understand three main things:
+object-oriented PHP code using references to other objects or
+collections of objects.
 
+Changes to associations in your code are not synchronized to the
+database directly, only when calling ``EntityManager#flush()``.
 
--  The :doc:`concept of owning and inverse sides <unitofwork-associations>`
-   in bidirectional associations.
+There are other concepts you should know about when working
+with associations in Doctrine:
+
 -  If an entity is removed from a collection, the association is
    removed, not the entity itself. A collection of entities always
    only represents the association to the containing entities, not the
    entity itself.
--  Collection-valued :ref:`persistent fields <architecture_persistent_fields>` have to be instances of the
+-  When a bidirectional assocation is updated, Doctrine only checks
+   on one of both sides for these changes. This is called the :doc:`owning side <unitofwork-associations>`
+   of the association.
+-  A property with a reference to many entities has to be instances of the
    ``Doctrine\Common\Collections\Collection`` interface.
-
-Changes to associations in your code are not synchronized to the
-database directly, but upon calling ``EntityManager#flush()``.
-
-To describe all the concepts of working with associations we
-introduce a specific set of example entities that show all the
-different flavors of association management in Doctrine.
 
 Association Example Entities
 ----------------------------
@@ -44,10 +42,6 @@ information about its type and if it's the owning or inverse side.
          * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
          *
          * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
-         * @JoinTable(name="user_favorite_comments",
-         *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-         *   inverseJoinColumns={@JoinColumn(name="favorite_comment_id", referencedColumnName="id")}
-         * )
          */
         private $favorites;
     
@@ -55,10 +49,6 @@ information about its type and if it's the owning or inverse side.
          * Unidirectional - Many users have marked many comments as read
          *
          * @ManyToMany(targetEntity="Comment")
-         * @JoinTable(name="user_read_comments",
-         *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-         *   inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
-         * )
          */
         private $commentsRead;
     
@@ -474,6 +464,7 @@ removed from the system:
 
 .. code-block:: php
 
+    <?php
     $user = $em->find('User', $deleteUserId);
     
     foreach ($user->getAuthoredComments() AS $comment) {
@@ -630,7 +621,7 @@ large collections.
 
     $criteria = Criteria::create()
         ->where(Criteria::expr()->eq("birthday", "1982-02-17"))
-        ->orderBy(array("username" => "ASC"))
+        ->orderBy(array("username" => Criteria::ASC))
         ->setFirstResult(0)
         ->setMaxResults(20)
     ;

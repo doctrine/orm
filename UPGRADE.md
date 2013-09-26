@@ -1,5 +1,19 @@
 # Upgrade to 2.4
 
+## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
+
+In Doctrine 2.3 it was possible to use the new ``matching($criteria)``
+functionality by adding constraints for assocations based on ID:
+
+    Criteria::expr()->eq('association', $assocation->getId());
+
+This functionality does not work on InMemory collections however, because
+in memory criteria compares object values based on reference.
+As of 2.4 the above code will throw an exception. You need to change
+offending code to pass the ``$assocation`` reference directly:
+
+    Criteria::expr()->eq('association', $assocation);
+
 ## Composer is now the default autoloader
 
 The test suite now runs with composer autoloading. Support for PEAR, and tarball autoloading is deprecated.

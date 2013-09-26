@@ -34,13 +34,35 @@ use Doctrine\Common\Util\ClassUtils;
 /**
  * The EntityManager is the central access point to ORM functionality.
  *
+ * It is a facade to all different ORM subsystems such as UnitOfWork,
+ * Query Language and Repository API. Instantiation is done through
+ * the static create() method. The quickest way to obtain a fully
+ * configured EntityManager is:
+ *
+ *     use Doctrine\ORM\Tools\Setup;
+ *     use Doctrine\ORM\EntityManager;
+ *
+ *     $paths = array('/path/to/entity/mapping/files');
+ *
+ *     $config = Setup::createAnnotationMetadataConfiguration($paths);
+ *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
+ *     $entityManager = EntityManager::create($dbParams, $config);
+ *
+ * For more information see
+ * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
+ *
+ * You should never attempt to inherit from the EntityManager: Inheritance
+ * is not a valid extension point for the EntityManager. Instead you
+ * should take a look at the {@see \Doctrine\ORM\Decorator\EntityManagerDecorator}
+ * and wrap your entity manager in a decorator.
+ *
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityManager implements ObjectManager
+/* final */class EntityManager implements EntityManagerInterface
 {
     /**
      * The used Configuration.
@@ -64,13 +86,6 @@ class EntityManager implements ObjectManager
     private $metadataFactory;
 
     /**
-     * The EntityRepository instances.
-     *
-     * @var array
-     */
-    private $repositories = array();
-
-    /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
      * @var \Doctrine\ORM\UnitOfWork
@@ -85,18 +100,18 @@ class EntityManager implements ObjectManager
     private $eventManager;
 
     /**
-     * The maintained (cached) hydrators. One instance per type.
-     *
-     * @var array
-     */
-    private $hydrators = array();
-
-    /**
      * The proxy factory used to create dynamic proxies.
      *
      * @var \Doctrine\ORM\Proxy\ProxyFactory
      */
     private $proxyFactory;
+
+    /**
+     * The repository factory used to create dynamic repositories.
+     *
+     * @var \Doctrine\ORM\Repository\RepositoryFactory
+     */
+    private $repositoryFactory;
 
     /**
      * The expression builder instance used to generate query expressions.
@@ -129,9 +144,9 @@ class EntityManager implements ObjectManager
      */
     protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
-        $this->conn         = $conn;
-        $this->config       = $config;
-        $this->eventManager = $eventManager;
+        $this->conn              = $conn;
+        $this->config            = $config;
+        $this->eventManager      = $eventManager;
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
@@ -139,8 +154,9 @@ class EntityManager implements ObjectManager
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
-        $this->unitOfWork   = new UnitOfWork($this);
-        $this->proxyFactory = new ProxyFactory(
+        $this->repositoryFactory = $config->getRepositoryFactory();
+        $this->unitOfWork        = new UnitOfWork($this);
+        $this->proxyFactory      = new ProxyFactory(
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
@@ -286,7 +302,7 @@ class EntityManager implements ObjectManager
      *
      * @return \Doctrine\ORM\Query
      */
-    public function createQuery($dql = "")
+    public function createQuery($dql = '')
     {
         $query = new Query($this);
 
@@ -736,28 +752,11 @@ class EntityManager implements ObjectManager
      *
      * @param string $entityName The name of the entity.
      *
-     * @return EntityRepository The repository class.
+     * @return \Doctrine\ORM\EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {
-        $entityName = ltrim($entityName, '\\');
-
-        if (isset($this->repositories[$entityName])) {
-            return $this->repositories[$entityName];
-        }
-
-        $metadata = $this->getClassMetadata($entityName);
-        $repositoryClassName = $metadata->customRepositoryClassName;
-
-        if ($repositoryClassName === null) {
-            $repositoryClassName = $this->config->getDefaultRepositoryClassName();
-        }
-
-        $repository = new $repositoryClassName($this, $metadata);
-
-        $this->repositories[$entityName] = $repository;
-
-        return $repository;
+        return $this->repositoryFactory->getRepository($this, $entityName);
     }
 
     /**
@@ -834,17 +833,15 @@ class EntityManager implements ObjectManager
      * This method caches the hydrator instances which is used for all queries that don't
      * selectively iterate over the result.
      *
+     * @deprecated
+     *
      * @param int $hydrationMode
      *
      * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
     public function getHydrator($hydrationMode)
     {
-        if ( ! isset($this->hydrators[$hydrationMode])) {
-            $this->hydrators[$hydrationMode] = $this->newHydrator($hydrationMode);
-        }
-
-        return $this->hydrators[$hydrationMode];
+        return $this->newHydrator($hydrationMode);
     }
 
     /**

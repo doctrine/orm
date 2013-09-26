@@ -82,7 +82,10 @@ class IdentityFunction extends FunctionNode
             }
         }
 
-        $tableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
+        //The table with the relation may be a subclass, so get the table name from the association definition
+        $tableName = $sqlWalker->getEntityManager()->getClassMetadata($assoc['sourceEntity'])->getTableName();
+
+        $tableAlias = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
         $columnName  = $quoteStrategy->getJoinColumnName($joinColumn, $targetEntity, $platform);
 
         return $tableAlias . '.' . $columnName;

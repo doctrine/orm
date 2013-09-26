@@ -106,7 +106,7 @@ Redis
 In order to use the Redis cache driver you must have it compiled
 and enabled in your php.ini. You can read about what is Redis
 `from here <http://redis.io/>`_. Also check
-`here <https://github.com/nicolasff/phpredis/>`_ for how you can use
+`A PHP extension for Redis <https://github.com/nicolasff/phpredis/>`_ for how you can use
 and install Redis PHP extension.
 
 Below is a simple example of how you could use the Redis cache

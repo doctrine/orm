@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\Value;
@@ -38,11 +40,17 @@ class SqlExpressionVisitor extends ExpressionVisitor
     private $persister;
 
     /**
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     */
+    private $classMetadata;
+
+    /**
      * @param \Doctrine\ORM\Persisters\BasicEntityPersister $persister
      */
-    public function __construct(BasicEntityPersister $persister)
+    public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)
     {
         $this->persister = $persister;
+        $this->classMetadata = $classMetadata;
     }
 
     /**
@@ -56,6 +64,14 @@ class SqlExpressionVisitor extends ExpressionVisitor
     {
         $field = $comparison->getField();
         $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
+
+        if (isset($this->classMetadata->associationMappings[$field]) &&
+            $value !== null &&
+            ! is_object($value) &&
+            ! in_array($comparison->getOperator(), array(Comparison::IN, Comparison::NIN))) {
+
+            throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->name, $field);
+        }
 
         return $this->persister->getSelectConditionStatementSQL($field, $value, null, $comparison->getOperator());
     }

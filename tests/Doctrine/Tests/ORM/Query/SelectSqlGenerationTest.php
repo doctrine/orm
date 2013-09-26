@@ -155,12 +155,12 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
-            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_managers c2_ INNER JOIN company_employees c3_ ON c2_.id = c3_.id INNER JOIN company_persons c4_ ON c2_.id = c4_.id AND (c0_.id = c4_.id)'
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id AND (c0_.id = c3_.id)'
         );
 
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
-            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ INNER JOIN company_employees c3_ ON c2_.id = c3_.id INNER JOIN company_persons c4_ ON c2_.id = c4_.id ON (c0_.id = c4_.id)'
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id ON (c0_.id = c3_.id)'
         );
     }
 
@@ -1293,6 +1293,22 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2519
+     */
+    public function testPartialWithAssociationIdentifier()
+    {
+        $this->assertSqlGeneration(
+            "SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l",
+            'SELECT l0_.iUserIdSource AS iUserIdSource0, l0_.iUserIdTarget AS iUserIdTarget1 FROM legacy_users_reference l0_'
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT PARTIAL l.{_description, _source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l",
+            'SELECT l0_.description AS description0, l0_.iUserIdSource AS iUserIdSource1, l0_.iUserIdTarget AS iUserIdTarget2 FROM legacy_users_reference l0_'
+        );
+    }
+
+    /**
      * @group DDC-1339
      */
     public function testIdentityFunctionInSelectClause()
@@ -1300,6 +1316,21 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             "SELECT IDENTITY(u.email) as email_id FROM Doctrine\Tests\Models\CMS\CmsUser u",
             "SELECT c0_.email_id AS sclr0 FROM cms_users c0_"
+        );
+    }
+
+    public function testIdentityFunctionInJoinedSubclass()
+    {
+        //relation is in the subclass (CompanyManager) we are querying
+        $this->assertSqlGeneration(
+            'SELECT m, IDENTITY(m.car) as car_id FROM Doctrine\Tests\Models\Company\CompanyManager m',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c2_.car_id AS sclr6, c0_.discr AS discr7 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id'
+        );
+
+        //relation is in the base class (CompanyPerson).
+        $this->assertSqlGeneration(
+            'SELECT m, IDENTITY(m.spouse) as spouse_id FROM Doctrine\Tests\Models\Company\CompanyManager m',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c0_.spouse_id AS sclr6, c0_.discr AS discr7 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id'
         );
     }
 
@@ -1810,6 +1841,38 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-2435
+     */
+    public function testColumnNameWithNumbersAndNonAlphanumericCharacters()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT t0_."1:1" AS _110, t0_."2:2" AS _221 FROM table t0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT e.value FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT t0_."2:2" AS _220 FROM table t0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Quote\NumericEntity e',
+            'SELECT TRIM(t0_."2:2") AS sclr0 FROM table t0_'
+        );
+    }
+
+    /**
+     * @group DDC-1845
+     */
+    public function testQuotedTableDeclaration()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Quote\User u',
+            'SELECT q0_."user-id" AS userid0, q0_."user-name" AS username1 FROM "quote-user" q0_'
+        );
+    }
+
    /**
     * @group DDC-1845
     */
@@ -1895,7 +1958,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
     	$connMock    = $this->_em->getConnection();
     	$orgPlatform = $connMock->getDatabasePlatform();
-    
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1905,7 +1968,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1915,7 +1978,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT c0_.id || c0_.name || c0_.status AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
-    	
+
     	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
@@ -1925,7 +1988,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT (c0_.id + c0_.name + c0_.status) AS sclr0 FROM cms_users c0_ WITH (NOLOCK) WHERE c0_.id = ?"
     	);
-    
+
     	$connMock->setDatabasePlatform($orgPlatform);
     }
 
@@ -1950,6 +2013,156 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+    * @group DDC-2475
+    */
+    public function testOrderByClauseShouldReplaceOrderByRelationMapping()
+    {
+        $this->assertSqlGeneration(
+            'SELECT r, b FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.bookings b',
+            'SELECT r0_.id AS id0, r1_.id AS id1, r1_.passengerName AS passengerName2 FROM RoutingRoute r0_ INNER JOIN RoutingRouteBooking r1_ ON r0_.id = r1_.route_id ORDER BY r1_.passengerName ASC'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT r, b FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.bookings b ORDER BY b.passengerName DESC',
+            'SELECT r0_.id AS id0, r1_.id AS id1, r1_.passengerName AS passengerName2 FROM RoutingRoute r0_ INNER JOIN RoutingRouteBooking r1_ ON r0_.id = r1_.route_id ORDER BY r1_.passengerName DESC'
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportIsNullExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL',
+            'SELECT c0_.name AS name0 FROM cms_users c0_ HAVING c0_.username IS NULL'
+        );
+    }
+
+    /**
+     * @group DDC-2506
+     */
+    public function testClassTableInheritanceJoinWithConditionAppliesToBaseTable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e.id FROM Doctrine\Tests\Models\Company\CompanyOrganization o JOIN o.events e WITH e.id = ?1',
+            'SELECT c0_.id AS id0 FROM company_organizations c1_ INNER JOIN company_events c0_ ON c1_.id = c0_.org_id AND (c0_.id = ?) LEFT JOIN company_auctions c2_ ON c0_.id = c2_.id LEFT JOIN company_raffles c3_ ON c0_.id = c3_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+
+    /**
+     * @group DDC-2235
+     */
+    public function testSingleTableInheritanceLeftJoinWithCondition()
+    {
+        // Regression test for the bug
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyContract c WITH c.salesPerson = e.id',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+        );
+    }
+
+    /**
+     * @group DDC-2235
+     */
+    public function testSingleTableInheritanceLeftJoinWithConditionAndWhere()
+    {
+        // Ensure other WHERE predicates are passed through to the main WHERE clause
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyContract c WITH c.salesPerson = e.id WHERE e.salary > 1000',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) AND c0_.discr IN ('fix', 'flexible', 'flexultra') WHERE c1_.salary > 1000"
+        );
+    }
+
+    /**
+     * @group DDC-2235
+     */
+    public function testSingleTableInheritanceInnerJoinWithCondition()
+    {
+        // Test inner joins too
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyEmployee e INNER JOIN Doctrine\Tests\Models\Company\CompanyContract c WITH c.salesPerson = e.id',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id INNER JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+        );
+    }
+
+    /**
+     * @group DDC-2235
+     */
+    public function testSingleTableInheritanceLeftJoinNonAssociationWithConditionAndWhere()
+    {
+        // Test that the discriminator IN() predicate is still added into
+        // the where clause when not joining onto that table
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c LEFT JOIN Doctrine\Tests\Models\Company\CompanyEmployee e WITH e.id = c.salesPerson WHERE c.completed = true',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6 FROM company_contracts c0_ LEFT JOIN company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id ON (c2_.id = c0_.salesPerson_id) WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+        );
+    }
+
+    /**
+     * @group DDC-2235
+     */
+    public function testSingleTableInheritanceJoinCreatesOnCondition()
+    {
+        // Test that the discriminator IN() predicate is still added
+        // into the where clause when not joining onto a single table inheritance entity
+        // via a join association
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN c.salesPerson s WHERE c.completed = true',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6 FROM company_contracts c0_ INNER JOIN company_employees c1_ ON c0_.salesPerson_id = c1_.id LEFT JOIN company_persons c2_ ON c1_.id = c2_.id WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+        );
+    }
+
+    /**
+     * @group DDC-2235
+     */
+    public function testSingleTableInheritanceCreatesOnConditionAndWhere()
+    {
+        // Test that when joining onto an entity using single table inheritance via
+        // a join association that the discriminator IN() predicate is placed
+        // into the ON clause of the join
+        $this->assertSqlGeneration(
+            'SELECT e, COUNT(c) FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN e.contracts c WHERE e.department = :department',
+            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, COUNT(c2_.id) AS sclr5, c0_.discr AS discr6 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_contract_employees c3_ ON c1_.id = c3_.employee_id INNER JOIN company_contracts c2_ ON c2_.id = c3_.contract_id AND c2_.discr IN ('fix', 'flexible', 'flexultra') WHERE c1_.department = ?",
+            array(),
+            array('department' => 'foobar')
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportResultVariableInExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING foo IN (?1)',
+            'SELECT c0_.name AS name0 FROM cms_users c0_ HAVING name0 IN (?)'
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportResultVariableLikeExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING foo LIKE '3'",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ HAVING name0 LIKE '3'"
+        );
+    }
+
+    /**
+     * @group DDC-1858
+     */
+    public function testHavingSupportResultVariableInAggregateFunction()
+    {
+        $this->assertSqlGeneration(
+            'SELECT COUNT(u.name) AS countName FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING countName IS NULL',
+            'SELECT COUNT(c0_.name) AS sclr0 FROM cms_users c0_ HAVING sclr0 IS NULL'
+        );
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode

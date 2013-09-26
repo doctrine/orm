@@ -517,6 +517,18 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function get($key)
     {
+        if ( ! $this->initialized
+            && $this->association['type'] === Mapping\ClassMetadataInfo::ONE_TO_MANY
+            && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
+            && isset($this->association['indexBy'])
+        ) {
+            if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
+                return $this->em->find($this->typeClass->name, $key);
+            }
+
+            return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
+        }
+
         $this->initialize();
 
         return $this->coll->get($key);
@@ -745,6 +757,8 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function key()
     {
+        $this->initialize();
+
         return $this->coll->key();
     }
 
@@ -753,6 +767,8 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function current()
     {
+        $this->initialize();
+
         return $this->coll->current();
     }
 
@@ -761,6 +777,8 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function next()
     {
+        $this->initialize();
+        
         return $this->coll->next();
     }
 
@@ -850,12 +868,8 @@ final class PersistentCollection implements Collection, Selectable
             throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany associations at the moment.");
         }
 
-        $id              = $this->em
-            ->getClassMetadata(get_class($this->owner))
-            ->getSingleIdReflectionProperty()
-            ->getValue($this->owner);
         $builder         = Criteria::expr();
-        $ownerExpression = $builder->eq($this->backRefFieldName, $id);
+        $ownerExpression = $builder->eq($this->backRefFieldName, $this->owner);
         $expression      = $criteria->getWhereExpression();
         $expression      = $expression ? $builder->andX($expression, $ownerExpression) : $ownerExpression;
 

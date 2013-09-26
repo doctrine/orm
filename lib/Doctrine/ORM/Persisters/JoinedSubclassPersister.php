@@ -184,6 +184,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Execute inserts on subtables.
             // The order doesn't matter because all child tables link to the root table via FK.
             foreach ($subTableStmts as $tableName => $stmt) {
+                /** @var \Doctrine\DBAL\Statement $stmt */
                 $paramIndex = 1;
                 $data       = isset($insertData[$tableName])
                     ? $insertData[$tableName]
@@ -196,7 +197,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 }
 
                 foreach ($data as $columnName => $value) {
-                    $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
+                    if (!is_array($id) || !isset($id[$columnName])) {
+                        $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
+                    }
                 }
 
                 $stmt->execute();

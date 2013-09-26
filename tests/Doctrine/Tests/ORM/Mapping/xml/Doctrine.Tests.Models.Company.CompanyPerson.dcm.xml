@@ -7,6 +7,12 @@
                               
     <entity name="Doctrine\Tests\Models\Company\CompanyPerson" table="company_persons" inheritance-type="JOINED">
 
+        <discriminator-map >
+            <discriminator-mapping value="person"   class="CompanyPerson" />
+            <discriminator-mapping value="manager"  class="CompanyManager" />
+            <discriminator-mapping value="employee" class="CompanyEmployee" />
+        </discriminator-map>
+
         <named-native-queries>
             <named-native-query name="fetchAllWithResultClass" result-class="__CLASS__">
                 <query>SELECT id, name, discr FROM company_persons ORDER BY name</query>
@@ -26,12 +32,6 @@
             </sql-result-set-mapping>
         </sql-result-set-mappings>
         
-        <discriminator-map >
-            <discriminator-mapping value="person"   class="CompanyPerson" />
-            <discriminator-mapping value="manager"  class="CompanyManager" />
-            <discriminator-mapping value="employee" class="CompanyEmployee" />
-        </discriminator-map>
-
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>

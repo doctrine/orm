@@ -114,6 +114,12 @@ class MockEntityManager extends EntityManager
     }
 
     /** {@inheritDoc} */
+    public function getMetadataFactory()
+    {
+        return $this->em->getMetadataFactory();
+    }
+
+    /** {@inheritDoc} */
     public function getClassMetadata($className)
     {
         return $this->em->getClassMetadata($className);

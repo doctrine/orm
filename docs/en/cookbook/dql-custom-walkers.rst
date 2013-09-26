@@ -112,7 +112,7 @@ The ``Paginate::count(Query $query)`` looks like:
     }
 
 It clones the query, resets the limit clause first and max results
-and registers the ``CountSqlWalker`` customer tree walker which
+and registers the ``CountSqlWalker`` custom tree walker which
 will modify the AST to execute a count query. The walkers
 implementation is:
 

@@ -2,12 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Util\Inflector;
-
-class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DatabaseDriverTest extends DatabaseDriverTestCase
 {
     /**
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
@@ -149,43 +147,69 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, count($metadatas['DbdriverBaz']->associationMappings), "no association mappings should be detected.");
     }
 
-    protected function convertToClassMetadata(array $entityTables, array $manyTables = array())
+    public function testLoadMetadataFromDatabaseDetail()
     {
-        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
-        $driver->setTables($entityTables, $manyTables);
-
-        $metadatas = array();
-        foreach ($driver->getAllClassNames() AS $className) {
-            $class = new ClassMetadataInfo($className);
-            $driver->loadMetadataForClass($className, $class);
-            $metadatas[$className] = $class;
+        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        return $metadatas;
-    }
+        $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
 
-    /**
-     * @param  string $className
-     * @return ClassMetadata
-     */
-    protected function extractClassMetadata(array $classNames)
-    {
-        $classNames = array_map('strtolower', $classNames);
-        $metadatas = array();
+        $table->addColumn('id', 'integer', array('unsigned' => true));
+        $table->setPrimaryKey(array('id'));
+        $table->addColumn('column_unsigned', 'integer', array('unsigned' => true));
+        $table->addColumn('column_comment', 'string', array('comment' => 'test_comment'));
+        $table->addColumn('column_default', 'string', array('default' => 'test_default'));
+        $table->addColumn('column_decimal', 'decimal', array('precision' => 4, 'scale' => 3));
 
-        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
-        foreach ($driver->getAllClassNames() as $className) {
-            if (!in_array(strtolower($className), $classNames)) {
-                continue;
-            }
-            $class = new ClassMetadataInfo($className);
-            $driver->loadMetadataForClass($className, $class);
-            $metadatas[$className] = $class;
+        $table->addColumn('column_index1', 'string');
+        $table->addColumn('column_index2', 'string');
+        $table->addIndex(array('column_index1','column_index2'), 'index1');
+
+        $table->addColumn('column_unique_index1', 'string');
+        $table->addColumn('column_unique_index2', 'string');
+        $table->addUniqueIndex(array('column_unique_index1', 'column_unique_index2'), 'unique_index1');
+
+        $this->_sm->dropAndCreateTable($table);
+
+        $metadatas = $this->extractClassMetadata(array("DbdriverFoo"));
+
+        $this->assertArrayHasKey('DbdriverFoo', $metadatas);
+
+        $metadata = $metadatas['DbdriverFoo'];
+
+        $this->assertArrayHasKey('id', $metadata->fieldMappings);
+        $this->assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
+        $this->assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
+
+        // FIXME: Condition here is fugly.
+        // NOTE: PostgreSQL does not support UNSIGNED
+        if ( ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform) {
+            $this->assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
+            $this->assertTrue($metadata->fieldMappings['columnUnsigned']['unsigned']);
         }
 
-        if (count($metadatas) != count($classNames)) {
-            $this->fail("Have not found all classes matching the names '" . implode(", ", $classNames) . "' only tables " . implode(", ", array_keys($metadatas)));
-        }
-        return $metadatas;
+        $this->assertArrayHasKey('columnComment', $metadata->fieldMappings);
+        $this->assertEquals('test_comment', $metadata->fieldMappings['columnComment']['comment']);
+
+        $this->assertArrayHasKey('columnDefault', $metadata->fieldMappings);
+        $this->assertEquals('test_default', $metadata->fieldMappings['columnDefault']['default']);
+
+        $this->assertArrayHasKey('columnDecimal', $metadata->fieldMappings);
+        $this->assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
+        $this->assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
+
+        $this->assertTrue( ! empty($metadata->table['indexes']['index1']['columns']));
+        $this->assertEquals(
+            array('column_index1','column_index2'),
+            $metadata->table['indexes']['index1']['columns']
+        );
+
+        $this->assertTrue( ! empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
+        $this->assertEquals(
+            array('column_unique_index1', 'column_unique_index2'),
+            $metadata->table['uniqueConstraints']['unique_index1']['columns']
+        );
     }
 }

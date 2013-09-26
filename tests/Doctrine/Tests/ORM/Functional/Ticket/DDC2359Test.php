@@ -19,18 +19,21 @@ class DDC2359Test extends \PHPUnit_Framework_TestCase
         $mockDriver      = $this->getMock('Doctrine\\Common\\Persistence\\Mapping\\Driver\\MappingDriver');
         $mockMetadata    = $this->getMock('Doctrine\\ORM\\Mapping\\ClassMetadata', array(), array(), '', false);
         $entityManager   = $this->getMock('Doctrine\\ORM\\EntityManager', array(), array(), '', false);
+
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMock(
             'Doctrine\\ORM\\Mapping\\ClassMetadataFactory',
             array('newClassMetadataInstance', 'wakeupReflection')
         );
-        $configuration   = $this->getMock('Doctrine\\ORM\\Configuration');
+        
+        $configuration   = $this->getMock('Doctrine\\ORM\\Configuration', array('getMetadataDriverImpl'));
         $connection      = $this->getMock('Doctrine\\DBAL\\Connection', array(), array(), '', false);
 
         $configuration
             ->expects($this->any())
             ->method('getMetadataDriverImpl')
             ->will($this->returnValue($mockDriver));
+
         $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($configuration));
         $entityManager->expects($this->any())->method('getConnection')->will($this->returnValue($connection));
         $entityManager

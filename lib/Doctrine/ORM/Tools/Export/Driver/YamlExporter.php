@@ -110,9 +110,7 @@ class YamlExporter extends AbstractExporter
             $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
 
-        if ($ids) {
-            $array['fields'] = $ids;
-        }
+        $array['id'] = $ids;
 
         if ($fieldMappings) {
             if ( ! isset($array['fields'])) {
@@ -151,6 +149,10 @@ class YamlExporter extends AbstractExporter
                 'targetEntity' => $associationMapping['targetEntity'],
                 'cascade'     => $cascade,
             );
+
+            if (isset($mapping['id']) && $mapping['id'] === true) {
+                $array['id'][$name]['associationKey'] = true;
+            }
 
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $joinColumns = $associationMapping['joinColumns'];

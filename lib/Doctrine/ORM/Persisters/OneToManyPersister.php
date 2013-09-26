@@ -33,6 +33,24 @@ use Doctrine\ORM\UnitOfWork;
 class OneToManyPersister extends AbstractCollectionPersister
 {
     /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    public function get(PersistentCollection $coll, $index)
+    {
+        $mapping   = $coll->getMapping();
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+
+        if (!isset($mapping['indexBy'])) {
+            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+        }
+
+        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, null, array(), 0, 1);
+    }
+
+    /**
      * Generates the SQL UPDATE that updates a particular row's foreign
      * key to null.
      *

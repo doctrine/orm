@@ -50,7 +50,7 @@ class DropCommand extends AbstractCommand
         ->setDefinition(array(
             new InputOption(
                 'dump-sql', null, InputOption::VALUE_NONE,
-                'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
+                'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
             ),
             new InputOption(
                 'force', null, InputOption::VALUE_NONE,
@@ -64,6 +64,12 @@ class DropCommand extends AbstractCommand
         ->setHelp(<<<EOT
 Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
 Beware that the complete database is dropped by this command, even tables that are not relevant to your metadata model.
+
+<comment>Hint:</comment> If you have a database with tables that should not be managed
+by the ORM, you can use a DBAL functionality to filter the tables and sequences down
+on a global level:
+
+    \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
         );
     }
@@ -100,7 +106,7 @@ EOT
             return 0;
         }
 
-        $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
+        $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.' . PHP_EOL);
 
         if ($isFullDatabaseDrop) {
             $sqls = $schemaTool->getDropDatabaseSQL();
@@ -109,8 +115,11 @@ EOT
         }
 
         if (count($sqls)) {
-            $output->writeln('Schema-Tool would execute ' . count($sqls) . ' queries to drop the database.');
-            $output->writeln('Please run the operation with --force to execute these queries or use --dump-sql to see them.');
+            $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
+            $output->writeln('Please run the operation by passing one - or both - of the following options:');
+
+            $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
+            $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
 
             return 1;
         }

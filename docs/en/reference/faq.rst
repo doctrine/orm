@@ -143,7 +143,7 @@ See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>
 the details.
 
 Why does Doctrine not create proxy objects for my inheritance hierarchy?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you set a many-to-one or one-to-one association target-entity to any parent class of
 an inheritance hierarchy Doctrine does not know what PHP class the foreign is actually of.

@@ -117,6 +117,9 @@ class ProxyFactory extends AbstractProxyFactory
     {
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
             return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+                $initializer = $proxy->__getInitializer();
+                $cloner      = $proxy->__getCloner();
+
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -136,12 +139,19 @@ class ProxyFactory extends AbstractProxyFactory
                 $proxy->__wakeup();
 
                 if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                    $proxy->__setInitializer($initializer);
+                    $proxy->__setCloner($cloner);
+                    $proxy->__setInitialized(false);
+
                     throw new EntityNotFoundException();
                 }
             };
         }
 
         return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+            $initializer = $proxy->__getInitializer();
+            $cloner      = $proxy->__getCloner();
+
             $proxy->__setInitializer(null);
             $proxy->__setCloner(null);
 
@@ -160,6 +170,10 @@ class ProxyFactory extends AbstractProxyFactory
             $proxy->__setInitialized(true);
 
             if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                $proxy->__setInitializer($initializer);
+                $proxy->__setCloner($cloner);
+                $proxy->__setInitialized(false);
+
                 throw new EntityNotFoundException();
             }
         };

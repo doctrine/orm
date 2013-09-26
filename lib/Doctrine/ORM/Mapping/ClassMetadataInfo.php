@@ -358,7 +358,7 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
      *
-     [* - <b>'unique'] (string, optional, schema-only)</b>
+     * - <b>'unique'</b> (string, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
      *
      * @var array
@@ -829,6 +829,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->lifecycleCallbacks) {
             $serialized[] = 'lifecycleCallbacks';
+        }
+
+        if ($this->entityListeners) {
+            $serialized[] = 'entityListeners';
         }
 
         if ($this->namedQueries) {
@@ -1547,15 +1551,18 @@ class ClassMetadataInfo implements ClassMetadata
                 $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
             }
 
+            $selfReferencingEntityWithoutJoinColumns = $mapping['sourceEntity'] == $mapping['targetEntity']
+                && (! (isset($mapping['joinTable']['joinColumns']) || isset($mapping['joinTable']['inverseJoinColumns'])));
+
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 $mapping['joinTable']['joinColumns'] = array(array(
-                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity']),
+                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
                         'onDelete' => 'CASCADE'));
             }
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 $mapping['joinTable']['inverseJoinColumns'] = array(array(
-                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity']),
+                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $selfReferencingEntityWithoutJoinColumns ? 'target' : null),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
                         'onDelete' => 'CASCADE'));
             }
@@ -2309,7 +2316,7 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 $entityResult['entityClass'] = $this->fullyQualifiedClassName($entityResult['entityClass']);
-  
+
                 $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
                 $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
 
@@ -2429,7 +2436,7 @@ class ClassMetadataInfo implements ClassMetadata
      * lifecycle callbacks and lifecycle listeners.
      *
      * @deprecated Deprecated since version 2.4 in favor of \Doctrine\ORM\Event\ListenersInvoker
-     * 
+     *
      * @param string $lifecycleEvent The lifecycle event.
      * @param object $entity         The Entity on which the event occurred.
      *
@@ -2783,8 +2790,12 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setSequenceGeneratorDefinition(array $definition)
     {
-        if (isset($definition['name']) && $definition['name'] == '`') {
-            $definition['name']   = trim($definition['name'], '`');
+        if ( ! isset($definition['sequenceName'])) {
+            throw MappingException::missingSequenceName($this->name);
+        }
+
+        if ($definition['sequenceName'][0] == '`') {
+            $definition['sequenceName']   = trim($definition['sequenceName'], '`');
             $definition['quoted'] = true;
         }
 
@@ -3018,5 +3029,19 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return $className;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function getMetadataValue($name) {
+
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+
+        return null;
     }
 }
