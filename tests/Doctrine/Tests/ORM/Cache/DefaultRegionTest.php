@@ -84,4 +84,30 @@ class DefaultRegionTest extends OrmFunctionalTestCase
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
     }
+
+    public function testSharedRegion()
+    {
+        if ( ! extension_loaded('apc') || false === @apc_cache_info()) {
+            $this->markTestSkipped('The ' . __CLASS__ .' requires the use of APC');
+        }
+
+        $key     = new CacheKeyMock('key');
+        $entry   = new CacheEntryMock(array('value' => 'foo'));
+        $region1 = new DefaultRegion('region1', new \Doctrine\Common\Cache\ApcCache());
+        $region2 = new DefaultRegion('region2', new \Doctrine\Common\Cache\ApcCache());
+
+        $this->assertFalse($region1->contains($key));
+        $this->assertFalse($region2->contains($key));
+
+        $region1->put($key, $entry);
+        $region2->put($key, $entry);
+
+        $this->assertTrue($region1->contains($key));
+        $this->assertTrue($region2->contains($key));
+
+        $region1->evictAll();
+
+        $this->assertFalse($region1->contains($key));
+        $this->assertTrue($region2->contains($key));
+    }
 }

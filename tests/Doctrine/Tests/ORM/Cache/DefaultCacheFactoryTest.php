@@ -4,11 +4,11 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use \Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\ORM\Persisters\OneToManyPersister;
-
 
 /**
  * @group DDC-2183
@@ -173,6 +173,44 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedCollectionPersister', $cachedPersister);
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedCollectionPersister', $cachedPersister);
+    }
+
+    public function testInheritedEntityCacheRegion()
+    {
+        $em         = $this->em;
+        $metadata1  = clone $em->getClassMetadata('Doctrine\Tests\Models\Cache\AttractionContactInfo');
+        $metadata2  = clone $em->getClassMetadata('Doctrine\Tests\Models\Cache\AttractionLocationInfo');
+        $persister1 = new BasicEntityPersister($em, $metadata1);
+        $persister2 = new BasicEntityPersister($em, $metadata2);
+        $factory    = new DefaultCacheFactory($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
+
+        $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
+        $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
+
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedEntityPersister', $cachedPersister1);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedEntityPersister', $cachedPersister2);
+
+        $this->assertNotSame($cachedPersister1, $cachedPersister2);
+        $this->assertSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
+    }
+
+    public function testCreateNewCacheDriver()
+    {
+        $em         = $this->em;
+        $metadata1  = clone $em->getClassMetadata('Doctrine\Tests\Models\Cache\State');
+        $metadata2  = clone $em->getClassMetadata('Doctrine\Tests\Models\Cache\City');
+        $persister1 = new BasicEntityPersister($em, $metadata1);
+        $persister2 = new BasicEntityPersister($em, $metadata2);
+        $factory    = new DefaultCacheFactory($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
+
+        $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
+        $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
+
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedEntityPersister', $cachedPersister1);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedEntityPersister', $cachedPersister2);
+
+        $this->assertNotSame($cachedPersister1, $cachedPersister2);
+        $this->assertNotSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
     }
 
     /**
