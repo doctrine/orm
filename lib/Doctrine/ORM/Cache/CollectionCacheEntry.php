@@ -40,4 +40,12 @@ class CollectionCacheEntry implements CacheEntry
     {
         $this->identifiers = $identifiers;
     }
+
+    /**
+     * @param array $values
+     */
+    public static function __set_state(array $values)
+    {
+        return new self($values['identifiers']);
+    }
 }

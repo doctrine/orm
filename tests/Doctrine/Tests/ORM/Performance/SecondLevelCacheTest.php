@@ -52,7 +52,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntity($em, __FUNCTION__);
 
-        $this->assertEquals(5502, $this->countQuery($em));
+        $this->assertEquals(6002, $this->countQuery($em));
     }
 
     public function testFindEntityWithCache()

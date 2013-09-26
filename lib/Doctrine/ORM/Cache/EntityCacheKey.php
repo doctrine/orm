@@ -48,6 +48,6 @@ class EntityCacheKey extends CacheKey
 
         $this->identifier  = $identifier;
         $this->entityClass = $entityClass;
-        $this->hash        = sprintf('%s[%s]', str_replace('\\', '.', strtolower($entityClass)) , implode(' ', $identifier));
+        $this->hash        = str_replace('\\', '.', strtolower($entityClass) . '_' . implode(' ', $identifier));
     }
 }

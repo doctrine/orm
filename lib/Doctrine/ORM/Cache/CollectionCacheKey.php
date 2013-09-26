@@ -55,6 +55,6 @@ class CollectionCacheKey extends CacheKey
         $this->entityClass      = $entityClass;
         $this->association      = $association;
         $this->ownerIdentifier  = $ownerIdentifier;
-        $this->hash             = sprintf('%s[%s].%s', str_replace('\\', '.', strtolower($entityClass)), implode(' ', $ownerIdentifier), $association);
+        $this->hash             = str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' .  $association;
     }
 }

@@ -47,4 +47,12 @@ class EntityCacheEntry implements CacheEntry
         $this->class = $class;
         $this->data  = $data;
     }
+
+    /**
+     * @param array $values
+     */
+    public static function __set_state(array $values)
+    {
+        return new self($values['class'], $values['data']);
+    }
 }

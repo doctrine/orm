@@ -40,10 +40,19 @@ class QueryCacheEntry implements CacheEntry
 
     /**
      * @param array $result
+     * @param integer $time
      */
-    public function __construct($result)
+    public function __construct($result, $time = null)
     {
         $this->result = $result;
-        $this->time   = time();
+        $this->time   = $time ?: time();
+    }
+
+    /**
+     * @param array $values
+     */
+    public static function __set_state(array $values)
+    {
+        return new self($values['result'], $values['time']);
     }
 }
