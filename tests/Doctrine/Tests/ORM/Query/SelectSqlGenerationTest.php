@@ -394,6 +394,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-2668
+     */
+    public function testSupportsTrimLeadingZeroString()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING '0' FROM u.name) != ''",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE TRIM(TRAILING '0' FROM c0_.name) <> ''"
+        );
+    }
+
     // Ticket 894
     public function testSupportsBetweenClauseWithPositionalParameters()
     {
