@@ -60,7 +60,7 @@ interface CacheFactory
      * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager.
      * @param string                               $regionName The region name.
      *
-     * @return \Doctrine\ORM\Cache\QueryCache The built query cache, or default query cache if the region name is NULL.
+     * @return \Doctrine\ORM\Cache\QueryCache The built query cache.
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 

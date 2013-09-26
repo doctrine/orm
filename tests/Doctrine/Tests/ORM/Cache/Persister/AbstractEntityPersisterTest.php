@@ -88,6 +88,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
     protected function setUp()
     {
+        $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();
         parent::setUp();
 

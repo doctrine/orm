@@ -265,14 +265,17 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         }
 
         $em->flush();
+        $em->clear();
 
         printf("\n[%s] persist %s countries", number_format(microtime(true) - $startPersist, 6), $size);
 
         $startFind  = microtime(true);
 
         for ($i = 0; $i <= $times; $i++) {
-            $rep->findAll();
+            $list = $rep->findAll();
             $em->clear();
+
+            $this->assertCount($size, $list);
         }
 
         printf("\n[%s] find %s countries (%s times)", number_format(microtime(true) - $startFind, 6), $size, $times);

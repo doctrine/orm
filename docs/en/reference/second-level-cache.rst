@@ -186,25 +186,25 @@ Caching mode
 
 
 Built-in cached persisters
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Cached persisters are responsible to access cache regions.
 
-+-----------------------+---------------------------------------------------------------------------+
-| Cache Usage           | Persister                                                                 |
-+=======================+===========================================================================+
-| READ_ONLY             | Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister                |
-+-----------------------+---------------------------------------------------------------------------+
-| READ_WRITE            | Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister               |
-+-----------------------+---------------------------------------------------------------------------+
-| NONSTRICT_READ_WRITE  | Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedEntityPersister      |
-+-----------------------+---------------------------------------------------------------------------+
-| READ_ONLY             | Doctrine\ORM\Cache\Persister\ReadOnlyCachedCollectionPersister            |
-+-----------------------+---------------------------------------------------------------------------+
-| READ_WRITE            | Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister           |
-+-----------------------+---------------------------------------------------------------------------+
-| NONSTRICT_READ_WRITE  | Doctrine\ORM\Cache\Persister\NonStrictReadWriteCacheCollectionPersister   |
-+-----------------------+---------------------------------------------------------------------------+
+    +-----------------------+-------------------------------------------------------------------------------+
+    | Cache Usage           | Persister                                                                     |
+    +=======================+===============================================================================+
+    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\ReadOnlyCachedEntityPersister                |
+    +-----------------------+-------------------------------------------------------------------------------+
+    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\ReadWriteCachedEntityPersister               |
+    +-----------------------+-------------------------------------------------------------------------------+
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\NonStrictReadWriteCachedEntityPersister      |
+    +-----------------------+-------------------------------------------------------------------------------+
+    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\ReadOnlyCachedCollectionPersister            |
+    +-----------------------+-------------------------------------------------------------------------------+
+    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\ReadWriteCachedCollectionPersister           |
+    +-----------------------+-------------------------------------------------------------------------------+
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\NonStrictReadWriteCacheCollectionPersister   |
+    +-----------------------+-------------------------------------------------------------------------------+
 
 Configuration
 -------------
@@ -221,8 +221,8 @@ To Enable the cache second-level-cache you should provide a cache factory
 
     <?php
 
-    /* var $config \Doctrine\ORM\Configuration /*
-    /* var $cache \Doctrine\Common\Cache /*
+    /* var $config \Doctrine\ORM\Configuration */
+    /* var $cache \Doctrine\Common\Cache */
 
     $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
 
@@ -255,9 +255,9 @@ It allows you to provide a specific implementation of the following components :
         /**
         * Build an entity persister for the given entity metadata.
         *
-        * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
-        * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister that will be cached.
-        * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata  The entity metadata.
+        * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager
+        * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister
+        * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata  The entity metadata
         *
         * @return \Doctrine\ORM\Cache\Persister\CachedEntityPersister
         */
@@ -266,9 +266,9 @@ It allows you to provide a specific implementation of the following components :
        /**
         * Build a collection persister for the given relation mapping.
         *
-        * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager.
-        * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister that will be cached.
-        * @param array                                        $mapping   The association mapping.
+        * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager
+        * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister
+        * @param array                                        $mapping   The association mapping
         *
         * @return \Doctrine\ORM\Cache\Persister\CachedCollectionPersister
         */
@@ -277,28 +277,28 @@ It allows you to provide a specific implementation of the following components :
        /**
         * Build a query cache based on the given region name
         *
-        * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager.
-        * @param string                               $regionName The region name.
+        * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager
+        * @param string                               $regionName The region name
         *
-        * @return \Doctrine\ORM\Cache\QueryCache The built query cache, or default query cache if the region name is NULL.
+        * @return \Doctrine\ORM\Cache\QueryCache The built query cache.
         */
        public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 
        /**
         * Build an entity hidrator
         *
-        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager
         *
-        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
+        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator
         */
        public function buildEntityHydrator(EntityManagerInterface $em);
 
        /**
         * Build a collection hidrator
         *
-        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager
         *
-        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
+        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator
         */
        public function buildCollectionHydrator(EntityManagerInterface $em);
     }
