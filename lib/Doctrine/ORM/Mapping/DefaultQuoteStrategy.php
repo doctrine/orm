@@ -35,7 +35,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->fieldMappings[$fieldName]['quoted']) || in_array(strtoupper($fieldName), $platform->getReservedKeywordsList())
+        return isset($class->fieldMappings[$fieldName]['quoted']) || $platform->getReservedKeywordsList()->isKeyword($fieldName)
             ? $platform->quoteIdentifier($class->fieldMappings[$fieldName]['columnName'])
             : $class->fieldMappings[$fieldName]['columnName'];
     }
@@ -45,7 +45,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->table['quoted']) || in_array(strtoupper($class->table['name']), $platform->getReservedKeywordsList())
+        return isset($class->table['quoted']) || $platform->getReservedKeywordsList()->isKeyword($class->table['name'])
             ? $platform->quoteIdentifier($class->table['name'])
             : $class->table['name'];
     }
@@ -55,7 +55,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($definition['quoted']) || in_array(strtoupper($definition['sequenceName']), $platform->getReservedKeywordsList())
+        return isset($definition['quoted']) || $platform->getReservedKeywordsList()->isKeyword($definition['sequenceName'])
             ? $platform->quoteIdentifier($definition['sequenceName'])
             : $definition['sequenceName'];
     }
@@ -65,7 +65,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($joinColumn['quoted']) || in_array(strtoupper($joinColumn['name']), $platform->getReservedKeywordsList())
+        return isset($joinColumn['quoted']) || $platform->getReservedKeywordsList()->isKeyword($joinColumn['name'])
             ? $platform->quoteIdentifier($joinColumn['name'])
             : $joinColumn['name'];
     }
@@ -75,7 +75,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($joinColumn['quoted']) || in_array(strtoupper($joinColumn['referencedColumnName']), $platform->getReservedKeywordsList())
+        return isset($joinColumn['quoted']) || $platform->getReservedKeywordsList()->isKeyword($joinColumn['referencedColumnName'])
             ? $platform->quoteIdentifier($joinColumn['referencedColumnName'])
             : $joinColumn['referencedColumnName'];
     }
@@ -85,7 +85,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($association['joinTable']['quoted']) || in_array(strtoupper($association['joinTable']['name']), $platform->getReservedKeywordsList())
+        return isset($association['joinTable']['quoted']) || $platform->getReservedKeywordsList()->isKeyword($association['joinTable']['name'])
             ? $platform->quoteIdentifier($association['joinTable']['name'])
             : $association['joinTable']['name'];
     }
