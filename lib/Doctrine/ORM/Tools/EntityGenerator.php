@@ -392,7 +392,7 @@ public function __construct()
             $this->generateEntityBody($metadata)
         );
 
-        $code = str_replace($placeHolders, $replacements, static::$classTemplate);
+        $code = str_replace($placeHolders, $replacements, static::$classTemplate) . "\n";
 
         return str_replace('<spaces>', $this->spaces, $code);
     }
@@ -413,7 +413,7 @@ public function __construct()
         $body = str_replace('<spaces>', $this->spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : ''). "}\n";
+        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : '') . "}\n";
     }
 
     /**
