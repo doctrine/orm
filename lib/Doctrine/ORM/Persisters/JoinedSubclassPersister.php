@@ -520,10 +520,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             : array();
 
         foreach ($this->class->reflFields as $name => $field) {
-            if (isset($this->class->fieldMappings[$name]['inherited'])
-                    && ! isset($this->class->fieldMappings[$name]['id'])
+            if (isset($this->class->fieldMappings[$name]['inherited']) && ! isset($this->class->fieldMappings[$name]['id'])
                     || isset($this->class->associationMappings[$name]['inherited'])
-                    || ($this->class->isVersioned && $this->class->versionField == $name)) {
+                    || ($this->class->isVersioned && (
+                            $this->class->versionField == $name && !$this->class->isExtenallyVersioned
+                            || $this->class->nextVersionProperty == $name
+                        ))) {
                 continue;
             }
 
