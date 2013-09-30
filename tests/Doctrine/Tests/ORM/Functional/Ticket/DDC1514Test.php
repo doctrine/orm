@@ -58,7 +58,7 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $results = $this->_em->createQuery($dql)->getResult();
 
         $a2FromDB = array_shift(array_filter($results, function($entity) use ($a2) {
-            return $entity->id === $a2FromDB->id;
+            return $entity->id === $a2->id;
         }));
 
         $this->assertEquals($c->title, $a2FromDB->entityC->title);
