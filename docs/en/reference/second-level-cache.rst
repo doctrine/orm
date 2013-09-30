@@ -64,6 +64,11 @@ A query region might be something like :
     The entity values will be stored in its own region
 
 
+.. _reference-second-level-cache-regions:
+
+Cache Regions
+-------------
+
 ``Doctrine\ORM\Cache\Region\DefaultRegion`` Its the default implementation.
  A simplest cache region compatible with all doctrine-cache drivers but does not support locking.
 
@@ -746,3 +751,52 @@ however, you can use the cache API to check / invalidate cache entries.
 
 Limitations
 -----------
+
+Composite primary key
+~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+    Composite primary key are supported by second level cache,
+    However when one of the keys is an association
+    the cached entity should always be retrieved using the association identifier.
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     */
+    class Reference
+    {
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="Article", inversedBy="references")
+         * @JoinColumn(name="source_id", referencedColumnName="article_id")
+         */
+        private $source;
+
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="Article")
+         * @JoinColumn(name="target_id", referencedColumnName="article_id")
+         */
+        private $target;
+    }
+
+    // Supported
+    $id        = array('source' => 1, 'target' => 2);
+    $reference = $this->_em->find("Reference", $id);
+
+    // NOT Supported
+    $id        = array('source' => new Article(1), 'target' => new Article(2));
+    $reference = $this->_em->find("Reference", $id);
+
+
+Concurrent cache region
+~~~~~~~~~~~~~~~~~~~~~~~
+
+A ``Doctrine\\ORM\\Cache\\ConcurrentRegion`` is designed to store concurrently managed data region.
+However doctrine provide an very simple implementation based on file locks ``Doctrine\\ORM\\Cache\\Region\\FileLockRegion``.
+
+If you want to use an ``READ_WRITE`` cache, you should consider providing your own cache region.
+for more details about how to implement a cache region please see :ref:`reference-second-level-cache-regions`

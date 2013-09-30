@@ -118,7 +118,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->put($key, $entry);
     }
 
-    public function readLock(CacheKey $key)
+    public function lock(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
 
@@ -131,7 +131,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->locks[$key->hash] = Lock::createLockRead();
     }
 
-    public function readUnlock(CacheKey $key, Lock $lock)
+    public function unlock(CacheKey $key, Lock $lock)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key, 'lock' => $lock);
 

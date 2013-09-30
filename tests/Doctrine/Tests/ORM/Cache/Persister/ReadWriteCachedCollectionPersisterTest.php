@@ -22,8 +22,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         'put',
         'evict',
         'evictAll',
-        'readLock',
-        'readUnlock',
+        'lock',
+        'unlock',
     );
 
     /**
@@ -51,7 +51,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -69,7 +69,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -87,7 +87,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -111,7 +111,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -137,7 +137,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -168,7 +168,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -199,7 +199,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -230,7 +230,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -260,7 +260,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue(null));
 
@@ -285,7 +285,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue(null));
 

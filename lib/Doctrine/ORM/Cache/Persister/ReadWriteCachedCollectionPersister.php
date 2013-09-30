@@ -96,7 +96,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     {
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
-        $lock    = $this->region->readLock($key);
+        $lock    = $this->region->lock($key);
 
         $this->persister->delete($collection);
 
@@ -126,7 +126,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
-        $lock    = $this->region->readLock($key);
+        $lock    = $this->region->lock($key);
 
         if ($lock === null) {
             return;

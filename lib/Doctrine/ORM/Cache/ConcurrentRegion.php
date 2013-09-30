@@ -24,6 +24,10 @@ use Doctrine\ORM\Cache\Lock;
 
 /**
  * Defines contract for concurrently managed data region.
+ * It should be able to lock an specific cache entry in an atomic operation.
+ *
+ * When a entry is locked another process should not be able to read or write the entry.
+ * All evict operation should not consider locks, even though an entry is locked evict should be able to delete the entry and its lock.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -39,7 +43,7 @@ interface ConcurrentRegion extends Region
      *
      * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
      */
-    public function readLock(CacheKey $key);
+    public function lock(CacheKey $key);
 
     /**
      * Attempts to read unlock the mapping for the given key.
@@ -51,5 +55,5 @@ interface ConcurrentRegion extends Region
      *
      * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
      */
-    public function readUnlock(CacheKey $key, Lock $lock);
+    public function unlock(CacheKey $key, Lock $lock);
 }

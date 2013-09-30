@@ -320,6 +320,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * @param integer $lifetime
+     */
+    public function setSecondLevelCacheLockLifetime($lifetime)
+    {
+        $this->_attributes['secondLevelCacheLockLifetime'] = (integer) $lifetime;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getSecondLevelCacheLockLifetime()
+    {
+         return isset($this->_attributes['secondLevelCacheLockLifetime'])
+            ? $this->_attributes['secondLevelCacheLockLifetime']
+            : 60;
+    }
+
+    /**
      * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
      */
     public function getSecondLevelCacheLogger()

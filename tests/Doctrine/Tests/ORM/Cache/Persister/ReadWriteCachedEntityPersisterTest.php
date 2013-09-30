@@ -23,8 +23,8 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         'put',
         'evict',
         'evictAll',
-        'readLock',
-        'readUnlock',
+        'lock',
+        'unlock',
     );
 
     /**
@@ -51,7 +51,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -68,7 +68,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -85,7 +85,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -108,7 +108,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -133,7 +133,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $property->setAccessible(true);
 
         $this->region->expects($this->exactly(2))
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -164,7 +164,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $property->setAccessible(true);
 
         $this->region->expects($this->exactly(2))
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
@@ -194,7 +194,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue(null));
 
@@ -218,7 +218,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $property->setAccessible(true);
 
         $this->region->expects($this->once())
-            ->method('readLock')
+            ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue(null));
 

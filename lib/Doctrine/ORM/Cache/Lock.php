@@ -39,11 +39,6 @@ class Lock
     public $time;
 
     /**
-     * @var integer
-     */
-    public $type;
-
-    /**
      * @param string  $value
      * @param integer $time
      */
