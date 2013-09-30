@@ -57,9 +57,9 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT a, b, ba, c FROM " . __NAMESPACE__ . "\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c";
         $results = $this->_em->createQuery($dql)->getResult();
 
-        $a2_db = array_filter($results, function($entity) use ($a2) {
-            if ($entity->id === $a2->id) return true;
-        })[0];
+        $a2FromDB = array_shift(array_filter($results, function($entity) use ($a2) {
+            return $entity->id === $a2FromDB->id;
+        }));
 
         $this->assertEquals($c->title, $a2_db->entityC->title);
     }
