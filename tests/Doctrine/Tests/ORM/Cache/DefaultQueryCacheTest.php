@@ -519,7 +519,7 @@ class CacheFactoryDefaultQueryCacheTest extends \Doctrine\ORM\Cache\DefaultCache
         return $this->queryCache;
     }
 
-    protected function createRegion(array $cache)
+    public function getRegion(array $cache)
     {
         return $this->region;
     }

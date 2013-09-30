@@ -35,7 +35,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $arguments     = array($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
         $this->factory = $this->getMock('\Doctrine\ORM\Cache\DefaultCacheFactory', array(
-            'createRegion'
+            'getRegion'
         ), $arguments);
     }
 
@@ -55,7 +55,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
         $this->factory->expects($this->once())
-            ->method('createRegion')
+            ->method('getRegion')
             ->with($this->equalTo($metadata->cache))
             ->will($this->returnValue($region));
 
@@ -77,7 +77,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
         $this->factory->expects($this->once())
-            ->method('createRegion')
+            ->method('getRegion')
             ->with($this->equalTo($metadata->cache))
             ->will($this->returnValue($region));
 
@@ -98,7 +98,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
         $this->factory->expects($this->once())
-            ->method('createRegion')
+            ->method('getRegion')
             ->with($this->equalTo($metadata->cache))
             ->will($this->returnValue($region));
 
@@ -120,7 +120,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
         $this->factory->expects($this->once())
-            ->method('createRegion')
+            ->method('getRegion')
             ->with($this->equalTo($mapping['cache']))
             ->will($this->returnValue($region));
 
@@ -143,7 +143,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
         $this->factory->expects($this->once())
-            ->method('createRegion')
+            ->method('getRegion')
             ->with($this->equalTo($mapping['cache']))
             ->will($this->returnValue($region));
 
@@ -165,7 +165,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
         $this->factory->expects($this->once())
-            ->method('createRegion')
+            ->method('getRegion')
             ->with($this->equalTo($mapping['cache']))
             ->will($this->returnValue($region));
 

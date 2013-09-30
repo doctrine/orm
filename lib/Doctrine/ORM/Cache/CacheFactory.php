@@ -52,7 +52,7 @@ interface CacheFactory
      *
      * @return \Doctrine\ORM\Cache\Persister\CachedCollectionPersister
      */
-    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, $mapping);
+    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping);
 
     /**
      * Build a query cache based on the given region name
@@ -67,18 +67,29 @@ interface CacheFactory
     /**
      * Build an entity hidrator
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+     * @param \Doctrine\ORM\EntityManagerInterface $em       The Entity manager.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
      *
      * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
      */
-    public function buildEntityHydrator(EntityManagerInterface $em);
+    public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata);
 
     /**
      * Build a collection hidrator
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager.
+     * @param \Doctrine\ORM\EntityManagerInterface $em      The Entity manager.
+     * @param array                                $mapping The association mapping.
      *
      * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
      */
-    public function buildCollectionHydrator(EntityManagerInterface $em);
+    public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
+
+    /**
+     * Build a cache region
+     *
+     * @param array $cache The cache configuration.
+     *
+     * @return \Doctrine\ORM\Cache\Region The cache region.
+     */
+    public function getRegion(array $cache);
 }

@@ -129,7 +129,7 @@ class CacheFactorySecondLevelCacheConcurrentTest extends \Doctrine\ORM\Cache\Def
         $this->cache = $cache;
     }
 
-    protected function createRegion(array $cache)
+    public function getRegion(array $cache)
     {
         $region = new DefaultRegion($cache['region'], $this->cache);
         $mock   = new ConcurrentRegionMock($region);

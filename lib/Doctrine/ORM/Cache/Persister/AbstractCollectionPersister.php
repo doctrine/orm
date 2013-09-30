@@ -107,7 +107,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $configuration->getSecondLevelCacheLogger();
-        $this->hidrator         = $cacheFactory->buildCollectionHydrator($em);
+        $this->hidrator         = $cacheFactory->buildCollectionHydrator($em, $association);
         $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
         $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
     }

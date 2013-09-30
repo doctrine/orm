@@ -108,7 +108,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $config->getSecondLevelCacheLogger();
-        $this->hidrator         = $factory->buildEntityHydrator($em);
+        $this->hidrator         = $factory->buildEntityHydrator($em, $class);
     }
 
     /**

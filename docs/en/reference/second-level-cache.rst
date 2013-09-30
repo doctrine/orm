@@ -215,7 +215,7 @@ Enable Second Level Cache Enabled
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To Enable the cache second-level-cache you should provide a cache factory
-``\Doctrine\ORM\Cache\DefaultCacheFactory`` its the default implementation.
+``\Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
 
 .. code-block:: php
 
@@ -287,20 +287,31 @@ It allows you to provide a specific implementation of the following components :
        /**
         * Build an entity hidrator
         *
-        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager
+        * @param \Doctrine\ORM\EntityManagerInterface $em       The Entity manager.
+        * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
         *
-        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator
+        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
         */
-       public function buildEntityHydrator(EntityManagerInterface $em);
+       public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata);
 
        /**
         * Build a collection hidrator
         *
-        * @param \Doctrine\ORM\EntityManagerInterface $em The Entity manager
+        * @param \Doctrine\ORM\EntityManagerInterface $em      The Entity manager.
+        * @param array                                $mapping The association mapping.
         *
-        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator
+        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
         */
-       public function buildCollectionHydrator(EntityManagerInterface $em);
+       public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
+
+       /**
+        * Gets a cache region based on its name.
+        *
+        * @param array $cache The cache configuration.
+        *
+        * @return \Doctrine\ORM\Cache\Region The cache region.
+        */
+       public function getRegion(array $cache);
     }
 
 Region Lifetime
