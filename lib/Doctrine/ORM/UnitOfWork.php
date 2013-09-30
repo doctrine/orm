@@ -328,8 +328,8 @@ class UnitOfWork implements PropertyChangedListener
 
         $conn = $this->em->getConnection();
 
-        $retryCount = $this->em->getConfiguration()->getDeadlockRetryCount() ? $this->em->getConfiguration()->getDeadlockRetryCount() : 1;
-        $retrySleepTime = $this->em->getConfiguration()->getDeadlockRetrySleepTime() ? $this->em->getConfiguration()->getDeadlockRetrySleepTime() : 0;
+        $retryCount = $this->em->getConfiguration()->getDeadlockRetryCount() ?: 1;
+        $retrySleepTime = $this->em->getConfiguration()->getDeadlockRetrySleepTime() ?: 0;
         $currentTryCount = 1;
 
         while ($currentTryCount <= $retryCount) {
