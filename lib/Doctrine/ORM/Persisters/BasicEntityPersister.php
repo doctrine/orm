@@ -464,7 +464,9 @@ class BasicEntityPersister
             $params[]   = $this->class->reflFields[$versionField]->getValue($entity);
 
             switch ($versionFieldType) {
+                case Type::SMALLINT:
                 case Type::INTEGER:
+                case Type::BIGINT:
                     $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
                     break;
 
