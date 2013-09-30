@@ -1573,7 +1573,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u, u.status AS st FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY st',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.status AS status4 FROM cms_users c0_ GROUP BY status4'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.status AS status4 FROM cms_users c0_ GROUP BY c0_.status'
         );
     }
 
@@ -2257,4 +2257,3 @@ class DDC1474Entity
     }
 
 }
-

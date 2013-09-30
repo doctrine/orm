@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
@@ -1625,7 +1624,9 @@ class SqlWalker implements TreeWalker
 
         // ResultVariable
         if (isset($this->queryComponents[$groupByItem]['resultVariable'])) {
-            if ($this->platform instanceof SQLServerPlatform) {
+            if ($this->queryComponents[$groupByItem]['resultVariable'] instanceof AST\PathExpression) {
+                return $this->walkPathExpression($this->queryComponents[$groupByItem]['resultVariable']);
+            } elseif (isset($this->queryComponents[$groupByItem]['resultVariable']->pathExpression)) {
                 return $this->walkPathExpression($this->queryComponents[$groupByItem]['resultVariable']->pathExpression);
             } else {
                 return $this->walkResultVariable($groupByItem);
