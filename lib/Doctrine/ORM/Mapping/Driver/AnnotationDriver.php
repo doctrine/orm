@@ -128,6 +128,16 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $metadata->setPrimaryTable($primaryTable);
         }
 
+        // Evaluate @Cache annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\Cache'])) {
+            $cacheAnnot = $classAnnotations['Doctrine\ORM\Mapping\Cache'];
+
+            $metadata->enableCache(array(
+                'usage'         => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
+                'region'        => $cacheAnnot->region,
+            ));
+        }
+
         // Evaluate NamedNativeQueries annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedNativeQueries'])) {
             $namedNativeQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedNativeQueries'];
@@ -364,6 +374,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+            }
+
+            // Evaluate @Cache annotation
+            if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Cache')) !== null) {
+                $metadata->enableAssociationCache($mapping['fieldName'], array(
+                    'usage'         => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
+                    'region'        => $cacheAnnot->region,
+                ));
             }
         }
 

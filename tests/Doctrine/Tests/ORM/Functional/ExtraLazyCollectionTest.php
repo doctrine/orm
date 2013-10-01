@@ -58,6 +58,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-546
+     * @group non-cacheable
      */
     public function testCountNotInitializesCollection()
     {
@@ -93,6 +94,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-546
+     * @group non-cacheable
      */
     public function testCountWhenInitialized()
     {
@@ -143,6 +145,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-546
+     * @group non-cacheable
      */
     public function testSlice()
     {
@@ -173,6 +176,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-546
+     * @group non-cacheable
      */
     public function testSliceInitializedCollection()
     {
@@ -505,6 +509,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-1462
+     * @group non-cacheable
      */
     public function testSliceOnDirtyCollection()
     {
@@ -526,6 +531,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-1398
+     * @group non-cacheable
      */
     public function testGetIndexByIdentifier()
     {

@@ -6,6 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
+/**
+ * @group non-cacheable
+ */
 class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userCm;

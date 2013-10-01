@@ -19,15 +19,13 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 use Doctrine\DBAL\LockMode;
-
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * A Query object represents a DQL query.
@@ -60,6 +58,11 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_REFRESH = 'doctrine.refresh';
+
+    /**
+     * @var string
+     */
+    const HINT_CACHE_ENABLED = 'doctrine.cache.enabled';
 
     /**
      * Internal hint: is set to the proxy entity that is currently triggered for loading
@@ -179,16 +182,6 @@ final class Query extends AbstractQuery
     private $_useQueryCache = true;
 
     /**
-     * Initializes a new Query instance.
-     *
-     * @param \Doctrine\ORM\EntityManager $entityManager
-     */
-    /*public function __construct(EntityManager $entityManager)
-    {
-        parent::__construct($entityManager);
-    }*/
-
-    /**
      * Gets the SQL query/queries that correspond to this DQL query.
      *
      * @return mixed The built sql query or an array of all sql queries.
@@ -212,6 +205,19 @@ final class Query extends AbstractQuery
         $parser = new Parser($this);
 
         return $parser->getAST();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResultSetMapping()
+    {
+        // parse query or load from cache
+        if ($this->_resultSetMapping === null) {
+            $this->_resultSetMapping = $this->_parse()->getResultSetMapping();
+        }
+
+        return $this->_resultSetMapping;
     }
 
     /**
@@ -303,13 +309,14 @@ final class Query extends AbstractQuery
         foreach ($this->parameters as $parameter) {
             $key    = $parameter->getName();
             $value  = $parameter->getValue();
+            $rsm    = $this->_resultSetMapping ?: $this->getResultSetMapping();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            if (isset($this->_resultSetMapping->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
-                $value = $value->getMetadataValue($this->_resultSetMapping->metadataParameterMapping[$key]);
+            if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
+                $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
             }
 
             $value = $this->processParameterValue($value);
@@ -653,6 +660,14 @@ final class Query extends AbstractQuery
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
         );
+    }
+
+     /**
+     * {@inheritdoc}
+     */
+    protected function getHash()
+    {
+        return sha1(parent::getHash(). '-'. $this->_firstResult . '-' . $this->_maxResults);
     }
 
     /**

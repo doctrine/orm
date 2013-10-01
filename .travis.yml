@@ -6,9 +6,12 @@ php:
   - 5.5
 
 env:
-  - DB=mysql
-  - DB=pgsql
-  - DB=sqlite
+  - DB=mysql ENABLE_SECOND_LEVEL_CACHE=1
+  - DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1
+  - DB=sqlite ENABLE_SECOND_LEVEL_CACHE=1
+  - DB=mysql ENABLE_SECOND_LEVEL_CACHE=0
+  - DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0
+  - DB=sqlite ENABLE_SECOND_LEVEL_CACHE=0
 
 before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests;' -U postgres; fi"
@@ -18,7 +21,7 @@ before_script:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi"
   - composer install --prefer-dist --dev
 
-script: phpunit --configuration tests/travis/$DB.travis.xml
+script: phpunit -v --configuration tests/travis/$DB.travis.xml
 
 after_script:
   - php vendor/bin/coveralls -v

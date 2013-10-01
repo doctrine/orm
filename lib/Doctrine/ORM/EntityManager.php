@@ -135,6 +135,11 @@ use Doctrine\Common\Util\ClassUtils;
     private $filterCollection;
 
     /**
+     * @var \Doctrine\ORM\Cache The second level cache regions API.
+     */
+    private $cache;
+
+    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      *
@@ -162,6 +167,11 @@ use Doctrine\Common\Util\ClassUtils;
             $config->getProxyNamespace(),
             $config->getAutoGenerateProxyClasses()
         );
+
+        if ($config->isSecondLevelCacheEnabled()) {
+            $cacheClass  = $config->getSecondLevelCacheClassName();
+            $this->cache = new $cacheClass($this);
+        }
     }
 
     /**
@@ -215,6 +225,14 @@ use Doctrine\Common\Util\ClassUtils;
     public function beginTransaction()
     {
         $this->conn->beginTransaction();
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache
+     */
+    public function getCache()
+    {
+        return $this->cache;
     }
 
     /**
@@ -457,7 +475,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         switch ($lockMode) {
             case LockMode::NONE:
-                return $persister->load($sortedId);
+                return $persister->loadById($sortedId);
 
             case LockMode::OPTIMISTIC:
                 if ( ! $class->isVersioned) {

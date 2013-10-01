@@ -2,6 +2,10 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\Tests\EventListener\CacheMetadataListener;
+use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
+
 /**
  * Base testcase class for all functional ORM testcases.
  *
@@ -162,6 +166,21 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Taxi\Car',
             'Doctrine\Tests\Models\Taxi\Driver',
         ),
+        'cache' => array(
+            'Doctrine\Tests\Models\Cache\Country',
+            'Doctrine\Tests\Models\Cache\State',
+            'Doctrine\Tests\Models\Cache\City',
+            'Doctrine\Tests\Models\Cache\Traveler',
+            'Doctrine\Tests\Models\Cache\Travel',
+            'Doctrine\Tests\Models\Cache\Attraction',
+            'Doctrine\Tests\Models\Cache\Restaurant',
+            'Doctrine\Tests\Models\Cache\Beach',
+            'Doctrine\Tests\Models\Cache\Bar',
+            'Doctrine\Tests\Models\Cache\Flight',
+            'Doctrine\Tests\Models\Cache\AttractionInfo',
+            'Doctrine\Tests\Models\Cache\AttractionContactInfo',
+            'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
+        ),
     );
 
     /**
@@ -297,6 +316,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM taxi_driver');
         }
 
+        if (isset($this->_usedModelSets['cache'])) {
+            $conn->executeUpdate('DELETE FROM cache_attraction_location_info');
+            $conn->executeUpdate('DELETE FROM cache_attraction_contact_info');
+            $conn->executeUpdate('DELETE FROM cache_attraction_info');
+            $conn->executeUpdate('DELETE FROM cache_visited_cities');
+            $conn->executeUpdate('DELETE FROM cache_flight');
+            $conn->executeUpdate('DELETE FROM cache_attraction');
+            $conn->executeUpdate('DELETE FROM cache_travel');
+            $conn->executeUpdate('DELETE FROM cache_traveler');
+            $conn->executeUpdate('DELETE FROM cache_city');
+            $conn->executeUpdate('DELETE FROM cache_state');
+            $conn->executeUpdate('DELETE FROM cache_country');
+        }
+
         $this->_em->clear();
     }
 
@@ -411,7 +444,29 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
+        $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
+
+        if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
+
+            $cache   = $this->getSharedSecondLevelCacheDriverImpl();
+            $factory = new DefaultCacheFactory($config, $cache);
+
+            $this->secondLevelCacheFactory = $factory;
+
+            if ($this->isSecondLevelCacheLogEnabled) {
+                $this->secondLevelCacheLogger  = new StatisticsCacheLogger();
+                $config->setSecondLevelCacheLogger($this->secondLevelCacheLogger);
+            }
+            
+            $config->setSecondLevelCacheEnabled();
+            $config->setSecondLevelCacheFactory($factory);
+
+            $this->isSecondLevelCacheEnabled = true;
+        }
+
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
+            realpath(__DIR__ . '/Models/Cache')
+        ), true));
 
         $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
@@ -422,6 +477,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             foreach ($listeners AS $listener) {
                 $evm->removeEventListener(array($event), $listener);
             }
+        }
+
+        if ($enableSecondLevelCache) {
+            $evm->addEventListener('loadClassMetadata', new CacheMetadataListener());
         }
 
         if (isset($GLOBALS['db_event_subscribers'])) {

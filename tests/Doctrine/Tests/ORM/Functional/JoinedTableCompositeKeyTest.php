@@ -30,7 +30,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     }
 
     /**
-     *
+     * @group non-cacheable
      */
     public function testUpdateWithCompositeKey()
     {

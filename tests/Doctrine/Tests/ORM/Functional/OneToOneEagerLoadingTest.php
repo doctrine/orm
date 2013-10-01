@@ -117,6 +117,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotNull($waggon->train);
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides()
     {
         $train = new Train(new TrainOwner("Alexander"));
@@ -141,6 +144,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide()
     {
         $waggon = new Waggon();
@@ -168,6 +174,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide()
     {
         $owner = new TrainOwner('Alexander');

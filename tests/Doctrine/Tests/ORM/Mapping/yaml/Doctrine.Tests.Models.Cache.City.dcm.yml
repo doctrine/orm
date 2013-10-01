@@ -1,0 +1,36 @@
+Doctrine\Tests\Models\Cache\City:
+    type: entity
+    table: cache_city
+    cache:
+        usage : READ_ONLY
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+    manyToOne:
+        state:
+            targetEntity: Doctrine\Tests\Models\Cache\State
+            inversedBy: cities
+            joinColumns:
+                state_id:
+                    referencedColumnName: id
+            cache:
+              usage : READ_ONLY
+    manyToMany:
+        travels:
+            targetEntity: Doctrine\Tests\Models\Cache\Travel
+            mappedBy: visitedCities
+
+    oneToMany:
+        attractions:
+            targetEntity: Doctrine\Tests\Models\Cache\Attraction
+            mappedBy: city
+            cache:
+              usage : READ_ONLY
+            orderBy:
+                name: ASC

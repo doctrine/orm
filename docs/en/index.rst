@@ -78,6 +78,7 @@ Advanced Topics
   * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
   * :doc:`Best Practices <reference/best-practices>`
   * :doc:`Metadata Drivers <reference/metadata-drivers>`
+  * :doc:`Second Level Cache <reference/second-level-cache>`
 
 Tutorials
 ---------
