@@ -61,7 +61,7 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
             if ($entity->id === $a2->id) {
                 $a2FromDB = $entity;
                 break;
-						}
+            }
         }
 
         $this->assertEquals($c->title, $a2FromDB->entityC->title);
