@@ -1624,13 +1624,17 @@ class SqlWalker implements TreeWalker
 
         // ResultVariable
         if (isset($this->queryComponents[$groupByItem]['resultVariable'])) {
-            if ($this->queryComponents[$groupByItem]['resultVariable'] instanceof AST\PathExpression) {
-                return $this->walkPathExpression($this->queryComponents[$groupByItem]['resultVariable']);
-            } elseif (isset($this->queryComponents[$groupByItem]['resultVariable']->pathExpression)) {
-                return $this->walkPathExpression($this->queryComponents[$groupByItem]['resultVariable']->pathExpression);
-            } else {
-                return $this->walkResultVariable($groupByItem);
+            $resultVariable = $this->queryComponents[$groupByItem]['resultVariable'];
+
+            if ($resultVariable instanceof AST\PathExpression) {
+                return $this->walkPathExpression($resultVariable);
             }
+
+            if (isset($resultVariable->pathExpression)) {
+                return $this->walkPathExpression($resultVariable->pathExpression);
+            }
+
+            return $this->walkResultVariable($groupByItem);
         }
 
         // IdentificationVariable
