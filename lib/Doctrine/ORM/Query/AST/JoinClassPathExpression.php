@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * JoinClassPathExpression ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Alexander <iam.asm89@gmail.com>

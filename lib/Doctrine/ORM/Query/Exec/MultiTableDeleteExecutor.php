@@ -27,7 +27,7 @@ use Doctrine\ORM\Query\AST;
  * Class Table Inheritance (JOINED).
  *
  * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        http://www.doctrine-project.org
  * @since       2.0
  */

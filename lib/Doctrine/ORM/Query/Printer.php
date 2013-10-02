@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Query;
  * A parse tree printer for Doctrine Query Language parser.
  *
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  */
