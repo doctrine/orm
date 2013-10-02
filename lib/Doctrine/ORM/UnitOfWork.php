@@ -563,7 +563,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField)) {
+            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField || $class->isExtenallyVersioned)) {
                 $actualData[$name] = $value;
             }
         }
@@ -2874,7 +2874,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
-
+ 
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.

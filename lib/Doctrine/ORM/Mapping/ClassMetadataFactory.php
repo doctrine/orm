@@ -99,6 +99,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
+            $class->setExternallyVersioned($parent->isExtenallyVersioned);
+            $class->setNextVersionProperty($parent->nextVersionProperty);
             $class->setDiscriminatorMap($parent->discriminatorMap);
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);

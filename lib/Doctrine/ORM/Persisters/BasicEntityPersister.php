@@ -416,10 +416,33 @@ class BasicEntityPersister
 
                     break;
             }
- 
+
             $params[]   = $value;
             $set[]      = $column . ' = ' . $placeholder;
             $types[]    = $this->columnTypes[$columnName];
+        }
+
+        if ($versioned) {
+            $versionField     = $this->class->versionField;
+            $versionFieldType = $this->class->fieldMappings[$versionField]['type'];
+            $versionColumn    = $this->quoteStrategy->getColumnName($versionField, $this->class, $this->platform);
+
+            if ($this->class->isExtenallyVersioned) {
+                $set[]    = $versionColumn . ' = ?';
+                $params[] = $this->class->reflFields[$this->class->nextVersionProperty]->getValue($entity);
+                $types[]  = $this->class->fieldMappings[$versionField]['type'];
+            }else{
+                switch ($versionFieldType) {
+                    case Type::SMALLINT:
+                    case Type::INTEGER:
+                    case Type::BIGINT:
+                        $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
+                        break;
+                    case Type::DATETIME:
+                        $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
+                        break;
+                }
+            }
         }
 
         $where      = array();
@@ -455,25 +478,9 @@ class BasicEntityPersister
         }
 
         if ($versioned) {
-            $versionField       = $this->class->versionField;
-            $versionFieldType   = $this->class->fieldMappings[$versionField]['type'];
-            $versionColumn      = $this->quoteStrategy->getColumnName($versionField, $this->class, $this->platform);
-
             $where[]    = $versionColumn;
             $types[]    = $this->class->fieldMappings[$versionField]['type'];
             $params[]   = $this->class->reflFields[$versionField]->getValue($entity);
-
-            switch ($versionFieldType) {
-                case Type::SMALLINT:
-                case Type::INTEGER:
-                case Type::BIGINT:
-                    $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
-                    break;
-
-                case Type::DATETIME:
-                    $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
-                    break;
-            }
         }
 
         $sql = 'UPDATE ' . $quotedTableName
@@ -614,27 +621,43 @@ class BasicEntityPersister
      *
      * @return array The prepared data.
      */
-    protected function prepareUpdateData($entity)
+    protected function prepareUpdateData($entity, $isForInsert = FALSE)
     {
         $result = array();
         $uow    = $this->em->getUnitOfWork();
 
         if (($versioned = $this->class->isVersioned) != false) {
             $versionField = $this->class->versionField;
+            $nextVersionProp = $this->class->nextVersionProperty;
+            $externallyVersioned = $this->class->isExtenallyVersioned;
         }
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if ($versioned && $versionField == $field) {
-                continue;
+            if ($versioned){
+                if ($nextVersionProp == $field && !($isForInsert && $externallyVersioned)){
+                    continue;
+                }
+                if ($versionField == $field) {
+                    continue;
+                }
             }
 
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
 
-                $columnName = $this->class->columnNames[$field];
-                $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
-                $result[$this->getOwningTable($field)][$columnName] = $newVal;
+                if ($versioned && $externallyVersioned && $isForInsert && $nextVersionProp == $field){
+                    //copy the nextVersionProperty value on the version field
+                    //because the insert is being executed
+                    $versionField = $this->class->versionField;
+                    $columnName   = $this->class->columnNames[$versionField];
+                    $this->columnTypes[$columnName] = $this->class->fieldMappings[$versionField]['type'];
+                    $result[$this->getOwningTable($versionField)][$columnName] = $newVal;
+                }else{
+                    $columnName = $this->class->columnNames[$field];
+                    $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
+                    $result[$this->getOwningTable($field)][$columnName] = $newVal;
+                }
 
                 continue;
             }
@@ -709,7 +732,7 @@ class BasicEntityPersister
      */
     protected function prepareInsertData($entity)
     {
-        return $this->prepareUpdateData($entity);
+        return $this->prepareUpdateData($entity, TRUE);
     }
 
     /**
@@ -852,7 +875,7 @@ class BasicEntityPersister
         $sql = $this->getSelectSQL($id, null, $lockMode);
         list($params, $types) = $this->expandParameters($id);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
- 
+
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
         $hydrator->hydrateAll($stmt, $this->rsm, array(Query::HINT_REFRESH => true));
     }
@@ -1132,7 +1155,7 @@ class BasicEntityPersister
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if ('' !== $filterSql) {
-            $conditionSql = $conditionSql 
+            $conditionSql = $conditionSql
                 ? $conditionSql . ' AND ' . $filterSql
                 : $filterSql;
         }
@@ -1285,7 +1308,7 @@ class BasicEntityPersister
             if ($assoc['isOwningSide']) {
                 $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
                 $this->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
-                
+
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1417,7 +1440,7 @@ class BasicEntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldNames[$column]) 
+            if (isset($this->class->fieldNames[$column])
                 && isset($this->columnTypes[$this->class->fieldNames[$column]])
                 && isset($this->class->fieldMappings[$this->class->fieldNames[$column]]['requireSQLConversion'])) {
 
@@ -1449,8 +1472,13 @@ class BasicEntityPersister
         $columns = array();
 
         foreach ($this->class->reflFields as $name => $field) {
-            if ($this->class->isVersioned && $this->class->versionField == $name) {
-                continue;
+            if ($this->class->isVersioned){
+                if ($this->class->nextVersionProperty == $name) {
+                    continue;
+                }
+                if ($this->class->versionField == $name && !$this->class->isExtenallyVersioned) {
+                    continue;
+                }
             }
 
             if (isset($this->class->associationMappings[$name])) {
@@ -1490,7 +1518,7 @@ class BasicEntityPersister
         $columnName     = $this->quoteStrategy->getColumnName($field, $class, $this->platform);
         $sql            = $tableAlias . '.' . $columnName;
         $columnAlias    = $this->getSQLColumnAlias($class->columnNames[$field]);
-        
+
         $this->rsm->addFieldResult($alias, $columnAlias, $field);
 
         if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
