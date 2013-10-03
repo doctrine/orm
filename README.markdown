@@ -11,8 +11,8 @@ Master: [![Coverage Status](https://coveralls.io/repos/doctrine/doctrine2/badge.
 
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.2+ that provides transparent persistence
-for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features
-is the option to write database queries in a proprietary object oriented SQL dialect called Doctrine Query Language (DQL),
+for PHP objects. It sits on top of a powerful [database abstraction layer (DBAL)][dbal]. One of its key features
+is the option to write database queries in a proprietary object oriented SQL dialect called [Doctrine Query Language (DQL)][dql],
 inspired by Hibernates HQL. This provides developers with a powerful alternative to SQL that maintains flexibility
 without requiring unnecessary code duplication.
 
@@ -22,4 +22,7 @@ without requiring unnecessary code duplication.
 * [Documentation](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
 * [Issue Tracker](http://www.doctrine-project.org/jira/browse/DDC)
 * [Downloads](http://github.com/doctrine/doctrine2/downloads)
+
+[dbal]: http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/
+[dql]: http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/dql-doctrine-query-language.html
 
