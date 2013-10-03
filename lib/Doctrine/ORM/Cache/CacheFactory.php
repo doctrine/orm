@@ -65,22 +65,22 @@ interface CacheFactory
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 
     /**
-     * Build an entity hidrator
+     * Build an entity hydrator
      *
      * @param \Doctrine\ORM\EntityManagerInterface $em       The Entity manager.
      * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
      *
-     * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
+     * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hydrator.
      */
     public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata);
 
     /**
-     * Build a collection hidrator
+     * Build a collection hydrator
      *
      * @param \Doctrine\ORM\EntityManagerInterface $em      The Entity manager.
      * @param array                                $mapping The association mapping.
      *
-     * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
+     * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hydrator.
      */
     public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
 

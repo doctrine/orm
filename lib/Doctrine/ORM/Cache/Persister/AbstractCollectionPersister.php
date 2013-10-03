@@ -82,7 +82,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * @var \Doctrine\ORM\Cache\CollectionHydrator
      */
-    protected $hidrator;
+    protected $hydrator;
 
     /**
      * @var \Doctrine\ORM\Cache\Logging\CacheLogger
@@ -98,7 +98,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function __construct(CollectionPersister $persister, Region $region, EntityManagerInterface $em, array $association)
     {
         $configuration  = $em->getConfiguration();
-        $cacheFactory   = $configuration->getSecondLevelCacheFactory();
+        $cacheConfig    = $configuration->getSecondLevelCacheConfiguration();
+        $cacheFactory   = $cacheConfig->getCacheFactory();
 
         $this->region           = $region;
         $this->persister        = $persister;
@@ -106,8 +107,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->regionName       = $region->getName();
         $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
-        $this->cacheLogger      = $configuration->getSecondLevelCacheLogger();
-        $this->hidrator         = $cacheFactory->buildCollectionHydrator($em, $association);
+        $this->cacheLogger      = $cacheConfig->getCacheLogger();
+        $this->hydrator         = $cacheFactory->buildCollectionHydrator($em, $association);
         $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
         $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
     }
@@ -149,7 +150,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             return null;
         }
 
-        if (($cache = $this->hidrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection)) === null) {
+        if (($cache = $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection)) === null) {
             return null;
         }
 
@@ -164,7 +165,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
         $targetRegion       = $targetPersister->getCacheRegion();
         $targetHidrator     = $targetPersister->getEntityHydrator();
-        $entry              = $this->hidrator->buildCacheEntry($this->targetEntity, $key, $elements);
+        $entry              = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);
 
         foreach ($entry->identifiers as $index => $identifier) {
             $entityKey = new EntityCacheKey($this->targetEntity->rootEntityName, $identifier);

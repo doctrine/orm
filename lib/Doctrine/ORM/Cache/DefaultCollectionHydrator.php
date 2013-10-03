@@ -28,7 +28,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
- * Default hidrator cache for collections
+ * Default hydrator cache for collections
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>

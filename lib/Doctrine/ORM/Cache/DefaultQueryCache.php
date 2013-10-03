@@ -75,7 +75,9 @@ class DefaultQueryCache implements QueryCache
         $this->em        = $em;
         $this->region    = $region;
         $this->uow       = $em->getUnitOfWork();
-        $this->validator = $em->getConfiguration()->getSecondLevelCacheQueryValidator();
+        $this->validator = $em->getConfiguration()
+            ->getSecondLevelCacheConfiguration()
+            ->getQueryValidator();
     }
 
     /**

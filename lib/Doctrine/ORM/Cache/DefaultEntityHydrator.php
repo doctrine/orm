@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
- * Default hidrator cache for entities
+ * Default hydrator cache for entities
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>

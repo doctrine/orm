@@ -3012,7 +3012,8 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->hasCache && $class->cache !== null) {
             $persister = $this->em->getConfiguration()
-                ->getSecondLevelCacheFactory()
+                ->getSecondLevelCacheConfiguration()
+                ->getCacheFactory()
                 ->buildCachedEntityPersister($this->em, $persister, $class);
         }
 
@@ -3044,7 +3045,8 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->hasCache && isset($association['cache'])) {
             $persister = $this->em->getConfiguration()
-                ->getSecondLevelCacheFactory()
+                ->getSecondLevelCacheConfiguration()
+                ->getCacheFactory()
                 ->buildCachedCollectionPersister($this->em, $persister, $association);
         }
 

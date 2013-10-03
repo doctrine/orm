@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
@@ -50,9 +50,9 @@ class DefaultCacheFactory implements CacheFactory
     private $cache;
 
     /**
-     * @var \Doctrine\ORM\Configuration
+     * @var \Doctrine\ORM\Cache\RegionsConfiguration
      */
-    private $configuration;
+    private $regionsConfig;
 
     /**
      * @var array
@@ -65,13 +65,13 @@ class DefaultCacheFactory implements CacheFactory
     private $fileLockRegionDirectory;
 
     /**
-     * @param \Doctrine\ORM\Configuration  $configuration
-     * @param \Doctrine\Common\Cache\Cache $cache
+     * @param \Doctrine\ORM\Cache\RegionsConfiguration  $cacheConfig
+     * @param \Doctrine\Common\Cache\Cache              $cache
      */
-    public function __construct(Configuration $configuration, CacheDriver $cache)
+    public function __construct(RegionsConfiguration $cacheConfig, CacheDriver $cache)
     {
         $this->cache         = $cache;
-        $this->configuration = $configuration;
+        $this->regionsConfig = $cacheConfig;
     }
 
     /**
@@ -181,7 +181,7 @@ class DefaultCacheFactory implements CacheFactory
         }
 
         $region = new DefaultRegion($cache['region'], clone $this->cache, array(
-            'lifetime' => $this->configuration->getSecondLevelCacheRegionLifetime($cache['region'])
+            'lifetime' => $this->regionsConfig->getLifetime($cache['region'])
         ));
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
@@ -194,7 +194,7 @@ class DefaultCacheFactory implements CacheFactory
             }
 
             $directory = $this->fileLockRegionDirectory . DIRECTORY_SEPARATOR . $cache['region'];
-            $region    = new FileLockRegion($region, $directory, $this->configuration->getSecondLevelCacheLockLifetime());
+            $region    = new FileLockRegion($region, $directory, $this->regionsConfig->getLockLifetime($cache['region']));
         }
 
         return $this->regions[$cache['region']] = $region;

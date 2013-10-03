@@ -448,18 +448,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
 
-            $cache   = $this->getSharedSecondLevelCacheDriverImpl();
-            $factory = new DefaultCacheFactory($config, $cache);
+            $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+            $cache          = $this->getSharedSecondLevelCacheDriverImpl();
+            $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
 
             $this->secondLevelCacheFactory = $factory;
 
             if ($this->isSecondLevelCacheLogEnabled) {
-                $this->secondLevelCacheLogger  = new StatisticsCacheLogger();
-                $config->setSecondLevelCacheLogger($this->secondLevelCacheLogger);
+                $this->secondLevelCacheLogger = new StatisticsCacheLogger();
+                $cacheConfig->setCacheLogger($this->secondLevelCacheLogger);
             }
-            
-            $config->setSecondLevelCacheEnabled();
-            $config->setSecondLevelCacheFactory($factory);
+
+            $cacheConfig->setCacheFactory($factory);
+            $config->setSecondLevelCacheEnabled(true);
+            $config->setSecondLevelCacheConfiguration($cacheConfig);
 
             $this->isSecondLevelCacheEnabled = true;
         }

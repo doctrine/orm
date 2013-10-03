@@ -162,7 +162,12 @@ abstract class AbstractQuery
     {
         $this->_em          = $em;
         $this->parameters   = new ArrayCollection();
-        $this->cacheLogger  = $em->getConfiguration()->getSecondLevelCacheLogger();
+
+        if ($this->_em->getConfiguration()->isSecondLevelCacheEnabled()) {
+            $this->cacheLogger  = $em->getConfiguration()
+                ->getSecondLevelCacheConfiguration()
+                ->getCacheLogger();
+        }
     }
 
     /**

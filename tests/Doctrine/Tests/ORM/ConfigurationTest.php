@@ -276,16 +276,13 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     /**
      * @group DDC-2183
      */
-    public function testSetGetSecondLevelCacheClassName()
+    public function testSetGetSecondLevelCacheConfig()
     {
-        $mockClass = get_class($this->getMock('Doctrine\ORM\Cache'));
+        $mockClass = $this->getMock('Doctrine\ORM\Cache\CacheConfiguration');
 
-        $this->assertEquals('Doctrine\ORM\Cache\DefaultCache', $this->configuration->getSecondLevelCacheClassName());
-        $this->configuration->setSecondLevelCacheClassName($mockClass);
-        $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheClassName());
-
-        $this->setExpectedException('Doctrine\ORM\ORMException');
-        $this->configuration->setSecondLevelCacheClassName(__CLASS__);
+        $this->assertNull($this->configuration->getSecondLevelCacheConfiguration());
+        $this->configuration->setSecondLevelCacheConfiguration($mockClass);
+        $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
 }
 

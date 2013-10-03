@@ -48,7 +48,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
                 }
 
                 $key    = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry  = $this->hidrator->buildCacheEntry($class, $key, $entity);
+                $entry  = $this->hydrator->buildCacheEntry($class, $key, $entity);
                 $cached = $this->region->put($key, $entry);
 
                 if ($this->cacheLogger && $cached) {
@@ -68,7 +68,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
                 }
 
                 $key    = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry  = $this->hidrator->buildCacheEntry($class, $key, $entity);
+                $entry  = $this->hydrator->buildCacheEntry($class, $key, $entity);
                 $cached = $this->region->put($key, $entry);
 
                 if ($this->cacheLogger && $cached) {

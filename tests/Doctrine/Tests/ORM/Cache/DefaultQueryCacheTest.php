@@ -53,7 +53,9 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->queryCache   = new DefaultQueryCache($this->em, $this->region);
         $this->cacheFactory = new CacheFactoryDefaultQueryCacheTest($this->queryCache, $this->region);
 
-        $this->em->getConfiguration()->setSecondLevelCacheFactory($this->cacheFactory);
+        $this->em->getConfiguration()
+            ->getSecondLevelCacheConfiguration()
+            ->setCacheFactory($this->cacheFactory);
     }
 
     public function testImplementQueryCache()

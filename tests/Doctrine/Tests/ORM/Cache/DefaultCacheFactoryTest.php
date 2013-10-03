@@ -9,6 +9,7 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\ORM\Persisters\OneToManyPersister;
+use Doctrine\ORM\Cache\RegionsConfiguration;
 
 /**
  * @group DDC-2183
@@ -25,16 +26,20 @@ class DefaultCacheFactoryTest extends OrmTestCase
      */
     private $em;
 
+    /**
+     * @var \Doctrine\ORM\Cache\RegionsConfiguration
+     */
+    private $regionsConfig;
+
     protected function setUp()
     {
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->em = $this->_getTestEntityManager();
-
-
-        $arguments     = array($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
-        $this->factory = $this->getMock('\Doctrine\ORM\Cache\DefaultCacheFactory', array(
+        $this->em               = $this->_getTestEntityManager();
+        $this->regionsConfig    = new RegionsConfiguration;
+        $arguments              = array($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+        $this->factory          = $this->getMock('\Doctrine\ORM\Cache\DefaultCacheFactory', array(
             'getRegion'
         ), $arguments);
     }
@@ -182,7 +187,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata2  = clone $em->getClassMetadata('Doctrine\Tests\Models\Cache\AttractionLocationInfo');
         $persister1 = new BasicEntityPersister($em, $metadata1);
         $persister2 = new BasicEntityPersister($em, $metadata2);
-        $factory    = new DefaultCacheFactory($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
+        $factory    = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
@@ -201,7 +206,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata2  = clone $em->getClassMetadata('Doctrine\Tests\Models\Cache\City');
         $persister1 = new BasicEntityPersister($em, $metadata1);
         $persister2 = new BasicEntityPersister($em, $metadata2);
-        $factory    = new DefaultCacheFactory($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
+        $factory    = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
@@ -252,7 +257,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
      */
     public function testInvalidFileLockRegionDirectoryException()
     {
-        $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($this->em->getConfiguration(), $this->getSharedSecondLevelCacheDriverImpl());
+        $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
         $factory->getRegion(array(
             'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
