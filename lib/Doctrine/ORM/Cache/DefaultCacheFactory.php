@@ -22,13 +22,15 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
+use Doctrine\ORM\Cache\TimestampRegion;
+
 use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
+use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
-
 use Doctrine\ORM\Persisters\EntityPersister;
 use Doctrine\ORM\Persisters\CollectionPersister;
 use Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister;
@@ -53,6 +55,11 @@ class DefaultCacheFactory implements CacheFactory
      * @var \Doctrine\ORM\Cache\RegionsConfiguration
      */
     private $regionsConfig;
+
+    /**
+     * @var \Doctrine\ORM\Cache\TimestampRegion
+     */
+    private $timestampRegion;
 
     /**
      * @var array
@@ -97,6 +104,15 @@ class DefaultCacheFactory implements CacheFactory
     {
        $this->regions[$region->getName()] = $region;
     }
+
+    /**
+     * @param \Doctrine\ORM\Cache\TimestampRegion $region
+     */
+    public function setTimestampRegion(TimestampRegion $region)
+    {
+       $this->timestampRegion = $region;
+    }
+
 
     /**
      * {@inheritdoc}
@@ -180,9 +196,7 @@ class DefaultCacheFactory implements CacheFactory
             return $this->regions[$cache['region']];
         }
 
-        $region = new DefaultRegion($cache['region'], clone $this->cache, array(
-            'lifetime' => $this->regionsConfig->getLifetime($cache['region'])
-        ));
+        $region = new DefaultRegion($cache['region'], clone $this->cache, $this->regionsConfig->getLifetime($cache['region']));
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 
@@ -198,5 +212,20 @@ class DefaultCacheFactory implements CacheFactory
         }
 
         return $this->regions[$cache['region']] = $region;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTimestampRegion()
+    {
+        if ($this->timestampRegion === null) {
+            $name     = Cache::DEFAULT_TIMESTAMP_REGION_NAME;
+            $lifetime = $this->regionsConfig->getLifetime($name);
+
+            $this->timestampRegion = new UpdateTimestampCache($name, clone $this->cache, $lifetime);
+        }
+
+        return $this->timestampRegion;
     }
 }

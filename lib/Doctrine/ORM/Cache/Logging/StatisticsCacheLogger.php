@@ -174,6 +174,30 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
+     * @return array
+     */
+    public function getRegionsMiss()
+    {
+        return $this->cacheMissCountMap;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegionsHit()
+    {
+        return $this->cacheHitCountMap;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegionsPut()
+    {
+        return $this->cachePutCountMap;
+    }
+
+    /**
      * Clear region statistics
      *
      * @param string $regionName The name of the cache region.

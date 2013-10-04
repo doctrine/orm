@@ -37,6 +37,8 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function afterTransactionComplete()
     {
+        $isChanged = false;
+
         if (isset($this->queuedCache['insert'])) {
             foreach ($this->queuedCache['insert'] as $entity) {
 
@@ -47,9 +49,10 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
                     $class = $this->metadataFactory->getMetadataFor($className);
                 }
 
-                $key    = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry  = $this->hydrator->buildCacheEntry($class, $key, $entity);
-                $cached = $this->region->put($key, $entry);
+                $key        = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+                $entry      = $this->hydrator->buildCacheEntry($class, $key, $entity);
+                $cached     = $this->region->put($key, $entry);
+                $isChanged  = $isChanged ?: $cached;
 
                 if ($this->cacheLogger && $cached) {
                     $this->cacheLogger->entityCachePut($this->regionName, $key);
@@ -67,9 +70,10 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
                     $class = $this->metadataFactory->getMetadataFor($className);
                 }
 
-                $key    = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry  = $this->hydrator->buildCacheEntry($class, $key, $entity);
-                $cached = $this->region->put($key, $entry);
+                $key        = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+                $entry      = $this->hydrator->buildCacheEntry($class, $key, $entity);
+                $cached     = $this->region->put($key, $entry);
+                $isChanged  = $isChanged ?: $cached;
 
                 if ($this->cacheLogger && $cached) {
                     $this->cacheLogger->entityCachePut($this->regionName, $key);
@@ -80,7 +84,13 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         if (isset($this->queuedCache['delete'])) {
             foreach ($this->queuedCache['delete'] as $key) {
                 $this->region->evict($key);
+
+                $isChanged = true;
             }
+        }
+
+        if ($isChanged) {
+            $this->timestampRegion->update($this->timestampKey);
         }
 
         $this->queuedCache = array();

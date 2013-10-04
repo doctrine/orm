@@ -24,6 +24,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -70,6 +71,16 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $region;
 
     /**
+     * @var \Doctrine\ORM\Cache\TimestampRegion
+     */
+    protected $timestampRegion;
+
+    /**
+     * @var \Doctrine\ORM\Cache\TimestampCacheKey
+     */
+    protected $timestampKey;
+
+    /**
      * @var \Doctrine\ORM\Cache\EntityHydrator
      */
     protected $hydrator;
@@ -109,7 +120,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
+        $this->timestampRegion  = $cacheFactory->getTimestampRegion();
         $this->hydrator         = $cacheFactory->buildEntityHydrator($em, $class);
+        $this->timestampKey     = new TimestampCacheKey($this->class->getTableName());
     }
 
     /**
@@ -218,13 +231,20 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Generates a string of currently query
      *
+     * @param array $query
+     * @param string $criteria
+     * @param array $orderBy
+     * @param integer $limit
+     * @param integer $offset
+     * @param integer $timestamp
+     *
      * @return string
      */
-    protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null)
+    protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null, $timestamp = null)
     {
-        list($params) = $this->expandParameters($criteria);
+        list($params) = $this->persister->expandParameters($criteria);
 
-        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset);
+        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset . $timestamp);
     }
 
     /**
@@ -288,8 +308,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         //handle only EntityRepository#findOneBy
+        $timestamp  = $this->timestampRegion->get($this->timestampKey);
         $query      = $this->persister->getSelectSQL($criteria, null, 0, $limit, 0, $orderBy);
-        $hash       = $this->getHash($query, $criteria);
+        $hash       = $this->getHash($query, $criteria, null, null, null, $timestamp ? $timestamp->time : null);
         $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
         $queryCache = $this->cache->getQueryCache($this->regionName);
@@ -326,8 +347,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
+        $timestamp  = $this->timestampRegion->get($this->timestampKey);
         $query      = $this->persister->getSelectSQL($criteria, null, 0, $limit, $offset, $orderBy);
-        $hash       = $this->getHash($query, $criteria);
+        $hash       = $this->getHash($query, $criteria, null, null, null, $timestamp ? $timestamp->time : null);
         $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
         $queryCache = $this->cache->getQueryCache($this->regionName);

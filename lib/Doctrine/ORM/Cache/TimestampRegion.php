@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,28 +18,22 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Cache;
 
 /**
- * Caching to an entity or a collection.
+ * Defines the contract for a cache region which will specifically be used to store entity "update timestamps".
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since   2.5
- *
- * @Annotation
- * @Target({"CLASS","PROPERTY"})
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-final class Cache implements Annotation
+interface TimestampRegion extends Region
 {
     /**
-     * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
-     * @var string The concurrency strategy.
+     * Update an specific key into the cache region.
+     *
+     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
+     *
+     * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
      */
-    public $usage = 'READ_ONLY';
-
-    /**
-     * @var string Cache region name.
-     */
-    public $region;
+    public function update(CacheKey $key);
 }

@@ -56,16 +56,26 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function afterTransactionComplete()
     {
+        $isChanged = true;
+
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
                 $this->region->evict($item['key']);
+
+                $isChanged = true;
             }
         }
 
         if (isset($this->queuedCache['delete'])) {
             foreach ($this->queuedCache['delete'] as $item) {
                 $this->region->evict($item['key']);
+
+                $isChanged = true;
             }
+        }
+
+        if ($isChanged) {
+            $this->timestampRegion->update($this->timestampKey);
         }
 
         $this->queuedCache = array();

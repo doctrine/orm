@@ -92,4 +92,11 @@ interface CacheFactory
      * @return \Doctrine\ORM\Cache\Region The cache region.
      */
     public function getRegion(array $cache);
+
+    /**
+     * Build timestamp cache region
+     *
+     * @return \Doctrine\ORM\Cache\TimestampRegion The timestamp region.
+     */
+    public function getTimestampRegion();
 }

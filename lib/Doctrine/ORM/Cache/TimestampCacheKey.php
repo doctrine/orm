@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,28 +18,21 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Cache;
 
 /**
- * Caching to an entity or a collection.
+ * A key that identifies a timestamped space.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since   2.5
- *
- * @Annotation
- * @Target({"CLASS","PROPERTY"})
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-final class Cache implements Annotation
+class TimestampCacheKey extends CacheKey
 {
     /**
-     * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
-     * @var string The concurrency strategy.
+     * @param string $space Result cache id
      */
-    public $usage = 'READ_ONLY';
-
-    /**
-     * @var string Cache region name.
-     */
-    public $region;
+    public function __construct($space)
+    {
+        $this->hash = $space;
+    }
 }

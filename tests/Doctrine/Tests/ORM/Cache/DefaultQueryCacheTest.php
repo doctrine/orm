@@ -525,4 +525,9 @@ class CacheFactoryDefaultQueryCacheTest extends \Doctrine\ORM\Cache\DefaultCache
     {
         return $this->region;
     }
+
+    public function getTimestampRegion()
+    {
+        return new \Doctrine\Tests\Mocks\TimestampRegionMock();
+    }
 }

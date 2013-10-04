@@ -30,7 +30,9 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 interface Cache
 {
-    const DEFAULT_QUERY_REGION_NAME = 'query.cache.region';
+    const DEFAULT_QUERY_REGION_NAME = 'query_cache_region';
+
+    const DEFAULT_TIMESTAMP_REGION_NAME = 'timestamp_cache_region';
 
     /**
      * May read items from the cache, but will not add items.

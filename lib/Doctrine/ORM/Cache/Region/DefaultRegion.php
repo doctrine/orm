@@ -39,33 +39,30 @@ class DefaultRegion implements Region
     /**
      * @var \Doctrine\Common\Cache\CacheProvider
      */
-    private $cache;
+    protected $cache;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var integer
      */
-    private $lifetime = 0;
+    protected $lifetime = 0;
 
     /**
      * @param string                                $name
      * @param \Doctrine\Common\Cache\CacheProvider  $cache
-     * @param array                                 $configuration
+     * @param integer                               $lifetime
      */
-    public function __construct($name, CacheProvider $cache, array $configuration = array())
+    public function __construct($name, CacheProvider $cache, $lifetime = 0)
     {
-        $this->name   = $name;
-        $this->cache  = $cache;
+        $this->name     = $name;
+        $this->cache    = $cache;
+        $this->lifetime = $lifetime;
 
         $this->cache->setNamespace($this->name);
-
-        if (isset($configuration['lifetime']) && $configuration['lifetime'] > 0) {
-            $this->lifetime = (integer) $configuration['lifetime'];
-        }
     }
 
     /**

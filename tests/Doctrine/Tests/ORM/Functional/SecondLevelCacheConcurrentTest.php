@@ -138,4 +138,9 @@ class CacheFactorySecondLevelCacheConcurrentTest extends \Doctrine\ORM\Cache\Def
 
         return $mock;
     }
+
+    public function getTimestampRegion()
+    {
+        return new \Doctrine\Tests\Mocks\TimestampRegionMock();
+    }
 }

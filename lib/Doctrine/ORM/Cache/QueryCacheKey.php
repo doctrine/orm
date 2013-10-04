@@ -43,7 +43,7 @@ class QueryCacheKey extends CacheKey
      * @param integer $lifetime  Query lifetime
      * @param integer $cacheMode Query cache mode
      */
-    public function __construct($hash, $lifetime, $cacheMode = 3)
+    public function __construct($hash, $lifetime = 0, $cacheMode = 3)
     {
         $this->hash      = $hash;
         $this->lifetime  = $lifetime;

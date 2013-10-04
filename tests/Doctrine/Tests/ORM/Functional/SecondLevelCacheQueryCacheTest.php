@@ -53,7 +53,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $result2);
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
@@ -70,7 +70,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[1]->getName(), $result2[1]->getName());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
@@ -256,7 +256,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $result2);
 
         $this->assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
@@ -273,7 +273,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[1]->getName(), $result2[1]->getName());
 
         $this->assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
@@ -357,7 +357,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $result2);
 
         $this->assertEquals(5, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
@@ -639,7 +639,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $result2);
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
@@ -656,7 +656,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[1]->getName(), $result2[1]->getName());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
@@ -804,7 +804,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertNotEmpty($result3);
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount('foo_region'));
@@ -818,7 +818,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertNotEmpty($result3);
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
-        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(6, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount('bar_region'));

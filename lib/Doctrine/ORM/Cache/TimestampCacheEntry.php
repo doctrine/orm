@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,28 +18,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Cache;
 
 /**
- * Caching to an entity or a collection.
+ * Timestamp cache entry
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since   2.5
- *
- * @Annotation
- * @Target({"CLASS","PROPERTY"})
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-final class Cache implements Annotation
+class TimestampCacheEntry implements CacheEntry
 {
     /**
-     * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
-     * @var string The concurrency strategy.
+     * @var integer
      */
-    public $usage = 'READ_ONLY';
+    public $time;
 
     /**
-     * @var string Cache region name.
+     * @param array $result
      */
-    public $region;
+    public function __construct($time = null)
+    {
+        $this->time = $time ?: microtime(true);
+    }
+
+    /**
+     * @param array $values
+     */
+    public static function __set_state(array $values)
+    {
+        return new self($values['time']);
+    }
 }

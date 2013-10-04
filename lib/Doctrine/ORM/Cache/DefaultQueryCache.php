@@ -62,6 +62,11 @@ class DefaultQueryCache implements QueryCache
     private $validator;
 
     /**
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     */
+    protected $cacheLogger;
+
+    /**
      * @var array
      */
     private static $hints = array(Query::HINT_CACHE_ENABLED => true);
@@ -72,12 +77,13 @@ class DefaultQueryCache implements QueryCache
      */
     public function __construct(EntityManagerInterface $em, Region $region)
     {
-        $this->em        = $em;
-        $this->region    = $region;
-        $this->uow       = $em->getUnitOfWork();
-        $this->validator = $em->getConfiguration()
-            ->getSecondLevelCacheConfiguration()
-            ->getQueryValidator();
+        $cacheConfig = $em->getConfiguration()->getSecondLevelCacheConfiguration();
+
+        $this->em           = $em;
+        $this->region       = $region;
+        $this->uow          = $em->getUnitOfWork();
+        $this->cacheLogger  = $cacheConfig->getCacheLogger();
+        $this->validator    = $cacheConfig->getQueryValidator();
     }
 
     /**
@@ -106,12 +112,22 @@ class DefaultQueryCache implements QueryCache
         $hasRelation = ( ! empty($rsm->relationMap));
         $persister   = $this->uow->getEntityPersister($entityName);
         $region      = $persister->getCacheRegion();
+        $regionName  = $region->getName();
 
         // @TODO - move to cache hydration componente
         foreach ($entry->result as $index => $entry) {
 
-            if (($entityEntry = $region->get(new EntityCacheKey($entityName, $entry['identifier']))) === null) {
+            if (($entityEntry = $region->get($entityKey = new EntityCacheKey($entityName, $entry['identifier']))) === null) {
+
+                if ($this->cacheLogger !== null) {
+                    $this->cacheLogger->entityCacheMiss($regionName, $entityKey);
+                }
+
                 return null;
+            }
+
+            if ($this->cacheLogger !== null) {
+                $this->cacheLogger->entityCacheHit($regionName, $entityKey);
             }
 
             if ( ! $hasRelation) {
@@ -129,11 +145,20 @@ class DefaultQueryCache implements QueryCache
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
 
-                    if (($assocEntry = $assocRegion->get(new EntityCacheKey($assoc['targetEntity'], $assoc['identifier']))) === null) {
+                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assoc['targetEntity'], $assoc['identifier']))) === null) {
+
+                        if ($this->cacheLogger !== null) {
+                            $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
+                        }
+
                         return null;
                     }
 
                     $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+
+                    if ($this->cacheLogger !== null) {
+                        $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKey);
+                    }
 
                     continue;
                 }
@@ -147,13 +172,22 @@ class DefaultQueryCache implements QueryCache
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
 
-                    if (($assocEntry = $assocRegion->get(new EntityCacheKey($assoc['targetEntity'], $assocId))) === null) {
+                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assoc['targetEntity'], $assocId))) === null) {
+
+                        if ($this->cacheLogger !== null) {
+                            $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
+                        }
+
                         return null;
                     }
 
                     $element = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
 
                     $collection->hydrateSet($assocIndex, $element);
+
+                    if ($this->cacheLogger !== null) {
+                        $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKey);
+                    }
                 }
 
                 $data[$name] = $collection;
