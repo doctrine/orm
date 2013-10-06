@@ -2469,6 +2469,8 @@ class UnitOfWork implements PropertyChangedListener
                 $id[$fieldName] = isset($class->associationMappings[$fieldName])
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
                     : $data[$fieldName];
+                    
+                if($id[$fieldName] instanceof \DateTime) $id[$fieldName] = $id[$fieldName]->format("Y-m-d H:i:s");
             }
 
             $idHash = implode(' ', $id);
