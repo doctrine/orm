@@ -232,7 +232,8 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     }
     
     /**
-     * Test taht 
+     * Test that Two DateTime objects that hold the same data will not trigger 
+     * an UPDATE statement 
      */
     public function testIdenticalDateObjectsDoNotTriggerUpdate()
     {
