@@ -9,6 +9,7 @@ use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
+use Doctrine\Tests\Models\Generic\DateTimeModel;
 
 require_once __DIR__ . '/../TestInit.php';
 
@@ -82,7 +83,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // should have an id
         $this->assertTrue(is_numeric($user->id));
     }
-
+    
     /**
      * Tests a scenario where a save() operation is cascaded from a ForumUser
      * to its associated ForumAvatar, both entities using IDENTITY id generation.
@@ -228,6 +229,59 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         $this->_unitOfWork->lock(null, null, null);
+    }
+    
+    /**
+     * Test that Two DateTime objects that hold the same data will not trigger 
+     * an UPDATE statement 
+     */
+    public function testIdenticalDateObjectsDoNotTriggerUpdate()
+    {
+        // Setup fake persister and id generator for identity generation
+        //DateTimeModel
+        $dateTimePersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Generic\DateTimeModel"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTimePersister);
+    
+        $date = '2013-10-01';
+        $date2 = '2013-10-02';
+        
+        $timezone = new \DateTimeZone('Europe/Dublin');
+        $timezone2 = new \DateTimeZone('Europe/Berlin');
+        
+        $dateTimeObject = new DateTimeModel();
+        $dateTimeObject->datetime = new \DateTime($date, $timezone);
+    
+        $this->_unitOfWork->persist($dateTimeObject);
+        $this->_unitOfWork->commit();
+    
+        // Ensure the entity was inserted
+        $this->assertEquals(1, count($dateTimePersister->getInserts()));
+        $this->assertEquals(0, count($dateTimePersister->getUpdates()));
+        $this->assertEquals(0, count($dateTimePersister->getDeletes()));
+        $this->assertTrue(is_numeric($dateTimeObject->id));
+    
+        // Ensure that we do not issue update statements for the dates
+        // but different objects
+        $dateTimeObject->datetime = new \DateTime($date, $timezone);
+        $this->_unitOfWork->commit();
+    
+        $this->assertEquals(1, count($dateTimePersister->getInserts()));
+        $this->assertEquals(0, count($dateTimePersister->getUpdates()));
+        $this->assertEquals(0, count($dateTimePersister->getDeletes()));
+        
+        // Ensure we do issue updates for dates that differ
+        $dateTimeObject->datetime = new \DateTime($date2);
+        $this->_unitOfWork->commit();
+        $this->assertEquals(1, count($dateTimePersister->getInserts()));
+        $this->assertEquals(1, count($dateTimePersister->getUpdates()));
+        $this->assertEquals(0, count($dateTimePersister->getDeletes()));
+        
+        // Test timezone difference
+        $dateTimeObject->datetime = new \DateTime($date2, $timezone2);
+        $this->_unitOfWork->commit();
+        $this->assertEquals(1, count($dateTimePersister->getInserts()));
+        $this->assertEquals(2, count($dateTimePersister->getUpdates()));
+        $this->assertEquals(0, count($dateTimePersister->getDeletes()));
     }
 }
 

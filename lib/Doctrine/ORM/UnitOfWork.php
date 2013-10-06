@@ -607,7 +607,8 @@ class UnitOfWork implements PropertyChangedListener
                 $orgValue = $originalData[$propName];
 
                 // skip if value haven't changed
-                if ($orgValue === $actualValue) {
+                if (($orgValue === $actualValue) || 
+                    ($orgValue instanceof \DateTime && $actualValue instanceof \DateTime && $orgValue == $actualValue)) {
                     continue;
                 }
 
