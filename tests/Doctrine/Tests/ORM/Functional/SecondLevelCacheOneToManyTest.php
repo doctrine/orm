@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;

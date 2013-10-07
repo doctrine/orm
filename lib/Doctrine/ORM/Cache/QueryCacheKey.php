@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Cache;
+
 /**
  * A key that identifies a particular query.
  *
@@ -43,7 +45,7 @@ class QueryCacheKey extends CacheKey
      * @param integer $lifetime  Query lifetime
      * @param integer $cacheMode Query cache mode
      */
-    public function __construct($hash, $lifetime = 0, $cacheMode = 3)
+    public function __construct($hash, $lifetime = 0, $cacheMode = Cache::MODE_NORMAL)
     {
         $this->hash      = $hash;
         $this->lifetime  = $lifetime;

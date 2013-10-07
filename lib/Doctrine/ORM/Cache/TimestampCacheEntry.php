@@ -29,12 +29,12 @@ namespace Doctrine\ORM\Cache;
 class TimestampCacheEntry implements CacheEntry
 {
     /**
-     * @var integer
+     * @var float
      */
     public $time;
 
     /**
-     * @param array $result
+     * @param float $time
      */
     public function __construct($time = null)
     {

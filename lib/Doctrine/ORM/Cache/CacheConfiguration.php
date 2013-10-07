@@ -98,7 +98,7 @@ class CacheConfiguration
      */
     public function getRegionsConfiguration()
     {
-        if ($this->regionsConfig == null) {
+        if ($this->regionsConfig === null) {
             $this->regionsConfig = new RegionsConfiguration();
         }
 
@@ -118,7 +118,7 @@ class CacheConfiguration
      */
     public function getQueryValidator()
     {
-        if ($this->queryValidator == null) {
+        if ($this->queryValidator === null) {
             $this->queryValidator = new TimestampQueryCacheValidator();
         }
 
@@ -136,7 +136,7 @@ class CacheConfiguration
     /**
      * @param string $className
      *
-     * @throws ORMException If not is a \Doctrine\ORM\Cache
+     * @throws \Doctrine\ORM\ORMException If is not a \Doctrine\ORM\Cache
      */
     public function setCacheClassName($className)
     {

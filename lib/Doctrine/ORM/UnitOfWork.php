@@ -2539,7 +2539,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
 
                 // If only a specific entity is set to refresh, check that it's the one
-                if(isset($hints[Query::HINT_REFRESH_ENTITY])) {
+                if (isset($hints[Query::HINT_REFRESH_ENTITY])) {
                     $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
                 }
 
@@ -3255,13 +3255,13 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($this->persisters as $persister) {
-            if($persister instanceof CachedPersister) {
+            if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionComplete();
             }
         }
 
         foreach ($this->collectionPersisters as $persister) {
-            if($persister instanceof CachedPersister) {
+            if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionComplete();
             }
         }
@@ -3277,13 +3277,13 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($this->persisters as $persister) {
-            if($persister instanceof CachedPersister) {
+            if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionRolledBack();
             }
         }
 
         foreach ($this->collectionPersisters as $persister) {
-            if($persister instanceof CachedPersister) {
+            if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionRolledBack();
             }
         }

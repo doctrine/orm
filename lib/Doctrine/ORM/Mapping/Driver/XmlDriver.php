@@ -82,8 +82,8 @@ class XmlDriver extends FileDriver
         $metadata->setPrimaryTable($table);
 
         // Evaluate second level cache
-        if (isset($xmlRoot->{'cache'})) {
-            $metadata->enableCache($this->cacheToArray($xmlRoot->{'cache'}));
+        if (isset($xmlRoot->cache)) {
+            $metadata->enableCache($this->cacheToArray($xmlRoot->cache));
         }
 
         // Evaluate named queries
@@ -356,8 +356,8 @@ class XmlDriver extends FileDriver
                 $metadata->mapOneToOne($mapping);
 
                 // Evaluate second level cache
-                if (isset($oneToOneElement->{'cache'})) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToOneElement->{'cache'}));
+                if (isset($oneToOneElement->cache)) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToOneElement->cache));
                 }
             }
         }
@@ -400,8 +400,8 @@ class XmlDriver extends FileDriver
                 $metadata->mapOneToMany($mapping);
 
                 // Evaluate second level cache
-                if (isset($oneToManyElement->{'cache'})) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToManyElement->{'cache'}));
+                if (isset($oneToManyElement->cache)) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToManyElement->cache));
                 }
             }
         }
@@ -445,8 +445,8 @@ class XmlDriver extends FileDriver
                 $metadata->mapManyToOne($mapping);
 
                 // Evaluate second level cache
-                if (isset($manyToOneElement->{'cache'})) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToOneElement->{'cache'}));
+                if (isset($manyToOneElement->cache)) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToOneElement->cache));
                 }
             }
         }
@@ -515,8 +515,8 @@ class XmlDriver extends FileDriver
                 $metadata->mapManyToMany($mapping);
 
                 // Evaluate second level cache
-                if (isset($manyToManyElement->{'cache'})) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToManyElement->{'cache'}));
+                if (isset($manyToManyElement->cache)) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToManyElement->cache));
                 }
             }
         }
@@ -733,8 +733,16 @@ class XmlDriver extends FileDriver
      */
     private function cacheToArray(SimpleXMLElement $cacheMapping)
     {
-        $region = isset($cacheMapping['region']) ? (string)$cacheMapping['region'] : null;
-        $usage  = isset($cacheMapping['usage']) ? constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . strtoupper($cacheMapping['usage'])) : null;
+        $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
+        $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
+
+        if ($usage && ! defined('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage)) {
+            throw new \InvalidArgumentException(sprintf('Invalid cache usage "%s"', $usage));
+        }
+
+        if ($usage) {
+            $usage = constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
+        }
 
         return array(
             'usage'  => $usage,

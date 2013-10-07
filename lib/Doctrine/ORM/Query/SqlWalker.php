@@ -573,6 +573,7 @@ class SqlWalker implements TreeWalker
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
         $this->useSqlTableAliases = false;
+        $this->rsm->isSelect      = false;
 
         return $this->walkUpdateClause($AST->updateClause)
              . $this->walkWhereClause($AST->whereClause);
@@ -584,6 +585,7 @@ class SqlWalker implements TreeWalker
     public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
         $this->useSqlTableAliases = false;
+        $this->rsm->isSelect      = false;
 
         return $this->walkDeleteClause($AST->deleteClause)
              . $this->walkWhereClause($AST->whereClause);

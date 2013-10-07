@@ -309,7 +309,7 @@ final class Query extends AbstractQuery
         foreach ($this->parameters as $parameter) {
             $key    = $parameter->getName();
             $value  = $parameter->getValue();
-            $rsm    = $this->_resultSetMapping ?: $this->getResultSetMapping();
+            $rsm    = $this->getResultSetMapping();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);

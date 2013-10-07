@@ -155,7 +155,7 @@ Defines contract for concurrently managed data region.
         *
         * @return \Doctrine\ORM\Cache\Lock A lock instance or NULL if the lock already exists.
         */
-       public function readLock(CacheKey $key);
+       public function lock(CacheKey $key);
 
        /**
         * Attempts to read unlock the mapping for the given key.
@@ -163,8 +163,30 @@ Defines contract for concurrently managed data region.
         * @param \Doctrine\ORM\Cache\CacheKey  $key  The key of the item to unlock.
         * @param \Doctrine\ORM\Cache\Lock      $lock The lock previously obtained from readLock
         */
-       public function readUnlock(CacheKey $key, Lock $lock);
+       public function unlock(CacheKey $key, Lock $lock);
     }
+
+``Doctrine\ORM\Cache\TimestampRegion``
+
+Tracks the timestamps of the most recent updates to particular entity.
+
+.. code-block:: php
+
+    <?php
+
+    interface TimestampRegion extends Region
+    {
+        /**
+         * Update an specific key into the cache region.
+         *
+         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
+         *
+         * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
+         */
+        public function update(CacheKey $key);
+    }
+
+.. _reference-second-level-cache-mode:
 
 Caching mode
 ------------
@@ -226,8 +248,8 @@ To enable the second-level-cache, you should provide a cache factory
 
     <?php
 
-    /* var $config \Doctrine\ORM\Configuration */
-    /* var $cache \Doctrine\Common\Cache */
+    /* var $config \Doctrine\ORM\Cache\RegionsConfiguration */
+    /* var $cache \Doctrine\Common\Cache\CacheProvider */
 
     $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
 
@@ -235,7 +257,8 @@ To enable the second-level-cache, you should provide a cache factory
     $config->setSecondLevelCacheEnabled();
 
     //Cache factory
-    $config->setSecondLevelCacheFactory($factory);
+    $config->getSecondLevelCacheConfiguration()
+        ->setCacheFactory($factory);
 
 
 Cache Factory
@@ -290,22 +313,22 @@ It allows you to provide a specific implementation of the following components :
        public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 
        /**
-        * Build an entity hidrator
+        * Build an entity hydrator
         *
         * @param \Doctrine\ORM\EntityManagerInterface $em       The Entity manager.
         * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
         *
-        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hidrator.
+        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hydrator.
         */
        public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata);
 
        /**
-        * Build a collection hidrator
+        * Build a collection hydrator
         *
         * @param \Doctrine\ORM\EntityManagerInterface $em      The Entity manager.
         * @param array                                $mapping The association mapping.
         *
-        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hidrator.
+        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hydrator.
         */
        public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
 
@@ -317,6 +340,13 @@ It allows you to provide a specific implementation of the following components :
         * @return \Doctrine\ORM\Cache\Region The cache region.
         */
        public function getRegion(array $cache);
+
+       /**
+        * Build timestamp cache region
+        *
+        * @return \Doctrine\ORM\Cache\TimestampRegion The timestamp region.
+        */
+       public function getTimestampRegion();
     }
 
 Region Lifetime
@@ -328,11 +358,14 @@ To specify a default lifetime for all regions or specify a different lifetime fo
 
     <?php
 
-    /* var $config \Doctrine\ORM\Configuration /*
+    /* var $config \Doctrine\ORM\Configuration */
+    /* var $cacheConfig \Doctrine\ORM\Configuration */
+    $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
+    $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
     //Cache Region lifetime
-    $config->setSecondLevelCacheRegionLifetime('my_entity_region', 3600);
-    $config->setSecondLevelCacheDefaultRegionLifetime(7200);
+    $regionConfig->setLifetime('my_entity_region', 3600);
+    $regionConfig->setDefaultLifetime(7200);
 
 
 Cache Log
@@ -344,12 +377,14 @@ By providing a cache logger you should be able to get information about all cach
  .. code-block:: php
 
     <?php
-
-    /* var $config \Doctrine\ORM\Configuration /*
+    
+    /* var $config \Doctrine\ORM\Configuration */
     $logger = \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
     //Cache logger
-    $config->setSecondLevelCacheLogger($logger);
+    $config->setSecondLevelCacheEnabled(true);
+    $config->getSecondLevelCacheConfiguration()
+        ->setCacheLogger($logger);
 
 
     // Collect cache statistics
@@ -456,8 +491,8 @@ Entity cache definition
 -----------------------
 * Entity cache configuration allows you to define the caching strategy and region for an entity.
 
-  * ``usage`` Specifies the caching strategy: ``READ_ONLY``, ``NONSTRICT_READ_WRITE``, ``READ_WRITE``
-  * ``region`` Specifies the name of the second level cache region.
+  * ``usage`` Specifies the caching strategy: ``READ_ONLY``, ``NONSTRICT_READ_WRITE``, ``READ_WRITE``. see :ref:`reference-second-level-cache-mode`
+  * ``region`` Optional value that specifies the name of the second level cache region.
 
 
 .. configuration-block::
@@ -729,6 +764,57 @@ The query cache stores the results of the query but as identifiers, entity value
             ->setCacheable(true)
             ->getResult();
 
+Cache mode
+~~~~~~~~~~
+
+The Cache Mode controls how a particular query interacts with the second-level cache:
+
+* ``Cache::MODE_GET`` - May read items from the cache, but will not add items.
+* ``Cache::MODE_PUT`` - Will never read items from the cache, but will add items to the cache as it reads them from the database.
+* ``Cache::MODE_NORMAL`` - May read items from the cache, and add items to the cache.
+* ``Cache::MODE_REFRESH`` - The query will never read items from the cache, but will refresh items to the cache as it reads them from the database.
+
+.. code-block:: php
+
+    <?php
+
+        /** var $em \Doctrine\ORM\EntityManager */
+        // Will refresh the query cache and all entities the cache as it reads from the database.
+        $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
+            ->setCacheMode(Cache::MODE_GET)
+            ->setCacheable(true)
+            ->getResult();
+
+.. note::
+
+    The the default query cache mode is ```Cache::MODE_NORMAL```
+
+
+Using the repository query cache
+---------------------
+
+As well as ``Query Cache`` all persister queries store only identifier values for an individual query.
+All persister use a single timestamps cache region keeps track of the last update for each persister,
+When a query is loaded from cache, the timestamp region is checked for the last update for that persister.
+Using the last update timestamps as part of the query key invalidate the cache key when an update occurs.
+
+.. code-block:: php
+
+    <?php
+
+    // load from database and store cache query key hashing the query + parameters + last timestamp cache region..
+    $entities   = $em->getRepository('Entity\Country')->findAll();
+
+    // load from query and entities from cache..
+    $entities   = $em->getRepository('Country')->findAll();
+
+    // update the timestamp cache region for Country
+    $em->persist(new Country('zombieland'));
+    $em->flush();
+    $em->clear();
+
+    // Reload the query from database.
+    $entities   = $em->getRepository('Country')->findAll();
 
 Cache API
 ---------
@@ -784,6 +870,14 @@ Composite primary key
          */
         private $target;
     }
+
+    // Supported
+    /** @var $article Article */
+    $article = $this->_em->find("Article", 1);
+
+    // Supported
+    /** @var $article Article */
+    $article = $this->_em->find("Article", $article);
 
     // Supported
     $id        = array('source' => 1, 'target' => 2);

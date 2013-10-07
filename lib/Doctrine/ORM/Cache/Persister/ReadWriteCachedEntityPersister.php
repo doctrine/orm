@@ -36,11 +36,6 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
     /**
-     * @var \Doctrine\ORM\Cache\ConcurrentRegion
-     */
-    protected $region;
-
-    /**
      * @param \Doctrine\ORM\Persister\EntityPersister $persister The entity persister to cache.
      * @param \Doctrine\ORM\Cache\ConcurrentRegion    $region    The entity cache region.
      * @param \Doctrine\ORM\EntityManagerInterface    $em        The entity manager.

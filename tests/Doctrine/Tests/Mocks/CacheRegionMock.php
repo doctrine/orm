@@ -18,13 +18,13 @@ class CacheRegionMock implements Region
         $this->returns[$method][] = $value;
     }
 
-    public function getReturn($method, $datault)
+    public function getReturn($method, $default)
     {
         if (isset($this->returns[$method]) && ! empty($this->returns[$method])) {
             return array_shift($this->returns[$method]);
         }
 
-        return $datault;
+        return $default;
     }
 
     public function getName()

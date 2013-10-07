@@ -97,11 +97,9 @@ class RegionsConfiguration
      */
     public function getLifetime($regionName)
     {
-        if (isset($this->lifetimes[$regionName])) {
-            return $this->lifetimes[$regionName];
-        }
-
-        return $this->defaultLifetime;
+        return isset($this->lifetimes[$regionName])
+            ? $this->lifetimes[$regionName]
+            : $this->defaultLifetime;
     }
 
     /**
@@ -120,11 +118,9 @@ class RegionsConfiguration
      */
     public function getLockLifetime($regionName)
     {
-        if (isset($this->lockLifetimes[$regionName])) {
-            return $this->lockLifetimes[$regionName];
-        }
-
-        return $this->defaultLockLifetime;
+        return isset($this->lockLifetimes[$regionName])
+            ? $this->lockLifetimes[$regionName]
+            : $this->defaultLockLifetime;
     }
 
     /**

@@ -10,7 +10,6 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
  */
 abstract class OrmTestCase extends DoctrineTestCase
 {
-    
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
      *

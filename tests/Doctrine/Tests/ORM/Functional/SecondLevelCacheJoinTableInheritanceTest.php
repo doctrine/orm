@@ -7,7 +7,6 @@ use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 
-
 /**
  * @group DDC-2183
  */

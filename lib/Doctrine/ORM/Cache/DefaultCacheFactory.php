@@ -20,17 +20,17 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\Common\Cache\CacheProvider;
+
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\TimestampRegion;
-
 use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
-use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\ORM\Persisters\EntityPersister;
 use Doctrine\ORM\Persisters\CollectionPersister;
 use Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister;
@@ -47,7 +47,7 @@ use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedCollectionPersister;
 class DefaultCacheFactory implements CacheFactory
 {
     /**
-     * @var \Doctrine\Common\Cache\Cache
+     * @var \Doctrine\Common\Cache\CacheProvider
      */
     private $cache;
 
@@ -73,9 +73,9 @@ class DefaultCacheFactory implements CacheFactory
 
     /**
      * @param \Doctrine\ORM\Cache\RegionsConfiguration  $cacheConfig
-     * @param \Doctrine\Common\Cache\Cache              $cache
+     * @param \Doctrine\Common\Cache\CacheProvider      $cache
      */
-    public function __construct(RegionsConfiguration $cacheConfig, CacheDriver $cache)
+    public function __construct(RegionsConfiguration $cacheConfig, CacheProvider $cache)
     {
         $this->cache         = $cache;
         $this->regionsConfig = $cacheConfig;
@@ -112,7 +112,6 @@ class DefaultCacheFactory implements CacheFactory
     {
        $this->timestampRegion = $region;
     }
-
 
     /**
      * {@inheritdoc}
@@ -202,7 +201,7 @@ class DefaultCacheFactory implements CacheFactory
 
             if ( ! $this->fileLockRegionDirectory) {
                 throw new \RuntimeException(
-                    'To use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
+                    'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
                     'The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you what to use it please provide a valid directory, DefaultCacheFactory#setFileLockRegionDirectory(). '
                 );
             }

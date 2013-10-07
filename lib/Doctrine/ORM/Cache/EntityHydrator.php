@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
- * Hidrator cache entry for entities
+ * Hydrator cache entry for entities
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>

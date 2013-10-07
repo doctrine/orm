@@ -87,7 +87,6 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
 
        // Invalidate non initialized collections OR odered collection
         if ($isDirty && ! $isInitialized || isset($this->association['orderBy'])) {
-
             $this->persister->update($collection);
 
             $this->queuedCache['delete'][spl_object_hash($collection)] = $key;

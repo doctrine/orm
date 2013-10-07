@@ -22,10 +22,8 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
@@ -111,13 +109,12 @@ class DefaultCache implements Cache
     {
         $metadata   = $this->em->getClassMetadata($className);
         $persister  = $this->uow->getEntityPersister($metadata->rootEntityName);
-        $key        = $this->buildEntityCacheKey($metadata, $identifier);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return false;
         }
 
-        return $persister->getCacheRegion()->contains($key);
+        return $persister->getCacheRegion()->contains($this->buildEntityCacheKey($metadata, $identifier));
     }
 
     /**
@@ -127,13 +124,12 @@ class DefaultCache implements Cache
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
-        $key       = $this->buildEntityCacheKey($metadata, $identifier);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
         }
 
-        $persister->getCacheRegion()->evict($key);
+        $persister->getCacheRegion()->evict($this->buildEntityCacheKey($metadata, $identifier));
     }
 
     /**
@@ -176,13 +172,12 @@ class DefaultCache implements Cache
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
-        $key       = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return false;
         }
 
-        return $persister->getCacheRegion()->contains($key);
+        return $persister->getCacheRegion()->contains($this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier));
     }
 
     /**
@@ -192,13 +187,12 @@ class DefaultCache implements Cache
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
-        $key       = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
         }
 
-        $persister->getCacheRegion()->evict($key);
+        $persister->getCacheRegion()->evict($this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier));
     }
 
     /**

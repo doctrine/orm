@@ -9,8 +9,6 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\EntityManagerInterface;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-2183
  * @group performance

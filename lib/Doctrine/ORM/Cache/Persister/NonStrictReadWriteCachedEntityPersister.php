@@ -41,7 +41,6 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         if (isset($this->queuedCache['insert'])) {
             foreach ($this->queuedCache['insert'] as $entity) {
-
                 $class      = $this->class;
                 $className  = ClassUtils::getClass($entity);
 
@@ -62,7 +61,6 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $entity) {
-
                 $class      = $this->class;
                 $className  = ClassUtils::getClass($entity);
 

@@ -145,7 +145,6 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
-
         if (($cache = $this->region->get($key)) === null) {
             return null;
         }
@@ -164,7 +163,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
         $targetRegion       = $targetPersister->getCacheRegion();
-        $targetHidrator     = $targetPersister->getEntityHydrator();
+        $targetHydrator     = $targetPersister->getEntityHydrator();
         $entry              = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);
 
         foreach ($entry->identifiers as $index => $identifier) {
@@ -182,7 +181,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             }
 
             $entity       = $elements[$index];
-            $entityEntry  = $targetHidrator->buildCacheEntry($class, $entityKey, $entity);
+            $entityEntry  = $targetHydrator->buildCacheEntry($class, $entityKey, $entity);
 
             $targetRegion->put($entityKey, $entityEntry);
         }

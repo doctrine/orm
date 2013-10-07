@@ -22,7 +22,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
@@ -127,7 +127,7 @@ abstract class AbstractQuery
      *
      * @var boolean
      */
-    protected $cacheable;
+    protected $cacheable = false;
 
     /**
      * Second level cache region name.
@@ -216,7 +216,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * @return boolean TRUE if the query cache and second level cache are anabled, FALSE otherwise.
+     * @return boolean TRUE if the query cache and second level cache are enabled, FALSE otherwise.
      */
     protected function isCacheEnabled()
     {
@@ -340,7 +340,7 @@ abstract class AbstractQuery
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
-                $parameter = new Query\Parameter($key, $value);
+                $parameter = new Parameter($key, $value);
 
                 $parameterCollection->add($parameter);
             }
@@ -381,7 +381,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        $parameter = new Query\Parameter($key, $value, $type);
+        $parameter = new Parameter($key, $value, $type);
 
         $this->parameters->add($parameter);
 
@@ -395,10 +395,14 @@ abstract class AbstractQuery
      *
      * @return array
      *
-     * @throws ORMInvalidArgumentException
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      */
     public function processParameterValue($value)
     {
+        if (is_scalar($value)) {
+            return $value;
+        }
+
         if (is_array($value)) {
             foreach ($value as $key => $paramValue) {
                 $paramValue  = $this->processParameterValue($paramValue);
@@ -889,7 +893,7 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $rsm  = $this->_resultSetMapping ?: $this->getResultSetMapping();
+        $rsm  = $this->getResultSetMapping();
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->iterate($stmt, $rsm, $this->_hints);
@@ -962,7 +966,7 @@ abstract class AbstractQuery
             return $stmt;
         }
 
-        $rsm  = $this->_resultSetMapping ?: $this->getResultSetMapping();
+        $rsm  = $this->getResultSetMapping();
         $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll($stmt, $rsm, $this->_hints);
 
         $setCacheEntry($data);
@@ -980,13 +984,12 @@ abstract class AbstractQuery
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
-        $rsm        = $this->_resultSetMapping ?: $this->getResultSetMapping();
+        $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($this->getHash(), $this->lifetime, $this->cacheMode ?: Cache::MODE_NORMAL);
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
-        $result     = $queryCache->get($querykey, $rsm);
+        $result     = $queryCache->get($querykey, $rsm, $this->_hints);
 
         if ($result !== null) {
-
             if ($this->cacheLogger) {
                 $this->cacheLogger->queryCacheHit($queryCache->getRegion()->getName(), $querykey);
             }
@@ -995,14 +998,14 @@ abstract class AbstractQuery
         }
 
         $result = $this->executeIgnoreQueryCache($parameters, $hydrationMode);
-        $cached = $queryCache->put($querykey, $rsm, $result);
+        $cached = $queryCache->put($querykey, $rsm, $result, $this->_hints);
 
         if ($this->cacheLogger) {
             $this->cacheLogger->queryCacheMiss($queryCache->getRegion()->getName(), $querykey);
-        }
 
-        if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->queryCachePut($queryCache->getRegion()->getName(), $querykey);
+            if ($cached) {
+                $this->cacheLogger->queryCachePut($queryCache->getRegion()->getName(), $querykey);
+            }
         }
 
         return $result;
@@ -1089,15 +1092,18 @@ abstract class AbstractQuery
      */
     protected function getHash()
     {
-        $hints  = $this->getHints();
+        $self   = $this;
         $query  = $this->getSQL();
-        $params = array();
+        $hints  = $this->getHints();
+        $params = array_map(function(Parameter $parameter) use ($self) {
+            // Small optimization
+            // Does not invoke processParameterValue for scalar values
+            if (is_scalar($value = $parameter->getValue())) {
+                return $value;
+            }
 
-        foreach ($this->parameters as $parameter) {
-            $value = $parameter->getValue();
-
-            $params[$parameter->getName()] = is_scalar($value) ? $value : $this->processParameterValue($value);
-        }
+            return $self->processParameterValue($value);
+        }, $this->parameters->getValues());
 
         ksort($hints);
 

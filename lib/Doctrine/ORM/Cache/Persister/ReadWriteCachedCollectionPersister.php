@@ -34,11 +34,6 @@ use Doctrine\ORM\PersistentCollection;
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
     /**
-     * @var \Doctrine\ORM\Cache\ConcurrentRegion
-     */
-    protected $region;
-
-    /**
      * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister that will be cached.
      * @param \Doctrine\ORM\Cache\ConcurrentRegion         $region    The collection region.
      * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager.

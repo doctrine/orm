@@ -236,7 +236,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
-        $result = $this->queryCache->get($key, $rsm, $entry);
+        $result = $this->queryCache->get($key, $rsm);
 
         $this->assertCount(2, $result);
         $this->assertInstanceOf(Country::CLASSNAME, $result[0]);
@@ -349,7 +349,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $this->region->addReturn('get', $entry);
 
-        $this->assertNull($this->queryCache->get($key, $rsm, $entry));
+        $this->assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testIgnoreCacheNonPutMode()
@@ -394,7 +394,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
-        $this->assertNull($this->queryCache->get($key, $rsm, $entry));
+        $this->assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testGetShouldIgnoreNonQueryCacheEntryResult()
@@ -417,7 +417,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
-        $this->assertNull($this->queryCache->get($key, $rsm, $entry));
+        $this->assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testGetShouldIgnoreMissingEntityQueryCacheEntry()
@@ -434,7 +434,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
-        $this->assertNull($this->queryCache->get($key, $rsm, $entry));
+        $this->assertNull($this->queryCache->get($key, $rsm));
     }
 
     /**
@@ -463,7 +463,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     /**
      * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second level cache does not suport scalar results.
+     * @expectedExceptionMessage Second level cache does not support scalar results.
      */
     public function testScalarResultException()
     {
@@ -472,6 +472,22 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm      = new ResultSetMappingBuilder($this->em);
 
         $rsm->addScalarResult('id', 'u');
+
+        $this->queryCache->put($key, $rsm, $result);
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Second level cache does not support multiple root entities.
+     */
+    public function testSuportMultipleRootEntitiesException()
+    {
+        $result   = array();
+        $key      = new QueryCacheKey('query.key1', 0);
+        $rsm      = new ResultSetMappingBuilder($this->em);
+
+        $rsm->addEntityResult('Doctrine\Tests\Models\Cache\City', 'e1');
+        $rsm->addEntityResult('Doctrine\Tests\Models\Cache\State', 'e2');
 
         $this->queryCache->put($key, $rsm, $result);
     }

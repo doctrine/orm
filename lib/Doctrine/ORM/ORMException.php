@@ -109,7 +109,7 @@ class ORMException extends Exception
      *
      * @return \Doctrine\ORM\ORMInvalidArgumentException
      */
-    static public function unexpectedAssociationValue($class, $association, $given, $expected)
+    public static function unexpectedAssociationValue($class, $association, $given, $expected)
     {
         return new self(sprintf('Found entity of type %s on association %s#%s, but expecting %s', $given, $class, $association, $expected));
     }

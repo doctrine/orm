@@ -17,7 +17,7 @@ class CacheMetadataListener
             'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
         );
 
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {
             return;
         }

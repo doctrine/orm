@@ -26,7 +26,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
- * Hidrator cache entry for collections
+ * Hydrator cache entry for collections
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -46,7 +46,7 @@ interface CollectionHydrator
      * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata   The owning entity metadata.
      * @param \Doctrine\ORM\Cache\CollectionCacheKey   $key        The cached collection key.
      * @param \Doctrine\ORM\Cache\CollectionCacheEntry $entry      The cached collection entry.
-     * @param Doctrine\ORM\PersistentCollection        $collection The collection to load the cache into.
+     * @param \Doctrine\ORM\PersistentCollection       $collection The collection to load the cache into.
      *
      * @return array
      */

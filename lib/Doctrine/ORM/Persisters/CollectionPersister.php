@@ -73,8 +73,6 @@ interface CollectionPersister
      * @param \Doctrine\ORM\PersistentCollection $collection
      *
      * @return integer
-     *
-     * @throws \BadMethodCallException
      */
     public function count(PersistentCollection $collection);
 

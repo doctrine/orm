@@ -51,7 +51,7 @@ interface Cache
     const MODE_NORMAL = 3;
 
     /**
-     * The session will never read items from the cache,
+     * The query will never read items from the cache,
      * but will refresh items to the cache as it reads them from the database.
      */
     const MODE_REFRESH = 4;
@@ -59,7 +59,7 @@ interface Cache
     /**
      * Construct
      *
-     * @param \Doctrine\ORMEntityManagerInterface $em
+     * @param \Doctrine\ORM\EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em);
 

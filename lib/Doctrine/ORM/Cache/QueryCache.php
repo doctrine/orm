@@ -39,19 +39,21 @@ interface QueryCache
     /**
      * @param \Doctrine\ORM\Cache\QueryCacheKey    $key
      * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
-     * @param array                                $result
+     * @param mixed                                $result
+     * @param array                                $hints
      *
      * @return boolean
      */
-    public function put(QueryCacheKey $key, ResultSetMapping $rsm, array $result);
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = array());
 
     /**
-     * @param \Doctrine\ORM\Cache\QueryCacheKey    $key
-     * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
+     * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
+     * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
+     * @param array                                 $hints
      *
      * @return void
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm);
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = array());
 
     /**
      * @return \Doctrine\ORM\Cache\Region

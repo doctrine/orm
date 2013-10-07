@@ -34,8 +34,6 @@ use Doctrine\Common\Cache\CacheProvider;
  */
 class DefaultRegion implements Region
 {
-    const ENTRY_KEY = '_entry_';
-
     /**
      * @var \Doctrine\Common\Cache\CacheProvider
      */
@@ -86,7 +84,7 @@ class DefaultRegion implements Region
      */
     public function contains(CacheKey $key)
     {
-        return $this->cache->contains($this->name . self::ENTRY_KEY . $key->hash);
+        return $this->cache->contains($this->name . '_' . $key->hash);
     }
 
     /**
@@ -94,7 +92,7 @@ class DefaultRegion implements Region
      */
     public function get(CacheKey $key)
     {
-        return $this->cache->fetch($this->name . self::ENTRY_KEY . $key->hash) ?: null;
+        return $this->cache->fetch($this->name . '_' . $key->hash) ?: null;
     }
 
     /**
@@ -102,7 +100,7 @@ class DefaultRegion implements Region
      */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
-        return $this->cache->save($this->name . self::ENTRY_KEY . $key->hash, $entry, $this->lifetime);
+        return $this->cache->save($this->name . '_' . $key->hash, $entry, $this->lifetime);
     }
 
     /**
@@ -110,7 +108,7 @@ class DefaultRegion implements Region
      */
     public function evict(CacheKey $key)
     {
-        return $this->cache->delete($this->name . self::ENTRY_KEY . $key->hash);
+        return $this->cache->delete($this->name . '_' . $key->hash);
     }
 
     /**

@@ -2,14 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
 
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheCompositPrimaryKeyTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTest
 {
     public function testPutAndLoadCompositPrimaryKeyEntities()
     {

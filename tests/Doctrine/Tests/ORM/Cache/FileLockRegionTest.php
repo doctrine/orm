@@ -8,7 +8,6 @@ use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Lock;
 
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;

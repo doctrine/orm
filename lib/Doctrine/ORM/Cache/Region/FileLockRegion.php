@@ -77,9 +77,9 @@ class FileLockRegion implements ConcurrentRegion
      * param \Doctrine\ORM\Cache\CacheKey $key
      * param \Doctrine\ORM\Cache\Lock     $lock
      *
-     * return boolean
+     * @return boolean
      */
-    private function isLoked(CacheKey $key, Lock $lock = null)
+    private function isLocked(CacheKey $key, Lock $lock = null)
     {
         $filename = $this->getLockFileName($key);
 
@@ -153,7 +153,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function contains(CacheKey $key)
     {
-        if ($this->isLoked($key)) {
+        if ($this->isLocked($key)) {
             return false;
         }
 
@@ -165,7 +165,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function get(CacheKey $key)
     {
-        if ($this->isLoked($key)) {
+        if ($this->isLocked($key)) {
             return null;
         }
 
@@ -177,7 +177,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
-        if ($this->isLoked($key, $lock)) {
+        if ($this->isLocked($key, $lock)) {
             return false;
         }
 
@@ -189,7 +189,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function evict(CacheKey $key)
     {
-        if ($this->isLoked($key)) {
+        if ($this->isLocked($key)) {
             @unlink($this->getLockFileName($key));
         }
 
@@ -213,7 +213,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function lock(CacheKey $key)
     {
-        if ($this->isLoked($key)) {
+        if ($this->isLocked($key)) {
             return null;
         }
 
@@ -232,7 +232,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function unlock(CacheKey $key, Lock $lock)
     {
-        if ($this->isLoked($key, $lock)) {
+        if ($this->isLocked($key, $lock)) {
             return false;
         }
 

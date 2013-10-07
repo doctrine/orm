@@ -18,8 +18,6 @@ use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-2183
  */

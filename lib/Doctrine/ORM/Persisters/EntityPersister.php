@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Collections\Criteria;
 
-
 /**
  * Entity persister interface
  * Define the behavior that should be implemented by all entity persisters.
