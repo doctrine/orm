@@ -198,10 +198,12 @@ Doctrine command-line tool:
     $ php vendor/bin/doctrine orm:schema-tool:create
 
 At this point no entitiy metadata exists in `src` so you will see a message like 
-"No Metadata Classes to process." — we'll add a Product entity and metadata soon.
+"No Metadata Classes to process." Don't worry, we'll create a Product entity and 
+corresponding metadata in the next section.
 
-You should be aware that during the development process you'll need to keep 
-the database schema in sync with changes to your Entities metadata. 
+You should be aware that during the development process you'll periodically want 
+to synchronize your database schema with your Entities metadata.
+
 You can easily recreate the database:
 
 ::
