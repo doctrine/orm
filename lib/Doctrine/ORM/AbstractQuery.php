@@ -609,7 +609,12 @@ abstract class AbstractQuery
      */
     public function getOneOrNullResult($hydrationMode = null)
     {
-        $result = $this->execute(null, $hydrationMode);
+        try {
+            $result = $this->execute(null, $hydrationMode);
+        } catch (NoResultException $e) {
+            return null;
+        }
+
 
         if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             return null;
