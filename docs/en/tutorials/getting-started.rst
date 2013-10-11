@@ -92,8 +92,7 @@ the following contents:
         },
         "autoload": {
             "psr-0": {"": "src/"}
-        },
-        "minimum-stability" : "dev"
+        }
     }
 
 
