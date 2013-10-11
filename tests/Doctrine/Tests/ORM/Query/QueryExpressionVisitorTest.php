@@ -85,6 +85,8 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             array($cb->in('field', array('value')), $qb->in('field', ':field'), new Parameter('field', array('value'))),
             array($cb->notIn('field', array('value')), $qb->notIn('field', ':field'), new Parameter('field', array('value'))),
 
+            array($cb->contains('field', 'value'), $qb->like('field', ':field'), new Parameter('field', '%value%')),
+
             // Test parameter conversion
             array($cb->eq('object.field', 'value'), $qb->eq('object.field', ':object_field'), new Parameter('object_field', 'value')),
         );
