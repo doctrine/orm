@@ -201,8 +201,8 @@ At this point no entitiy metadata exists in `src` so you will see a message like
 "No Metadata Classes to process." Don't worry, we'll create a Product entity and 
 corresponding metadata in the next section.
 
-You should be aware that during the development process you'll periodically want 
-to synchronize your database schema with your Entities metadata.
+You should be aware that during the development process you'll periodically need 
+to update your database schema to be in sync with your Entities metadata.
 
 You can easily recreate the database:
 
