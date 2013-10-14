@@ -1581,6 +1581,10 @@ class SqlWalker implements TreeWalker
                 $sql .= $expr->dispatch($this) . ' AS ' . $columnAlias;
                 break;
 
+            case ($expr instanceof AST\ParenthesisExpression):
+                $sql .= $this->walkParenthesisExpression($expr);
+                break;
+
             default: // IdentificationVariable
                 $sql .= $this->walkEntityIdentificationVariable($expr);
                 break;

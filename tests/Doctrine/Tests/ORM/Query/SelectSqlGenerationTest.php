@@ -1641,6 +1641,13 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsParenthesisExpressionInSubSelect() {
+        $this->assertSqlGeneration(
+            'SELECT u.id, (SELECT (1000*SUM(subU.id)/SUM(subU.id)) FROM Doctrine\Tests\Models\CMS\CmsUser subU where subU.id = u.id) AS subSelect FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT c0_.id AS id0, (SELECT (1000 * SUM(c1_.id) / SUM(c1_.id)) FROM cms_users c1_ WHERE c1_.id = c0_.id) AS sclr1 FROM cms_users c0_'
+        );
+    }
+
     /**
      * @group DDC-1557
      */
