@@ -829,13 +829,13 @@ However, you can use the cache API to check / invalidate cache entries.
     /* var $cache \Doctrine\ORM\Cache */
     $cache = $em->getCache();
 
-    $cache->containsEntity('State', 1)      // Check if the cache exists
-    $cache->evictEntity('State', 1);       // Remove an entity from cache
-    $cache->evictEntityRegion('State');     // Remove all entities from cache
+    $cache->containsEntity('Entity\State', 1)      // Check if the cache exists
+    $cache->evictEntity('Entity\State', 1);        // Remove an entity from cache
+    $cache->evictEntityRegion('Entity\State');     // Remove all entities from cache
 
-    $cache->containsCollection('State', 'cities', 1);   // Check if the cache exists
-    $cache->evictCollection('State', 'cities', 1);      // Remove an entity collection from cache
-    $cache->evictCollectionRegion('State', 'cities');   // Remove all collections from cache
+    $cache->containsCollection('Entity\State', 'cities', 1);   // Check if the cache exists
+    $cache->evictCollection('Entity\State', 'cities', 1);      // Remove an entity collection from cache
+    $cache->evictCollectionRegion('Entity\State', 'cities');   // Remove all collections from cache
 
 Limitations
 -----------
@@ -843,10 +843,8 @@ Limitations
 Composite primary key
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. note::
-
-    Composite primary key are supported by second level cache, however when one of the keys is an association
-    the cached entity should always be retrieved using the association identifier.
+Composite primary key are supported by second level cache, however when one of the keys is an association
+the cached entity should always be retrieved using the association identifier.
 
 .. code-block:: php
 
@@ -896,3 +894,46 @@ By default, Doctrine provides a very simple implementation based on file locks `
 
 If you want to use an ``READ_WRITE`` cache, you should consider providing your own cache region.
 for more details about how to implement a cache region please see :ref:`reference-second-level-cache-regions`
+
+
+DELETE / UPDATE queries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+DQL UPDATE / DELETE statements are ported directly into a database and bypass the second-level cache,
+Entities that are already cached will NOT be invalidated.
+However the cached data could be evicted using the cache API or an special query hint.
+
+
+Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_CACHE_EVICT``
+
+.. code-block:: php
+
+    <?php
+    // Execute and invalidate
+    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+        ->setHint(Query::HINT_CACHE_EVICT, true)
+        ->execute();
+
+
+Execute the ``UPDATE`` and invalidate ``all cache entries`` using the cache API
+
+.. code-block:: php
+
+    <?php
+    // Execute
+    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+        ->execute();
+    // Invoke Cache API
+    $em->getCache()->evictEntityRegion('Entity\Country');
+
+
+Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache API
+
+.. code-block:: php
+
+    <?php
+    // Execute
+    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+        ->execute();
+    // Invoke Cache API
+    $em->getCache()->evictEntity('Entity\Country', 1);

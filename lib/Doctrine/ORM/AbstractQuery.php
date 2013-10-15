@@ -130,6 +130,11 @@ abstract class AbstractQuery
     protected $cacheable = false;
 
     /**
+     * @var boolean
+     */
+    protected $hasCache = false;
+
+    /**
      * Second level cache region name.
      *
      * @var string
@@ -162,9 +167,10 @@ abstract class AbstractQuery
     {
         $this->_em          = $em;
         $this->parameters   = new ArrayCollection();
+        $this->hasCache     = $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
 
-        if ($this->_em->getConfiguration()->isSecondLevelCacheEnabled()) {
-            $this->cacheLogger  = $em->getConfiguration()
+        if ($this->hasCache) {
+            $this->cacheLogger = $em->getConfiguration()
                 ->getSecondLevelCacheConfiguration()
                 ->getCacheLogger();
         }
@@ -220,7 +226,7 @@ abstract class AbstractQuery
      */
     protected function isCacheEnabled()
     {
-        return $this->cacheable && $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
+        return $this->cacheable && $this->hasCache;
     }
 
     /**

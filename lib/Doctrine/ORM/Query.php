@@ -65,6 +65,11 @@ final class Query extends AbstractQuery
     const HINT_CACHE_ENABLED = 'doctrine.cache.enabled';
 
     /**
+     * @var string
+     */
+    const HINT_CACHE_EVICT = 'doctrine.cache.evict';
+
+    /**
      * Internal hint: is set to the proxy entity that is currently triggered for loading
      *
      * @var string
@@ -287,9 +292,32 @@ final class Query extends AbstractQuery
             throw QueryException::invalidParameterNumber();
         }
 
+        // evict all cache for the entity region
+        if ($this->hasCache && isset($this->_hints[self::HINT_CACHE_EVICT]) && $this->_hints[self::HINT_CACHE_EVICT]) {
+            $this->evictEntityCacheRegion();
+        }
+
         list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
 
         return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+    }
+
+    /**
+     * Evict entity cache region
+     */
+    private function evictEntityCacheRegion()
+    {
+        $AST = $this->getAST();
+
+        if ($AST instanceof \Doctrine\ORM\Query\AST\SelectStatement) {
+            throw new QueryException('The hint "HINT_CACHE_EVICT" is not valid for select statements.');
+        }
+
+        $className = ($AST instanceof \Doctrine\ORM\Query\AST\DeleteStatement)
+            ? $AST->deleteClause->abstractSchemaName
+            : $AST->updateClause->abstractSchemaName;
+
+        $this->_em->getCache()->evictEntityRegion($className);
     }
 
     /**
