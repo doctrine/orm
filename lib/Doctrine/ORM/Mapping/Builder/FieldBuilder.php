@@ -163,9 +163,6 @@ class FieldBuilder
      */
     public function option($name, $value)
     {
-        if ( ! array_key_exists('options', $this->mapping)) {
-            $this->mapping['options'] = array();
-        }
         $this->mapping['options'][$name] = $value;
         return $this;
     }
