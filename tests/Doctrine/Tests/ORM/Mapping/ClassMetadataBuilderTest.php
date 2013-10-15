@@ -174,6 +174,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'), $this->cm->fieldMappings['id']);
     }
 
+    public function testCreateUnsignedOptionField()
+    {
+        $this->builder->createField('state', 'integer')->unsigned()->build();
+
+        $this->assertEquals(array('fieldName' => 'state', 'type' => 'integer', 'options' => array('unsigned' => true), 'columnName' => 'state'), $this->cm->fieldMappings['state']);
+    }
+
     public function testAddLifecycleEvent()
     {
         $this->builder->addLifecycleEvent('getStatus', 'postLoad');
