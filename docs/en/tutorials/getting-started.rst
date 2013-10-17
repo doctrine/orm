@@ -196,9 +196,14 @@ Doctrine command-line tool:
     $ cd project/
     $ php vendor/bin/doctrine orm:schema-tool:create
 
-During the development you probably need to re-create the database
-several times when changing the Entity metadata. You can then
-either re-create the database:
+At this point no entitiy metadata exists in `src` so you will see a message like 
+"No Metadata Classes to process." Don't worry, we'll create a Product entity and 
+corresponding metadata in the next section.
+
+You should be aware that during the development process you'll periodically need 
+to update your database schema to be in sync with your Entities metadata.
+
+You can easily recreate the database:
 
 ::
 
