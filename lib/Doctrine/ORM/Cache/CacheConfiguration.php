@@ -35,22 +35,22 @@ use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
 class CacheConfiguration
 {
     /**
-     * @var \Doctrine\ORM\Cache\CacheFactory
+     * @var \Doctrine\ORM\Cache\CacheFactory|null
      */
     private $cacheFactory;
 
     /**
-     * @var \Doctrine\ORM\Cache\RegionsConfiguration
+     * @var \Doctrine\ORM\Cache\RegionsConfiguration|null
      */
     private $regionsConfig;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger|null
      */
     private $cacheLogger;
 
     /**
-     * @var \Doctrine\ORM\Cache\QueryCacheValidator
+     * @var \Doctrine\ORM\Cache\QueryCacheValidator|null
      */
     private $queryValidator;
 

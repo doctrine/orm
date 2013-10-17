@@ -594,7 +594,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @var array
      */
-    public $cache;
+    public $cache = null;
 
     /**
      * The ReflectionClass instance of the mapped class.
@@ -875,7 +875,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ($this->cache) {
-            $serialized[] = "cache";
+            $serialized[] = 'cache';
         }
 
         return $serialized;

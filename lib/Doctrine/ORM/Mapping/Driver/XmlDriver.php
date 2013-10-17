@@ -727,6 +727,8 @@ class XmlDriver extends FileDriver
     }
 
     /**
+     * Parse / Normalize the cache configuration
+     *
      * @param SimpleXMLElement $cacheMapping
      *
      * @return array

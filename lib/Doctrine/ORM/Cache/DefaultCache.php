@@ -51,7 +51,7 @@ class DefaultCache implements Cache
     private $cacheFactory;
 
     /**
-     * @var array<\Doctrine\ORM\Cache\QueryCache>
+     * @var \Doctrine\ORM\Cache\QueryCache[]
      */
     private $queryCaches = array();
 

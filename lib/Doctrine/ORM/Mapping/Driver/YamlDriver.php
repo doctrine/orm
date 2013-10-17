@@ -732,6 +732,8 @@ class YamlDriver extends FileDriver
     }
 
     /**
+     * Parse / Normalize the cache configuration
+     *
      * @param array $cacheMapping
      *
      * @return array

@@ -31,12 +31,12 @@ class RegionsConfiguration
     /**
      * @var array
      */
-    private $lifetimes;
+    private $lifetimes = array();
 
     /**
      * @var array
      */
-    private $lockLifetimes;
+    private $lockLifetimes = array();
 
     /**
      * @var integer
@@ -54,8 +54,8 @@ class RegionsConfiguration
      */
     public function __construct($defaultLifetime = 3600, $defaultLockLifetime = 60)
     {
-        $this->defaultLifetime      = $defaultLifetime;
-        $this->defaultLockLifetime  = $defaultLockLifetime;
+        $this->defaultLifetime      = (integer) $defaultLifetime;
+        $this->defaultLockLifetime  = (integer) $defaultLockLifetime;
     }
 
     /**
@@ -71,7 +71,7 @@ class RegionsConfiguration
      */
     public function setDefaultLifetime($defaultLifetime)
     {
-        $this->defaultLifetime = $defaultLifetime;
+        $this->defaultLifetime = (integer) $defaultLifetime;
     }
 
     /**
@@ -87,7 +87,7 @@ class RegionsConfiguration
      */
     public function setDefaultLockLifetime($defaultLockLifetime)
     {
-        $this->defaultLockLifetime = $defaultLockLifetime;
+        $this->defaultLockLifetime = (integer) $defaultLockLifetime;
     }
 
     /**

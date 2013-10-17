@@ -57,17 +57,17 @@ class DefaultCacheFactory implements CacheFactory
     private $regionsConfig;
 
     /**
-     * @var \Doctrine\ORM\Cache\TimestampRegion
+     * @var \Doctrine\ORM\Cache\TimestampRegion|null
      */
     private $timestampRegion;
 
     /**
-     * @var array
+     * @var \Doctrine\ORM\Cache\Region[]
      */
-    private $regions;
+    private $regions = array();
 
     /**
-     * @var string
+     * @var string|null
      */
     private $fileLockRegionDirectory;
 
@@ -86,7 +86,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function setFileLockRegionDirectory($fileLockRegionDirectory)
     {
-        $this->fileLockRegionDirectory = $fileLockRegionDirectory;
+        $this->fileLockRegionDirectory = (string) $fileLockRegionDirectory;
     }
 
     /**
@@ -200,7 +200,7 @@ class DefaultCacheFactory implements CacheFactory
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 
             if ( ! $this->fileLockRegionDirectory) {
-                throw new \RuntimeException(
+                throw new \LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
                     'The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you what to use it please provide a valid directory, DefaultCacheFactory#setFileLockRegionDirectory(). '
                 );

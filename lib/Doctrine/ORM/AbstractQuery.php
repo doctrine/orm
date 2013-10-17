@@ -137,19 +137,19 @@ abstract class AbstractQuery
     /**
      * Second level cache region name.
      *
-     * @var string
+     * @var string|null
      */
     protected $cacheRegion;
 
     /**
      * Second level query cache mode.
      *
-     * @var integer
+     * @var integer|null
      */
     protected $cacheMode;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     * @var \Doctrine\ORM\Cache\Logging\CacheLogger|null
      */
     protected $cacheLogger;
 
@@ -206,7 +206,7 @@ abstract class AbstractQuery
      */
     public function setCacheRegion($cacheRegion)
     {
-        $this->cacheRegion = $cacheRegion;
+        $this->cacheRegion = (string) $cacheRegion;
 
         return $this;
     }
@@ -245,7 +245,7 @@ abstract class AbstractQuery
      */
     public function setLifetime($lifetime)
     {
-        $this->lifetime = $lifetime;
+        $this->lifetime = (integer) $lifetime;
 
         return $this;
     }
@@ -264,7 +264,7 @@ abstract class AbstractQuery
      */
     public function setCacheMode($cacheMode)
     {
-        $this->cacheMode = $cacheMode;
+        $this->cacheMode = (integer) $cacheMode;
 
         return $this;
     }

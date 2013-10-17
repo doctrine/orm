@@ -165,7 +165,7 @@ interface Cache
     /**
      * Evicts all cached query results under the given name, or default query cache if the region name is NULL.
      *
-     * @param string $regionName The cache name associated to the queries being cached.
+     * @param string|null $regionName The cache name associated to the queries being cached.
      */
     public function evictQueryRegion($regionName = null);
 
@@ -179,7 +179,7 @@ interface Cache
     /**
      * Get query cache by region name or create a new one if none exist.
      *
-     * @param regionName Query cache region name, or default query cache if the region name is NULL.
+     * @param string|null $regionName Query cache region name, or default query cache if the region name is NULL.
      *
      * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
      */

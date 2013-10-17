@@ -51,7 +51,7 @@ interface Region
      *
      * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to be retrieved.
      *
-     * @return \Doctrine\ORM\Cache\CacheEntry The cached entry or NULL
+     * @return \Doctrine\ORM\Cache\CacheEntry|null The cached entry or NULL
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the item or region.
      */

@@ -2,7 +2,7 @@ The Second Level Cache
 ======================
 
 The Second Level Cache is designed to reduce the amount of necessary database access.
-It sits between your application and the database to avoid the number of database hits as many as possible.
+It sits between your application and the database to avoid the number of database hits as much as possible.
 
 When turned on, entities will be first searched in cache and if they are not found,
 a database query will be fired an then the entity result will be stored in a cache provider.
@@ -21,6 +21,9 @@ Each entity class, collection association and query has its region, where values
 
 Caching Regions are specific region into the cache provider that might store entities, collection or queries.
 Each cache region resides in a specific cache namespace and has its own lifetime configuration.
+
+Notice that when caching collection and queries only identifiers are stored.
+The entity values will be stored in its own region
 
 Something like below for an entity region :
 
@@ -60,8 +63,7 @@ A query region might be something like :
 
 .. note::
 
-    Notice that when caching collection and queries only identifiers are stored.
-    The entity values will be stored in its own region
+    The following data structures represents now the cache will looks like, this is not actual cached data.
 
 
 .. _reference-second-level-cache-regions:
@@ -79,6 +81,11 @@ It allows you to provide your own cache implementation that might take advantage
 
 If you want to support locking for ``READ_WRITE`` strategies you should implement ``ConcurrentRegion``; ``CacheRegion`` otherwise.
 
+
+Cache region
+~~~~~~~~~~~~
+
+Defines a contract for accessing a particular region.
 
 ``Doctrine\ORM\Cache\Region``
 
@@ -111,7 +118,7 @@ Defines a contract for accessing a particular cache region.
          *
          * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to be retrieved.
          *
-         * @return \Doctrine\ORM\Cache\CacheEntry The cached entry or NULL
+         * @return \Doctrine\ORM\Cache\CacheEntry|null The cached entry or NULL
          */
         public function get(CacheKey $key);
 
@@ -137,6 +144,14 @@ Defines a contract for accessing a particular cache region.
         public function evictAll();
     }
 
+
+Concurrent cache region
+~~~~~~~~~~~~~~~~~~~~~~~
+
+A ``Doctrine\ORM\Cache\ConcurrentRegion`` is designed to store concurrently managed data region.
+By default, Doctrine provides a very simple implementation based on file locks ``Doctrine\ORM\Cache\Region\FileLockRegion``.
+
+If you want to use an ``READ_WRITE`` cache, you should consider providing your own cache region.
 
 ``Doctrine\ORM\Cache\ConcurrentRegion``
 
@@ -166,6 +181,9 @@ Defines contract for concurrently managed data region.
        public function unlock(CacheKey $key, Lock $lock);
     }
 
+Cache region
+~~~~~~~~~~~~
+
 ``Doctrine\ORM\Cache\TimestampRegion``
 
 Tracks the timestamps of the most recent updates to particular entity.
@@ -179,7 +197,7 @@ Tracks the timestamps of the most recent updates to particular entity.
         /**
          * Update an specific key into the cache region.
          *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
+         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to update the timestamp.
          *
          * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
          */
@@ -364,8 +382,8 @@ To specify a default lifetime for all regions or specify a different lifetime fo
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
     //Cache Region lifetime
-    $regionConfig->setLifetime('my_entity_region', 3600);
-    $regionConfig->setDefaultLifetime(7200);
+    $regionConfig->setLifetime('my_entity_region', 3600);   // Time to live for a specific region; In seconds
+    $regionConfig->setDefaultLifetime(7200);                // Default time to live; In seconds
 
 
 Cache Log
@@ -672,7 +690,7 @@ Basic entity cache
 
     $em->clear();                         // Clear entity manager
 
-    $country   = $em->find('Country', 1); // Retrieve item from cache
+    $country1  = $em->find('Country', 1); // Retrieve item from cache
 
     $country->setName("New Name");
     $em->persist($state);
@@ -680,7 +698,8 @@ Basic entity cache
 
     $em->clear();                         // Clear entity manager
 
-    $country   = $em->find('Country', 1); // Retrieve item from cache
+    $country2  = $em->find('Country', 1); // Retrieve item from cache
+                                          // Notice that $country1 and $country2 are not the same instance.
 
 
 Association cache
@@ -759,6 +778,8 @@ The query cache stores the results of the query but as identifiers, entity value
             ->setCacheable(true)
             ->getResult();
 
+        $em->clear()
+
         // Check if query result is valid and load entities from cache
         $result2 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
             ->setCacheable(true)
@@ -806,15 +827,16 @@ Using the last update timestamps as part of the query key invalidate the cache k
     $entities   = $em->getRepository('Entity\Country')->findAll();
 
     // load from query and entities from cache..
-    $entities   = $em->getRepository('Country')->findAll();
+    $entities   = $em->getRepository('Entity\Country')->findAll();
 
     // update the timestamp cache region for Country
     $em->persist(new Country('zombieland'));
     $em->flush();
     $em->clear();
 
-    // Reload the query from database.
-    $entities   = $em->getRepository('Country')->findAll();
+    // Reload from database.
+    // At this point the query cache key if not logger valid, the select goes straight
+    $entities   = $em->getRepository('Entity\Country')->findAll();
 
 Cache API
 ---------
@@ -843,8 +865,9 @@ Limitations
 Composite primary key
 ~~~~~~~~~~~~~~~~~~~~~
 
-Composite primary key are supported by second level cache, however when one of the keys is an association
-the cached entity should always be retrieved using the association identifier.
+Composite primary key are supported by second level cache,
+however when one of the keys is an association the cached entity should always be retrieved using the association identifier.
+For performance reasons the cache API does not extract from composite primary key.
 
 .. code-block:: php
 
@@ -871,29 +894,19 @@ the cached entity should always be retrieved using the association identifier.
 
     // Supported
     /** @var $article Article */
-    $article = $this->_em->find("Article", 1);
+    $article = $em->find('Article', 1);
 
     // Supported
     /** @var $article Article */
-    $article = $this->_em->find("Article", $article);
+    $article = $em->find('Article', $article);
 
     // Supported
     $id        = array('source' => 1, 'target' => 2);
-    $reference = $this->_em->find("Reference", $id);
+    $reference = $em->find('Reference', $id);
 
     // NOT Supported
     $id        = array('source' => new Article(1), 'target' => new Article(2));
-    $reference = $this->_em->find("Reference", $id);
-
-
-Concurrent cache region
-~~~~~~~~~~~~~~~~~~~~~~~
-
-A ``Doctrine\\ORM\\Cache\\ConcurrentRegion`` is designed to store concurrently managed data region.
-By default, Doctrine provides a very simple implementation based on file locks ``Doctrine\\ORM\\Cache\\Region\\FileLockRegion``.
-
-If you want to use an ``READ_WRITE`` cache, you should consider providing your own cache region.
-for more details about how to implement a cache region please see :ref:`reference-second-level-cache-regions`
+    $reference = $em->find('Reference', $id);
 
 
 DELETE / UPDATE queries
