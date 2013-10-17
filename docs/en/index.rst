@@ -65,29 +65,29 @@ Working with Objects
 Advanced Topics
 ---------------
 
-  * :doc:`Architecture <reference/architecture>`
-  * :doc:`Advanced Configuration <reference/advanced-configuration>`
-  * :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
-  * :doc:`Commandline Tools <reference/tools>`
-  * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
-  * :doc:`Filters <reference/filters>`
-  * :doc:`NamingStrategy <reference/namingstrategy>`
-  * :doc:`Improving Performance <reference/improving-performance>` 
-  * :doc:`Caching <reference/caching>` 
-  * :doc:`Partial Objects <reference/partial-objects>` 
-  * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
-  * :doc:`Best Practices <reference/best-practices>`
-  * :doc:`Metadata Drivers <reference/metadata-drivers>`
+* :doc:`Architecture <reference/architecture>`
+* :doc:`Advanced Configuration <reference/advanced-configuration>`
+* :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
+* :doc:`Commandline Tools <reference/tools>`
+* :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
+* :doc:`Filters <reference/filters>`
+* :doc:`NamingStrategy <reference/namingstrategy>`
+* :doc:`Improving Performance <reference/improving-performance>` 
+* :doc:`Caching <reference/caching>` 
+* :doc:`Partial Objects <reference/partial-objects>` 
+* :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+* :doc:`Best Practices <reference/best-practices>`
+* :doc:`Metadata Drivers <reference/metadata-drivers>`
 
 Tutorials
 ---------
 
-  * :doc:`Indexed associations <tutorials/working-with-indexed-associations>`
-  * :doc:`Extra Lazy Associations <tutorials/extra-lazy-associations>`
-  * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
-  * :doc:`Ordered associations <tutorials/ordered-associations>`
-  * :doc:`Pagination <tutorials/pagination>`
-  * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
+* :doc:`Indexed associations <tutorials/working-with-indexed-associations>`
+* :doc:`Extra Lazy Associations <tutorials/extra-lazy-associations>`
+* :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
+* :doc:`Ordered associations <tutorials/ordered-associations>`
+* :doc:`Pagination <tutorials/pagination>`
+* :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
 
 Cookbook
 --------
