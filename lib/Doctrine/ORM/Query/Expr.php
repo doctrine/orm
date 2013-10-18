@@ -447,6 +447,7 @@ class Expr
         if ($y instanceof Collection) {
             $y = $y->toArray();
         }
+
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
@@ -454,6 +455,7 @@ class Expr
                 }
             }
         }
+
         return new Expr\Func($x . ' IN', (array) $y);
     }
 
@@ -470,6 +472,7 @@ class Expr
         if ($y instanceof Collection) {
             $y = $y->toArray();
         }
+
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
@@ -477,6 +480,7 @@ class Expr
                 }
             }
         }
+
         return new Expr\Func($x . ' NOT IN', (array) $y);
     }
 
