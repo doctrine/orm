@@ -19,6 +19,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
 
@@ -281,6 +282,12 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', array('foo', 'bar')));
     }
 
+    public function testInExprWithCollection()
+    {
+        $collection = new ArrayCollection(array(1, 2, 3));
+        $this->assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', $collection));
+    }
+
     public function testNotInExpr()
     {
         $this->assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', array(1, 2, 3)));
@@ -289,6 +296,12 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testNotInLiteralExpr()
     {
         $this->assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', array('foo', 'bar')));
+    }
+
+    public function testNotInExprWithCollection()
+    {
+        $collection = new ArrayCollection(array(1, 2, 3));
+        $this->assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', $collection));
     }
 
     public function testAndxOrxExpr()

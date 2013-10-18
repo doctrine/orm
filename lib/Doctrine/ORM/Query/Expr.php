@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions.
 
@@ -442,6 +444,9 @@ class Expr
      */
     public function in($x, $y)
     {
+        if ($y instanceof Collection) {
+            $y = $y->toArray();
+        }
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
@@ -462,6 +467,9 @@ class Expr
      */
     public function notIn($x, $y)
     {
+        if ($y instanceof Collection) {
+            $y = $y->toArray();
+        }
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
