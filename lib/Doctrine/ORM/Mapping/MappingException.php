@@ -328,13 +328,13 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         if (false !== ($parent = get_parent_class($className))) {
             return new self(sprintf(
-                'Class "%s" sub class of "%s" is not a valid entity or mapped super class.',
+                'Class "%s" sub class of "%s" is not a valid entity or mapped super class or has wrong mapped metadata.',
                 $className, $parent
             ));
         }
 
         return new self(sprintf(
-            'Class "%s" is not a valid entity or mapped super class.',
+            'Class "%s" is not a valid entity or mapped super class or has wrong mapped metadata.',
             $className
         ));
     }
