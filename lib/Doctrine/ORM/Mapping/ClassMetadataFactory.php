@@ -450,7 +450,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
-                if ($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
+                if ($this->targetPlatform instanceof Platforms\PostgreSqlPlatform) {
                     $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
