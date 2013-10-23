@@ -10,22 +10,38 @@ use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Lock;
 
+/**
+ * Concurrent region mock
+ *
+ * Used to mock a ConcurrentRegion
+ */
 class ConcurrentRegionMock implements ConcurrentRegion
 {
     public $calls       = array();
     public $exceptions  = array();
     public $locks       = array();
-    
+
     /**
      * @var \Doctrine\ORM\Cache\Region 
      */
     private $region;
 
+    /**
+     * @param \Doctrine\ORM\Cache\Region $region
+     */
     public function __construct(Region $region)
     {
         $this->region = $region;
     }
 
+    /**
+     * Dequeue an exception for a specific method invocation
+     *
+     * @param string $method
+     * @param mixed $default
+     *
+     * @return mixed
+     */
     private function throwException($method)
     {
         if (isset($this->exceptions[$method]) && ! empty($this->exceptions[$method])) {
@@ -37,16 +53,31 @@ class ConcurrentRegionMock implements ConcurrentRegion
         }
     }
 
+    /**
+     * Queue an exception for the next method invocation
+     *
+     * @param string $method
+     * @param \Exception $e
+     */
     public function addException($method, \Exception $e)
     {
         $this->exceptions[$method][] = $e;
     }
 
+    /**
+     * Locks a specific cache entry
+     *
+     * @param \Doctrine\ORM\Cache\CacheKey $key
+     * @param \Doctrine\ORM\Cache\Lock $lock
+     */
     public function setLock(CacheKey $key, Lock $lock)
     {
         $this->locks[$key->hash] = $lock;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function contains(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
@@ -60,6 +91,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->contains($key);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function evict(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
@@ -69,6 +103,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->evict($key);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function evictAll()
     {
         $this->calls[__FUNCTION__][] = array();
@@ -78,6 +115,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->evictAll();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
@@ -91,6 +131,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->get($key);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         $this->calls[__FUNCTION__][] = array();
@@ -100,6 +143,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->getName();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key, 'entry' => $entry);
@@ -118,6 +164,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->put($key, $entry);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function lock(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
@@ -131,6 +180,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->locks[$key->hash] = Lock::createLockRead();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function unlock(CacheKey $key, Lock $lock)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key, 'lock' => $lock);

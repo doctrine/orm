@@ -72,7 +72,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @return \Doctrine\Common\Cache\Cache
+     * @return \Doctrine\Common\Cache\CacheProvider
      */
     public function getCache()
     {
