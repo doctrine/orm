@@ -185,6 +185,32 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-2761
+     */
+    public function testUpdateThenRemoveWithPreUpdateEvent()
+    {
+        $listener = new LifecycleListenerPreUpdate;
+        $this->_em->getEventManager()->addEventListener(array('preUpdate'), $listener);
+
+        $user = new LifecycleCallbackTestUser;
+        $user->setName('Giosh');
+        $user->setValue('value');
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $userId=$user->getId();
+
+        $user->setValue('YetAnotherValue');
+
+        $this->_em->remove($user);
+        $this->_em->flush($user);
+
+        $this->_em->getEventManager()->removeEventListener(array('preUpdate'), $listener);
+
+        $found = $this->_em->find(get_class($user), $userId);
+        $this->assertNull($found);
+    }
+
+    /**
     * @group DDC-1955
     */
     public function testLifecycleCallbackEventArgs()
@@ -200,7 +226,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->refresh($e);
-        
+
         $this->_em->remove($e);
         $this->_em->flush();
 
@@ -243,7 +269,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['postUpdateHandler']
         );
- 
+
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['preRemoveHandler']
@@ -378,7 +404,8 @@ class LifecycleListenerPreUpdate
 {
     public function preUpdate(PreUpdateEventArgs $eventArgs)
     {
-        $eventArgs->setNewValue('name', 'Bob');
+        if( $eventArgs->hasChangedField('name') )
+            $eventArgs->setNewValue('name', 'Bob');
     }
 }
 

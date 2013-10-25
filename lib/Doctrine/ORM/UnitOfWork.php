@@ -878,7 +878,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if ( ! isset($this->entityStates[$oid]) || $this->entityStates[$oid] != self::STATE_MANAGED) {
+        if ( ! isset($this->entityStates[$oid]) || ($this->entityStates[$oid] != self::STATE_MANAGED && $this->entityStates[$oid] != self::STATE_REMOVED)) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
