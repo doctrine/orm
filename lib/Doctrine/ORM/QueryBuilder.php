@@ -1098,7 +1098,7 @@ class QueryBuilder
 
         if ($criteria->getOrderings()) {
             foreach ($criteria->getOrderings() as $sort => $order) {
-                $this->addOrderBy($sort, $order);
+                $this->addOrderBy($this->getRootAlias() . '.' . $sort, $order);
             }
         }
 

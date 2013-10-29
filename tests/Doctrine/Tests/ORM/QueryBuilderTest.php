@@ -414,13 +414,16 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaOrder()
     {
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
         $criteria = new Criteria();
         $criteria->orderBy(array('field' => Criteria::DESC));
 
         $qb->addCriteria($criteria);
 
         $this->assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
-        $this->assertEquals('field DESC', (string) $orderBy[0]);
+        $this->assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
     public function testAddCriteriaLimit()
