@@ -327,48 +327,66 @@ class UnitOfWork implements PropertyChangedListener
         $commitOrder = $this->getCommitOrder();
 
         $conn = $this->em->getConnection();
-        $conn->beginTransaction();
 
-        try {
-            if ($this->entityInsertions) {
-                foreach ($commitOrder as $class) {
-                    $this->executeInserts($class);
+        $retryCount = $this->em->getConfiguration()->getDeadlockRetryCount() ?: 1;
+        $retrySleepTime = $this->em->getConfiguration()->getDeadlockRetrySleepTime() ?: 0;
+        $currentTryCount = 1;
+
+        while ($currentTryCount <= $retryCount) {
+            $conn->beginTransaction();
+            try {
+                if ($this->entityInsertions) {
+                    foreach ($commitOrder as $class) {
+                        $this->executeInserts($class);
+                    }
                 }
-            }
 
-            if ($this->entityUpdates) {
-                foreach ($commitOrder as $class) {
-                    $this->executeUpdates($class);
+                if ($this->entityUpdates) {
+                    foreach ($commitOrder as $class) {
+                        $this->executeUpdates($class);
+                    }
                 }
-            }
 
-            // Extra updates that were requested by persisters.
-            if ($this->extraUpdates) {
-                $this->executeExtraUpdates();
-            }
-
-            // Collection deletions (deletions of complete collections)
-            foreach ($this->collectionDeletions as $collectionToDelete) {
-                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
-            }
-            // Collection updates (deleteRows, updateRows, insertRows)
-            foreach ($this->collectionUpdates as $collectionToUpdate) {
-                $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
-            }
-
-            // Entity deletions come last and need to be in reverse commit order
-            if ($this->entityDeletions) {
-                for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-                    $this->executeDeletions($commitOrder[$i]);
+                // Extra updates that were requested by persisters.
+                if ($this->extraUpdates) {
+                    $this->executeExtraUpdates();
                 }
+
+                // Collection deletions (deletions of complete collections)
+                foreach ($this->collectionDeletions as $collectionToDelete) {
+                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+                }
+                // Collection updates (deleteRows, updateRows, insertRows)
+                foreach ($this->collectionUpdates as $collectionToUpdate) {
+                    $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
+                }
+
+                // Entity deletions come last and need to be in reverse commit order
+                if ($this->entityDeletions) {
+                    for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
+                        $this->executeDeletions($commitOrder[$i]);
+                    }
+                }
+
+                $conn->commit();
+
+                break;
+            } catch (Exception $e) {
+                if (strstr($e->getMessage(), '1213 Deadlock found when trying to get lock; try restarting transaction')) {
+                    $currentTryCount++;
+
+                    if ($currentTryCount <= $retryCount) {
+                        $conn->rollback();
+                        sleep($retrySleepTime);
+
+                        continue;
+                    }
+                }
+                $this->em->close();
+                $conn->rollback();
+
+                throw $e;
             }
-
-            $conn->commit();
-        } catch (Exception $e) {
-            $this->em->close();
-            $conn->rollback();
-
-            throw $e;
         }
 
         // Take new snapshots from visited collections

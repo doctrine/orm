@@ -805,4 +805,58 @@ class Configuration extends \Doctrine\DBAL\Configuration
             ? $this->_attributes['repositoryFactory']
             : new DefaultRepositoryFactory();
     }
+
+    /**
+     * Set the deadlock retry count value
+     *
+     * @since  2.4
+     * 
+     * @param int $retryCount
+     * 
+     * @return void
+     */
+    public function setDeadlockRetryCount($retryCount)
+    {
+        $this->_attributes['deadlockRetryCount'] = $retryCount;
+    }
+
+    /**
+     * Get the deadlock retry count value
+     *
+     * @since  2.4
+     * @return int
+     */
+    public function getDeadlockRetryCount()
+    {
+        return isset($this->_attributes['deadlockRetryCount'])
+            ? $this->_attributes['deadlockRetryCount']
+            : null;
+    }
+
+    /**
+     * Set the deadlock retry sleep time
+     *
+     * @since  2.4
+     * 
+     * @param float $retryCount
+     * 
+     * @return void
+     */
+    public function setDeadlockRetrySleepTime($sleepTime)
+    {
+        $this->_attributes['deadlockRetrySleepTime'] = $sleepTime;
+    }
+
+    /**
+     * Get the deadlock retry sleep time
+     *
+     * @since  2.4
+     * @return float
+     */
+    public function getDeadlockRetrySleepTime()
+    {
+        return isset($this->_attributes['deadlockRetrySleepTime'])
+            ? $this->_attributes['deadlockRetrySleepTime']
+            : null;
+    }
 }
