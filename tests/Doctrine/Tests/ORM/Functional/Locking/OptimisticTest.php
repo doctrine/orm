@@ -7,6 +7,8 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\TestUtil;
+use Doctrine\DBAL\LockMode;
+use DateTime;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -181,13 +183,44 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date($format, strtotime($test->version->format($format)) + 3600), $test->id));
 
         // Try and update the record and it should throw an exception
+        $caughtException = null;
         $test->name = 'Testing again';
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            $caughtException = $e;
         }
+
+        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
+        $this->assertSame($test, $caughtException->getEntity());
+
     }
+
+    /**
+     * @depends testOptimisticTimestampSetsDefaultValue
+     */
+    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity)
+    {
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
+        $q->setParameter('id', $entity->id);
+        $test = $q->getSingleResult();
+
+        $this->assertInstanceOf('DateTime', $test->version);
+
+        // Try to lock the record with an older timestamp and it should throw an exception
+        $caughtException = null;
+        try {
+            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp()-3600);
+            $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
+        } catch (OptimisticLockException $e) {
+            $caughtException = $e;
+        }
+
+        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
+        $this->assertSame($test, $caughtException->getEntity());
+
+    }
+
 }
 
 /**
