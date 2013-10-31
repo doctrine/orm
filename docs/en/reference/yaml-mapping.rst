@@ -73,6 +73,7 @@ of several common elements:
     Doctrine\Tests\ORM\Mapping\User:
       type: entity
       table: cms_users
+      readOnly: true
       indexes:
         name_index:
           columns: [ name ]
