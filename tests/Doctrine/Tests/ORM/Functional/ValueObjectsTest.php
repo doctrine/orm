@@ -139,12 +139,10 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNull($this->_em->find(__NAMESPACE__.'\\DDC93Person', $person->id));
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage no field or association named address.asdfasdf
-     */
     public function testDqlWithNonExistentEmbeddableField()
     {
+        $this->setExpectedException('Doctrine\ORM\Query\QueryException', 'no field or association named address.asdfasdf');
+
         $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
             ->execute();
     }
