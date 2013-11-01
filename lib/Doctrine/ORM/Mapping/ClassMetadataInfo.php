@@ -247,6 +247,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $isMappedSuperclass = false;
 
     /**
+     * READ-ONLY: Wheather this class describes the mapping of an embeddable class.
+     *
+     * @var boolean
+     */
+    public $isEmbeddedClass = false;
+
+    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -259,6 +266,13 @@ class ClassMetadataInfo implements ClassMetadata
      * @var array
      */
     public $subClasses = array();
+
+    /**
+     * READ-ONLY: The names of all embedded classes based on properties.
+     *
+     * @var array
+     */
+    public $embeddedClasses = array();
 
     /**
      * READ-ONLY: The named queries allowed to be called directly from Repository.
@@ -884,6 +898,15 @@ class ClassMetadataInfo implements ClassMetadata
         $this->reflClass = $reflService->getClass($this->name);
 
         foreach ($this->fieldMappings as $field => $mapping) {
+            if (isset($mapping['declaredField'])) {
+                $this->reflFields[$field] = new ReflectionEmbeddedProperty(
+                    $reflService->getAccessibleProperty($this->name, $mapping['declaredField']),
+                    $reflService->getAccessibleProperty($this->embeddedClasses[$mapping['declaredField']], $mapping['originalField']),
+                    $this->embeddedClasses[$mapping['declaredField']]
+                );
+                continue;
+            }
+
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
@@ -925,8 +948,12 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function validateIdentifier()
     {
+        if ($this->isMappedSuperclass || $this->isEmbeddedClass) {
+            return;
+        }
+
         // Verify & complete identifier mapping
-        if ( ! $this->identifier && ! $this->isMappedSuperclass) {
+        if ( ! $this->identifier) {
             throw MappingException::identifierRequired($this->name);
         }
 
@@ -2162,9 +2189,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapField(array $mapping)
     {
         $this->_validateAndCompleteFieldMapping($mapping);
-        if (isset($this->fieldMappings[$mapping['fieldName']]) || isset($this->associationMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
-        }
+        $this->assertFieldNotMapped($mapping['fieldName']);
+
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -2412,9 +2438,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $sourceFieldName = $assocMapping['fieldName'];
 
-        if (isset($this->fieldMappings[$sourceFieldName]) || isset($this->associationMappings[$sourceFieldName])) {
-            throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
-        }
+        $this->assertFieldNotMapped($sourceFieldName);
 
         $this->associationMappings[$sourceFieldName] = $assocMapping;
     }
@@ -3043,5 +3067,50 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return null;
+    }
+
+    /**
+     * Map Embedded Class
+     *
+     * @array $mapping
+     * @return void
+     */
+    public function mapEmbedded(array $mapping)
+    {
+        $this->assertFieldNotMapped($mapping['fieldName']);
+
+        $this->embeddedClasses[$mapping['fieldName']] = $this->fullyQualifiedClassName($mapping['class']);
+    }
+
+    /**
+     * Inline the embeddable class
+     *
+     * @param string $property
+     * @param ClassMetadataInfo $embeddable
+     */
+    public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
+    {
+        foreach ($embeddable->fieldMappings as $fieldMapping) {
+            $fieldMapping['declaredField'] = $property;
+            $fieldMapping['originalField'] = $fieldMapping['fieldName'];
+            $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName']; // TODO: Change DQL parser to accept this dot notation
+            $fieldMapping['columnName'] = $property . "_" . $fieldMapping['columnName']; // TODO: Use naming strategy
+
+            $this->mapField($fieldMapping);
+        }
+    }
+
+    /**
+     * @param string $fieldName
+     * @throws MappingException
+     */
+    private function assertFieldNotMapped($fieldName)
+    {
+        if (isset($this->fieldMappings[$fieldName]) ||
+            isset($this->associationMappings[$fieldName]) ||
+            isset($this->embeddedClasses[$fieldName])) {
+
+            throw MappingException::duplicateFieldMapping($this->name, $fieldName);
+        }
     }
 }
