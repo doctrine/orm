@@ -3093,8 +3093,8 @@ class ClassMetadataInfo implements ClassMetadata
         foreach ($embeddable->fieldMappings as $fieldMapping) {
             $fieldMapping['declaredField'] = $property;
             $fieldMapping['originalField'] = $fieldMapping['fieldName'];
-            $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName']; // TODO: Change DQL parser to accept this dot notation
-            $fieldMapping['columnName'] = $property . "_" . $fieldMapping['columnName']; // TODO: Use naming strategy
+            $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
+            $fieldMapping['columnName'] = $property . "_" . $fieldMapping['columnName'];
 
             $this->mapField($fieldMapping);
         }
