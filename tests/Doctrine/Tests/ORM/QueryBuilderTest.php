@@ -410,7 +410,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('field = :field', (string) $qb->getDQLPart('where'));
+        $this->assertEquals('u.field = :field', (string) $qb->getDQLPart('where'));
         $this->assertNotNull($qb->getParameter('field'));
     }
 
