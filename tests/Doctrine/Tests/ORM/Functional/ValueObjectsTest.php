@@ -101,6 +101,24 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->assertEquals('funkytown', $person['address.city']);
         }
     }
+
+    /**
+     * @group dql
+     */
+    public function testDqlOnEmbeddedObjectsField()
+    {
+        $person = new DDC93Person('Johannes', new DDC93Address('Moo', '12345', 'Karlsruhe'));
+        $this->_em->persist($person);
+        $this->_em->flush($person);
+
+        $dql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.address.city = :city";
+        $loadedPerson = $this->_em->createQuery($dql)
+            ->setParameter('city', 'Karlsruhe')
+            ->getSingleResult();
+        $this->assertEquals($person, $loadedPerson);
+
+        $this->assertNull($this->_em->createQuery($dql)->setParameter('city', 'asdf')->getOneOrNullResult());
+    }
 }
 
 /**
@@ -118,6 +136,12 @@ class DDC93Person
 
     /** @Embedded(class="DDC93Address") */
     public $address;
+
+    public function __construct($name = null, DDC93Address $address = null)
+    {
+        $this->name = $name;
+        $this->address = $address;
+    }
 }
 
 /**
@@ -139,5 +163,12 @@ class DDC93Address
      * @Column(type="string")
      */
     public $city;
+
+    public function __construct($street = null, $zip = null, $city = null)
+    {
+        $this->street = $street;
+        $this->zip = $zip;
+        $this->city = $city;
+    }
 }
 

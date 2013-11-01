@@ -1049,7 +1049,7 @@ class Parser
      * Parses an arbitrary path expression and defers semantical validation
      * based on expected types.
      *
-     * PathExpression ::= IdentificationVariable "." identifier
+     * PathExpression ::= IdentificationVariable "." identifier [ ("." identifier)* ]
      *
      * @param integer $expectedTypes
      *
@@ -1065,6 +1065,12 @@ class Parser
             $this->match(Lexer::T_IDENTIFIER);
 
             $field = $this->lexer->token['value'];
+
+            while ($this->lexer->isNextToken(Lexer::T_DOT)) {
+                $this->match(Lexer::T_DOT);
+                $this->match(Lexer::T_IDENTIFIER);
+                $field .= '.'.$this->lexer->token['value'];
+            }
         }
 
         // Creating AST node
