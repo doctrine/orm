@@ -402,6 +402,9 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaWhere()
     {
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->eq('field', 'value'));
 
@@ -429,6 +432,9 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaLimit()
     {
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
         $criteria = new Criteria();
         $criteria->setFirstResult(2);
         $criteria->setMaxResults(10);
@@ -442,7 +448,11 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaUndefinedLimit()
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->setFirstResult(2)->setMaxResults(10);
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->setFirstResult(2)
+            ->setMaxResults(10);
+
         $criteria = new Criteria();
 
         $qb->addCriteria($criteria);
