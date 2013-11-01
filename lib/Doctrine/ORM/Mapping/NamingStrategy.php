@@ -57,7 +57,7 @@ interface NamingStrategy
      *
      * @return string
      */
-    function embeddedFieldToColumnName($propertyName, $embeddedColumnName);
+    function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null);
 
     /**
      * Returns the default reference column name.
