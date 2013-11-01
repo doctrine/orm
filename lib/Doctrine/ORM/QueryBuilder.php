@@ -1096,9 +1096,10 @@ class QueryBuilder
             }
         }
 
+        $rootAlias = $this->getRootAlias();
         if ($criteria->getOrderings()) {
             foreach ($criteria->getOrderings() as $sort => $order) {
-                $this->addOrderBy($this->getRootAlias() . '.' . $sort, $order);
+                $this->addOrderBy($rootAlias . '.' . $sort, $order);
             }
         }
 
