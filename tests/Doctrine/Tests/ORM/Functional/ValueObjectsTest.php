@@ -111,13 +111,32 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($person);
         $this->_em->flush($person);
 
-        $dql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.address.city = :city";
-        $loadedPerson = $this->_em->createQuery($dql)
+        // SELECT
+        $selectDql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.address.city = :city";
+        $loadedPerson = $this->_em->createQuery($selectDql)
             ->setParameter('city', 'Karlsruhe')
             ->getSingleResult();
         $this->assertEquals($person, $loadedPerson);
 
-        $this->assertNull($this->_em->createQuery($dql)->setParameter('city', 'asdf')->getOneOrNullResult());
+        $this->assertNull($this->_em->createQuery($selectDql)->setParameter('city', 'asdf')->getOneOrNullResult());
+
+        // UPDATE
+        $updateDql = "UPDATE " . __NAMESPACE__ . "\\DDC93Person p SET p.address.street = :street WHERE p.address.city = :city";
+        $this->_em->createQuery($updateDql)
+            ->setParameter('street', 'Boo')
+            ->setParameter('city', 'Karlsruhe')
+            ->execute();
+
+        $this->_em->refresh($person);
+        $this->assertEquals('Boo', $person->address->street);
+
+        // DELETE
+        $this->_em->createQuery("DELETE " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.city = :city")
+            ->setParameter('city', 'Karlsruhe')
+            ->execute();
+
+        $this->_em->clear();
+        $this->assertNull($this->_em->find(__NAMESPACE__.'\\DDC93Person', $person->id));
     }
 }
 
