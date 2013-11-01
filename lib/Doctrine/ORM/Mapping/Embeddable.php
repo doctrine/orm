@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Mapping;
 
 /**
  * @Annotation
- * @Target("PROPERTY")
+ * @Target("CLASS")
  */
 final class Embeddable implements Annotation
 {
