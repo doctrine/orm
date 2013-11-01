@@ -53,6 +53,14 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
+    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName)
+    {
+        return $propertyName.ucfirst($embeddedColumnName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function referenceColumnName()
     {
         return 'id';

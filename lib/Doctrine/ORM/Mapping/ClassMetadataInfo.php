@@ -3094,7 +3094,7 @@ class ClassMetadataInfo implements ClassMetadata
             $fieldMapping['declaredField'] = $property;
             $fieldMapping['originalField'] = $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
-            $fieldMapping['columnName'] = $property . "_" . $fieldMapping['columnName'];
+            $fieldMapping['columnName'] = $this->namingStrategy->embeddedFieldToColumnName($property, $fieldMapping['columnName']);
 
             $this->mapField($fieldMapping);
         }

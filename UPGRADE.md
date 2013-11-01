@@ -1,3 +1,11 @@
+# Upgrade to 2.5
+
+## BC BREAK: NamingStrategy has a new method ``embeddedFieldToColumnName($propertyName, $embeddedColumnName)``
+
+This method generates the column name for fields of embedded objects. If you implement your custom NamingStrategy, you
+now also need to implement this new method.
+
+
 # Upgrade to 2.4
 
 ## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
