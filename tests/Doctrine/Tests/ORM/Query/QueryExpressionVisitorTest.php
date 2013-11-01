@@ -47,7 +47,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->visitor = new QueryExpressionVisitor();
+        $this->visitor = new QueryExpressionVisitor('o');
     }
 
     /**
@@ -71,22 +71,22 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
         $qb = new QueryBuilder();
 
         return array(
-            array($cb->eq('field', 'value'), $qb->eq('field', ':field'), new Parameter('field', 'value')),
-            array($cb->neq('field', 'value'), $qb->neq('field', ':field'), new Parameter('field', 'value')),
-            array($cb->eq('field', null), $qb->isNull('field')),
-            array($cb->neq('field', null), $qb->isNotNull('field')),
-            array($cb->isNull('field'), $qb->isNull('field')),
+            array($cb->eq('field', 'value'), $qb->eq('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->neq('field', 'value'), $qb->neq('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->eq('field', null), $qb->isNull('o.field')),
+            array($cb->neq('field', null), $qb->isNotNull('o.field')),
+            array($cb->isNull('field'), $qb->isNull('o.field')),
 
-            array($cb->gt('field', 'value'), $qb->gt('field', ':field'), new Parameter('field', 'value')),
-            array($cb->gte('field', 'value'), $qb->gte('field', ':field'), new Parameter('field', 'value')),
-            array($cb->lt('field', 'value'), $qb->lt('field', ':field'), new Parameter('field', 'value')),
-            array($cb->lte('field', 'value'), $qb->lte('field', ':field'), new Parameter('field', 'value')),
+            array($cb->gt('field', 'value'), $qb->gt('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->gte('field', 'value'), $qb->gte('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->lt('field', 'value'), $qb->lt('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->lte('field', 'value'), $qb->lte('o.field', ':field'), new Parameter('field', 'value')),
 
-            array($cb->in('field', array('value')), $qb->in('field', ':field'), new Parameter('field', array('value'))),
-            array($cb->notIn('field', array('value')), $qb->notIn('field', ':field'), new Parameter('field', array('value'))),
+            array($cb->in('field', array('value')), $qb->in('o.field', ':field'), new Parameter('field', array('value'))),
+            array($cb->notIn('field', array('value')), $qb->notIn('o.field', ':field'), new Parameter('field', array('value'))),
 
             // Test parameter conversion
-            array($cb->eq('object.field', 'value'), $qb->eq('object.field', ':object_field'), new Parameter('object_field', 'value')),
+            array($cb->eq('object.field', 'value'), $qb->eq('o.object.field', ':object_field'), new Parameter('object_field', 'value')),
         );
     }
 
