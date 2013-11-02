@@ -3088,7 +3088,8 @@ class ClassMetadataInfo implements ClassMetadata
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = array(
-            'class' => $this->fullyQualifiedClassName($mapping['class'])
+            'class' => $this->fullyQualifiedClassName($mapping['class']),
+            'columnPrefix' => $mapping['columnPrefix'],
         );
     }
 
@@ -3104,7 +3105,10 @@ class ClassMetadataInfo implements ClassMetadata
             $fieldMapping['declaredField'] = $property;
             $fieldMapping['originalField'] = $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
-            $fieldMapping['columnName'] = $this->namingStrategy->embeddedFieldToColumnName($property, $fieldMapping['columnName'], $this->reflClass->name, $embeddable->reflClass->name);
+
+            $fieldMapping['columnName'] = ! empty($this->embeddedClasses[$property]['columnPrefix'])
+                    ? $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName']
+                        : $this->namingStrategy->embeddedFieldToColumnName($property, $fieldMapping['columnName'], $this->reflClass->name, $embeddable->reflClass->name);
 
             $this->mapField($fieldMapping);
         }
