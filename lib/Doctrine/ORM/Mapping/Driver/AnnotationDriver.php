@@ -242,7 +242,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 ||
                 $metadata->isInheritedField($property->name)
                 ||
-                $metadata->isInheritedAssociation($property->name)) {
+                $metadata->isInheritedAssociation($property->name)
+                ||
+                $metadata->isInheritedEmbeddedClass($property->name)) {
                 continue;
             }
 

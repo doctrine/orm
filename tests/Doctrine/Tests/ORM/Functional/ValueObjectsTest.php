@@ -15,6 +15,8 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Vehicle'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Car'),
             ));
         } catch(\Exception $e) {
         }
@@ -146,6 +148,16 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
             ->execute();
     }
+
+    public function testEmbeddableWithInheritance()
+    {
+        $car = new DDC93Car(new DDC93Address('Foo', '12345', 'Asdf'));
+        $this->_em->persist($car);
+        $this->_em->flush($car);
+
+        $reloadedCar = $this->_em->find(__NAMESPACE__.'\\DDC93Car', $car->id);
+        $this->assertEquals($car, $reloadedCar);
+    }
 }
 
 /**
@@ -169,6 +181,36 @@ class DDC93Person
         $this->name = $name;
         $this->address = $address;
     }
+}
+
+/**
+ * @Entity
+ *
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name = "t", type = "string", length = 10)
+ * @DiscriminatorMap({
+ *     "v" = "Doctrine\Tests\ORM\Functional\DDC93Car",
+ * })
+ */
+abstract class DDC93Vehicle
+{
+    /** @Id @GeneratedValue(strategy = "AUTO") @Column(type = "integer") */
+    public $id;
+
+    /** @Embedded(class = "DDC93Address") */
+    public $address;
+
+    public function __construct(DDC93Address $address)
+    {
+        $this->address = $address;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DDC93Car extends DDC93Vehicle
+{
 }
 
 /**

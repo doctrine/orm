@@ -899,10 +899,12 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField'])) {
+                $declaringClass = isset($this->embeddedClasses[$field]['declared']) ? $this->embeddedClasses[$field]['declared'] : $this->name;
+
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
-                    $reflService->getAccessibleProperty($this->name, $mapping['declaredField']),
-                    $reflService->getAccessibleProperty($this->embeddedClasses[$mapping['declaredField']], $mapping['originalField']),
-                    $this->embeddedClasses[$mapping['declaredField']]
+                    $reflService->getAccessibleProperty($declaringClass, $mapping['declaredField']),
+                    $reflService->getAccessibleProperty($this->embeddedClasses[$mapping['declaredField']]['class'], $mapping['originalField']),
+                    $this->embeddedClasses[$mapping['declaredField']]['class']
                 );
                 continue;
             }
@@ -2110,6 +2112,11 @@ class ClassMetadataInfo implements ClassMetadata
         return isset($this->associationMappings[$fieldName]['inherited']);
     }
 
+    public function isInheritedEmbeddedClass($fieldName)
+    {
+        return isset($this->embeddedClasses[$fieldName]['inherited']);
+    }
+
     /**
      * Sets the name of the primary table the class is mapped to.
      *
@@ -3079,7 +3086,9 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->assertFieldNotMapped($mapping['fieldName']);
 
-        $this->embeddedClasses[$mapping['fieldName']] = $this->fullyQualifiedClassName($mapping['class']);
+        $this->embeddedClasses[$mapping['fieldName']] = array(
+            'class' => $this->fullyQualifiedClassName($mapping['class'])
+        );
     }
 
     /**
