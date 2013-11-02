@@ -22,21 +22,21 @@ implement the ``NotifyPropertyChanged`` interface from the
 .. code-block:: php
 
     <?php
-    use Doctrine\Common\NotifyPropertyChanged,
-        Doctrine\Common\PropertyChangedListener;
+    use Doctrine\Common\NotifyPropertyChanged;
+    use Doctrine\Common\PropertyChangedListener;
     
     abstract class DomainObject implements NotifyPropertyChanged
     {
-        private $_listeners = array();
+        private $listeners = array();
     
         public function addPropertyChangedListener(PropertyChangedListener $listener) {
-            $this->_listeners[] = $listener;
+            $this->listeners[] = $listener;
         }
     
         /** Notifies listeners of a change. */
-        protected function _onPropertyChanged($propName, $oldValue, $newValue) {
-            if ($this->_listeners) {
-                foreach ($this->_listeners as $listener) {
+        protected function onPropertyChanged($propName, $oldValue, $newValue) {
+            if ($this->listeners) {
+                foreach ($this->listeners as $listener) {
                     $listener->propertyChanged($this, $propName, $oldValue, $newValue);
                 }
             }
@@ -44,7 +44,7 @@ implement the ``NotifyPropertyChanged`` interface from the
     }
 
 Then, in each property setter of concrete, derived domain classes,
-you need to invoke \_onPropertyChanged as follows to notify
+you need to invoke onPropertyChanged as follows to notify
 listeners:
 
 .. code-block:: php
@@ -58,7 +58,7 @@ listeners:
     
         public function setData($data) {
             if ($data != $this->data) { // check: is it actually modified?
-                $this->_onPropertyChanged('data', $this->data, $data);
+                $this->onPropertyChanged('data', $this->data, $data);
                 $this->data = $data;
             }
         }

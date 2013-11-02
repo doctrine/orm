@@ -85,6 +85,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
+        } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
+            $metadata->isEmbeddedClass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
@@ -247,7 +249,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
-            // Check for JoinColummn/JoinColumns annotations
+            // Check for JoinColumn/JoinColumns annotations
             $joinColumns = array();
 
             if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
@@ -364,6 +366,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+            } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
+                $mapping['class'] = $embeddedAnnot->class;
+                $metadata->mapEmbedded($mapping);
             }
         }
 
@@ -375,7 +380,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $override   = array();
                 $fieldName  = $associationOverride->name;
 
-                // Check for JoinColummn/JoinColumns annotations
+                // Check for JoinColumn/JoinColumns annotations
                 if ($associationOverride->joinColumns) {
                     $joinColumns = array();
                     foreach ($associationOverride->joinColumns as $joinColumn) {
@@ -533,6 +538,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Parse the given JoinColumn as array
      *
+     * @param JoinColumn $joinColumn
      * @return array
      */
     private function joinColumnToArray(JoinColumn $joinColumn)

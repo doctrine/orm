@@ -25,7 +25,7 @@ use Doctrine\ORM\EntityManager;
 /**
  * Provides event arguments for the preFlush event.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.org
  * @since       2.0
  * @author      Roman Borschel <roman@code-factory.de>
@@ -37,9 +37,6 @@ class OnFlushEventArgs extends EventArgs
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
-
-    //private $entitiesToPersist = array();
-    //private $entitiesToRemove = array();
 
     /**
      * Constructor.
@@ -61,25 +58,4 @@ class OnFlushEventArgs extends EventArgs
         return $this->em;
     }
 
-    /*
-    public function addEntityToPersist($entity)
-    {
-
-    }
-
-    public function addEntityToRemove($entity)
-    {
-
-    }
-
-    public function addEntityToUpdate($entity)
-    {
-
-    }
-
-    public function getEntitiesToPersist()
-    {
-        return $this->_entitiesToPersist;
-    }
-    */
 }

@@ -23,7 +23,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 
 /**
- * Special generator for application-assigned identifiers (doesnt really generate anything).
+ * Special generator for application-assigned identifiers (doesn't really generate anything).
  *
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

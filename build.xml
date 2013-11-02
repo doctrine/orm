@@ -1,114 +1,101 @@
 <?xml version="1.0"?>
 <project name="DoctrineORM" default="build" basedir=".">
-    <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
-    <import file="${project.basedir}/lib/vendor/doctrine-build-common/packaging.xml" />
-
     <property file="build.properties" />
 
-    <!--
-        Fileset for artifacts shared across all distributed packages.
-    -->
-    <fileset id="shared-artifacts" dir=".">
-        <include name="LICENSE"/>
-        <include name="UPGRADE*" />
-        <include name="doctrine-mapping.xsd" />
-    </fileset>
-
-    <!--
-        Fileset for command line scripts
-    -->
-    <fileset id="bin-scripts" dir="./bin">
-        <include name="doctrine"/>
-        <include name="doctrine-pear.php"/>
-        <include name="doctrine.bat"/>
-    </fileset>
-
-    <!--
-        Fileset for the sources of the Doctrine Common dependency.
-    -->
-    <fileset id="common-sources" dir="./lib/vendor/doctrine-common/lib">
-        <include name="Doctrine/Common/**"/>
-    </fileset>
-
-    <!--
-        Fileset for the sources of the Doctrine DBAL dependency.
-    -->
-    <fileset id="dbal-sources" dir="./lib/vendor/doctrine-dbal/lib">
-        <include name="Doctrine/DBAL/**"/>
-    </fileset>
-
-    <!--
-        Fileset for the sources of the Doctrine ORM.
-    -->
-    <fileset id="orm-sources" dir="./lib">
-        <include name="Doctrine/ORM/**"/>
-    </fileset>
-
-    <!--
-      Fileset for source of the Symfony YAML and Console components.
-    -->
-    <fileset id="symfony-sources" dir="./lib/vendor">
-        <include name="Symfony/Component/**"/>
-        <exclude name="**/.git/**" />
-    </fileset>
-
-    <!--
-        Builds ORM package, preparing it for distribution.
-    -->
-    <target name="copy-files" depends="prepare">
-        <copy todir="${build.dir}/${project.name}-${version}">
-            <fileset refid="shared-artifacts"/>
-        </copy>
-        <copy todir="${build.dir}/${project.name}-${version}">
-            <fileset refid="common-sources"/>
-            <fileset refid="dbal-sources"/>
-            <fileset refid="orm-sources"/>
-        </copy>
-        <copy todir="${build.dir}/${project.name}-${version}/Doctrine">
-            <fileset refid="symfony-sources"/>
-        </copy>
-        <copy todir="${build.dir}/${project.name}-${version}/bin">
-            <fileset refid="bin-scripts"/>
-        </copy>
+    <target name="php">
+        <exec executable="which" outputproperty="php_executable">
+            <arg value="php" />
+        </exec>
     </target>
 
-    <!--
-        Builds distributable PEAR packages.
-    -->
-    <target name="define-pear-package" depends="copy-files">
-        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/${project.name}-${version}">
-           <name>DoctrineORM</name>
-           <summary>Doctrine Object Relational Mapper</summary>
-           <channel>pear.doctrine-project.org</channel>
-           <description>The Doctrine ORM package is the primary package containing the object relational mapper.</description>
-           <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
-           <lead user="guilhermeblanco" name="Guilherme Blanco" email="guilhermeblanco@gmail.com" />
-           <lead user="romanb" name="Roman Borschel" email="roman@code-factory.org" />
-           <lead user="beberlei" name="Benjamin Eberlei" email="kontakt@beberlei.de" />
-           <license>LGPL</license>
-           <version release="${pear.version}" api="${pear.version}" />
-           <stability release="${pear.stability}" api="${pear.stability}" />
-           <notes>-</notes>
-           <dependencies>
-               <php minimum_version="5.3.0" />
-               <pear minimum_version="1.6.0" recommended_version="1.6.1" />
-               <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" />
-               <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" />
-               <package name="Console" channel="pear.symfony.com" minimum_version="2.0.0" />
-               <package name="Yaml" channel="pear.symfony.com" minimum_version="2.0.0" />
-           </dependencies>
-           <dirroles key="bin">script</dirroles>
-           <ignore>Doctrine/Common/</ignore>
-           <ignore>Doctrine/DBAL/</ignore>
-           <ignore>Symfony/Component/Yaml/</ignore>
-           <ignore>Symfony/Component/Console/</ignore>
-           <release>
-                <install as="doctrine" name="bin/doctrine" />
-                <install as="doctrine.php" name="bin/doctrine-pear.php" />
-                <install as="doctrine.bat" name="bin/doctrine.bat" />
-           </release>
-           <replacement path="bin/doctrine" type="pear-config" from="@php_bin@" to="php_bin" />
-           <replacement path="bin/doctrine.bat" type="pear-config" from="@bin_dir@" to="bin_dir" />
-        </d51pearpkg2>
+    <target name="prepare">
+        <mkdir dir="build" />
     </target>
+
+    <target name="build" depends="check-git-checkout-clean,prepare,php,composer">
+        <exec executable="${php_executable}">
+            <arg value="build/composer.phar" />
+            <arg value="archive" />
+            <arg value="--dir=build" />
+        </exec>
+    </target>
+
+    <target name="composer" depends="php,composer-check,composer-download">
+        <exec executable="${php_executable}">
+            <arg value="build/composer.phar" />
+            <arg value="install" />
+        </exec>
+    </target>
+
+    <target name="composer-check" depends="prepare">
+        <available file="build/composer.phar" property="composer.present"/>
+    </target>
+
+    <target name="composer-download" unless="composer.present">
+        <exec executable="wget">
+            <arg value="-Obuild/composer.phar" />
+            <arg value="http://getcomposer.org/composer.phar" />
+        </exec>
+    </target>
+
+    <target name="make-release" depends="check-git-checkout-clean,prepare,php">
+        <replace file="${project.version_file}" token="-DEV" value="" failOnNoReplacements="true" />
+        <exec executable="${php_executable}" outputproperty="doctrine.current_version" failonerror="true">
+            <arg value="-r" />
+            <arg value="require_once '${project.version_file}';echo ${project.version_class}::VERSION;" />
+        </exec>
+        <exec executable="${php_executable}" outputproperty="doctrine.next_version" failonerror="true">
+            <arg value="-r" />
+            <arg value="$parts = explode('.', str_ireplace(array('-DEV', '-ALPHA', '-BETA'), '', '${doctrine.current_version}'));
+                if (count($parts) != 3) {
+                    throw new \InvalidArgumentException('Version is assumed in format x.y.z, ${doctrine.current_version} given');
+                }
+                $parts[2]++;
+                echo implode('.', $parts);
+            " />
+        </exec>
+
+        <git-commit file="${project.version_file}" message="Release ${doctrine.current_version}" />
+        <git-tag version="${doctrine.current_version}" />
+        <replace file="${project.version_file}" token="${doctrine.current_version}" value="${doctrine.next_version}-DEV" />
+        <git-commit file="${project.version_file}" message="Bump version to ${doctrine.next_version}" />
+    </target>
+
+    <target name="check-git-checkout-clean">
+        <exec executable="git" failonerror="true">
+            <arg value="diff-index" />
+            <arg value="--quiet" />
+            <arg value="HEAD" />
+        </exec>
+    </target>
+
+    <macrodef name="git-commit">
+        <attribute name="file" default="NOT SET"/>
+        <attribute name="message" default="NOT SET"/>
+
+        <sequential>
+            <exec executable="git">
+                <arg value="add" />
+                <arg value="@{file}" />
+            </exec>
+            <exec executable="git">
+                <arg value="commit" />
+                <arg value="-m" />
+                <arg value="@{message}" />
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="git-tag">
+        <attribute name="version" default="NOT SET" />
+
+        <sequential>
+            <exec executable="git">
+                <arg value="tag" />
+                <arg value="-m" />
+                <arg value="v@{version}" />
+                <arg value="v@{version}" />
+            </exec>
+        </sequential>
+    </macrodef>
 </project>

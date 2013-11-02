@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Query;
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @author		Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        http://www.doctrine-project.org
  * @since       2.0
  */

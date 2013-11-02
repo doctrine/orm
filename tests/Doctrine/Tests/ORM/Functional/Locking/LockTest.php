@@ -38,7 +38,7 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
      * @group DDC-178
      * @group locking
      */
-    public function testLockVersionedEntity_MissmatchThrowsException() {
+    public function testLockVersionedEntity_MismatchThrowsException() {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";

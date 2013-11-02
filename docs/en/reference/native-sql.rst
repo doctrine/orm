@@ -1,17 +1,21 @@
 Native SQL
 ==========
 
-A ``NativeQuery`` lets you execute native SELECT SQL statements, mapping the results
-according to your specifications. Such a specification that
-describes how an SQL result set is mapped to a Doctrine result is
-represented by a ``ResultSetMapping``. It describes how each column
-of the database result should be mapped by Doctrine in terms of the
-object graph. This allows you to map arbitrary SQL code to objects,
-such as highly vendor-optimized SQL or stored-procedures.
+With ``NativeQuery`` you can execute native SELECT SQL statements
+and map the results to Doctrine entities or any other result format
+supported by Doctrine.
 
-Because writing ``ResultSetMapping`` is not so simple, there is a convenience
-wrapper around it called a ``ResultSetMappingBuilder``. The last section
-of this chapter describes its usage.
+In order to make this mapping possible, you need to describe
+to Doctrine what columns in the result map to which entity property.
+This description is represented by a ``ResultSetMapping`` object.
+
+With this feature you can map arbitrary SQL code to objects, such as highly
+vendor-optimized SQL or stored-procedures.
+
+Writing ``ResultSetMapping`` from scratch is complex, but there is a convenience
+wrapper around it called a ``ResultSetMappingBuilder``. It can generate
+the mappings for you based on Entities and even generates the ``SELECT``
+clause based on this information for you.
 
 .. note::
 
@@ -25,14 +29,75 @@ The NativeQuery class
 ---------------------
 
 To create a ``NativeQuery`` you use the method
-``EntityManager#createNativeQuery($sql, $resultSetMapping)``. As
-you can see in the signature of this method, it expects 2
-ingredients: The SQL you want to execute and the
-``ResultSetMapping`` that describes how the results will be
+``EntityManager#createNativeQuery($sql, $resultSetMapping)``. As you can see in
+the signature of this method, it expects 2 ingredients: The SQL you want to
+execute and the ``ResultSetMapping`` that describes how the results will be
 mapped.
 
-Once you obtained an instance of a ``NativeQuery``, you can bind
-parameters to it and finally execute it.
+Once you obtained an instance of a ``NativeQuery``, you can bind parameters to
+it with the same API that ``Query`` has and execute it.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Query\ResultSetMapping;
+
+    $rsm = new ResultSetMapping();
+    // build rsm here
+
+    $query = $entityManager->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
+    $query->setParameter(1, 'romanb');
+
+    $users = $query->getResult();
+
+ResultSetMappingBuilder
+-----------------------
+
+An easy start into ResultSet mapping is the ``ResultSetMappingBuilder`` object.
+This has several benefits:
+
+- The builder takes care of automatically updating your ``ResultSetMapping``
+  when the fields or associations change on the metadata of an entity.
+- You can generate the required ``SELECT`` expression for a builder
+  by converting it to a string.
+- The API is much simpler than the usual ``ResultSetMapping`` API.
+
+One downside is that the builder API does not yet support entities
+with inheritance hierachies.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ORM\Query\ResultSetMappingBuilder;
+
+    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+           "FROM users u INNER JOIN address a ON u.address_id = a.id";
+
+    $rsm = new ResultSetMappingBuilder($entityManager);
+    $rsm->addRootEntityFromClassMetadata('MyProject\User', 'u');
+    $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', 'u', 'address', array('id' => 'address_id'));
+
+The builder extends the ``ResultSetMapping`` class and as such has all the functionality of it as well.
+
+.. versionadded:: 2.4
+
+Starting with Doctrine ORM 2.4 you can generate the ``SELECT`` clause
+from a ``ResultSetMappingBuilder``. You can either cast the builder
+object to ``(string)`` and the DQL aliases are used as SQL table aliases
+or use the ``generateSelectClause($tableAliases)`` method and pass
+a mapping from DQL alias (key) to SQL alias (value)
+
+.. code-block:: php
+
+    <?php
+
+    $selectClause = $builder->generateSelectClause(array(
+        'u' => 't1',
+        'g' => 't2'
+    ));
+    $sql = "SELECT " . $selectClause . " FROM users t1 JOIN groups t2 ON t1.group_id = t2.id";
+
 
 The ResultSetMapping
 --------------------
@@ -136,7 +201,7 @@ joined entity result.
 Field results
 ~~~~~~~~~~~~~
 
-A field result describes the mapping of a single column in an SQL
+A field result describes the mapping of a single column in a SQL
 result set to a field in an entity. As such, field results are
 inherently bound to entity results. You add a field result through
 ``ResultSetMapping#addFieldResult()``. Again, let's examine the
@@ -165,7 +230,7 @@ column should be set.
 Scalar results
 ~~~~~~~~~~~~~~
 
-A scalar result describes the mapping of a single column in an SQL
+A scalar result describes the mapping of a single column in a SQL
 result set to a scalar value in the Doctrine result. Scalar results
 are typically used for aggregate values but any column in the SQL
 result set can be mapped as a scalar value. To add a scalar result
@@ -190,7 +255,7 @@ of the column will be placed in the transformed Doctrine result.
 Meta results
 ~~~~~~~~~~~~
 
-A meta result describes a single column in an SQL result set that
+A meta result describes a single column in a SQL result set that
 is either a foreign key or a discriminator column. These columns
 are essential for Doctrine to properly construct objects out of SQL
 result sets. To add a column as a meta result use
@@ -203,18 +268,21 @@ detail:
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
      * 
-     * @param string $alias
-     * @param string $columnAlias
-     * @param string $columnName
+     * @param string  $alias
+     * @param string  $columnAlias
+     * @param string  $columnName
+     * @param boolean $isIdentifierColumn
      */
-    public function addMetaResult($alias, $columnAlias, $columnName)
+    public function addMetaResult($alias, $columnAlias, $columnName, $isIdentifierColumn = false)
 
 The first parameter is the alias of the entity result to which the
 meta column belongs. A meta result column (foreign key or
-discriminator column) always belongs to to an entity result. The
+discriminator column) always belongs to an entity result. The
 second parameter is the column alias/name of the column in the SQL
 result set and the third parameter is the column name used in the
 mapping.
+The fourth parameter should be set to true in case the primary key
+of the entity is the foreign key you're adding.
 
 Discriminator Column
 ~~~~~~~~~~~~~~~~~~~~
@@ -366,35 +434,6 @@ are actually a subtype of User. When using DQL, Doctrine
 automatically includes the necessary joins for this mapping
 strategy but with native SQL it is your responsibility.
 
-ResultSetMappingBuilder
------------------------
-
-There are some downsides with Native SQL queries. The primary one is that you have to adjust all result set mapping
-definitions if names of columns change. In DQL this is detected dynamically when the Query is regenerated with
-the current metadata.
-
-To avoid this hassle you can use the ``ResultSetMappingBuilder`` class. It allows to add all columns of an entity
-to a result set mapping. To avoid clashes you can optionally rename specific columns when you are doing the same
-in your sQL statement:
-
-.. code-block:: php
-
-    <?php
-
-    use Doctrine\ORM\Query\ResultSetMappingBuilder;
-
-    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
-           "FROM users u INNER JOIN address a ON u.address_id = a.id";
-
-    $rsm = new ResultSetMappingBuilder($entityManager);
-    $rsm->addRootEntityFromClassMetadata('MyProject\User', 'u');
-    $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', 'u', 'address', array('id' => 'address_id'));
-
-For entities with more columns the builder is very convenient to use. It extends the ``ResultSetMapping`` class
-and as such has all the functionality of it as well. Currently the ``ResultSetMappingBuilder`` does not support
-entities with inheritance.
-
-
 Named Native Query
 ------------------
 
@@ -543,12 +582,12 @@ it represents the name of a defined @SqlResultSetMapping.
 
 Things to note:
     - The resultset mapping declares the entities retrieved by this native query.
-    - Each field of the entity is bound to an SQL alias (or column name).
+    - Each field of the entity is bound to a SQL alias (or column name).
     - All fields of the entity including the ones of subclasses
       and the foreign key columns of related entities have to be present in the SQL query.
     - Field definitions are optional provided that they map to the same
       column name as the one declared on the class property.
-    - ``__CLASS__`` is a alias for the mapped class
+    - ``__CLASS__`` is an alias for the mapped class
 
 
 In the above example,
@@ -564,7 +603,6 @@ Let's now see an implicit declaration of the property / column.
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
@@ -648,7 +686,6 @@ followed by a dot ("."), followed by the name or the field or property of the pr
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
@@ -766,7 +803,6 @@ you can use the resultClass attribute instead of resultSetMapping:
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(
@@ -814,7 +850,6 @@ You actually can even mix, entities and scalar returns in the same native query 
 
         <?php
         namespace MyProject\Model;
-            <?php
             /**
              * @NamedNativeQueries({
              *      @NamedNativeQuery(

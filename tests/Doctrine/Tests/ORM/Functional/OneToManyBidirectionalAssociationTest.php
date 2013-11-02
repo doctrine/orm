@@ -173,14 +173,36 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
         $this->assertEquals(2, count($results));
     }
-	
+
+    /**
+     * @group DDC-2340
+     */
+    public function testMatchingOnDirtyCollection()
+    {
+        $this->_createFixture();
+
+        $product  = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $this->product->getId());
+
+        $thirdFeature = new ECommerceFeature();
+        $thirdFeature->setDescription('Model writing tutorial');
+
+        $features = $product->getFeatures();
+        $features->add($thirdFeature);
+
+        $results = $features->matching(new Criteria(
+            Criteria::expr()->eq('description', 'Model writing tutorial')
+        ));
+
+        $this->assertEquals(2, count($results));
+    }
+
     public function testMatchingBis()
     {
         $this->_createFixture();
 
         $product  = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $this->product->getId());
         $features = $product->getFeatures();
-        
+
         $thirdFeature = new ECommerceFeature();
         $thirdFeature->setDescription('Third feature');
         $product->addFeature($thirdFeature);

@@ -184,6 +184,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Execute inserts on subtables.
             // The order doesn't matter because all child tables link to the root table via FK.
             foreach ($subTableStmts as $tableName => $stmt) {
+                /** @var \Doctrine\DBAL\Statement $stmt */
                 $paramIndex = 1;
                 $data       = isset($insertData[$tableName])
                     ? $insertData[$tableName]
@@ -196,7 +197,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 }
 
                 foreach ($data as $columnName => $value) {
-                    $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
+                    if (!is_array($id) || !isset($id[$columnName])) {
+                        $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
+                    }
                 }
 
                 $stmt->execute();
@@ -302,31 +305,31 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
-            $contitions     = array();
+            $conditions     = array();
             $parentClass    = $this->em->getClassMetadata($parentClassName);
             $tableAlias     = $this->getSQLTableAlias($parentClassName);
             $joinSql       .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
 
             foreach ($identifierColumn as $idColumn) {
-                $contitions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
 
-            $joinSql .= implode(' AND ', $contitions);
+            $joinSql .= implode(' AND ', $conditions);
         }
 
         // OUTER JOIN sub tables
         foreach ($this->class->subClasses as $subClassName) {
-            $contitions  = array();
+            $conditions  = array();
             $subClass    = $this->em->getClassMetadata($subClassName);
             $tableAlias  = $this->getSQLTableAlias($subClassName);
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumn as $idColumn) {
-                $contitions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
 
-            $joinSql .= implode(' AND ', $contitions);
+            $joinSql .= implode(' AND ', $conditions);
         }
 
         if ($assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {

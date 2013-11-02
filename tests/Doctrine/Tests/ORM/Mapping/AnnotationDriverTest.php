@@ -190,7 +190,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1156
      */
-    public function testMappedSuperclassInMiddleOfInheritanceHierachy()
+    public function testMappedSuperclassInMiddleOfInheritanceHierarchy()
     {
         $annotationDriver = $this->_loadDriver();
 

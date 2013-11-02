@@ -11,21 +11,27 @@ require_once __DIR__ . '/../../../TestInit.php';
  */
 class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
-    const CLASS_NAME = '\Doctrine\Tests\Models\Quote\SimpleEntity';
+    const CLASS_NAME = 'Doctrine\Tests\Models\Quote\SimpleEntity';
 
     protected function setUp()
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(self::CLASS_NAME),
-            ));
-        } catch(\Exception $e) {
-        }
+
+        $this->_schemaTool->createSchema(array(
+            $this->_em->getClassMetadata(self::CLASS_NAME),
+        ));
     }
 
-    public function testCreateRetreaveUpdateDelete()
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $this->_schemaTool->dropSchema(array(
+            $this->_em->getClassMetadata(self::CLASS_NAME),
+        ));
+    }
+
+    public function testCreateRetrieveUpdateDelete()
     {
         $e1 = new SimpleEntity('Bar 1');
         $e2 = new SimpleEntity('Foo 1');
@@ -39,7 +45,7 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e1Id   = $e1->id;
         $e2Id   = $e2->id;
 
-        // Retreave
+        // Retrieve
         $e1     = $this->_em->find(self::CLASS_NAME, $e1Id);
         $e2     = $this->_em->find(self::CLASS_NAME, $e2Id);
 

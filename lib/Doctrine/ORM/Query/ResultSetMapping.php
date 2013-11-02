@@ -154,6 +154,13 @@ class ResultSetMapping
     public $newObjectMappings = array();
 
     /**
+     * Maps metadata parameter names to the metadata attribute.
+     *
+     * @var array
+     */
+    public $metadataParameterMapping = array();
+
+    /**
      * Adds an entity result to this ResultSetMapping.
      *
      * @param string $class            The class name of the entity.
@@ -211,7 +218,7 @@ class ResultSetMapping
     {
         $found = false;
 
-        foreach ($this->fieldMappings as $columnName => $columnFieldName) {
+        foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
             if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) continue;
 
             $this->addIndexByColumn($alias, $columnName);
@@ -372,6 +379,17 @@ class ResultSetMapping
     }
 
     /**
+     * Adds a metadata parameter mappings.
+     *
+     * @param mixed $parameter      The parameter name in the SQL result set.
+     * @param string $attribute     The metadata attribute.
+     */
+    public function addMetadataParameterMapping($parameter, $attribute)
+    {
+        $this->metadataParameterMapping[$parameter] = $attribute;
+    }
+
+    /**
      * Checks whether a column with a given name is mapped as a scalar result.
      *
      * @param string $columnName The name of the column in the SQL result set.
@@ -525,20 +543,25 @@ class ResultSetMapping
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
      *
-     * @param string $alias
-     * @param string $columnName
-     * @param string $fieldName
+     * @param string $alias                 The result alias with which the meta result should be placed in the result structure.
+     * @param string $columnName            The name of the column in the SQL result set.
+     * @param string $fieldName             The name of the field on the declaring class.
      * @param bool   $isIdentifierColumn
+     * @param string $type                  The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      */
-    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false)
+    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
     {
         $this->metaMappings[$columnName] = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
 
         if ($isIdentifierColumn) {
             $this->isIdentifierColumn[$alias][$columnName] = true;
+        }
+
+        if ($type) {
+            $this->typeMappings[$columnName] = $type;
         }
 
         return $this;

@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManager;
 /**
  * Provides event arguments for the onClear event.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.org
  * @since       2.0
  * @author      Roman Borschel <roman@code-factory.de>

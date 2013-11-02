@@ -128,7 +128,7 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSupportsGreatherThanClause()
+    public function testSupportsGreaterThanClause()
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id > ?2',
@@ -136,7 +136,7 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSupportsGreatherThanOrEqualToClause()
+    public function testSupportsGreaterThanOrEqualToClause()
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id >= ?2',

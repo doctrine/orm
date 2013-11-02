@@ -1,4 +1,26 @@
+# Upgrade to 2.5
+
+## BC BREAK: NamingStrategy has a new method ``embeddedFieldToColumnName($propertyName, $embeddedColumnName)``
+
+This method generates the column name for fields of embedded objects. If you implement your custom NamingStrategy, you
+now also need to implement this new method.
+
+
 # Upgrade to 2.4
+
+## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
+
+In Doctrine 2.3 it was possible to use the new ``matching($criteria)``
+functionality by adding constraints for assocations based on ID:
+
+    Criteria::expr()->eq('association', $assocation->getId());
+
+This functionality does not work on InMemory collections however, because
+in memory criteria compares object values based on reference.
+As of 2.4 the above code will throw an exception. You need to change
+offending code to pass the ``$assocation`` reference directly:
+
+    Criteria::expr()->eq('association', $assocation);
 
 ## Composer is now the default autoloader
 
@@ -10,6 +32,23 @@ Support for GIT submodules is removed.
 Before 2.4 the postFlush and onFlush events were only called when there were
 actually entities that changed. Now these events are called no matter if there
 are entities in the UoW or changes are found.
+
+## Parenthesis are now considered in arithmetic expression
+
+Before 2.4 parenthesis are not considered in arithmetic primary expression.
+That's conceptually wrong, since it might result in wrong values. For example:
+
+The DQL:
+
+    SELECT 100 / ( 2 * 2 ) FROM MyEntity
+
+Before 2.4 it generates the SQL:
+
+    SELECT 100 / 2 * 2 FROM my_entity
+
+Now parenthesis are considered, the previous DQL will generate:
+
+    SELECT 100 / (2 * 2) FROM my_entity
 
 # Upgrade to 2.3
 
@@ -126,7 +165,7 @@ from 2.0 have to configure the annotation driver if they don't use `Configuratio
     $config->setMetadataDriverImpl($driver);
 
 
-## Scalar mappings can now be ommitted from DQL result
+## Scalar mappings can now be omitted from DQL result
 
 You are now allowed to mark scalar SELECT expressions as HIDDEN an they are not hydrated anymore.
 Example:
@@ -307,7 +346,7 @@ them for batch updates like SchemaTool and other commands. However the
 annotations driver being a default driver does not really help that much
 anyways.
 
-Therefore we decided to break backwards compability in this issue and drop
+Therefore we decided to break backwards compatibility in this issue and drop
 the support for Annotations as Default Driver and require our users to
 specify the driver explicitly (which allows us to ask for the path to all
 entities).
@@ -366,7 +405,7 @@ apologize for the inconvenience.
 ## Default Property for Field Mappings
 
 The "default" option for database column defaults has been removed. If desired, database column defaults can
-be implemented by using the columnDefinition attribute of the @Column annotation (or the approriate XML and YAML equivalents).
+be implemented by using the columnDefinition attribute of the @Column annotation (or the appropriate XML and YAML equivalents).
 Prefer PHP default values, if possible.
 
 ## Selecting Partial Objects
@@ -451,7 +490,7 @@ With new required method AbstractTask::buildDocumentation, its implementation de
 
     * "doctrine schema-tool --drop" now always drops the complete database instead of
     only those tables defined by the current database model. The previous method had
-    problems when foreign keys of orphaned tables pointed to tables that were schedulded
+    problems when foreign keys of orphaned tables pointed to tables that were scheduled
     for deletion.
     * Use "doctrine schema-tool --update" to get a save incremental update for your
     database schema without deleting any unused tables, sequences or foreign keys.

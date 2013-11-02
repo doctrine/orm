@@ -49,7 +49,7 @@ interface EntityListenerResolver
     /**
      * Register a entity listener instance.
      *
-     * @return  object An entity listener
+     * @param   object $object An entity listener
      */
     function register($object);
 }

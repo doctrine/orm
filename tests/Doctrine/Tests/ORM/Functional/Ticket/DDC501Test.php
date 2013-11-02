@@ -64,7 +64,7 @@ class DDC501Test extends OrmFunctionalTestCase
         $userClone = $this->_em->merge($userClone);
 
         // Back in managed world I would expect to have my phonenumbers back but they aren't!
-	// Remember I didn't touch (and propably didn't need) them at all while in detached mode.
+	// Remember I didn't touch (and probably didn't need) them at all while in detached mode.
         $this->assertEquals(4, count($userClone->getPhonenumbers()), 'Phonenumbers are not available anymore');
 
         // This works fine as long as cmUser::groups doesn't cascade "merge"

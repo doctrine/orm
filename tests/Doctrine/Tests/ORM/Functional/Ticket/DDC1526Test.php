@@ -37,7 +37,7 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
             LEFT JOIN m.children c";
         $menus = $this->_em->createQuery($dql)->getResult();
 
-        // All Children collection now have to be initiailzed
+        // All Children collection now have to be initialized
         foreach ($menus as $menu) {
             $this->assertTrue($menu->children->isInitialized());
         }

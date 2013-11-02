@@ -106,7 +106,7 @@ Redis
 In order to use the Redis cache driver you must have it compiled
 and enabled in your php.ini. You can read about what is Redis
 `from here <http://redis.io/>`_. Also check
-`here <https://github.com/nicolasff/phpredis/>`_ for how you can use
+`A PHP extension for Redis <https://github.com/nicolasff/phpredis/>`_ for how you can use
 and install Redis PHP extension.
 
 Below is a simple example of how you could use the Redis cache
@@ -211,49 +211,6 @@ By Cache ID
     <?php
     $cacheDriver->delete('my_array');
 
-You can also pass wild cards to the ``delete()`` method and it will
-return an array of IDs that were matched and deleted.
-
-.. code-block:: php
-
-    <?php
-    $deleted = $cacheDriver->delete('users_*');
-
-By Regular Expression
-^^^^^^^^^^^^^^^^^^^^^
-
-If you need a little more control than wild cards you can use a PHP
-regular expression to delete cache entries.
-
-.. code-block:: php
-
-    <?php
-    $deleted = $cacheDriver->deleteByRegex('/users_.*/');
-
-By Prefix
-^^^^^^^^^
-
-Because regular expressions are kind of slow, if simply deleting by
-a prefix or suffix is sufficient, it is recommended that you do
-that instead of using a regular expression because it will be much
-faster if you have many cache entries.
-
-.. code-block:: php
-
-    <?php
-    $deleted = $cacheDriver->deleteByPrefix('users_');
-
-By Suffix
-^^^^^^^^^
-
-Just like we did above with the prefix you can do the same with a
-suffix.
-
-.. code-block:: php
-
-    <?php
-    $deleted = $cacheDriver->deleteBySuffix('_my_account');
-
 All
 ^^^
 
@@ -264,17 +221,6 @@ the ``deleteAll()`` method.
 
     <?php
     $deleted = $cacheDriver->deleteAll();
-
-Counting
-~~~~~~~~
-
-If you want to count how many entries are stored in the cache
-driver instance you can use the ``count()`` method.
-
-.. code-block:: php
-
-    <?php
-    echo $cacheDriver->count();
 
 Namespaces
 ~~~~~~~~~~

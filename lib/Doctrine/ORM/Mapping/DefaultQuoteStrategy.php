@@ -127,12 +127,15 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ClassMetadata $class = null)
     {
-        // Trim the column alias to the maximum identifier length of the platform.
-        // If the alias is to long, characters are cut off from the beginning.
-        // And strip non alphanumeric characters
+        // 1 ) Concatenate column name and counter
+        // 2 ) Trim the column alias to the maximum identifier length of the platform.
+        //     If the alias is to long, characters are cut off from the beginning.
+        // 3 ) Strip non alphanumeric characters
+        // 4 ) Prefix with "_" if the result its numeric
         $columnName = $columnName . $counter;
         $columnName = substr($columnName, -$platform->getMaxIdentifierLength());
         $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
+        $columnName = is_numeric($columnName) ? '_' . $columnName : $columnName;
 
         return $platform->getSQLResultCasing($columnName);
     }

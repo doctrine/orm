@@ -2,7 +2,7 @@
 <!--
     Use this configuration file as a template to run the tests against any dbms.
     Procedure:
-        1) Save a copy of this file with a name of your chosing. It doesn't matter
+        1) Save a copy of this file with a name of your choosing. It doesn't matter
            where you place it as long as you know where it is.
            i.e. "mysqlconf.xml" (It needs the ending .xml).
         2) Edit the file and fill in your settings (database name, type, username, etc.)

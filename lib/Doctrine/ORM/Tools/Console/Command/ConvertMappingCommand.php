@@ -49,6 +49,7 @@ class ConvertMappingCommand extends Command
     {
         $this
         ->setName('orm:convert-mapping')
+        ->setAliases(array('orm:convert:mapping'))
         ->setDescription('Convert mapping information between supported formats.')
         ->setDefinition(array(
             new InputOption(
@@ -86,10 +87,10 @@ class ConvertMappingCommand extends Command
 Convert mapping information between supported formats.
 
 This is an execute <info>one-time</info> command. It should not be necessary for
-you to call this method multiple times, escpecially when using the <comment>--from-database</comment>
+you to call this method multiple times, especially when using the <comment>--from-database</comment>
 flag.
 
-Converting an existing databsae schema into mapping files only solves about 70-80%
+Converting an existing database schema into mapping files only solves about 70-80%
 of the necessary mapping information. Additionally the detection from an existing
 database cannot detect inverse associations, inheritance types,
 entities with foreign keys as primary keys and many of the
@@ -98,6 +99,12 @@ semantical operations on associations such as cascade.
 <comment>Hint:</comment> There is no need to convert YAML or XML mapping files to annotations
 every time you make changes. All mapping drivers are first class citizens
 in Doctrine 2 and can be used as runtime mapping for the ORM.
+
+<comment>Hint:</comment> If you have a database with tables that should not be managed
+by the ORM, you can use a DBAL functionality to filter the tables and sequences down
+on a global level:
+
+    \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
         );
     }

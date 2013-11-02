@@ -56,7 +56,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-869
      */
-    public function testGetMetadataForSubclassWithMappedSuperclassWhithRepository()
+    public function testGetMetadataForSubclassWithMappedSuperclassWithRepository()
     {
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
 
@@ -101,9 +101,9 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-1203
      */
-    public function testUnmappedSuperclassInHierachy()
+    public function testUnmappedSuperclassInHierarchy()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyD');
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
 
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['a']));
@@ -113,11 +113,11 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-1204
      */
-    public function testUnmappedEntityInHierachy()
+    public function testUnmappedEntityInHierarchy()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierachyBase' to be properly mapped in the inheritance hierachy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' an abstract class to avoid this exception from occuring.");
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierarchyBase' to be properly mapped in the inheritance hierarchy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' an abstract class to avoid this exception from occurring.");
 
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyE');
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
     }
 
     /**
@@ -148,9 +148,9 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      * @group DDC-1156
      * @group DDC-1218
      */
-    public function testSequenceDefinitionInHierachyWithSandwichMappedSuperclass()
+    public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyD');
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
@@ -213,12 +213,12 @@ class EntitySubClass2 extends MappedSuperclassBase {
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string", length=20)
  * @DiscriminatorMap({
- *     "c"   = "HierachyC",
- *     "d"   = "HierachyD",
- *     "e"   = "HierachyE"
+ *     "c"   = "HierarchyC",
+ *     "d"   = "HierarchyD",
+ *     "e"   = "HierarchyE"
  * })
  */
-abstract class HierachyBase
+abstract class HierarchyBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
@@ -231,7 +231,7 @@ abstract class HierachyBase
 /**
  * @MappedSuperclass
  */
-abstract class HierachyASuperclass extends HierachyBase
+abstract class HierarchyASuperclass extends HierarchyBase
 {
     /** @Column(type="string") */
     public $a;
@@ -240,7 +240,7 @@ abstract class HierachyASuperclass extends HierachyBase
 /**
  * @Entity
  */
-class HierachyBEntity extends HierachyBase
+class HierarchyBEntity extends HierarchyBase
 {
     /** @Column(type="string") */
     public $b;
@@ -249,7 +249,7 @@ class HierachyBEntity extends HierachyBase
 /**
  * @Entity
  */
-class HierachyC extends HierachyBase
+class HierarchyC extends HierarchyBase
 {
     /** @Column(type="string") */
     public $c;
@@ -258,7 +258,7 @@ class HierachyC extends HierachyBase
 /**
  * @Entity
  */
-class HierachyD extends HierachyASuperclass
+class HierarchyD extends HierarchyASuperclass
 {
     /** @Column(type="string") */
     public $d;
@@ -267,7 +267,7 @@ class HierachyD extends HierachyASuperclass
 /**
  * @Entity
  */
-class HierachyE extends HierachyBEntity
+class HierarchyE extends HierarchyBEntity
 {
     /** @Column(type="string") */
     public $e;

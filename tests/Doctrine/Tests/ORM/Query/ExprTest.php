@@ -414,4 +414,18 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $select = new Expr\Select(array('foo', 'bar'));
         $this->assertEquals(array('foo', 'bar'), $select->getParts());
     }
+
+    public function testAddEmpty() {
+        $andExpr = $this->_expr->andx();
+        $andExpr->add($this->_expr->andx());
+        
+        $this->assertEquals(0, $andExpr->count());
+    }
+
+    public function testAddNull() {
+        $andExpr = $this->_expr->andx();
+        $andExpr->add(null);
+        
+        $this->assertEquals(0, $andExpr->count());
+    }
 }

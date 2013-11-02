@@ -35,8 +35,8 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->orderBy('o.id')
                         ->getQuery();
 
-        $this->assertEquals('SELECT o.id, o.date, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date ORDER BY o.id ASC', $query->getDQL());
-        $this->assertEquals('SELECT d0_.order_id AS order_id0, d0_.created_at AS created_at1, COUNT(d1_.id) AS sclr2 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at ORDER BY d0_.order_id ASC', $query->getSQL());
+        $this->assertSQLEquals('SELECT o.id, o.date, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date ORDER BY o.id ASC', $query->getDQL());
+        $this->assertSQLEquals('SELECT d0_.order_id AS order_id0, d0_.created_at AS created_at1, COUNT(d1_.id) AS sclr2 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at ORDER BY d0_.order_id ASC', $query->getSQL());
 
 
         $result = $query->getResult();
@@ -67,8 +67,8 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery();
 
 
-        $this->assertEquals('SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date, o.status ORDER BY o.id ASC', $query->getDQL());
-        $this->assertEquals('SELECT d0_.order_id AS order_id0, d0_.created_at AS created_at1, d0_.order_status AS order_status2, COUNT(d1_.id) AS sclr3 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at, d0_.order_status ORDER BY d0_.order_id ASC', $query->getSQL());
+        $this->assertSQLEquals('SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date, o.status ORDER BY o.id ASC', $query->getDQL());
+        $this->assertSQLEquals('SELECT d0_.order_id AS order_id0, d0_.created_at AS created_at1, d0_.order_status AS order_status2, COUNT(d1_.id) AS sclr3 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at, d0_.order_status ORDER BY d0_.order_id ASC', $query->getSQL());
 
         $result = $query->getResult();
 
@@ -96,8 +96,8 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery();
 
 
-        $this->assertEquals('SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o ORDER BY o.id ASC', $query->getDQL());
-        $this->assertEquals('SELECT d0_.order_id AS order_id0, d0_.created_at AS created_at1, d0_.order_status AS order_status2, COUNT(d1_.id) AS sclr3 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at, d0_.order_status ORDER BY d0_.order_id ASC', $query->getSQL());
+        $this->assertSQLEquals('SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o ORDER BY o.id ASC', $query->getDQL());
+        $this->assertSQLEquals('SELECT d0_.order_id AS order_id0, d0_.created_at AS created_at1, d0_.order_status AS order_status2, COUNT(d1_.id) AS sclr3 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at, d0_.order_status ORDER BY d0_.order_id ASC', $query->getSQL());
 
 
         $result = $query->getResult();

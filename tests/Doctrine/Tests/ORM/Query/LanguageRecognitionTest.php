@@ -590,6 +590,22 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDQL("select COALESCE(NULLIF(u.name, ''), u.username) as Display FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
+
+    /**
+     * @gorup DDC-1858
+     */
+    public function testHavingSupportIsNullExpression()
+    {
+        $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL");
+    }
+
+    /**
+     * @gorup DDC-1858
+     */
+    public function testHavingSupportLikeExpression()
+    {
+        $this->assertValidDQL("SELECT _u.id, count(_articles) as uuuu FROM Doctrine\Tests\Models\CMS\CmsUser _u LEFT JOIN _u.articles _articles GROUP BY _u HAVING uuuu LIKE '3'");
+    }
 }
 
 /** @Entity */

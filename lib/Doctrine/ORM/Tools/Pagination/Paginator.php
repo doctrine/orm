@@ -121,7 +121,7 @@ class Paginator implements \Countable, \IteratorAggregate
             /* @var $countQuery Query */
             $countQuery = $this->cloneQuery($this->query);
 
-            if ( ! $countQuery->getHint(CountWalker::HINT_DISTINCT)) {
+            if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
                 $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
             }
 
@@ -134,7 +134,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
                 $countQuery->setResultSetMapping($rsm);
             } else {
-                $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+                $this->appendTreeWalker($countQuery, 'Doctrine\ORM\Tools\Pagination\CountWalker');
             }
 
             $countQuery->setFirstResult(null)->setMaxResults(null);
@@ -165,7 +165,7 @@ class Paginator implements \Countable, \IteratorAggregate
             if ($this->useOutputWalker($subQuery)) {
                 $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
             } else {
-                $subQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+                $this->appendTreeWalker($subQuery, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker');
             }
 
             $subQuery->setFirstResult($offset)->setMaxResults($length);
@@ -178,7 +178,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 return new \ArrayIterator(array());
             }
 
-            $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+            $this->appendTreeWalker($whereInQuery, 'Doctrine\ORM\Tools\Pagination\WhereInWalker');
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
             $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
@@ -230,5 +230,23 @@ class Paginator implements \Countable, \IteratorAggregate
         }
 
         return $this->useOutputWalkers;
+    }
+
+    /**
+     * Appends a custom tree walker to the tree walkers hint.
+     *
+     * @param Query $query
+     * @param string $walkerClass
+     */
+    private function appendTreeWalker(Query $query, $walkerClass)
+    {
+        $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
+
+        if ($hints === false) {
+            $hints = array();
+        }
+
+        $hints[] = $walkerClass;
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $hints);
     }
 }

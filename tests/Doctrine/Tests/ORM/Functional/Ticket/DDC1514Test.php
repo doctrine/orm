@@ -29,10 +29,10 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $a1 = new DDC1514EntityA();
-        $a1->title = "foo";
+        $a1->title = "1foo";
 
         $a2 = new DDC1514EntityA();
-        $a2->title = "bar";
+        $a2->title = "2bar";
 
         $b1 = new DDC1514EntityB();
         $b1->entityAFrom = $a1;
@@ -54,9 +54,13 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "SELECT a, b, ba, c FROM " . __NAMESPACE__ . "\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c";
+        $dql = "SELECT a, b, ba, c FROM " . __NAMESPACE__ . "\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title";
         $results = $this->_em->createQuery($dql)->getResult();
 
+        $this->assertEquals($a1->id, $results[0]->id);
+        $this->assertNull($results[0]->entityC);
+
+        $this->assertEquals($a2->id, $results[1]->id);
         $this->assertEquals($c->title, $results[1]->entityC->title);
     }
 }

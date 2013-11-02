@@ -28,7 +28,7 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    public function testCreateRetreaveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete()
     {
 
         $e1 = new Group('Parent Bar 1');
@@ -52,7 +52,7 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e3Id   = $e3->id;
         $e4Id   = $e4->id;
 
-        // Retreave
+        // Retrieve
         $e1     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e1Id);
         $e2     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e2Id);
         $e3     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e3Id);
@@ -121,7 +121,7 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
         $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
 
-        // Retreave
+        // Retrieve
         $e1     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e1Id);
         $e2     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e2Id);
         $e3     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e3Id);

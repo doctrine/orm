@@ -64,7 +64,7 @@ class OneToOneOrphanRemovalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = new CmsUser;
         $user->status = 'dev';
         $user->username = 'beberlei';
-        $user->name = 'Bejamin Eberlei';
+        $user->name = 'Benjamin Eberlei';
 
         $email = new CmsEmail;
         $email->email = 'beberlei@domain.com';

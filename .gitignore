@@ -11,3 +11,4 @@ lib/Doctrine/DBAL
 .project
 .idea
 vendor/
+composer.lock

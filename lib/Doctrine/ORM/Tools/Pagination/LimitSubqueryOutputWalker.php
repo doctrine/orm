@@ -16,6 +16,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 
 /**
  * Wraps the query in order to select root entity IDs for pagination.
@@ -91,7 +92,25 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $innerSql = parent::walkSelectStatement($AST);
+        if ($this->platform instanceof PostgreSqlPlatform) {
+            // Set every select expression as visible(hidden = false) to
+            // make $AST to have scalar mappings properly
+            $hiddens = array();
+            foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
+                $hiddens[$idx] = $expr->hiddenAliasResultVariable;
+                $expr->hiddenAliasResultVariable = false;
+            }
+            
+            $innerSql = parent::walkSelectStatement($AST);
+    
+            // Restore hiddens
+            foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
+                $expr->hiddenAliasResultVariable = $hiddens[$idx];
+            }
+        } else {
+            $innerSql = parent::walkSelectStatement($AST);
+        }
+
 
         // Find out the SQL alias of the identifier column of the root entity.
         // It may be possible to make this work with multiple root entities but that
@@ -130,6 +149,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
             }
         }
 
+        if (count($sqlIdentifier) === 0) {
+            throw new \RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
+        }
+
         if (count($rootIdentifier) != count($sqlIdentifier)) {
             throw new \RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
@@ -137,13 +160,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
             ));
         }
 
-        // Build the counter query.
+        // Build the counter query
         $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
             implode(', ', $sqlIdentifier), $innerSql);
 
-        if ($this->platform instanceof PostgreSqlPlatform) {
+        if ($this->platform instanceof PostgreSqlPlatform ||
+            $this->platform instanceof OraclePlatform) {
             //http://www.doctrine-project.org/jira/browse/DDC-1958
-            $this->getPostgresqlSql($AST, $sqlIdentifier, $innerSql, $sql);
+            $this->preserveSqlOrdering($AST, $sqlIdentifier, $innerSql, $sql);
         }
 
         // Apply the limit and offset.
@@ -161,9 +185,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         return $sql;
     }
-
+    
     /**
-     * Generates new SQL for postgresql if necessary.
+     * Generates new SQL for Postgresql or Oracle if necessary.
      *
      * @param SelectStatement $AST
      * @param array           $sqlIdentifier
@@ -172,7 +196,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return void
      */
-    public function getPostgresqlSql(SelectStatement $AST, array $sqlIdentifier, $innerSql, &$sql)
+    public function preserveSqlOrdering(SelectStatement $AST, array $sqlIdentifier, $innerSql, &$sql)
     {
         // For every order by, find out the SQL alias by inspecting the ResultSetMapping.
         $sqlOrderColumns = array();

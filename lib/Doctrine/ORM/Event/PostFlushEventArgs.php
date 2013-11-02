@@ -24,7 +24,7 @@ use Doctrine\Common\EventArgs;
 /**
  * Provides event arguments for the postFlush event.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.org
  * @since       2.0
  * @author      Daniel Freudenberger <df@rebuy.de>

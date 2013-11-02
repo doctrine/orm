@@ -178,7 +178,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
      */
     public function testIdentifierIsExported($class)
     {
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType);
+        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType, "Generator Type wrong");
         $this->assertEquals(array('id'), $class->identifier);
         $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
 
@@ -355,7 +355,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             $this->assertEquals('all', $value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade'][0]);
 
         } else {
-            $this->markTestSkipped('Test aviable only for '.$type.' dirver');
+            $this->markTestSkipped('Test available only for '.$type.' driver');
         }
     }
     public function __destruct()

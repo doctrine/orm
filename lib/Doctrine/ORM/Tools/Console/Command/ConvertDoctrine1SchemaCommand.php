@@ -102,6 +102,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     {
         $this
         ->setName('orm:convert-d1-schema')
+        ->setAliases(array('orm:convert:d1-schema'))
         ->setDescription('Converts Doctrine 1.X schema into a Doctrine 2.X schema.')
         ->setDefinition(array(
             new InputArgument(

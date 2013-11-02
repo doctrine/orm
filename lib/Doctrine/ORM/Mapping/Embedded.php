@@ -17,8 +17,16 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Mapping;
 
-class UnionSubclassPersister extends BasicEntityPersister
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class Embedded implements Annotation
 {
+    /**
+     * @var string
+     */
+    public $class;
 }

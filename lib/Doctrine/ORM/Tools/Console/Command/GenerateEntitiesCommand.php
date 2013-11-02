@@ -47,6 +47,7 @@ class GenerateEntitiesCommand extends Command
     {
         $this
         ->setName('orm:generate-entities')
+        ->setAliases(array('orm:generate:entities'))
         ->setDescription('Generate entity classes and method stubs from your mapping information.')
         ->setDefinition(array(
             new InputOption(
@@ -91,7 +92,7 @@ to error and we suggest you use code repositories such as GIT or SVN to make
 backups of your code.
 
 It makes sense to generate the entity code if you are using entities as Data
-Access Objects only and dont put much additional logic on them. If you are
+Access Objects only and don't put much additional logic on them. If you are
 however putting much more logic on the entities you should refrain from using
 the entity-generator and code your entities manually.
 

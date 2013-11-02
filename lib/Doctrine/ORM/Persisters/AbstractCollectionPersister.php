@@ -98,7 +98,7 @@ abstract class AbstractCollectionPersister
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
      *
-     * @return void
+     * @return string
      */
     abstract protected function getDeleteSQL(PersistentCollection $coll);
 
@@ -108,7 +108,7 @@ abstract class AbstractCollectionPersister
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
      *
-     * @return void
+     * @return array
      */
     abstract protected function getDeleteSQLParameters(PersistentCollection $coll);
 

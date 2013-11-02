@@ -46,6 +46,7 @@ class GenerateRepositoriesCommand extends Command
     {
         $this
         ->setName('orm:generate-repositories')
+        ->setAliases(array('orm:generate:repositories'))
         ->setDescription('Generate repository classes from your mapping information.')
         ->setDefinition(array(
             new InputOption(

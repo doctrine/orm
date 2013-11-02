@@ -200,7 +200,7 @@ class AssociationBuilder
         } else if ($this->type == ClassMetadata::ONE_TO_ONE) {
             $cm->mapOneToOne($mapping);
         } else {
-            throw new \InvalidArgumentException("Type should be a ToOne Assocation here");
+            throw new \InvalidArgumentException("Type should be a ToOne Association here");
         }
         return $this->builder;
     }

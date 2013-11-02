@@ -50,11 +50,17 @@ class CreateCommand extends AbstractCommand
         ->setDefinition(array(
             new InputOption(
                 'dump-sql', null, InputOption::VALUE_NONE,
-                'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
+                'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
             )
         ))
         ->setHelp(<<<EOT
 Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
+
+<comment>Hint:</comment> If you have a database with tables that should not be managed
+by the ORM, you can use a DBAL functionality to filter the tables and sequences down
+on a global level:
+
+    \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
         );
     }

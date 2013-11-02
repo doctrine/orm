@@ -284,6 +284,10 @@ abstract class AbstractQuery
             }
         }
 
+        if ($value instanceof Mapping\ClassMetadata) {
+            return $value->name;
+        }
+
         return $value;
     }
 
@@ -305,7 +309,7 @@ abstract class AbstractQuery
     /**
      * Allows to translate entity namespaces to full qualified names.
      *
-     * @param EntityManager $em
+     * @param Query\ResultSetMapping $rsm
      *
      * @return void
      */
@@ -386,7 +390,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Defines a cache driver to be used for caching result sets and implictly enables caching.
+     * Defines a cache driver to be used for caching result sets and implicitly enables caching.
      *
      * @param \Doctrine\Common\Cache\Cache|null $resultCacheDriver Cache driver
      *
@@ -605,7 +609,12 @@ abstract class AbstractQuery
      */
     public function getOneOrNullResult($hydrationMode = null)
     {
-        $result = $this->execute(null, $hydrationMode);
+        try {
+            $result = $this->execute(null, $hydrationMode);
+        } catch (NoResultException $e) {
+            return null;
+        }
+
 
         if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             return null;
@@ -698,6 +707,18 @@ abstract class AbstractQuery
     }
 
     /**
+     * Check if the query has a hint
+     *
+     * @param  string $name The name of the hint
+     *
+     * @return bool False if the query does not have any hint
+     */
+    public function hasHint($name)
+    {
+        return isset($this->_hints[$name]);
+    }
+
+    /**
      * Return the key value map of query hints that are currently set.
      *
      * @return array
@@ -783,7 +804,7 @@ abstract class AbstractQuery
             return $stmt;
         }
 
-        $data = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+        $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll(
             $stmt, $this->_resultSetMapping, $this->_hints
         );
 

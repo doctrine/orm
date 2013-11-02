@@ -214,7 +214,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
     }
 
-    public function testQueryScalarWithDiscrimnatorValue()
+    public function testQueryScalarWithDiscriminatorValue()
     {
         $this->loadFullFixture();
 
@@ -343,15 +343,30 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
         $contracts = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
         $this->assertEquals(3, count($contracts));
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
         $contracts = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
         $this->assertEquals(1, count($contracts));
+    }
+
+    /**
+     * @group DDC-2430
+     */
+    public function testMatchingNonObjectOnAssocationThrowsException()
+    {
+        $this->loadFullFixture();
+
+        $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
+
+        $this->setExpectedException('Doctrine\ORM\Persisters\PersisterException', 'annot match on Doctrine\Tests\Models\Company\CompanyContract::salesPerson with a non-object value.');
+        $contracts = $repository->matching(new Criteria(
+            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+        ));
     }
 
     /**
@@ -364,7 +379,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyContract', $ref);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Emplyoee directly.");
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Employee directly.");
         $this->_em->clear();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFixContract', $this->fix->getId());
@@ -374,7 +389,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-952
      */
-    public function testEagerLoadInheritanceHierachy()
+    public function testEagerLoadInheritanceHierarchy()
     {
         $this->loadFullFixture();
 

@@ -122,7 +122,7 @@ final class Events
 
     /**
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,
-     * but before any changes to managed entites have been calculated. This event is
+     * but before any changes to managed entities have been calculated. This event is
      * always raised right after EntityManager#flush() call.
      */
     const preFlush = 'preFlush';

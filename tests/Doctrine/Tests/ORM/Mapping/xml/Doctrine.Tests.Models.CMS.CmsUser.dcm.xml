@@ -15,7 +15,7 @@
             <named-native-query name="fetchIdAndUsernameWithResultClass" result-class="CmsUser">
                 <query>SELECT id, username FROM cms_users WHERE username = ?</query>
             </named-native-query>
-            
+
             <named-native-query name="fetchAllColumns" result-class="CmsUser">
                 <query>SELECT * FROM cms_users WHERE username = ?</query>
             </named-native-query>
@@ -90,20 +90,7 @@
         <field name="status" column="status" type="string" length="50" unique="true"/>
         <field name="username" column="username" type="string" length="255" unique="true"/>
         <field name="name" column="name" type="string" length="255"/>
-        
-        <one-to-many field="phonenumbers" target-entity="CmsPhonenumber" mapped-by="user" orphan-removal="true">
-            <cascade>
-                <cascade-persist/>
-                <cascade-merge/>
-            </cascade>
-        </one-to-many>
 
-        <one-to-many field="articles" target-entity="CmsArticle" mapped-by="user">
-            <cascade>
-                <cascade-detach/>
-            </cascade>
-        </one-to-many>
-        
         <one-to-one field="address" target-entity="CmsAddress" inversed-by="user" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
@@ -117,12 +104,25 @@
             </cascade>
             <join-column referenced-column-name="id" nullable="true" />
         </one-to-one>
+
+        <one-to-many field="phonenumbers" target-entity="CmsPhonenumber" mapped-by="user" orphan-removal="true">
+            <cascade>
+                <cascade-persist/>
+                <cascade-merge/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="articles" target-entity="CmsArticle" mapped-by="user">
+            <cascade>
+                <cascade-detach/>
+            </cascade>
+        </one-to-many>
         
         <many-to-many field="groups" target-entity="CmsGroup">
             <cascade>
                 <cascade-persist/>
-                <cascade-detach/>
                 <cascade-merge/>
+                <cascade-detach/>
             </cascade>
             <join-table name="cms_users_groups">
                 <join-columns>
@@ -133,7 +133,7 @@
                 </inverse-join-columns>
             </join-table>
         </many-to-many>
-        
+
     </entity>
 
 </doctrine-mapping>

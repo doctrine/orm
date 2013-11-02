@@ -350,8 +350,8 @@ class Expr
      * When converted to string, it will generated a <left expr> * <right expr>. Example:
      *
      *     [php]
-     *     // u.salary * u.percentAnualSalaryIncrease
-     *     $q->expr()->prod('u.salary', 'u.percentAnualSalaryIncrease')
+     *     // u.salary * u.percentAnnualSalaryIncrease
+     *     $q->expr()->prod('u.salary', 'u.percentAnnualSalaryIncrease')
      *
      * @param mixed $x Left expression.
      * @param mixed $y Right expression.

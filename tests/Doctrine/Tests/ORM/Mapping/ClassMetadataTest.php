@@ -80,7 +80,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-115
      */
-    public function testMapAssocationInGlobalNamespace()
+    public function testMapAssociationInGlobalNamespace()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
@@ -237,7 +237,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
     }
 
-    public function testDuplicateFieldAndAssocationMapping1_ThrowsException()
+    public function testDuplicateFieldAndAssociationMapping1_ThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -248,7 +248,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapOneToOne(array('fieldName' => 'name', 'targetEntity' => 'CmsUser'));
     }
 
-    public function testDuplicateFieldAndAssocationMapping2_ThrowsException()
+    public function testDuplicateFieldAndAssociationMapping2_ThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -301,7 +301,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        // this is really dirty, but it's the simpliest way to test whether
+        // this is really dirty, but it's the simplest way to test whether
         // joinColumn's name will be automatically set to user_id
         $cm->mapOneToOne(array(
             'fieldName' => 'user',
@@ -340,7 +340,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser'
         ));
-        
+
         $this->assertEquals(array('USER_ID'=>'ID'), $oneToOneMetadata->associationMappings['user']['sourceToTargetKeyColumns']);
         $this->assertEquals(array('USER_ID'=>'USER_ID'), $oneToOneMetadata->associationMappings['user']['joinColumnFieldNames']);
         $this->assertEquals(array('ID'=>'USER_ID'), $oneToOneMetadata->associationMappings['user']['targetToSourceKeyColumns']);
@@ -348,7 +348,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('USER_ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['name']);
         $this->assertEquals('ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['referencedColumnName']);
 
-        
+
         $this->assertEquals('CMS_ADDRESS_CMS_USER', $manyToManyMetadata->associationMappings['user']['joinTable']['name']);
 
         $this->assertEquals(array('CMS_ADDRESS_ID','CMS_USER_ID'), $manyToManyMetadata->associationMappings['user']['joinTableColumns']);
@@ -447,7 +447,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-117
      */
-    public function testInverseIdentifierAssocation()
+    public function testInverseIdentifierAssociation()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -466,7 +466,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-117
      */
-    public function testIdentifierAssocationManyToMany()
+    public function testIdentifierAssociationManyToMany()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -715,6 +715,23 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2451
+     */
+    public function testSerializeEntityListeners()
+    {
+        $metadata = new ClassMetadata('Doctrine\Tests\Models\Company\CompanyContract');
+
+        $metadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
+
+        $serialize   = serialize($metadata);
+        $unserialize = unserialize($serialize);
+
+        $this->assertEquals($metadata->entityListeners, $unserialize->entityListeners);
+    }
+
+    /**
      * @expectedException \Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Query named "userById" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once
      */
@@ -770,7 +787,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-        
+
         $cm->addSqlResultSetMapping(array(
             'name'      => 'find-all',
             'entities'  => array(
@@ -825,7 +842,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass'));
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "The target-entity Doctrine\Tests\Models\CMS\UnknownClass cannot be found in 'Doctrine\Tests\Models\CMS\CmsUser#address'.");
-        $cm->validateAssocations();
+        $cm->validateAssociations();
     }
 
     /**
@@ -1000,7 +1017,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
     /**
      * @group DDC-1955
-     * 
+     *
      * @expectedException        Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
      */
@@ -1024,6 +1041,55 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
         $cm->addEntityListener(Events::postLoad, '\Doctrine\Tests\Models\Company\CompanyContractListener', 'invalidMethod');
+    }
+
+    public function testManyToManySelfReferencingNamingStrategyDefaults()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CustomType\CustomTypeParent');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->mapManyToMany(
+            array(
+                'fieldName' => 'friendsWithMe',
+                'targetEntity' => 'CustomTypeParent'
+            )
+        );
+
+        $this->assertEquals(
+            array(
+                'name' => 'customtypeparent_customtypeparent',
+                'joinColumns' => array(array('name' => 'customtypeparent_source', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
+                'inverseJoinColumns' => array(array('name' => 'customtypeparent_target', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
+            ),
+            $cm->associationMappings['friendsWithMe']['joinTable']
+        );
+        $this->assertEquals(array('customtypeparent_source', 'customtypeparent_target'), $cm->associationMappings['friendsWithMe']['joinTableColumns']);
+        $this->assertEquals(array('customtypeparent_source' => 'id'), $cm->associationMappings['friendsWithMe']['relationToSourceKeyColumns']);
+        $this->assertEquals(array('customtypeparent_target' => 'id'), $cm->associationMappings['friendsWithMe']['relationToTargetKeyColumns']);
+    }
+
+    /**
+     * @group DDC-2608
+     */
+    public function testSetSequenceGeneratorThrowsExceptionWhenSequenceNameIsMissing()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->setSequenceGeneratorDefinition(array());
+    }
+
+    /**
+     * @group DDC-2662
+     */
+    public function testQuotedSequenceName()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $cm->setSequenceGeneratorDefinition(array('sequenceName' => '`foo`'));
+
+        $this->assertEquals(array('sequenceName' => 'foo', 'quoted' => true), $cm->sequenceGeneratorDefinition);
     }
 }
 

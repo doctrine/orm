@@ -89,9 +89,8 @@ just fields of the entity using the syntax ``u.name``. Combinations
 of both are also allowed and it is possible to wrap both fields and
 identification values into aggregation and DQL functions. Numerical
 fields can be part of computations using mathematical operations.
-See the sub-section on
-`DQL Functions, Aggregates and Operations <#dqlfn>`_ on more
-information.
+See the sub-section on `Functions, Operators, Aggregates`_ for
+more information.
 
 Joins
 ~~~~~
@@ -428,12 +427,22 @@ Get all users visible on a given website that have chosen certain gender:
     <?php
     $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
 
-IDENTITY() DQL Function when the association has a composite primary key:
+.. versionadded:: 2.4
+
+Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys:
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1');
+
+Joins between entities without associations were not possible until version
+2.4, where you can generate an arbitrary join with the following syntax:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT u FROM User u JOIN Blacklist b WITH u.email = b.email');
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -464,13 +473,14 @@ You use the partial syntax when joining as well:
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
 
-Using the ``NEW`` operator you can construct DTOs from queries.
+.. versionadded:: 2.4
+
+Using the ``NEW`` operator you can construct Data Transfer Objects (DTOs) directly from DQL queries.
 
 - When using ``SELECT NEW`` you don't need to specify a mapped entity.
-- You can specify any PHP class, it's only require that you have a matching constructor in your class.
+- You can specify any PHP class, it's only require that the constructor of this class matches the ``NEW`` statement.
 - This approach involves determining exactly which columns you really need,
   and instantiating data-transfer object that containing a constructor with those arguments.
-
 
 If you want to select data-transfer objects you should create a class:
 
@@ -910,7 +920,7 @@ Query Result Formats
 
 The format in which the result of a DQL SELECT query is returned
 can be influenced by a so-called ``hydration mode``. A hydration
-mode specifies a particular way in which an SQL result set is
+mode specifies a particular way in which a SQL result set is
 transformed. Each hydration mode has its own dedicated method on
 the Query class. Here they are:
 
@@ -1188,7 +1198,7 @@ There are situations when a query you want to execute returns a
 very large result-set that needs to be processed. All the
 previously described hydration modes completely load a result-set
 into memory which might not be feasible with large result sets. See
-the `Batch Processing <batch-processing>`_ section on details how
+the `Batch Processing <batch-processing.html>`_ section on details how
 to iterate large result sets.
 
 Functions
@@ -1291,7 +1301,7 @@ userland:
 Query Cache (DQL Query Only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Parsing a DQL query and converting it into an SQL query against the
+Parsing a DQL query and converting it into a SQL query against the
 underlying database platform obviously has some overhead in
 contrast to directly executing Native SQL queries. That is why
 there is a dedicated Query Cache for caching the DQL parser
@@ -1582,7 +1592,7 @@ Scalar and Type Expressions
 .. code-block:: php
 
     ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression | BooleanPrimary | CaseExpression | InstanceOfExpression
-    StringExpression       ::= StringPrimary | "(" Subselect ")"
+    StringExpression       ::= StringPrimary | ResultVariable | "(" Subselect ")"
     StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
     BooleanPrimary         ::= StateFieldPathExpression | boolean | InputParameter
@@ -1631,7 +1641,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
-    NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
+    NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
     ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
     ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
 

@@ -105,6 +105,8 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('bar', $q->getHint('foo'));
         $this->assertEquals('baz', $q->getHint('bar'));
         $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+        $this->assertTrue($q->hasHint('foo'));
+        $this->assertFalse($q->hasHint('barFooBaz'));
     }
 
     /**
@@ -162,5 +164,17 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('cities', $parameter->getName());
         $this->assertEquals($cities, $parameter->getValue());
+    }
+
+    /**
+     * @group DDC-2224
+     */
+    public function testProcessParameterValueClassMetadata()
+    {
+        $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
+        $this->assertEquals(
+            'Doctrine\Tests\Models\CMS\CmsAddress',
+            $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+        );
     }
 }

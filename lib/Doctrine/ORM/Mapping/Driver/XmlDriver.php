@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping\MappingException;
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license 	http://www.opensource.org/licenses/mit-license.php MIT
  * @link    	www.doctrine-project.org
  * @since   	2.0
  * @author		Benjamin Eberlei <kontakt@beberlei.de>
@@ -224,7 +224,7 @@ class XmlDriver extends FileDriver
             $metadata->table['options'] = $this->_parseOptions($xmlRoot->options->children());
         }
 
-        // The mapping assignement is done in 2 times as a bug might occurs on some php/xml lib versions
+        // The mapping assignment is done in 2 times as a bug might occurs on some php/xml lib versions
         // The internal SimpleXmlIterator get resetted, to this generate a duplicate field exception
         $mappings = array();
         // Evaluate <field ...> mappings
@@ -234,6 +234,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($mapping['version'])) {
                     $metadata->setVersionMapping($mapping);
+                    unset($mapping['version']);
                 }
 
                 $metadata->mapField($mapping);
@@ -686,7 +687,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-            $mapping['version'] = $fieldMapping['version'];
+            $mapping['version'] = $this->evaluateBoolean($fieldMapping['version']);
         }
 
         if (isset($fieldMapping['column-definition'])) {

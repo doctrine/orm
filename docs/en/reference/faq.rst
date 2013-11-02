@@ -143,11 +143,11 @@ See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>
 the details.
 
 Why does Doctrine not create proxy objects for my inheritance hierarchy?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you set a many-to-one or one-to-one association target-entity to any parent class of
 an inheritance hierarchy Doctrine does not know what PHP class the foreign is actually of.
-To find this out it has to execute an SQL query to look this information up in the database.
+To find this out it has to execute a SQL query to look this information up in the database.
 
 EntityGenerator
 ---------------
@@ -162,7 +162,7 @@ is supposed to kick-start you, but not towards 100%.
 Why does the EntityGenerator not generate inheritance correctly?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierachy.
+Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierarchy.
 This is why the generation of inherited entities does not fully work. You have to adjust some additional
 code to get this one working correctly.
 

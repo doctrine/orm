@@ -46,25 +46,6 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
      * @param object $entity
      *
      * @return mixed
-     *
-     * @override
-     */
-    public function insert($entity)
-    {
-        $this->inserts[] = $entity;
-        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->class->isIdGeneratorIdentity()) {
-            $id = $this->identityColumnValueCounter++;
-            $this->postInsertIds[$id] = $entity;
-            return $id;
-        }
-        return null;
-    }
-
-    /**
-     * @param object $entity
-     *
-     * @return mixed
      */
     public function addInsert($entity)
     {

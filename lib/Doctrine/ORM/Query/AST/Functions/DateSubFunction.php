@@ -39,6 +39,11 @@ class DateSubFunction extends DateAddFunction
     public function getSql(SqlWalker $sqlWalker)
     {
         switch (strtolower($this->unit->value)) {
+            case 'hour':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubHourExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
             case 'day':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubDaysExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
@@ -53,7 +58,7 @@ class DateSubFunction extends DateAddFunction
 
             default:
                 throw QueryException::semanticalError(
-                    'DATE_SUB() only supports units of type day and month.'
+                    'DATE_SUB() only supports units of type hour, day and month.'
                 );
         }
     }

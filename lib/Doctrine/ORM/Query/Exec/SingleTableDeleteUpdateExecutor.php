@@ -26,7 +26,7 @@ use Doctrine\ORM\Query\AST;
  * Executor that executes the SQL statements for DQL DELETE/UPDATE statements on classes
  * that are mapped to a single table.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @author      Roman Borschel <roman@code-factory.org>
  * @link        www.doctrine-project.org
  * @since       2.0

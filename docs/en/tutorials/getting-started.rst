@@ -1,43 +1,57 @@
-Getting Started: Code First
-===========================
+Getting Started with Doctrine
+=============================
 
-.. note:: *Development Workflows*
+This guide covers getting started with the Doctrine ORM. After working
+through the guide you should know:
 
-    When you :doc:`Code First <getting-started>`, you
-    start with developing Objects and then map them onto your database. When
-    you :doc:`Model First <getting-started-models>`, you are modelling your application using tools (for
-    example UML) and generate database schema and PHP code from this model.
-    When you have a :doc:`Database First <getting-started-database>`, then you already have a database schema
-    and generate the corresponding PHP code from it.
+- How to install and configure Doctrine by connecting it to a database
+- Mapping PHP objects to database tables
+- Generating a database schema from PHP objects
+- Using the ``EntityManager`` to insert, update, delete and find
+  objects in the database.
 
-Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides
-transparent persistence for PHP objects. It uses the Data Mapper pattern at
-the heart of this project, aiming for a complete separation of the
-domain/business logic from the persistence in a relational database management
-system. The benefit of Doctrine for the programmer is the ability to focus
-solely on the object-oriented business logic and worry about persistence only
-as a secondary task. This doesn't mean persistence is not important to Doctrine
-2, however it is our belief that there are considerable benefits for
-object-oriented programming if persistence and entities are kept perfectly
-separated.
+Guide Assumptions
+-----------------
 
-Starting with the object-oriented model is called the *Code First* approach to
-Doctrine.
+This guide is designed for beginners that haven't worked with Doctrine ORM
+before. There are some prerequesites for the tutorial that have to be
+installed:
+
+- PHP 5.3.3 or above
+- Composer Package Manager (`Install Composer
+  <http://getcomposer.org/doc/00-intro.md>`_)
+
+The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
 
 .. note::
 
-    The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
+    This tutorial assumes you work with **Doctrine 2.4** and above.
+    Some of the code will not work with lower versions.
+
+What is Doctrine?
+-----------------
+
+Doctrine 2 is an `object-relational mapper (ORM)
+<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.3.3+ that
+provides transparent persistence for PHP objects. It uses the Data Mapper
+pattern at the heart, aiming for a complete separation of your domain/business
+logic from the persistence in a relational database management system.
+
+The benefit of Doctrine for the programmer is the ability to focus
+on the object-oriented business logic and worry about persistence only
+as a secondary problem. This doesn't mean persistence is downplayed by Doctrine
+2, however it is our belief that there are considerable benefits for
+object-oriented programming if persistence and entities are kept
+separated.
 
 What are Entities?
-------------------
+~~~~~~~~~~~~~~~~~~
 
-Entities are lightweight PHP Objects that don't need to extend any
+Entities are PHP Objects that can be identified over many requests
+by a unique identifier or primary key. These classes don't need to extend any
 abstract base class or interface. An entity class must not be final
 or contain final methods. Additionally it must not implement
 **clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
-
-See the :doc:`architecture chapter <../reference/architecture>` for a full list of the restrictions
-that your entities need to comply with.
 
 An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
@@ -50,8 +64,7 @@ For this Getting Started Guide for Doctrine we will implement the
 Bug Tracker domain model from the
 `Zend\_Db\_Table <http://framework.zend.com/manual/en/zend.db.table.html>`_
 documentation. Reading their documentation we can extract the
-requirements to be:
-
+requirements:
 
 -  A Bugs has a description, creation date, status, reporter and
    engineer
@@ -62,14 +75,6 @@ requirements to be:
 -  The assigned engineer can close a bug.
 -  A user can see all his reported or assigned bugs.
 -  Bugs can be paginated through a list-view.
-
-.. warning::
-
-    This tutorial is incrementally building up your Doctrine 2
-    knowledge and even lets you make some mistakes, to show some common
-    pitfalls in mapping Entities to a database. Don't blindly
-    copy-paste the examples here, it is not production ready without
-    the additional comments and knowledge this tutorial teaches.
 
 Setup Project
 -------------
@@ -82,14 +87,14 @@ the following contents:
 
     {
         "require": {
-            "doctrine/orm": "2.*",
-            "symfony/console": "2.*",
+            "doctrine/orm": "2.4.*",
             "symfony/yaml": "2.*"
         },
         "autoload": {
-            "psr-0": {"": "entities"}
+            "psr-0": {"": "src/"}
         }
     }
+
 
 Install Doctrine using the Composer Dependency Management tool, by calling:
 
@@ -97,48 +102,145 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
 
     $ composer install
 
-This ill install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-Symfony YAML and Symfony Console. Both Symfony dependencies are optional
-but will be used in this tutorial.
+This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
+Symfony YAML and Symfony Console into the `vendor` directory. The Symfony 
+dependencies are not required by Doctrine but will be used in this tutorial.
 
-You can prepare the directory structure:
-
+Add the following directories:
 ::
 
-    project
-    |-- composer.json
+    doctrine2-tutorial
     |-- config
     |   |-- xml
     |   `-- yaml
-    `-- entities
+    `-- src
 
-A first prototype
------------------
+Obtaining the EntityManager
+---------------------------
 
-We start with a simplified design for the bug tracker domain, by creating three
-classes ``Bug``, ``Product`` and ``User`` and putting them into
-`entities/Bug.php`, `entities/Product.php` and `entities/User.php`
-respectively.
-
-.. code-block:: php
-
-    <?php
-    // Bug.php
-    class Bug
-    {
-        protected $id;
-        protected $description;
-        protected $created;
-        protected $status;
-    }
+Doctrine's public interface is the EntityManager, it provides the
+access point to the complete lifecycle management of your entities
+and transforms entities from and back to persistence. You have to
+configure and create it to use your entities with Doctrine 2. I
+will show the configuration steps and then discuss them step by
+step:
 
 .. code-block:: php
 
     <?php
-    // Product.php
+    // bootstrap.php
+    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
+    
+    require_once "vendor/autoload.php";
+    
+    // Create a simple "default" Doctrine ORM configuration for Annotations
+    $isDevMode = true;
+    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
+    // or if you prefer yaml or XML
+    //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
+    //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
+    
+    // database configuration parameters
+    $conn = array(
+        'driver' => 'pdo_sqlite',
+        'path' => __DIR__ . '/db.sqlite',
+    );
+    
+    // obtaining the entity manager
+    $entityManager = EntityManager::create($conn, $config);
+
+The first require statement sets up the autoloading capabilities of Doctrine
+using the Composer autoload.
+
+The second block consists of the instantiation of the ORM
+``Configuration`` object using the Setup helper. It assumes a bunch
+of defaults that you don't have to bother about for now. You can
+read up on the configuration details in the
+:doc:`reference chapter on configuration <../reference/configuration>`.
+
+The third block shows the configuration options required to connect
+to a database, in my case a file-based sqlite database. All the
+configuration options for all the shipped drivers are given in the
+`DBAL Configuration section of the manual <http://www.doctrine-project.org/documentation/manual/2_0/en/dbal>`_.
+
+The last block shows how the ``EntityManager`` is obtained from a
+factory method.
+
+Generating the Database Schema
+------------------------------
+
+Now that we have defined the Metadata Mappings and bootstrapped the
+EntityManager we want to generate the relational database schema
+from it. Doctrine has a Command-Line-Interface that allows you to
+access the SchemaTool, a component that generates the required
+tables to work with the metadata.
+
+For the command-line tool to work a cli-config.php file has to be
+present in the project root directory, where you will execute the
+doctrine command. Its a fairly simple file:
+
+.. code-block:: php
+
+    <?php
+    // cli-config.php
+    require_once "bootstrap.php";
+    
+    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
+
+You can then change into your project directory and call the
+Doctrine command-line tool:
+
+::
+
+    $ cd project/
+    $ php vendor/bin/doctrine orm:schema-tool:create
+
+At this point no entitiy metadata exists in `src` so you will see a message like 
+"No Metadata Classes to process." Don't worry, we'll create a Product entity and 
+corresponding metadata in the next section.
+
+You should be aware that during the development process you'll periodically need 
+to update your database schema to be in sync with your Entities metadata.
+
+You can easily recreate the database:
+
+::
+
+    $ php vendor/bin/doctrine orm:schema-tool:drop --force
+    $ php vendor/bin/doctrine orm:schema-tool:create
+
+Or use the update functionality:
+
+::
+
+    $ php vendor/bin/doctrine orm:schema-tool:update --force
+
+The updating of databases uses a Diff Algorithm for a given
+Database Schema, a cornerstone of the ``Doctrine\DBAL`` package,
+which can even be used without the Doctrine ORM package. However
+its not available in SQLite since it does not support ALTER TABLE.
+
+Starting with the Product
+-------------------------
+
+We start with the Product entity requirements, because it is the most simple one
+to get started. Create a ``src/Product.php`` file and put the ``Product``
+entity definition in there:
+
+.. code-block:: php
+
+    <?php
+    // src/Product.php
     class Product
     {
+        /**
+         * @var int
+         */
         protected $id;
+        /**
+         * @var string
+         */
         protected $name;
 
         public function getId()
@@ -157,332 +259,27 @@ respectively.
         }
     }
 
-.. code-block:: php
-
-    <?php
-    // User.php
-    class User
-    {
-        protected $id;
-        public $name; // public for educational purpose, see below
-
-        public function getId()
-        {
-            return $this->id;
-        }
-
-        public function getName()
-        {
-            return $this->name;
-        }
-
-        public function setName($name)
-        {
-            $this->name = $name;
-        }
-    }
-
-.. warning::
-
-    Properties should never be public when using Doctrine.
-    This will lead to bugs with the way lazy loading works in Doctrine.
-
-You see that all properties have getters and setters except `$id`.
-Doctrine 2 uses Reflection to access the values in all your entities properties, so it
-is possible to set the `$id` value for Doctrine, however not from
-your application code. The use of reflection by Doctrine allows you
-to completely encapsulate state and state changes in your entities.
-
-Many of the fields are single scalar values, for example the 3 ID
-fields of the entities, their names, description, status and change
-dates. Doctrine 2 can easily handle these single values as can any
-other ORM. From a point of our domain model they are ready to be
-used right now and we will see at a later stage how they are mapped
-to the database.
-
-We will soon add references between objects in this domain
-model. The semantics are discussed case by case to
-explain how Doctrine handles them. In general each OneToOne or
-ManyToOne Relation in the Database is replaced by an instance of
-the related object in the domain model. Each OneToMany or
-ManyToMany Relation is replaced by a collection of instances in the
-domain model. You never have to work with the foreign keys, only
-with objects that represent the foreign key through their own identity.
-
-If you think this through carefully you realize Doctrine 2 will
-load up the complete database in memory if you access one object.
-However by default Doctrine generates Lazy Load proxies of entities
-or collections of all the relations that haven't been explicitly
-retrieved from the database yet.
-
-To be able to use lazyload with collections, simple PHP arrays have
-to be replaced by a generic collection interface for Doctrine which
-tries to act as as much like an array as possible by using ArrayAccess,
-IteratorAggregate and Countable interfaces. The class is the most
-simple implementation of this interface.
-
-Now that we know this, we have to clear up our domain model to cope
-with the assumptions about related collections:
-
-.. code-block:: php
-
-    <?php
-    // entities/Bug.php
-    use Doctrine\Common\Collections\ArrayCollection;
-    
-    class Bug
-    {
-        // ... (previous code)
-
-        protected $products = null;
-    
-        public function __construct()
-        {
-            $this->products = new ArrayCollection();
-        }
-    }
-
-.. code-block:: php
-
-    <?php
-    // entities/User.php
-    use Doctrine\Common\Collections\ArrayCollection;
-    class User
-    {
-        // ... (previous code)
-
-        protected $reportedBugs = null;
-        protected $assignedBugs = null;
-    
-        public function __construct()
-        {
-            $this->reportedBugs = new ArrayCollection();
-            $this->assignedBugs = new ArrayCollection();
-        }
-    }
-
-Whenever an entity is recreated from the database, an Collection
-implementation of the type Doctrine is injected into your entity
-instead of an array. Compared to the ArrayCollection this
-implementation helps the Doctrine ORM understand the changes that
-have happened to the collection which are noteworthy for
-persistence.
-
-.. warning::
-
-    Lazy load proxies always contain an instance of
-    Doctrine's EntityManager and all its dependencies. Therefore a
-    var\_dump() will possibly dump a very large recursive structure
-    which is impossible to render and read. You have to use
-    ``Doctrine\Common\Util\Debug::dump()`` to restrict the dumping to a
-    human readable level. Additionally you should be aware that dumping
-    the EntityManager to a Browser may take several minutes, and the
-    Debug::dump() method just ignores any occurrences of it in Proxy
-    instances.
-
-
-Because we only work with collections for the references we must be
-careful to implement a bidirectional reference in the domain model.
-The concept of owning or inverse side of a relation is central to
-this notion and should always be kept in mind. The following
-assumptions are made about relations and have to be followed to be
-able to work with Doctrine 2. These assumptions are not unique to
-Doctrine 2 but are best practices in handling database relations
-and Object-Relational Mapping.
-
-
--  Changes to Collections are saved or updated, when the entity on
-   the *owning* side of the collection is saved or updated.
--  Saving an Entity at the inverse side of a relation never
-   triggers a persist operation to changes to the collection.
--  In a one-to-one relation the entity holding the foreign key of
-   the related entity on its own database table is *always* the owning
-   side of the relation.
--  In a many-to-many relation, both sides can be the owning side of
-   the relation. However in a bi-directional many-to-many relation
-   only one is allowed to be.
--  In a many-to-one relation the Many-side is the owning side by
-   default, because it holds the foreign key.
--  The OneToMany side of a relation is inverse by default, since
-   the foreign key is saved on the Many side. A OneToMany relation can
-   only be the owning side, if its implemented using a ManyToMany
-   relation with join table and restricting the one side to allow only
-   UNIQUE values per database constraint.
-
-.. note::
-
-    Consistency of bi-directional references on the inverse side of a
-    relation have to be managed in userland application code. Doctrine
-    cannot magically update your collections to be consistent.
-
-
-In the case of Users and Bugs we have references back and forth to
-the assigned and reported bugs from a user, making this relation
-bi-directional. We have to change the code to ensure consistency of
-the bi-directional reference:
-
-.. code-block:: php
-
-    <?php
-    // entities/Bug.php
-    class Bug
-    {
-        // ... (previous code)
-
-        protected $engineer;
-        protected $reporter;
-    
-        public function setEngineer($engineer)
-        {
-            $engineer->assignedToBug($this);
-            $this->engineer = $engineer;
-        }
-    
-        public function setReporter($reporter)
-        {
-            $reporter->addReportedBug($this);
-            $this->reporter = $reporter;
-        }
-    
-        public function getEngineer()
-        {
-            return $this->engineer;
-        }
-    
-        public function getReporter()
-        {
-            return $this->reporter;
-        }
-    }
-
-.. code-block:: php
-
-    <?php
-    // entities/User.php
-    class User
-    {
-        // ... (previous code)
-
-        protected $reportedBugs = null;
-        protected $assignedBugs = null;
-
-        public function addReportedBug($bug)
-        {
-            $this->reportedBugs[] = $bug;
-        }
-    
-        public function assignedToBug($bug)
-        {
-            $this->assignedBugs[] = $bug;
-        }
-    }
-
-I chose to name the inverse methods in past-tense, which should
-indicate that the actual assigning has already taken place and the
-methods are only used for ensuring consistency of the references.
-This approach is my personal preference, you can choose whatever
-method to make this work.
-
-You can see from ``User::addReportedBug()`` and
-``User::assignedToBug()`` that using this method in userland alone
-would not add the Bug to the collection of the owning side in
-``Bug::$reporter`` or ``Bug::$engineer``. Using these methods and
-calling Doctrine for persistence would not update the collections
-representation in the database.
-
-Only using ``Bug::setEngineer()`` or ``Bug::setReporter()``
-correctly saves the relation information. We also set both
-collection instance variables to protected, however with PHP 5.3's
-new features Doctrine is still able to use Reflection to set and
-get values from protected and private properties.
-
-The ``Bug::$reporter`` and ``Bug::$engineer`` properties are
-Many-To-One relations, which point to a User. In a normalized
-relational model the foreign key is saved on the Bug's table, hence
-in our object-relation model the Bug is at the owning side of the
-relation. You should always make sure that the use-cases of your
-domain model should drive which side is an inverse or owning one in
-your Doctrine mapping. In our example, whenever a new bug is saved
-or an engineer is assigned to the bug, we don't want to update the
-User to persist the reference, but the Bug. This is the case with
-the Bug being at the owning side of the relation.
-
-Bugs reference Products by an uni-directional ManyToMany relation in
-the database that points from Bugs to Products.
-
-.. code-block:: php
-
-    <?php
-    // entities/Bug.php
-    class Bug
-    {
-        // ... (previous code)
-
-        protected $products = null;
-    
-        public function assignToProduct($product)
-        {
-            $this->products[] = $product;
-        }
-    
-        public function getProducts()
-        {
-            return $this->products;
-        }
-    }
-
-We are now finished with the domain model given the requirements.
-From the simple model with public properties only we had to do
-quite some work to get to a model where we encapsulated the
-references between the objects to make sure we don't break its
-consistent state when using Doctrine.
-
-However up to now the assumptions Doctrine imposed on our business
-objects have not restricting us much in our domain modelling
-capabilities. Actually we would have encapsulated access to all the
-properties anyways by using object-oriented best-practices.
-
-Metadata Mappings for our Entities
-----------------------------------
-
-Up to now we have only implemented our Entities as Data-Structures
-without actually telling Doctrine how to persist them in the
-database. If perfect in-memory databases would exist, we could now
-finish the application using these entities by implementing code to
-fulfil all the requirements. However the world isn't perfect and we
-have to persist our entities in some storage to make sure we don't
-loose their state. Doctrine currently serves Relational Database
-Management Systems. In the future we are thinking to support NoSQL
-vendors like CouchDb or MongoDb, however this is still far in the
-future.
+Note how the properties have getter and setter methods defined except
+``$id``. To access data from entities Doctrine 2 uses the Reflection API, so it
+is possible for Doctrine to access the value of ``$id``. You don't have to
+take Doctrine into account when designing access to the state of your objects.
 
 The next step for persistence with Doctrine is to describe the
-structure of our domain model entities to Doctrine using a metadata
+structure of the ``Product`` entity to Doctrine using a metadata
 language. The metadata language describes how entities, their
 properties and references should be persisted and what constraints
 should be applied to them.
 
-Metadata for entities are loaded using a
-``Doctrine\ORM\Mapping\Driver\Driver`` implementation and Doctrine
-2 already comes with XML, YAML and Annotations Drivers. This
-Getting Started Guide will show the mappings for all Mapping Drivers.
+Metadata for entities are configured using a XML, YAML or Docblock Annotations.
+This Getting Started Guide will show the mappings for all Mapping Drivers.
 References in the text will be made to the XML mapping.
-
-Since we haven't namespaced our three entities, we have to
-implement three mapping files called Bug.dcm.xml, Product.dcm.xml
-and User.dcm.xml (or .yml) and put them into a distinct folder for mapping
-configurations. For the annotations driver we need to use
-doc-block comments on the entity classes themselves.
-
-The first discussed definition will be for the Product, since it is
-the most simple one:
 
 .. configuration-block::
 
     .. code-block:: php
 
         <?php
-        // entities/Product.php
+        // src/Product.php
         /**
          * @Entity @Table(name="products")
          **/
@@ -537,13 +334,462 @@ uses the database platforms native id generation strategy, for
 example AUTO INCREMENT in the case of MySql or Sequences in the
 case of PostgreSql and Oracle.
 
-We then go on specifying the definition of a Bug:
+You have to update the database now, because we have a first Entity now:
+
+::
+
+    $ php vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
+
+Specifying both flags ``--force`` and ``-dump-sql`` prints and executes the DDL
+statements.
+
+Now create a new script that will insert products into the database:
+
+.. code-block:: php
+
+    <?php
+    // create_product.php
+    require_once "bootstrap.php";
+
+    $newProductName = $argv[1];
+
+    $product = new Product();
+    $product->setName($newProductName);
+
+    $entityManager->persist($product);
+    $entityManager->flush();
+
+    echo "Created Product with ID " . $product->getId() . "\n";
+
+Call this script from the command line to see how new products are created:
+
+::
+
+    $ php create_product.php ORM
+    $ php create_product.php DBAL
+
+What is happening here? Using the ``Product`` is pretty standard OOP.
+The interesting bits are the use of the ``EntityManager`` service. To
+notify the EntityManager that a new entity should be inserted into the database
+you have to call ``persist()``. To intiate a transaction to actually perform
+the insertion, You have to explicitly call ``flush()`` on the ``EntityManager``.
+
+This distinction between persist and flush is allows to aggregate all writes
+(INSERT, UPDATE, DELETE) into one single transaction, which is executed when
+flush is called. Using this approach the write-performance is significantly
+better than in a scenario where updates are done for each entity in isolation.
+
+Doctrine follows the UnitOfWork pattern which additionally detects all entities
+that were fetched and have changed during the request. You don't have to keep track of
+entities yourself, when Doctrine already knowns about them.
+
+As a next step we want to fetch a list of all the products. Let's create a
+new script for this:
+
+.. code-block:: php
+
+    <?php
+    // list_products.php
+    require_once "bootstrap.php";
+
+    $productRepository = $entityManager->getRepository('Product');
+    $products = $productRepository->findAll();
+
+    foreach ($products as $product) {
+        echo sprintf("-%s\n", $product->getName());
+    }
+
+The ``EntityManager#getRepository()`` method can create a finder object (called
+repository) for every entity. It is provided by Doctrine and contains some
+finder methods such as ``findAll()``.
+
+Let's continue with displaying the name of a product based on its ID:
+
+.. code-block:: php
+
+    <?php
+    // show_product.php <id>
+    require_once "bootstrap.php";
+
+    $id = $argv[1];
+    $product = $entityManager->find('Product', $id);
+
+    if ($product === null) {
+        echo "No product found.\n";
+        exit(1);
+    }
+
+    echo sprintf("-%s\n", $product->getName());
+
+Updating a product name demonstrates the functionality UnitOfWork of pattern
+discussed before. We only need to find a product entity and all changes to its
+properties are written to the database:
+
+.. code-block:: php
+
+    <?php
+    // update_product.php <id> <new-name>
+    require_once "bootstrap.php";
+
+    $id = $argv[1];
+    $newName = $argv[2];
+
+    $product = $entityManager->find('Product', $id);
+
+    if ($product === null) {
+        echo "Product $id does not exist.\n";
+        exit(1);
+    }
+
+    $product->setName($newName);
+
+    $entityManager->flush();
+
+After calling this script on one of the existing products, you can verify the
+product name changed by calling the ``show_product.php`` script.
+
+Adding Bug and User Entities
+----------------------------
+
+We continue with the bug tracker domain, by creating the missing classes
+``Bug``  and ``User`` and putting them into ``src/Bug.php`` and
+``src/User.php`` respectively.
+
+.. code-block:: php
+
+    <?php
+    // src/Bug.php
+    /**
+     * @Entity(repositoryClass="BugRepository") @Table(name="bugs")
+     */
+    class Bug
+    {
+        /**
+         * @Id @Column(type="integer") @GeneratedValue
+         * @var int
+         */
+        protected $id;
+        /**
+         * @Column(type="string")
+         * @var string
+         */
+        protected $description;
+        /**
+         * @Column(type="datetime")
+         * @var DateTime
+         */
+        protected $created;
+        /**
+         * @Column(type="string")
+         * @var string
+         */
+        protected $status;
+
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function getDescription()
+        {
+            return $this->description;
+        }
+
+        public function setDescription($description)
+        {
+            $this->description = $description;
+        }
+
+        public function setCreated(DateTime $created)
+        {
+            $this->created = $created;
+        }
+
+        public function getCreated()
+        {
+            return $this->created;
+        }
+
+        public function setStatus($status)
+        {
+            $this->status = $status;
+        }
+
+        public function getStatus()
+        {
+            return $this->status;
+        }
+    }
+
+.. code-block:: php
+
+    <?php
+    // src/User.php
+    /**
+     * @Entity @Table(name="users")
+     */
+    class User
+    {
+        /**
+         * @Id @GeneratedValue @Column(type="integer")
+         * @var int
+         */
+        protected $id;
+        /**
+         * @Column(type="string")
+         * @var string
+         */
+        protected $name;
+
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+    }
+
+All of the properties discussed so far are simple string and integer values,
+for example the id fields of the entities, their names, description, status and
+change dates. With just the scalar values this model cannot describe the dynamics that we want. We
+want to model references between entities.
+
+References between objects are foreign keys in the database. You never have to
+work with the foreign keys directly, only with objects that represent the
+foreign key through their own identity.
+
+For every foreign key you either have a Doctrine ManyToOne or OneToOne
+association. On the inverse sides of these foreign keys you can have
+OneToMany associations. Obviously you can have ManyToMany associations
+that connect two tables with each other through a join table with 
+two foreign keys.
+
+Now that you know the basics about references in Doctrine, we can extend the
+domain model to match the requirements:
+
+.. code-block:: php
+
+    <?php
+    // src/Bug.php
+    use Doctrine\Common\Collections\ArrayCollection;
+
+    class Bug
+    {
+        // ... (previous code)
+
+        protected $products;
+
+        public function __construct()
+        {
+            $this->products = new ArrayCollection();
+        }
+    }
+
+.. code-block:: php
+
+    <?php
+    // src/User.php
+    use Doctrine\Common\Collections\ArrayCollection;
+    class User
+    {
+        // ... (previous code)
+
+        protected $reportedBugs;
+        protected $assignedBugs;
+
+        public function __construct()
+        {
+            $this->reportedBugs = new ArrayCollection();
+            $this->assignedBugs = new ArrayCollection();
+        }
+    }
+
+Whenever an entity is recreated from the database, an Collection
+implementation of the type Doctrine is injected into your entity
+instead of an array. Compared to the ArrayCollection this
+implementation helps the Doctrine ORM understand the changes that
+have happened to the collection which are noteworthy for
+persistence.
+
+.. warning::
+
+    Lazy load proxies always contain an instance of
+    Doctrine's EntityManager and all its dependencies. Therefore a
+    var\_dump() will possibly dump a very large recursive structure
+    which is impossible to render and read. You have to use
+    ``Doctrine\Common\Util\Debug::dump()`` to restrict the dumping to a
+    human readable level. Additionally you should be aware that dumping
+    the EntityManager to a Browser may take several minutes, and the
+    Debug::dump() method just ignores any occurrences of it in Proxy
+    instances.
+
+Because we only work with collections for the references we must be
+careful to implement a bidirectional reference in the domain model.
+The concept of owning or inverse side of a relation is central to
+this notion and should always be kept in mind. The following
+assumptions are made about relations and have to be followed to be
+able to work with Doctrine 2. These assumptions are not unique to
+Doctrine 2 but are best practices in handling database relations
+and Object-Relational Mapping.
+
+
+-  Changes to Collections are saved or updated, when the entity on
+   the *owning* side of the collection is saved or updated.
+-  Saving an Entity at the inverse side of a relation never
+   triggers a persist operation to changes to the collection.
+-  In a one-to-one relation the entity holding the foreign key of
+   the related entity on its own database table is *always* the owning
+   side of the relation.
+-  In a many-to-many relation, both sides can be the owning side of
+   the relation. However in a bi-directional many-to-many relation
+   only one is allowed to be.
+-  In a many-to-one relation the Many-side is the owning side by
+   default, because it holds the foreign key.
+-  The OneToMany side of a relation is inverse by default, since
+   the foreign key is saved on the Many side. A OneToMany relation can
+   only be the owning side, if its implemented using a ManyToMany
+   relation with join table and restricting the one side to allow only
+   UNIQUE values per database constraint.
+
+.. note::
+
+    Consistency of bi-directional references on the inverse side of a
+    relation have to be managed in userland application code. Doctrine
+    cannot magically update your collections to be consistent.
+
+
+In the case of Users and Bugs we have references back and forth to
+the assigned and reported bugs from a user, making this relation
+bi-directional. We have to change the code to ensure consistency of
+the bi-directional reference:
+
+.. code-block:: php
+
+    <?php
+    // src/Bug.php
+    class Bug
+    {
+        // ... (previous code)
+
+        protected $engineer;
+        protected $reporter;
+
+        public function setEngineer($engineer)
+        {
+            $engineer->assignedToBug($this);
+            $this->engineer = $engineer;
+        }
+
+        public function setReporter($reporter)
+        {
+            $reporter->addReportedBug($this);
+            $this->reporter = $reporter;
+        }
+
+        public function getEngineer()
+        {
+            return $this->engineer;
+        }
+
+        public function getReporter()
+        {
+            return $this->reporter;
+        }
+    }
+
+.. code-block:: php
+
+    <?php
+    // src/User.php
+    class User
+    {
+        // ... (previous code)
+
+        protected $reportedBugs = null;
+        protected $assignedBugs = null;
+
+        public function addReportedBug($bug)
+        {
+            $this->reportedBugs[] = $bug;
+        }
+
+        public function assignedToBug($bug)
+        {
+            $this->assignedBugs[] = $bug;
+        }
+    }
+
+I chose to name the inverse methods in past-tense, which should
+indicate that the actual assigning has already taken place and the
+methods are only used for ensuring consistency of the references.
+This approach is my personal preference, you can choose whatever
+method to make this work.
+
+You can see from ``User::addReportedBug()`` and
+``User::assignedToBug()`` that using this method in userland alone
+would not add the Bug to the collection of the owning side in
+``Bug::$reporter`` or ``Bug::$engineer``. Using these methods and
+calling Doctrine for persistence would not update the collections
+representation in the database.
+
+Only using ``Bug::setEngineer()`` or ``Bug::setReporter()``
+correctly saves the relation information. We also set both
+collection instance variables to protected, however with PHP 5.3's
+new features Doctrine is still able to use Reflection to set and
+get values from protected and private properties.
+
+The ``Bug::$reporter`` and ``Bug::$engineer`` properties are
+Many-To-One relations, which point to a User. In a normalized
+relational model the foreign key is saved on the Bug's table, hence
+in our object-relation model the Bug is at the owning side of the
+relation. You should always make sure that the use-cases of your
+domain model should drive which side is an inverse or owning one in
+your Doctrine mapping. In our example, whenever a new bug is saved
+or an engineer is assigned to the bug, we don't want to update the
+User to persist the reference, but the Bug. This is the case with
+the Bug being at the owning side of the relation.
+
+Bugs reference Products by an uni-directional ManyToMany relation in
+the database that points from Bugs to Products.
+
+.. code-block:: php
+
+    <?php
+    // src/Bug.php
+    class Bug
+    {
+        // ... (previous code)
+
+        protected $products = null;
+
+        public function assignToProduct($product)
+        {
+            $this->products[] = $product;
+        }
+
+        public function getProducts()
+        {
+            return $this->products;
+        }
+    }
+
+We are now finished with the domain model given the requirements.
+Now we continue adding metadata mappings for the ``User`` and ``Bug``
+as we did for the ``Product`` before:
 
 .. configuration-block::
     .. code-block:: php
 
         <?php
-        // entities/Bug.php
+        // src/Bug.php
         /**
          * @Entity @Table(name="bugs")
          **/
@@ -636,9 +882,9 @@ We then go on specifying the definition of a Bug:
           manyToMany:
             products:
               targetEntity: Product
-              
 
-Here again we have the entity, id and primitive type definitions.
+
+Here we have the entity, id and primitive type definitions.
 The column names are used from the Zend\_Db\_Table examples and
 have different names than the properties on the Bug class.
 Additionally for the "created" field it is specified that it is of
@@ -673,7 +919,7 @@ The last missing definition is that of the User entity:
     .. code-block:: php
 
         <?php
-        // entities/User.php
+        // src/User.php
         /**
          * @Entity @Table(name="users")
          **/
@@ -758,157 +1004,10 @@ class that holds the owning sides.
 This example has a fair overview of the most basic features of the
 metadata definition language.
 
-Obtaining the EntityManager
----------------------------
-
-Doctrine's public interface is the EntityManager, it provides the
-access point to the complete lifecycle management of your entities
-and transforms entities from and back to persistence. You have to
-configure and create it to use your entities with Doctrine 2. I
-will show the configuration steps and then discuss them step by
-step:
-
-.. code-block:: php
-
-    <?php
-    // bootstrap_doctrine.php
-
-    // See :doc:`Configuration <../reference/configuration>` for up to date autoloading details.
-    require_once "vendor/autoload.php";
-
-    // Create a simple "default" Doctrine ORM configuration for XML Mapping
-    $isDevMode = true;
-    $config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    // or if you prefer yaml or annotations
-    //$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/entities"), $isDevMode);
-    //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
-    
-    // database configuration parameters
-    $conn = array(
-        'driver' => 'pdo_sqlite',
-        'path' => __DIR__ . '/db.sqlite',
-    );
-    
-    // obtaining the entity manager
-    $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
-
-The first require statement sets up the autoloading capabilities of Doctrine.
-We assume here that you have installed Doctrine using Composer.
-See :doc:`Configuration <../reference/configuration>` for more details
-on other installation procedures.
-
-The second block consists of the instantiation of the ORM
-Configuration object using the Setup helper. It assumes a bunch
-of defaults that you don't have to bother about for now. You can
-read up on the configuration details in the
-:doc:`reference chapter on configuration <../reference/configuration>`.
-
-The third block shows the configuration options required to connect
-to a database, in my case a file-based sqlite database. All the
-configuration options for all the shipped drivers are given in the
-`DBAL Configuration section of the manual <http://www.doctrine-project.org/documentation/manual/2_0/en/dbal>`_.
-
-You should make sure to make it configurable if Doctrine should run
-in dev or production mode using the `$devMode` variable. You can
-use an environment variable for example, hook into your frameworks configuration
-or check for the HTTP_HOST of your devsystem (localhost for example)
-
-.. code-block:: php
-
-    <?php
-    // examples, use your own logic to determine this:
-    $isDevMode = ($_SERVER['HTTP_HOST'] == 'localhost');
-    $isDevMode = ($_ENV['APPLICATION_ENV'] == 'development');
-
-The last block shows how the ``EntityManager`` is obtained from a
-factory method.
-
-We also have to create a general bootstrap file for our application:
-
-.. code-block:: php
-
-    <?php
-    // bootstrap.php
-    if (!class_exists("Doctrine\Common\Version", false)) {
-        require_once "bootstrap_doctrine.php";
-    }
-
-    require_once "entities/User.php";
-    require_once "entities/Product.php";
-    require_once "entities/Bug.php";
-
-Generating the Database Schema
+Implementing more Requirements
 ------------------------------
 
-Now that we have defined the Metadata Mappings and bootstrapped the
-EntityManager we want to generate the relational database schema
-from it. Doctrine has a Command-Line-Interface that allows you to
-access the SchemaTool, a component that generates the required
-tables to work with the metadata.
-
-For the command-line tool to work a cli-config.php file has to be
-present in the project root directory, where you will execute the
-doctrine command. Its a fairly simple file:
-
-.. code-block:: php
-
-    <?php
-    // cli-config.php
-    require_once "bootstrap.php";
-
-    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
-    ));
-
-You can then change into your project directory and call the
-Doctrine command-line tool:
-
-::
-
-    $ cd project/
-    $ php vendor/bin/doctrine-orm orm:schema-tool:create
-
-.. note::
-
-    The ``doctrine`` command will only be present if you installed
-    Doctrine from Composer. Otherwise you will have to dig into the
-    ``bin/doctrine.php`` code of your Doctrine 2 directory to setup
-    your doctrine command-line client.
-
-    See the
-    :doc:`Tools section of the manual <../reference/tools>`
-    on how to setup the Doctrine console correctly.
-
-
-During the development you probably need to re-create the database
-several times when changing the Entity metadata. You can then
-either re-create the database:
-
-::
-
-    $ doctrine orm:schema-tool:drop --force
-    $ doctrine orm:schema-tool:create
-
-Or use the update functionality:
-
-::
-
-    $ doctrine orm:schema-tool:update --force
-
-The updating of databases uses a Diff Algorithm for a given
-Database Schema, a cornerstone of the ``Doctrine\DBAL`` package,
-which can even be used without the Doctrine ORM package. However
-its not available in SQLite since it does not support ALTER TABLE.
-
-Writing Entities into the Database
-----------------------------------
-
-.. note::
-
-    This tutorial assumes you call all the example scripts from the CLI.
-
-Having created the schema we can now start and save entities in the
-database. For starters we need a create user use-case:
+For starters we need a create user entities:
 
 .. code-block:: php
 
@@ -917,68 +1016,23 @@ database. For starters we need a create user use-case:
     require_once "bootstrap.php";
 
     $newUsername = $argv[1];
-    
+
     $user = new User();
     $user->setName($newUsername);
-    
+
     $entityManager->persist($user);
     $entityManager->flush();
 
     echo "Created User with ID " . $user->getId() . "\n";
-
-Products can also be created:
-
-.. code-block:: php
-
-    <?php
-    // create_product.php
-    require_once "bootstrap.php";
-
-    $newProductName = $argv[1];
-    
-    $product = new Product();
-    $product->setName($newProductName);
-    
-    $entityManager->persist($product);
-    $entityManager->flush();
-
-    echo "Created Product with ID " . $product->getId() . "\n";
 
 Now call:
 
 ::
 
     $ php create_user.php beberlei
-    $ php create_product.php MyProduct
 
-So what is happening in those two snippets? In both examples the
-code that works on User and Product is pretty standard OOP. The interesting bits are the
-communication with the ``EntityManager``. To notify the
-EntityManager that a new entity should be inserted into the
-database you have to call ``persist()``. However the EntityManager
-does not act on this command, its merely notified. You have to explicitly
-call ``flush()`` to have the EntityManager write those two entities
-to the database.
-
-You might wonder why does this distinction between persist
-notification and flush exist: Doctrine 2 uses the UnitOfWork
-pattern to aggregate all writes (INSERT, UPDATE, DELETE) into one
-single transaction, which is executed when flush is called.
-Using this approach the write-performance is significantly better
-than in a scenario where updates are done for each entity in
-isolation. In more complex scenarios than the previous two, you are
-free to request updates on many different entities and all flush
-them at once.
-
-Doctrine's UnitOfWork detects entities that have changed after
-retrieval from the database automatically when the flush operation
-is called, so that you only have to keep track of those entities
-that are new or to be removed and pass them to
-``EntityManager#persist()`` and ``EntityManager#remove()``
-respectively.
-
-We are now getting to the "Create a New Bug" requirement and the
-code for this scenario may look like this:
+We now have the data to create a bug and the code for this scenario may look
+like this:
 
 .. code-block:: php
 
@@ -987,7 +1041,7 @@ code for this scenario may look like this:
     require_once "bootstrap.php";
 
     $theReporterId = $argv[1];
-    $theDefaultEngineerId = $argv[1];
+    $theDefaultEngineerId = $argv[2];
     $productIds = explode(",", $argv[3]);
 
     $reporter = $entityManager->find("User", $theReporterId);
@@ -996,23 +1050,23 @@ code for this scenario may look like this:
         echo "No reporter and/or engineer found for the input.\n";
         exit(1);
     }
-    
+
     $bug = new Bug();
     $bug->setDescription("Something does not work!");
     $bug->setCreated(new DateTime("now"));
     $bug->setStatus("OPEN");
-    
+
     foreach ($productIds AS $productId) {
         $product = $entityManager->find("Product", $productId);
         $bug->assignToProduct($product);
     }
-    
+
     $bug->setReporter($reporter);
     $bug->setEngineer($engineer);
-    
+
     $entityManager->persist($bug);
     $entityManager->flush();
-    
+
     echo "Your new Bug Id: ".$bug->getId()."\n";
 
 Since we only have one user and product, probably with the ID of 1, we can call this script with:
@@ -1051,17 +1105,17 @@ the first read-only use-case:
     require_once "bootstrap.php";
 
     $dql = "SELECT b, e, r FROM Bug b JOIN b.engineer e JOIN b.reporter r ORDER BY b.created DESC";
-    
+
     $query = $entityManager->createQuery($dql);
     $query->setMaxResults(30);
     $bugs = $query->getResult();
-    
+
     foreach($bugs AS $bug) {
         echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
-        echo "    Reported by: ".$bug->getReporter()->name."\n";
-        echo "    Assigned to: ".$bug->getEngineer()->name."\n";
+        echo "    Reported by: ".$bug->getReporter()->getName()."\n";
+        echo "    Assigned to: ".$bug->getEngineer()->getName()."\n";
         foreach($bug->getProducts() AS $product) {
-            echo "    Platform: ".$product->name."\n";
+            echo "    Platform: ".$product->getName()."\n";
         }
         echo "\n";
     }
@@ -1139,7 +1193,7 @@ can rewrite our code:
            "JOIN b.reporter r JOIN b.products p ORDER BY b.created DESC";
     $query = $entityManager->createQuery($dql);
     $bugs = $query->getArrayResult();
-    
+
     foreach ($bugs AS $bug) {
         echo $bug['description'] . " - " . $bug['created']->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug['reporter']['name']."\n";
@@ -1161,68 +1215,9 @@ Find by Primary Key
 
 The next Use-Case is displaying a Bug by primary key. This could be
 done using DQL as in the previous example with a where clause,
-however there is a convenience method on the Entity Manager that
+however there is a convenience method on the ``EntityManager`` that
 handles loading by primary key, which we have already seen in the
 write scenarios:
-
-However we will soon see another problem with our entities using
-this approach. Try displaying the engineer's name:
-
-.. code-block:: php
-
-    <?php
-    // show_bug.php
-    require_once "bootstrap.php";
-
-    $theBugId = $argv[1];
-
-    $bug = $entityManager->find("Bug", (int)$theBugId);
-
-    echo "Bug: ".$bug->getDescription()."\n";
-    // Accessing our special public $name property here on purpose:
-    echo "Engineer: ".$bug->getEngineer()->name."\n";
-
-The output of the engineers name is null! What is happening?
-It worked in the previous example, so it can't be a problem with the persistence code of
-Doctrine. What is it then? You walked in the public property trap.
-
-Since we only retrieved the bug by primary key both the engineer
-and reporter are not immediately loaded from the database but are
-replaced by LazyLoading proxies. Sample code of this proxy
-generated code can be found in the specified Proxy Directory, it
-looks like:
-
-.. code-block:: php
-
-    <?php
-    namespace MyProject\Proxies;
-    
-    /**
-     * THIS CLASS WAS GENERATED BY THE DOCTRINE ORM. DO NOT EDIT THIS FILE.
-     **/
-    class UserProxy extends \User implements \Doctrine\ORM\Proxy\Proxy
-    {
-        // .. lazy load code here
-    
-        public function addReportedBug($bug)
-        {
-            $this->_load();
-            return parent::addReportedBug($bug);
-        }
-    
-        public function assignedToBug($bug)
-        {
-            $this->_load();
-            return parent::assignedToBug($bug);
-        }
-    }
-
-See how upon each method call the proxy is lazily loaded from the
-database? Using public properties however we never call a method
-and Doctrine has no way to hook into the PHP Engine to detect a
-direct access to a public property and trigger the lazy load. We
-need to rewrite our entities, make all the properties private or
-protected and add getters and setters to get a working example:
 
 .. code-block:: php
 
@@ -1237,17 +1232,51 @@ protected and add getters and setters to get a working example:
     echo "Bug: ".$bug->getDescription()."\n";
     echo "Engineer: ".$bug->getEngineer()->getName()."\n";
 
-Now prints:
+The output of the engineers name is fetched from the database! What is happening?
+
+Since we only retrieved the bug by primary key both the engineer and reporter
+are not immediately loaded from the database but are replaced by LazyLoading
+proxies. These proxies will load behind the scenes, when the first method
+is called on them.
+
+Sample code of this proxy generated code can be found in the specified Proxy
+Directory, it looks like:
+
+.. code-block:: php
+
+    <?php
+    namespace MyProject\Proxies;
+
+    /**
+     * THIS CLASS WAS GENERATED BY THE DOCTRINE ORM. DO NOT EDIT THIS FILE.
+     **/
+    class UserProxy extends \User implements \Doctrine\ORM\Proxy\Proxy
+    {
+        // .. lazy load code here
+
+        public function addReportedBug($bug)
+        {
+            $this->_load();
+            return parent::addReportedBug($bug);
+        }
+
+        public function assignedToBug($bug)
+        {
+            $this->_load();
+            return parent::assignedToBug($bug);
+        }
+    }
+
+See how upon each method call the proxy is lazily loaded from the
+database?
+
+The call prints:
 
 ::
 
     $ php show_bug.php 1
     Bug: Something does not work!
     Engineer: beberlei
-
-Being required to use private or protected properties Doctrine 2
-actually enforces you to encapsulate your objects according to
-object-oriented best-practices.
 
 Dashboard of the User
 ---------------------
@@ -1267,12 +1296,12 @@ and usage of bound parameters:
 
     $dql = "SELECT b, e, r FROM Bug b JOIN b.engineer e JOIN b.reporter r ".
            "WHERE b.status = 'OPEN' AND (e.id = ?1 OR r.id = ?1) ORDER BY b.created DESC";
-    
+
     $myBugs = $entityManager->createQuery($dql)
                             ->setParameter(1, $theUserId)
                             ->setMaxResults(15)
                             ->getResult();
-    
+
     echo "You have created or assigned to " . count($myBugs) . " open bugs:\n\n";
 
     foreach ($myBugs AS $bug) {
@@ -1299,7 +1328,7 @@ grouped by product:
     $dql = "SELECT p.id, p.name, count(b.id) AS openBugs FROM Bug b ".
            "JOIN b.products p WHERE b.status = 'OPEN' GROUP BY p.id";
     $productBugs = $entityManager->createQuery($dql)->getScalarResult();
-    
+
     foreach($productBugs as $productBug) {
         echo $productBug['name']." has " . $productBug['openBugs'] . " open bugs!\n";
     }
@@ -1313,7 +1342,7 @@ should be able to close a bug. This looks like:
 .. code-block:: php
 
     <?php
-    // entities/Bug.php
+    // src/Bug.php
 
     class Bug
     {
@@ -1333,7 +1362,7 @@ should be able to close a bug. This looks like:
 
     $bug = $entityManager->find("Bug", (int)$theBugId);
     $bug->close();
-    
+
     $entityManager->flush();
 
 When retrieving the Bug from the database it is inserted into the
@@ -1393,7 +1422,7 @@ the previously discussed query functionality in it:
 .. code-block:: php
 
     <?php
-    // repositories/BugRepository.php
+    // src/BugRepository.php
 
     use Doctrine\ORM\EntityRepository;
 
@@ -1509,5 +1538,4 @@ will be added to this tutorial incrementally, topics will include:
 
 Additional details on all the topics discussed here can be found in
 the respective manual chapters.
-
 

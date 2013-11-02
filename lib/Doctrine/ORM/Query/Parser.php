@@ -2,7 +2,7 @@
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHARNTABILITY AND FITNESS FOR
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
  * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
@@ -305,7 +305,7 @@ class Parser
      *
      * @return void
      *
-     * @throws QueryException If the tokens dont match.
+     * @throws QueryException If the tokens don't match.
      */
     public function match($token)
     {
@@ -644,7 +644,7 @@ class Parser
             }
 
             if ($class->getConstructor() === null) {
-                $this->semanticalError(sprintf('Class "%s" has not a valid contructor.', $className), $token);
+                $this->semanticalError(sprintf('Class "%s" has not a valid constructor.', $className), $token);
             }
 
             if ($class->getConstructor()->getNumberOfRequiredParameters() > count($args)) {
@@ -667,6 +667,12 @@ class Parser
 
             foreach ($expr->partialFieldSet as $field) {
                 if (isset($class->fieldMappings[$field])) {
+                    continue;
+                }
+
+                if (isset($class->associationMappings[$field]) &&
+                    $class->associationMappings[$field]['isOwningSide'] &&
+                    $class->associationMappings[$field]['type'] & ClassMetadata::TO_ONE) {
                     continue;
                 }
 
@@ -1043,7 +1049,7 @@ class Parser
      * Parses an arbitrary path expression and defers semantical validation
      * based on expected types.
      *
-     * PathExpression ::= IdentificationVariable "." identifier
+     * PathExpression ::= IdentificationVariable "." identifier [ ("." identifier)* ]
      *
      * @param integer $expectedTypes
      *
@@ -1059,12 +1065,18 @@ class Parser
             $this->match(Lexer::T_IDENTIFIER);
 
             $field = $this->lexer->token['value'];
+
+            while ($this->lexer->isNextToken(Lexer::T_DOT)) {
+                $this->match(Lexer::T_DOT);
+                $this->match(Lexer::T_IDENTIFIER);
+                $field .= '.'.$this->lexer->token['value'];
+            }
         }
 
         // Creating AST node
         $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $field);
 
-        // Defer PathExpression validation if requested to be defered
+        // Defer PathExpression validation if requested to be deferred
         $this->deferredPathExpressions[] = array(
             'expression'   => $pathExpr,
             'nestingLevel' => $this->nestingLevel,
@@ -1538,6 +1550,9 @@ class Parser
     public function IdentificationVariableDeclaration()
     {
         $rangeVariableDeclaration = $this->RangeVariableDeclaration();
+
+        $rangeVariableDeclaration->isRoot = true;
+
         $indexBy = $this->lexer->isNextToken(Lexer::T_INDEX) ? $this->IndexBy() : null;
         $joins   = array();
 
@@ -1616,15 +1631,19 @@ class Parser
         $this->match(Lexer::T_JOIN);
 
         $next            = $this->lexer->glimpse();
-        $joinDeclaration = ($next['type'] === Lexer::T_DOT)
-            ? $this->JoinAssociationDeclaration()
-            : $this->RangeVariableDeclaration();
+        $joinDeclaration = ($next['type'] === Lexer::T_DOT) ? $this->JoinAssociationDeclaration() : $this->RangeVariableDeclaration();
+        $adhocConditions = $this->lexer->isNextToken(Lexer::T_WITH);
+        $join            = new AST\Join($joinType, $joinDeclaration);
 
-        // Create AST node
-        $join = new AST\Join($joinType, $joinDeclaration);
+        // Describe non-root join declaration
+        if ($joinDeclaration instanceof AST\RangeVariableDeclaration) {
+            $joinDeclaration->isRoot = false;
+
+            $adhocConditions = true;
+        }
 
         // Check for ad-hoc Join conditions
-        if ($this->lexer->isNextToken(Lexer::T_WITH) || $joinDeclaration instanceof AST\RangeVariableDeclaration) {
+        if ($adhocConditions) {
             $this->match(Lexer::T_WITH);
 
             $join->conditionalExpression = $this->ConditionalExpression();
@@ -2373,7 +2392,7 @@ class Parser
             return $condPrimary;
         }
 
-        // Peek beyond the matching closing paranthesis ')'
+        // Peek beyond the matching closing parenthesis ')'
         $peek = $this->peekBeyondClosingParenthesis();
 
         if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
@@ -2413,7 +2432,7 @@ class Parser
         }
 
         if ($token['type'] === Lexer::T_IDENTIFIER || $token['type'] === Lexer::T_INPUT_PARAMETER || $this->isFunction()) {
-            // Peek beyond the matching closing paranthesis.
+            // Peek beyond the matching closing parenthesis.
             $beyond = $this->lexer->peek();
 
             switch ($peek['value']) {
@@ -2445,7 +2464,7 @@ class Parser
                         $token = $this->lexer->peek();
                     }
 
-                    // We need to go even further in case of IS (differenciate between NULL and EMPTY)
+                    // We need to go even further in case of IS (differentiate between NULL and EMPTY)
                     $lookahead = $this->lexer->peek();
             }
 
@@ -2495,19 +2514,19 @@ class Parser
      */
     public function EmptyCollectionComparisonExpression()
     {
-        $emptyColletionCompExpr = new AST\EmptyCollectionComparisonExpression(
+        $emptyCollectionCompExpr = new AST\EmptyCollectionComparisonExpression(
             $this->CollectionValuedPathExpression()
         );
         $this->match(Lexer::T_IS);
 
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $emptyColletionCompExpr->not = true;
+            $emptyCollectionCompExpr->not = true;
         }
 
         $this->match(Lexer::T_EMPTY);
 
-        return $emptyColletionCompExpr;
+        return $emptyCollectionCompExpr;
     }
 
     /**
@@ -2546,7 +2565,7 @@ class Parser
     /**
      * Literal ::= string | char | integer | float | boolean
      *
-     * @return string
+     * @return \Doctrine\ORM\Query\AST\Literal
      */
     public function Literal()
     {
@@ -2704,7 +2723,7 @@ class Parser
     }
 
     /**
-     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
+     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | ParenthesisExpression
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
      *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
      *          | InputParameter | CaseExpression
@@ -2713,11 +2732,12 @@ class Parser
     {
         if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $this->match(Lexer::T_OPEN_PARENTHESIS);
+
             $expr = $this->SimpleArithmeticExpression();
 
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-            return $expr;
+            return new AST\ParenthesisExpression($expr);
         }
 
         switch ($this->lexer->lookahead['type']) {
@@ -2762,23 +2782,29 @@ class Parser
     }
 
     /**
-     * StringExpression ::= StringPrimary | "(" Subselect ")"
+     * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
      * @return \Doctrine\ORM\Query\AST\StringPrimary |
-     *         \Doctrine]ORM\Query\AST\Subselect
+     *         \Doctrine\ORM\Query\AST\Subselect |
+     *         string
      */
     public function StringExpression()
     {
-        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
-            $peek = $this->lexer->glimpse();
+        $peek = $this->lexer->glimpse();
 
-            if ($peek['type'] === Lexer::T_SELECT) {
-                $this->match(Lexer::T_OPEN_PARENTHESIS);
-                $expr = $this->Subselect();
-                $this->match(Lexer::T_CLOSE_PARENTHESIS);
+        // Subselect
+        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && $peek['type'] === Lexer::T_SELECT) {
+            $this->match(Lexer::T_OPEN_PARENTHESIS);
+            $expr = $this->Subselect();
+            $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-                return $expr;
-            }
+            return $expr;
+        }
+
+        // ResultVariable (string)
+        if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER) &&
+            isset($this->queryComponents[$this->lexer->lookahead['value']]['resultVariable'])) {
+            return $this->ResultVariable();
         }
 
         return $this->StringPrimary();
@@ -2800,7 +2826,7 @@ class Parser
                 }
 
                 if ($peek['value'] == '(') {
-                    // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
+                    // do NOT directly go to FunctionsReturningString() because it doesn't check for custom functions.
                     return $this->FunctionDeclaration();
                 }
 
@@ -3101,7 +3127,7 @@ class Parser
     }
 
     /**
-     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression) "IS" ["NOT"] "NULL"
+     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
      *
      * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
      */
@@ -3127,7 +3153,29 @@ class Parser
                 break;
 
             default:
-                $expr = $this->SingleValuedPathExpression();
+                // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
+                $glimpse = $this->lexer->glimpse();
+
+                if ($glimpse['type'] === Lexer::T_DOT) {
+                    $expr = $this->SingleValuedPathExpression();
+
+                    // Leave switch statement
+                    break;
+                }
+
+                $lookaheadValue = $this->lexer->lookahead['value'];
+
+                // Validate existing component
+                if ( ! isset($this->queryComponents[$lookaheadValue])) {
+                    $this->semanticalError('Cannot add having condition on undefined result variable.');
+                }
+
+                // Validating ResultVariable
+                if ( ! isset($this->queryComponents[$lookaheadValue]['resultVariable'])) {
+                    $this->semanticalError('Cannot add having condition on a non result variable.');
+                }
+
+                $expr = $this->ResultVariable();
                 break;
         }
 

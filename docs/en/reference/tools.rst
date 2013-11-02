@@ -4,30 +4,29 @@ Tools
 Doctrine Console
 ----------------
 
-The Doctrine Console is a Command Line Interface tool for
-simplifying common tasks during the development of a project that
-uses Doctrine 2.
+The Doctrine Console is a Command Line Interface tool for simplifying common
+administration tasks during the development of a project that uses Doctrine 2.
 
-Take a look at the :doc:`Configuration <configuration>` for more
-information how to setup the console command.
+Take a look at the :doc:`Installation and Configuration <configuration>`
+chapter for more information how to setup the console command.
 
-Getting Help
-~~~~~~~~~~~~
+Display Help Information
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Type ``php vendor/bin/doctrine-orm`` on the command line and you should see an
+Type ``php vendor/bin/doctrine`` on the command line and you should see an
 overview of the available commands or use the --help flag to get
 information on the available commands. If you want to know more
 about the use of generate entities for example, you can call:
 
 .. code-block:: php
 
-    $> php vendor/bin/doctrine-orm orm:generate-entities --help
+    $> php vendor/bin/doctrine orm:generate-entities --help
 
 
 Configuration
 ~~~~~~~~~~~~~
 
-Whenever the ``doctrine-orm`` command line tool is invoked, it can
+Whenever the ``doctrine`` command line tool is invoked, it can
 access all Commands that were registered by developer. There is no
 auto-detection mechanism at work. The Doctrine binary
 already registers all the commands that currently ship with
@@ -131,6 +130,20 @@ The following Commands are currently available:
 -  ``orm:schema-tool:update`` Processes the schema and either
    update the database schema of EntityManager Storage Connection or
    generate the SQL output.
+
+For these commands are also available aliases:
+
+
+-  ``orm:convert:d1-schema`` is alias for ``orm:convert-d1-schema``.
+-  ``orm:convert:mapping`` is alias for ``orm:convert-mapping``.
+-  ``orm:generate:entities`` is alias for ``orm:generate-entities``.
+-  ``orm:generate:proxies`` is alias for ``orm:generate-proxies``.
+-  ``orm:generate:repositories`` is alias for ``orm:generate-repositories``.
+
+.. note::
+
+    Console also supports auto completion, for example, instead of
+    ``orm:clear-cache:query`` you can use just ``o:c:q``.
 
 Database Schema Generation
 --------------------------

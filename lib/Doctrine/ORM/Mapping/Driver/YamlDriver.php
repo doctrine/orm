@@ -264,6 +264,10 @@ class YamlDriver extends FileDriver
                     $mapping['columnDefinition'] = $idElement['columnDefinition'];
                 }
 
+                if (isset($idElement['options'])) {
+                    $mapping['options'] = $idElement['options'];
+                }
+
                 $metadata->mapField($mapping);
 
                 if (isset($idElement['generator'])) {
@@ -300,11 +304,13 @@ class YamlDriver extends FileDriver
 
                 if (isset($mapping['version'])) {
                     $metadata->setVersionMapping($mapping);
+                    unset($mapping['version']);
                 }
 
                 $metadata->mapField($mapping);
             }
         }
+
 
         // Evaluate oneToOne relationships
         if (isset($element['oneToOne'])) {

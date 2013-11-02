@@ -93,6 +93,12 @@ task will drop all database assets (e.g. tables, etc) that are *not* described
 by the current metadata. In other words, without this option, this task leaves
 untouched any "extra" tables that exist in the database, but which aren't
 described by any metadata.
+
+<comment>Hint:</comment> If you have a database with tables that should not be managed
+by the ORM, you can use a DBAL functionality to filter the tables and sequences down
+on a global level:
+
+    \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
         );
     }
@@ -117,7 +123,7 @@ EOT
         $force   = true === $input->getOption('force');
 
         if ($dumpSql) {
-            $output->writeln(implode(';' . PHP_EOL, $sqls));
+            $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
         }
 
         if ($force) {
@@ -132,7 +138,7 @@ EOT
         if ($dumpSql || $force) {
             return 0;
         }
-        	
+
         $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
         $output->writeln('           Use the incremental update to detect changes during development and use');
         $output->writeln('           the SQL DDL provided to manually update your database in production.');

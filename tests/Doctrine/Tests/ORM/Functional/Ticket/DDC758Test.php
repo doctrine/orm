@@ -88,7 +88,7 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cmsUser->addGroup($group1);
         $cmsUser->addGroup($group2);
 
-        // Cascade merge of cmsUser followed by a flush should add in the birectional new many-to-many associations between the user and the groups
+        // Cascade merge of cmsUser followed by a flush should add in the bidirectional new many-to-many associations between the user and the groups
         $this->_em->merge($cmsUser);
         $this->_em->flush();
 

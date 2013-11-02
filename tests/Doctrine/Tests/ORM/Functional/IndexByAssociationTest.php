@@ -51,8 +51,8 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $market = $this->_em->find('Doctrine\Tests\Models\StockExchange\Market', $this->market->getId());
 
         $this->assertEquals(2, count($market->stocks));
-        $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed assocation.");
-        $this->assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed assocation.");
+        $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        $this->assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
         $this->assertEquals("AAPL", $market->stocks['AAPL']->getSymbol());
         $this->assertEquals("GOOG", $market->stocks['GOOG']->getSymbol());
     }
@@ -63,8 +63,8 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $market = $this->_em->createQuery($dql)->setParameter(1, $this->market->getId())->getSingleResult();
 
         $this->assertEquals(2, count($market->stocks));
-        $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed assocation.");
-        $this->assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed assocation.");
+        $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        $this->assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
         $this->assertEquals("AAPL", $market->stocks['AAPL']->getSymbol());
         $this->assertEquals("GOOG", $market->stocks['GOOG']->getSymbol());
     }
@@ -74,8 +74,8 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $bond = $this->_em->find('Doctrine\Tests\Models\StockExchange\Bond', $this->bond->getId());
 
         $this->assertEquals(2, count($bond->stocks));
-        $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed assocation.");
-        $this->assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed assocation.");
+        $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        $this->assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
         $this->assertEquals("AAPL", $bond->stocks['AAPL']->getSymbol());
         $this->assertEquals("GOOG", $bond->stocks['GOOG']->getSymbol());
     }
@@ -86,8 +86,8 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $bond = $this->_em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
 
         $this->assertEquals(2, count($bond->stocks));
-        $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed assocation.");
-        $this->assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed assocation.");
+        $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        $this->assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
         $this->assertEquals("AAPL", $bond->stocks['AAPL']->getSymbol());
         $this->assertEquals("GOOG", $bond->stocks['GOOG']->getSymbol());
     }
@@ -98,8 +98,8 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $bond = $this->_em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
 
         $this->assertEquals(2, count($bond->stocks));
-        $this->assertFalse(isset($bond->stocks['AAPL']), "AAPL symbol not exists in re-indexed assocation.");
-        $this->assertFalse(isset($bond->stocks['GOOG']), "GOOG symbol not exists in re-indexed assocation.");
+        $this->assertFalse(isset($bond->stocks['AAPL']), "AAPL symbol not exists in re-indexed association.");
+        $this->assertFalse(isset($bond->stocks['GOOG']), "GOOG symbol not exists in re-indexed association.");
     }
 }
 

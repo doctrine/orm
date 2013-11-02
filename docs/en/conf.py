@@ -192,3 +192,10 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+primary_domain = "dcorm"
+
+def linkcode_resolve(domain, info):
+    if domain == 'dcorm':
+        return 'http://'
+    return None
