@@ -25,7 +25,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\Common\Util\Debug;
-use JMS\Serializer\SerializerBuilder;
 
 /**
  * Command to execute DQL queries in a given EntityManager.
@@ -65,11 +64,6 @@ class RunDqlCommand extends Command
             new InputOption(
                 'depth', null, InputOption::VALUE_REQUIRED,
                 'Dumping depth of Entity graph.', 7
-            ),
-            new InputOption(
-                'format', null, InputOption::VALUE_REQUIRED,
-                'The output format of the result. Available formats: doctrine-debug (default), jms-serializer-json.',
-                'doctrine-debug'
             )
         ))
         ->setHelp(<<<EOT
@@ -124,22 +118,6 @@ EOT
 
         $resultSet = $query->execute(array(), constant($hydrationMode));
 
-        switch ($input->getOption('format')) {
-            case 'doctrine-debug':
-                ob_start();
-                Debug::dump($resultSet, $input->getOption('depth'));
-                $message = ob_get_clean();
-
-                $output->write($message);
-                break;
-
-            case 'jms-serializer-json':
-                $serializer = SerializerBuilder::create()->build();
-                $output->write($serializer->serialize($resultSet, 'json'));
-                break;
-
-            default:
-                throw new \RuntimeException(sprintf('Unknown output format "%s"; available formats: doctrine-debug, jms-serializer-json', $input->getOption('format')));
-        }
+        Debug::dump($resultSet, $input->getOption('depth'));
     }
 }
