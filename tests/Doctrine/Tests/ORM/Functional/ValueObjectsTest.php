@@ -176,10 +176,28 @@ class DDC93Person
     /** @Embedded(class="DDC93Address") */
     public $address;
 
+    /** @Embedded(class = "DDC93Timestamps") */
+    public $timestamps;
+
     public function __construct($name = null, DDC93Address $address = null)
     {
         $this->name = $name;
         $this->address = $address;
+        $this->timestamps = new DDC93Timestamps(new \DateTime);
+    }
+}
+
+/**
+ * @Embeddable
+ */
+class DDC93Timestamps
+{
+    /** @Column(type = "datetime") */
+    public $createdAt;
+
+    public function __construct(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
     }
 }
 

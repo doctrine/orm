@@ -57,7 +57,7 @@ class ReflectionEmbeddedProperty
         $embeddedObject = $this->parentProperty->getValue($object);
 
         if ($embeddedObject === null) {
-            $embeddedObject = new $this->class; // TODO
+            $embeddedObject = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->class), $this->class));
             $this->parentProperty->setValue($object, $embeddedObject);
         }
 
