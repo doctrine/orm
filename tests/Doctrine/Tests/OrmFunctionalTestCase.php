@@ -162,6 +162,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Taxi\Car',
             'Doctrine\Tests\Models\Taxi\Driver',
         ),
+        'ddc2775' => array(
+            'Doctrine\Tests\Models\DDC2775\User',
+            'Doctrine\Tests\Models\DDC2775\Role',
+            'Doctrine\Tests\Models\DDC2775\AdminRole',
+            'Doctrine\Tests\Models\DDC2775\Authorization',
+        ),
     );
 
     /**
