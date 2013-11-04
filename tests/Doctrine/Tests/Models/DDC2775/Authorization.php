@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\Models\DDC2775;
 
 /**
- * @Entity
+ * @Entity @Table(name="authorizations")
  */
 class Authorization
 {
