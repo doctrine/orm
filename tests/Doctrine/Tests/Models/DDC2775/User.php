@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests\Models\DDC2775;
 
-/** @Entity @Table(name="users") */
+/**
+ * @Entity @Table(name="users")
+ */
 class User
 {
     /**
