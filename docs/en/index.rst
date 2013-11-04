@@ -67,7 +67,7 @@ Advanced Topics
 
 * :doc:`Architecture <reference/architecture>`
 * :doc:`Advanced Configuration <reference/advanced-configuration>`
-* :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
+* :doc:`Limitations and known issues <reference/limitations-and-known-issues>`
 * :doc:`Commandline Tools <reference/tools>`
 * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
 * :doc:`Filters <reference/filters>`
