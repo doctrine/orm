@@ -39,14 +39,6 @@ use Doctrine\ORM\Proxy\Proxy;
  */
 class ObjectHydrator extends AbstractHydrator
 {
-    /**
-     * Local ClassMetadata cache to avoid going to the EntityManager all the time.
-     * This local cache is maintained between hydration runs and not cleared.
-     *
-     * @var array
-     */
-    private $ce = array();
-
     /* The following parts are reinitialized on every hydration run. */
 
     /**
@@ -103,10 +95,6 @@ class ObjectHydrator extends AbstractHydrator
             $this->identifierMap[$dqlAlias] = array();
             $this->idTemplate[$dqlAlias]    = '';
 
-            if ( ! isset($this->ce[$className])) {
-                $this->ce[$className] = $this->_em->getClassMetadata($className);
-            }
-
             // Remember which associations are "fetch joined", so that we know where to inject
             // collection stubs or proxies and where not.
             if ( ! isset($this->_rsm->relationMap[$dqlAlias])) {
@@ -118,7 +106,7 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             $sourceClassName = $this->_rsm->aliasMap[$this->_rsm->parentAliasMap[$dqlAlias]];
-            $sourceClass     = $this->getClassMetadata($sourceClassName);
+            $sourceClass     = $this->_cmf->$sourceClassName;
             $assoc           = $sourceClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
 
             $this->_hints['fetched'][$this->_rsm->parentAliasMap[$dqlAlias]][$assoc['fieldName']] = true;
@@ -136,7 +124,7 @@ class ObjectHydrator extends AbstractHydrator
 
             // handle fetch-joined owning side bi-directional one-to-one associations
             if ($assoc['inversedBy']) {
-                $class        = $this->ce[$className];
+                $class        = $this->_cmf->$className;
                 $inverseAssoc = $class->associationMappings[$assoc['inversedBy']];
 
                 if ( ! ($inverseAssoc['type'] & ClassMetadata::TO_ONE)) {
@@ -209,7 +197,7 @@ class ObjectHydrator extends AbstractHydrator
 
         if ( ! $value instanceof PersistentCollection) {
             $value = new PersistentCollection(
-                $this->_em, $this->ce[$relation['targetEntity']], $value
+                $this->_em, $this->_cmf->{$relation['targetEntity']}, $value
             );
             $value->setOwner($entity, $relation);
 
@@ -266,13 +254,13 @@ class ObjectHydrator extends AbstractHydrator
                 throw HydrationException::emptyDiscriminatorValue($dqlAlias);
             }
 
-            $className = $this->ce[$className]->discriminatorMap[$data[$discrColumn]];
+            $className = $this->_cmf->$className->discriminatorMap[$data[$discrColumn]];
 
             unset($data[$discrColumn]);
         }
 
         if (isset($this->_hints[Query::HINT_REFRESH_ENTITY]) && isset($this->rootAliases[$dqlAlias])) {
-            $this->registerManaged($this->ce[$className], $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
+            $this->registerManaged($this->_cmf->$className, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
         $this->_hints['fetchAlias'] = $dqlAlias;
@@ -289,7 +277,7 @@ class ObjectHydrator extends AbstractHydrator
     private function getEntityFromIdentityMap($className, array $data)
     {
         // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
-        $class = $this->ce[$className];
+        $class = $this->_cmf->$className;
 
         /* @var $class ClassMetadata */
         if ($class->isIdentifierComposite) {
@@ -307,24 +295,6 @@ class ObjectHydrator extends AbstractHydrator
         } else {
             return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
         }
-    }
-
-    /**
-     * Gets a ClassMetadata instance from the local cache.
-     * If the instance is not yet in the local cache, it is loaded into the
-     * local cache.
-     *
-     * @param string $className The name of the class.
-     *
-     * @return ClassMetadata
-     */
-    private function getClassMetadata($className)
-    {
-        if ( ! isset($this->ce[$className])) {
-            $this->ce[$className] = $this->_em->getClassMetadata($className);
-        }
-
-        return $this->ce[$className];
     }
 
     /**
@@ -409,7 +379,7 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $parentClass    = $this->ce[$this->_rsm->aliasMap[$parentAlias]];
+                $parentClass    = $this->_cmf->{$this->_rsm->aliasMap[$parentAlias]};
                 $oid            = spl_object_hash($parentObject);
                 $relationField  = $this->_rsm->relationMap[$dqlAlias];
                 $relation       = $parentClass->associationMappings[$relationField];
@@ -474,7 +444,7 @@ class ObjectHydrator extends AbstractHydrator
                             $element = $this->getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
-                            $targetClass = $this->ce[$relation['targetEntity']];
+                            $targetClass = $this->_cmf->{$relation['targetEntity']};
 
                             if ($relation['isOwningSide']) {
                                 //TODO: Just check hints['fetched'] here?

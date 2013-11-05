@@ -66,7 +66,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
         }
 
-        $this->class = $this->_em->getClassMetadata(reset($this->_rsm->aliasMap));
+        $this->class = $this->_cmf->{reset($this->_rsm->aliasMap)};
 
         // We only need to add declaring classes if we have inheritance.
         if ($this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_NONE) {
