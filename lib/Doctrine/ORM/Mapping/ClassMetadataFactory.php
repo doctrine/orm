@@ -73,6 +73,21 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
+     * Magic PHP getter {@link http://www.php.net/manual/en/language.oop5.overloading.php#object.get}
+     *
+     * @param string $entityName
+     *
+     * @return mixed reference
+     */
+    public function & __get($entityName)
+    {
+        $this->$entityName = $this->getMetadataFor(ltrim($entityName, '\\'));
+
+        // assignment and return is not possible since PHP will segfault (bug report will come)
+        return $this->$entityName;
+    }
+
+    /**
      * {@inheritDoc}.
      */
     protected function initialize()
