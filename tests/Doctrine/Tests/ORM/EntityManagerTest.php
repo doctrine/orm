@@ -62,6 +62,19 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame('SELECT foo', $query->getSql());
     }
 
+    /**
+     * @covers Doctrine\ORM\EntityManager::createNamedNativeQuery
+     */
+    public function testCreateNamedNativeQuery()
+    {
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
+        
+        $query = $this->_em->createNamedNativeQuery('foo');
+        
+        $this->assertInstanceOf('Doctrine\ORM\NativeQuery', $query);
+    }
+
     public function testCreateQueryBuilder()
     {
         $this->assertInstanceOf('Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
@@ -99,6 +112,18 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $q = $this->_em->createQuery('SELECT 1');
         $this->assertInstanceOf('Doctrine\ORM\Query', $q);
         $this->assertEquals('SELECT 1', $q->getDql());
+    }
+    
+    /**
+     * @covers Doctrine\ORM\EntityManager::createNamedQuery
+     */
+    public function testCreateNamedQuery()
+    {
+        $this->_em->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
+        
+        $query = $this->_em->createNamedQuery('foo');
+        $this->assertInstanceOf('Doctrine\ORM\Query', $query);
+        $this->assertEquals('SELECT 1', $query->getDql());
     }
 
     static public function dataMethodsAffectedByNoObjectArguments()
