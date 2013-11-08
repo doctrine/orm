@@ -1,0 +1,58 @@
+<?php
+
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+
+require_once __DIR__ . '/../../../TestInit.php';
+
+/**
+ * @group DDC-2785
+ */
+class DDC2785Test extends \Doctrine\Tests\OrmFunctionalTestCase
+{
+    public function setUp()
+    {
+        $this->useModelSet('cms');
+        parent::setUp();
+    }
+
+    private $hashes = array();
+
+    public function testIssue()
+    {
+        $counter = 0;
+        do
+        {
+            $object = $this->createObject();
+            $counter++;
+            if ($counter > 1000)
+            {
+                //mark as skipped ? (I never hit this on PHP 5.3 at least)
+                break;
+            }
+        }
+        while ($object === false);
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($object));
+    }
+
+    private function createObject()
+    {
+        $phone = new CmsPhonenumber();
+        $phone->phonenumber = "1234";
+        $hash = spl_object_hash($phone);
+        $this->_em->persist($phone);
+
+        if (!array_key_exists($hash, $this->hashes))
+        {
+            $this->hashes[$hash] = true;
+            $this->_em->flush();
+            $this->_em->remove($phone);
+            $this->_em->flush();
+            return false;
+        }
+
+        return $phone;
+    }
+}
