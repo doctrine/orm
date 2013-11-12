@@ -37,7 +37,7 @@ Mapping Objects onto a Database
 * **Mapping**:
   :doc:`Objects <reference/basic-mapping>` |
   :doc:`Associations <reference/association-mapping>` |
-  :doc:`Inheritance <reference/inheritance-mapping>` |
+  :doc:`Inheritance <reference/inheritance-mapping>`
 
 * **Drivers**:
   :doc:`Docblock Annotations <reference/annotations-reference>` |
