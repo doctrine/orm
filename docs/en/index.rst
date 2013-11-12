@@ -37,7 +37,7 @@ Mapping Objects onto a Database
 * **Mapping**:
   :doc:`Objects <reference/basic-mapping>` |
   :doc:`Associations <reference/association-mapping>` |
-  :doc:`Inheritance <reference/inheritance-mapping>`
+  :doc:`Inheritance <reference/inheritance-mapping>` |
 
 * **Drivers**:
   :doc:`Docblock Annotations <reference/annotations-reference>` |
@@ -88,6 +88,7 @@ Tutorials
 * :doc:`Ordered associations <tutorials/ordered-associations>`
 * :doc:`Pagination <tutorials/pagination>`
 * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
+* :doc:`Embeddables <tutorials/embeddables>`
 
 Cookbook
 --------
