@@ -247,7 +247,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $isMappedSuperclass = false;
 
     /**
-     * READ-ONLY: Wheather this class describes the mapping of an embeddable class.
+     * READ-ONLY: Whether this class describes the mapping of an embeddable class.
      *
      * @var boolean
      */
@@ -900,7 +900,7 @@ class ClassMetadataInfo implements ClassMetadata
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField'])) {
                 $declaringClass = isset($this->embeddedClasses[$mapping['declaredField']]['declared'])
-                                    ? $this->embeddedClasses[$mapping['declaredField']]['declared'] : $this->name;
+                                      ? $this->embeddedClasses[$mapping['declaredField']]['declared'] : $this->name;
 
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $reflService->getAccessibleProperty($declaringClass, $mapping['declaredField']),
