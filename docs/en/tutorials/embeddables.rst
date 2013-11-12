@@ -43,14 +43,14 @@ instead of simply adding the respective columns to the ``User`` class.
 
         <doctrine-mapping>
             <entity name="User">
-                <embedded class="Address" />
+                <embedded name="address" class="Address" />
             </entity>
 
             <embeddable name="Address">
-                <column name="street" type="string" />
-                <column name="postalCode" type="string" />
-                <column name="city" type="string" />
-                <column name="country" type="string" />
+                <field name="street" type="string" />
+                <field name="postalCode" type="string" />
+                <field name="city" type="string" />
+                <field name="country" type="string" />
             </embeddable>
         </doctrine-mapping>
 
@@ -64,7 +64,7 @@ instead of simply adding the respective columns to the ``User`` class.
 
         Address:
           type: embeddable
-          columns:
+          fields:
             street: { type: string }
             postalCode: { type: string }
             city: { type: string }

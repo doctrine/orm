@@ -69,6 +69,8 @@ class XmlDriver extends FileDriver
                 isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
             );
             $metadata->isMappedSuperclass = true;
+        } else if ($xmlRoot->getName() == 'embeddable') {
+            $metadata->isEmbeddedClass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
@@ -238,6 +240,17 @@ class XmlDriver extends FileDriver
                 }
 
                 $metadata->mapField($mapping);
+            }
+        }
+
+        if (isset($xmlRoot->embedded)) {
+            foreach ($xmlRoot->embedded as $embeddedMapping) {
+                $mapping = array(
+                    'fieldName' => (string) $embeddedMapping['name'],
+                    'class' => (string) $embeddedMapping['class'],
+                    'columnPrefix' => isset($embeddedMapping['class']) ? (string) $embeddedMapping['class'] : null,
+                );
+                $metadata->mapEmbedded($mapping);
             }
         }
 
