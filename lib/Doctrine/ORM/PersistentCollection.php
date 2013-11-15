@@ -44,7 +44,7 @@ use Closure;
  * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
  * @todo      Design for inheritance to allow custom implementations?
  */
-final class PersistentCollection implements Collection, Selectable
+class PersistentCollection implements Collection, Selectable
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -74,7 +74,7 @@ final class PersistentCollection implements Collection, Selectable
      *
      * @var \Doctrine\ORM\EntityManager
      */
-    private $em;
+    protected $em;
 
     /**
      * The name of the field on the target entities that points to the owner
@@ -111,7 +111,7 @@ final class PersistentCollection implements Collection, Selectable
      *
      * @var Collection
      */
-    private $coll;
+    protected $coll;
 
     /**
      * Creates a new persistent collection.
