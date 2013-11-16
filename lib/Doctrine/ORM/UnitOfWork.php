@@ -2406,7 +2406,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $coid = spl_object_hash($coll);
 
-        //TODO: if $coll is already scheduled for recreation ... what to do?
+        // TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
         if (isset($this->collectionUpdates[$coid])) {
             unset($this->collectionUpdates[$coid]);

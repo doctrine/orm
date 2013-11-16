@@ -477,7 +477,7 @@ class ObjectHydrator extends AbstractHydrator
                             $targetClass = $this->ce[$relation['targetEntity']];
 
                             if ($relation['isOwningSide']) {
-                                //TODO: Just check hints['fetched'] here?
+                                // TODO: Just check hints['fetched'] here?
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if ($relation['inversedBy']) {
                                     $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
