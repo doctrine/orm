@@ -519,7 +519,7 @@ details of the database join table. If you do not specify
 @JoinTable on these relations reasonable mapping defaults apply
 using the affected table and the column names.
 
-Required attributes:
+Optional attributes:
 
 
 -  **name**: Database name of the join-table

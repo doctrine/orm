@@ -67,7 +67,7 @@ Advanced Topics
 
 * :doc:`Architecture <reference/architecture>`
 * :doc:`Advanced Configuration <reference/advanced-configuration>`
-* :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
+* :doc:`Limitations and known issues <reference/limitations-and-known-issues>`
 * :doc:`Commandline Tools <reference/tools>`
 * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
 * :doc:`Filters <reference/filters>`
@@ -78,6 +78,7 @@ Advanced Topics
 * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
 * :doc:`Best Practices <reference/best-practices>`
 * :doc:`Metadata Drivers <reference/metadata-drivers>`
+* :doc:`Batch Processing <reference/batch-processing>`
 
 Tutorials
 ---------

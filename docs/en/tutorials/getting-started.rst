@@ -381,7 +381,7 @@ better than in a scenario where updates are done for each entity in isolation.
 
 Doctrine follows the UnitOfWork pattern which additionally detects all entities
 that were fetched and have changed during the request. You don't have to keep track of
-entities yourself, when Doctrine already knowns about them.
+entities yourself, when Doctrine already knows about them.
 
 As a next step we want to fetch a list of all the products. Let's create a
 new script for this:

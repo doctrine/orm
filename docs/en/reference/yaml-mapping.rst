@@ -72,6 +72,7 @@ of several common elements:
     # Doctrine.Tests.ORM.Mapping.User.dcm.yml
     Doctrine\Tests\ORM\Mapping\User:
       type: entity
+      repositoryClass: Doctrine\Tests\ORM\Mapping\UserRepository
       table: cms_users
       indexes:
         name_index:
