@@ -126,7 +126,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $parameterName = str_replace('.', '_', $comparison->getField());
+        $parameterName = str_replace('.', '_', $comparison->getField()) . '_' . count($this->parameters);
         $parameter = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
         $placeholder = ':' . $parameterName;
 
