@@ -141,7 +141,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
         );
     }
-    
+
     public function testComplexInnerJoinWithIndexBy()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -153,7 +153,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             $qb,
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a INDEX BY a.name ON u.id = a.author_id'
         );
-    }    
+    }
 
     public function testLeftJoin()
     {
@@ -409,6 +409,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('field = :field', (string) $qb->getDQLPart('where'));
         $this->assertNotNull($qb->getParameter('field'));
+    }
+
+    public function testAddMultipleSameCriteriaWhere()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->andX($criteria->expr()->eq('field', 'value1'), $criteria->expr()->eq('field', 'value2')));
+        $qb->addCriteria($criteria);
+        $this->assertEquals('field = :field AND field = :field_1', (string) $qb->getDQLPart('where'));
+        $this->assertNotNull($qb->getParameter('field'));
+        $this->assertNotNull($qb->getParameter('field_1'));
     }
 
     public function testAddCriteriaOrder()
