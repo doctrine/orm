@@ -176,7 +176,7 @@ default.
               length: 140
             postedAt:
               type: datetime
-              name: posted_at
+              column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
 assumes the field name is also the column name. This means that:
@@ -391,7 +391,7 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
- 
+
     .. code-block:: yaml
 
         Message:
