@@ -20,6 +20,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('ecommerce');
+        $this->useModelSet('company');
         parent::setUp();
         $this->_factory = new ProxyFactory(
                 $this->_em,
