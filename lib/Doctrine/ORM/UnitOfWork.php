@@ -2342,6 +2342,20 @@ class UnitOfWork implements PropertyChangedListener
     public function clear($entityName = null)
     {
         if ($entityName === null) {
+            unset($this->identityMap);
+            unset($this->entityIdentifiers);
+            unset($this->originalEntityData);
+            unset($this->entityChangeSets);
+            unset($this->entityStates);
+            unset($this->scheduledForDirtyCheck);
+            unset($this->entityInsertions);
+            unset($this->entityUpdates);
+            unset($this->entityDeletions);
+            unset($this->collectionDeletions);
+            unset($this->collectionUpdates);
+            unset($this->extraUpdates);
+            unset($this->readOnlyObjects);
+            unset($this->orphanRemovals);            
             $this->identityMap =
             $this->entityIdentifiers =
             $this->originalEntityData =
