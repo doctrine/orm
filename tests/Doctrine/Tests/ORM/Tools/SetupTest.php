@@ -39,7 +39,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
 
     public function testDirectoryAutoload()
     {
-        Setup::registerAutoloadDirectory(__DIR__ . "/../../../../../lib/vendor/doctrine-common/lib");
+        Setup::registerAutoloadDirectory(__DIR__ . "/../../../../../vendor/doctrine/common/lib");
 
         $this->assertEquals($this->originalAutoloaderCount + 2, count(spl_autoload_functions()));
     }
