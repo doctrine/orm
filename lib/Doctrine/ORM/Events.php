@@ -156,4 +156,12 @@ final class Events
      * @var string
      */
     const onClear = 'onClear';
+
+    /**
+     * The preQueryExecute event occurs when Query#execute() operation is invoked,
+     * before any operation with query was applied.
+     *
+     * @var string
+     */
+    const preQueryExecute = 'preQueryExecute';
 }
