@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
+use Doctrine\ORM\Event\PreQueryExecuteEvent;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
@@ -764,6 +765,13 @@ abstract class AbstractQuery
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
+        $eventManager = $this->_em->getEventManager();
+        if ($eventManager->hasListeners(Events::preQueryExecute)) {
+            $eventManager->dispatchEvent(Events::preQueryExecute, new PreQueryExecuteEvent(
+                $this->_em, $this, $parameters, $hydrationMode
+            ));
+        }
+
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
