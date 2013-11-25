@@ -2510,7 +2510,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addEntityListener($eventName, $class, $method)
     {
-        $class = $this->fullyQualifiedClassName($class);
+        $class    = $this->fullyQualifiedClassName($class);
+        $listener = array(
+            'class'  => $class,
+            'method' => $method
+        );
 
         if ( ! class_exists($class)) {
             throw MappingException::entityListenerClassNotFound($class, $this->name);
@@ -2520,10 +2524,11 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::entityListenerMethodNotFound($class, $method, $this->name);
         }
 
-        $this->entityListeners[$eventName][] = array(
-            'class'  => $class,
-            'method' => $method
-        );
+        if (isset($this->entityListeners[$eventName]) && in_array($listener, $this->entityListeners[$eventName])) {
+            throw MappingException::duplicateEntityListener($class, $method, $this->name);
+        }
+
+        $this->entityListeners[$eventName][] = $listener;
     }
 
     /**
