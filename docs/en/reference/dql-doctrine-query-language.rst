@@ -1370,6 +1370,9 @@ Given that there are 10 users and corresponding addresses in the database the ex
     SELECT * FROM users;
     SELECT * FROM address WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
+.. note::
+    Changing the fetch mode during a query is only possible for one-to-one and many-to-one relations.
+
 
 EBNF
 ----
