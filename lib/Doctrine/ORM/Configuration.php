@@ -858,4 +858,57 @@ class Configuration extends \Doctrine\DBAL\Configuration
             ? $this->_attributes['secondLevelCacheConfiguration']
             : null;
     }
+
+    /**
+     * Returns query hints, which will be applied to every query in application
+     *
+     * @since 2.5
+     *
+     * @return array
+     */
+    public function getDefaultQueryHints()
+    {
+        return isset($this->_attributes['defaultQueryHints']) ? $this->_attributes['defaultQueryHints'] : array();
+    }
+
+    /**
+     * Sets array of query hints, which will be applied to every query in application
+     *
+     * @since 2.5
+     *
+     * @param array $defaultQueryHints
+     */
+    public function setDefaultQueryHints(array $defaultQueryHints)
+    {
+        $this->_attributes['defaultQueryHints'] = $defaultQueryHints;
+    }
+
+    /**
+     * Gets the value of a default query hint. If the hint name is not recognized, FALSE is returned.
+     *
+     * @since 2.5
+     *
+     * @param string $name The name of the hint.
+     *
+     * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
+     */
+    public function getDefaultQueryHint($name)
+    {
+        return isset($this->_attributes['defaultQueryHints'][$name])
+            ? $this->_attributes['defaultQueryHints'][$name]
+            : false;
+    }
+
+    /**
+     * Sets a query hint. If the hint name is not recognized, it is silently ignored.
+     *
+     * @since 2.5
+     *
+     * @param string $name  The name of the hint.
+     * @param mixed  $value The value of the hint.
+     */
+    public function setDefaultQueryHint($name, $value)
+    {
+        $this->_attributes['defaultQueryHints'][$name] = $value;
+    }
 }
