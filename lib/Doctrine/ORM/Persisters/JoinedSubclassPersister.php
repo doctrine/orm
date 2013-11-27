@@ -197,7 +197,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 }
 
                 foreach ($data as $columnName => $value) {
-                    if (!isset($id[$columnName])) {
+                    if (!is_array($id) || !isset($id[$columnName])) {
                         $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
                     }
                 }

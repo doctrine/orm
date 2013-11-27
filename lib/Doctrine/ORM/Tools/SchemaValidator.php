@@ -26,7 +26,7 @@ use Doctrine\DBAL\Types\Type;
 /**
  * Performs strict validation of the mapping schema
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
@@ -238,6 +238,11 @@ class SchemaValidator
 
         foreach ($class->reflClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $publicAttr) {
             if ($publicAttr->isStatic()) {
+                continue;
+            }
+
+            if ( ! isset($class->fieldMappings[$publicAttr->getName()]) &&
+                ! isset($class->associationMappings[$publicAttr->getName()])) {
                 continue;
             }
 

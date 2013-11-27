@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 /**
  * Builder Object for ClassMetadata
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
  * @since       2.2
  * @author      Benjamin Eberlei <kontakt@beberlei.de>

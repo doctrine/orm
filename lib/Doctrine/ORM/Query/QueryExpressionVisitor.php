@@ -127,6 +127,14 @@ class QueryExpressionVisitor extends ExpressionVisitor
     public function walkComparison(Comparison $comparison)
     {
         $parameterName = str_replace('.', '_', $comparison->getField());
+
+        foreach($this->parameters as $parameter) {
+            if($parameter->getName() === $parameterName) {
+                $parameterName .= '_' . count($this->parameters);
+                break;
+            }
+        }
+
         $parameter = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
         $placeholder = ':' . $parameterName;
 
@@ -153,6 +161,11 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 }
                 $this->parameters[] = $parameter;
                 return $this->expr->neq($comparison->getField(), $placeholder);
+
+            case Comparison::CONTAINS:
+                $parameter->setValue('%' . $parameter->getValue() . '%', $parameter->getType());
+                $this->parameters[] = $parameter;
+                return $this->expr->like($comparison->getField(), $placeholder);
 
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());

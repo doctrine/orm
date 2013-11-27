@@ -149,6 +149,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
             }
         }
 
+        if (count($sqlIdentifier) === 0) {
+            throw new \RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
+        }
+
         if (count($rootIdentifier) != count($sqlIdentifier)) {
             throw new \RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
@@ -162,7 +166,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         if ($this->platform instanceof PostgreSqlPlatform ||
             $this->platform instanceof OraclePlatform) {
-            //http://www.doctrine-project.org/jira/browse/DDC-1958
+            // http://www.doctrine-project.org/jira/browse/DDC-1958
             $this->preserveSqlOrdering($AST, $sqlIdentifier, $innerSql, $sql);
         }
 
@@ -211,7 +215,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                     }
                 }
             }
-            //remove identifier aliases
+            // remove identifier aliases
             $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
         }
 

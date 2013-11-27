@@ -90,7 +90,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
-     * @param boolean $bool
+     * @param boolean|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
      *
      * @return void
      */

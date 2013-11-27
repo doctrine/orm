@@ -260,6 +260,7 @@ or auto-increment details). Furthermore each child table has to
 have a foreign key pointing from the id column to the root table id
 column and cascading on delete.
 
+.. _inheritence_mapping_overrides:
 
 Overrides
 ---------
@@ -557,3 +558,22 @@ Things to note:
 -  The "attribute override" specifies the overrides base on the property name.
 -  The column type *CANNOT* be changed. if the column type is not equals you got a ``MappingException``
 -  The override can redefine all the column except the type.
+
+Query the Type
+--------------
+
+It may happen that the entities of a special type should be queried. Because there
+is no direct access to the discriminator column, Doctrine provides the
+``INSTANCE OF`` construct.
+
+The following example shows how to use ``INSTANCE OF``. There is a three level hierarchy
+with a base entity ``NaturalPerson`` which is extended by ``Staff`` which in turn
+is extended by ``Technician``.
+
+Querying for the staffs without getting any technicians can be achieved by this DQL:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery("SELECT staff FROM MyProject\Model\Staff staff WHERE staff INSTANCE OF MyProject\Model\Staff");
+    $staffs = $query->getResult();

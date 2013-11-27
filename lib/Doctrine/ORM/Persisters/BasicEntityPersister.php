@@ -328,7 +328,7 @@ class BasicEntityPersister
         $identifier     = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
         $columnName     = $this->quoteStrategy->getColumnName($versionField, $versionedClass, $this->platform);
 
-        //FIXME: Order with composite keys might not be correct
+        // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
@@ -464,7 +464,9 @@ class BasicEntityPersister
             $params[]   = $this->class->reflFields[$versionField]->getValue($entity);
 
             switch ($versionFieldType) {
+                case Type::SMALLINT:
                 case Type::INTEGER:
+                case Type::BIGINT:
                     $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
                     break;
 

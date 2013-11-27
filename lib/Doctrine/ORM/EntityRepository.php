@@ -75,14 +75,15 @@ class EntityRepository implements ObjectRepository, Selectable
      * Creates a new QueryBuilder instance that is prepopulated for this entity name.
      *
      * @param string $alias
+     * @param string $indexBy The index for the from.
      *
      * @return QueryBuilder
      */
-    public function createQueryBuilder($alias)
+    public function createQueryBuilder($alias, $indexBy = null)
     {
         return $this->_em->createQueryBuilder()
             ->select($alias)
-            ->from($this->_entityName, $alias);
+            ->from($this->_entityName, $alias, $indexBy);
     }
 
     /**

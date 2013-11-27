@@ -427,6 +427,8 @@ Get all users visible on a given website that have chosen certain gender:
     <?php
     $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
 
+.. versionadded:: 2.4
+
 Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys:
 
 .. code-block:: php
@@ -434,6 +436,13 @@ Starting with 2.4, the IDENTITY() DQL function also works for composite primary 
     <?php
     $query = $em->createQuery('SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1');
 
+Joins between entities without associations were not possible until version
+2.4, where you can generate an arbitrary join with the following syntax:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT u FROM User u JOIN Blacklist b WITH u.email = b.email');
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -1361,6 +1370,9 @@ Given that there are 10 users and corresponding addresses in the database the ex
     SELECT * FROM users;
     SELECT * FROM address WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
+.. note::
+    Changing the fetch mode during a query is only possible for one-to-one and many-to-one relations.
+
 
 EBNF
 ----
@@ -1583,7 +1595,7 @@ Scalar and Type Expressions
 .. code-block:: php
 
     ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression | BooleanPrimary | CaseExpression | InstanceOfExpression
-    StringExpression       ::= StringPrimary | "(" Subselect ")"
+    StringExpression       ::= StringPrimary | ResultVariable | "(" Subselect ")"
     StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
     BooleanPrimary         ::= StateFieldPathExpression | boolean | InputParameter

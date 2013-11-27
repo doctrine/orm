@@ -16,7 +16,7 @@
         "php": ">=5.3.2",
         "ext-pdo": "*",
         "doctrine/collections": "~1.1",
-        "doctrine/dbal": ">=2.4-beta,<2.5-dev",
+        "doctrine/dbal": ">=2.5-dev,<2.6-dev",
         "symfony/console": "2.*"
     },
     "require-dev": {
@@ -32,7 +32,10 @@
     "bin": ["bin/doctrine", "bin/doctrine.php"],
     "extra": {
         "branch-alias": {
-            "dev-master": "2.4.x-dev"
+            "dev-master": "2.5.x-dev"
         }
+    },
+    "archive": {
+        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp", "*coveralls.yml"]
     }
 }

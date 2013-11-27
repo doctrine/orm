@@ -157,7 +157,7 @@ wishes to be hydrated. Default result-types include:
 - SQL to a single result variable
 
 Hydration to entities and arrays is one of most complex parts of Doctrine
-algorithm-wise. It can built results with for example:
+algorithm-wise. It can build results with for example:
 
 - Single table selects
 - Joins with n:1 or 1:n cardinality, grouping belonging to the same parent.

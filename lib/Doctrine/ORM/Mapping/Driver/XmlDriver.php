@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping\MappingException;
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license 	http://www.opensource.org/licenses/mit-license.php MIT
  * @link    	www.doctrine-project.org
  * @since   	2.0
  * @author		Benjamin Eberlei <kontakt@beberlei.de>

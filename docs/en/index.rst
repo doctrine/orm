@@ -14,7 +14,7 @@ Doctrine ORM don't panic. You can get help from different sources:
 
 -  There is a :doc:`FAQ <reference/faq>` with answers to frequent questions.
 -  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
--  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
+-  Internet Relay Chat (IRC) in #doctrine on Freenode
 -  Report a bug on `JIRA <http://www.doctrine-project.org/jira>`_.
 -  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine2``
 -  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine2>`_
@@ -65,29 +65,30 @@ Working with Objects
 Advanced Topics
 ---------------
 
-  * :doc:`Architecture <reference/architecture>`
-  * :doc:`Advanced Configuration <reference/advanced-configuration>`
-  * :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
-  * :doc:`Commandline Tools <reference/tools>`
-  * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
-  * :doc:`Filters <reference/filters>`
-  * :doc:`NamingStrategy <reference/namingstrategy>`
-  * :doc:`Improving Performance <reference/improving-performance>` 
-  * :doc:`Caching <reference/caching>` 
-  * :doc:`Partial Objects <reference/partial-objects>` 
-  * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
-  * :doc:`Best Practices <reference/best-practices>`
-  * :doc:`Metadata Drivers <reference/metadata-drivers>`
+* :doc:`Architecture <reference/architecture>`
+* :doc:`Advanced Configuration <reference/advanced-configuration>`
+* :doc:`Limitations and known issues <reference/limitations-and-known-issues>`
+* :doc:`Commandline Tools <reference/tools>`
+* :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
+* :doc:`Filters <reference/filters>`
+* :doc:`NamingStrategy <reference/namingstrategy>`
+* :doc:`Improving Performance <reference/improving-performance>` 
+* :doc:`Caching <reference/caching>` 
+* :doc:`Partial Objects <reference/partial-objects>` 
+* :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+* :doc:`Best Practices <reference/best-practices>`
+* :doc:`Metadata Drivers <reference/metadata-drivers>`
+* :doc:`Batch Processing <reference/batch-processing>`
 
 Tutorials
 ---------
 
-  * :doc:`Indexed associations <tutorials/working-with-indexed-associations>`
-  * :doc:`Extra Lazy Associations <tutorials/extra-lazy-associations>`
-  * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
-  * :doc:`Ordered associations <tutorials/ordered-associations>`
-  * :doc:`Pagination <tutorials/pagination>`
-  * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
+* :doc:`Indexed associations <tutorials/working-with-indexed-associations>`
+* :doc:`Extra Lazy Associations <tutorials/extra-lazy-associations>`
+* :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
+* :doc:`Ordered associations <tutorials/ordered-associations>`
+* :doc:`Pagination <tutorials/pagination>`
+* :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
 
 Cookbook
 --------
@@ -120,3 +121,4 @@ Cookbook
   :doc:`MySQL Enums <cookbook/mysql-enums>`
   :doc:`Advanced Field Value Conversion <cookbook/advanced-field-value-conversion-using-custom-mapping-types>`
 
+.. include:: toc.rst
