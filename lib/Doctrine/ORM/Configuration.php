@@ -900,7 +900,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Sets a query hint. If the hint name is not recognized, it is silently ignored.
+     * Sets a default query hint. If the hint name is not recognized, it is silently ignored.
      *
      * @since 2.5
      *
