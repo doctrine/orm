@@ -794,6 +794,7 @@ class ClassMetadataInfo implements ClassMetadata
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'fieldMappings',
             'fieldNames',
+            'embeddedClasses',
             'identifier',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
