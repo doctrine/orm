@@ -683,7 +683,7 @@ final class Query extends AbstractQuery
         ksort($this->_hints);
 
         return md5(
-            $this->getDql() . var_export($this->_hints, true) .
+            $this->getDql() . serialize($this->_hints) .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
