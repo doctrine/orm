@@ -549,12 +549,14 @@ class Parser
     /**
      * Checks whether the given token type indicates an aggregate function.
      *
-     * @param int $tokenType
+     * @param int|null $tokenType Token type to be checked, or NULL to check lookahead token.
      *
      * @return boolean TRUE if the token type is an aggregate function, FALSE otherwise.
      */
-    private function isAggregateFunction($tokenType)
+    private function isAggregateFunction($tokenType = null)
     {
+        if(!isset($tokenType))
+            $tokenType = $this->lexer->lookahead['type'];
         return in_array($tokenType, array(Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT));
     }
 
@@ -3140,6 +3142,10 @@ class Parser
 
             case $this->lexer->isNextToken(Lexer::T_COALESCE):
                 $expr = $this->CoalesceExpression();
+                break;
+
+            case $this->isAggregateFunction():
+                $expr = $this->SimpleArithmeticExpression();
                 break;
 
             case $this->isFunction():
