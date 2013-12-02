@@ -29,12 +29,16 @@ namespace Doctrine\ORM\Cache;
 class EntityCacheKey extends CacheKey
 {
     /**
-     * @var array
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var array The entity identifier
      */
     public $identifier;
 
     /**
-     * @var string
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var string The entity class name
      */
     public $entityClass;
 

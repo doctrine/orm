@@ -71,7 +71,7 @@ A query region might be something like :
 Cache Regions
 -------------
 
-``Doctrine\ORM\Cache\Region\DefaultRegion`` Its the default implementation.
+``Doctrine\ORM\Cache\Region\DefaultRegion`` It's the default implementation.
  A simplest cache region compatible with all doctrine-cache drivers but does not support locking.
 
 ``Doctrine\ORM\Cache\Region`` and ``Doctrine\ORM\Cache\ConcurrentRegion``
@@ -91,59 +91,7 @@ Defines a contract for accessing a particular region.
 
 Defines a contract for accessing a particular cache region.
 
-.. code-block:: php
-
-    <?php
-
-    interface Region
-    {
-        /**
-         * Retrieve the name of this region.
-         *
-         * @return string The region name
-         */
-        public function getName();
-
-        /**
-         * Determine whether this region contains data for the given key.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The cache key
-         *
-         * @return boolean
-         */
-        public function contains(CacheKey $key);
-
-        /**
-         * Get an item from the cache.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to be retrieved.
-         *
-         * @return \Doctrine\ORM\Cache\CacheEntry|null The cached entry or NULL
-         */
-        public function get(CacheKey $key);
-
-        /**
-         * Put an item into the cache.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey   $key   The key under which to cache the item.
-         * @param \Doctrine\ORM\Cache\CacheEntry $entry The entry to cache.
-         * @param \Doctrine\ORM\Cache\Lock       $lock  The lock previously obtained.
-         */
-        public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null);
-
-        /**
-         * Remove an item from the cache.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The key under which to cache the item.
-         */
-        public function evict(CacheKey $key);
-
-        /**
-         * Remove all contents of this particular cache region.
-         */
-        public function evictAll();
-    }
-
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.Region.html/>`_.
 
 Concurrent cache region
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,29 +105,7 @@ If you want to use an ``READ_WRITE`` cache, you should consider providing your o
 
 Defines contract for concurrently managed data region.
 
-.. code-block:: php
-
-    <?php
-
-    interface ConcurrentRegion extends Region
-    {
-       /**
-        * Attempts to read lock the mapping for the given key.
-        *
-        * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to lock.
-        *
-        * @return \Doctrine\ORM\Cache\Lock A lock instance or NULL if the lock already exists.
-        */
-       public function lock(CacheKey $key);
-
-       /**
-        * Attempts to read unlock the mapping for the given key.
-        *
-        * @param \Doctrine\ORM\Cache\CacheKey  $key  The key of the item to unlock.
-        * @param \Doctrine\ORM\Cache\Lock      $lock The lock previously obtained from readLock
-        */
-       public function unlock(CacheKey $key, Lock $lock);
-    }
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.ConcurrentRegion.html/>`_.
 
 Cache region
 ~~~~~~~~~~~~
@@ -188,21 +114,7 @@ Cache region
 
 Tracks the timestamps of the most recent updates to particular entity.
 
-.. code-block:: php
-
-    <?php
-
-    interface TimestampRegion extends Region
-    {
-        /**
-         * Update an specific key into the cache region.
-         *
-         * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to update the timestamp.
-         *
-         * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
-         */
-        public function update(CacheKey $key);
-    }
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.TimestampRegion.html/>`_.
 
 .. _reference-second-level-cache-mode:
 
@@ -218,7 +130,7 @@ Caching mode
 
 * ``NONSTRICT_READ_WRITE``
 
-  * Read Write Cache doesn’t employ any locks but can do reads, inserts , updates and deletes.
+  * Read Write Cache doesn’t employ any locks but can do reads, inserts, updates and deletes.
   * Good if the application needs to update data rarely.
     
 
@@ -292,80 +204,7 @@ It allows you to provide a specific implementation of the following components :
 * ``EntityHydrator``  Transform an entity into a cache entry and cache entry into entities
 * ``CollectionHydrator`` Transform a collection into a cache entry and cache entry into collection
 
-.. code-block:: php
-
-    <?php
-
-    interface CacheFactory
-    {
-        /**
-        * Build an entity persister for the given entity metadata.
-        *
-        * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager
-        * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister
-        * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata  The entity metadata
-        *
-        * @return \Doctrine\ORM\Cache\Persister\CachedEntityPersister
-        */
-       public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata);
-
-       /**
-        * Build a collection persister for the given relation mapping.
-        *
-        * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager
-        * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister
-        * @param array                                        $mapping   The association mapping
-        *
-        * @return \Doctrine\ORM\Cache\Persister\CachedCollectionPersister
-        */
-       public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, $mapping);
-
-       /**
-        * Build a query cache based on the given region name
-        *
-        * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager
-        * @param string                               $regionName The region name
-        *
-        * @return \Doctrine\ORM\Cache\QueryCache The built query cache.
-        */
-       public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
-
-       /**
-        * Build an entity hydrator
-        *
-        * @param \Doctrine\ORM\EntityManagerInterface $em       The Entity manager.
-        * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
-        *
-        * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hydrator.
-        */
-       public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata);
-
-       /**
-        * Build a collection hydrator
-        *
-        * @param \Doctrine\ORM\EntityManagerInterface $em      The Entity manager.
-        * @param array                                $mapping The association mapping.
-        *
-        * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hydrator.
-        */
-       public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
-
-       /**
-        * Gets a cache region based on its name.
-        *
-        * @param array $cache The cache configuration.
-        *
-        * @return \Doctrine\ORM\Cache\Region The cache region.
-        */
-       public function getRegion(array $cache);
-
-       /**
-        * Build timestamp cache region
-        *
-        * @return \Doctrine\ORM\Cache\TimestampRegion The timestamp region.
-        */
-       public function getTimestampRegion();
-    }
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.DefaultCacheFactory.html/>`_.
 
 Region Lifetime
 ~~~~~~~~~~~~~~~
@@ -428,81 +267,7 @@ By providing a cache logger you should be able to get information about all cach
 If you want to get more information you should implement ``\Doctrine\ORM\Cache\Logging\CacheLogger``.
 and collect all information you want.
 
- .. code-block:: php
-
-    <?php
-
-    /**
-     * Log an entity put into second level cache.
-     *
-     * @param string            $regionName The name of the cache region.
-     * @param EntityCacheKey    $key        The cache key of the entity.
-     */
-    public function entityCachePut($regionName, EntityCacheKey $key);
-
-    /**
-     * Log an entity get from second level cache resulted in a hit.
-     *
-     * @param string            $regionName The name of the cache region.
-     * @param EntityCacheKey    $key        The cache key of the entity.
-     */
-    public function entityCacheHit($regionName, EntityCacheKey $key);
-
-    /**
-     * Log an entity get from second level cache resulted in a miss.
-     *
-     * @param string             $regionName The name of the cache region.
-     * @param \EntityCacheKey    $key        The cache key of the entity.
-     */
-    public function entityCacheMiss($regionName, EntityCacheKey $key);
-
-     /**
-     * Log an entity put into second level cache.
-     *
-     * @param string                $regionName The name of the cache region.
-     * @param CollectionCacheKey    $key        The cache key of the collection.
-     */
-    public function collectionCachePut($regionName, CollectionCacheKey $key);
-
-    /**
-     * Log an entity get from second level cache resulted in a hit.
-     *
-     * @param string                $regionName The name of the cache region.
-     * @param CollectionCacheKey    $key        The cache key of the collection.
-     */
-    public function collectionCacheHit($regionName, CollectionCacheKey $key);
-
-    /**
-     * Log an entity get from second level cache resulted in a miss.
-     *
-     * @param string                 $regionName The name of the cache region.
-     * @param \CollectionCacheKey    $key        The cache key of the collection.
-     */
-    public function collectionCacheMiss($regionName, CollectionCacheKey $key);
-
-    /**
-     * Log a query put into the query cache.
-     *
-     * @param string                 $regionName The name of the cache region.
-     * @param QueryCacheKey          $key        The cache key of the query.
-     */
-    public function queryCachePut($regionName, QueryCacheKey $key);
-
-    /**
-     * Log a query get from the query cache resulted in a hit.
-     *
-     * @param string                 $regionName The name of the cache region.
-     * @param \QueryCacheKey         $key        The cache key of the query.
-     */
-    public function queryCacheHit($regionName, QueryCacheKey $key);
-
-    /**
-     * Log a query get from the query cache resulted in a miss.
-     *
-     * @param string                 $regionName The name of the cache region.
-     * @param QueryCacheKey          $key        The cache key of the query.
-     */
-    public function queryCacheMiss($regionName, QueryCacheKey $key);
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.CacheLogger.html/>`_.
 
 
 Entity cache definition
@@ -810,6 +575,47 @@ The Cache Mode controls how a particular query interacts with the second-level c
 
     The the default query cache mode is ```Cache::MODE_NORMAL```
 
+DELETE / UPDATE queries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+DQL UPDATE / DELETE statements are ported directly into a database and bypass the second-level cache,
+Entities that are already cached will NOT be invalidated.
+However the cached data could be evicted using the cache API or an special query hint.
+
+
+Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_CACHE_EVICT``
+
+.. code-block:: php
+
+    <?php
+    // Execute and invalidate
+    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+        ->setHint(Query::HINT_CACHE_EVICT, true)
+        ->execute();
+
+
+Execute the ``UPDATE`` and invalidate ``all cache entries`` using the cache API
+
+.. code-block:: php
+
+    <?php
+    // Execute
+    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+        ->execute();
+    // Invoke Cache API
+    $em->getCache()->evictEntityRegion('Entity\Country');
+
+
+Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache API
+
+.. code-block:: php
+
+    <?php
+    // Execute
+    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+        ->execute();
+    // Invoke Cache API
+    $em->getCache()->evictEntity('Entity\Country', 1);
 
 Using the repository query cache
 ---------------------
@@ -908,45 +714,12 @@ For performance reasons the cache API does not extract from composite primary ke
     $id        = array('source' => new Article(1), 'target' => new Article(2));
     $reference = $em->find('Reference', $id);
 
-
-DELETE / UPDATE queries
+Distribute environments
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-DQL UPDATE / DELETE statements are ported directly into a database and bypass the second-level cache,
-Entities that are already cached will NOT be invalidated.
-However the cached data could be evicted using the cache API or an special query hint.
+Some cache driver are not meant to be used in a distribute environment
+Load-balancer for distributing workloads across multiple computing resources
+should be used in conjunction with distributed caching system such as memcached, redis, riak ...
 
-
-Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_CACHE_EVICT``
-
-.. code-block:: php
-
-    <?php
-    // Execute and invalidate
-    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
-        ->setHint(Query::HINT_CACHE_EVICT, true)
-        ->execute();
-
-
-Execute the ``UPDATE`` and invalidate ``all cache entries`` using the cache API
-
-.. code-block:: php
-
-    <?php
-    // Execute
-    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
-        ->execute();
-    // Invoke Cache API
-    $em->getCache()->evictEntityRegion('Entity\Country');
-
-
-Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache API
-
-.. code-block:: php
-
-    <?php
-    // Execute
-    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
-        ->execute();
-    // Invoke Cache API
-    $em->getCache()->evictEntity('Entity\Country', 1);
+Caches should be used with care when using a load-balancer if you don't share the cache.
+While using APC or any file based cache update occurred in a specific machine would not reflect to the cache in other machines.

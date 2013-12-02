@@ -29,12 +29,14 @@ namespace Doctrine\ORM\Cache;
 class CollectionCacheEntry implements CacheEntry
 {
     /**
-     * @var array
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var array The list of entity identifiers hold by the collection
      */
     public $identifiers;
 
     /**
-     * @param array $identifiers
+     * @param array $identifiers List of entity identifiers hold by the collection
      */
     public function __construct(array $identifiers)
     {
@@ -42,7 +44,11 @@ class CollectionCacheEntry implements CacheEntry
     }
 
     /**
-     * @param array $values
+     * Creates a new CollectionCacheEntry
+     *
+     * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
+     *
+     * @param array $values array containing property values
      */
     public static function __set_state(array $values)
     {

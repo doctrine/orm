@@ -123,7 +123,6 @@ class DefaultEntityHydrator implements EntityHydrator
         }
 
         foreach ($metadata->associationMappings as $name => $assoc) {
-
             if ( ! isset($assoc['cache']) ||  ! isset($data[$name])) {
                 continue;
             }

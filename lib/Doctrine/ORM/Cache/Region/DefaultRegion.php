@@ -56,9 +56,9 @@ class DefaultRegion implements Region
      */
     public function __construct($name, CacheProvider $cache, $lifetime = 0)
     {
-        $this->name     = $name;
         $this->cache    = $cache;
-        $this->lifetime = $lifetime;
+        $this->name     = (string) $name;
+        $this->lifetime = (integer) $lifetime;
 
         $this->cache->setNamespace($this->name);
     }

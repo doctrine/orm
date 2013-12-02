@@ -29,12 +29,16 @@ namespace Doctrine\ORM\Cache;
 class EntityCacheEntry implements CacheEntry
 {
     /**
-     * @var array
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var array The entity map data
      */
     public $data;
 
     /**
-     * @var string
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var string The entity class name
      */
     public $class;
 
@@ -49,7 +53,11 @@ class EntityCacheEntry implements CacheEntry
     }
 
     /**
-     * @param array $values
+     * Creates a new EntityCacheEntry
+     *
+     * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
+     *
+     * @param array $values array containing property values
      */
     public static function __set_state(array $values)
     {

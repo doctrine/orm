@@ -131,11 +131,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate @Cache annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Cache'])) {
             $cacheAnnot = $classAnnotations['Doctrine\ORM\Mapping\Cache'];
+            $cacheMap   = array(
+                'region' => $cacheAnnot->region,
+                'usage'  => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
+            );
 
-            $metadata->enableCache(array(
-                'usage'         => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
-                'region'        => $cacheAnnot->region,
-            ));
+            $metadata->enableCache($cacheMap);
         }
 
         // Evaluate NamedNativeQueries annotation

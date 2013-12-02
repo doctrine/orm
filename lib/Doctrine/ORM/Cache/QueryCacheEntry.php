@@ -29,12 +29,16 @@ namespace Doctrine\ORM\Cache;
 class QueryCacheEntry implements CacheEntry
 {
     /**
-     * @var array
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var array List of entity identifiers
      */
     public $result;
 
     /**
-     * @var integer
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var integer Time creation of this cache entry
      */
     public $time;
 

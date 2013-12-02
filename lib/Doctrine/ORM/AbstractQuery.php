@@ -346,9 +346,7 @@ abstract class AbstractQuery
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
-                $parameter = new Parameter($key, $value);
-
-                $parameterCollection->add($parameter);
+                $parameterCollection->add(new Parameter($key, $value));
             }
 
             $parameters = $parameterCollection;
@@ -387,9 +385,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        $parameter = new Parameter($key, $value, $type);
-
-        $this->parameters->add($parameter);
+        $this->parameters->add(new Parameter($key, $value, $type));
 
         return $this;
     }
@@ -453,7 +449,7 @@ abstract class AbstractQuery
      *
      * @return \Doctrine\ORM\Query\ResultSetMapping
      */
-    public function getResultSetMapping()
+    protected function getResultSetMapping()
     {
         return $this->_resultSetMapping;
     }

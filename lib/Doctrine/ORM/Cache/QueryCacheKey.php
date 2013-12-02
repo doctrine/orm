@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache;
 
 /**
- * A key that identifies a particular query.
+ * A cache key that identifies a particular query.
  *
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -31,12 +31,16 @@ use Doctrine\ORM\Cache;
 class QueryCacheKey extends CacheKey
 {
     /**
-     * @var integer
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var integer Cache key lifetime
      */
     public $lifetime;
 
     /**
-     * @var integer
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var integer Cache mode (Doctrine\ORM\Cache::MODE_*)
      */
     public $cacheMode;
 
