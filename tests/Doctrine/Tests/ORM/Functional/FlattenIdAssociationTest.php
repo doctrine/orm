@@ -25,17 +25,17 @@ class FlattenIdAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFlattenIdAssociationMerge()
     {
         $variant = new DDC2645Variant();
-        $variant->setId('abc');
-        $variant->setName('foo');
+        $variant->id = 'abc';
+        $variant->name = 'foo';
 
         $this->_em->persist($variant);
         $this->_em->flush();
 
         $price = new DDC2645Price();
-        $price->setCountry('de');
-        $price->setValue(12.2);
-        $price->setType(1);
-        $price->setVariant($variant);
+        $price->country ='de';
+        $price->value = 12.2;
+        $price->type = 1;
+        $price->variant = $variant;
 
         $success = true;
         try {
