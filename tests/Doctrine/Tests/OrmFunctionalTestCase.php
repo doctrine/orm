@@ -134,6 +134,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC117\DDC117Editor',
             'Doctrine\Tests\Models\DDC117\DDC117Link',
         ),
+        'ddc2645' => array(
+            'Doctrine\Tests\Models\DDC2645\DDC2645Variant',
+            'Doctrine\Tests\Models\DDC2645\DDC2645Price'
+        ),
         'stockexchange' => array(
             'Doctrine\Tests\Models\StockExchange\Bond',
             'Doctrine\Tests\Models\StockExchange\Stock',
@@ -295,6 +299,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM taxi_ride');
             $conn->executeUpdate('DELETE FROM taxi_car');
             $conn->executeUpdate('DELETE FROM taxi_driver');
+        }
+
+        if (isset($this->_usedModelSets['ddc2645'])) {
+            $conn->executeUpdate('DELETE FROM ddc2645_variant');
+            $conn->executeUpdate('DELETE FROM ddc2645_price');
         }
 
         $this->_em->clear();
