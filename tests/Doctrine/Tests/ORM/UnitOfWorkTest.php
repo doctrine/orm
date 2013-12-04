@@ -229,6 +229,30 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('InvalidArgumentException');
         $this->_unitOfWork->lock(null, null, null);
     }
+
+    /**
+     * Without this changes to DateTime objects are not detected.
+     */
+    public function testCreateEntityStoresCopiesOfObjectsInsteadOfObjects()
+    {
+        $date = new \DateTime();
+
+        $data = array(
+            'id'       => 1,
+            'datetime' => $date,
+            'date'     => new \DateTime(),
+            'time'     => new \DateTime(),
+        );
+
+        $entity = $this->_unitOfWork->createEntity('Doctrine\Tests\Models\Generic\DateTimeModel', $data);
+
+        $originalData = $this->_unitOfWork->getOriginalEntityData($entity);
+
+        $this->assertNotEquals(
+            spl_object_hash($date),
+            spl_object_hash($originalData['datetime'])
+        );
+    }
 }
 
 /**
