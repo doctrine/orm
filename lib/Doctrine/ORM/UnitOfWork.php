@@ -2531,7 +2531,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($overrideLocalValues) {
-                $this->originalEntityData[$oid] = $data;
+                $this->originalEntityData[$oid] = $this->cloneObjects($data);
             }
         } else {
             $entity = $this->newInstance($class);
@@ -2539,7 +2539,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $this->entityIdentifiers[$oid]  = $id;
             $this->entityStates[$oid]       = self::STATE_MANAGED;
-            $this->originalEntityData[$oid] = $data;
+            $this->originalEntityData[$oid] = $this->cloneObjects($data);
 
             $this->identityMap[$class->rootEntityName][$idHash] = $entity;
 
@@ -3204,5 +3204,23 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
         }
+    }
+
+    /**
+     * Return an array with all objects from the original array cloned so
+     * when the original objects are altered the ones in the array are not.
+     *
+     * @param  array $data
+     *
+     * @return array
+     */
+    private function cloneObjects(array $data)
+    {
+        return array_combine(
+            array_keys($data),
+            array_map(function ($value) {
+                return is_object($value) ? clone $value : $value;
+            }, $data)
+        );
     }
 }
