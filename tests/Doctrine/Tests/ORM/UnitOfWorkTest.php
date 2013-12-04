@@ -232,6 +232,8 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     /**
      * Without this changes to DateTime objects are not detected.
+     *
+     * @group DDC-2839
      */
     public function testCreateEntityStoresCopiesOfObjectsInsteadOfObjects()
     {
@@ -245,6 +247,40 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         );
 
         $entity = $this->_unitOfWork->createEntity('Doctrine\Tests\Models\Generic\DateTimeModel', $data);
+
+        $originalData = $this->_unitOfWork->getOriginalEntityData($entity);
+
+        $this->assertNotEquals(
+            spl_object_hash($date),
+            spl_object_hash($originalData['datetime'])
+        );
+    }
+
+    /**
+     * @group DDC-2839
+     */
+    public function testCreateEntityStoresCopiesOfObjectsInsteadOfObjectsForRefreshes()
+    {
+        $date = new \DateTime();
+
+        $data = array(
+            'id'       => 1,
+            'datetime' => $date,
+            'date'     => new \DateTime(),
+            'time'     => new \DateTime(),
+        );
+
+        // Do it onces so the UnitOfWork is aware of the entity
+        $this->_unitOfWork->createEntity('Doctrine\Tests\Models\Generic\DateTimeModel', $data);
+
+        // Do it a second time and require a refresh
+        $hints = array(\Doctrine\ORM\Query::HINT_REFRESH => true);
+
+        $entity = $this->_unitOfWork->createEntity(
+            'Doctrine\Tests\Models\Generic\DateTimeModel',
+            $data,
+            $hints
+        );
 
         $originalData = $this->_unitOfWork->getOriginalEntityData($entity);
 

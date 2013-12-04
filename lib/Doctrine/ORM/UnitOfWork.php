@@ -2531,7 +2531,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($overrideLocalValues) {
-                $this->originalEntityData[$oid] = $data;
+                $this->originalEntityData[$oid] = $this->cloneObjects($data);
             }
         } else {
             $entity = $this->newInstance($class);
