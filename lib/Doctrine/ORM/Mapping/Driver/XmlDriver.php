@@ -248,7 +248,7 @@ class XmlDriver extends FileDriver
                 $mapping = array(
                     'fieldName' => (string) $embeddedMapping['name'],
                     'class' => (string) $embeddedMapping['class'],
-                    'columnPrefix' => isset($embeddedMapping['class']) ? (string) $embeddedMapping['class'] : null,
+                    'columnPrefix' => isset($embeddedMapping['column-prefix']) ? (string) $embeddedMapping['column-prefix'] : null,
                 );
                 $metadata->mapEmbedded($mapping);
             }
@@ -753,6 +753,11 @@ class XmlDriver extends FileDriver
             foreach ($xmlElement->{'mapped-superclass'} as $mappedSuperClass) {
                 $className = (string)$mappedSuperClass['name'];
                 $result[$className] = $mappedSuperClass;
+            }
+        } else if (isset($xmlElement->embeddable)) {
+            foreach ($xmlElement->embeddable as $embeddableElement) {
+                $embeddableName = (string) $embeddableElement['name'];
+                $result[$embeddableName] = $embeddableElement;
             }
         }
 
