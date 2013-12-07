@@ -754,6 +754,11 @@ class XmlDriver extends FileDriver
                 $className = (string)$mappedSuperClass['name'];
                 $result[$className] = $mappedSuperClass;
             }
+        } else if (isset($xmlElement->embeddable)) {
+            foreach ($xmlElement->embeddable as $embeddableElement) {
+                $embeddableName = (string) $embeddableElement['name'];
+                $result[$embeddableName] = $embeddableElement;
+            }
         }
 
         return $result;

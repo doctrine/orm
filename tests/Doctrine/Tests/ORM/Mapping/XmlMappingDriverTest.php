@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Mapping\ClassMetadataFactory,
     Doctrine\ORM\Mapping\Driver\XmlDriver,
     Doctrine\ORM\Mapping\Driver\YamlDriver;
 
@@ -38,7 +39,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $driver  = $this->_loadDriver();
         $em      = $this->_getTestEntityManager();
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
@@ -50,6 +51,28 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $this->assertArrayHasKey('id', $class->associationMappings['article']);
         $this->assertTrue($class->associationMappings['article']['id']);
+    }
+
+    public function testEmbeddableMapping()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\Models\ValueObjects\Name');
+
+        $this->assertEquals(true, $class->isEmbeddedClass);
+    }
+
+    public function testEmbeddedMapping()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\Models\ValueObjects\Person');
+
+        $this->assertEquals(
+            array(
+                'name' => array(
+                    'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
+                    'columnPrefix' => 'nm_'
+                )
+            ),
+            $class->embeddedClasses
+        );
     }
 
     /**
