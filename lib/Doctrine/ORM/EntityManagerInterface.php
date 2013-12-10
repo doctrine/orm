@@ -20,7 +20,6 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
@@ -96,7 +95,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $dql The DQL string.
      *
-     * @return \Doctrine\ORM\Query
+     * @return Query
      */
     public function createQuery($dql = '');
 
@@ -105,7 +104,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $name
      *
-     * @return \Doctrine\ORM\Query
+     * @return Query
      */
     public function createNamedQuery($name);
 
@@ -124,7 +123,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $name
      *
-     * @return \Doctrine\ORM\NativeQuery
+     * @return NativeQuery
      */
     public function createNamedNativeQuery($name);
 
@@ -215,7 +214,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the Configuration used by the EntityManager.
      *
-     * @return \Doctrine\ORM\Configuration
+     * @return Configuration
      */
     public function getConfiguration();
 
@@ -229,7 +228,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the UnitOfWork used by the EntityManager to coordinate operations.
      *
-     * @return \Doctrine\ORM\UnitOfWork
+     * @return UnitOfWork
      */
     public function getUnitOfWork();
 
@@ -261,14 +260,14 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
      *
-     * @return ProxyFactory
+     * @return \Doctrine\ORM\Proxy\ProxyFactory
      */
     public function getProxyFactory();
 
     /**
      * Gets the enabled filters.
      *
-     * @return FilterCollection The active filter collection.
+     * @return \Doctrine\ORM\Query\FilterCollection The active filter collection.
      */
     public function getFilters();
 
