@@ -165,9 +165,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets the database connection object used by the EntityManager.
-     *
-     * @return \Doctrine\DBAL\Connection
+     * {@inheritDoc}
      */
     public function getConnection()
     {
@@ -185,18 +183,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
-     *
-     * Example:
-     *
-     * <code>
-     *     $qb = $em->createQueryBuilder();
-     *     $expr = $em->getExpressionBuilder();
-     *     $qb->select('u')->from('User', 'u')
-     *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
-     * </code>
-     *
-     * @return \Doctrine\ORM\Query\Expr
+     * {@inheritDoc}
      */
     public function getExpressionBuilder()
     {
@@ -208,9 +195,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Starts a transaction on the underlying database connection.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function beginTransaction()
     {
@@ -218,18 +203,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Executes a function in a transaction.
-     *
-     * The function gets passed this EntityManager instance as an (optional) parameter.
-     *
-     * {@link flush} is invoked prior to transaction commit.
-     *
-     * If an exception occurs during execution of the function or flushing or transaction commit,
-     * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
-     *
-     * @param callable $func The function to execute transactionally.
-     *
-     * @return mixed The non-empty value returned from the closure or true instead.
+     * {@inheritDoc}
      */
     public function transactional($func)
     {
@@ -255,9 +229,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Commits a transaction on the underlying database connection.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function commit()
     {
@@ -265,9 +237,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Performs a rollback on the underlying database connection.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function rollback()
     {
@@ -296,11 +266,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Creates a new Query object.
-     *
-     * @param string $dql The DQL string.
-     *
-     * @return \Doctrine\ORM\Query
+     * {@inheritDoc}
      */
     public function createQuery($dql = '')
     {
@@ -314,11 +280,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Creates a Query from a named query.
-     *
-     * @param string $name
-     *
-     * @return \Doctrine\ORM\Query
+     * {@inheritDoc}
      */
     public function createNamedQuery($name)
     {
@@ -326,12 +288,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Creates a native SQL query.
-     *
-     * @param string           $sql
-     * @param ResultSetMapping $rsm The ResultSetMapping to use.
-     *
-     * @return NativeQuery
+     * {@inheritDoc}
      */
     public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
@@ -344,11 +301,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Creates a NativeQuery from a named native query.
-     *
-     * @param string $name
-     *
-     * @return \Doctrine\ORM\NativeQuery
+     * {@inheritDoc}
      */
     public function createNamedNativeQuery($name)
     {
@@ -358,9 +311,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Create a QueryBuilder instance
-     *
-     * @return QueryBuilder
+     * {@inheritDoc}
      */
     public function createQueryBuilder()
     {
@@ -480,15 +431,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets a reference to the entity identified by the given type and identifier
-     * without actually loading it, if the entity is not yet loaded.
-     *
-     * @param string $entityName The name of the entity type.
-     * @param mixed  $id         The entity identifier.
-     *
-     * @return object The entity reference.
-     *
-     * @throws ORMException
+     * {@inheritDoc}
      */
     public function getReference($entityName, $id)
     {
@@ -529,24 +472,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets a partial reference to the entity identified by the given type and identifier
-     * without actually loading it, if the entity is not yet loaded.
-     *
-     * The returned reference may be a partial object if the entity is not yet loaded/managed.
-     * If it is a partial object it will not initialize the rest of the entity state on access.
-     * Thus you can only ever safely access the identifier of an entity obtained through
-     * this method.
-     *
-     * The use-cases for partial references involve maintaining bidirectional associations
-     * without loading one side of the association or to update an entity without loading it.
-     * Note, however, that in the latter case the original (persistent) entity data will
-     * never be visible to the application (especially not event listeners) as it will
-     * never be loaded in the first place.
-     *
-     * @param string $entityName The name of the entity type.
-     * @param mixed  $identifier The entity identifier.
-     *
-     * @return object The (partial) entity reference.
+     * {@inheritDoc}
      */
     public function getPartialReference($entityName, $identifier)
     {
@@ -585,11 +511,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Closes the EntityManager. All entities that are currently managed
-     * by this EntityManager become detached. The EntityManager may no longer
-     * be used after it is closed.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function close()
     {
@@ -713,14 +635,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Creates a copy of the given entity. Can create a shallow or a deep copy.
-     *
-     * @param object  $entity The entity to copy.
-     * @param boolean $deep   FALSE for a shallow copy, TRUE for a deep copy.
-     *
-     * @return object The new entity.
-     *
-     * @throws \BadMethodCallException
+     * {@inheritDoc}
      *
      * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
      * Fatal error: Maximum function nesting level of '100' reached, aborting!
@@ -731,16 +646,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Acquire a lock on the given entity.
-     *
-     * @param object   $entity
-     * @param int      $lockMode
-     * @param int|null $lockVersion
-     *
-     * @return void
-     *
-     * @throws OptimisticLockException
-     * @throws PessimisticLockException
+     * {@inheritDoc}
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
@@ -774,9 +680,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets the EventManager used by the EntityManager.
-     *
-     * @return \Doctrine\Common\EventManager
+     * {@inheritDoc}
      */
     public function getEventManager()
     {
@@ -784,9 +688,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets the Configuration used by the EntityManager.
-     *
-     * @return \Doctrine\ORM\Configuration
+     * {@inheritDoc}
      */
     public function getConfiguration()
     {
@@ -808,9 +710,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Check if the Entity manager is open or closed.
-     *
-     * @return bool
+     * {@inheritDoc}
      */
     public function isOpen()
     {
@@ -818,9 +718,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets the UnitOfWork used by the EntityManager to coordinate operations.
-     *
-     * @return \Doctrine\ORM\UnitOfWork
+     * {@inheritDoc}
      */
     public function getUnitOfWork()
     {
@@ -828,16 +726,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets a hydrator for the given hydration mode.
-     *
-     * This method caches the hydrator instances which is used for all queries that don't
-     * selectively iterate over the result.
-     *
-     * @deprecated
-     *
-     * @param int $hydrationMode
-     *
-     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     * {@inheritDoc}
      */
     public function getHydrator($hydrationMode)
     {
@@ -845,13 +734,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Create a new instance for the given hydration mode.
-     *
-     * @param int $hydrationMode
-     *
-     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
-     *
-     * @throws ORMException
+     * {@inheritDoc}
      */
     public function newHydrator($hydrationMode)
     {
@@ -881,9 +764,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets the proxy factory used by the EntityManager to create entity proxies.
-     *
-     * @return ProxyFactory
+     * {@inheritDoc}
      */
     public function getProxyFactory()
     {
@@ -891,13 +772,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Helper method to initialize a lazy loading proxy or persistent collection.
-     *
-     * This method is a no-op for other objects
-     *
-     * @param object $obj
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function initializeObject($obj)
     {
@@ -943,9 +818,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Gets the enabled filters.
-     *
-     * @return FilterCollection The active filter collection.
+     * {@inheritDoc}
      */
     public function getFilters()
     {
@@ -957,9 +830,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Checks whether the state of the filter collection is clean.
-     *
-     * @return boolean True, if the filter collection is clean.
+     * {@inheritDoc}
      */
     public function isFiltersStateClean()
     {
@@ -967,9 +838,7 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
-     * Checks whether the Entity Manager has filters.
-     *
-     * @return boolean True, if the EM has a filter collection.
+     * {@inheritDoc}
      */
     public function hasFilters()
     {
