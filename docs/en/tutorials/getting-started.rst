@@ -218,8 +218,7 @@ Or use the update functionality:
 
 The updating of databases uses a Diff Algorithm for a given
 Database Schema, a cornerstone of the ``Doctrine\DBAL`` package,
-which can even be used without the Doctrine ORM package. However
-its not available in SQLite since it does not support ALTER TABLE.
+which can even be used without the Doctrine ORM package.
 
 Starting with the Product
 -------------------------
