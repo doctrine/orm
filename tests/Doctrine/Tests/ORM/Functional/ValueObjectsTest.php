@@ -162,6 +162,23 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $reloadedCar = $this->_em->find(__NAMESPACE__.'\\DDC93Car', $car->id);
         $this->assertEquals($car, $reloadedCar);
     }
+
+    public function testEmbeddableWithinEmbeddable()
+    {
+        $this->setExpectedException(
+            'Doctrine\ORM\Mapping\MappingException',
+            sprintf(
+                "You embedded one or more embeddables in embeddable '%s', but this behavior is currently unsupported.",
+                __NAMESPACE__ . '\DDC93ContactInfo'
+            )
+        );
+
+        $this->_schemaTool->createSchema(array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Customer'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93ContactInfo'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93PhoneNumber')
+        ));
+    }
 }
 
 /**
@@ -263,3 +280,19 @@ class DDC93Address
     }
 }
 
+/** @Entity */
+class DDC93Customer
+{
+    /** @Id @GeneratedValue @Column(type="integer") */
+    private $id;
+
+    /** @Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_") */
+    private $contactInfo;
+}
+
+/** @Embeddable */
+class DDC93ContactInfo
+{
+    /** @Embedded(class = "DDC93Address") */
+    private $address;
+}

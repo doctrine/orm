@@ -3162,6 +3162,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapEmbedded(array $mapping)
     {
+        if ($this->isEmbeddedClass) {
+            throw MappingException::noEmbeddablesInEmbeddable($this->name);
+        }
+
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = array(
