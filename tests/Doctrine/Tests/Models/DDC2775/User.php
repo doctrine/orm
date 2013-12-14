@@ -11,7 +11,7 @@ class User
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    public $id;
 
     /**
      * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
@@ -23,20 +23,15 @@ class User
      */
     public $authorizations;
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
     public function addRole(Role $role)
     {
         $this->roles[] = $role;
-        $role->setUser($this);
+        $role->user = $this;
     }
 
     public function addAuthorization(Authorization $authorization)
     {
         $this->authorizations[] = $authorization;
-        $authorization->setUser($this);
+        $authorization->user = $this;
     }
 }
