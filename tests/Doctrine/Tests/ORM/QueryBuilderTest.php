@@ -411,7 +411,8 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotNull($qb->getParameter('field'));
     }
 
-    public function testAddCriteriaWhereWithMultipleParameters()
+    /** @group=cordoval */
+    public function testAddCriteriaWhereWithMultipleParametersWithSameField()
     {
         $qb = $this->_em->createQueryBuilder();
         $criteria = new Criteria();
@@ -420,7 +421,21 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('field = :field', (string) $qb->getDQLPart('where'));
+        $this->assertEquals('field = :field AND field > :field', (string) $qb->getDQLPart('where'));
+        $this->assertNotNull($qb->getParameter('value'));
+    }
+
+    /** @group=cordoval */
+    public function testAddCriteriaWhereWithMultipleParametersWithDifferentFields()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('field1', 'value1'));
+        $criteria->andWhere($criteria->expr()->gt('field2', 'value2'));
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals('field1 = :field1 AND field2 > :field2', (string) $qb->getDQLPart('where'));
         $this->assertNotNull($qb->getParameter('value'));
     }
 
