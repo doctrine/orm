@@ -411,6 +411,19 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotNull($qb->getParameter('field'));
     }
 
+    public function testAddCriteriaWhereWithMultipleParameters()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('field', 'value1'));
+        $criteria->andWhere($criteria->expr()->gt('field', 'value2'));
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals('field = :field', (string) $qb->getDQLPart('where'));
+        $this->assertNotNull($qb->getParameter('value'));
+    }
+
     public function testAddCriteriaOrder()
     {
         $qb = $this->_em->createQueryBuilder();
