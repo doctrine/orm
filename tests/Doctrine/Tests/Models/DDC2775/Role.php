@@ -14,36 +14,21 @@ abstract class Role
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    public $id;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="roles")
      */
-    private $user;
+    public $user;
 
     /**
      * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
      */
     public $authorizations;
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
-
     public function addAuthorization(Authorization $authorization)
     {
         $this->authorizations[] = $authorization;
-        $authorization->setRole($this);
+        $authorization->role = $this;
     }
 }

@@ -11,30 +11,15 @@ class Authorization
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    public $id;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="authorizations")
      */
-    private $user;
+    public $user;
 
     /**
      * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
      */
-    private $role;
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function setRole(Role $role)
-    {
-        $this->role = $role;
-    }
+    public $role;
 }

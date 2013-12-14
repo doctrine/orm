@@ -5,13 +5,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\DDC2775\AdminRole;
 use Doctrine\Tests\Models\DDC2775\Authorization;
 use Doctrine\Tests\Models\DDC2775\User;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for cascade remove with class table inheritance.
  *
  * @author Matthieu Napoli <matthieu@mnapoli.fr>
  */
-class DDC2775Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2775Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         $this->useModelSet('ddc2775');
@@ -38,7 +39,7 @@ class DDC2775Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Need to clear so that associations are lazy-loaded
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\Models\DDC2775\User', $user->getId());
+        $user = $this->_em->find('Doctrine\Tests\Models\DDC2775\User', $user->id);
 
         $this->_em->remove($user);
         $this->_em->flush();
