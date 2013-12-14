@@ -74,6 +74,7 @@ of several common elements:
       type: entity
       repositoryClass: Doctrine\Tests\ORM\Mapping\UserRepository
       table: cms_users
+      readOnly: true
       indexes:
         name_index:
           columns: [ name ]
