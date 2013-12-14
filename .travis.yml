@@ -25,5 +25,5 @@ after_script:
   - php vendor/bin/coveralls -v
 
 matrix:
-  allowed_failures:
+  allow_failures:
     - php: hhvm
