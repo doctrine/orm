@@ -422,6 +422,74 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotNull($qb->getParameter('field_1'));
     }
 
+    /**
+     * @group DDC-2844
+     */
+    public function testAddCriteriaWhereWithMultipleParametersWithSameField()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('field', 'value1'));
+        $criteria->andWhere($criteria->expr()->gt('field', 'value2'));
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals('field = :field AND field > :field_1', (string) $qb->getDQLPart('where'));
+        $this->assertSame('value1', $qb->getParameter('field')->getValue());
+        $this->assertSame('value2', $qb->getParameter('field_1')->getValue());
+    }
+
+    /**
+     * @group DDC-2844
+     */
+    public function testAddCriteriaWhereWithMultipleParametersWithDifferentFields()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('field1', 'value1'));
+        $criteria->andWhere($criteria->expr()->gt('field2', 'value2'));
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals('field1 = :field1 AND field2 > :field2', (string) $qb->getDQLPart('where'));
+        $this->assertSame('value1', $qb->getParameter('field1')->getValue());
+        $this->assertSame('value2', $qb->getParameter('field2')->getValue());
+    }
+
+    /**
+     * @group DDC-2844
+     */
+    public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndDifferentProperties()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('alias1.field1', 'value1'));
+        $criteria->andWhere($criteria->expr()->gt('alias1.field2', 'value2'));
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals('alias1.field1 = :alias1_field1 AND alias1.field2 > :alias1_field2', (string) $qb->getDQLPart('where'));
+        $this->assertSame('value1', $qb->getParameter('alias1_field1')->getValue());
+        $this->assertSame('value2', $qb->getParameter('alias1_field2')->getValue());
+    }
+
+    /**
+     * @group DDC-2844
+     */
+    public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndSameProperty()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('alias1.field1', 'value1'));
+        $criteria->andWhere($criteria->expr()->gt('alias1.field1', 'value2'));
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals('alias1.field1 = :alias1_field1 AND alias1.field1 > :alias1_field1_1', (string) $qb->getDQLPart('where'));
+        $this->assertSame('value1', $qb->getParameter('alias1_field1')->getValue());
+        $this->assertSame('value2', $qb->getParameter('alias1_field1_1')->getValue());
+    }
+
     public function testAddCriteriaOrder()
     {
         $qb = $this->_em->createQueryBuilder();
