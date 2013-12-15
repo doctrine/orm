@@ -152,7 +152,7 @@ class EntityGenerator
         Type::SMALLINT      => 'integer',
         Type::TEXT          => 'string',
         Type::BLOB          => 'string',
-        Type::DECIMAL       => 'string',
+        Type::DECIMAL       => 'float',
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
     );
@@ -392,7 +392,7 @@ public function __construct()
             $this->generateEntityBody($metadata)
         );
 
-        $code = str_replace($placeHolders, $replacements, static::$classTemplate) . "\n";
+        $code = str_replace($placeHolders, $replacements, static::$classTemplate);
 
         return str_replace('<spaces>', $this->spaces, $code);
     }
@@ -413,7 +413,7 @@ public function __construct()
         $body = str_replace('<spaces>', $this->spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : '') . "}\n";
+        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : ''). "}\n";
     }
 
     /**
@@ -766,15 +766,7 @@ public function __construct()
                 ? new \ReflectionClass($metadata->name)
                 : $metadata->reflClass;
 
-            $traits = array();
-
-            while ($reflClass !== false) {
-                $traits = array_merge($traits, $reflClass->getTraits());
-
-                $reflClass = $reflClass->getParentClass();
-            }
-
-            return $traits;
+            return $reflClass->getTraits();
         }
 
         return array();
@@ -953,7 +945,7 @@ public function __construct()
     protected function generateDiscriminatorColumnAnnotation($metadata)
     {
         if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            $discrColumn = $metadata->discriminatorColumn;
+            $discrColumn = $metadata->discriminatorValue;
             $columnDefinition = 'name="' . $discrColumn['name']
                 . '", type="' . $discrColumn['type']
                 . '", length=' . $discrColumn['length'];
@@ -1430,11 +1422,7 @@ public function __construct()
             if (isset($fieldMapping['nullable'])) {
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
-            
-            if (isset($fieldMapping['unsigned']) && $fieldMapping['unsigned']) {
-                $column[] = 'options={"unsigned"=true}';
-            }
-            
+
             if (isset($fieldMapping['columnDefinition'])) {
                 $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
             }
@@ -1505,7 +1493,7 @@ public function __construct()
      *
      * @return string The literal string for the inheritance type.
      *
-     * @throws \InvalidArgumentException When the inheritance type does not exist.
+     * @throws \InvalidArgumentException When the inheritance type does not exists.
      */
     protected function getInheritanceTypeString($type)
     {
@@ -1521,7 +1509,7 @@ public function __construct()
      *
      * @return string The literal string for the change-tracking type.
      *
-     * @throws \InvalidArgumentException When the change-tracking type does not exist.
+     * @throws \InvalidArgumentException When the change-tracking type does not exists.
      */
     protected function getChangeTrackingPolicyString($type)
     {
@@ -1537,7 +1525,7 @@ public function __construct()
      *
      * @return string The literal string for the generator type.
      *
-     * @throws \InvalidArgumentException    When the generator type does not exist.
+     * @throws \InvalidArgumentException    When the generator type does not exists.
      */
     protected function getIdGeneratorTypeString($type)
     {

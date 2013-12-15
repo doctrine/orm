@@ -1544,9 +1544,6 @@ class Parser
     public function IdentificationVariableDeclaration()
     {
         $rangeVariableDeclaration = $this->RangeVariableDeclaration();
-
-        $rangeVariableDeclaration->isRoot = true;
-
         $indexBy = $this->lexer->isNextToken(Lexer::T_INDEX) ? $this->IndexBy() : null;
         $joins   = array();
 
@@ -1625,19 +1622,15 @@ class Parser
         $this->match(Lexer::T_JOIN);
 
         $next            = $this->lexer->glimpse();
-        $joinDeclaration = ($next['type'] === Lexer::T_DOT) ? $this->JoinAssociationDeclaration() : $this->RangeVariableDeclaration();
-        $adhocConditions = $this->lexer->isNextToken(Lexer::T_WITH);
-        $join            = new AST\Join($joinType, $joinDeclaration);
+        $joinDeclaration = ($next['type'] === Lexer::T_DOT)
+            ? $this->JoinAssociationDeclaration()
+            : $this->RangeVariableDeclaration();
 
-        // Describe non-root join declaration
-        if ($joinDeclaration instanceof AST\RangeVariableDeclaration) {
-            $joinDeclaration->isRoot = false;
-
-            $adhocConditions = true;
-        }
+        // Create AST node
+        $join = new AST\Join($joinType, $joinDeclaration);
 
         // Check for ad-hoc Join conditions
-        if ($adhocConditions) {
+        if ($this->lexer->isNextToken(Lexer::T_WITH) || $joinDeclaration instanceof AST\RangeVariableDeclaration) {
             $this->match(Lexer::T_WITH);
 
             $join->conditionalExpression = $this->ConditionalExpression();
@@ -2776,29 +2769,23 @@ class Parser
     }
 
     /**
-     * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
+     * StringExpression ::= StringPrimary | "(" Subselect ")"
      *
      * @return \Doctrine\ORM\Query\AST\StringPrimary |
-     *         \Doctrine\ORM\Query\AST\Subselect |
-     *         string
+     *         \Doctrine\ORM\Query\AST\Subselect
      */
     public function StringExpression()
     {
-        $peek = $this->lexer->glimpse();
+        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
+            $peek = $this->lexer->glimpse();
 
-        // Subselect
-        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && $peek['type'] === Lexer::T_SELECT) {
-            $this->match(Lexer::T_OPEN_PARENTHESIS);
-            $expr = $this->Subselect();
-            $this->match(Lexer::T_CLOSE_PARENTHESIS);
+            if ($peek['type'] === Lexer::T_SELECT) {
+                $this->match(Lexer::T_OPEN_PARENTHESIS);
+                $expr = $this->Subselect();
+                $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-            return $expr;
-        }
-
-        // ResultVariable (string)
-        if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER) &&
-            isset($this->queryComponents[$this->lexer->lookahead['value']]['resultVariable'])) {
-            return $this->ResultVariable();
+                return $expr;
+            }
         }
 
         return $this->StringPrimary();
@@ -3121,7 +3108,7 @@ class Parser
     }
 
     /**
-     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
+     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression) "IS" ["NOT"] "NULL"
      *
      * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
      */
@@ -3147,29 +3134,7 @@ class Parser
                 break;
 
             default:
-                // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
-                $glimpse = $this->lexer->glimpse();
-
-                if ($glimpse['type'] === Lexer::T_DOT) {
-                    $expr = $this->SingleValuedPathExpression();
-
-                    // Leave switch statement
-                    break;
-                }
-
-                $lookaheadValue = $this->lexer->lookahead['value'];
-
-                // Validate existing component
-                if ( ! isset($this->queryComponents[$lookaheadValue])) {
-                    $this->semanticalError('Cannot add having condition on undefined result variable.');
-                }
-
-                // Validating ResultVariable
-                if ( ! isset($this->queryComponents[$lookaheadValue]['resultVariable'])) {
-                    $this->semanticalError('Cannot add having condition on a non result variable.');
-                }
-
-                $expr = $this->ResultVariable();
+                $expr = $this->SingleValuedPathExpression();
                 break;
         }
 

@@ -894,8 +894,8 @@ class QueryBuilder
      */
     public function andWhere($where)
     {
-        $args  = func_get_args();
         $where = $this->getDQLPart('where');
+        $args  = func_get_args();
 
         if ($where instanceof Expr\Andx) {
             $where->addMultiple($args);
@@ -927,8 +927,8 @@ class QueryBuilder
      */
     public function orWhere($where)
     {
-        $args  = func_get_args();
         $where = $this->getDqlPart('where');
+        $args  = func_get_args();
 
         if ($where instanceof Expr\Orx) {
             $where->addMultiple($args);
@@ -1007,8 +1007,8 @@ class QueryBuilder
      */
     public function andHaving($having)
     {
-        $args   = func_get_args();
         $having = $this->getDqlPart('having');
+        $args   = func_get_args();
 
         if ($having instanceof Expr\Andx) {
             $having->addMultiple($args);
@@ -1030,8 +1030,8 @@ class QueryBuilder
      */
     public function orHaving($having)
     {
-        $args   = func_get_args();
         $having = $this->getDqlPart('having');
+        $args   = func_get_args();
 
         if ($having instanceof Expr\Orx) {
             $having->addMultiple($args);
