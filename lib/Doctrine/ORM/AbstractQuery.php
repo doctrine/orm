@@ -609,12 +609,7 @@ abstract class AbstractQuery
      */
     public function getOneOrNullResult($hydrationMode = null)
     {
-        try {
-            $result = $this->execute(null, $hydrationMode);
-        } catch (NoResultException $e) {
-            return null;
-        }
-
+        $result = $this->execute(null, $hydrationMode);
 
         if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             return null;
@@ -704,18 +699,6 @@ abstract class AbstractQuery
     public function getHint($name)
     {
         return isset($this->_hints[$name]) ? $this->_hints[$name] : false;
-    }
-
-    /**
-     * Check if the query has a hint
-     *
-     * @param  string $name The name of the hint
-     *
-     * @return bool False if the query does not have any hint
-     */
-    public function hasHint($name)
-    {
-        return isset($this->_hints[$name]);
     }
 
     /**

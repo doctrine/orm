@@ -41,20 +41,13 @@ class RangeVariableDeclaration extends Node
     public $aliasIdentificationVariable;
 
     /**
-     * @var boolean
+     * @param string $abstractSchemaName
+     * @param string $aliasIdentificationVar
      */
-    public $isRoot;
-
-    /**
-     * @param string  $abstractSchemaName
-     * @param string  $aliasIdentificationVar
-     * @param boolean $isRoot
-     */
-    public function __construct($abstractSchemaName, $aliasIdentificationVar, $isRoot = true)
+    public function __construct($abstractSchemaName, $aliasIdentificationVar)
     {
-        $this->abstractSchemaName          = $abstractSchemaName;
+        $this->abstractSchemaName = $abstractSchemaName;
         $this->aliasIdentificationVariable = $aliasIdentificationVar;
-        $this->isRoot                      = $isRoot;
     }
 
     /**

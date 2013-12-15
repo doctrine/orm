@@ -769,16 +769,4 @@ class MappingException extends \Doctrine\ORM\ORMException
             $cascades
         ));
     }
-
-    /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
-    public static function missingSequenceName($className)
-    {
-        return new self(
-            sprintf('Missing "sequenceName" attribute for sequence id generator definition on class "%s".', $className)
-        );
-    }
 }

@@ -842,9 +842,7 @@ class SqlWalker implements TreeWalker
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
 
-        if ($rangeVariableDeclaration->isRoot) {
-            $this->rootAliases[] = $dqlAlias;
-        }
+        $this->rootAliases[] = $dqlAlias;
 
         $sql = $this->quoteStrategy->getTableName($class,$this->platform) . ' '
             . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
@@ -860,14 +858,13 @@ class SqlWalker implements TreeWalker
      * Walks down a JoinAssociationDeclaration AST node, thereby generating the appropriate SQL.
      *
      * @param AST\JoinAssociationDeclaration $joinAssociationDeclaration
-     * @param int                            $joinType
-     * @param AST\ConditionalExpression      $condExpr
+     * @param int $joinType
      *
      * @return string
      *
      * @throws QueryException
      */
-    public function walkJoinAssociationDeclaration($joinAssociationDeclaration, $joinType = AST\Join::JOIN_TYPE_INNER, $condExpr = null)
+    public function walkJoinAssociationDeclaration($joinAssociationDeclaration, $joinType = AST\Join::JOIN_TYPE_INNER)
     {
         $sql = '';
 
@@ -982,13 +979,6 @@ class SqlWalker implements TreeWalker
                 break;
         }
 
-        // Handle WITH clause
-        if ($condExpr !== null) {
-            // Phase 2 AST optimization: Skip processing of ConditionalExpression
-            // if only one ConditionalTerm is defined
-            $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
-        }
-
         // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
         if ($targetClass->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
@@ -1068,37 +1058,24 @@ class SqlWalker implements TreeWalker
 
         switch (true) {
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
-                $class      = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
-                $dqlAlias   = $joinDeclaration->aliasIdentificationVariable;
-                $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
-                $condition = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
-                $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER)
+                $class = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
+                $condExprConjunction = $class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER
                     ? ' AND '
                     : ' ON ';
 
-                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration);
-
-                $conditions = array($condition);
-
-                // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($dqlAlias));
-
-                if ($discrSql) {
-                    $conditions[] = $discrSql;
-                }
-
-                // Apply the filters
-                $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias);
-
-                if ($filterExpr) {
-                    $conditions[] = $filterExpr;
-                }
-
-                $sql .= $condExprConjunction . implode(' AND ', $conditions);
+                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration)
+                      . $condExprConjunction . '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
-                $sql .= $this->walkJoinAssociationDeclaration($joinDeclaration, $joinType, $join->conditionalExpression);
+                $sql .= $this->walkJoinAssociationDeclaration($joinDeclaration, $joinType);
+
+                // Handle WITH clause
+                if (($condExpr = $join->conditionalExpression) !== null) {
+                    // Phase 2 AST optimization: Skip processing of ConditionalExpression
+                    // if only one ConditionalTerm is defined
+                    $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
+                }
                 break;
         }
 
@@ -1581,10 +1558,6 @@ class SqlWalker implements TreeWalker
                 $sql .= $expr->dispatch($this) . ' AS ' . $columnAlias;
                 break;
 
-            case ($expr instanceof AST\ParenthesisExpression):
-                $sql .= $this->walkParenthesisExpression($expr);
-                break;
-
             default: // IdentificationVariable
                 $sql .= $this->walkEntityIdentificationVariable($expr);
                 break;
@@ -1628,16 +1601,6 @@ class SqlWalker implements TreeWalker
 
         // ResultVariable
         if (isset($this->queryComponents[$groupByItem]['resultVariable'])) {
-            $resultVariable = $this->queryComponents[$groupByItem]['resultVariable'];
-
-            if ($resultVariable instanceof AST\PathExpression) {
-                return $this->walkPathExpression($resultVariable);
-            }
-
-            if (isset($resultVariable->pathExpression)) {
-                return $this->walkPathExpression($resultVariable->pathExpression);
-            }
-
             return $this->walkResultVariable($groupByItem);
         }
 
@@ -1961,14 +1924,10 @@ class SqlWalker implements TreeWalker
         $expression = $nullCompExpr->expression;
         $comparison = ' IS' . ($nullCompExpr->not ? ' NOT' : '') . ' NULL';
 
-        // Handle ResultVariable
-        if (is_string($expression) && isset($this->queryComponents[$expression]['resultVariable'])) {
-            return $this->walkResultVariable($expression) . $comparison;
-        }
-
-        // Handle InputParameter mapping inclusion to ParserResult
         if ($expression instanceof AST\InputParameter) {
-            return $this->walkInputParameter($expression) . $comparison;
+            $this->parserResult->addParameterMapping($expression->name, $this->sqlParamIndex++);
+
+            return '?' . $comparison;
         }
 
         return $expression->dispatch($this) . $comparison;
@@ -2013,7 +1972,9 @@ class SqlWalker implements TreeWalker
         $sqlParameterList = array();
 
         foreach ($instanceOfExpr->value as $parameter) {
+
             if ($parameter instanceof AST\InputParameter) {
+
                 $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
 
                 $sqlParameterList[] = $this->walkInputParameter($parameter);
@@ -2083,9 +2044,7 @@ class SqlWalker implements TreeWalker
     {
         $sql = $this->walkArithmeticExpression($betweenExpr->expression);
 
-        if ($betweenExpr->not) {
-            $sql .= ' NOT';
-        }
+        if ($betweenExpr->not) $sql .= ' NOT';
 
         $sql .= ' BETWEEN ' . $this->walkArithmeticExpression($betweenExpr->leftBetweenExpression)
               . ' AND ' . $this->walkArithmeticExpression($betweenExpr->rightBetweenExpression);
@@ -2099,15 +2058,14 @@ class SqlWalker implements TreeWalker
     public function walkLikeExpression($likeExpr)
     {
         $stringExpr = $likeExpr->stringExpression;
-        $leftExpr   = (is_string($stringExpr) && isset($this->queryComponents[$stringExpr]['resultVariable']))
-            ? $this->walkResultVariable($stringExpr)
-            : $stringExpr->dispatch($this);
-
-        $sql = $leftExpr . ($likeExpr->not ? ' NOT' : '') . ' LIKE ';
+        $sql = $stringExpr->dispatch($this) . ($likeExpr->not ? ' NOT' : '') . ' LIKE ';
 
         if ($likeExpr->stringPattern instanceof AST\InputParameter) {
-            $sql .= $this->walkInputParameter($likeExpr->stringPattern);
-        } elseif ($likeExpr->stringPattern instanceof AST\Functions\FunctionNode) {
+            $inputParam = $likeExpr->stringPattern;
+            $dqlParamKey = $inputParam->name;
+            $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
+            $sql .= '?';
+        } elseif ($likeExpr->stringPattern instanceof AST\Functions\FunctionNode ) {
             $sql .= $this->walkFunction($likeExpr->stringPattern);
         } elseif ($likeExpr->stringPattern instanceof AST\PathExpression) {
             $sql .= $this->walkPathExpression($likeExpr->stringPattern);

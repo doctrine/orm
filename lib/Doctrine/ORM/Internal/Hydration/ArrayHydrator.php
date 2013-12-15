@@ -190,14 +190,17 @@ class ArrayHydrator extends AbstractHydrator
                         ( ! isset($baseElement[$relationAlias]))
                     ) {
                         $baseElement[$relationAlias] = null;
-                    } else if ( ! isset($baseElement[$relationAlias])) {
+                    } else if (
+                        ( ! isset($baseElement[$relationAlias])) ||
+                        ( ! isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]))
+                    ) {
                         $baseElement[$relationAlias] = $data;
                     }
                 }
 
                 $coll =& $baseElement[$relationAlias];
 
-                if (is_array($coll)) {
+                if ($coll !== null) {
                     $this->updateResultPointer($coll, $index, $dqlAlias, $oneToOne);
                 }
             } else {

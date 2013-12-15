@@ -8,7 +8,6 @@ use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
-use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -488,36 +487,6 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @group DDC-2372
-     */
-    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
-    {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
-
-        $cmf = new ClassMetadataFactory();
-        $em = $this->_getTestEntityManager();
-        $cmf->setEntityManager($em);
-
-        $user = new DDC2372Admin();
-        $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->_namespace . "\DDC2372Admin";
-        $metadata->namespace = $this->_namespace;
-
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
-
-        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372Admin.php");
-        require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372Admin.php";
-
-        $reflClass = new \ReflectionClass($metadata->name);
-
-        $this->assertSame($reflClass->hasProperty('address'), false);
-        $this->assertSame($reflClass->hasMethod('setAddress'), false);
-        $this->assertSame($reflClass->hasMethod('getAddress'), false);
-    }
-
-    /**
      * @return array
      */
     public function getEntityTypeAliasDataProvider()
@@ -579,9 +548,9 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
             )),
             array(array(
                 'fieldName' => 'decimal',
-                'phpType' => 'string',
+                'phpType' => 'float',
                 'dbType' => 'decimal',
-                'value' => '12.34'
+                'value' => 33.33
             ),
         ));
     }

@@ -70,6 +70,7 @@ looks like this:
         $em->getConnection()->commit();
     } catch (Exception $e) {
         $em->getConnection()->rollback();
+        $em->close();
         throw $e;
     }
 
@@ -80,12 +81,14 @@ require an active transaction. Such methods will throw a
 ``TransactionRequiredException`` to inform you of that
 requirement.
 
-A more convenient alternative for explicit transaction demarcation is the use
-of provided control abstractions in the form of
-``Connection#transactional($func)`` and ``EntityManager#transactional($func)``.
-When used, these control abstractions ensure that you never forget to rollback
-the transaction, in addition to the obvious code reduction. An example that is
-functionally equivalent to the previously shown code looks as follows:
+A more convenient alternative for explicit transaction demarcation
+is the use of provided control abstractions in the form of
+``Connection#transactional($func)`` and
+``EntityManager#transactional($func)``. When used, these control
+abstractions ensure that you never forget to rollback the
+transaction or close the ``EntityManager``, apart from the obvious
+code reduction. An example that is functionally equivalent to the
+previously shown code looks as follows:
 
 .. code-block:: php
 
@@ -101,8 +104,8 @@ functionally equivalent to the previously shown code looks as follows:
 The difference between ``Connection#transactional($func)`` and
 ``EntityManager#transactional($func)`` is that the latter
 abstraction flushes the ``EntityManager`` prior to transaction
-commit and rolls back the transaction when an
-exception occurs.
+commit and also closes the ``EntityManager`` properly when an
+exception occurs (in addition to rolling back the transaction).
 
 Exception Handling
 ~~~~~~~~~~~~~~~~~~

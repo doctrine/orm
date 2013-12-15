@@ -1071,12 +1071,13 @@ class UnitOfWork implements PropertyChangedListener
         $newNodes = array();
 
         foreach ($entityChangeSet as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
+            $className = $this->em->getClassMetadata(get_class($entity))->name;
 
-            if ($calc->hasClass($class->name)) {
+            if ($calc->hasClass($className)) {
                 continue;
             }
 
+            $class = $this->em->getClassMetadata($className);
             $calc->addClass($class);
 
             $newNodes[] = $class;
@@ -2874,7 +2875,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
-
+ 
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
@@ -2964,7 +2965,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             default:
-                throw new \RuntimeException('No persister found for entity.');
+                $persister = new Persisters\UnionSubclassPersister($this->em, $class);
         }
 
         $this->persisters[$entityName] = $persister;
