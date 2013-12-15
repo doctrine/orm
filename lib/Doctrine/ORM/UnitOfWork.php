@@ -1735,6 +1735,8 @@ class UnitOfWork implements PropertyChangedListener
                 $associatedId        = $this->getEntityIdentifier($idValue);
 
                 $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
+            } else {
+                $flatId[$idField] = $idValue;
             }
         }
 
