@@ -23,6 +23,9 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testSimpleDetachMerge() {
         $user = new DefaultValueUser;
         $user->name = 'romanb';

@@ -16,6 +16,9 @@ $cli->addCommands(array(
     new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
 
     // ORM Commands
+    new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryRegionCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand(),
     new \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand(),
     new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
     new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryCommand(),

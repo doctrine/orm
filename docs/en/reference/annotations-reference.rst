@@ -35,6 +35,7 @@ Index
 
 -  :ref:`@Column <annref_column>`
 -  :ref:`@ColumnResult <annref_column_result>`
+-  :ref:`@Cache <annref_cache>`
 -  :ref:`@ChangeTrackingPolicy <annref_changetrackingpolicy>`
 -  :ref:`@DiscriminatorColumn <annref_discriminatorcolumn>`
 -  :ref:`@DiscriminatorMap <annref_discriminatormap>`
@@ -151,6 +152,17 @@ Scalar result types can be included in the query result by specifying this annot
 Required attributes:
 
 -  **name**: The name of a column in the SELECT clause of a SQL query
+
+.. _annref_cache:
+
+@Cache
+~~~~~~~~~~~~~~
+Add caching strategy to a root entity or a collection.
+
+Optional attributes:
+
+-  **usage**: One of ``READ_ONLY``, ``READ_READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
+-  **region**: An specific region name
 
 .. _annref_changetrackingpolicy:
 
