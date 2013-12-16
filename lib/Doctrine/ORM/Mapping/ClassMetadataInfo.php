@@ -1021,7 +1021,8 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param array $cache
+     * @param string $fieldName
+     * @param array  $cache
      *
      * @return void
      */

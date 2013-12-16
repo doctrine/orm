@@ -94,7 +94,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 : $data[$name];
 
             // @TODO - fix it !
-            // hande UnitOfWork#createEntity hash generation
+            // handle UnitOfWork#createEntity hash generation
             if ( ! is_array($targetId)) {
 
                 $data[reset($assoc['joinColumnFieldNames'])] = $targetId;

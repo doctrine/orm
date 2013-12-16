@@ -44,7 +44,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         ), $arguments);
     }
 
-    public function testInplementsCacheFactory()
+    public function testImplementsCacheFactory()
     {
         $this->assertInstanceOf('Doctrine\ORM\Cache\CacheFactory', $this->factory);
     }

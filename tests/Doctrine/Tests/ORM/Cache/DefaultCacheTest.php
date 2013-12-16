@@ -245,7 +245,7 @@ class DefaultCacheTest extends OrmTestCase
         $this->assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
     }
 
-    public function testToIdentifierArrayShoudLookupForEntityIdentifier()
+    public function testToIdentifierArrayShouldLookupForEntityIdentifier()
     {
         $identifier = 123;
         $entity     = new Country('Foo');

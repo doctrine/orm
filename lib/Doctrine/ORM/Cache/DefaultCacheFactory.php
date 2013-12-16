@@ -102,7 +102,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function setRegion(Region $region)
     {
-       $this->regions[$region->getName()] = $region;
+        $this->regions[$region->getName()] = $region;
     }
 
     /**
@@ -110,7 +110,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function setTimestampRegion(TimestampRegion $region)
     {
-       $this->timestampRegion = $region;
+        $this->timestampRegion = $region;
     }
 
     /**

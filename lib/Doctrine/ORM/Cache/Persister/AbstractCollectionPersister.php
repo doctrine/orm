@@ -90,10 +90,10 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $cacheLogger;
 
     /**
-     * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister that will be cached.
-     * @param \Doctrine\ORM\Cache\Region                   $region    The collection region.
-     * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager.
-     * @param array                                        $mapping   The association mapping.
+     * @param \Doctrine\ORM\Persisters\CollectionPersister $persister   The collection persister that will be cached.
+     * @param \Doctrine\ORM\Cache\Region                   $region      The collection region.
+     * @param \Doctrine\ORM\EntityManagerInterface         $em          The entity manager.
+     * @param array                                        $association The association mapping.
      */
     public function __construct(CollectionPersister $persister, Region $region, EntityManagerInterface $em, array $association)
     {

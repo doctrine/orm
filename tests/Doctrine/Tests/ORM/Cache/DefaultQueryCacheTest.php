@@ -216,7 +216,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->assertCount(13, $this->region->calls['put']);
     }
 
-    public function testgGetBasicQueryResult()
+    public function testGetBasicQueryResult()
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
@@ -480,7 +480,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      * @expectedException Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Second level cache does not support multiple root entities.
      */
-    public function testSuportMultipleRootEntitiesException()
+    public function testSupportMultipleRootEntitiesException()
     {
         $result   = array();
         $key      = new QueryCacheKey('query.key1', 0);

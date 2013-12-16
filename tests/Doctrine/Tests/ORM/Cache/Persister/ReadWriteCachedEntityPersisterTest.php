@@ -153,7 +153,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $this->assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionlCommitShouldClearQueue()
+    public function testTransactionCommitShouldClearQueue()
     {
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();

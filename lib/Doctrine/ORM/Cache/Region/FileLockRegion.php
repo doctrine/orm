@@ -29,8 +29,8 @@ use Doctrine\ORM\Cache\ConcurrentRegion;
 /**
  * Very naive concurrent region, based on file locks.
  *
- * since   2.5
- * author  Fabio B. Silva <fabio.bat.silvagmail.com>
+ * @since   2.5
+ * @author  Fabio B. Silva <fabio.bat.silvagmail.com>
  */
 class FileLockRegion implements ConcurrentRegion
 {
@@ -42,7 +42,7 @@ class FileLockRegion implements ConcurrentRegion
     private $region;
 
     /**
-     * var string
+     * @var string
      */
     private $directory;
 
@@ -74,8 +74,8 @@ class FileLockRegion implements ConcurrentRegion
     }
 
     /**
-     * param \Doctrine\ORM\Cache\CacheKey $key
-     * param \Doctrine\ORM\Cache\Lock     $lock
+     * @param \Doctrine\ORM\Cache\CacheKey $key
+     * @param \Doctrine\ORM\Cache\Lock     $lock
      *
      * @return boolean
      */

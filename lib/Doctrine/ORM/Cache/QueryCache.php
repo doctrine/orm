@@ -51,7 +51,7 @@ interface QueryCache
      * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
      * @param array                                 $hints
      *
-     * @return void
+     * @return array|null
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = array());
 

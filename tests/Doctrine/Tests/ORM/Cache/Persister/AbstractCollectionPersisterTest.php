@@ -199,7 +199,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $this->assertEquals(0, $persister->count($collection));
     }
 
-    public function testInvokEslice()
+    public function testInvokeSlice()
     {
         $entity     = new State("Foo");
         $persister  = $this->createPersisterDefault();
