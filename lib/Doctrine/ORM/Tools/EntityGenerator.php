@@ -914,7 +914,10 @@ public function __construct()
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
-                $metadata->isInheritedField($fieldMapping['fieldName'])) {
+                $metadata->isInheritedField($fieldMapping['fieldName']) ||
+                (!$this->isNew &&
+                 ($property = $this->getParentProperty($metadata->getName(), $fieldMapping['fieldName'])) &&
+                 !$property->isPrivate())) {
                 continue;
             }
 
@@ -926,6 +929,30 @@ public function __construct()
         return implode("\n", $lines);
     }
 
+    private function getParentProperty($className, $propertyName) {
+        $reflClass = new \ReflectionClass($className);
+        $parent = $reflClass->getParentClass();
+        while ($parent) {
+            if ($parent->hasProperty($propertyName)) {
+                return $parent->getProperty($propertyName);
+            }
+            $parent = $reflClass->getParentClass();
+        }
+        return false;
+    }
+
+    private function getParentMethod($className, $methodName) {
+        $reflClass = new \ReflectionClass($className);
+        $parent = $reflClass->getParentClass();
+        while ($parent) {
+            if ($parent->hasMethod($methodName)) {
+                return $parent->getMethod($methodName);
+            }
+            $parent = $parent->getParentClass();
+        }
+        return false;
+    }
+
     private function generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null,  $defaultValue = null)
     {
         $methodName = $type . Inflector::classify($fieldName);
@@ -933,7 +960,10 @@ public function __construct()
             $methodName = substr($methodName, 0, -1);
         }
 
-        if ($this->hasMethod($methodName, $metadata)) {
+        if ($this->hasMethod($methodName, $metadata) ||
+            (!$this->isNew &&
+             ($method = $this->getParentMethod($metadata->getName(), $methodName)) &&
+             !$method->isPrivate())) {
             return;
         }
         $this->staticReflection[$metadata->name]['methods'][] = $methodName;
