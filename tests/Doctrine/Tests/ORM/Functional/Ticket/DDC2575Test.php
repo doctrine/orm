@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
@@ -23,15 +23,15 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
 
         $entityRoot1 = new DDC2575Root(1);
-        $entityB1 = new DDC2575B(1);
+        $entityB1 = new DDC2575B(2);
         $entityA1 = new DDC2575A($entityRoot1, $entityB1);
 
         $this->_em->persist($entityRoot1);
         $this->_em->persist($entityA1);
         $this->_em->persist($entityB1);
 
-        $entityRoot2 = new DDC2575Root(2);
-        $entityB2 = new DDC2575B(2);
+        $entityRoot2 = new DDC2575Root(3);
+        $entityB2 = new DDC2575B(4);
         $entityA2 = new DDC2575A($entityRoot2, $entityB2);
 
         $this->_em->persist($entityRoot2);
@@ -48,6 +48,8 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->bEntities[] = $entityB1;
         $this->bEntities[] = $entityB2;
+
+        $this->_em->clear();
     }
 
     public function testHydrationIssue()
@@ -58,7 +60,8 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->leftJoin('r.aRelation', 'a')
             ->leftJoin('a.bRelation', 'b');
 
-        $result = $qb->getQuery()->getResult();
+        $query = $qb->getQuery();
+        $result = $query->getResult();
 
         $this->assertCount(2, $result);
 
@@ -68,15 +71,15 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotNull($row->aRelation->rootRelation);
         $this->assertSame($row, $row->aRelation->rootRelation);
         $this->assertNotNull($row->aRelation->bRelation);
-        $this->assertEquals(1, $row->aRelation->bRelation->id);
+        $this->assertEquals(2, $row->aRelation->bRelation->id);
 
         $row = $result[1];
         $this->assertNotNull($row->aRelation);
-        $this->assertEquals(2, $row->id);
+        $this->assertEquals(3, $row->id);
         $this->assertNotNull($row->aRelation->rootRelation);
         $this->assertSame($row, $row->aRelation->rootRelation);
         $this->assertNotNull($row->aRelation->bRelation);
-        $this->assertEquals(2, $row->aRelation->bRelation->id);
+        $this->assertEquals(4, $row->aRelation->bRelation->id);
     }
 
 }
