@@ -259,7 +259,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getClassMetadata($className)
     {
-        return $this->metadataFactory->getMetadataFor($className);
+        return $this->metadataFactory->$className;
     }
 
     /**
@@ -354,7 +354,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class = $this->metadataFactory->$entityName;
 
         if (is_object($id) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($id))) {
             $id = $this->unitOfWork->getSingleIdentifierValue($id);
@@ -432,7 +432,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getReference($entityName, $id)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class = $this->metadataFactory->$entityName;
 
         if ( ! is_array($id)) {
             $id = array($class->identifier[0] => $id);
@@ -473,7 +473,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getPartialReference($entityName, $identifier)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class = $this->metadataFactory->$entityName;
 
         // Check identity map first, if its already in there just return it.
         if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {

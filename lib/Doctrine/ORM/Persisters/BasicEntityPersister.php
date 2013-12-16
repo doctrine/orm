@@ -125,6 +125,13 @@ class BasicEntityPersister
     protected $em;
 
     /**
+     * The Metadata Factory instance.
+     *
+     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
+     */
+    protected $cmf;
+
+    /**
      * Queued inserts.
      *
      * @var array
@@ -216,6 +223,7 @@ class BasicEntityPersister
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->em               = $em;
+        $this->cmf              = $em->getMetadataFactory();
         $this->class            = $class;
         $this->conn             = $em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
@@ -437,7 +445,7 @@ class BasicEntityPersister
 
             $params[]       = $identifier[$idField];
             $where[]        = $this->class->associationMappings[$idField]['joinColumns'][0]['name'];
-            $targetMapping  = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
+            $targetMapping  = $this->cmf->{$this->class->associationMappings[$idField]['targetEntity']};
 
             switch (true) {
                 case (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])):
@@ -511,7 +519,7 @@ class BasicEntityPersister
             $keys            = array();
 
             if ( ! $mapping['isOwningSide']) {
-                $class       = $this->em->getClassMetadata($mapping['targetEntity']);
+                $class       = $this->cmf->{$mapping['targetEntity']};
                 $association = $class->associationMappings[$mapping['mappedBy']];
             }
 
@@ -564,18 +572,19 @@ class BasicEntityPersister
     {
         $class      = $this->class;
         $em         = $this->em;
+        $cmf        = $this->cmf;
 
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
-        $types      = array_map(function ($identifier) use ($class, $em) {
+        $types      = array_map(function ($identifier) use ($class, $em, $cmf) {
 
             if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
 
-            $targetMapping = $em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+            $targetMapping = $cmf->{$class->associationMappings[$identifier]['targetEntity']};
 
             if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
                 return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
@@ -663,7 +672,7 @@ class BasicEntityPersister
                 $newValId = $uow->getEntityIdentifier($newVal);
             }
 
-            $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+            $targetClass = $this->cmf->{$assoc['targetEntity']};
             $owningTable = $this->getOwningTable($field);
 
             foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -780,7 +789,7 @@ class BasicEntityPersister
             return $foundEntity;
         }
 
-        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+        $targetClass = $this->cmf->{$assoc['targetEntity']};
 
         if ($assoc['isOwningSide']) {
             $isInverseSingleValued = $assoc['inversedBy'] && ! $targetClass->isCollectionValuedAssociation($assoc['inversedBy']);
@@ -809,7 +818,7 @@ class BasicEntityPersister
             return $targetEntity;
         }
 
-        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $sourceClass = $this->cmf->{$assoc['sourceEntity']};
         $owningAssoc = $targetClass->getAssociationMapping($assoc['mappedBy']);
 
         // TRICKY: since the association is specular source and target are flipped
@@ -1027,14 +1036,14 @@ class BasicEntityPersister
      */
     private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $sourceClass    = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $sourceClass    = $this->cmf->{$assoc['sourceEntity']};
         $class          = $sourceClass;
         $association    = $assoc;
         $criteria       = array();
 
 
         if ( ! $assoc['isOwningSide']) {
-            $class       = $this->em->getClassMetadata($assoc['targetEntity']);
+            $class       = $this->cmf->{$assoc['targetEntity']};
             $association = $class->associationMappings[$assoc['mappedBy']];
         }
 
@@ -1056,7 +1065,7 @@ class BasicEntityPersister
 
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
+                        $value = $value[$this->cmf->{$sourceClass->associationMappings[$field]['targetEntity']}->identifier[0]];
                     }
 
                     break;
@@ -1248,7 +1257,7 @@ class BasicEntityPersister
                 continue;
             }
 
-            $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
+            $eagerEntity = $this->cmf->{$assoc['targetEntity']};
 
             if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
                 continue; // now this is why you shouldn't use inheritance
@@ -1275,7 +1284,7 @@ class BasicEntityPersister
             $joinCondition  = array();
 
             if ( ! $assoc['isOwningSide']) {
-                $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
+                $eagerEntity = $this->cmf->{$assoc['targetEntity']};
                 $association = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
             }
 
@@ -1337,7 +1346,7 @@ class BasicEntityPersister
         }
 
         $columnList  = array();
-        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+        $targetClass = $this->cmf->{$assoc['targetEntity']};
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
             $type             = null;
@@ -1372,7 +1381,7 @@ class BasicEntityPersister
         $sourceTableAlias   = $this->getSQLTableAlias($this->class->name);
 
         if ( ! $manyToMany['isOwningSide']) {
-            $targetEntity   = $this->em->getClassMetadata($manyToMany['targetEntity']);
+            $targetEntity   = $this->cmf->{$manyToMany['targetEntity']};
             $association    = $targetEntity->associationMappings[$manyToMany['mappedBy']];
         }
 
@@ -1753,7 +1762,7 @@ class BasicEntityPersister
     {
         $criteria = array();
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
-        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $sourceClass = $this->cmf->{$assoc['sourceEntity']};
 
         $tableAlias = $this->getSQLTableAlias(isset($owningAssoc['inherited']) ? $owningAssoc['inherited'] : $this->class->name);
 
@@ -1764,7 +1773,7 @@ class BasicEntityPersister
 
                 if (isset($sourceClass->associationMappings[$field])) {
                     $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
+                    $value = $value[$this->cmf->{$sourceClass->associationMappings[$field]['targetEntity']}->identifier[0]];
                 }
 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
@@ -1829,7 +1838,7 @@ class BasicEntityPersister
                     throw Query\QueryException::associationPathCompositeKeyNotSupported();
                 }
 
-                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetClass  = $this->cmf->{$assoc['targetEntity']};
                 $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
                 $type         = null;
 

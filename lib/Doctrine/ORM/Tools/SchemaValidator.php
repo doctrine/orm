@@ -105,7 +105,7 @@ class SchemaValidator
                 $ce[] = "The association " . $class . "#" . $fieldName . " cannot be defined as both inverse and owning.";
             }
 
-            $targetMetadata = $cmf->getMetadataFor($assoc['targetEntity']);
+            $targetMetadata = $cmf->{$assoc['targetEntity']};
 
             if (isset($assoc['id']) && $targetMetadata->containsForeignIdentifier) {
                 $ce[] = "Cannot map association '" . $class->name. "#". $fieldName ." as identifier, because " .

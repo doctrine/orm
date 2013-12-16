@@ -51,6 +51,13 @@ abstract class AbstractHydrator
     protected $_em;
 
     /**
+     * The class metadata factory
+     *
+     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
+     */
+    protected $_cmf;
+
+    /**
      * The dbms Platform instance.
      *
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
@@ -93,6 +100,7 @@ abstract class AbstractHydrator
     public function __construct(EntityManager $em)
     {
         $this->_em       = $em;
+        $this->_cmf      = $em->getMetadataFactory();
         $this->_platform = $em->getConnection()->getDatabasePlatform();
         $this->_uow      = $em->getUnitOfWork();
     }
@@ -244,7 +252,7 @@ abstract class AbstractHydrator
                     // NOTE: Most of the times it's a field mapping, so keep it first!!!
                     case (isset($this->_rsm->fieldMappings[$key])):
                         $fieldName     = $this->_rsm->fieldMappings[$key];
-                        $classMetadata = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$key]);
+                        $classMetadata = $this->_cmf->{$this->_rsm->declaringClasses[$key]};
 
                         $cache[$key]['fieldName']    = $fieldName;
                         $cache[$key]['type']         = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
@@ -261,7 +269,6 @@ abstract class AbstractHydrator
                     case (isset($this->_rsm->metaMappings[$key])):
                         // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                         $fieldName     = $this->_rsm->metaMappings[$key];
-                        $classMetadata = $this->_em->getClassMetadata($this->_rsm->aliasMap[$this->_rsm->columnOwnerMap[$key]]);
 
                         $cache[$key]['isMetaColumn'] = true;
                         $cache[$key]['fieldName']    = $fieldName;
