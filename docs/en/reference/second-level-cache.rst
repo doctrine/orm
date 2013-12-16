@@ -1,6 +1,12 @@
 The Second Level Cache
 ======================
 
+.. note::
+
+    The second level cache functionality is marked as experimental for now. It
+    is a very complex feature and we cannot guarantee yet that it works stable
+    in all cases.
+
 The Second Level Cache is designed to reduce the amount of necessary database access.
 It sits between your application and the database to avoid the number of database hits as much as possible.
 
