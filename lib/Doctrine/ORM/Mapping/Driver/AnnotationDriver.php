@@ -94,9 +94,18 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate Table annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Table'])) {
             $tableAnnot = $classAnnotations['Doctrine\ORM\Mapping\Table'];
+
+            $tableName  = $tableAnnot->name;
+            $schemaName = $tableAnnot->schema;
+
+            // Split schema and table name from a table name like "myschema.mytable"
+            if (strpos($tableName, '.') !== false) {
+                list($schemaName, $tableName) = explode('.', $tableName);
+            }
+
             $primaryTable = array(
-                'name' => $tableAnnot->name,
-                'schema' => $tableAnnot->schema
+                'name'   => $tableName,
+                'schema' => $schemaName
             );
 
             if ($tableAnnot->indexes !== null) {

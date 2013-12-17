@@ -41,12 +41,24 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
     /**
      * {@inheritdoc}
+     *
+     * @todo Table names should be computed in DBAL depending on the platform
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->table['quoted']) 
-            ? $platform->quoteIdentifier($class->table['name'])
-            : $class->table['name'];
+        $tableName = $class->table['name'];
+
+        if ( ! empty($class->table['schema'])) {
+            $tableName = $class->table['schema'] . '.' . $class->table['name'];
+
+            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
+                $tableName = $class->table['schema'] . '__' . $class->table['name'];
+            }
+        }
+
+        return isset($class->table['quoted'])
+            ? $platform->quoteIdentifier($tableName)
+            : $tableName;
     }
 
     /**
