@@ -26,6 +26,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch(\Exception $e) {}
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadOneToOneOwningSide()
     {
         $train = new Train(new TrainOwner("Alexander"));
@@ -48,6 +51,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadOneToOneNullOwningSide()
     {
         $train = new Train(new TrainOwner("Alexander"));
@@ -65,6 +71,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadOneToOneInverseSide()
     {
         $owner = new TrainOwner("Alexander");
@@ -83,6 +92,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testEagerLoadOneToOneNullInverseSide()
     {
         $driver = new TrainDriver("Dagny Taggert");

@@ -2602,6 +2602,18 @@ class UnitOfWork implements PropertyChangedListener
             switch (true) {
                 case ($assoc['type'] & ClassMetadata::TO_ONE):
                     if ( ! $assoc['isOwningSide']) {
+
+                        // use the given entity association
+                        if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_hash($data[$field])])) {
+                            
+                            $this->originalEntityData[$oid][$field] = $data[$field];
+
+                            $class->reflFields[$field]->setValue($entity, $data[$field]);
+                            $targetClass->reflFields[$assoc['mappedBy']]->setValue($data[$field], $entity);
+
+                            continue 2;
+                        }
+
                         // Inverse side of x-to-one can never be lazy
                         $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
 
