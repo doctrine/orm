@@ -62,7 +62,8 @@ class CompanySchemaTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $sql = $this->_schemaTool->getDropSchemaSQL(array(
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyManager'),
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyCar')
         ));
-        $this->assertEquals(4, count($sql));
+        $this->assertEquals(5, count($sql));
     }
 }

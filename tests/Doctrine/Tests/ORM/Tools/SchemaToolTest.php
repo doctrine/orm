@@ -24,6 +24,7 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmail')
         );
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -94,6 +95,7 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmail')
         );
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);

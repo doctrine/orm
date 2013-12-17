@@ -23,7 +23,7 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmail'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber')
         );
 
         $tool = new SchemaTool($this->_em);
@@ -85,6 +85,18 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, count($sql));
     }
 
+    public function testGetCreateSchemaSql5()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\\TableInnodb'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\\TableMyisam')
+        );
+
+        $tool = new SchemaTool($this->_em);
+        $sql = $tool->getCreateSchemaSql($classes);
+
+        $this->assertEquals(3, count($sql));
+    }
 }
 
 /**
@@ -97,3 +109,25 @@ class MysqlSchemaNamespacedEntity
     public $id;
 }
 
+/**
+ * @Entity
+ */
+class TableInnodb
+{
+    /** @Column(type="integer") @Id @GeneratedValue */
+    public $id;
+    /** @OneToOne(targetEntity="TableInnodb") */
+    public $selfReferencing;
+}
+
+/**
+ * @Entity
+ * @Table(options={"engine"="MyISAM"})
+ */
+class TableMyisam
+{
+    /** @Column(type="integer") @Id @GeneratedValue */
+    public $id;
+    /** @ManyToOne(targetEntity="TableInnodb") */
+    public $tableInnodb;
+}
