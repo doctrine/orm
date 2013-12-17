@@ -75,8 +75,24 @@ class YamlDriver extends FileDriver
         // Evaluate root level properties
         $table = array();
 
+        $tableName  = null;
+        $schemaName = null;
+
         if (isset($element['table'])) {
-            $table['name'] = $element['table'];
+            $tableName = $element['table'];
+
+            // Split schema and table name from a table name like "myschema.mytable"
+            if (strpos($tableName, '.') !== false) {
+                list($schemaName, $tableName) = explode('.', $tableName);
+            }
+        }
+
+        if (isset($element['schema'])) {
+            $schemaName = $element['schema'];
+        }
+
+        if (null !== $tableName) {
+            $table['name'] = $tableName;
         }
 
         // Evaluate second level cache
@@ -162,11 +178,6 @@ class YamlDriver extends FileDriver
                 ));
             }
         }
-
-        /* not implemented specially anyway. use table = schema.table
-        if (isset($element['schema'])) {
-            $metadata->table['schema'] = $element['schema'];
-        }*/
 
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));

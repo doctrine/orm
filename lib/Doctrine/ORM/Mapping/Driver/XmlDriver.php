@@ -77,8 +77,25 @@ class XmlDriver extends FileDriver
 
         // Evaluate <entity...> attributes
         $table = array();
+
+        $tableName  = null;
+        $schemaName = null;
+
         if (isset($xmlRoot['table'])) {
-            $table['name'] = (string)$xmlRoot['table'];
+            $tableName = (string)$xmlRoot['table'];
+
+            // Split schema and table name from a table name like "myschema.mytable"
+            if (strpos($tableName, '.') !== false) {
+                list($schemaName, $tableName) = explode('.', $tableName);
+            }
+        }
+
+        if (isset($xmlRoot['schema'])) {
+            $schemaName = (string)$xmlRoot['schema'];
+        }
+
+        if (null !== $tableName) {
+            $table['name'] = $tableName;
         }
 
         $metadata->setPrimaryTable($table);
@@ -149,11 +166,6 @@ class XmlDriver extends FileDriver
                 ));
             }
         }
-
-        /* not implemented specially anyway. use table = schema.table
-        if (isset($xmlRoot['schema'])) {
-            $metadata->table['schema'] = (string)$xmlRoot['schema'];
-        }*/
 
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string)$xmlRoot['inheritance-type'];
