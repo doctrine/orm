@@ -34,11 +34,6 @@ use Doctrine\ORM\Persisters\BasicEntityPersister;
 class LazyCriteriaCollection implements Collection
 {
     /**
-     * @var EntityManager
-     */
-    protected $entityManager;
-
-    /**
      * @var BasicEntityPersister
      */
     protected $entityPersister;
@@ -66,13 +61,11 @@ class LazyCriteriaCollection implements Collection
     protected $count;
 
     /**
-     * @param EntityManager        $entityManager
      * @param BasicEntityPersister $entityPersister
      * @param Criteria             $criteria
      */
-    public function __construct(EntityManager $entityManager, BasicEntityPersister $entityPersister, Criteria $criteria)
+    public function __construct(BasicEntityPersister $entityPersister, Criteria $criteria)
     {
-        $this->entityManager   = $entityManager;
         $this->entityPersister = $entityPersister;
         $this->criteria        = $criteria;
     }
@@ -87,9 +80,6 @@ class LazyCriteriaCollection implements Collection
         if (null !== $this->count) {
             return $this->count;
         }
-
-        //$exp = $this->criteria->expr()->eq('username', 'bar');
-        //$this->criteria = new Criteria($exp);
 
         $this->count = $this->entityPersister->count($this->criteria);
 
