@@ -54,13 +54,6 @@ class LazyCriteriaCollection implements Collection
     protected $initialized = false;
 
     /**
-     * Allow to cache the count
-     *
-     * @var int
-     */
-    protected $count;
-
-    /**
      * @param BasicEntityPersister $entityPersister
      * @param Criteria             $criteria
      */
@@ -77,13 +70,11 @@ class LazyCriteriaCollection implements Collection
      */
     public function count()
     {
-        if (null !== $this->count) {
-            return $this->count;
+        if ($this->initialized) {
+            return $this->collection->count();
         }
 
-        $this->count = $this->entityPersister->count($this->criteria);
-
-        return $this->count;
+        return $this->entityPersister->count($this->criteria);
     }
 
     /**
