@@ -190,6 +190,18 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
+     * Gets the original entity.
+     *
+     * @param object $entity
+     *
+     * @return object|null
+     */
+    public function getOriginalEntity($entity)
+    {
+        return $this->unitOfWork->getOriginalEntity($entity);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getExpressionBuilder()

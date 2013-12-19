@@ -2850,6 +2850,33 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Gets the original entity.
+     *
+     * @param object $entity
+     *
+     * @return object|null
+     */
+    public function getOriginalEntity($entity)
+    {
+        $originalData = $this->getOriginalEntityData($entity);
+
+        if (empty($originalData)) {
+            return null;
+        }
+
+        $class = $this->em->getClassMetadata(get_class($entity));
+        $originalEntity = clone $entity;
+
+        foreach ($class->reflFields as $name => $refProp) {
+            if (isset($originalData[$name])) {
+                $class->reflFields[$name]->setValue($originalEntity, $originalData[$name]);
+            }
+        }
+
+        return $originalEntity;
+    }
+
+    /**
      * @ignore
      *
      * @param object $entity
