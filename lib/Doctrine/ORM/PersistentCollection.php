@@ -884,6 +884,6 @@ final class PersistentCollection implements Collection, Selectable
 
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
 
-        return new ArrayCollection($persister->loadCriteria($criteria));
+        return new LazyCriteriaCollection($persister, $criteria);
     }
 }
