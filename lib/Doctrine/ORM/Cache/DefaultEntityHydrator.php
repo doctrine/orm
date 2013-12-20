@@ -73,10 +73,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if ( ! isset($assoc['cache']) ||
-                ($assoc['type'] & ClassMetadata::TO_ONE) === 0 ||
-                ($data[$name] instanceof Proxy && ! $data[$name]->__isInitialized__)) {
-
+            if ( ! isset($assoc['cache']) || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
                 unset($data[$name]);
 
                 continue;

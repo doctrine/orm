@@ -187,7 +187,10 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCities();
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
-        $this->evictRegions();
+
+        $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->cache->evictEntityRegion(City::CLASSNAME);
+        $this->cache->evictCollectionRegion(State::CLASSNAME, 'cities');
 
         $this->assertFalse($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
         $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
@@ -288,7 +291,9 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCities();
 
         $this->secondLevelCacheLogger->clearStats();
-        $this->evictRegions();
+        $this->cache->evictEntityRegion(City::CLASSNAME);
+        $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->cache->evictCollectionRegion(State::CLASSNAME, 'cities');
         $this->_em->clear();
 
         $entitiId   = $this->states[0]->getId();

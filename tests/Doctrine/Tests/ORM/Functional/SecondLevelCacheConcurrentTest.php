@@ -87,6 +87,8 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $state      = $this->_em->find(State::CLASSNAME, $stateId);
 
         $this->assertInstanceOf(State::CLASSNAME, $state);
+        $this->assertInstanceOf(Country::CLASSNAME, $state->getCountry());
+        $this->assertNotNull($state->getCountry()->getName());
         $this->assertCount(2, $state->getCities());
 
         $this->_em->clear();
