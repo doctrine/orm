@@ -171,7 +171,11 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesStates();
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
-        $this->evictRegions();
+
+        $this->cache->evictEntityRegion(City::CLASSNAME);
+        $this->cache->evictEntityRegion(Attraction::CLASSNAME);
+        $this->cache->evictCollectionRegion(City::CLASSNAME, 'attractions');
+
         $this->_em->clear();
 
         $entity = $this->_em->find(City::CLASSNAME, $this->cities[0]->getId());
