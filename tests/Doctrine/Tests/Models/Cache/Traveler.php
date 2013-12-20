@@ -34,6 +34,12 @@ class Traveler
     public $travels;
 
     /**
+     * @Cache
+     * @OneToOne(targetEntity="TravelerProfile")
+     */
+     protected $profile;
+
+    /**
      * @param string $name
      */
     public function __construct($name)
@@ -60,6 +66,22 @@ class Traveler
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return \Doctrine\Tests\Models\Cache\TravelerProfile
+     */
+    public function getProfile()
+    {
+        return $this->profile;
+    }
+
+    /**
+     * @param \Doctrine\Tests\Models\Cache\TravelerProfile $profile
+     */
+    public function setProfile(TravelerProfile $profile)
+    {
+        $this->profile = $profile;
     }
 
     public function getTravels()

@@ -101,6 +101,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $regionName;
 
     /**
+     * Associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
+     *
+     * @var array
+     */
+    protected $joinedAssociations;
+
+    /**
      * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister to cache.
      * @param \Doctrine\ORM\Cache\Region               $region    The entity cache region.
      * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
@@ -225,6 +232,42 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         return $cached;
+    }
+
+    /**
+     * @param object $entity
+     */
+    private function storeJoinedAssociations($entity)
+    {
+        if ($this->joinedAssociations === null) {
+            $associations = array();
+
+            foreach ($this->class->associationMappings as $name => $assoc) {
+                if (isset($assoc['cache']) && 
+                    ($assoc['type'] & ClassMetadata::TO_ONE) &&
+                    ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc['isOwningSide'])) {
+
+                    $associations[] = $name;
+                }
+            }
+
+            $this->joinedAssociations = $associations;
+        }
+
+        foreach ($this->joinedAssociations as $name) {
+            $assoc       = $this->class->associationMappings[$name];
+            $assocEntity = $this->class->getFieldValue($entity, $name);
+
+            if ($assocEntity === null) {
+                continue;
+            }
+
+            $assocId        = $this->uow->getEntityIdentifier($assocEntity);
+            $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
+            $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+
+            $assocPersister->storeEntityCache($assocEntity, $assocKey);
+        }
     }
 
     /**
@@ -416,6 +459,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
         $cacheEntry = $this->hydrator->buildCacheEntry($class, $cacheKey, $entity);
         $cached     = $this->region->put($cacheKey, $cacheEntry);
+
+        if ($cached && ($this->joinedAssociations === null || count($this->joinedAssociations) > 0)) {
+            $this->storeJoinedAssociations($entity);
+        }
 
         if ($this->cacheLogger) {
             if ($cached) {
