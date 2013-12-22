@@ -56,7 +56,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return 'DELETE FROM ' . $tableName
-        . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
@@ -104,7 +104,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
-        . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+            . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
 
     /**
@@ -180,7 +180,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return 'DELETE FROM ' . $joinTable
-        . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
