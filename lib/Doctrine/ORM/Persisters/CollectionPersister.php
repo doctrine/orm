@@ -141,7 +141,7 @@ interface CollectionPersister
     /**
      * Loads association entities matching the given Criteria object.
      *
-     * @param \Doctrine\ORM\PersistentCollection    $persistentCollection
+     * @param \Doctrine\ORM\PersistentCollection    $collection
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
      * @return array
