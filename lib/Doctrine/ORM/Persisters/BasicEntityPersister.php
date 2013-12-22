@@ -811,8 +811,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @param  array|Criteria $criteria
-     * @return int
+     * {@inheritDoc}
      */
     public function count($criteria = array())
     {
@@ -1082,10 +1081,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * Get the COUNT SQL to count entities (optionally based on a criteria)
-     *
-     * @param  array|Criteria $criteria
-     * @return string
+     * {@inheritDoc}
      */
     public function getCountSQL($criteria = array())
     {
