@@ -259,11 +259,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param int                                $offset
-     * @param int|null                           $length
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
@@ -282,10 +278,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function contains(PersistentCollection $coll, $element)
     {
@@ -311,10 +304,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
