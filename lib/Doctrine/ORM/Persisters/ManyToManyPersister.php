@@ -556,29 +556,38 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Loads Entities matching the given Criteria object.
      *
      * @param PersistentCollection                  $coll
-     * @param object                                $owner
      * @param \Doctrine\Common\Collections\Criteria $criteria
      * @return array
      */
-    public function loadCriteria(PersistentCollection $coll, $owner, Criteria $criteria)
+    public function loadCriteria(PersistentCollection $coll, Criteria $criteria)
     {
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $owner, true);
+        $mapping       = $coll->getMapping();
+        $owner         = $coll->getOwner();
+        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
+
+        $whereClauses = $params = array();
+
+        foreach ($mapping['relationToSourceKeyColumns'] as $key => $value) {
+            $whereClauses[] = sprintf('t.%s = ?', $key);
+            $params[]       = $ownerMetadata->getFieldValue($owner, $value);
+        }
 
         $parameters = $this->expandCriteriaParameters($criteria);
 
         foreach ($parameters as $parameter) {
             list($name, $value) = $parameter;
-            $whereClauses[] = sprintf("te.%s = ?", $name);
-            $params[]       = $value;
+            $whereClauses[]     = sprintf("te.%s = ?", $name);
+            $params[]           = $value;
         }
 
         $mapping      = $coll->getMapping();
         $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
         $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+        $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $ownerMetadata, $this->platform);
         $onConditions = $this->getOnConditionSQL($mapping);
 
         $sql  = 'SELECT * FROM ' . $tableName . ' te'
-            . ' JOIN ' . $quotedJoinTable  . ' ON'
+            . ' JOIN ' . $joinTable  . ' t ON'
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
