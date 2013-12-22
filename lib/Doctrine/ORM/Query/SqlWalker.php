@@ -982,16 +982,16 @@ class SqlWalker implements TreeWalker
                 break;
         }
 
+        // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
+        if ($targetClass->isInheritanceTypeJoined()) {
+            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+        }
+
         // Handle WITH clause
         if ($condExpr !== null) {
             // Phase 2 AST optimization: Skip processing of ConditionalExpression
             // if only one ConditionalTerm is defined
             $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
-        }
-
-        // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
-        if ($targetClass->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
         }
 
         // Apply the indexes
