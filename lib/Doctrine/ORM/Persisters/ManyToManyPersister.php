@@ -553,11 +553,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * Loads Entities matching the given Criteria object.
-     *
-     * @param PersistentCollection                  $coll
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     * @return array
+     * {@inheritDoc}
      */
     public function loadCriteria(PersistentCollection $coll, Criteria $criteria)
     {
