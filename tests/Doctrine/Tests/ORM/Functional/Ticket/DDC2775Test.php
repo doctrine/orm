@@ -2,9 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\DDC2775\AdminRole;
-use Doctrine\Tests\Models\DDC2775\Authorization;
-use Doctrine\Tests\Models\DDC2775\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -14,9 +11,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2775Test extends OrmFunctionalTestCase
 {
-    protected function setUp() {
-        $this->useModelSet('ddc2775');
+    protected function setUp()
+    {
         parent::setUp();
+
+        $this->setUpEntitySchema(array(
+            'Doctrine\Tests\ORM\Functional\Ticket\User',
+            'Doctrine\Tests\ORM\Functional\Ticket\Role',
+            'Doctrine\Tests\ORM\Functional\Ticket\AdminRole',
+            'Doctrine\Tests\ORM\Functional\Ticket\Authorization',
+        ));
     }
 
     /**
@@ -39,12 +43,104 @@ class DDC2775Test extends OrmFunctionalTestCase
         // Need to clear so that associations are lazy-loaded
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\Models\DDC2775\User', $user->id);
+        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\User', $user->id);
 
         $this->_em->remove($user);
         $this->_em->flush();
 
         // With the bug, the second flush throws an error because the cascade remove didn't work correctly
         $this->_em->flush();
+    }
+}
+
+/**
+ * @Entity
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="role_type", type="string")
+ * @DiscriminatorMap({"admin"="AdminRole"})
+ */
+abstract class Role
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @ManyToOne(targetEntity="User", inversedBy="roles")
+     */
+    public $user;
+
+    /**
+     * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
+     */
+    public $authorizations;
+
+    public function addAuthorization(Authorization $authorization)
+    {
+        $this->authorizations[] = $authorization;
+        $authorization->role = $this;
+    }
+}
+
+/** @Entity */
+class AdminRole extends Role
+{
+}
+
+/**
+ * @Entity @Table(name="authorizations")
+ */
+class Authorization
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @ManyToOne(targetEntity="User", inversedBy="authorizations")
+     */
+    public $user;
+
+    /**
+     * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
+     */
+    public $role;
+}
+
+/**
+ * @Entity @Table(name="users")
+ */
+class User
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    public $id;
+
+    /**
+     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     */
+    public $roles;
+
+    /**
+     * @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     */
+    public $authorizations;
+
+    public function addRole(Role $role)
+    {
+        $this->roles[] = $role;
+        $role->user = $this;
+    }
+
+    public function addAuthorization(Authorization $authorization)
+    {
+        $this->authorizations[] = $authorization;
+        $authorization->user = $this;
     }
 }
