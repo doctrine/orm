@@ -2235,8 +2235,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $entitiesToCascade = array();
 
-        // We need to load all related entities beforehand so that lazy collection loading doesn't
-        // reload entities after they have been removed (bug DDC-2775)
         foreach ($associationMappings as $assoc) {
             if ($entity instanceof Proxy && !$entity->__isInitialized__) {
                 $entity->__load();
