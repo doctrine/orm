@@ -87,6 +87,13 @@ of several common elements:
         name:
           type: string
           length: 50
+        email:
+          type: string
+          length: 32
+          column: user_email
+          unique: true
+          options:
+            fixed: true
       oneToOne:
         address:
           targetEntity: Address
