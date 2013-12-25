@@ -533,7 +533,8 @@ class UnitOfWork implements PropertyChangedListener
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::preFlush);
 
         if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-            $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em), $invoke);
+            // We should invoke preFlush event only in entity callbacks and entity listeners, not in event manager.
+            $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em), $invoke & ~ListenersInvoker::INVOKE_MANAGER);
         }
 
         $actualData = array();
