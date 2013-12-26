@@ -138,7 +138,7 @@ Caching mode
 
   * Read Write Cache doesn’t employ any locks but can do reads, inserts, updates and deletes.
   * Good if the application needs to update data rarely.
-    
+
 
 * ``READ_WRITE``
 
@@ -240,7 +240,7 @@ By providing a cache logger you should be able to get information about all cach
  .. code-block:: php
 
     <?php
-    
+
     /* var $config \Doctrine\ORM\Configuration */
     $logger = \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
@@ -291,7 +291,7 @@ Entity cache definition
         <?php
         /**
          * @Entity
-         * @Cache(usage="READ_ONLY", region="my_entity_region")
+         * @Cache(usage="READ_ONLY", region="my_entity_region", lifetime=60)
          */
         class Country
         {
@@ -315,7 +315,7 @@ Entity cache definition
         <?xml version="1.0" encoding="utf-8"?>
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
           <entity name="Country">
-            <cache usage="READ_ONLY" region="my_entity_region" />
+            <cache usage="READ_ONLY" region="my_entity_region" lifetime=60 />
             <id name="id" type="integer" column="id">
               <generator strategy="IDENTITY"/>
             </id>
@@ -330,6 +330,7 @@ Entity cache definition
           cache:
             usage : READ_ONLY
             region : my_entity_region
+            lifetime : 60
           id:
             id:
               type: integer
@@ -399,7 +400,7 @@ It caches the primary keys of association and cache each element will be cached 
             </id>
 
             <field name="name" type="string" column="name"/>
-            
+
             <many-to-one field="country" target-entity="Country">
               <cache usage="NONSTRICT_READ_WRITE" />
 
