@@ -45,5 +45,5 @@ final class Cache implements Annotation
     /**
      * @var int Lifetime of the cache data
      */
-    public $lifetime = 0;
+    public $lifetime;
 }
