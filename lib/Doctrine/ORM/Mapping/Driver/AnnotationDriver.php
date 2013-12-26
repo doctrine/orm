@@ -132,8 +132,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Cache'])) {
             $cacheAnnot = $classAnnotations['Doctrine\ORM\Mapping\Cache'];
             $cacheMap   = array(
-                'region' => $cacheAnnot->region,
-                'usage'  => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
+                'region'   => $cacheAnnot->region,
+                'lifetime' => $cacheAnnot->lifetime,
+                'usage'    => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
             );
 
             $metadata->enableCache($cacheMap);
@@ -380,8 +381,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             // Evaluate @Cache annotation
             if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Cache')) !== null) {
                 $metadata->enableAssociationCache($mapping['fieldName'], array(
-                    'usage'         => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
-                    'region'        => $cacheAnnot->region,
+                    'usage'    => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
+                    'region'   => $cacheAnnot->region,
+                    'lifetime' => $cacheAnnot->lifetime
                 ));
             }
         }

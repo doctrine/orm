@@ -32,7 +32,7 @@ final class Cache implements Annotation
 {
     /**
      * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
+     *
      * @var string The concurrency strategy.
      */
     public $usage = 'READ_ONLY';
@@ -41,4 +41,9 @@ final class Cache implements Annotation
      * @var string Cache region name.
      */
     public $region;
+
+    /**
+     * @var int Lifetime of the cache data
+     */
+    public $lifetime = 0;
 }
