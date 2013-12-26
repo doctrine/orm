@@ -778,7 +778,7 @@ final class PersistentCollection implements Collection, Selectable
     public function next()
     {
         $this->initialize();
-
+        
         return $this->coll->next();
     }
 
@@ -864,14 +864,8 @@ final class PersistentCollection implements Collection, Selectable
             return $this->coll->matching($criteria);
         }
 
-        if ($this->association['type'] !== ClassMetadata::ONE_TO_MANY
-            && $this->association['type'] !== ClassMetadata::MANY_TO_MANY) {
-            throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany and ManyToMany associations at the moment.");
-        }
-
-        if ($this->association['type'] === ClassMetadata::MANY_TO_MANY) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
-            return new ArrayCollection($persister->loadCriteria($this, $this->owner, $criteria));
+        if ($this->association['type'] !== ClassMetadata::ONE_TO_MANY) {
+            throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany associations at the moment.");
         }
 
         $builder         = Criteria::expr();
