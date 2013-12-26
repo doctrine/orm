@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Models\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @Cache
+ * @Cache(lifetime=0)
  * @Entity
  * @Table("cache_city")
  */
@@ -26,7 +26,7 @@ class City
     protected $name;
 
     /**
-     * @Cache
+     * @Cache(lifetime=0)
      * @ManyToOne(targetEntity="State", inversedBy="cities")
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */
@@ -38,7 +38,7 @@ class City
     public $travels;
 
      /**
-     * @Cache
+     * @Cache(lifetime=0)
      * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="Attraction", mappedBy="city")
      */
