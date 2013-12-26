@@ -201,7 +201,7 @@ class DefaultCacheFactory implements CacheFactory
         }
 
         $lifetime = isset($cache['lifetime']) ? $cache['lifetime'] : $this->regionsConfig->getLifetime($cache['region']);
-        $region = new DefaultRegion($cache['region'], clone $this->cache, $lifetime);
+        $region   = new DefaultRegion($cache['region'], clone $this->cache, $lifetime);
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 
