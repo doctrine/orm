@@ -8,6 +8,8 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
 
+use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
+use Doctrine\Tests\Models\Cache\TravelerProfile;
 use Doctrine\Tests\Models\Cache\Traveler;
 use Doctrine\Tests\Models\Cache\Travel;
 
@@ -23,13 +25,14 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
  */
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
-    protected $countries        = array();
-    protected $states           = array();
-    protected $cities           = array();
-    protected $travels          = array();
-    protected $travelers        = array();
-    protected $attractions      = array();
-    protected $attractionsInfo  = array();
+    protected $countries            = array();
+    protected $states               = array();
+    protected $cities               = array();
+    protected $travels              = array();
+    protected $travelers            = array();
+    protected $attractions          = array();
+    protected $attractionsInfo      = array();
+    protected $travelersWithProfile = array();
 
     /**
      * @var \Doctrine\ORM\Cache
@@ -115,6 +118,45 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         $this->travelers[] = $t1;
         $this->travelers[] = $t2;
+
+        $this->_em->flush();
+    }
+    
+    protected function loadFixturesTravelersWithProfile()
+    {
+        $t1   = new Traveler("Test traveler 1");
+        $t2   = new Traveler("Test traveler 2");
+        $p1   = new TravelerProfile("First Traveler Profile");
+        $p2   = new TravelerProfile("Second Traveler Profile");
+
+        $t1->setProfile($p1);
+        $t2->setProfile($p2);
+
+        $this->_em->persist($p1);
+        $this->_em->persist($p2);
+        $this->_em->persist($t1);
+        $this->_em->persist($t2);
+
+        $this->travelersWithProfile[] = $t1;
+        $this->travelersWithProfile[] = $t2;
+        
+        $this->_em->flush();
+    }
+
+    protected function loadFixturesTravelersProfileInfo()
+    {
+        $p1   = $this->travelersWithProfile[0]->getProfile();
+        $p2   = $this->travelersWithProfile[1]->getProfile();
+        $i1   = new TravelerProfileInfo($p1, "First Profile Info ...");
+        $i2   = new TravelerProfileInfo($p2, "Second  Profile Info ...");
+
+        $p1->setInfo($i1);
+        $p2->setInfo($i2);
+
+        $this->_em->persist($i1);
+        $this->_em->persist($i2);
+        $this->_em->persist($p1);
+        $this->_em->persist($p2);
 
         $this->_em->flush();
     }

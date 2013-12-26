@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Query;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,10 +72,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if ( ! isset($assoc['cache']) ||
-                ($assoc['type'] & ClassMetadata::TO_ONE) === 0 ||
-                ($data[$name] instanceof Proxy && ! $data[$name]->__isInitialized__)) {
-
+            if ( ! isset($assoc['cache']) || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
                 unset($data[$name]);
 
                 continue;
@@ -136,7 +132,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 return null;
             }
 
-            $data[$name] = $assoc['fetch'] === ClassMetadata::FETCH_EAGER
+            $data[$name] = $assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide'])
                 ? $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints)
                 : $this->em->getReference($assocEntry->class, $assocId);
         }

@@ -171,6 +171,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\State',
             'Doctrine\Tests\Models\Cache\City',
             'Doctrine\Tests\Models\Cache\Traveler',
+            'Doctrine\Tests\Models\Cache\TravelerProfileInfo',
+            'Doctrine\Tests\Models\Cache\TravelerProfile',
             'Doctrine\Tests\Models\Cache\Travel',
             'Doctrine\Tests\Models\Cache\Attraction',
             'Doctrine\Tests\Models\Cache\Restaurant',
@@ -325,6 +327,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_attraction');
             $conn->executeUpdate('DELETE FROM cache_travel');
             $conn->executeUpdate('DELETE FROM cache_traveler');
+            $conn->executeUpdate('DELETE FROM cache_traveler_profile_info');
+            $conn->executeUpdate('DELETE FROM cache_traveler_profile');
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');

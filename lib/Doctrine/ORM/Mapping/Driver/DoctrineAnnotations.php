@@ -33,7 +33,6 @@ require_once __DIR__.'/../OneToOne.php';
 require_once __DIR__.'/../OneToMany.php';
 require_once __DIR__.'/../ManyToOne.php';
 require_once __DIR__.'/../ManyToMany.php';
-require_once __DIR__.'/../ElementCollection.php';
 require_once __DIR__.'/../Table.php';
 require_once __DIR__.'/../UniqueConstraint.php';
 require_once __DIR__.'/../Index.php';
