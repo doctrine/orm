@@ -48,7 +48,7 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->emMock = EntityManagerMock::create($this->connectionMock);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
-        $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory :: AUTOGENERATE_ALWAYS);
+        $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);
     }
 
     public function testReferenceProxyDelegatesLoadingToThePersister()

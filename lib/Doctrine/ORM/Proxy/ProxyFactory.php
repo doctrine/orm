@@ -64,7 +64,7 @@ class ProxyFactory extends AbstractProxyFactory
      * @param string                      $proxyNs      The namespace to use for the proxy classes.
      * @param boolean|int                 $autoGenerate Whether to automatically generate proxy classes.
      */
-    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory :: AUTOGENERATE_NEVER)
+    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
