@@ -1,6 +1,8 @@
 Doctrine\Tests\ORM\Mapping\User:
   type: entity
   table: cms_users
+  persisterClass: Doctrine\Tests\ORM\Mapping\UserPersister
+  repositoryClass: Doctrine\Tests\ORM\Mapping\UserRepository
   options:
     foo: bar
     baz:

@@ -58,6 +58,9 @@ class YamlDriver extends FileDriver
             if (isset($element['repositoryClass'])) {
                 $metadata->setCustomRepositoryClass($element['repositoryClass']);
             }
+            if (isset($element['persisterClass'])) {
+                $metadata->setCustomPersisterClass($element['persisterClass']);
+            }
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
             }

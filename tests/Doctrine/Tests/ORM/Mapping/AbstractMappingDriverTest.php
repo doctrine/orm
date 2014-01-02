@@ -61,6 +61,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @depends testLoadMapping
+     * @param ClassMetadata $class
+     */
+    public function testEntityRepositoryAndPersister($class)
+    {
+        $this->assertEquals('Doctrine\Tests\ORM\Mapping\UserRepository', $class->customRepositoryClassName);
+        $this->assertEquals('Doctrine\Tests\ORM\Mapping\UserPersister', $class->customPersisterClassName);
+
+        return $class;
+    }
+
+    /**
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
@@ -924,7 +936,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 }
 
 /**
- * @Entity
+ * @Entity(persisterClass="Doctrine\Tests\ORM\Mapping\UserPersister", repositoryClass="Doctrine\Tests\ORM\Mapping\UserRepository")
  * @HasLifecycleCallbacks
  * @Table(
  *  name="cms_users",
@@ -1005,6 +1017,8 @@ class User
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
+        $metadata->setCustomPersisterClass('Doctrine\Tests\ORM\Mapping\UserPersister');
+        $metadata->setCustomRepositoryClass('Doctrine\Tests\ORM\Mapping\UserRepository');
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',
@@ -1127,6 +1141,14 @@ class User
                 'query' => 'SELECT u FROM __CLASS__ u'
             ));
     }
+}
+
+class UserPersister extends \Doctrine\ORM\Persisters\BasicEntityPersister
+{
+}
+
+class UserRepository extends \Doctrine\ORM\EntityRepository
+{
 }
 
 /**

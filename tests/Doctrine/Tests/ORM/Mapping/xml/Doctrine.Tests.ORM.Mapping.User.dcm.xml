@@ -5,7 +5,10 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
+    <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users"
+        repository-class="Doctrine\Tests\ORM\Mapping\UserRepository"
+        persister-class="Doctrine\Tests\ORM\Mapping\UserPersister">
+
         <options>
             <option name="foo">bar</option>
             <option name="baz">
