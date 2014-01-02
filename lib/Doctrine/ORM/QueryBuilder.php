@@ -1087,7 +1087,8 @@ class QueryBuilder
      */
     public function addCriteria(Criteria $criteria)
     {
-        $visitor = new QueryExpressionVisitor();
+        $rootAlias = $this->getRootAlias();
+        $visitor = new QueryExpressionVisitor($rootAlias);
 
         if ($whereExpression = $criteria->getWhereExpression()) {
             $this->andWhere($visitor->dispatch($whereExpression));
@@ -1098,7 +1099,7 @@ class QueryBuilder
 
         if ($criteria->getOrderings()) {
             foreach ($criteria->getOrderings() as $sort => $order) {
-                $this->addOrderBy($sort, $order);
+                $this->addOrderBy($rootAlias . '.' . $sort, $order);
             }
         }
 

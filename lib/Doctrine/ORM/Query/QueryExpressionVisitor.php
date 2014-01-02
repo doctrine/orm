@@ -48,6 +48,11 @@ class QueryExpressionVisitor extends ExpressionVisitor
     );
 
     /**
+     * @var string
+     */
+    private $rootAlias;
+
+    /**
      * @var Expr
      */
     private $expr;
@@ -58,10 +63,13 @@ class QueryExpressionVisitor extends ExpressionVisitor
     private $parameters = array();
 
     /**
-     * Constructor with internal initialization.
+     * Constructor
+     *
+     * @param string $rootAlias
      */
-    public function __construct()
+    public function __construct($rootAlias)
     {
+        $this->rootAlias = $rootAlias;
         $this->expr = new Expr();
     }
 
@@ -133,33 +141,33 @@ class QueryExpressionVisitor extends ExpressionVisitor
         switch ($comparison->getOperator()) {
             case Comparison::IN:
                 $this->parameters[] = $parameter;
-                return $this->expr->in($comparison->getField(), $placeholder);
+                return $this->expr->in($this->rootAlias . '.' . $comparison->getField(), $placeholder);
 
             case Comparison::NIN:
                 $this->parameters[] = $parameter;
-                return $this->expr->notIn($comparison->getField(), $placeholder);
+                return $this->expr->notIn($this->rootAlias . '.' . $comparison->getField(), $placeholder);
 
             case Comparison::EQ:
             case Comparison::IS:
                 if ($this->walkValue($comparison->getValue()) === null) {
-                    return $this->expr->isNull($comparison->getField());
+                    return $this->expr->isNull($this->rootAlias . '.' . $comparison->getField());
                 }
                 $this->parameters[] = $parameter;
-                return $this->expr->eq($comparison->getField(), $placeholder);
+                return $this->expr->eq($this->rootAlias . '.' . $comparison->getField(), $placeholder);
 
             case Comparison::NEQ:
                 if ($this->walkValue($comparison->getValue()) === null) {
-                    return $this->expr->isNotNull($comparison->getField());
+                    return $this->expr->isNotNull($this->rootAlias . '.' . $comparison->getField());
                 }
                 $this->parameters[] = $parameter;
-                return $this->expr->neq($comparison->getField(), $placeholder);
+                return $this->expr->neq($this->rootAlias . '.' . $comparison->getField(), $placeholder);
 
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());
                 if ($operator) {
                     $this->parameters[] = $parameter;
                     return new Expr\Comparison(
-                        $comparison->getField(),
+                        $this->rootAlias . '.' . $comparison->getField(),
                         $operator,
                         $placeholder
                     );
