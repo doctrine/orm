@@ -65,7 +65,7 @@ class UpdateCommand extends AbstractCommand
                 'Dumps the generated SQL statements to the screen (does not execute them).'
             ),
             new InputOption(
-                'force', null, InputOption::VALUE_NONE,
+                'force', 'f', InputOption::VALUE_NONE,
                 'Causes the generated SQL statements to be physically executed against your database.'
             ),
         ));
