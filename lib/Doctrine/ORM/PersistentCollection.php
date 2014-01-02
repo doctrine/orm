@@ -865,7 +865,9 @@ final class PersistentCollection implements Collection, Selectable
         }
 
         if ($this->association['type'] !== ClassMetadata::ONE_TO_MANY) {
-            throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany associations at the moment.");
+            $this->initialize();
+
+            return $this->coll->matching($criteria);
         }
 
         $builder         = Criteria::expr();
