@@ -463,10 +463,10 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
+        // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION OR DELETION are processed here.
         $oid = spl_object_hash($entity);
 
-        if ( ! isset($this->entityInsertions[$oid]) && isset($this->entityStates[$oid])) {
+        if ( ! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
             $this->computeChangeSet($class, $entity);
         }
     }
@@ -756,10 +756,10 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
+                // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION OR DELETION are processed here.
                 $oid = spl_object_hash($entity);
 
-                if ( ! isset($this->entityInsertions[$oid]) && isset($this->entityStates[$oid])) {
+                if ( ! isset($this->entityInsertions[$oid]) &&  ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
                     $this->computeChangeSet($class, $entity);
                 }
             }
