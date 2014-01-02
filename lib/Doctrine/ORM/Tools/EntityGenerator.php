@@ -202,9 +202,7 @@ class EntityGenerator
 '<?php
 
 <namespace>
-
-use Doctrine\ORM\Mapping as ORM;
-
+<useStatement>
 <entityAnnotation>
 <entityClassName>
 {
@@ -380,6 +378,7 @@ public function __construct()
     {
         $placeHolders = array(
             '<namespace>',
+            '<useStatement>',
             '<entityAnnotation>',
             '<entityClassName>',
             '<entityBody>'
@@ -387,6 +386,7 @@ public function __construct()
 
         $replacements = array(
             $this->generateEntityNamespace($metadata),
+            $this->generateEntityUse(),
             $this->generateEntityDocBlock($metadata),
             $this->generateEntityClassName($metadata),
             $this->generateEntityBody($metadata)
@@ -566,6 +566,15 @@ public function __construct()
     {
         if ($this->hasNamespace($metadata)) {
             return 'namespace ' . $this->getNamespace($metadata) .';';
+        }
+    }
+    
+    protected function generateEntityUse()
+    {
+        if ($this->generateAnnotations) {
+            return "\n".'use Doctrine\ORM\Mapping as ORM;'."\n";
+        } else {
+            return "";
         }
     }
 
