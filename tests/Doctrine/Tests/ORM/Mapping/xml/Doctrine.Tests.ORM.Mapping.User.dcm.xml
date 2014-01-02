@@ -35,6 +35,9 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
             <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+            <options>
+                <option name="foo">bar</option>
+            </options>
         </id>
 
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true">

@@ -350,6 +350,7 @@
       <xs:element name="generator" type="orm:generator" minOccurs="0" />
       <xs:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0" maxOccurs="1" />
       <xs:element name="custom-id-generator" type="orm:custom-id-generator" minOccurs="0" maxOccurs="1" />
+      <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />

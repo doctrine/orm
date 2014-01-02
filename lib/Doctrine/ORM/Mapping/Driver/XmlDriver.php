@@ -278,6 +278,10 @@ class XmlDriver extends FileDriver
                 $mapping['columnDefinition'] = (string)$idElement['column-definition'];
             }
 
+            if (isset($idElement->options)) {
+                $mapping['options'] = $this->_parseOptions($idElement->options->children());
+            }
+
             $metadata->mapField($mapping);
 
             if (isset($idElement->generator)) {
