@@ -62,9 +62,9 @@ class ProxyFactory extends AbstractProxyFactory
      * @param \Doctrine\ORM\EntityManager $em           The EntityManager the new factory works for.
      * @param string                      $proxyDir     The directory to use for the proxy classes. It must exist.
      * @param string                      $proxyNs      The namespace to use for the proxy classes.
-     * @param boolean                     $autoGenerate Whether to automatically generate proxy classes.
+     * @param boolean|int                 $autoGenerate Whether to automatically generate proxy classes.
      */
-    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
+    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
