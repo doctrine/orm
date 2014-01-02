@@ -120,15 +120,35 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $book = $this->newInstance($metadata);
         $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', '__construct'), "EntityGeneratorBook::__construct() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getId'), "EntityGeneratorBook::getId() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setName'), "EntityGeneratorBook::setName() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getName'), "EntityGeneratorBook::getName() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setAuthor'), "EntityGeneratorBook::setAuthor() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getAuthor'), "EntityGeneratorBook::getAuthor() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+        $className = $metadata->namespace . '\EntityGeneratorBook';
+        $this->assertTrue(method_exists($className, '__construct'), "EntityGeneratorBook::__construct() missing.");
+        $this->assertTrue(method_exists($className, 'getId'), "EntityGeneratorBook::getId() missing.");
+        $this->assertTrue(method_exists($className, 'setName'), "EntityGeneratorBook::setName() missing.");
+        $this->assertTrue(method_exists($className, 'getName'), "EntityGeneratorBook::getName() missing.");
+        $this->assertTrue(method_exists($className, 'setAuthor'), "EntityGeneratorBook::setAuthor() missing.");
+        $this->assertTrue(method_exists($className, 'getAuthor'), "EntityGeneratorBook::getAuthor() missing.");
+        $this->assertTrue(method_exists($className, 'getComments'), "EntityGeneratorBook::getComments() missing.");
+        $this->assertTrue(method_exists($className, 'addComment'), "EntityGeneratorBook::addComment() missing.");
+        $this->assertTrue(method_exists($className, 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+
+        $reflectionClass = new \ReflectionClass($className);
+
+        $this->assertEmpty($reflectionClass->getMethod('getId')->getParameters());
+        $this->assertEmpty($reflectionClass->getMethod('getName')->getParameters());
+        $this->assertEmpty($reflectionClass->getMethod('getAuthor')->getParameters());
+        $this->assertEmpty($reflectionClass->getMethod('getComments')->getParameters());
+
+        $paramsSetName = $reflectionClass->getMethod('setName')->getParameters();
+        $this->assertEquals('name', $paramsSetName[0]->name);
+
+        $paramsSetAuthor = $reflectionClass->getMethod('setAuthor')->getParameters();
+        $this->assertEquals('author', $paramsSetAuthor[0]->name);
+
+        $paramsAddComment = $reflectionClass->getMethod('addComment')->getParameters();
+        $this->assertEquals('comment', $paramsAddComment[0]->name);
+
+        $paramsRemoveComment = $reflectionClass->getMethod('removeComment')->getParameters();
+        $this->assertEquals('comment', $paramsRemoveComment[0]->name);
 
         $this->assertEquals('published', $book->getStatus());
 
