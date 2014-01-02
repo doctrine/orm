@@ -187,8 +187,28 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
 
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testFieldOptions($class)
+    {
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
         $this->assertEquals($expected, $class->fieldMappings['name']['options']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testIdFieldOptions($class)
+    {
+        $this->assertEquals(array('foo' => 'bar'), $class->fieldMappings['id']['options']);
 
         return $class;
     }
@@ -890,7 +910,7 @@ class User
 {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(type="integer", options={"foo": "bar"})
      * @generatedValue(strategy="AUTO")
      * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
      **/
@@ -971,6 +991,7 @@ class User
            'fieldName' => 'id',
            'type' => 'integer',
            'columnName' => 'id',
+           'options' => array('foo' => 'bar'),
           ));
         $metadata->mapField(array(
            'fieldName' => 'name',

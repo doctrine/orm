@@ -16,6 +16,8 @@ Doctrine\Tests\ORM\Mapping\User:
         sequenceName: tablename_seq
         allocationSize: 100
         initialValue: 1
+      options:
+        foo: bar
   fields:
     name:
       type: string
