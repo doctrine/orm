@@ -402,12 +402,15 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaWhere()
     {
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->eq('field', 'value'));
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('field = :field', (string) $qb->getDQLPart('where'));
+        $this->assertEquals('u.field = :field', (string) $qb->getDQLPart('where'));
         $this->assertNotNull($qb->getParameter('field'));
     }
 
@@ -493,18 +496,24 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaOrder()
     {
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
         $criteria = new Criteria();
         $criteria->orderBy(array('field' => Criteria::DESC));
 
         $qb->addCriteria($criteria);
 
         $this->assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
-        $this->assertEquals('field DESC', (string) $orderBy[0]);
+        $this->assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
     public function testAddCriteriaLimit()
     {
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
         $criteria = new Criteria();
         $criteria->setFirstResult(2);
         $criteria->setMaxResults(10);
@@ -518,7 +527,11 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddCriteriaUndefinedLimit()
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->setFirstResult(2)->setMaxResults(10);
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->setFirstResult(2)
+            ->setMaxResults(10);
+
         $criteria = new Criteria();
 
         $qb->addCriteria($criteria);
