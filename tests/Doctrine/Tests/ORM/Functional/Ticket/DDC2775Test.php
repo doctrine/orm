@@ -54,7 +54,7 @@ class DDC2775Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @Entity @Table(name="ddc2775_role")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="role_type", type="string")
  * @DiscriminatorMap({"admin"="AdminRole"})
@@ -84,13 +84,13 @@ abstract class Role
     }
 }
 
-/** @Entity */
+/** @Entity @Table(name="ddc2775_admin_role") */
 class AdminRole extends Role
 {
 }
 
 /**
- * @Entity @Table(name="authorizations")
+ * @Entity @Table(name="ddc2775_authorizations")
  */
 class Authorization
 {
@@ -112,7 +112,7 @@ class Authorization
 }
 
 /**
- * @Entity @Table(name="users")
+ * @Entity @Table(name="ddc2775_users")
  */
 class User
 {
