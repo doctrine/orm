@@ -279,6 +279,6 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
-        throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
+        return $this->persister->loadCriteria($collection, $criteria);
     }
 }
