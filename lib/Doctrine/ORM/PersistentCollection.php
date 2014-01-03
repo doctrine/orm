@@ -114,6 +114,13 @@ final class PersistentCollection implements Collection, Selectable
     private $coll;
 
     /**
+     * A cache of items loaded from an indexed extra lazy collection
+     *
+     * @var array
+     */
+    private $indexByCache = array();
+
+    /**
      * Creates a new persistent collection.
      *
      * @param EntityManager $em    The EntityManager the collection will be associated with.
@@ -245,6 +252,7 @@ final class PersistentCollection implements Collection, Selectable
             $this->isDirty = true;
         }
 
+        $this->indexByCache = array();
         $this->initialized = true;
     }
 
@@ -522,11 +530,19 @@ final class PersistentCollection implements Collection, Selectable
             && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])
         ) {
-            if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
-                return $this->em->find($this->typeClass->name, $key);
+            if (array_key_exists($key, $this->indexByCache)) {
+                return $this->indexByCache[$key];
             }
 
-            return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
+            if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
+                $value = $this->em->find($this->typeClass->name, $key);
+            } else {
+                $value = $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
+            }
+
+            $this->indexByCache[$key] = $value;
+
+            return $value;
         }
 
         $this->initialize();
