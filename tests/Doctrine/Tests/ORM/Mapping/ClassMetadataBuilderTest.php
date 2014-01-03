@@ -176,7 +176,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreateUnsignedOptionField()
     {
-        $this->builder->createField('state', 'integer')->unsigned()->build();
+        $this->builder->createField('state', 'integer')->option('unsigned', true)->build();
 
         $this->assertEquals(array('fieldName' => 'state', 'type' => 'integer', 'options' => array('unsigned' => true), 'columnName' => 'state'), $this->cm->fieldMappings['state']);
     }

@@ -168,18 +168,6 @@ class FieldBuilder
     }
 
     /**
-     * Sets unsigned option.
-     *
-     * @param bool $flag
-     *
-     * @return FieldBuilder
-     */
-    public function unsigned($flag = true)
-    {
-        return $this->option('unsigned', (bool)$flag);
-    }
-
-    /**
      * @param string $strategy
      *
      * @return FieldBuilder
