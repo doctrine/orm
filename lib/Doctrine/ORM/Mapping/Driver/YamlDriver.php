@@ -493,6 +493,7 @@ class YamlDriver extends FileDriver
                             if ( ! isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $joinColumnName;
                             }
+                        }
 
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
@@ -502,6 +503,7 @@ class YamlDriver extends FileDriver
                             if ( ! isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $joinColumnName;
                             }
+                        }
 
                         $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
@@ -620,7 +622,7 @@ class YamlDriver extends FileDriver
                 }
 
                 foreach ($entityListener as $eventName => $callbackElement){
-                    foreach ($callbackElement as $methodName){
+                    foreach ($callbackElement as $methodName) {
                         $metadata->addEntityListener($eventName, $className, $methodName);
                     }
                 }
