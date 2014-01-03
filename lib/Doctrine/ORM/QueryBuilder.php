@@ -187,7 +187,7 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
-     *         ->from('User', 'u')
+     *         ->from('User', 'u');
      *     echo $qb->getDql(); // SELECT u FROM User u
      * </code>
      *
@@ -655,7 +655,7 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->delete('User', 'u')
-     *         ->where('u.id = :user_id');
+     *         ->where('u.id = :user_id')
      *         ->setParameter('user_id', 1);
      * </code>
      *
@@ -709,7 +709,7 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
-     *         ->from('User', 'u')
+     *         ->from('User', 'u');
      * </code>
      *
      * @param string $from    The class name.
@@ -967,8 +967,8 @@ class QueryBuilder
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
-     *         ->groupBy('u.lastLogin');
-     *         ->addGroupBy('u.createdAt')
+     *         ->groupBy('u.lastLogin')
+     *         ->addGroupBy('u.createdAt');
      * </code>
      *
      * @param string $groupBy The grouping expression.
