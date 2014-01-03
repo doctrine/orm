@@ -40,10 +40,12 @@ class CacheConfigTest extends DoctrineTestCase
 
         $config->setDefaultLifetime(111);
 
+        $this->assertFalse($config->hasLifetime('foo_region'));
         $this->assertEquals($config->getDefaultLifetime(), $config->getLifetime('foo_region'));
 
         $config->setLifetime('foo_region', 222);
 
+        $this->assertTrue($config->hasLifetime('foo_region'));
         $this->assertEquals(222, $config->getLifetime('foo_region'));
     }
 

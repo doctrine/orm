@@ -91,6 +91,16 @@ class RegionsConfiguration
     }
 
     /**
+     * @param  string $regionName
+     *
+     * @return bool
+     */
+    public function hasLifetime($regionName)
+    {
+        return isset($this->lifetimes[$regionName]);
+    }
+
+    /**
      * @param string $regionName
      *
      * @return integer
