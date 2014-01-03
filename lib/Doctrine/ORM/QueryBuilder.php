@@ -283,12 +283,18 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
+     * @throws RuntimeException
      *
      * @return string
      */
     public function getRootAlias()
     {
         $aliases = $this->getRootAliases();
+
+        if ( ! isset($aliases[0])) {
+            throw new \RuntimeException('No alias was set before invoking getRootAlias().');
+        }
+
         return $aliases[0];
     }
 
