@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
