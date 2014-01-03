@@ -58,6 +58,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'removeElement',
         'removeKey',
         'get',
+        'loadCriteria'
     );
 
     /**
