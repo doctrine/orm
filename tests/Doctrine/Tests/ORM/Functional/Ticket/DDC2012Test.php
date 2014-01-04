@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * @group DDC-2012
+ * @group non-cacheable
  */
 class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

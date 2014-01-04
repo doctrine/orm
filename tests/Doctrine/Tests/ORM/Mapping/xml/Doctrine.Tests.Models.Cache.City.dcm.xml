@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Doctrine\Tests\Models\Cache\City" table="cache_city">
+    <cache usage="READ_ONLY" />
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="name" type="string" column="name" precision="0" scale="0" unique="1" nullable="false"/>
+    <one-to-many field="attractions" target-entity="Doctrine\Tests\Models\Cache\Attraction" mapped-by="city">
+      <cache usage="READ_ONLY" />
+      <order-by>
+        <order-by-field name="name" direction="ASC"/>
+      </order-by>
+    </one-to-many>
+    <many-to-one field="state" target-entity="Doctrine\Tests\Models\Cache\State" inversed-by="cities">
+      <cache/>
+      <join-columns>
+        <join-column name="state_id" referenced-column-name="id" nullable="1"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-many field="travels" target-entity="Doctrine\Tests\Models\Cache\Travel" mapped-by="visitedCities"/>
+  </entity>
+</doctrine-mapping>

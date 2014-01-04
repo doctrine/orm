@@ -3,6 +3,7 @@
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -22,6 +23,31 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @var \Doctrine\Common\Cache\Cache|null
      */
     private static $_queryCacheImpl = null;
+
+    /**
+     * @var boolean
+     */
+    protected $isSecondLevelCacheEnabled = false;
+
+    /**
+     * @var boolean
+     */
+    protected $isSecondLevelCacheLogEnabled = false;
+
+    /**
+     * @var \Doctrine\ORM\Cache\CacheFactory
+     */
+    protected $secondLevelCacheFactory;
+
+    /**
+     * @var \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger
+     */
+    protected $secondLevelCacheLogger;
+
+    /**
+     * @var \Doctrine\Common\Cache\Cache|null
+     */
+    protected $secondLevelCacheDriverImpl = null;
 
     /**
      * @param array $paths
@@ -95,6 +121,22 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
+            realpath(__DIR__ . '/Models/Cache')
+        ), true));
+
+        if ($this->isSecondLevelCacheEnabled) {
+
+            $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+            $cache          = $this->getSharedSecondLevelCacheDriverImpl();
+            $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
+
+            $this->secondLevelCacheFactory = $factory;
+
+            $cacheConfig->setCacheFactory($factory);
+            $config->setSecondLevelCacheEnabled(true);
+            $config->setSecondLevelCacheConfiguration($cacheConfig);
+        }
 
         if ($conn === null) {
             $conn = array(
@@ -110,6 +152,12 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
+    }
+
+    protected function enableSecondLevelCache($log = true)
+    {
+        $this->isSecondLevelCacheEnabled    = true;
+        $this->isSecondLevelCacheLogEnabled = $log;
     }
 
     /**
@@ -134,5 +182,17 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         return self::$_queryCacheImpl;
+    }
+
+    /**
+     * @return \Doctrine\Common\Cache\Cache
+     */
+    protected function getSharedSecondLevelCacheDriverImpl()
+    {
+        if ($this->secondLevelCacheDriverImpl === null) {
+            $this->secondLevelCacheDriverImpl = new \Doctrine\Common\Cache\ArrayCache();
+        }
+
+        return $this->secondLevelCacheDriverImpl;
     }
 }

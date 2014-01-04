@@ -34,8 +34,6 @@ class OneToManyPersister extends AbstractCollectionPersister
 {
     /**
      * {@inheritdoc}
-     *
-     * @override
      */
     public function get(PersistentCollection $coll, $index)
     {
@@ -166,11 +164,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param int                                $offset
-     * @param int|null                           $length
-     *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * {@inheritdoc}
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
@@ -181,11 +175,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 
-    /**
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return boolean
+     /**
+     * {@inheritdoc}
      */
     public function contains(PersistentCollection $coll, $element)
     {
@@ -215,10 +206,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function removeElement(PersistentCollection $coll, $element)
     {

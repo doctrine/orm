@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit>
+<phpunit bootstrap="../Doctrine/Tests/TestInit.php">
     <php>
         <var name="db_type" value="pdo_mysql"/>
         <var name="db_host" value="localhost" />
@@ -25,9 +25,15 @@
             <directory>./../Doctrine/Tests/ORM</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./../../lib/Doctrine</directory>
+        </whitelist>
+    </filter>
     <groups>
         <exclude>
             <group>performance</group>
+            <group>non-cacheable</group>
             <group>locking_functional</group>
         </exclude>
     </groups>

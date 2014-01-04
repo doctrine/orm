@@ -31,6 +31,8 @@ require_once __DIR__ . '/../../TestInit.php';
  * Tests SQLFilter functionality.
  *
  * @author Alexander <iam.asm89@gmail.com>
+ *
+ * @group non-cacheable
  */
 class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {

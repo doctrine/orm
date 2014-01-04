@@ -79,6 +79,7 @@ Advanced Topics
 * :doc:`Best Practices <reference/best-practices>`
 * :doc:`Metadata Drivers <reference/metadata-drivers>`
 * :doc:`Batch Processing <reference/batch-processing>`
+* :doc:`Second Level Cache <reference/second-level-cache>`
 
 Tutorials
 ---------

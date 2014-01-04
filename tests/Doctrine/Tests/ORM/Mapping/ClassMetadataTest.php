@@ -1091,6 +1091,25 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array('sequenceName' => 'foo', 'quoted' => true), $cm->sequenceGeneratorDefinition);
     }
+
+    /**
+     * @group DDC-2700
+     */
+    public function testIsIdentifierMappedSuperClass()
+    {
+        $class = new ClassMetadata(__NAMESPACE__ . '\\DDC2700MappedSuperClass');
+
+        $this->assertFalse($class->isIdentifier('foo'));
+    }
+}
+
+/**
+ * @MappedSuperclass
+ */
+class DDC2700MappedSuperClass
+{
+    /** @Column */
+    private $foo;
 }
 
 class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy

@@ -8,6 +8,9 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * @author asm89
+ *
+ * @group non-cacheable
+ * @group DDC-1301
  */
 class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

@@ -676,6 +676,55 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->getResult();
     }
 
+    /**
+     * @group DDC-2319
+     */
+    public function testSetCollectionParameterBindingSingleIdentifierObject()
+    {
+        $u1 = new CmsUser;
+        $u1->name = 'Name1';
+        $u1->username = 'username1';
+        $u1->status = 'developer';
+        $this->_em->persist($u1);
+
+        $u2 = new CmsUser;
+        $u2->name = 'Name2';
+        $u2->username = 'username2';
+        $u2->status = 'tester';
+        $this->_em->persist($u2);
+
+        $u3 = new CmsUser;
+        $u3->name = 'Name3';
+        $u3->username = 'username3';
+        $u3->status = 'tester';
+        $this->_em->persist($u3);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userCollection = new ArrayCollection();
+
+        $userCollection->add($u1);
+        $userCollection->add($u2);
+        $userCollection->add($u3->getId());
+
+        $q = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (:users) ORDER BY u.id");
+        $q->setParameter('users', $userCollection);
+        $users = $q->execute();
+
+        $this->assertEquals(3, count($users));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[2]);
+
+        $resultUser1 = $users[0];
+        $resultUser2 = $users[1];
+        $resultUser3 = $users[2];
+
+        $this->assertEquals($u1->username, $resultUser1->username);
+        $this->assertEquals($u2->username, $resultUser2->username);
+        $this->assertEquals($u3->username, $resultUser3->username);
+    }
 
     /**
      * @group DDC-1822

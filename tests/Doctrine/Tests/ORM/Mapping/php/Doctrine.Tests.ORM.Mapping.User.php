@@ -19,6 +19,7 @@ $metadata->mapField(array(
    'fieldName' => 'id',
    'type' => 'integer',
    'columnName' => 'id',
+   'options' => array('foo' => 'bar'),
   ));
 $metadata->mapField(array(
    'fieldName' => 'name',

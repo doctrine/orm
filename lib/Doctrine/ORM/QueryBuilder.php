@@ -187,7 +187,7 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
-     *         ->from('User', 'u')
+     *         ->from('User', 'u');
      *     echo $qb->getDql(); // SELECT u FROM User u
      * </code>
      *
@@ -283,12 +283,18 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
+     * @throws RuntimeException
      *
      * @return string
      */
     public function getRootAlias()
     {
         $aliases = $this->getRootAliases();
+
+        if ( ! isset($aliases[0])) {
+            throw new \RuntimeException('No alias was set before invoking getRootAlias().');
+        }
+
         return $aliases[0];
     }
 
@@ -655,7 +661,7 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->delete('User', 'u')
-     *         ->where('u.id = :user_id');
+     *         ->where('u.id = :user_id')
      *         ->setParameter('user_id', 1);
      * </code>
      *
@@ -709,7 +715,7 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
-     *         ->from('User', 'u')
+     *         ->from('User', 'u');
      * </code>
      *
      * @param string $from    The class name.
@@ -967,8 +973,8 @@ class QueryBuilder
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
-     *         ->groupBy('u.lastLogin');
-     *         ->addGroupBy('u.createdAt')
+     *         ->groupBy('u.lastLogin')
+     *         ->addGroupBy('u.createdAt');
      * </code>
      *
      * @param string $groupBy The grouping expression.
@@ -1087,7 +1093,8 @@ class QueryBuilder
      */
     public function addCriteria(Criteria $criteria)
     {
-        $visitor = new QueryExpressionVisitor();
+        $rootAlias = $this->getRootAlias();
+        $visitor = new QueryExpressionVisitor($rootAlias);
 
         if ($whereExpression = $criteria->getWhereExpression()) {
             $this->andWhere($visitor->dispatch($whereExpression));
@@ -1098,7 +1105,7 @@ class QueryBuilder
 
         if ($criteria->getOrderings()) {
             foreach ($criteria->getOrderings() as $sort => $order) {
-                $this->addOrderBy($sort, $order);
+                $this->addOrderBy($rootAlias . '.' . $sort, $order);
             }
         }
 

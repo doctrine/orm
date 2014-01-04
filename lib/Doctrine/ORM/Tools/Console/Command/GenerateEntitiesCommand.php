@@ -80,6 +80,10 @@ class GenerateEntitiesCommand extends Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
+            ),
+            new InputOption(
+                'no-backup', null, InputOption::VALUE_NONE,
+                'Flag to define if generator should avoid backuping existing entity file if it exists.'
             )
         ))
         ->setHelp(<<<EOT
@@ -141,6 +145,7 @@ EOT
             $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
             $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
             $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+            $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
 
             if (($extend = $input->getOption('extend')) !== null) {
                 $entityGenerator->setClassToExtend($extend);
