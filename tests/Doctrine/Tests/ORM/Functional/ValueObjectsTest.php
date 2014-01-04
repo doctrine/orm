@@ -109,6 +109,10 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testDqlOnEmbeddedObjectsField()
     {
+        if ($this->isSecondLevelCacheEnabled) {
+            $this->markTestSkipped('SLC does not work with UPDATE/DELETE queries through EM.');
+        }
+
         $person = new DDC93Person('Johannes', new DDC93Address('Moo', '12345', 'Karlsruhe'));
         $this->_em->persist($person);
         $this->_em->flush($person);
