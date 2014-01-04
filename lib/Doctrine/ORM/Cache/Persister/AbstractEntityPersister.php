@@ -161,7 +161,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function getCountSQL($criteria = array())
     {
-        return $this->persister->count($criteria);
+        return $this->persister->getCountSQL($criteria);
     }
 
     /**

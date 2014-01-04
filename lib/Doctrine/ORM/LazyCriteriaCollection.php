@@ -23,6 +23,7 @@ use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
 
 /**
@@ -31,7 +32,7 @@ use Doctrine\ORM\Persisters\BasicEntityPersister;
  * @since   2.5
  * @author  Michaël Gallego <mic.gallego@gmail.com>
  */
-class LazyCriteriaCollection implements Collection
+class LazyCriteriaCollection implements Collection, Selectable
 {
     /**
      * @var BasicEntityPersister
@@ -353,5 +354,14 @@ class LazyCriteriaCollection implements Collection
 
         $this->collection  = new ArrayCollection($elements);
         $this->initialized = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    function matching(Criteria $criteria)
+    {
+        $this->initialize();
+        return $this->collection->matching($criteria);
     }
 }
