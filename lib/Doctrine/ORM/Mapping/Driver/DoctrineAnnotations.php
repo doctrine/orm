@@ -66,7 +66,4 @@ require_once __DIR__.'/../AssociationOverrides.php';
 require_once __DIR__.'/../AttributeOverride.php';
 require_once __DIR__.'/../AttributeOverrides.php';
 require_once __DIR__.'/../EntityListeners.php';
-<<<<<<< HEAD
-=======
 require_once __DIR__.'/../Cache.php';
->>>>>>> 69cad4079dcfbee273e7451ee6361a82c2432afb
