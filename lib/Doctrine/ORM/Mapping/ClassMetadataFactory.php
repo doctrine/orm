@@ -154,6 +154,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setPrimaryTable($parent->table);
         }
 
+        if ($parent && $parent->cache) {
+            $class->cache = $parent->cache;
+        }
+
         if ($parent && $parent->containsForeignIdentifier) {
             $class->containsForeignIdentifier = true;
         }
@@ -468,17 +472,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // Create & assign an appropriate ID generator instance
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_IDENTITY:
-                // For PostgreSQL IDENTITY (SERIAL) we need a sequence name. It defaults to
-                // <table>_<column>_seq in PostgreSQL for SERIAL columns.
-                // Not pretty but necessary and the simplest solution that currently works.
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
-                if ($this->targetPlatform instanceof Platforms\PostgreSqlPlatform) {
-                    $columnName     = $class->getSingleIdentifierColumnName();
-                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-                    $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
-                    $definition     = array(
+                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
+                if ($this->targetPlatform->usesSequenceEmulatedIdentityColumns()) {
+                    $columnName   = $class->getSingleIdentifierColumnName();
+                    $quoted       = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
+                    $sequenceName = $this->targetPlatform->getIdentitySequenceName($class->getTableName(), $columnName);
+                    $definition   = array(
                         'sequenceName' => $this->targetPlatform->fixSchemaElementName($sequenceName)
                     );
 
@@ -486,7 +488,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         $definition['quoted'] = true;
                     }
 
-                    $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform);
+                    $sequenceName = $this
+                        ->em
+                        ->getConfiguration()
+                        ->getQuoteStrategy()
+                        ->getSequenceName($definition, $class, $this->targetPlatform);
                 }
 
                 $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')

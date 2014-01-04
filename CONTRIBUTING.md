@@ -8,7 +8,7 @@ unified and future proof.
 
 ## We only accept PRs  to "master"
 
-Our branching strategy is summed up with "everything to master first", even
+Our branching strategy is "everything to master first", even
 bugfixes and we then merge them into the stable branches. You should only 
 open pull requests against the master branch. Otherwise we cannot accept the PR.
 
@@ -33,7 +33,7 @@ with some exceptions/differences:
 
 ## Unit-Tests
 
-Always add a test for your pull-request.
+Please try to add a test for your pull-request.
 
 * If you want to fix a bug or provide a reproduce case, create a test file in
   ``tests/Doctrine/Tests/ORM/Functional/Ticket`` with the name of the ticket,
@@ -49,6 +49,12 @@ to for example ``mysql.phpunit.xml`` and edit the parameters. You can
 take a look at the ``tests/travis`` folder for some examples. Then run:
 
     phpunit -c mysql.phpunit.xml
+
+Tips for creating unittests:
+
+1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
+   See `https://github.com/doctrine/doctrine2/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
+   example.
 
 ## Travis
 

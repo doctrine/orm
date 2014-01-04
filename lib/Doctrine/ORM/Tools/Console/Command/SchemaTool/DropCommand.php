@@ -53,7 +53,7 @@ class DropCommand extends AbstractCommand
                 'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
             ),
             new InputOption(
-                'force', null, InputOption::VALUE_NONE,
+                'force', 'f', InputOption::VALUE_NONE,
                 "Don't ask for the deletion of the database, but force the operation to run."
             ),
             new InputOption(

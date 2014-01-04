@@ -72,7 +72,9 @@ of several common elements:
     # Doctrine.Tests.ORM.Mapping.User.dcm.yml
     Doctrine\Tests\ORM\Mapping\User:
       type: entity
+      repositoryClass: Doctrine\Tests\ORM\Mapping\UserRepository
       table: cms_users
+      readOnly: true
       indexes:
         name_index:
           columns: [ name ]
@@ -85,6 +87,13 @@ of several common elements:
         name:
           type: string
           length: 50
+        email:
+          type: string
+          length: 32
+          column: user_email
+          unique: true
+          options:
+            fixed: true
       oneToOne:
         address:
           targetEntity: Address

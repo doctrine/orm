@@ -38,4 +38,18 @@ $connectionOptions = array(
     'path'   => 'database.sqlite'
 );
 
+// Enable second-level cache
+$cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+$cacheDriver    = $debug ? new Cache\ArrayCache : new Cache\ApcCache;
+$cacheLogger    = new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
+$factory        = new \Doctrine\ORM\Cache\DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cacheDriver);
+
+if ($debug) {
+    $cacheConfig->setCacheLogger($cacheLogger);
+}
+
+$cacheConfig->setCacheFactory($factory);
+$config->setSecondLevelCacheEnabled(true);
+$config->setSecondLevelCacheConfiguration($cacheConfig);
+
 return EntityManager::create($connectionOptions, $config);

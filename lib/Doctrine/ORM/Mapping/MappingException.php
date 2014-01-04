@@ -708,6 +708,18 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param string $listenerName
+     * @param string $methodName
+     * @param string $className
+     *
+     * @return \Doctrine\ORM\Mapping\MappingException
+     */
+    public static function duplicateEntityListener($listenerName, $methodName, $className)
+    {
+        return new self(sprintf('Entity Listener "%s#%s()" in "%s" was already declared, but it must be declared only once.', $listenerName, $methodName, $className));
+    }
+
+    /**
      * @param string $className
      * @param string $annotation
      *

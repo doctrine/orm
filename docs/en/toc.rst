@@ -54,10 +54,13 @@ Reference Guide
    reference/metadata-drivers
    reference/best-practices
    reference/limitations-and-known-issues
-   reference/filters.rst
-   reference/namingstrategy.rst
-   reference/advanced-configuration.rst
-
+   tutorials/pagination
+   reference/filters
+   reference/namingstrategy
+   reference/installation
+   reference/advanced-configuration
+   reference/second-level-cache
+   
 
 Cookbook
 --------
@@ -82,4 +85,5 @@ Cookbook
    cookbook/mysql-enums
    cookbook/advanced-field-value-conversion-using-custom-mapping-types
    cookbook/entities-in-session
+   cookbook/resolve-target-entity-listener
 

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 /**
  * @group DDC-1595
  * @group DDC-1596
+ * @group non-cacheable
  */
 class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

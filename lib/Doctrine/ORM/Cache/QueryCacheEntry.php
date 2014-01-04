@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,17 +18,45 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Cache;
 
 /**
- * @Annotation
- * @Target("ALL")
- * @todo check available targets
+ * Query cache entry
+ *
+ * @since   2.5
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-final class ElementCollection implements Annotation
+class QueryCacheEntry implements CacheEntry
 {
     /**
-     * @var string
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var array List of entity identifiers
      */
-    public $tableName;
+    public $result;
+
+    /**
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var integer Time creation of this cache entry
+     */
+    public $time;
+
+    /**
+     * @param array $result
+     * @param integer $time
+     */
+    public function __construct($result, $time = null)
+    {
+        $this->result = $result;
+        $this->time   = $time ?: time();
+    }
+
+    /**
+     * @param array $values
+     */
+    public static function __set_state(array $values)
+    {
+        return new self($values['result'], $values['time']);
+    }
 }

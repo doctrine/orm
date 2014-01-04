@@ -5,6 +5,15 @@
 This method generates the column name for fields of embedded objects. If you implement your custom NamingStrategy, you
 now also need to implement this new method.
 
+## Updates on entities scheduled for deletion are no longer processed
+
+In Doctrine 2.4, if you modified properties of an entity scheduled for deletion, UnitOfWork would
+produce an UPDATE statement to be executed right before the DELETE statement. The entity in question
+was therefore present in ``UnitOfWork#entityUpdates``, which means that ``preUpdate`` and ``postUpdate``
+listeners were (quite pointlessly) called. In ``preFlush`` listeners, it used to be possible to undo
+the scheduled deletion for updated entities (by calling ``persist()`` if the entity was found in both
+``entityUpdates`` and ``entityDeletions``). This does not work any longer, because the entire changeset
+calculation logic is optimized away.
 
 # Upgrade to 2.4
 

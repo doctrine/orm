@@ -1884,7 +1884,7 @@ class Parser
             case ($lookahead === Lexer::T_OPEN_PARENTHESIS):
                 return $this->SimpleArithmeticExpression();
 
-            //this check must be done before checking for a filed path expression
+            // this check must be done before checking for a filed path expression
             case ($this->isFunction()):
                 $this->lexer->peek(); // "("
 
@@ -1902,7 +1902,7 @@ class Parser
                 }
 
                 break;
-            //it is no function, so it must be a field path
+            // it is no function, so it must be a field path
             case ($lookahead === Lexer::T_IDENTIFIER):
                 $this->lexer->peek(); // lookahead => '.'
                 $this->lexer->peek(); // lookahead => token after '.'
@@ -2437,7 +2437,7 @@ class Parser
 
             switch ($peek['value']) {
                 case '(':
-                    //Peeks beyond the matched closing parenthesis.
+                    // Peeks beyond the matched closing parenthesis.
                     $token = $this->peekBeyondClosingParenthesis(false);
 
                     if ($token['type'] === Lexer::T_NOT) {

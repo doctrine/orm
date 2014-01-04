@@ -134,7 +134,7 @@ abstract class AbstractExporter
         }
 
         foreach ($this->_metadata as $metadata) {
-            //In case output is returned, write it to a file, skip otherwise
+            // In case output is returned, write it to a file, skip otherwise
             if($output = $this->exportClassMetadata($metadata)){
                 $path = $this->_generateOutputPath($metadata);
                 $dir = dirname($path);

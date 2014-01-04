@@ -35,7 +35,6 @@ require_once __DIR__.'/../OneToOne.php';
 require_once __DIR__.'/../OneToMany.php';
 require_once __DIR__.'/../ManyToOne.php';
 require_once __DIR__.'/../ManyToMany.php';
-require_once __DIR__.'/../ElementCollection.php';
 require_once __DIR__.'/../Table.php';
 require_once __DIR__.'/../UniqueConstraint.php';
 require_once __DIR__.'/../Index.php';
@@ -67,3 +66,7 @@ require_once __DIR__.'/../AssociationOverrides.php';
 require_once __DIR__.'/../AttributeOverride.php';
 require_once __DIR__.'/../AttributeOverrides.php';
 require_once __DIR__.'/../EntityListeners.php';
+<<<<<<< HEAD
+=======
+require_once __DIR__.'/../Cache.php';
+>>>>>>> 69cad4079dcfbee273e7451ee6361a82c2432afb

@@ -74,9 +74,16 @@ class YamlDriver extends FileDriver
 
         // Evaluate root level properties
         $table = array();
+
         if (isset($element['table'])) {
             $table['name'] = $element['table'];
         }
+
+        // Evaluate second level cache
+        if (isset($element['cache'])) {
+            $metadata->enableCache($this->cacheToArray($element['cache']));
+        }
+
         $metadata->setPrimaryTable($table);
 
         // Evaluate named queries
@@ -373,6 +380,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapOneToOne($mapping);
+
+                // Evaluate second level cache
+                if (isset($oneToOneElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToOneElement['cache']));
+                }
             }
         }
 
@@ -406,6 +418,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapOneToMany($mapping);
+
+                // Evaluate second level cache
+                if (isset($oneToManyElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToManyElement['cache']));
+                }
             }
         }
 
@@ -450,6 +467,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapManyToOne($mapping);
+
+                // Evaluate second level cache
+                if (isset($manyToOneElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToOneElement['cache']));
+                }
             }
         }
 
@@ -478,17 +500,21 @@ class YamlDriver extends FileDriver
                         $joinTable['schema'] = $joinTableElement['schema'];
                     }
 
-                    foreach ($joinTableElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
-                        if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $joinColumnName;
+                    if (isset($joinTableElement['joinColumns'])) {
+                        foreach ($joinTableElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
+                            if ( ! isset($joinColumnElement['name'])) {
+                                $joinColumnElement['name'] = $joinColumnName;
+                            }
                         }
 
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
-                    foreach ($joinTableElement['inverseJoinColumns'] as $joinColumnName => $joinColumnElement) {
-                        if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $joinColumnName;
+                    if (isset($joinTableElement['inverseJoinColumns'])) {
+                        foreach ($joinTableElement['inverseJoinColumns'] as $joinColumnName => $joinColumnElement) {
+                            if ( ! isset($joinColumnElement['name'])) {
+                                $joinColumnElement['name'] = $joinColumnName;
+                            }
                         }
 
                         $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
@@ -518,6 +544,11 @@ class YamlDriver extends FileDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+
+                // Evaluate second level cache
+                if (isset($manyToManyElement['cache'])) {
+                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToManyElement['cache']));
+                }
             }
         }
 
@@ -603,7 +634,7 @@ class YamlDriver extends FileDriver
                 }
 
                 foreach ($entityListener as $eventName => $callbackElement){
-                    foreach ($callbackElement as $methodName){
+                    foreach ($callbackElement as $methodName) {
                         $metadata->addEntityListener($eventName, $className, $methodName);
                     }
                 }
@@ -714,6 +745,32 @@ class YamlDriver extends FileDriver
         }
 
         return $mapping;
+    }
+
+    /**
+     * Parse / Normalize the cache configuration
+     *
+     * @param array $cacheMapping
+     *
+     * @return array
+     */
+    private function cacheToArray($cacheMapping)
+    {
+        $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
+        $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
+
+        if ($usage && ! defined('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage)) {
+            throw new \InvalidArgumentException(sprintf('Invalid cache usage "%s"', $usage));
+        }
+
+        if ($usage) {
+            $usage = constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
+        }
+
+        return array(
+            'usage'  => $usage,
+            'region' => $region,
+        );
     }
 
     /**

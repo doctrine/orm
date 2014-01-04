@@ -44,6 +44,14 @@ class ResultSetMapping
     public $isMixed = false;
 
     /**
+     * Whether the result is a select statement.
+     *
+     * @ignore
+     * @var boolean
+     */
+    public $isSelect = true;
+
+    /**
      * Maps alias names to class names.
      *
      * @ignore

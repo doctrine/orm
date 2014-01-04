@@ -26,7 +26,6 @@ use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
-use Doctrine\Common\EventArgs;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -188,6 +187,21 @@ class ClassMetadataInfo implements ClassMetadata
      * Combined bitmask for to-many (collection-valued) associations.
      */
     const TO_MANY = 12;
+
+    /**
+     * ReadOnly cache can do reads, inserts and deletes, cannot perform updates or employ any locks,
+     */
+    const CACHE_USAGE_READ_ONLY = 1;
+
+    /**
+     * Nonstrict Read Write Cache doesn’t employ any locks but can do inserts, update and deletes.
+     */
+    const CACHE_USAGE_NONSTRICT_READ_WRITE = 2;
+
+    /**
+     * Read Write Attempts to lock the entity before update/delete.
+     */
+    const CACHE_USAGE_READ_WRITE = 3;
 
     /**
      * READ-ONLY: The name of the entity class.
@@ -592,6 +606,11 @@ class ClassMetadataInfo implements ClassMetadata
     public $versionField;
 
     /**
+     * @var array
+     */
+    public $cache = null;
+
+    /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
@@ -870,6 +889,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = "customGeneratorDefinition";
         }
 
+        if ($this->cache) {
+            $serialized[] = 'cache';
+        }
+
         return $serialized;
     }
 
@@ -1011,6 +1034,45 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * @param array $cache
+     *
+     * @return void
+     */
+    public function enableCache(array $cache)
+    {
+        if ( ! isset($cache['usage'])) {
+            $cache['usage'] = self::CACHE_USAGE_READ_ONLY;
+        }
+
+        if ( ! isset($cache['region'])) {
+            $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName));
+        }
+
+        $this->cache = $cache;
+    }
+
+    /**
+     * @param string $fieldName
+     * @param array  $cache
+     *
+     * @return void
+     */
+    public function enableAssociationCache($fieldName, array $cache)
+    {
+        if ( ! isset($cache['usage'])) {
+            $cache['usage'] = isset($this->cache['usage'])
+                ? $this->cache['usage']
+                : self::CACHE_USAGE_READ_ONLY;
+        }
+
+        if ( ! isset($cache['region'])) {
+            $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
+        }
+
+        $this->associationMappings[$fieldName]['cache'] = $cache;
+    }
+
+    /**
      * Sets the change tracking policy used by this class.
      *
      * @param integer $policy
@@ -1062,9 +1124,14 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isIdentifier($fieldName)
     {
+        if ( ! $this->identifier) {
+            return false;
+        }
+
         if ( ! $this->isIdentifierComposite) {
             return $fieldName === $this->identifier[0];
         }
+
         return in_array($fieldName, $this->identifier);
     }
 
@@ -2543,7 +2610,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addEntityListener($eventName, $class, $method)
     {
-        $class = $this->fullyQualifiedClassName($class);
+        $class    = $this->fullyQualifiedClassName($class);
+        $listener = array(
+            'class'  => $class,
+            'method' => $method
+        );
 
         if ( ! class_exists($class)) {
             throw MappingException::entityListenerClassNotFound($class, $this->name);
@@ -2553,10 +2624,11 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::entityListenerMethodNotFound($class, $method, $this->name);
         }
 
-        $this->entityListeners[$eventName][] = array(
-            'class'  => $class,
-            'method' => $method
-        );
+        if (isset($this->entityListeners[$eventName]) && in_array($listener, $this->entityListeners[$eventName])) {
+            throw MappingException::duplicateEntityListener($class, $method, $this->name);
+        }
+
+        $this->entityListeners[$eventName][] = $listener;
     }
 
     /**

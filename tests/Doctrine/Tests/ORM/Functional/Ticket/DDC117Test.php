@@ -12,6 +12,9 @@ use Doctrine\Tests\Models\DDC117\DDC117Link;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
+/**
+ * @group DDC-117
+ */
 class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $article1;
@@ -138,6 +141,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-117
+     * @group non-cacheable
      */
     public function testDqlRemoveCompositeElement()
     {
@@ -471,6 +475,10 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testGetEntityState()
     {
+        if ($this->isSecondLevelCacheEnabled) {
+            $this->markTestIncomplete('Second level cache - not supported yet');
+        }
+
         $this->article1 = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article1->id());
         $this->article2 = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article2->id());
 
