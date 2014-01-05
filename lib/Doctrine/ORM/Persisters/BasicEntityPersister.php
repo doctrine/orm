@@ -817,11 +817,11 @@ class BasicEntityPersister implements EntityPersister
     {
         $sql = $this->getCountSQL($criteria);
 
-        list($values, $types) = ($criteria instanceof Criteria)
+        list($params, $types) = ($criteria instanceof Criteria)
             ? $this->expandCriteriaParameters($criteria)
             : $this->expandParameters($criteria);
 
-        return $this->conn->fetchColumn($sql, $values);
+        return $this->conn->executeQuery($sql, $params, $types)->fetchColumn();
     }
 
     /**
@@ -857,20 +857,20 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        list($values, $types) = $valueVisitor->getParamsAndTypes();
+        list($params, $types) = $valueVisitor->getParamsAndTypes();
 
-        $sqlValues = array();
-        foreach ($values as $value) {
-            $sqlValues[] = $this->getValue($value);
+        $sqlParams = array();
+        foreach ($params as $param) {
+            $sqlParams[] = $this->getValue($param);
         }
 
         $sqlTypes = array();
         foreach ($types as $type) {
             list($field, $value) = $type;
-            $sqlTypes[] = $this->getType($field, $value);
+            $sqlTypes[]          = $this->getType($field, $value);
         }
 
-        return array($sqlValues, $sqlTypes);
+        return array($sqlParams, $sqlTypes);
     }
 
     /**
@@ -1085,8 +1085,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getCountSQL($criteria = array())
     {
-        $tableName    = $this->quoteStrategy->getTableName($this->class, $this->platform);
-        $tableAlias   = $this->getSQLTableAlias($this->class->name);
+        $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $tableAlias = $this->getSQLTableAlias($this->class->name);
 
         $conditionSql = ($criteria instanceof Criteria)
             ? $this->getSelectConditionCriteriaSQL($criteria)
@@ -1101,7 +1101,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $sql = 'SELECT COUNT(*) '
-            . 'FROM ' . $tableName . ' ' . 't0'
+            . 'FROM ' . $tableName . ' ' . $tableAlias
             . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
 
         return $sql;
