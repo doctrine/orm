@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persisters\EntityPersister;
 
 /**
  * A lazy collection that allow a fast count when using criteria object
@@ -55,10 +56,10 @@ class LazyCriteriaCollection implements Collection, Selectable
     protected $initialized = false;
 
     /**
-     * @param BasicEntityPersister $entityPersister
-     * @param Criteria             $criteria
+     * @param EntityPersister $entityPersister
+     * @param Criteria        $criteria
      */
-    public function __construct(BasicEntityPersister $entityPersister, Criteria $criteria)
+    public function __construct(EntityPersister $entityPersister, Criteria $criteria)
     {
         $this->entityPersister = $entityPersister;
         $this->criteria        = $criteria;
