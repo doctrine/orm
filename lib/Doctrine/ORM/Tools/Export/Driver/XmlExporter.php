@@ -260,6 +260,39 @@ class XmlExporter extends AbstractExporter
             if (isset($associationMapping['orphanRemoval']) && $associationMapping['orphanRemoval'] !== false) {
                 $associationMappingXml->addAttribute('orphan-removal', 'true');
             }
+            
+            $cascade = array();
+            if ($associationMapping['isCascadeRemove']) {
+                $cascade[] = 'cascade-remove';
+            }
+
+            if ($associationMapping['isCascadePersist']) {
+                $cascade[] = 'cascade-persist';
+            }
+
+            if ($associationMapping['isCascadeRefresh']) {
+                $cascade[] = 'cascade-refresh';
+            }
+
+            if ($associationMapping['isCascadeMerge']) {
+                $cascade[] = 'cascade-merge';
+            }
+
+            if ($associationMapping['isCascadeDetach']) {
+                $cascade[] = 'cascade-detach';
+            }
+
+            if (count($cascade) === 5) {
+                $cascade  = array('cascade-all');
+            }
+
+            if ($cascade) {
+                $cascadeXml = $associationMappingXml->addChild('cascade');
+
+                foreach ($cascade as $type) {
+                    $cascadeXml->addChild($type);
+                }
+            }
 
             if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
                 $joinTableXml = $associationMappingXml->addChild('join-table');
@@ -328,39 +361,6 @@ class XmlExporter extends AbstractExporter
                     $orderByFieldXml = $orderByXml->addChild('order-by-field');
                     $orderByFieldXml->addAttribute('name', $name);
                     $orderByFieldXml->addAttribute('direction', $direction);
-                }
-            }
-            $cascade = array();
-
-            if ($associationMapping['isCascadeRemove']) {
-                $cascade[] = 'cascade-remove';
-            }
-
-            if ($associationMapping['isCascadePersist']) {
-                $cascade[] = 'cascade-persist';
-            }
-
-            if ($associationMapping['isCascadeRefresh']) {
-                $cascade[] = 'cascade-refresh';
-            }
-
-            if ($associationMapping['isCascadeMerge']) {
-                $cascade[] = 'cascade-merge';
-            }
-
-            if ($associationMapping['isCascadeDetach']) {
-                $cascade[] = 'cascade-detach';
-            }
-
-            if (count($cascade) === 5) {
-                $cascade  = array('cascade-all');
-            }
-
-            if ($cascade) {
-                $cascadeXml = $associationMappingXml->addChild('cascade');
-
-                foreach ($cascade as $type) {
-                    $cascadeXml->addChild($type);
                 }
             }
         }
