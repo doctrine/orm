@@ -69,8 +69,8 @@ class XmlExporter extends AbstractExporter
             $root->addAttribute('schema', $metadata->table['schema']);
         }
 
-        if (isset($metadata->table['inheritance-type'])) {
-            $root->addAttribute('inheritance-type', $metadata->table['inheritance-type']);
+        if ($metadata->inheritanceType) {
+            $root->addAttribute('inheritance-type', $this->_getInheritanceTypeString($metadata->inheritanceType));
         }
 
         if ($metadata->discriminatorColumn) {
