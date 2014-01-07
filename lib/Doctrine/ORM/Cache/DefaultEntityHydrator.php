@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\Common\Util\ClassUtils;
+
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -79,13 +81,15 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             if ( ! isset($assoc['id'])) {
-                $data[$name] = $this->uow->getEntityIdentifier($data[$name]);
+                $targetClass = ClassUtils::getClass($data[$name]);
+                $targetId    = $this->uow->getEntityIdentifier($data[$name]);
+                $data[$name] = new AssociationCacheEntry($targetClass, $targetId);
 
                 continue;
             }
 
             // handle association identifier
-            $targetId = is_object($data[$name]) && $this->em->getMetadataFactory()->hasMetadataFor(get_class($data[$name]))
+            $targetId = is_object($data[$name]) && $this->uow->isInIdentityMap($data[$name])
                 ? $this->uow->getEntityIdentifier($data[$name])
                 : $data[$name];
 
@@ -99,7 +103,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 $targetId     = array($targetEntity->identifier[0] => $targetId);
             }
 
-            $data[$name] = $targetId;
+            $data[$name] = new AssociationCacheEntry($assoc['targetEntity'], $targetId);
         }
 
         return new EntityCacheEntry($metadata->name, $data);
@@ -123,18 +127,26 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            $assocId        = $data[$name];
+            $assocClass     = $data[$name]->class;
+            $assocId        = $data[$name]->identifier;
+            $isEagerLoad    = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
+
+            if ( ! $isEagerLoad) {
+                $data[$name] = $this->em->getReference($assocClass, $assocId);
+
+                continue;
+            }
+
+            $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
             $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
             $assocRegion    = $assocPersister->getCacheRegion();
-            $assocEntry     = $assocRegion->get(new EntityCacheKey($assoc['targetEntity'], $assocId));
+            $assocEntry     = $assocRegion->get($assocKey);
 
             if ($assocEntry === null) {
                 return null;
             }
 
-            $data[$name] = $assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide'])
-                ? $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints)
-                : $this->em->getReference($assocEntry->class, $assocId);
+            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints);
         }
 
         if ($entity !== null) {

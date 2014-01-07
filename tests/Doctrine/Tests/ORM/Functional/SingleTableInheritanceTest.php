@@ -240,6 +240,9 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1000, $contract->getFixPrice());
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testUpdateChildClassWithCondition()
     {
         $this->loadFullFixture();

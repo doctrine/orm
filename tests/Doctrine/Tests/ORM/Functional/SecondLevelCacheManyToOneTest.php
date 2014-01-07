@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * @group DDC-2183
@@ -94,27 +95,48 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->states[1]->getCountry()->getName(), $c4->getCountry()->getName());
     }
 
-    public function testLoadFromDatabaseWhenAssociationIsMissing()
+    public function testShouldNotReloadWhenAssociationIsMissing()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->states[0]->getCountry()->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->states[1]->getCountry()->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
+        $stateId1 = $this->states[0]->getId();
+        $stateId2 = $this->states[3]->getId();
+
+        $countryId1 = $this->states[0]->getCountry()->getId();
+        $countryId2 = $this->states[3]->getCountry()->getId();
+
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $countryId1));
+        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $countryId2));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $stateId1));
+        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $stateId2));
 
         $this->cache->evictEntityRegion(Country::CLASSNAME);
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->states[0]->getCountry()->getId()));
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->states[1]->getCountry()->getId()));
+
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $countryId1));
+        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $countryId2));
 
         $this->_em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $state1 = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
-        $state2 = $this->_em->find(State::CLASSNAME, $this->states[1]->getId());
+        $state1 = $this->_em->find(State::CLASSNAME, $stateId1);
+        $state2 = $this->_em->find(State::CLASSNAME, $stateId2);
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertInstanceOf(State::CLASSNAME, $state1);
+        $this->assertInstanceOf(State::CLASSNAME, $state2);
+        $this->assertInstanceOf(Country::CLASSNAME, $state1->getCountry());
+        $this->assertInstanceOf(Country::CLASSNAME, $state2->getCountry());
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $this->assertNotNull($state1->getCountry()->getName());
+        $this->assertNotNull($state2->getCountry()->getName());
+        $this->assertEquals($countryId1, $state1->getCountry()->getId());
+        $this->assertEquals($countryId2, $state2->getCountry()->getId());
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
