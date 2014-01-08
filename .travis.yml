@@ -30,3 +30,13 @@ after_script:
 matrix:
   allow_failures:
     - php: hhvm
+  exclude:
+    - php: hhvm
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0  # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1 # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=mysqli ENABLE_SECOND_LEVEL_CACHE=0  # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=mysqli ENABLE_SECOND_LEVEL_CACHE=1 # driver currently unsupported by HHVM
+
