@@ -37,9 +37,17 @@ matrix:
     - php: hhvm
   exclude:
     - php: hhvm
-      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0  # driver currently unsupported by HHVM
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0 POSTGRESQL_VERSION=9.1  # driver currently unsupported by HHVM
     - php: hhvm
-      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1 # driver currently unsupported by HHVM
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1 POSTGRESQL_VERSION=9.1 # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0 POSTGRESQL_VERSION=9.2  # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1 POSTGRESQL_VERSION=9.2 # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0 POSTGRESQL_VERSION=9.3  # driver currently unsupported by HHVM
+    - php: hhvm
+      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1 POSTGRESQL_VERSION=9.3 # driver currently unsupported by HHVM
     - php: hhvm
       env: DB=mysqli ENABLE_SECOND_LEVEL_CACHE=0  # driver currently unsupported by HHVM
     - php: hhvm
