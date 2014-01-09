@@ -2550,6 +2550,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addLifecycleCallback($callback, $event)
     {
+        if(isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event]))
+            return;
+
         $this->lifecycleCallbacks[$event][] = $callback;
     }
 
