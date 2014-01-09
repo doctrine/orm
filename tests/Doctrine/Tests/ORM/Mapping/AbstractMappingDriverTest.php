@@ -304,8 +304,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testLifecycleCallbacks($class)
     {
         $this->assertEquals(count($class->lifecycleCallbacks), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
-        $this->assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
+        $this->assertEquals($class->lifecycleCallbacks['prePersist']['doStuffOnPrePersist'], 'doStuffOnPrePersist');
+        $this->assertEquals($class->lifecycleCallbacks['postPersist']['doStuffOnPostPersist'], 'doStuffOnPostPersist');
 
         return $class;
     }
@@ -317,7 +317,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testLifecycleCallbacksSupportMultipleMethodNames($class)
     {
         $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
+        $this->assertEquals($class->lifecycleCallbacks['prePersist']['doOtherStuffOnPrePersistToo'], 'doOtherStuffOnPrePersistToo');
 
         return $class;
     }

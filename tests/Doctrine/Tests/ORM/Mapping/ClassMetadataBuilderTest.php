@@ -185,7 +185,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->builder->addLifecycleEvent('getStatus', 'postLoad');
 
-        $this->assertEquals(array('postLoad' => array('getStatus')), $this->cm->lifecycleCallbacks);
+        $this->assertEquals(array('postLoad' => array('getStatus' => 'getStatus')), $this->cm->lifecycleCallbacks);
     }
 
     public function testCreateManyToOne()

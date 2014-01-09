@@ -26,10 +26,10 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPostLoadOneToManyInheritance()
     {
         $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1655Foo');
-        $this->assertEquals(array("postLoad" => array("postLoad")), $cm->lifecycleCallbacks);
+        $this->assertEquals(array("postLoad" => array("postLoad" => "postLoad")), $cm->lifecycleCallbacks);
 
         $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1655Bar');
-        $this->assertEquals(array("postLoad" => array("postLoad", "postSubLoaded")), $cm->lifecycleCallbacks);
+        $this->assertEquals(array("postLoad" => array("postLoad" => "postLoad", "postSubLoaded" => "postSubLoaded")), $cm->lifecycleCallbacks);
 
         $baz = new DDC1655Baz();
         $foo = new DDC1655Foo();

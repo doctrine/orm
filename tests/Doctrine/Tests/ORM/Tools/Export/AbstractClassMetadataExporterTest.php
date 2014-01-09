@@ -297,12 +297,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         $this->assertTrue(isset($class->lifecycleCallbacks['prePersist']));
         $this->assertEquals(2, count($class->lifecycleCallbacks['prePersist']));
-        $this->assertEquals('doStuffOnPrePersist', $class->lifecycleCallbacks['prePersist'][0]);
-        $this->assertEquals('doOtherStuffOnPrePersistToo', $class->lifecycleCallbacks['prePersist'][1]);
+        $this->assertEquals('doStuffOnPrePersist', $class->lifecycleCallbacks['prePersist']['doStuffOnPrePersist']);
+        $this->assertEquals('doOtherStuffOnPrePersistToo', $class->lifecycleCallbacks['prePersist']['doOtherStuffOnPrePersistToo']);
 
         $this->assertTrue(isset($class->lifecycleCallbacks['postPersist']));
         $this->assertEquals(1, count($class->lifecycleCallbacks['postPersist']));
-        $this->assertEquals('doStuffOnPostPersist', $class->lifecycleCallbacks['postPersist'][0]);
+        $this->assertEquals('doStuffOnPostPersist', $class->lifecycleCallbacks['postPersist']['doStuffOnPostPersist']);
 
         return $class;
     }
