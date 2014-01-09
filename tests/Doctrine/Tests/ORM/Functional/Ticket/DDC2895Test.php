@@ -1,13 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gwagner
- * Date: 1/8/14
- * Time: 8:19 PM
- */
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+/**
+ * Class DDC2895Test
+ * @package Doctrine\Tests\ORM\Functional\Ticket
+ * @author http://github.com/gwagner
+ */
 class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
