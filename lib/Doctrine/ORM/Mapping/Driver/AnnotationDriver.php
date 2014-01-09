@@ -447,11 +447,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         // Evaluate @HasLifecycleCallbacks annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks']))
+        {
             /* @var $method \ReflectionMethod */
-            foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-
-                foreach ($this->getMethodCallbacks($method) as $value) {
+            foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method)
+            {
+                foreach ($this->getMethodCallbacks($method) as $value)
+                {
                     $metadata->addLifecycleCallback($value[0], $value[1]);
                 }
             }
