@@ -69,6 +69,16 @@ class DatabaseDriver implements MappingDriver
     /**
      * @var array
      */
+    private $schemaNamesForTable = array();
+
+    /**
+     * @var array
+     */
+    private $namespacesForClassName  = array();
+
+    /**
+     * @var array
+     */
     private $fieldNamesForColumns = array();
 
     /**
@@ -168,6 +178,32 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
+     * Given a table name, this method return the Schema Name if exists, if not return a empty string
+     *
+     * @param string $tableName
+     * @return string
+     */
+    public function getSchemaNamesForTable($tableName){
+        if(array_key_exists($tableName, $this->schemaNamesForTable)){
+            return $this->schemaNamesForTable[$tableName];
+        }
+        return '';
+    }
+
+    /**
+     * Given a Class name, this method return the Name Space for a Schema if exists, if not return a empty string
+     *
+     * @param string $tableName
+     * @return string
+     */
+    public function getNamespacesForClassName($className){
+        if(array_key_exists($className, $this->namespacesForClassName)){
+            return $this->namespacesForClassName[$className];
+        }
+        return '';
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
@@ -182,6 +218,8 @@ class DatabaseDriver implements MappingDriver
 
         $metadata->name = $className;
         $metadata->table['name'] = $tableName;
+        $metadata->namespace = $this->getNamespacesForClassName($className);
+        $metadata->table['schema'] = $this->getSchemaNamesForTable($tableName);
 
         $this->buildIndexes($metadata);
         $this->buildFieldMappings($metadata);
@@ -248,7 +286,7 @@ class DatabaseDriver implements MappingDriver
                 }
 
                 $metadata->mapManyToMany($associationMapping);
-                
+
                 break;
             }
         }
@@ -299,22 +337,34 @@ class DatabaseDriver implements MappingDriver
             if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2) {
                 $this->manyToManyTables[$tableName] = $table;
             } else {
-                
-                // If you work with PostgreSQL Schemas you need tu filter the names of table to generate
-                // Correct name for PHP Classes
+
+                // If you work with PostgreSQL Schemas you should filter the names of table to generate a
+                // correct name for Classes
                 if (strpos($tableName, ".") !== false) {
-                    list($schema, $table_shortname) = explode(".", $tableName);
+                    list($schemaName, $tableSoloName) = explode(".", $tableName);
                 }else{
-                    $schema = 'public';
-                    $table_shortname = $tableName;
+                    $schemaName = '';
+                    $tableSoloName = $tableName;
                 }
-                
+
                 // lower-casing is necessary because of Oracle Uppercase Tablenames,
                 // assumption is lower-case + underscore separated.
-                $className = $this->getClassNameForTable($table_shortname);
+                $className = $this->getClassNameForTable($tableSoloName);
 
                 $this->tables[$tableName] = $table;
                 $this->classToTableNames[$className] = $tableName;
+
+                // Necessary when work with PostgreSQL Schemas
+                // assumption is lower-case + underscore separated.
+                $subNameSpace = $this->getNamespaceForSchema($tableName, $schemaName);
+
+                $this->schemaNamesForTable[$tableName] = $schemaName;
+                $this->namespacesForClassName[$className] = $subNameSpace;
+
+                $_schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
+                $_schemaConfig->setName($subNameSpace);
+
+                $table->setSchemaConfig($_schemaConfig);
             }
         }
     }
@@ -537,6 +587,22 @@ class DatabaseDriver implements MappingDriver
         }
 
         return $this->namespace . Inflector::classify(strtolower($tableName));
+    }
+
+    /**
+     * Returns the mapped class name for a table if it exists. Otherwise return "classified" version.
+     *
+     * @param string $tableName
+     *
+     * @return string
+     */
+    private function getNamespaceForSchema($tableName, $schemaName)
+    {
+        if (isset($this->schemaNamesForTable[$tableName])) {
+            return $this->namespace . $this->classNamesForTables[$tableName];
+        }
+
+        return $this->namespace . Inflector::classify(str_replace('.', '_', str_replace(' ', '_', str_replace('  ', ' ', strtolower($schemaName)))));
     }
 
     /**
