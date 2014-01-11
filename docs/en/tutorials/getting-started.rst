@@ -1473,8 +1473,6 @@ the previously discussed query functionality in it:
         }
     }
 
-Don't forget to add a `require_once` call for this class to the bootstrap.php
-
 To be able to use this query logic through ``$this->getEntityManager()->getRepository('Bug')``
 we have to adjust the metadata slightly.
 
