@@ -1164,7 +1164,7 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            if ( ! (($assoc['type'] & ClassMetadata::TO_ONE) && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide']))) {
+            if ( ! (($assoc['type'] & ClassMetadata::TO_ONE) && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide']) || ($assoc['fetch'] === ClassMetadata::FETCH_EAGER && $assoc['type'] === ClassMetadata::ONE_TO_MANY))) {
                 continue;
             }
 
