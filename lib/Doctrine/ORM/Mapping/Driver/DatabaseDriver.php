@@ -342,7 +342,7 @@ class DatabaseDriver implements MappingDriver
                 // correct name for Classes
                 if (strpos($tableName, ".") !== false) {
                     list($schemaName, $tableSoloName) = explode(".", $tableName);
-                }else{
+                } else {
                     $schemaName = '';
                     $tableSoloName = $tableName;
                 }
