@@ -183,7 +183,7 @@ class DatabaseDriver implements MappingDriver
      * @param string $tableName
      * @return string
      */
-    public function getSchemaNamesForTable($tableName){
+    public function getSchemaNameForTable($tableName){
         if(array_key_exists($tableName, $this->schemaNamesForTable)){
             return $this->schemaNamesForTable[$tableName];
         }
@@ -196,7 +196,7 @@ class DatabaseDriver implements MappingDriver
      * @param string $tableName
      * @return string
      */
-    public function getNamespacesForClassName($className){
+    public function getNamespaceForClassName($className){
         if(array_key_exists($className, $this->namespacesForClassName)){
             return $this->namespacesForClassName[$className];
         }
@@ -218,8 +218,8 @@ class DatabaseDriver implements MappingDriver
 
         $metadata->name = $className;
         $metadata->table['name'] = $tableName;
-        $metadata->namespace = $this->getNamespacesForClassName($className);
-        $metadata->table['schema'] = $this->getSchemaNamesForTable($tableName);
+        $metadata->namespace = $this->getNamespaceForClassName($className);
+        $metadata->table['schema'] = $this->getSchemaNameForTable($tableName);
 
         $this->buildIndexes($metadata);
         $this->buildFieldMappings($metadata);
@@ -356,7 +356,7 @@ class DatabaseDriver implements MappingDriver
 
                 // Necessary when work with PostgreSQL Schemas
                 // assumption is lower-case + underscore separated.
-                $subNameSpace = $this->getNamespaceForSchema($tableName, $schemaName);
+                $subNameSpace = $this->getNamespaceForSchema($className, $schemaName);
 
                 $this->schemaNamesForTable[$tableName] = $schemaName;
                 $this->namespacesForClassName[$className] = $subNameSpace;
@@ -590,19 +590,21 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Returns the mapped class name for a table if it exists. Otherwise return "classified" version.
+     * Returns the mapped namespace for a class name if it exists. Otherwise return "classified" version.
      *
-     * @param string $tableName
+     * @param string $className
+     * @param string $schemaName
      *
      * @return string
      */
-    private function getNamespaceForSchema($tableName, $schemaName)
+    private function getNamespaceForSchema($className, $schemaName)
     {
-        if (isset($this->schemaNamesForTable[$tableName])) {
-            return $this->namespace . $this->classNamesForTables[$tableName];
+        if (isset($this->namespacesForClassName[$className])) {
+            return $this->namespacesForClassName[$className];
         }
-
-        return $this->namespace . Inflector::classify(str_replace('.', '_', str_replace(' ', '_', str_replace('  ', ' ', strtolower($schemaName)))));
+        // The three str_replace functions are necessary to ensure a good formed PHP namespace and you work with PostgreSQL.
+        // It is well known that in all PostgreSQL objects points can contain spaces and other non-alphanumeric characters.
+        return Inflector::classify(str_replace('.', '_', str_replace(' ', '_', str_replace('  ', ' ', strtolower($schemaName)))));
     }
 
     /**
