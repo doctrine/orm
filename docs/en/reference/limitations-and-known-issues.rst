@@ -187,3 +187,10 @@ Microsoft SQL Server and Doctrine "datetime"
 
 Doctrine assumes that you use ``DateTime2`` data-types. If your legacy database contains DateTime
 datatypes then you have to add your own data-type (see Basic Mapping for an example).
+
+MySQL with MyISAM tables
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
+of the tables involved uses the storage engine MyISAM. You must use InnoDB or
+other storage engines that support transactions if you need integrity.
