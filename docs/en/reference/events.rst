@@ -584,23 +584,23 @@ mentioned sets. See this example:
             $em = $eventArgs->getEntityManager();
             $uow = $em->getUnitOfWork();
 
-            foreach ($uow->getScheduledEntityInsertions() AS $entity) {
+            foreach ($uow->getScheduledEntityInsertions() as $entity) {
 
             }
 
-            foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+            foreach ($uow->getScheduledEntityUpdates() as $entity) {
 
             }
 
-            foreach ($uow->getScheduledEntityDeletions() AS $entity) {
+            foreach ($uow->getScheduledEntityDeletions() as $entity) {
 
             }
 
-            foreach ($uow->getScheduledCollectionDeletions() AS $col) {
+            foreach ($uow->getScheduledCollectionDeletions() as $col) {
 
             }
 
-            foreach ($uow->getScheduledCollectionUpdates() AS $col) {
+            foreach ($uow->getScheduledCollectionUpdates() as $col) {
 
             }
         }

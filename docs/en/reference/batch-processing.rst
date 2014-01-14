@@ -76,7 +76,7 @@ with the batching strategy that was already used for bulk inserts:
     $i = 0;
     $q = $em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
-    foreach($iterableResult AS $row) {
+    foreach ($iterableResult as $row) {
         $user = $row[0];
         $user->increaseCredit();
         $user->calculateNewBonuses();
@@ -162,7 +162,7 @@ problems using the following approach:
     <?php
     $q = $this->_em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
-    foreach ($iterableResult AS $row) {
+    foreach ($iterableResult as $row) {
         // do stuff with the data in the row, $row[0] is always the object
     
         // detach from Doctrine, so that it can be Garbage-Collected immediately

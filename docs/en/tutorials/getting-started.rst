@@ -1054,7 +1054,7 @@ like this:
     $bug->setCreated(new DateTime("now"));
     $bug->setStatus("OPEN");
 
-    foreach ($productIds AS $productId) {
+    foreach ($productIds as $productId) {
         $product = $entityManager->find("Product", $productId);
         $bug->assignToProduct($product);
     }
@@ -1108,11 +1108,11 @@ the first read-only use-case:
     $query->setMaxResults(30);
     $bugs = $query->getResult();
 
-    foreach($bugs AS $bug) {
+    foreach ($bugs as $bug) {
         echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug->getReporter()->getName()."\n";
         echo "    Assigned to: ".$bug->getEngineer()->getName()."\n";
-        foreach($bug->getProducts() AS $product) {
+        foreach ($bug->getProducts() as $product) {
             echo "    Platform: ".$product->getName()."\n";
         }
         echo "\n";
@@ -1194,11 +1194,11 @@ can rewrite our code:
     $query = $entityManager->createQuery($dql);
     $bugs = $query->getArrayResult();
 
-    foreach ($bugs AS $bug) {
+    foreach ($bugs as $bug) {
         echo $bug['description'] . " - " . $bug['created']->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug['reporter']['name']."\n";
         echo "    Assigned to: ".$bug['engineer']['name']."\n";
-        foreach($bug['products'] AS $product) {
+        foreach ($bug['products'] as $product) {
             echo "    Platform: ".$product['name']."\n";
         }
         echo "\n";
@@ -1312,7 +1312,7 @@ and usage of bound parameters:
 
     echo "You have created or assigned to " . count($myBugs) . " open bugs:\n\n";
 
-    foreach ($myBugs AS $bug) {
+    foreach ($myBugs as $bug) {
         echo $bug->getId() . " - " . $bug->getDescription()."\n";
     }
 
@@ -1337,7 +1337,7 @@ grouped by product:
            "JOIN b.products p WHERE b.status = 'OPEN' GROUP BY p.id";
     $productBugs = $entityManager->createQuery($dql)->getScalarResult();
 
-    foreach($productBugs as $productBug) {
+    foreach ($productBugs as $productBug) {
         echo $productBug['name']." has " . $productBug['openBugs'] . " open bugs!\n";
     }
 
@@ -1417,7 +1417,7 @@ example querying for all closed bugs:
     $bugs = $entityManager->getRepository('Bug')
                           ->findBy(array('status' => 'CLOSED'));
 
-    foreach ($bugs AS $bug) {
+    foreach ($bugs as $bug) {
         // do stuff
     }
 
@@ -1519,11 +1519,11 @@ As an example here is the code of the first use case "List of Bugs":
 
     $bugs = $entityManager->getRepository('Bug')->getRecentBugs();
 
-    foreach($bugs AS $bug) {
+    foreach ($bugs as $bug) {
         echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug->getReporter()->getName()."\n";
         echo "    Assigned to: ".$bug->getEngineer()->getName()."\n";
-        foreach($bug->getProducts() AS $product) {
+        foreach ($bug->getProducts() as $product) {
             echo "    Platform: ".$product->getName()."\n";
         }
         echo "\n";
