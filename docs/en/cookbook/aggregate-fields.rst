@@ -149,7 +149,7 @@ collection, which means we can compute this value at runtime:
         public function getBalance()
         {
             $balance = 0;
-            foreach ($this->entries AS $entry) {
+            foreach ($this->entries as $entry) {
                 $balance += $entry->getAmount();
             }
             return $balance;

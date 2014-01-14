@@ -468,7 +468,7 @@ removed from the system:
     <?php
     $user = $em->find('User', $deleteUserId);
     
-    foreach ($user->getAuthoredComments() AS $comment) {
+    foreach ($user->getAuthoredComments() as $comment) {
         $em->remove($comment);
     }
     $em->remove($user);

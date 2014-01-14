@@ -130,7 +130,7 @@ implementation is:
         {
             $parent = null;
             $parentName = null;
-            foreach ($this->_getQueryComponents() AS $dqlAlias => $qComp) {
+            foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
                 if ($qComp['parent'] === null && $qComp['nestingLevel'] == 0) {
                     $parent = $qComp;
                     $parentName = $dqlAlias;
