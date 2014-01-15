@@ -408,7 +408,7 @@ class BasicEntityPersister implements EntityPersister
 
                     break;
             }
- 
+
             $params[]   = $value;
             $set[]      = $column . ' = ' . $placeholder;
             $types[]    = $this->columnTypes[$columnName];
@@ -805,7 +805,7 @@ class BasicEntityPersister implements EntityPersister
         $sql = $this->getSelectSQL($id, null, $lockMode);
         list($params, $types) = $this->expandParameters($id);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
- 
+
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
         $hydrator->hydrateAll($stmt, $this->rsm, array(Query::HINT_REFRESH => true));
     }
@@ -1052,7 +1052,7 @@ class BasicEntityPersister implements EntityPersister
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if ('' !== $filterSql) {
-            $conditionSql = $conditionSql 
+            $conditionSql = $conditionSql
                 ? $conditionSql . ' AND ' . $filterSql
                 : $filterSql;
         }
@@ -1205,7 +1205,7 @@ class BasicEntityPersister implements EntityPersister
             if ($assoc['isOwningSide']) {
                 $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
                 $this->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
-                
+
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1335,7 +1335,7 @@ class BasicEntityPersister implements EntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldNames[$column]) 
+            if (isset($this->class->fieldNames[$column])
                 && isset($this->columnTypes[$this->class->fieldNames[$column]])
                 && isset($this->class->fieldMappings[$this->class->fieldNames[$column]]['requireSQLConversion'])) {
 
@@ -1408,7 +1408,7 @@ class BasicEntityPersister implements EntityPersister
         $columnName     = $this->quoteStrategy->getColumnName($field, $class, $this->platform);
         $sql            = $tableAlias . '.' . $columnName;
         $columnAlias    = $this->getSQLColumnAlias($class->columnNames[$field]);
-        
+
         $this->rsm->addFieldResult($alias, $columnAlias, $field);
 
         if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
@@ -1465,7 +1465,7 @@ class BasicEntityPersister implements EntityPersister
                 break;
         }
 
-        $lock  = $this->platform->appendLockHint($this->getLockTablesSql(), $lockMode);
+        $lock  = $this->getLockTablesSql($lockMode);
         $where = ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ';
         $sql = 'SELECT 1 '
              . $lock
@@ -1480,13 +1480,18 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the FROM and optionally JOIN conditions to lock the entity managed by this persister.
      *
+     * @param integer $lockMode One of the Doctrine\DBAL\LockMode::* constants.
+     *
      * @return string
      */
-    protected function getLockTablesSql()
+    protected function getLockTablesSql($lockMode)
     {
-        return 'FROM '
-             . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
-             . $this->getSQLTableAlias($this->class->name);
+        return $this->platform->appendLockHint(
+            'FROM '
+            . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
+            . $this->getSQLTableAlias($this->class->name),
+            $lockMode
+        );
     }
 
     /**
@@ -1796,7 +1801,7 @@ class BasicEntityPersister implements EntityPersister
         $alias = $this->getSQLTableAlias($this->class->name);
 
         $sql = 'SELECT 1 '
-             . $this->getLockTablesSql()
+             . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
         if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {

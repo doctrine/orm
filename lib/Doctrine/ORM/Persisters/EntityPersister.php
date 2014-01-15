@@ -74,7 +74,7 @@ interface EntityPersister
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null);
 
-    /** 
+    /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
      *
      * @param $criteria
@@ -269,7 +269,7 @@ interface EntityPersister
      * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
      *
      * @param array $criteria
-     * @param int   $lockMode
+     * @param int   $lockMode One of the Doctrine\DBAL\LockMode::* constants.
      *
      * @return void
      */
