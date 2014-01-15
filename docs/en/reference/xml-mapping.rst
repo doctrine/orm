@@ -187,7 +187,7 @@ specified as the ``<entity />`` element as a direct child of the
 .. code-block:: xml
 
     <doctrine-mapping>
-        <entity name="MyProject\User" table="cms_users" repository-class="MyProject\UserRepository">
+        <entity name="MyProject\User" table="cms_users" schema="schema_name" repository-class="MyProject\UserRepository">
             <!-- definition here -->
         </entity>
     </doctrine-mapping>
@@ -211,6 +211,7 @@ Optional attributes:
 -  **read-only** - (>= 2.1) Specifies that this entity is marked as read only and not
    considered for change-tracking. Entities of this type can be persisted
    and removed though.
+-  **schema** - (>= 2.5) The schema the table lies in, for platforms that support schemas
 
 Defining Fields
 ~~~~~~~~~~~~~~~

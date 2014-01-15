@@ -1084,6 +1084,7 @@ Optional attributes:
 
 -  **indexes**: Array of @Index annotations
 -  **uniqueConstraints**: Array of @UniqueConstraint annotations.
+-  **schema**: (>= 2.5) Name of the schema the table lies in.
 
 Example:
 
@@ -1095,6 +1096,7 @@ Example:
      * @Table(name="user",
      *      uniqueConstraints={@UniqueConstraint(name="user_unique",columns={"username"})},
      *      indexes={@Index(name="user_idx", columns={"email"})}
+     *      schema="schema_name"
      * )
      */
     class User { }

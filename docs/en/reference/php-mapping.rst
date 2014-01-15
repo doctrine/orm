@@ -227,6 +227,7 @@ General Getters
 
 
 -  ``getTableName()``
+-  ``getSchemaName()``
 -  ``getTemporaryIdTableName()``
 
 Identifier Getters
