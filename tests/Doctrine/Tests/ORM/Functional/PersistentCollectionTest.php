@@ -41,6 +41,34 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, $collectionHolder->getCollection()->count());
     }
 
+    /**
+     * Tests that PersistentCollection::isEmpty() does not initialize the collection when FETCH_EXTRA_LAZY is used.
+     */
+    public function testExtraLazyIsEmptyDoesNotInitializeCollection()
+    {
+        $collectionHolder = new PersistentCollectionHolder();
+
+        $this->_em->persist($collectionHolder);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
+        $collection = $collectionHolder->getRawCollection();
+
+        $this->assertTrue($collection->isEmpty());
+        $this->assertFalse($collection->isInitialized());
+
+        $collectionHolder->addElement(new PersistentCollectionContent());
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
+        $collection = $collectionHolder->getRawCollection();
+
+        $this->assertFalse($collection->isEmpty());
+        $this->assertFalse($collection->isInitialized());
+    }
 }
 
 /**
@@ -56,7 +84,7 @@ class PersistentCollectionHolder extends PersistentObject
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"})
+     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
      */
     protected $collection;
 
@@ -81,6 +109,13 @@ class PersistentCollectionHolder extends PersistentObject
         return clone $this->collection;
     }
 
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRawCollection()
+    {
+        return $this->collection;
+    }
 }
 
 /**
@@ -88,11 +123,9 @@ class PersistentCollectionHolder extends PersistentObject
  */
 class PersistentCollectionContent extends PersistentObject
 {
-
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
      */
     protected $id;
-
 }
