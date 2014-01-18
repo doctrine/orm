@@ -929,8 +929,9 @@ the Query class. Here they are:
    result is either a plain collection of objects (pure) or an array
    where the objects are nested in the result rows (mixed).
 -  ``Query#getSingleResult()``: Retrieves a single object. If the
-   result contains more than one or no object, an exception is thrown. The
-   pure/mixed distinction does not apply.
+   result contains more than one object, an ``NonUniqueResultException``
+   is thrown. If the result contains no objects, an ``NoResultException``
+   is thrown. The pure/mixed distinction does not apply.
 -  ``Query#getOneOrNullResult()``: Retrieve a single object. If no
    object is found null will be returned.
 -  ``Query#getArrayResult()``: Retrieves an array graph (a nested
