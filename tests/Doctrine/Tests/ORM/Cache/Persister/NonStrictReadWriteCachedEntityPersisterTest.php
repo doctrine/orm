@@ -1,0 +1,140 @@
+<?php
+
+namespace Doctrine\Tests\ORM\Cache\Persister;
+
+use Doctrine\ORM\Cache\Region;
+use Doctrine\ORM\EntityManager;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityCacheEntry;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedEntityPersister;
+
+/**
+ * @group DDC-2183
+ */
+class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
+    {
+        return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
+    }
+
+    public function testTransactionRollBackShouldClearQueue()
+    {
+        $entity    = new Country("Foo");
+        $persister = $this->createPersisterDefault();
+        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister', 'queuedCache');
+
+        $property->setAccessible(true);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $persister->update($entity);
+        $persister->delete($entity);
+
+        $this->assertCount(2, $property->getValue($persister));
+
+        $persister->afterTransactionRolledBack();
+
+        $this->assertCount(0, $property->getValue($persister));
+    }
+
+    public function testInsertTransactionCommitShouldPutCache()
+    {
+        $entity    = new Country("Foo");
+        $persister = $this->createPersisterDefault();
+        $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
+        $entry     = new EntityCacheEntry(Country::CLASSNAME, array('id'=>1, 'name'=>'Foo'));
+        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister', 'queuedCache');
+
+        $property->setAccessible(true);
+
+        $this->region->expects($this->once())
+            ->method('put')
+            ->with($this->equalTo($key), $this->equalTo($entry));
+
+        $this->entityPersister->expects($this->once())
+            ->method('addInsert')
+            ->with($this->equalTo($entity));
+
+        $this->entityPersister->expects($this->once())
+            ->method('getInserts')
+            ->will($this->returnValue(array($entity)));
+
+        $this->entityPersister->expects($this->once())
+            ->method('executeInserts');
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $persister->addInsert($entity);
+        $persister->executeInserts();
+
+        $this->assertCount(1, $property->getValue($persister));
+
+        $persister->afterTransactionComplete();
+
+        $this->assertCount(0, $property->getValue($persister));
+    }
+
+    public function testUpdateTransactionCommitShouldPutCache()
+    {
+        $entity    = new Country("Foo");
+        $persister = $this->createPersisterDefault();
+        $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
+        $entry     = new EntityCacheEntry(Country::CLASSNAME, array('id'=>1, 'name'=>'Foo'));
+        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister', 'queuedCache');
+
+        $property->setAccessible(true);
+
+        $this->region->expects($this->once())
+            ->method('put')
+            ->with($this->equalTo($key), $this->equalTo($entry));
+
+        $this->entityPersister->expects($this->once())
+            ->method('update')
+            ->with($this->equalTo($entity));
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $persister->update($entity);
+
+        $this->assertCount(1, $property->getValue($persister));
+
+        $persister->afterTransactionComplete();
+
+        $this->assertCount(0, $property->getValue($persister));
+    }
+
+    public function testDeleteTransactionCommitShouldEvictCache()
+    {
+        $entity    = new Country("Foo");
+        $persister = $this->createPersisterDefault();
+        $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
+        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister', 'queuedCache');
+
+        $property->setAccessible(true);
+
+        $this->region->expects($this->once())
+            ->method('evict')
+            ->with($this->equalTo($key));
+
+        $this->entityPersister->expects($this->once())
+            ->method('delete')
+            ->with($this->equalTo($entity));
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $persister->delete($entity);
+
+        $this->assertCount(1, $property->getValue($persister));
+
+        $persister->afterTransactionComplete();
+
+        $this->assertCount(0, $property->getValue($persister));
+    }
+}

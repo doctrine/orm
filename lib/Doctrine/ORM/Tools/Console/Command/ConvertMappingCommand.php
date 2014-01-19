@@ -64,7 +64,7 @@ class ConvertMappingCommand extends Command
                 'The path to generate your entities classes.'
             ),
             new InputOption(
-                'force', null, InputOption::VALUE_NONE,
+                'force', 'f', InputOption::VALUE_NONE,
                 'Force to overwrite existing mapping files.'
             ),
             new InputOption(

@@ -65,7 +65,7 @@ Memcache
 
 In order to use the Memcache cache driver you must have it compiled
 and enabled in your php.ini. You can read about Memcache
-` on the PHP website <http://us2.php.net/memcache>`_. It will
+` on the PHP website <http://php.net/memcache>`_. It will
 give you a little background information about what it is and how
 you can use it as well as how to install it.
 
@@ -80,6 +80,31 @@ driver by itself.
     
     $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
     $cacheDriver->setMemcache($memcache);
+    $cacheDriver->save('cache_id', 'my_data');
+
+Memcached
+~~~~~~~~
+
+Memcached is a more recent and complete alternative extension to
+Memcache.
+
+In order to use the Memcached cache driver you must have it compiled
+and enabled in your php.ini. You can read about Memcached
+` on the PHP website <http://php.net/memcached>`_. It will
+give you a little background information about what it is and how
+you can use it as well as how to install it.
+
+Below is a simple example of how you could use the Memcached cache
+driver by itself.
+
+.. code-block:: php
+
+    <?php
+    $memcached = new Memcached();
+    $memcached->addServer('memcache_host', 11211);
+    
+    $cacheDriver = new \Doctrine\Common\Cache\MemcachedCache();
+    $cacheDriver->setMemcached($memcached);
     $cacheDriver->save('cache_id', 'my_data');
 
 Xcache

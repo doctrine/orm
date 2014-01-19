@@ -143,7 +143,7 @@ your code. See the following code:
     // accessing the comments as an iterator triggers the lazy-load
     // retrieving ALL the comments of this article from the database
     // using a single SELECT statement
-    foreach ($article->getComments() AS $comment) {
+    foreach ($article->getComments() as $comment) {
         echo $comment->getText() . "\n\n";
     }
     

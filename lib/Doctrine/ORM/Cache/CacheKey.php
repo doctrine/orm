@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,14 +17,22 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-namespace Doctrine\ORM\Persisters;
+
+namespace Doctrine\ORM\Cache;
 
 /**
- * Persister for collections of basic elements / value types.
+ * Defines entity / collection / query key to be stored in the cache region.
+ * Allows multiple roles to be stored in the same cache region.
  *
- * @author robo
- * @todo Implementation once support for collections of basic elements (i.e. strings) is added.
+ * @since   2.5
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-abstract class ElementCollectionPersister extends AbstractCollectionPersister
+abstract class CacheKey
 {
+    /**
+     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     *
+     * @var string Unique identifier
+     */
+    public $hash;
 }

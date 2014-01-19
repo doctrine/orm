@@ -6,7 +6,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
-
+use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
@@ -187,8 +187,28 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
 
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testFieldOptions($class)
+    {
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
         $this->assertEquals($expected, $class->fieldMappings['name']['options']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testIdFieldOptions($class)
+    {
+        $this->assertEquals(array('foo' => 'bar'), $class->fieldMappings['id']['options']);
 
         return $class;
     }
@@ -873,6 +893,34 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(Events::postLoad, $postLoad['method']);
         $this->assertEquals(Events::preFlush, $preFlush['method']);
     }
+
+    /**
+     * @group DDC-2183
+     */
+    public function testSecondLevelCacheMapping()
+    {
+        $em      = $this->_getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
+        $class   = $factory->getMetadataFor(City::CLASSNAME);
+        $this->assertArrayHasKey('usage', $class->cache);
+        $this->assertArrayHasKey('region', $class->cache);
+        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->cache['usage']);
+        $this->assertEquals('doctrine_tests_models_cache_city', $class->cache['region']);
+
+        $this->assertArrayHasKey('state', $class->associationMappings);
+        $this->assertArrayHasKey('cache', $class->associationMappings['state']);
+        $this->assertArrayHasKey('usage', $class->associationMappings['state']['cache']);
+        $this->assertArrayHasKey('region', $class->associationMappings['state']['cache']);
+        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['state']['cache']['usage']);
+        $this->assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']['region']);
+
+        $this->assertArrayHasKey('attractions', $class->associationMappings);
+        $this->assertArrayHasKey('cache', $class->associationMappings['attractions']);
+        $this->assertArrayHasKey('usage', $class->associationMappings['attractions']['cache']);
+        $this->assertArrayHasKey('region', $class->associationMappings['attractions']['cache']);
+        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['attractions']['cache']['usage']);
+        $this->assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
+    }
 }
 
 /**
@@ -890,7 +938,7 @@ class User
 {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(type="integer", options={"foo": "bar"})
      * @generatedValue(strategy="AUTO")
      * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
      **/
@@ -971,6 +1019,7 @@ class User
            'fieldName' => 'id',
            'type' => 'integer',
            'columnName' => 'id',
+           'options' => array('foo' => 'bar'),
           ));
         $metadata->mapField(array(
            'fieldName' => 'name',

@@ -403,7 +403,7 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-Persisting, removing, detaching and merging individual entities can
+Persisting, removing, detaching, refreshing and merging individual entities can
 become pretty cumbersome, especially when a highly interweaved object graph
 is involved. Therefore Doctrine 2 provides a
 mechanism for transitive persistence through cascading of these
@@ -419,7 +419,8 @@ The following cascade options exist:
 -  remove : Cascades remove operations to the associated entities.
 -  merge : Cascades merge operations to the associated entities.
 -  detach : Cascades detach operations to the associated entities.
--  all : Cascades persist, remove, merge and detach operations to
+-  refresh : Cascades refresh operations to the associated entities.
+-  all : Cascades persist, remove, merge, refresh and detach operations to
    associated entities.
 
 .. note::
@@ -467,7 +468,7 @@ removed from the system:
     <?php
     $user = $em->find('User', $deleteUserId);
     
-    foreach ($user->getAuthoredComments() AS $comment) {
+    foreach ($user->getAuthoredComments() as $comment) {
         $em->remove($comment);
     }
     $em->remove($user);

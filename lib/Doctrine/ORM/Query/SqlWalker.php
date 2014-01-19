@@ -401,11 +401,12 @@ class SqlWalker implements TreeWalker
         foreach ($this->selectedClasses as $selectedClass) {
             $dqlAlias  = $selectedClass['dqlAlias'];
             $qComp     = $this->queryComponents[$dqlAlias];
-            $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
 
             if ( ! isset($qComp['relation']['orderBy'])) {
                 continue;
             }
+
+            $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
 
             foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
                 $columnName = $this->quoteStrategy->getColumnName($fieldName, $qComp['metadata'], $this->platform);
@@ -572,6 +573,7 @@ class SqlWalker implements TreeWalker
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
         $this->useSqlTableAliases = false;
+        $this->rsm->isSelect      = false;
 
         return $this->walkUpdateClause($AST->updateClause)
              . $this->walkWhereClause($AST->whereClause);
@@ -583,6 +585,7 @@ class SqlWalker implements TreeWalker
     public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
         $this->useSqlTableAliases = false;
+        $this->rsm->isSelect      = false;
 
         return $this->walkDeleteClause($AST->deleteClause)
              . $this->walkWhereClause($AST->whereClause);

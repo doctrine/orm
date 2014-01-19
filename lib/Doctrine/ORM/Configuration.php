@@ -24,7 +24,8 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -252,7 +253,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function setQueryCacheImpl(Cache $cacheImpl)
+    public function setQueryCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
     }
@@ -276,7 +277,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function setHydrationCacheImpl(Cache $cacheImpl)
+    public function setHydrationCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
     }
@@ -300,7 +301,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function setMetadataCacheImpl(Cache $cacheImpl)
+    public function setMetadataCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }
@@ -804,5 +805,57 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['repositoryFactory'])
             ? $this->_attributes['repositoryFactory']
             : new DefaultRepositoryFactory();
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @return boolean
+     */
+    public function isSecondLevelCacheEnabled()
+    {
+        return isset($this->_attributes['isSecondLevelCacheEnabled'])
+            ? $this->_attributes['isSecondLevelCacheEnabled']
+            : false;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @param boolean $flag
+     *
+     * @return void
+     */
+    public function setSecondLevelCacheEnabled($flag = true)
+    {
+        $this->_attributes['isSecondLevelCacheEnabled'] = (boolean) $flag;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @param \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig
+     *
+     * @return void
+     */
+    public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig)
+    {
+        $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @return  \Doctrine\ORM\Cache\CacheConfiguration|null
+     */
+    public function getSecondLevelCacheConfiguration()
+    {
+        if ( ! isset($this->_attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {
+            $this->_attributes['secondLevelCacheConfiguration'] = new CacheConfiguration();
+        }
+
+        return isset($this->_attributes['secondLevelCacheConfiguration'])
+            ? $this->_attributes['secondLevelCacheConfiguration']
+            : null;
     }
 }

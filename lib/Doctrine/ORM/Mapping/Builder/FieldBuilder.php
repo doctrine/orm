@@ -154,6 +154,20 @@ class FieldBuilder
     }
 
     /**
+     * Sets an option.
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return FieldBuilder
+     */
+    public function option($name, $value)
+    {
+        $this->mapping['options'][$name] = $value;
+        return $this;
+    }
+
+    /**
      * @param string $strategy
      *
      * @return FieldBuilder

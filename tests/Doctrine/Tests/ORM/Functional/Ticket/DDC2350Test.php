@@ -6,6 +6,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2350
+ * @group non-cacheable
  */
 class DDC2350Test extends OrmFunctionalTestCase
 {
