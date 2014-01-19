@@ -2058,7 +2058,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT e.id FROM Doctrine\Tests\Models\Company\CompanyOrganization o JOIN o.events e WITH e.id = ?1',
-            'SELECT c0_.id AS id0 FROM company_organizations c1_ INNER JOIN company_events c0_ ON c1_.id = c0_.org_id AND (c0_.id = ?) LEFT JOIN company_auctions c2_ ON c0_.id = c2_.id LEFT JOIN company_raffles c3_ ON c0_.id = c3_.id',
+            'SELECT c0_.id AS id0 FROM company_organizations c1_ INNER JOIN (company_events c0_ LEFT JOIN company_auctions c2_ ON c0_.id = c2_.id LEFT JOIN company_raffles c3_ ON c0_.id = c3_.id) ON c1_.id = c0_.org_id AND (c0_.id = ?)',
             array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
