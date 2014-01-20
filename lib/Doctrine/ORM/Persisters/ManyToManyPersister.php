@@ -587,12 +587,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
         $stmt     = $this->conn->executeQuery($sql, $params);
-        $hydrator = $this->em->newHydrator(Query::HYDRATE_ARRAY);
+        $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
 
         $rsm  = new Query\ResultSetMapping();
         $rsm->addEntityResult($mapping['targetEntity'], 'r');
-$result = $hydrator->hydrateAll($stmt, $rsm);
-        var_dump($result);
+
         return $hydrator->hydrateAll($stmt, $rsm);
     }
 

@@ -389,9 +389,14 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $groups = $user->groups;
         $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
 
-        $criteria = Criteria::create();//->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
         $result   = $groups->matching($criteria);
 
-        //$this->assertCount(1, $result);
+        $this->assertCount(1, $result);
+
+        $firstGroup = $result->first();
+        $this->assertEquals('Developers_0', $firstGroup->name);
+
+        $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
     }
 }
