@@ -591,7 +591,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $rsm  = new Query\ResultSetMapping();
         $rsm->addEntityResult($mapping['targetEntity'], 'r');
-
+$result = $hydrator->hydrateAll($stmt, $rsm);
+        var_dump($result);
         return $hydrator->hydrateAll($stmt, $rsm);
     }
 
@@ -601,14 +602,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
-     * @return array(array(), array())
+     * @return array
      */
     private function expandCriteriaParameters(Criteria $criteria)
     {
         $expression = $criteria->getWhereExpression();
 
         if ($expression === null) {
-            return array(array(), array());
+            return array();
         }
 
         $valueVisitor = new SqlValueVisitor();
