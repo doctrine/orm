@@ -871,6 +871,7 @@ final class PersistentCollection implements Collection, Selectable
 
         if ($this->association['type'] === ClassMetadata::MANY_TO_MANY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+
             return new ArrayCollection($persister->loadCriteria($this, $criteria));
         }
 

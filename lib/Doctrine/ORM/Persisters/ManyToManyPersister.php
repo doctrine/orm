@@ -516,7 +516,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $sql = implode(' AND ', $filterClauses);
-        return $sql ? "(" . $sql . ")" : "";
+        return $sql ? '(' . $sql . ')' : '';
     }
 
     /**
@@ -560,8 +560,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping       = $coll->getMapping();
         $owner         = $coll->getOwner();
         $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
-
-        $whereClauses = $params = array();
+        $whereClauses  = $params = array();
 
         foreach ($mapping['relationToSourceKeyColumns'] as $key => $value) {
             $whereClauses[] = sprintf('t.%s = ?', $key);
@@ -572,7 +571,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         foreach ($parameters as $parameter) {
             list($name, $value) = $parameter;
-            $whereClauses[]     = sprintf("te.%s = ?", $name);
+            $whereClauses[]     = sprintf('te.%s = ?', $name);
             $params[]           = $value;
         }
 
