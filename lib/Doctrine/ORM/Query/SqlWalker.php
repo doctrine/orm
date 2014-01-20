@@ -991,24 +991,28 @@ class SqlWalker implements TreeWalker
                     'condition' => implode(' AND ', $conditions),
                 );
                 break;
+
+            default:
+                throw new \BadMethodCallException('Type of association must be one of *_TO_ONE or MANY_TO_MANY');
         }
 
         // Handle WITH clause
-        $withCondition = (null !== $condExpr) ? ('(' . $this->walkConditionalExpression($condExpr) . ')') : '';
+        $withCondition = (null === $condExpr) ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
 
         if ($targetClass->isInheritanceTypeJoined()) {
             $ctiJoins = $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
             // If we have WITH condition, we need to build nested joins for target class table and cti joins
             if ($withCondition) {
-                $sql .= '(' . $targetTableJoin['table'] . $ctiJoins . ') ON ' . $targetTableJoin['condition'] . ' AND ' . $withCondition;
+                $sql .= '(' . $targetTableJoin['table'] . $ctiJoins . ') ON ' . $targetTableJoin['condition'];
             } else {
                 $sql .= $targetTableJoin['table'] . ' ON ' . $targetTableJoin['condition'] . $ctiJoins;
             }
         } else {
             $sql .= $targetTableJoin['table'] . ' ON ' . $targetTableJoin['condition'];
-            if ($withCondition) {
-                $sql .= ' AND ' . $withCondition;
-            }
+        }
+
+        if ($withCondition) {
+            $sql .= ' AND ' . $withCondition;
         }
 
         // Apply the indexes
