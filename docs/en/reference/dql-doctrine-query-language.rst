@@ -509,7 +509,7 @@ And then use the ``NEW`` DQL keyword :
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, a.city, SUM(o.value)) FROM Customer c JOIN c.email e JOIN c.address a JOIN c.orders o GROUP BY c');
     $users = $query->getResult(); // array of CustomerDTO
 
-Note that you cannot pass entities as constructor parameters for now.
+Note that you can only pass scalar expressions to the constructor.
 
 Using INDEX BY
 ~~~~~~~~~~~~~~
