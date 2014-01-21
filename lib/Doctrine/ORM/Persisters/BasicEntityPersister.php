@@ -1164,7 +1164,7 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            if ( ! (($assoc['type'] & ClassMetadata::TO_ONE) && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide']) || ($assoc['fetch'] === ClassMetadata::FETCH_EAGER && $assoc['type'] === ClassMetadata::ONE_TO_MANY))) {
+            if (!$this->shouldBeFetchedEagerly($assoc)) {
                 continue;
             }
 
@@ -1238,6 +1238,16 @@ class BasicEntityPersister implements EntityPersister
         $this->selectColumnListSql = implode(', ', $columnList);
 
         return $this->selectColumnListSql;
+    }
+
+    /**
+     * @param array $assoc
+     *
+     * @return bool
+     */
+    private function shouldBeFetchedEagerly(array $assoc)
+    {
+         return $assoc['type'] !== ClassMetadata::MANY_TO_MANY && ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] & ClassMetadata::TO_ONE && !$assoc['isOwningSide']));
     }
 
     /**
