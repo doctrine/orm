@@ -1466,6 +1466,10 @@ class Parser
 
         switch (true) {
 
+            case ($this->isFunction($peek)):
+                $expr = $this->FunctionDeclaration();
+                break;
+
             case ($this->isMathOperator($peek)):
                 $expr = $this->SimpleArithmeticExpression();
 
