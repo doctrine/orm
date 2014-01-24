@@ -281,6 +281,71 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
+     * Gets an association entity instance.
+     *
+     * @param array $data
+     * @param string $dqlAlias
+     *
+     * @return object The associated entity.
+     *
+     * @throws HydrationException
+     */
+    private function getAssociatedEntity(array $data, $dqlAlias)
+    {
+        $className = $this->_rsm->aliasMap[$dqlAlias];
+
+        if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
+            if ( ! isset($this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]])) {
+                throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $this->_rsm->discriminatorColumns[$dqlAlias], $dqlAlias);
+            }
+
+            $discrColumn = $this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]];
+
+            if ( ! isset($data[$discrColumn])) {
+                throw HydrationException::missingDiscriminatorColumn($className, $discrColumn, $dqlAlias);
+            }
+
+            if ($data[$discrColumn] === '') {
+                throw HydrationException::emptyDiscriminatorValue($dqlAlias);
+            }
+
+            $className = $this->ce[$className]->discriminatorMap[$data[$discrColumn]];
+
+            unset($data[$discrColumn]);
+        }
+
+        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY]) && isset($this->rootAliases[$dqlAlias])) {
+            $this->registerManaged($this->ce[$className], $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
+        }
+
+        $refresh = $refreshEntity = null;
+
+        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY])) {
+            $refreshEntity = $this->_hints[Query::HINT_REFRESH_ENTITY];
+        }
+
+        if (isset($this->_hints[Query::HINT_REFRESH])) {
+            $refresh = $this->_hints[Query::HINT_REFRESH];
+        }
+
+        unset($this->_hints[Query::HINT_REFRESH_ENTITY], $this->_hints[Query::HINT_REFRESH]);
+
+        $this->_hints['fetchAlias'] = $dqlAlias;
+
+        $entity = $this->_uow->createEntity($className, $data, $this->_hints);
+
+        if (isset($refreshEntity)) {
+            $this->_hints[Query::HINT_REFRESH_ENTITY] = $refreshEntity;
+        }
+
+        if (isset($refresh)) {
+            $this->_hints[Query::HINT_REFRESH] = $refresh;
+        }
+
+        return $entity;
+    }
+
+    /**
      * @param string $className
      * @param array  $data
      *
@@ -440,7 +505,7 @@ class ObjectHydrator extends AbstractHydrator
                                     unset($this->resultPointers[$dqlAlias]);
                                 }
                             } else {
-                                $element = $this->getEntity($data, $dqlAlias);
+                                $element = $this->getAssociatedEntity($data, $dqlAlias);
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                                     $indexValue = $row[$this->_rsm->indexByMap[$dqlAlias]];
@@ -471,7 +536,7 @@ class ObjectHydrator extends AbstractHydrator
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an unitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
-                            $element = $this->getEntity($data, $dqlAlias);
+                            $element = $this->getAssociatedEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->ce[$relation['targetEntity']];
