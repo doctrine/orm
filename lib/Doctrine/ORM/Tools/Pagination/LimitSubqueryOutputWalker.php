@@ -17,6 +17,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 
 /**
  * Wraps the query in order to select root entity IDs for pagination.
@@ -165,8 +166,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
             implode(', ', $sqlIdentifier), $innerSql);
 
         if ($this->platform instanceof PostgreSqlPlatform ||
-            $this->platform instanceof OraclePlatform) {
+            $this->platform instanceof OraclePlatform ||
+            $this->platform instanceof MySqlPlatform) {
             // http://www.doctrine-project.org/jira/browse/DDC-1958
+            // Warxcell: Same problem occurs in MySQL
             $this->preserveSqlOrdering($AST, $sqlIdentifier, $innerSql, $sql);
         }
 
