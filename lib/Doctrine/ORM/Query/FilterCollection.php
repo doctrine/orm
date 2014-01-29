@@ -103,14 +103,8 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if ( ! $this->has($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
-        }
-
-        if ( ! $this->isEnabled($name)) {
-            $filterClass = $this->config->getFilterClassName($name);
-
-            $this->enabledFilters[$name] = new $filterClass($this->em);
+        if (!isset($this->enabledFilters[$name])) {
+            $this->enabledFilters[$name] = $this->createFilterClass($name);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
@@ -120,6 +114,20 @@ class FilterCollection
         }
 
         return $this->enabledFilters[$name];
+    }
+
+    /**
+     *
+     * @param string $name
+     * @throws \InvalidArgumentException
+     * @return \Doctrine\ORM\Query\Filter\SQLFilter
+     */
+    protected function createFilterClass($name)
+    {
+        if (null === $filterClass = $this->config->getFilterClassName($name)) {
+            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+        }
+        return new $filterClass($this->em);
     }
 
     /**
@@ -176,16 +184,16 @@ class FilterCollection
 
     /**
      * Checks if a filter is enabled.
-     * 
+     *
      * @param string $name Name of the filter.
-     * 
+     *
      * @return boolean True if the filter is enabled, false otherwise.
      */
     public function isEnabled($name)
     {
         return isset($this->enabledFilters[$name]);
     }
-    
+
     /**
      * @return boolean True, if the filter collection is clean.
      */
@@ -207,7 +215,6 @@ class FilterCollection
         }
 
         $filterHash = '';
-
         foreach ($this->enabledFilters as $name => $filter) {
             $filterHash .= $name . $filter;
         }

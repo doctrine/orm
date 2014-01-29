@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Decorator;
 
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Persistence\ObjectManagerDecorator;
@@ -250,6 +251,14 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     public function getFilters()
     {
         return $this->wrapped->getFilters();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFilters(FilterCollection $filters)
+    {
+        return $this->wrapped->setFilters($filters);
     }
 
     /**
