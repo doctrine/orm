@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Responsible for creating filters
  *
- * Inject custom implementation into FilterCollection to override
+ * Inject custom implementation into Configuration to override
  * @author Nico Schoenmaker <nschoenmaker@hostnet.nl>
  */
 interface FilterFactory
