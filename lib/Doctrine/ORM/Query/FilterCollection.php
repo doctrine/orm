@@ -19,10 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Filter\FilterFactory;
-use Doctrine\ORM\Query\Filter\FilterFactoryInterface;
 
 /**
  * Collection class for all the query filters.
@@ -68,7 +66,7 @@ class FilterCollection
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
     /**
-     * @var \Doctrine\ORM\Query\Filter\FilterFactoryInterface
+     * @var \Doctrine\ORM\Query\Filter\FilterFactory
      */
     private $filterFactory;
 
@@ -98,17 +96,10 @@ class FilterCollection
     private function getFilterFactory()
     {
         if (! $this->filterFactory) {
-            $this->filterFactory = new FilterFactory($this->em);
+            $this->filterFactory = $this->em->getConfiguration()->getFilterFactory();
+            $this->filterFactory->setEntityManager($this->em);
         }
         return $this->filterFactory;
-    }
-
-    /**
-     * @param FilterFactoryInterface $filterFactory
-     */
-    public function setFilterFactory(FilterFactoryInterface $filterFactory)
-    {
-        $this->filterFactory = $filterFactory;
     }
 
     /**

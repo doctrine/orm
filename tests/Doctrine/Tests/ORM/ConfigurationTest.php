@@ -346,6 +346,18 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
+
+    /**
+     * @group DDC-2940
+     */
+    public function testSetGetFilterFactory()
+    {
+      $mockClass = $this->getMock('Doctrine\ORM\Query\Filter\FilterFactory');
+
+      $this->assertInstanceOf('Doctrine\ORM\Query\Filter\DefaultFilterFactory', $this->configuration->getFilterFactory());
+      $this->configuration->setFilterFactory($mockClass);
+      $this->assertEquals($mockClass, $this->configuration->getFilterFactory());
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker

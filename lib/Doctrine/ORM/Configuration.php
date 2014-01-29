@@ -25,9 +25,9 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
@@ -35,6 +35,8 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
+use Doctrine\ORM\Query\Filter\FilterFactory;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 
@@ -672,6 +674,26 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['filters'][$name])
             ? $this->_attributes['filters'][$name]
             : null;
+    }
+
+    /**
+     * Sets the factory used to create filters
+     * @param FilterFactory $filterFactory
+     */
+    public function setFilterFactory(FilterFactory $filterFactory)
+    {
+        $this->_attributes['filterFactory'] = $filterFactory;
+    }
+
+    /**
+     * Get the factory used to create filters
+     * @return \Doctrine\ORM\Query\Filter\FilterFactory
+     */
+    public function getFilterFactory()
+    {
+        return isset($this->_attributes['filterFactory'])
+            ? $this->_attributes['filterFactory']
+            : new DefaultFilterFactory();
     }
 
     /**

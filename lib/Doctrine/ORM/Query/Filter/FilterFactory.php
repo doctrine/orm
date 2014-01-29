@@ -22,47 +22,31 @@ namespace Doctrine\ORM\Query\Filter;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Default create-a-filter implementation
+ * Responsible for creating filters
+ *
+ * Inject custom implementation into FilterCollection to override
  * @author Nico Schoenmaker <nschoenmaker@hostnet.nl>
  */
-class FilterFactory implements FilterFactoryInterface
+interface FilterFactory
 {
     /**
-     * The used Configuration.
-     *
-     * @var \Doctrine\ORM\Configuration
+     * Set the current entity manager
+     * @param EntityManagerInterface $em
      */
-    private $config;
+    public function setEntityManager(EntityManagerInterface $em);
 
     /**
-     * The EntityManager that "owns" this FilterFactory instance.
-     *
-     * @var \Doctrine\ORM\EntityManager
+     * Can I create a filter with the given name?
+     * @param string $name
+     * @return bool
      */
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
-        $this->config = $em->getConfiguration();
-    }
+    public function canCreate($name);
 
     /**
-     * {@inheritDoc}
+     * Creates a filter by that name
+     * @param string $name
+     * @throws \InvalidArgumentException If filter with that name doesn't exist
+     * @return SQLFilter
      */
-    public function canCreate($name)
-    {
-        return null !== $this->config->getFilterClassName($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createFilter($name)
-    {
-      if (null === $filterClass = $this->config->getFilterClassName($name)) {
-        throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
-      }
-      return new $filterClass($this->em);
-    }
+    public function createFilter($name);
 }
