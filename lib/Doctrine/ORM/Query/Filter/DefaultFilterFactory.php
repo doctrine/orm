@@ -51,7 +51,7 @@ class DefaultFilterFactory implements FilterFactory
         return $this->em;
     }
 
-    private function getConfig()
+    protected function getConfig()
     {
         return $this->getEntityManager()->getConfiguration();
     }
