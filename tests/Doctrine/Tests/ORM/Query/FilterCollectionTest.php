@@ -47,6 +47,23 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertTrue($filterCollection->has('testFilter'));
         $this->assertFalse($filterCollection->has('fakeFilter'));
+
+        // And try with a custom factory
+        $factory = $this->getMock('Doctrine\ORM\Query\Filter\FilterFactoryInterface');
+        $factory->expects($this->once())
+            ->method('canCreate')
+            ->with('testFilter')
+            ->will($this->returnValue(true));
+        $filterCollection->setFilterFactory($factory);
+        $this->assertTrue($filterCollection->has('testFilter'));
+
+        $factory = $this->getMock('Doctrine\ORM\Query\Filter\FilterFactoryInterface');
+        $factory->expects($this->once())
+            ->method('canCreate')
+            ->with('testFilter')
+            ->will($this->returnValue(false));
+        $filterCollection->setFilterFactory($factory);
+        $this->assertFalse($filterCollection->has('testFilter'));
     }
 
     /**

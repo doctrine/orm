@@ -19,7 +19,10 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Filter\FilterFactory;
+use Doctrine\ORM\Query\Filter\FilterFactoryInterface;
 
 /**
  * Collection class for all the query filters.
@@ -41,16 +44,9 @@ class FilterCollection
     const FILTERS_STATE_DIRTY = 2;
 
     /**
-     * The used Configuration.
-     *
-     * @var \Doctrine\ORM\Configuration
-     */
-    private $config;
-
-    /**
      * The EntityManager that "owns" this FilterCollection instance.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -72,6 +68,11 @@ class FilterCollection
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
     /**
+     * @var \Doctrine\ORM\Query\Filter\FilterFactoryInterface
+     */
+    private $filterFactory;
+
+    /**
      * Constructor.
      *
      * @param EntityManagerInterface $em
@@ -79,7 +80,6 @@ class FilterCollection
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-        $this->config = $em->getConfiguration();
     }
 
     /**
@@ -90,6 +90,25 @@ class FilterCollection
     public function getEnabledFilters()
     {
         return $this->enabledFilters;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Query\Filter\FilterFactory
+     */
+    private function getFilterFactory()
+    {
+        if (! $this->filterFactory) {
+            $this->filterFactory = new FilterFactory($this->em);
+        }
+        return $this->filterFactory;
+    }
+
+    /**
+     * @param FilterFactoryInterface $filterFactory
+     */
+    public function setFilterFactory(FilterFactoryInterface $filterFactory)
+    {
+        $this->filterFactory = $filterFactory;
     }
 
     /**
@@ -104,7 +123,7 @@ class FilterCollection
     public function enable($name)
     {
         if (!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = $this->createFilterClass($name);
+            $this->enabledFilters[$name] = $this->getFilterFactory()->createFilter($name);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
@@ -114,20 +133,6 @@ class FilterCollection
         }
 
         return $this->enabledFilters[$name];
-    }
-
-    /**
-     *
-     * @param string $name
-     * @throws \InvalidArgumentException
-     * @return \Doctrine\ORM\Query\Filter\SQLFilter
-     */
-    protected function createFilterClass($name)
-    {
-        if (null === $filterClass = $this->config->getFilterClassName($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
-        }
-        return new $filterClass($this->em);
     }
 
     /**
@@ -179,7 +184,7 @@ class FilterCollection
      */
     public function has($name)
     {
-        return null !== $this->config->getFilterClassName($name);
+        return $this->getFilterFactory()->canCreate($name);
     }
 
     /**

@@ -865,16 +865,6 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function setFilters(FilterCollection $filters)
-    {
-        if (null === $this->filterCollection) {
-            $this->filterCollection = $filters;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function isFiltersStateClean()
     {
         return null === $this->filterCollection || $this->filterCollection->isClean();

@@ -20,7 +20,6 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
@@ -280,13 +279,6 @@ interface EntityManagerInterface extends ObjectManager
      * @return \Doctrine\ORM\Query\FilterCollection The active filter collection.
      */
     public function getFilters();
-
-    /**
-     * Use the given filter collection
-     * Optional function, by default the entity manager will create it's own
-     * @param FilterCollection $filters
-     */
-    public function setFilters(FilterCollection $filters);
 
     /**
      * Checks whether the state of the filter collection is clean.

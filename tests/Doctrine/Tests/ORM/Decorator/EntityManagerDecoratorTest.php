@@ -2,10 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Decorator;
 
-
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
@@ -36,13 +34,7 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
             if ($method->getName() === 'createNativeQuery') {
                 $methods[] = array($method->getName(), array('name', new ResultSetMapping()));
                 continue;
-            } else if ($method->getName() === 'setFilters') {
-                $em = $this->getMockBuilder('Doctrine\ORM\EntityManager')->
-                    disableOriginalConstructor()->getMock();
-                $methods[] = array($method->getName(), array(new FilterCollection($em)));
-                continue;
             }
-
 
             if ($method->getNumberOfRequiredParameters() === 0) {
                 $methods[] = array($method->getName(), array());
