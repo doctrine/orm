@@ -97,7 +97,6 @@ class FilterCollection
     {
         if (! $this->filterFactory) {
             $this->filterFactory = $this->em->getConfiguration()->getFilterFactory();
-            $this->filterFactory->setEntityManager($this->em);
         }
         return $this->filterFactory;
     }
@@ -114,7 +113,7 @@ class FilterCollection
     public function enable($name)
     {
         if (!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = $this->getFilterFactory()->createFilter($name);
+            $this->enabledFilters[$name] = $this->getFilterFactory()->createFilter($this->em, $name);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
@@ -175,7 +174,7 @@ class FilterCollection
      */
     public function has($name)
     {
-        return $this->getFilterFactory()->canCreate($name);
+        return $this->getFilterFactory()->canCreate($this->em, $name);
     }
 
     /**

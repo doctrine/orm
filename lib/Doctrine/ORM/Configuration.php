@@ -678,6 +678,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Sets the factory used to create filters
+     *
+     * @since 2.5
+     *
      * @param FilterFactory $filterFactory
      */
     public function setFilterFactory(FilterFactory $filterFactory)
@@ -687,13 +690,17 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Get the factory used to create filters
+     *
+     * @since 2.5
+     *
      * @return \Doctrine\ORM\Query\Filter\FilterFactory
      */
     public function getFilterFactory()
     {
-        return isset($this->_attributes['filterFactory'])
-            ? $this->_attributes['filterFactory']
-            : new DefaultFilterFactory();
+        if ( ! isset($this->_attributes['filterFactory'])) {
+          $this->_attributes['filterFactory'] = new DefaultFilterFactory();
+        }
+        return $this->_attributes['filterFactory'];
     }
 
     /**
