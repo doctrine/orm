@@ -37,7 +37,7 @@ class EntityManagerHelper extends Helper
     /**
      * Doctrine ORM EntityManager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $_em;
 
@@ -46,7 +46,7 @@ class EntityManagerHelper extends Helper
      *
      * @param \Doctrine\ORM\EntityManager $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->_em = $em;
     }
