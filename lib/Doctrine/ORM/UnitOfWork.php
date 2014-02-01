@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\DBAL\LockMode;
 use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -2306,8 +2307,8 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        switch ($lockMode) {
-            case \Doctrine\DBAL\LockMode::OPTIMISTIC;
+        switch (true) {
+            case LockMode::OPTIMISTIC === $lockMode;
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
@@ -2324,8 +2325,9 @@ class UnitOfWork implements PropertyChangedListener
 
                 break;
 
-            case \Doctrine\DBAL\LockMode::PESSIMISTIC_READ:
-            case \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE:
+            case LockMode::NONE === $lockMode:
+            case LockMode::PESSIMISTIC_READ === $lockMode:
+            case LockMode::PESSIMISTIC_WRITE === $lockMode:
                 if (!$this->em->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
@@ -2611,7 +2613,7 @@ class UnitOfWork implements PropertyChangedListener
 
                         // use the given entity association
                         if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_hash($data[$field])])) {
-                            
+
                             $this->originalEntityData[$oid][$field] = $data[$field];
 
                             $class->reflFields[$field]->setValue($entity, $data[$field]);

@@ -296,7 +296,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null)
     {
         $joinSql            = '';
         $identifierColumn   = $this->class->getIdentifierColumnNames();
@@ -374,11 +374,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $from       = ' FROM ' . $tableName . ' ' . $baseTableAlias;
         $where      = $conditionSql != '' ? ' WHERE ' . $conditionSql : '';
+        $lock       = $this->platform->appendLockHint($from, $lockMode);
         $columnList = $this->getSelectColumnsSQL();
         $query      = 'SELECT '  . $columnList
-                    . ' FROM '
-                    . $tableName . ' ' . $baseTableAlias
+                    . $lock
                     . $joinSql
                     . $where
                     . $orderBySql;

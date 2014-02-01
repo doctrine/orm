@@ -20,10 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-
-use Doctrine\DBAL\LockMode;
 use Doctrine\Common\Persistence\ObjectRepository;
-
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -145,12 +142,14 @@ class EntityRepository implements ObjectRepository, Selectable
      * Finds an entity by its primary key / identifier.
      *
      * @param mixed    $id          The identifier.
-     * @param int      $lockMode    The lock mode.
+     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
+     *                              or NULL if no specific lock mode should be used
+     *                              during the search.
      * @param int|null $lockVersion The lock version.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      */
-    public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($id, $lockMode = null, $lockVersion = null)
     {
         return $this->_em->find($this->_entityName, $id, $lockMode, $lockVersion);
     }
@@ -194,7 +193,7 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
-        return $persister->load($criteria, null, null, array(), 0, 1, $orderBy);
+        return $persister->load($criteria, null, null, array(), null, 1, $orderBy);
     }
 
     /**
