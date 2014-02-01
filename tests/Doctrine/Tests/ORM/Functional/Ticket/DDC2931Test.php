@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Query;
+
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
@@ -24,9 +26,9 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $first = new DDC2931User();
+        $first  = new DDC2931User();
         $second = new DDC2931User();
-        $third = new DDC2931User();
+        $third  = new DDC2931User();
 
         $second->parent = $first;
         $third->parent  = $second;
@@ -41,6 +43,45 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $second = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC2931User', $second->id);
 
         $this->assertSame(2, $second->getRank());
+    }
+
+    public function testFetchJoinedEntitiesCanBeRefreshed()
+    {
+        $first  = new DDC2931User();
+        $second = new DDC2931User();
+        $third  = new DDC2931User();
+
+        $second->parent = $first;
+        $third->parent  = $second;
+
+        $first->value  = 1;
+        $second->value = 2;
+        $third->value  = 3;
+
+        $this->_em->persist($first);
+        $this->_em->persist($second);
+        $this->_em->persist($third);
+
+        $this->_em->flush();
+
+        $first->value  = 4;
+        $second->value = 5;
+        $third->value  = 6;
+
+        $refreshedSecond = $this
+            ->_em
+            ->createQuery(
+                'SELECT e, p, c FROM '
+                . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id'
+            )
+            ->setParameter('id', $second)
+            ->setHint(Query::HINT_REFRESH, true)
+            ->getResult();
+
+        $this->assertCount(1, $refreshedSecond);
+        $this->assertSame(1, $first->value);
+        $this->assertSame(2, $second->value);
+        $this->assertSame(3, $third->value);
     }
 }
 
@@ -57,6 +98,9 @@ class DDC2931User
 
     /** @OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
     public $child;
+
+    /** @Column(type="integer") */
+    public $value = 0;
 
     /**
      * Return Rank recursively
