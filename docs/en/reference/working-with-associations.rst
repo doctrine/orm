@@ -702,3 +702,8 @@ methods:
 * ``notIn($field, array $values)``
 
 
+.. note::
+
+    There is a limitation on the compatibility of Criteria comparisons.
+    You have to use scalar values only as the value in a comparison or
+    the behaviour between different backends is not the same.
