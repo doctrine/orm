@@ -2905,11 +2905,15 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
-     * @return array The identifier values.
+     * @return array The identifier values, or an empty array if no identifiers were found
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)];
+        $soh = spl_object_hash($entity);
+        if(!isset($this->entityIdentifiers[$soh])) {
+            return array();
+        }
+        return $this->entityIdentifiers[$soh];
     }
 
     /**
