@@ -246,4 +246,17 @@ class NativePhpunitPrinter extends PHPUnit_Util_Printer implements PHPUnit_Frame
     {
 
     }
+    
+    /**
+     * Risky test.
+     *
+     * @param PHPUnit_Framework_Test $test
+     * @param Exception              $e
+     * @param float                  $time
+     * @since  Method available since Release 3.8.0
+     */
+    public function addRiskyTest(PHPUnit_Framework_Test $test, Exception $e, $time)
+    {
+    	// Stub out to support PHPUnit 3.8
+    }
 }
