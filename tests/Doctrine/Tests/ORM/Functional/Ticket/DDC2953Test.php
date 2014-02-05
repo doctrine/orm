@@ -33,41 +33,6 @@ class DDC2953Test extends OrmFunctionalTestCase
      */
     public function testMultipleJoinsDoNotBreakArrayHydrationOnMisSortedIndexes()
     {
-        /*$foo1 = new DDC2953Foo();
-        $foo2 = new DDC2953Foo();
-        $bar  = new DDC2953Bar();
-        $baz1 = new DDC2953Baz();
-        $baz2 = new DDC2953Baz();
-        $baz3 = new DDC2953Baz();
-
-        $foo1->bar = $bar;
-        $foo2->bar = $bar;
-
-        $bar->baz[] = $baz1;
-        $bar->baz[] = $baz2;
-        $bar->baz[] = $baz3;
-        $baz1->bar  = $bar;
-        $baz2->bar  = $bar;
-        $baz3->bar  = $bar;
-
-        $this->_em->persist($foo1);
-        $this->_em->persist($foo2);
-        $this->_em->persist($bar);
-        $this->_em->persist($baz1);
-        $this->_em->persist($baz2);
-        $this->_em->persist($baz3);
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $results = $this
-            ->_em
-            ->createQuery(
-                'SELECT foo, bar, baz FROM ' . DDC2953Foo::CLASSNAME
-                . ' foo LEFT JOIN foo.bar bar LEFT JOIN bar.baz baz'
-                . ' ORDER BY bar.id ASC, baz.id ASC, foo.id ASC'
-            )->getArrayResult();*/
-
         $rsmb = new ResultSetMappingBuilder($this->_em);
 
         $rsmb->addEntityResult(DDC2953Foo::CLASSNAME, 'foo');
@@ -76,7 +41,9 @@ class DDC2953Test extends OrmFunctionalTestCase
 
         $rsmb->addFieldResult('foo', 'foo_id', 'id');
         $rsmb->addMetaResult('foo', 'bar_id', 'bar');
+        $rsmb->addFieldResult('bar', 'bar_id', 'id');
         $rsmb->addMetaResult('baz', 'baz_id', 'bar');
+        $rsmb->addFieldResult('baz', 'baz_id', 'id');
 
         $index   = 0;
         $results = array(
