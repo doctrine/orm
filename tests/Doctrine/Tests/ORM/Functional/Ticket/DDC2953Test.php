@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -24,9 +25,9 @@ class DDC2953Test extends OrmFunctionalTestCase
     {
         $rsmb = new ResultSetMappingBuilder($this->_em);
 
-        $rsmb->addEntityResult(DDC2953Foo::CLASSNAME, 'foo');
-        $rsmb->addJoinedEntityResult(DDC2953Bar::CLASSNAME, 'bar', 'foo', 'bar');
-        $rsmb->addJoinedEntityResult(DDC2953Baz::CLASSNAME, 'baz', 'bar', 'baz');
+        $rsmb->addEntityResult(__NAMESPACE__ . '\\DDC2953Foo', 'foo');
+        $rsmb->addJoinedEntityResult(__NAMESPACE__ . '\\DDC2953Bar', 'bar', 'foo', 'bar');
+        $rsmb->addJoinedEntityResult(__NAMESPACE__ . '\\DDC2953Baz', 'baz', 'bar', 'baz');
 
         $rsmb->addFieldResult('foo', 'foo_id', 'id');
         $rsmb->addMetaResult('foo', 'bar_id', 'bar');
@@ -34,33 +35,17 @@ class DDC2953Test extends OrmFunctionalTestCase
         $rsmb->addMetaResult('baz', 'baz_id', 'bar');
         $rsmb->addFieldResult('baz', 'baz_id', 'id');
 
-        $index   = 0;
-        $results = array(
+        $results = new HydratorMockStatement(array(
             array('foo_id' => 1, 'bar_id' => 1, 'baz_id' => 1),
             array('foo_id' => 1, 'bar_id' => 1, 'baz_id' => 2),
             array('foo_id' => 2, 'bar_id' => 1, 'baz_id' => 3),
             array('foo_id' => 2, 'bar_id' => 1, 'baz_id' => 1),
             array('foo_id' => 2, 'bar_id' => 1, 'baz_id' => 2),
             array('foo_id' => 1, 'bar_id' => 1, 'baz_id' => 3),
-        );
-
-        $stmt = $this->getMock('stdClass', array('fetch', 'closeCursor'));
-
-        $stmt->expects($this->any())->method('fetch')->will($this->returnCallback(function () use ($results, & $index) {
-            if (isset($results[$index])) {
-                $result = $results[$index];
-
-                $index += 1;
-
-                return $result;
-            }
-
-            return false;
-        }));
+        ));
 
         $hydrator = new ArrayHydrator($this->_em);
-
-        $results = $hydrator->hydrateAll($stmt, $rsmb);
+        $results  = $hydrator->hydrateAll($results, $rsmb);
 
         $this->assertCount(2, $results);
         $this->assertCount(3, $results[0]['bar']['baz']);
@@ -71,8 +56,6 @@ class DDC2953Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2953Foo
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
@@ -83,8 +66,6 @@ class DDC2953Foo
 /** @Entity */
 class DDC2953Bar
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
@@ -100,8 +81,6 @@ class DDC2953Bar
 /** @Entity */
 class DDC2953Baz
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
