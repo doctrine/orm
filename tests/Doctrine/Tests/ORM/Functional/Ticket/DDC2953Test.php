@@ -14,17 +14,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2953Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(DDC2953Foo::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2953Bar::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2953Baz::CLASSNAME),
-        ));
-    }
-
     /**
      * @group DDC-2953
      *
