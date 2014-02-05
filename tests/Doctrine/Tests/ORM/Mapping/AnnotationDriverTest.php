@@ -181,10 +181,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationChild');
-        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        $this->assertEquals(array("postLoad" => array("postLoad" => "postLoad"), "preUpdate" => array("preUpdate" => "preUpdate")), $cm->lifecycleCallbacks);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationParent');
-        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        $this->assertEquals(array("postLoad" => array("postLoad" => "postLoad"), "preUpdate" => array("preUpdate" => "preUpdate")), $cm->lifecycleCallbacks);
     }
 
     /**

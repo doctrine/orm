@@ -2543,6 +2543,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Adds a lifecycle callback for entities of this class.
      *
+     * If the callback is already registered, this is a NOOP.
+     *
      * @param string $callback
      * @param string $event
      *
@@ -2550,7 +2552,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addLifecycleCallback($callback, $event)
     {
-        $this->lifecycleCallbacks[$event][] = $callback;
+        if ( ! isset($this->lifecycleCallbacks[$event][$callback])) {
+            $this->lifecycleCallbacks[$event][$callback] = $callback;
+        }
     }
 
     /**

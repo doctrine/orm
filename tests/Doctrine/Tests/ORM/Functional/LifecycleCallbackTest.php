@@ -155,7 +155,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testLifecycleCallbacksGetInherited()
     {
         $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
-        $this->assertEquals(array('prePersist' => array(0 => 'doStuff')), $childMeta->lifecycleCallbacks);
+        $this->assertEquals(array('prePersist' => array('doStuff' => 'doStuff')), $childMeta->lifecycleCallbacks);
     }
 
     public function testLifecycleListener_ChangeUpdateChangeSet()
