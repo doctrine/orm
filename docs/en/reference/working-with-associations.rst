@@ -41,14 +41,16 @@ information about its type and if it's the owning or inverse side.
         /**
          * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
          *
-         * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
+         * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")   
+         * @JoinTable(name="user_favorite_comments")
          */
         private $favorites;
     
         /**
          * Unidirectional - Many users have marked many comments as read
          *
-         * @ManyToMany(targetEntity="Comment")
+         * @ManyToMany(targetEntity="Comment")    
+         * @JoinTable(name="user_read_comments")
          */
         private $commentsRead;
     
