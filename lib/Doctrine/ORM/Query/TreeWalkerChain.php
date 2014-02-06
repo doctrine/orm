@@ -633,10 +633,10 @@ class TreeWalkerChain implements TreeWalker
     private function getWalker($walkerClass)
     {
         $key = array_search($walkerClass, $this->_walkersClasses);
-        if (isset($this->_walkers[$key])) {
-            return $this->_walkers[$key];
+        if (!isset($this->_walkers[$key])) {
+            $this->_walkers[$key] = new $walkerClass($this->_query, $this->_parserResult, $this->_queryComponents);
         }
 
-        return new $walkerClass($this->_query, $this->_parserResult, $this->_queryComponents);
+        return $this->_walkers[$key];
     }
 }
