@@ -79,7 +79,6 @@ class ArrayHydrator extends AbstractHydrator
         $this->_resultCounter  = 0;
 
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
-            $this->_identifierMap[$dqlAlias]  = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias]     = '';
         }
