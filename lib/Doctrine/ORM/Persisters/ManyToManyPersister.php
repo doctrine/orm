@@ -349,9 +349,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $associationSourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
             $mapping  = $associationSourceClass->associationMappings[$mapping['mappedBy']];
             $joinColumns = $mapping['joinTable']['joinColumns'];
+            $relationMode = 'relationToTargetKeyColumns';
         } else {
             $joinColumns = $mapping['joinTable']['inverseJoinColumns'];
             $associationSourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+            $relationMode = 'relationToSourceKeyColumns';
         }
 
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform). ' t';
@@ -375,13 +377,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-
-
-            if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
+            if (isset($mapping[$relationMode][$joinTableColumn])) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $targetEntity->containsForeignIdentifier
-                 ? $id[$targetEntity->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])]
-                 : $id[$targetEntity->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                 ? $id[$targetEntity->getFieldForColumn($mapping[$relationMode][$joinTableColumn])]
+                 : $id[$targetEntity->fieldNames[$mapping[$relationMode][$joinTableColumn]]];
             } elseif (!$joinNeeded) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $key;
