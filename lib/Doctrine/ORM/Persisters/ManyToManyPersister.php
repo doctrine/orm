@@ -364,12 +364,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $joinConditions = array();
 
             foreach ($joinColumns as $joinTableColumn) {
-                $joinConditions[] = 't.'.$joinTableColumn['name'].' = tr.'.$joinTableColumn['referencedColumnName'];
+                $joinConditions[] = 't.' . $joinTableColumn['name'] . ' = tr.' . $joinTableColumn['referencedColumnName'];
             }
             $tableName = $this->quoteStrategy->getTableName($targetEntity, $this->platform);
-            $quotedJoinTable .= ' JOIN '. $tableName. ' tr ON '.implode(' AND ', $joinConditions);
+            $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
 
-            $whereClauses[] = 'tr.'.$targetEntity->getColumnName($indexBy).' = ?';
+            $whereClauses[] = 'tr.' . $targetEntity->getColumnName($indexBy) . ' = ?';
             $params[] = $key;
 
         }
