@@ -274,7 +274,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
         return (bool) $this->conn->fetchColumn($sql, $params);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -341,15 +341,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $filterMapping  = $coll->getMapping();
         $mapping        = $filterMapping;
         $indexBy        = $mapping['indexBy'];
-        $wasOwning      = $mapping['isOwningSide'];
         $id             = $uow->getEntityIdentifier($coll->getOwner());
 
         $targetEntity   = $this->em->getClassMetadata($mapping['targetEntity']);
 
         if (! $mapping['isOwningSide']) {
             $associationSourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
-            $mapping = $associationSourceClass->associationMappings[$mapping['mappedBy']];
+            $mapping  = $associationSourceClass->associationMappings[$mapping['mappedBy']];
+            $joinColumns = $mapping['joinTable']['joinColumns'];
         } else {
+            $joinColumns = $mapping['joinTable']['inverseJoinColumns'];
             $associationSourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         }
 
@@ -361,7 +362,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         if ($joinNeeded) { // extra join needed if indexBy is not a @id
             $joinConditions = array();
-            foreach ($wasOwning?$mapping['joinTable']['inverseJoinColumns']:$mapping['joinTable']['joinColumns'] as $joinTableColumn) {
+
+            foreach ($joinColumns as $joinTableColumn) {
                 $joinConditions[] = 't.'.$joinTableColumn['name'].' = tr.'.$joinTableColumn['referencedColumnName'];
             }
             $tableName = $this->quoteStrategy->getTableName($targetEntity, $this->platform);
@@ -397,6 +399,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         return array($quotedJoinTable, $whereClauses, $params);
     }
+
     /**
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param object                             $element

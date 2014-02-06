@@ -758,6 +758,5 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->topic = $article1->topic;
         $this->phonenumber = $phonenumber1->phonenumber;
 
-
     }
 }
