@@ -97,7 +97,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSupportsSeveralHintsQueriesWithoutWhere()
+    public function testSupportsSeveralHintsQueries()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
