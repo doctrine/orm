@@ -32,16 +32,9 @@ class TreeWalkerChain implements TreeWalker
     /**
      * The tree walkers.
      *
-     * @var string[]
-     */
-    private $_walkersClasses = array();
-
-    /**
-     * The tree walkers.
-     *
      * @var TreeWalker[]
      */
-    private $_walkers = array();
+    private $_walkers;
 
     /**
      * The original Query.
@@ -96,6 +89,7 @@ class TreeWalkerChain implements TreeWalker
         $this->_query = $query;
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
+        $this->_walkers = new TreeWalkerChainIterator($this, $query, $parserResult);
     }
 
     /**
@@ -107,7 +101,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function addTreeWalker($walkerClass)
     {
-        $this->_walkersClasses[] = $walkerClass;
+        $this->_walkers[] = $walkerClass;
     }
 
     /**
@@ -115,8 +109,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSelectStatement($AST);
 
             $this->_queryComponents = $walker->getQueryComponents();
@@ -128,8 +121,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSelectClause($selectClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSelectClause($selectClause);
         }
     }
@@ -139,8 +131,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkFromClause($fromClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkFromClause($fromClause);
         }
     }
@@ -150,8 +141,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkFunction($function)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkFunction($function);
         }
     }
@@ -161,8 +151,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkOrderByClause($orderByClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkOrderByClause($orderByClause);
         }
     }
@@ -172,8 +161,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkOrderByItem($orderByItem)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkOrderByItem($orderByItem);
         }
     }
@@ -183,8 +171,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkHavingClause($havingClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkHavingClause($havingClause);
         }
     }
@@ -194,8 +181,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkJoin($join)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkJoin($join);
         }
     }
@@ -205,8 +191,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSelectExpression($selectExpression)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSelectExpression($selectExpression);
         }
     }
@@ -216,8 +201,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkQuantifiedExpression($qExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkQuantifiedExpression($qExpr);
         }
     }
@@ -227,8 +211,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSubselect($subselect)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSubselect($subselect);
         }
     }
@@ -238,8 +221,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSubselectFromClause($subselectFromClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSubselectFromClause($subselectFromClause);
         }
     }
@@ -249,8 +231,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSimpleSelectClause($simpleSelectClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSimpleSelectClause($simpleSelectClause);
         }
     }
@@ -260,8 +241,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSimpleSelectExpression($simpleSelectExpression)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSimpleSelectExpression($simpleSelectExpression);
         }
     }
@@ -271,8 +251,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkAggregateExpression($aggExpression)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkAggregateExpression($aggExpression);
         }
     }
@@ -282,8 +261,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkGroupByClause($groupByClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkGroupByClause($groupByClause);
         }
     }
@@ -293,8 +271,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkGroupByItem($groupByItem)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkGroupByItem($groupByItem);
         }
     }
@@ -304,8 +281,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkUpdateStatement($AST);
         }
     }
@@ -315,8 +291,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkDeleteStatement($AST);
         }
     }
@@ -326,8 +301,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkDeleteClause(AST\DeleteClause $deleteClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkDeleteClause($deleteClause);
         }
     }
@@ -337,8 +311,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkUpdateClause($updateClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkUpdateClause($updateClause);
         }
     }
@@ -348,8 +321,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkUpdateItem($updateItem)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkUpdateItem($updateItem);
         }
     }
@@ -359,8 +331,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkWhereClause($whereClause)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkWhereClause($whereClause);
         }
     }
@@ -370,8 +341,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkConditionalExpression($condExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkConditionalExpression($condExpr);
         }
     }
@@ -381,8 +351,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkConditionalTerm($condTerm)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkConditionalTerm($condTerm);
         }
     }
@@ -392,8 +361,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkConditionalFactor($factor)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkConditionalFactor($factor);
         }
     }
@@ -403,8 +371,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkConditionalPrimary($condPrimary)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkConditionalPrimary($condPrimary);
         }
     }
@@ -414,8 +381,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkExistsExpression($existsExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkExistsExpression($existsExpr);
         }
     }
@@ -425,8 +391,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkCollectionMemberExpression($collMemberExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkCollectionMemberExpression($collMemberExpr);
         }
     }
@@ -436,8 +401,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkEmptyCollectionComparisonExpression($emptyCollCompExpr);
         }
     }
@@ -447,8 +411,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkNullComparisonExpression($nullCompExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkNullComparisonExpression($nullCompExpr);
         }
     }
@@ -458,8 +421,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkInExpression($inExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkInExpression($inExpr);
         }
     }
@@ -469,8 +431,7 @@ class TreeWalkerChain implements TreeWalker
      */
     function walkInstanceOfExpression($instanceOfExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkInstanceOfExpression($instanceOfExpr);
         }
     }
@@ -480,8 +441,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkLiteral($literal)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkLiteral($literal);
         }
     }
@@ -491,8 +451,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkBetweenExpression($betweenExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkBetweenExpression($betweenExpr);
         }
     }
@@ -502,8 +461,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkLikeExpression($likeExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkLikeExpression($likeExpr);
         }
     }
@@ -513,8 +471,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkStateFieldPathExpression($stateFieldPathExpression)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkStateFieldPathExpression($stateFieldPathExpression);
         }
     }
@@ -524,8 +481,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkComparisonExpression($compExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkComparisonExpression($compExpr);
         }
     }
@@ -535,8 +491,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkInputParameter($inputParam)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkInputParameter($inputParam);
         }
     }
@@ -546,8 +501,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkArithmeticExpression($arithmeticExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkArithmeticExpression($arithmeticExpr);
         }
     }
@@ -557,9 +511,8 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkArithmeticTerm($term)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
-            $walkerClass->walkArithmeticTerm($term);
+        foreach ($this->_walkers as $walker) {
+            $walker->walkArithmeticTerm($term);
         }
     }
 
@@ -568,8 +521,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkStringPrimary($stringPrimary)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkStringPrimary($stringPrimary);
         }
     }
@@ -579,8 +531,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkArithmeticFactor($factor)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkArithmeticFactor($factor);
         }
     }
@@ -590,8 +541,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkSimpleArithmeticExpression($simpleArithmeticExpr);
         }
     }
@@ -601,8 +551,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkPathExpression($pathExpr)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkPathExpression($pathExpr);
         }
     }
@@ -612,8 +561,7 @@ class TreeWalkerChain implements TreeWalker
      */
     public function walkResultVariable($resultVariable)
     {
-        foreach ($this->_walkersClasses as $walkerClass) {
-            $walker = $this->getWalker($walkerClass);
+        foreach ($this->_walkers as $walker) {
             $walker->walkResultVariable($resultVariable);
         }
     }
@@ -623,20 +571,5 @@ class TreeWalkerChain implements TreeWalker
      */
     public function getExecutor($AST)
     {
-    }
-
-    /**
-     * @param $walkerClass
-     *
-     * @return TreeWalker
-     */
-    private function getWalker($walkerClass)
-    {
-        $key = array_search($walkerClass, $this->_walkersClasses);
-        if (!isset($this->_walkers[$key])) {
-            $this->_walkers[$key] = new $walkerClass($this->_query, $this->_parserResult, $this->_queryComponents);
-        }
-
-        return $this->_walkers[$key];
     }
 }
