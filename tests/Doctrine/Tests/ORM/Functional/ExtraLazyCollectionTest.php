@@ -35,6 +35,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['users']['indexBy'] = 'username';
 
         $this->loadFixture();
     }
@@ -539,7 +540,6 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $user CmsUser */
 
         $queryCount = $this->getCurrentQueryCount();
-
         $phonenumber = $user->phonenumbers->get($this->phonenumber);
 
         $this->assertFalse($user->phonenumbers->isInitialized());
@@ -574,6 +574,106 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
         $this->assertNull($user->articles->get(-1));
+    }
+
+    public function testContainsKeyIndexByOneToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $user->articles->containsKey($this->topic);
+
+        $this->assertTrue($contains);
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+
+    public function testContainsKeyIndexByManyToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $user->groups->containsKey($group->name);
+
+        $this->assertTrue($contains, "The item is not into collection");
+        $this->assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+    public function testContainsKeyIndexByManyToManyNonOwning()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $group->users->containsKey($user->username);
+
+        $this->assertTrue($contains, "The item is not into collection");
+        $this->assertFalse($group->users->isInitialized(), "The collection must not be initialized");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+
+    public function testContainsKeyIndexByWithPkManyToMany()
+    {
+        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class->associationMappings['groups']['indexBy'] = 'id';
+
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $user->groups->containsKey($this->groupId);
+
+        $this->assertTrue($contains, "The item is not into collection");
+        $this->assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+    public function testContainsKeyIndexByWithPkManyToManyNonOwning()////
+    {
+        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
+        $class->associationMappings['users']['indexBy'] = 'id';
+
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $group->users->containsKey($this->userId);
+
+        $this->assertTrue($contains, "The item is not into collection");
+        $this->assertFalse($group->users->isInitialized(), "The collection must not be initialized");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+
+    public function testContainsKeyNonExistentIndexByOneToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $user->articles->containsKey("NonExistentTopic");
+
+        $this->assertFalse($contains);
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
+
+    public function testContainsKeyNonExistentIndexByManyToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $contains = $user->groups->containsKey("NonExistentTopic");
+
+        $this->assertFalse($contains);
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     private function loadFixture()
@@ -646,6 +746,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($phonenumber1);
         $this->_em->persist($phonenumber2);
 
+        $user1->addPhonenumber($phonenumber1);
+
         $this->_em->flush();
         $this->_em->clear();
 
@@ -655,5 +757,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->topic = $article1->topic;
         $this->phonenumber = $phonenumber1->phonenumber;
+
+
     }
 }
