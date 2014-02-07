@@ -14,6 +14,7 @@ require_once __DIR__ . '/../../TestInit.php';
 class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userId;
+    private $userId2;
     private $groupId;
     private $articleId;
 
@@ -592,7 +593,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testContainsKeyIndexByManyToMany()
     {
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
 
         $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
 
@@ -606,7 +607,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
     public function testContainsKeyIndexByManyToManyNonOwning()
     {
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
         $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
 
         $queryCount = $this->getCurrentQueryCount();
@@ -623,7 +624,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $class->associationMappings['groups']['indexBy'] = 'id';
 
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -633,7 +634,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
-    public function testContainsKeyIndexByWithPkManyToManyNonOwning()////
+    public function testContainsKeyIndexByWithPkManyToManyNonOwning()
     {
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['indexBy'] = 'id';
@@ -642,7 +643,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $contains = $group->users->containsKey($this->userId);
+        $contains = $group->users->containsKey($this->userId2);
 
         $this->assertTrue($contains, "The item is not into collection");
         $this->assertFalse($group->users->isInitialized(), "The collection must not be initialized");
@@ -651,7 +652,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testContainsKeyNonExistentIndexByOneToMany()
     {
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -664,7 +665,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testContainsKeyNonExistentIndexByManyToMany()
     {
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
 
 
         $queryCount = $this->getCurrentQueryCount();
@@ -753,6 +754,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->articleId = $article1->id;
         $this->userId = $user1->getId();
+        $this->userId2 = $user2->getId();
         $this->groupId = $group1->id;
 
         $this->topic = $article1->topic;
