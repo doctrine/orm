@@ -471,6 +471,13 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function containsKey($key)
     {
+
+        if (! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
+            && isset($this->association['indexBy'])) {
+            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+
+            return $this->coll->containsKey($key) || $persister->containsKey($this, $key);
+        }
         $this->initialize();
 
         return $this->coll->containsKey($key);
@@ -776,7 +783,7 @@ final class PersistentCollection implements Collection, Selectable
     public function next()
     {
         $this->initialize();
-        
+
         return $this->coll->next();
     }
 

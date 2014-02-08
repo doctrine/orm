@@ -132,6 +132,45 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $coll)
     {
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+
+        $sql = 'SELECT count(*) FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+
+        return $this->conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function slice(PersistentCollection $coll, $offset, $length = null)
+    {
+        $mapping   = $coll->getMapping();
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+
+        return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function containsKey(PersistentCollection $coll, $key)
+    {
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+
+        $mapping     = $coll->getMapping();
+        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+
+        $whereClauses[] = $sourceClass->getColumnName($mapping['indexBy']) . ' = ?';
+        $params[] = $key;
+
+        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+
+        return (bool) $this->conn->fetchColumn($sql, $params);
+    }
+    
+    private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
+    {
         $mapping     = $coll->getMapping();
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
@@ -149,30 +188,18 @@ class OneToManyPersister extends AbstractCollectionPersister
                 : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
         }
 
-        $filterTargetClass = $this->em->getClassMetadata($targetClass->rootEntityName);
-        foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ($filterExpr = $filter->addFilterConstraint($filterTargetClass, 't')) {
-                $whereClauses[] = '(' . $filterExpr . ')';
+        if ($addFilters) {
+            $filterTargetClass = $this->em->getClassMetadata($targetClass->rootEntityName);
+            foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
+                if ($filterExpr = $filter->addFilterConstraint($filterTargetClass, 't')) {
+                    $whereClauses[] = '(' . $filterExpr . ')';
+                }
             }
         }
 
-        $sql = 'SELECT count(*)'
-             . ' FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' t'
-             . ' WHERE ' . implode(' AND ', $whereClauses);
+        $quotedJoinTable = $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' t';
 
-        return $this->conn->fetchColumn($sql, $params);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function slice(PersistentCollection $coll, $offset, $length = null)
-    {
-        $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
-
-        return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+        return array($quotedJoinTable, $whereClauses, $params);
     }
 
      /**
@@ -200,7 +227,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $id = current( $uow->getEntityIdentifier($coll->getOwner()));
+        $id = current($uow->getEntityIdentifier($coll->getOwner()));
 
         return $persister->exists($element, array($mapping['mappedBy'] => $id));
     }
