@@ -1,5 +1,11 @@
 # Upgrade to 2.3
 
+## Auto Discriminator Map breaks userland implementations with Listener
+
+The new feature to detect discriminator maps automatically when none
+are provided breaks userland implementations doing this with a
+listener in ``loadClassMetadata`` event.
+
 ## EntityManager#find() not calls EntityRepository#find() anymore
 
 Previous to 2.3, calling ``EntityManager#find()`` would be delegated to
