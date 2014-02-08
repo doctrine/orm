@@ -336,7 +336,8 @@ set of useful methods to help build expressions:
     <?php
     // $qb instanceof QueryBuilder
 
-    // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ? OR u.nickname LIKE ? ORDER BY u.surname DESC" using Expr class
+    // example8: QueryBuilder port of:
+    // "SELECT u FROM User u WHERE u.id = ? OR u.nickname LIKE ? ORDER BY u.name ASC" using Expr class
     $qb->add('select', new Expr\Select(array('u')))
        ->add('from', new Expr\From('User', 'u'))
        ->add('where', $qb->expr()->orX(
@@ -513,7 +514,9 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
     <?php
     // $qb instanceof QueryBuilder
 
-    // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
+    // example6: how to define:
+    // "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC"
+    // using QueryBuilder string support
     $qb->add('select', 'u')
        ->add('from', 'User u')
        ->add('where', 'u.id = ?1')
@@ -532,7 +535,9 @@ same query of example 6 written using
    <?php
    // $qb instanceof QueryBuilder
 
-   // example7: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder using Expr\* instances
+   // example7: how to define:
+   // "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC"
+   // using QueryBuilder using Expr\* instances
    $qb->add('select', new Expr\Select(array('u')))
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
