@@ -151,7 +151,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null)
     {
         return $this->persister->getSelectSQL($criteria, $assoc, $lockMode, $limit, $offset, $orderBy);
     }
@@ -243,7 +243,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $associations = array();
 
             foreach ($this->class->associationMappings as $name => $assoc) {
-                if (isset($assoc['cache']) && 
+                if (isset($assoc['cache']) &&
                     ($assoc['type'] & ClassMetadata::TO_ONE) &&
                     ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc['isOwningSide'])) {
 
@@ -342,15 +342,15 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null)
     {
-        if ($entity !== null || $assoc !== null || ! empty($hints) || $lockMode !== 0) {
+        if ($entity !== null || $assoc !== null || ! empty($hints) || $lockMode !== null) {
             return $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
         }
 
         //handle only EntityRepository#findOneBy
         $timestamp  = $this->timestampRegion->get($this->timestampKey);
-        $query      = $this->persister->getSelectSQL($criteria, null, 0, $limit, 0, $orderBy);
+        $query      = $this->persister->getSelectSQL($criteria, null, null, $limit, null, $orderBy);
         $hash       = $this->getHash($query, $criteria, null, null, null, $timestamp ? $timestamp->time : null);
         $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
@@ -390,7 +390,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
         $timestamp  = $this->timestampRegion->get($this->timestampKey);
-        $query      = $this->persister->getSelectSQL($criteria, null, 0, $limit, $offset, $orderBy);
+        $query      = $this->persister->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
         $hash       = $this->getHash($query, $criteria, null, null, null, $timestamp ? $timestamp->time : null);
         $rsm        = $this->getResultSetMapping();
         $querykey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
@@ -573,7 +573,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, $entity, $lockMode = 0)
+    public function refresh(array $id, $entity, $lockMode = null)
     {
         $this->persister->refresh($id, $entity, $lockMode);
     }

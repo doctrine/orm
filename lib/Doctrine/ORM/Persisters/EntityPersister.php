@@ -65,14 +65,14 @@ interface EntityPersister
      *
      * @param array|\Doctrine\Common\Collections\Criteria $criteria
      * @param array|null                                  $assoc
-     * @param int                                         $lockMode
+     * @param int|null                                    $lockMode
      * @param int|null                                    $limit
      * @param int|null                                    $offset
      * @param array|null                                  $orderBy
      *
      * @return string
      */
-    public function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null);
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null);
 
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
@@ -160,7 +160,9 @@ interface EntityPersister
      * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
      * @param array|null  $assoc    The association that connects the entity to load to another entity, if any.
      * @param array       $hints    Hints for entity creation.
-     * @param int         $lockMode
+     * @param int|null    $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                              or NULL if no specific lock mode should be used
+     *                              for loading the entity.
      * @param int|null    $limit    Limit number of results.
      * @param array|null  $orderBy  Criteria to order by.
      *
@@ -168,7 +170,7 @@ interface EntityPersister
      *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null);
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null);
 
     /**
      * Loads an entity by identifier.
@@ -201,14 +203,16 @@ interface EntityPersister
     /**
      * Refreshes a managed entity.
      *
-     * @param array  $id       The identifier of the entity as an associative array from
-     *                         column or field names to values.
-     * @param object $entity   The entity to refresh.
-     * @param int    $lockMode
+     * @param array    $id       The identifier of the entity as an associative array from
+     *                           column or field names to values.
+     * @param object   $entity   The entity to refresh.
+     * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                           or NULL if no specific lock mode should be used
+     *                           for refreshing the managed entity.
      *
      * @return void
      */
-    public function refresh(array $id, $entity, $lockMode = 0);
+    public function refresh(array $id, $entity, $lockMode = null);
 
     /**
      * Loads Entities matching the given Criteria object.

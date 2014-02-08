@@ -358,10 +358,13 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string       $entityName
-     * @param mixed        $id
-     * @param integer      $lockMode
-     * @param integer|null $lockVersion
+     * @param string       $entityName  The class name of the entity to find.
+     * @param mixed        $id          The identity of the entity to find.
+     * @param integer|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
+     *                                  or NULL if no specific lock mode should be used
+     *                                  during the search.
+     * @param integer|null $lockVersion The version of the entity to find when using
+     *                                  optimistic locking.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      *
@@ -370,7 +373,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws TransactionRequiredException
      * @throws ORMException
      */
-    public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -404,13 +407,14 @@ use Doctrine\Common\Util\ClassUtils;
                 return null;
             }
 
-            switch ($lockMode) {
-                case LockMode::OPTIMISTIC:
+            switch (true) {
+                case LockMode::OPTIMISTIC === $lockMode:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case LockMode::PESSIMISTIC_READ:
-                case LockMode::PESSIMISTIC_WRITE:
+                case LockMode::NONE === $lockMode:
+                case LockMode::PESSIMISTIC_READ === $lockMode;
+                case LockMode::PESSIMISTIC_WRITE === $lockMode:
                     $persister = $unitOfWork->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
@@ -421,11 +425,8 @@ use Doctrine\Common\Util\ClassUtils;
 
         $persister = $unitOfWork->getEntityPersister($class->name);
 
-        switch ($lockMode) {
-            case LockMode::NONE:
-                return $persister->loadById($sortedId);
-
-            case LockMode::OPTIMISTIC:
+        switch (true) {
+            case LockMode::OPTIMISTIC === $lockMode:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
@@ -436,12 +437,17 @@ use Doctrine\Common\Util\ClassUtils;
 
                 return $entity;
 
-            default:
+            case LockMode::NONE === $lockMode:
+            case LockMode::PESSIMISTIC_READ === $lockMode:
+            case LockMode::PESSIMISTIC_WRITE === $lockMode:
                 if ( ! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
 
                 return $persister->load($sortedId, null, null, array(), $lockMode);
+
+            default:
+                return $persister->loadById($sortedId);
         }
     }
 

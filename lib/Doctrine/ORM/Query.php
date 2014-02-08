@@ -644,7 +644,7 @@ final class Query extends AbstractQuery
      */
     public function setLockMode($lockMode)
     {
-        if (in_array($lockMode, array(LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE))) {
+        if (in_array($lockMode, array(LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE), true)) {
             if ( ! $this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
@@ -658,14 +658,14 @@ final class Query extends AbstractQuery
     /**
      * Get the current lock mode for this query.
      *
-     * @return int
+     * @return int|null The current lock mode of this query or NULL if no specific lock mode is set.
      */
     public function getLockMode()
     {
         $lockMode = $this->getHint(self::HINT_LOCK_MODE);
 
-        if ( ! $lockMode) {
-            return LockMode::NONE;
+        if (false === $lockMode) {
+            return null;
         }
 
         return $lockMode;
