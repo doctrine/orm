@@ -26,7 +26,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
@@ -47,7 +47,7 @@ use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 class SchemaTool
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -67,9 +67,9 @@ class SchemaTool
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em               = $em;
         $this->platform         = $em->getConnection()->getDatabasePlatform();
