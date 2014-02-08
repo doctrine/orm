@@ -2,13 +2,15 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Country;
+
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\DefaultEntityHydrator;
+use Doctrine\ORM\Cache\AssociationCacheEntry;
 
 /**
  * @group DDC-2183
@@ -92,7 +94,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         ), $cache->data);
     }
 
-    public function testBuildCacheEntryOwningSide()
+    public function testBuildCacheEntryAssociation()
     {
         $country        = new Country('Foo');
         $state          = new State('Bat', $country);
@@ -119,7 +121,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $this->assertEquals(array(
             'id'        => 11,
             'name'      => 'Bar',
-            'country'   => array ('id' => 11),
+            'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
         ), $cache->data);
     }
 
@@ -147,7 +149,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $this->assertEquals(array(
             'id'        => 11,
             'name'      => 'Bar',
-            'country'   => array ('id' => 11),
+            'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
         ), $cache->data);
     }
 }
