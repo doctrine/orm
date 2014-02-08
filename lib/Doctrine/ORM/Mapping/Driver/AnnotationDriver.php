@@ -450,12 +450,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
             /* @var $method \ReflectionMethod */
             foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                // filter for the declaring class only, callbacks from parents will already be registered.
-                if ($method->getDeclaringClass()->name !== $class->name) {
-                    continue;
-                }
 
                 foreach ($this->getMethodCallbacks($method) as $value) {
+
                     $metadata->addLifecycleCallback($value[0], $value[1]);
                 }
             }
