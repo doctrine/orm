@@ -42,7 +42,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $query = $this->_em->createQuery($dqlToBeTested);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
-              ->useQueryCache(false);
+            ->useQueryCache(false);
 
         if ($outputWalker) {
             $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, $outputWalker);
@@ -94,6 +94,15 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             array(),
             __NAMESPACE__ . '\\AddUnknownQueryComponentWalker'
+        );
+    }
+
+    public function testSupportsSeveralHintsQueries()
+    {
+        $this->assertSqlGeneration(
+            'select u from Doctrine\Tests\Models\CMS\CmsUser u',
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c1_.country AS country5, c1_.zip AS zip6, c1_.city AS city7, c0_.email_id AS email_id8, c1_.user_id AS user_id9 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1",
+            array('Doctrine\Tests\ORM\Functional\CustomTreeWalkerJoin', 'Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
     }
 }
@@ -180,6 +189,46 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             $condExpr = new Query\AST\ConditionalExpression(array($term));
             $whereClause = new Query\AST\WhereClause($condExpr);
             $selectStatement->whereClause = $whereClause;
+        }
+    }
+}
+
+class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
+{
+    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
+    {
+        foreach ($selectStatement->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
+            if ($identificationVariableDeclaration->rangeVariableDeclaration->abstractSchemaName == 'Doctrine\Tests\Models\CMS\CmsUser') {
+                $identificationVariableDeclaration->joins[] = new Query\AST\Join(
+                    Query\AST\Join::JOIN_TYPE_LEFT,
+                    new Query\AST\JoinAssociationDeclaration(
+                        new Query\AST\JoinAssociationPathExpression(
+                            $identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable,
+                            'address'
+                        ),
+                        $identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable . 'a',
+                        null
+                    )
+                );
+                $selectStatement->selectClause->selectExpressions[] =
+                    new Query\AST\SelectExpression(
+                        $identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable . 'a',
+                        null,
+                        false
+                    );
+                $meta1 = $this->_getQuery()->getEntityManager()->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+                $meta = $this->_getQuery()->getEntityManager()->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+                $this->setQueryComponent($identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable . 'a',
+                    array(
+                        'metadata' => $meta,
+                        'parent' => $identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable,
+                        'relation' => $meta1->getAssociationMapping('address'),
+                        'map' => null,
+                        'nestingLevel' => 0,
+                        'token' => null
+                    )
+                );
+            }
         }
     }
 }
