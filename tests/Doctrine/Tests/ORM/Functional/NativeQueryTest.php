@@ -314,6 +314,25 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group rsm-sti
+     */
+    public function testConcreteClassInSingleTableInheritanceSchemaWithRSMBuilderIsFine()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\Company\CompanyFixContract', 'c');
+    }
+
+    /**
+     * @group rsm-sti
+     */
+    public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException()
+    {
+        $this->setExpectedException('\InvalidArgumentException', 'ResultSetMapping builder does not currently support your inheritance scheme.');
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\Company\CompanyContract', 'c');
+    }
+
+    /**
      * @expectedException \InvalidArgumentException
      */
     public function testRSMBuilderThrowsExceptionOnColumnConflict()
