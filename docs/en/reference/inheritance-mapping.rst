@@ -116,6 +116,9 @@ Things to note:
    the case above a value of "person" identifies a row as being of
    type ``Person`` and "employee" identifies a row as being of type
    ``Employee``.
+-  All entity classes that is part of the mapped entity hierarchy
+   (including the topmost class) should be specified in the
+   @DiscriminatorMap. In the case above Person class included.
 -  The names of the classes in the discriminator map do not need to
    be fully qualified if the classes are contained in the same
    namespace as the entity class on which the discriminator map is
