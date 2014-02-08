@@ -90,6 +90,7 @@ Tutorials
 * :doc:`Ordered associations <tutorials/ordered-associations>`
 * :doc:`Pagination <tutorials/pagination>`
 * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
+* :doc:`Embeddables <tutorials/embeddables>`
 
 Cookbook
 --------

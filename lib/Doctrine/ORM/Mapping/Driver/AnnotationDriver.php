@@ -85,6 +85,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
+        } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
+            $metadata->isEmbeddedClass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
@@ -251,7 +253,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 ||
                 $metadata->isInheritedField($property->name)
                 ||
-                $metadata->isInheritedAssociation($property->name)) {
+                $metadata->isInheritedAssociation($property->name)
+                ||
+                $metadata->isInheritedEmbeddedClass($property->name)) {
                 continue;
             }
 
@@ -375,6 +379,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+            } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
+                $mapping['class'] = $embeddedAnnot->class;
+                $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
+                $metadata->mapEmbedded($mapping);
             }
 
             // Evaluate @Cache annotation

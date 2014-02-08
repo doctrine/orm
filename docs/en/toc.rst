@@ -16,6 +16,7 @@ Tutorials
    tutorials/ordered-associations
    tutorials/override-field-association-mappings-in-subclasses
    tutorials/pagination.rst
+   tutorials/embeddables.rst
 
 Reference Guide
 ---------------

@@ -96,6 +96,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
+            $this->addInheritedEmbeddedClasses($class, $parent);
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
@@ -138,6 +139,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         } else {
             $this->completeIdGeneratorMapping($class);
+        }
+
+        foreach ($class->embeddedClasses as $property => $embeddableClass) {
+            if (isset($embeddableClass['inherited'])) {
+                continue;
+            }
+
+            $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
+            $class->inlineEmbeddable($property, $embeddableMetadata);
         }
 
         if ($parent && $parent->isInheritanceTypeSingleTable()) {
@@ -339,6 +349,20 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedAssociationMapping($mapping);
+        }
+    }
+
+    private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
+            if ( ! isset($embeddedClass['inherited']) && ! $parentClass->isMappedSuperclass) {
+                $embeddedClass['inherited'] = $parentClass->name;
+            }
+            if ( ! isset($embeddedClass['declared'])) {
+                $embeddedClass['declared'] = $parentClass->name;
+            }
+
+            $subClass->embeddedClasses[$field] = $embeddedClass;
         }
     }
 
