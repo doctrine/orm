@@ -2498,14 +2498,14 @@ class UnitOfWork implements PropertyChangedListener
                 && isset($hints[Query::HINT_REFRESH_ENTITY])
                 && ($unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY]) !== $entity
                 && $unmanagedProxy instanceof Proxy
-                && (($unmanagedProxyClass = $this->em->getClassMetadata(get_class($unmanagedProxy))) === $class)
+                && $this->isIdentifierEquals($unmanagedProxy, $entity)
             ) {
                 // DDC-1238 - we have a managed instance, but it isn't the provided one.
                 // Therefore we clear its identifier. Also, we must re-fetch metadata since the
                 // refreshed object may be anything
 
-                foreach ($unmanagedProxyClass->identifier as $fieldName) {
-                    $unmanagedProxyClass->reflFields[$fieldName]->setValue($unmanagedProxy, null);
+                foreach ($class->identifier as $fieldName) {
+                    $class->reflFields[$fieldName]->setValue($unmanagedProxy, null);
                 }
 
                 return $unmanagedProxy;
@@ -3213,5 +3213,38 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
         }
+    }
+
+    /**
+     * Verifies if two given entities actually are the same based on identifier comparison
+     *
+     * @param object $entity1
+     * @param object $entity2
+     *
+     * @return bool
+     */
+    private function isIdentifierEquals($entity1, $entity2)
+    {
+        if ($entity1 === $entity2) {
+            return true;
+        }
+
+        $class = $this->em->getClassMetadata(get_class($entity1));
+
+        if ($class !== $this->em->getClassMetadata(get_class($entity2))) {
+            return false;
+        }
+
+        $oid1 = spl_object_hash($entity1);
+        $oid2 = spl_object_hash($entity2);
+
+        $id1 = isset($this->entityIdentifiers[$oid1])
+            ? $this->entityIdentifiers[$oid1]
+            : $this->flattenIdentifier($class, $class->getIdentifierValues($entity1));
+        $id2 = isset($this->entityIdentifiers[$oid2])
+            ? $this->entityIdentifiers[$oid2]
+            : $this->flattenIdentifier($class, $class->getIdentifierValues($entity2));
+
+        return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
 }
