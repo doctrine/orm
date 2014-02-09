@@ -16,7 +16,6 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\DBAL\Platforms\OraclePlatform;
 
 /**
  * Wraps the query in order to select root entity IDs for pagination.

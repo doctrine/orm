@@ -28,7 +28,6 @@ use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 
