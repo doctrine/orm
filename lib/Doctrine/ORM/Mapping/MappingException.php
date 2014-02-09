@@ -781,4 +781,12 @@ class MappingException extends \Doctrine\ORM\ORMException
             sprintf('Missing "sequenceName" attribute for sequence id generator definition on class "%s".', $className)
         );
     }
+
+    public static function noEmbeddablesInEmbeddable($className)
+    {
+        return new self(sprintf(
+            "You embedded one or more embeddables in embeddable '%s', but this behavior is currently unsupported.",
+            $className
+        ));
+    }
 }
