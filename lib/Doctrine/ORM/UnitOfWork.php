@@ -560,7 +560,15 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($class->reflFields as $name => $refProp) {
             $value = $refProp->getValue($entity);
 
-            if ($class->isCollectionValuedAssociation($name) && $value !== null && ! ($value instanceof PersistentCollection)) {
+            if ($class->isCollectionValuedAssociation($name) && $value !== null) {
+                if ($value instanceof PersistentCollection) {
+                    if ($value->getOwner() === $entity) {
+                        continue;
+                    }
+
+                    $value = new ArrayCollection($value->getValues());
+                }
+
                 // If $value is not a Collection then use an ArrayCollection.
                 if ( ! $value instanceof Collection) {
                     $value = new ArrayCollection($value);
