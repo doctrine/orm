@@ -55,6 +55,11 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * @var array
      */
+    private $_identifiersGroups = array();
+
+    /**
+     * @var array
+     */
     private $_resultPointers = array();
 
     /**
@@ -276,15 +281,15 @@ class ArrayHydrator extends AbstractHydrator
     {
         $index = 0;
 
-        foreach ($this->_identifierMap as & $identifierMap) {
-            if (isset($identifierMap['baseElement']) && $identifierMap['baseElement'] === $baseElement) {
+        foreach ($this->_identifiersGroups as & $identifierMap) {
+            if ($identifierMap === $baseElement) {
                 return $index;
             }
 
             $index += 1;
         }
 
-        $this->_identifierMap[$index]['baseElement'] = & $baseElement;
+        $this->_identifiersGroups[] = & $baseElement;
 
         return $index;
     }
