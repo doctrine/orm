@@ -24,8 +24,6 @@ use Doctrine\Common\Cache\CacheProvider;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\Cache\TimestampRegion;
-use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;

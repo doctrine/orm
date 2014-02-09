@@ -23,10 +23,8 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\Common\Util\ClassUtils;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
  * Default hydrator cache for entities

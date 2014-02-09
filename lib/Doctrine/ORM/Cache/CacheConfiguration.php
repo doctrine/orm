@@ -21,10 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
-use Doctrine\ORM\Cache\QueryCacheValidator;
-use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
 
 /**
  * Configuration container for second-level cache.

@@ -20,8 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\Lock;
-
 /**
  * Defines a contract for accessing a particular named region.
  *

@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\ORMException;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;

@@ -20,8 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\QueryCacheEntry;
-
 /**
  * Cache query validator interface.
  *
