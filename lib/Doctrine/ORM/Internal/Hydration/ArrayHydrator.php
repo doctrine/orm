@@ -77,11 +77,12 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        $this->_isSimpleQuery  = count($this->_rsm->aliasMap) <= 1;
-        $this->_identifierMap  = array();
-        $this->_resultPointers = array();
-        $this->_idTemplate     = array();
-        $this->_resultCounter  = 0;
+        $this->_isSimpleQuery     = count($this->_rsm->aliasMap) <= 1;
+        $this->_identifierMap     = array();
+        $this->_identifiersGroups = array();
+        $this->_resultPointers    = array();
+        $this->_idTemplate        = array();
+        $this->_resultCounter     = 0;
 
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_resultPointers[$dqlAlias] = array();
