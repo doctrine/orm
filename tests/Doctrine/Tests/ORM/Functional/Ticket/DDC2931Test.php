@@ -114,6 +114,5 @@ class DDC2931User
 
     public function __wakeup()
     {
-        echo 'foo';
     }
 }
