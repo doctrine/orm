@@ -581,16 +581,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $ownerMetadata, $this->platform);
         $onConditions = $this->getOnConditionSQL($mapping);
 
-        $sql  = 'SELECT * FROM ' . $tableName . ' te'
+        $rsm = new Query\ResultSetMappingBuilder($this->em);
+        $rsm->addRootEntityFromClassMetadata($mapping['targetEntity'], 'te');
+
+        $sql  = 'SELECT ' . $rsm->generateSelectClause() . ' FROM ' . $tableName . ' te'
             . ' JOIN ' . $joinTable  . ' t ON'
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
         $stmt     = $this->conn->executeQuery($sql, $params);
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
-
-        $rsm  = new Query\ResultSetMapping();
-        $rsm->addEntityResult($mapping['targetEntity'], 'r');
 
         return $hydrator->hydrateAll($stmt, $rsm);
     }
