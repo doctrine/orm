@@ -457,7 +457,7 @@ class SqlWalker implements TreeWalker
             }
 
             $sqlParts[] = (($this->useSqlTableAliases) ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.' : '')
-                        . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
+                . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -497,7 +497,7 @@ class SqlWalker implements TreeWalker
             default:
                 //@todo: throw exception?
                 return '';
-            break;
+                break;
         }
 
         $filterClauses = array();
@@ -576,7 +576,7 @@ class SqlWalker implements TreeWalker
         $this->rsm->isSelect      = false;
 
         return $this->walkUpdateClause($AST->updateClause)
-             . $this->walkWhereClause($AST->whereClause);
+            . $this->walkWhereClause($AST->whereClause);
     }
 
     /**
@@ -588,7 +588,7 @@ class SqlWalker implements TreeWalker
         $this->rsm->isSelect      = false;
 
         return $this->walkDeleteClause($AST->deleteClause)
-             . $this->walkWhereClause($AST->whereClause);
+            . $this->walkWhereClause($AST->whereClause);
     }
 
     /**
@@ -703,10 +703,10 @@ class SqlWalker implements TreeWalker
         }
 
         $addMetaColumns = ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
-                $this->query->getHydrationMode() == Query::HYDRATE_OBJECT
-                ||
-                $this->query->getHydrationMode() != Query::HYDRATE_OBJECT &&
-                $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
+            $this->query->getHydrationMode() == Query::HYDRATE_OBJECT
+            ||
+            $this->query->getHydrationMode() != Query::HYDRATE_OBJECT &&
+            $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
 
         foreach ($this->selectedClasses as $selectedClass) {
             $class       = $selectedClass['class'];
@@ -804,10 +804,7 @@ class SqlWalker implements TreeWalker
         $sqlParts = array();
 
         foreach ($identificationVarDecls as $identificationVariableDecl) {
-            $sql = $this->platform->appendLockHint(
-                $this->walkRangeVariableDeclaration($identificationVariableDecl->rangeVariableDeclaration),
-                $this->query->getHint(Query::HINT_LOCK_MODE)
-            );
+            $sql = $this->walkRangeVariableDeclaration($identificationVariableDecl->rangeVariableDeclaration);
 
             foreach ($identificationVariableDecl->joins as $join) {
                 $sql .= $this->walkJoin($join);
@@ -849,8 +846,11 @@ class SqlWalker implements TreeWalker
             $this->rootAliases[] = $dqlAlias;
         }
 
-        $sql = $this->quoteStrategy->getTableName($class,$this->platform) . ' '
-            . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+        $sql = $this->platform->appendLockHint(
+            $this->quoteStrategy->getTableName($class, $this->platform) . ' ' .
+            $this->getSQLTableAlias($class->getTableName(), $dqlAlias),
+            $this->query->getHint(Query::HINT_LOCK_MODE)
+        );
 
         if ($class->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
@@ -904,7 +904,7 @@ class SqlWalker implements TreeWalker
             case ($assoc['type'] & ClassMetadata::TO_ONE):
                 $conditions = array();
 
-                 foreach ($assoc['joinColumns'] as $joinColumn) {
+                foreach ($assoc['joinColumns'] as $joinColumn) {
                     $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
                     $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
@@ -1460,10 +1460,7 @@ class SqlWalker implements TreeWalker
         $sqlParts = array ();
 
         foreach ($identificationVarDecls as $subselectIdVarDecl) {
-            $sql = $this->platform->appendLockHint(
-                $this->walkRangeVariableDeclaration($subselectIdVarDecl->rangeVariableDeclaration),
-                $this->query->getHint(Query::HINT_LOCK_MODE)
-            );
+            $sql = $this->walkRangeVariableDeclaration($subselectIdVarDecl->rangeVariableDeclaration);
 
             foreach ($subselectIdVarDecl->joins as $join) {
                 $sql .= $this->walkJoin($join);
@@ -1481,7 +1478,7 @@ class SqlWalker implements TreeWalker
     public function walkSimpleSelectClause($simpleSelectClause)
     {
         return 'SELECT' . ($simpleSelectClause->isDistinct ? ' DISTINCT' : '')
-             . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
+            . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
     }
 
     /**
@@ -1620,7 +1617,7 @@ class SqlWalker implements TreeWalker
     public function walkAggregateExpression($aggExpression)
     {
         return $aggExpression->functionName . '(' . ($aggExpression->isDistinct ? 'DISTINCT ' : '')
-             . $this->walkSimpleArithmeticExpression($aggExpression->pathExpression) . ')';
+            . $this->walkSimpleArithmeticExpression($aggExpression->pathExpression) . ')';
     }
 
     /**
@@ -1925,7 +1922,7 @@ class SqlWalker implements TreeWalker
 
             // join to target table
             $sql .= $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform) . ' ' . $joinTableAlias
-                  . ' INNER JOIN ' . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' ' . $targetTableAlias . ' ON ';
+                . ' INNER JOIN ' . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' ' . $targetTableAlias . ' ON ';
 
             // join conditions
             $joinColumns  = $assoc['isOwningSide'] ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
@@ -2109,7 +2106,7 @@ class SqlWalker implements TreeWalker
         }
 
         $sql .= ' BETWEEN ' . $this->walkArithmeticExpression($betweenExpr->leftBetweenExpression)
-              . ' AND ' . $this->walkArithmeticExpression($betweenExpr->rightBetweenExpression);
+            . ' AND ' . $this->walkArithmeticExpression($betweenExpr->rightBetweenExpression);
 
         return $sql;
     }
