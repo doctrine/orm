@@ -20,9 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\QueryCacheEntry;
-use Doctrine\ORM\Cache\QueryCacheKey;
-
 /**
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>

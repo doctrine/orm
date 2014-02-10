@@ -20,8 +20,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\EntityManagerInterface;
-
 /**
  * Provides an API for querying/managing the second level cache regions.
  *

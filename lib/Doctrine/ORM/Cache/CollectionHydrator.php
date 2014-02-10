@@ -22,8 +22,6 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
  * Hydrator cache entry for collections

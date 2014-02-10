@@ -20,9 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
  * Hydrator cache entry for entities
