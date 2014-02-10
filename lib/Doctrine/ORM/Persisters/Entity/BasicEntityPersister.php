@@ -1057,6 +1057,10 @@ class BasicEntityPersister implements EntityPersister
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria, $assoc);
 
+        if ($lockMode === null) {
+            $lockMode = $this->em->getConfiguration()->getDefaultLockMode();
+        }
+
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
                 $lockSql = ' ' . $this->platform->getReadLockSql();
