@@ -1837,7 +1837,7 @@ class UnitOfWork implements PropertyChangedListener
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
                     if ( ! $class->isIdentifierNatural()) {
-                        throw new EntityNotFoundException;
+                        throw new EntityNotFoundException($class->getName());
                     }
 
                     $managedCopy = $this->newInstance($class);
