@@ -90,7 +90,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $s3 = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
         $s4 = $this->_em->find(State::CLASSNAME, $this->states[1]->getId());
-       
+
         //trigger lazy load from cache
         $this->assertCount(2, $s3->getCities());
         $this->assertCount(2, $s4->getCities());
@@ -133,12 +133,12 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         //trigger lazy load from database
         $this->assertCount(2, $this->_em->find(State::CLASSNAME, $this->states[0]->getId())->getCities());
-        
+
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
         $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(0)->getId()));
         $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->states[0]->getCities()->get(1)->getId()));
-       
+
         $queryCount = $this->getCurrentQueryCount();
         $stateId    = $this->states[0]->getId();
         $state      = $this->_em->find(State::CLASSNAME, $stateId);
@@ -282,6 +282,35 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
         $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+    }
+
+    public function testOneToManyWithEmptyRelation()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->cache->evictEntityRegion(City::CLASSNAME);
+        $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->cache->evictCollectionRegion(State::CLASSNAME, 'cities');
+        $this->_em->clear();
+
+        $entitiId   = $this->states[2]->getId(); // bavaria (cities count = 0)
+        $queryCount = $this->getCurrentQueryCount();
+        $entity     = $this->_em->find(State::CLASSNAME, $entitiId);
+
+        $this->assertEquals(0, $entity->getCities()->count());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $entity     = $this->_em->find(State::CLASSNAME, $entitiId);
+
+        $this->assertEquals(0, $entity->getCities()->count());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
     }
 
     public function testOneToManyCount()

@@ -214,4 +214,33 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->persist($travel);
         $this->_em->flush();
     }
+
+    public function testManyToManyWithEmptyRelation()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesTraveler();
+        $this->loadFixturesTravels();
+        $this->_em->clear();
+
+        $this->evictRegions();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $entitiId   = $this->travels[2]->getId(); //empty travel
+        $entity     = $this->_em->find(Travel::CLASSNAME, $entitiId);
+
+        $this->assertEquals(0, $entity->getVisitedCities()->count());
+        $this->assertEquals($queryCount+2, $this->getCurrentQueryCount());
+
+        $this->_em->clear();
+
+        $entity     = $this->_em->find(Travel::CLASSNAME, $entitiId);
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertEquals(0, $entity->getVisitedCities()->count());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+    }
 }
