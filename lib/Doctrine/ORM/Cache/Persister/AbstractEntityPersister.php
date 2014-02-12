@@ -508,7 +508,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
         $list = $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);
 
-        if ($hasCache && ! empty($list)) {
+        if ($hasCache) {
             $persister->storeCollectionCache($key, $list);
 
             if ($this->cacheLogger) {
@@ -543,7 +543,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
         $list = $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $coll);
 
-        if ($hasCache && ! empty($list)) {
+        if ($hasCache) {
             $persister->storeCollectionCache($key, $list);
 
             if ($this->cacheLogger) {
