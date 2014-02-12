@@ -171,7 +171,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $travel->getId()));
+        $this->assertTrue($this->cache->containsEntity(Travel::CLASSNAME, $travel->getId()));
         $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $traveler->getId()));
         $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $this->cities[1]->getId()));
