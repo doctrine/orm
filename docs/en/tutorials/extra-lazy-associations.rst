@@ -15,7 +15,9 @@ the first time its accessed. If you mark an association as extra lazy the follow
 can be called without triggering a full load of the collection:
 
 -  ``Collection#contains($entity)``
+-  ``Collection#containsKey($key)`` (available with Doctrine 2.5)
 -  ``Collection#count()``
+-  ``Collection#get($key)``  (available with Doctrine 2.4
 -  ``Collection#slice($offset, $length = null)``
 
 For each of this three methods the following semantics apply:
