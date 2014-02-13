@@ -523,6 +523,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Generate ON condition
      *
      * @param  array $mapping
+     *
      * @return array
      */
     protected function getOnConditionSQL($mapping)
