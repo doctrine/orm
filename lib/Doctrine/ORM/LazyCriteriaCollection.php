@@ -71,18 +71,18 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * {@inheritDoc}
      */
-    protected function doInitialize()
+    public function matching(Criteria $criteria)
     {
-        $elements         = $this->entityPersister->loadCriteria($this->criteria);
-        $this->collection = new ArrayCollection($elements);
+        $this->initialize();
+        return $this->collection->matching($criteria);
     }
 
     /**
      * {@inheritDoc}
      */
-    function matching(Criteria $criteria)
+    protected function doInitialize()
     {
-        $this->initialize();
-        return $this->collection->matching($criteria);
+        $elements         = $this->entityPersister->loadCriteria($this->criteria);
+        $this->collection = new ArrayCollection($elements);
     }
 }
