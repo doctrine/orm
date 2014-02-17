@@ -94,6 +94,12 @@ with the batching strategy that was already used for bulk inserts:
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
 
+.. note::
+
+    Results may be fully buffered by the database client/ connection allocating
+    additional memory not visible to the PHP process. For large sets this
+    may easily kill the process for no apparant reason.
+
 
 Bulk Deletes
 ------------
