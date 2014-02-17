@@ -883,7 +883,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
 
-        if ($this->association['fetch'] !== ClassMetadataInfo::FETCH_EAGER) {
+        if ($this->association['fetch'] === ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             return new LazyCriteriaCollection($persister, $criteria);
         } else {
             return new ArrayCollection($persister->loadCriteria($criteria));

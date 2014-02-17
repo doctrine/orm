@@ -21,6 +21,10 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
 
 /**
  * @author Michaël Gallego <mic.gallego@gmail.com>
@@ -29,7 +33,7 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
 {
     protected function setUp()
     {
-        $this->useModelSet('cms');
+        $this->useModelSet('company');
         parent::setUp();
     }
 
@@ -43,28 +47,24 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
 
     public function loadFixture()
     {
-        $article = new CmsArticle();
-        $article->topic = 'Criteria is awesome';
-        $article->text = 'foo';
-        $this->_em->persist($article);
+        $companyOrganization = new CompanyOrganization();
+        $this->_em->persist($companyOrganization);
 
-        $comment1 = new CmsComment();
-        $comment1->topic = 'I agree';
-        $comment1->text = 'bar';
-        $this->_em->persist($comment1);
-        $article->addComment($comment1);
+        $event1 = new CompanyAuction();
+        $event1->setData('Foo');
+        $this->_em->persist($event1);
+        $companyOrganization->addEvent($event1);
 
-        $comment2 = new CmsComment();
-        $comment2->topic = 'I disagree';
-        $comment2->text = 'baz';
-        $this->_em->persist($comment2);
-        $article->addComment($comment2);
+        $event2 = new CompanyAuction();
+        $event2->setData('Bar');
+        $this->_em->persist($event2);
+        $companyOrganization->addEvent($event2);
 
         $this->_em->flush();
 
-        unset($article);
-        unset($comment1);
-        unset($comment2);
+        unset($companyOrganization);
+        unset($event1);
+        unset($event2);
 
         $this->_em->clear();
     }
@@ -72,24 +72,24 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
     public function testCanCountWithoutLoadingPersistentCollection()
     {
         $this->loadFixture();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle');
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyOrganization');
 
-        $article  = $repository->findOneBy(array('topic' => 'Criteria is awesome'));
-        $comments = $article->comments->matching(new Criteria());
+        $organization = $repository->find(1);
+        $events       = $organization->events->matching(new Criteria());
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $comments);
-        $this->assertFalse($comments->isInitialized());
-        $this->assertCount(2, $comments);
-        $this->assertFalse($comments->isInitialized());
+        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $events);
+        $this->assertFalse($events->isInitialized());
+        $this->assertCount(2, $events);
+        $this->assertFalse($events->isInitialized());
 
         // Make sure it works with constraints
-        $comments = $article->comments->matching(new Criteria(
-            Criteria::expr()->eq('text', 'bar')
+        $events = $organization->events->matching(new Criteria(
+            Criteria::expr()->eq('id', 2)
         ));
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $comments);
-        $this->assertFalse($comments->isInitialized());
-        $this->assertCount(1, $comments);
-        $this->assertFalse($comments->isInitialized());
+        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $events);
+        $this->assertFalse($events->isInitialized());
+        $this->assertCount(1, $events);
+        $this->assertFalse($events->isInitialized());
     }
 }
