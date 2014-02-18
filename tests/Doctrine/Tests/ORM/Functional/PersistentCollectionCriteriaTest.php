@@ -74,8 +74,9 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
         $this->loadFixture();
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyOrganization');
 
-        $organization = $repository->find(1);
-        $events       = $organization->events->matching(new Criteria());
+        $organizations = $repository->findAll();
+        $organization  = $organizations[0];
+        $events        = $organization->events->matching(new Criteria());
 
         $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $events);
         $this->assertFalse($events->isInitialized());
