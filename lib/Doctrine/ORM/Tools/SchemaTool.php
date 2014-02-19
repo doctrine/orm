@@ -680,6 +680,10 @@ class SchemaTool
             if (isset($joinColumn['onDelete'])) {
                 $fkOptions['onDelete'] = $joinColumn['onDelete'];
             }
+
+            $fkName = isset($mapping['indexName'])
+                ? $mapping['indexName']
+                : null;
         }
 
         $compositeName = $theJoinTable->getName().'.'.implode('', $localColumns);
@@ -704,7 +708,7 @@ class SchemaTool
                 $localColumns,
                 $foreignColumns,
                 $fkOptions,
-                $mapping['indexName']
+                $fkName
             );
         }
     }

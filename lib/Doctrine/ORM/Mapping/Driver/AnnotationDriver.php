@@ -374,6 +374,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
+                $mapping['indexName'] = $manyToManyAnnot->indexName;
 
                 if ($orderByAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;

@@ -63,4 +63,9 @@ final class ManyToMany implements Annotation
      * @var string
      */
     public $indexBy;
+
+    /**
+     * @var string
+     */
+    public $indexName;
 }
