@@ -38,12 +38,6 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         foreach ($classes as $class) {
             $ce = $validator->validateClass($class);
 
-            foreach ($ce as $key => $error) {
-                if (strpos($error, "must be private or protected. Public fields may break lazy-loading.") !== false) {
-                    unset($ce[$key]);
-                }
-            }
-
             $this->assertEquals(0, count($ce), "Invalid Modelset: " . $modelSet . " class " . $class->name . ": ". implode("\n", $ce));
         }
     }
