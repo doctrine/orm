@@ -48,4 +48,9 @@ final class ManyToOne implements Annotation
      * @var string
      */
     public $inversedBy;
+
+    /**
+     * @var string
+     */
+    public $indexName;
 }

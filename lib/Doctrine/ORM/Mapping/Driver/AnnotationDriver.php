@@ -346,6 +346,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
+                $mapping['indexName'] = $manyToOneAnnot->indexName;
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();

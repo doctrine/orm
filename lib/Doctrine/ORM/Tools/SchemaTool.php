@@ -699,11 +699,12 @@ class SchemaTool
             $blacklistedFks[$compositeName] = true;
         } elseif (!isset($blacklistedFks[$compositeName])) {
             $addedFks[$compositeName] = array('foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns);
-            $theJoinTable->addUnnamedForeignKeyConstraint(
+            $theJoinTable->addForeignKeyConstraint(
                 $foreignTableName,
                 $localColumns,
                 $foreignColumns,
-                $fkOptions
+                $fkOptions,
+                $mapping['indexName']
             );
         }
     }
