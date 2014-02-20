@@ -629,7 +629,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The options array.
      */
-    private function _parseOptions(SimpleXMLElement $options)
+    protected function _parseOptions(SimpleXMLElement $options)
     {
         $array = array();
 
@@ -661,7 +661,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The mapping array.
      */
-    private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
+    protected function joinColumnToArray(SimpleXMLElement $joinColumnElement)
     {
         $joinColumn = array(
             'name' => (string)$joinColumnElement['name'],
@@ -694,7 +694,7 @@ class XmlDriver extends FileDriver
      *
      * @return array
      */
-    private function columnToArray(SimpleXMLElement $fieldMapping)
+    protected function columnToArray(SimpleXMLElement $fieldMapping)
     {
         $mapping = array(
             'fieldName' => (string) $fieldMapping['name'],
@@ -750,7 +750,7 @@ class XmlDriver extends FileDriver
      *
      * @return array
      */
-    private function cacheToArray(SimpleXMLElement $cacheMapping)
+    protected function cacheToArray(SimpleXMLElement $cacheMapping)
     {
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
         $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
@@ -776,7 +776,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The list of cascade options.
      */
-    private function _getCascadeMappings($cascadeElement)
+    protected function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
         /* @var $action SimpleXmlElement */
