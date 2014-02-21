@@ -60,6 +60,7 @@ Reference Guide
    reference/installation
    reference/advanced-configuration
    reference/second-level-cache
+   reference/security
    
 
 Cookbook
