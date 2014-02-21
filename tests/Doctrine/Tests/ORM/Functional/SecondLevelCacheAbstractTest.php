@@ -121,7 +121,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
     }
-    
+
     protected function loadFixturesTravelersWithProfile()
     {
         $t1   = new Traveler("Test traveler 1");
@@ -139,7 +139,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         $this->travelersWithProfile[] = $t1;
         $this->travelersWithProfile[] = $t2;
-        
+
         $this->_em->flush();
     }
 
@@ -165,6 +165,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
     {
         $t1   = new Travel($this->travelers[0]);
         $t2   = new Travel($this->travelers[1]);
+        $t3   = new Travel($this->travelers[1]);
 
         $t1->addVisitedCity($this->cities[0]);
         $t1->addVisitedCity($this->cities[1]);
@@ -175,9 +176,11 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         $this->_em->persist($t1);
         $this->_em->persist($t2);
+        $this->_em->persist($t3);
 
         $this->travels[] = $t1;
         $this->travels[] = $t2;
+        $this->travels[] = $t3;
 
         $this->_em->flush();
     }

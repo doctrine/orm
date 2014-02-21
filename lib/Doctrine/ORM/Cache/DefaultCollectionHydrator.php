@@ -24,8 +24,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
  * Default hydrator cache for collections

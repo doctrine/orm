@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\EventArgs;
 use Doctrine\ORM\EntityManager;
 
 /**

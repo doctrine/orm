@@ -74,11 +74,11 @@ class GenerateEntitiesCommand extends Command
                 'Flag to define if generator should only update entity if it exists.', true
             ),
             new InputOption(
-                'extend', null, InputOption::VALUE_OPTIONAL,
+                'extend', null, InputOption::VALUE_REQUIRED,
                 'Defines a base class to be extended by generated entity classes.'
             ),
             new InputOption(
-                'num-spaces', null, InputOption::VALUE_OPTIONAL,
+                'num-spaces', null, InputOption::VALUE_REQUIRED,
                 'Defines the number of indentation spaces', 4
             ),
             new InputOption(

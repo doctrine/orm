@@ -236,20 +236,6 @@ class SchemaValidator
             }
         }
 
-        foreach ($class->reflClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $publicAttr) {
-            if ($publicAttr->isStatic()) {
-                continue;
-            }
-
-            if ( ! isset($class->fieldMappings[$publicAttr->getName()]) &&
-                ! isset($class->associationMappings[$publicAttr->getName()])) {
-                continue;
-            }
-
-            $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private ".
-                    "or protected. Public fields may break lazy-loading.";
-        }
-
         foreach ($class->subClasses as $subClass) {
             if (!in_array($class->name, class_parents($subClass))) {
                 $ce[] = "According to the discriminator map class '" . $subClass . "' has to be a child ".

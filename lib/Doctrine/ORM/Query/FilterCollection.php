@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 
 /**

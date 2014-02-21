@@ -100,6 +100,7 @@ of several common elements:
           joinColumn:
             name: address_id
             referencedColumnName: id
+            onDelete: CASCADE
       oneToMany:
         phonenumbers:
           targetEntity: Phonenumber

@@ -20,8 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\Lock;
-
 /**
  * Defines contract for concurrently managed data region.
  * It should be able to lock an specific cache entry in an atomic operation.

@@ -29,7 +29,6 @@ use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
