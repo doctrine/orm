@@ -21,7 +21,7 @@ class Tweet
     public $content;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="tweet")
+     * @ManyToOne(targetEntity="User", inversedBy="tweets")
      */
     public $author;
 
