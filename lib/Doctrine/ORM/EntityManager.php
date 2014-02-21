@@ -59,7 +59,7 @@ use Doctrine\Common\Util\ClassUtils;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-/* final */class EntityManager implements EntityManagerInterface
+/* final */class EntityManager implements EntityManagerInterface, ObjectPersisterInterface
 {
     /**
      * The used Configuration.
