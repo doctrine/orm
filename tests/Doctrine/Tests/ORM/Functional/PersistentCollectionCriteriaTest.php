@@ -19,12 +19,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsComment;
-use Doctrine\Tests\Models\Company\CompanyAuction;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
-use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
-use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Tweet\Tweet;
+use Doctrine\Tests\Models\Tweet\User;
 
 /**
  * @author Michaël Gallego <mic.gallego@gmail.com>
@@ -33,7 +29,7 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
 {
     protected function setUp()
     {
-        $this->useModelSet('company');
+        $this->useModelSet('tweet');
         parent::setUp();
     }
 
@@ -47,24 +43,23 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
 
     public function loadFixture()
     {
-        $companyOrganization = new CompanyOrganization();
-        $this->_em->persist($companyOrganization);
+        $author = new User();
+        $author->name = 'ngal';
+        $this->_em->persist($author);
 
-        $event1 = new CompanyAuction();
-        $event1->setData('Foo');
-        $this->_em->persist($event1);
-        $companyOrganization->addEvent($event1);
+        $tweet1 = new Tweet();
+        $tweet1->content = 'Foo';
+        $author->addTweet($tweet1);
 
-        $event2 = new CompanyAuction();
-        $event2->setData('Bar');
-        $this->_em->persist($event2);
-        $companyOrganization->addEvent($event2);
+        $tweet2 = new Tweet();
+        $tweet2->content = 'Bar';
+        $author->addTweet($tweet2);
 
         $this->_em->flush();
 
-        unset($companyOrganization);
-        unset($event1);
-        unset($event2);
+        unset($author);
+        unset($tweet1);
+        unset($tweet2);
 
         $this->_em->clear();
     }
@@ -72,25 +67,24 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
     public function testCanCountWithoutLoadingPersistentCollection()
     {
         $this->loadFixture();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyOrganization');
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Tweet\User');
 
-        $organizations = $repository->findAll();
-        $organization  = $organizations[0];
-        $events        = $organization->events->matching(new Criteria());
+        $user   = $repository->findOneBy(array('name' => 'ngal'));
+        $tweets = $user->tweets->matching(new Criteria());
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $events);
-        $this->assertFalse($events->isInitialized());
-        $this->assertCount(2, $events);
-        $this->assertFalse($events->isInitialized());
+        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertFalse($tweets->isInitialized());
+        $this->assertCount(2, $tweets);
+        $this->assertFalse($tweets->isInitialized());
 
         // Make sure it works with constraints
-        $events = $organization->events->matching(new Criteria(
-            Criteria::expr()->eq('id', 2)
+        $tweets = $user->tweets->matching(new Criteria(
+            Criteria::expr()->eq('content', 'Foo')
         ));
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $events);
-        $this->assertFalse($events->isInitialized());
-        $this->assertCount(1, $events);
-        $this->assertFalse($events->isInitialized());
+        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertFalse($tweets->isInitialized());
+        $this->assertCount(1, $tweets);
+        $this->assertFalse($tweets->isInitialized());
     }
 }
