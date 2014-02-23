@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Tools\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Doctrine\ORM\Version;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -35,10 +35,10 @@ class ConsoleRunner
     /**
      * Create a Symfony Console HelperSet
      *
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      * @return HelperSet
      */
-    public static function createHelperSet(EntityManager $entityManager)
+    public static function createHelperSet(EntityManagerInterface $entityManager)
     {
         return new HelperSet(array(
             'db' => new ConnectionHelper($entityManager->getConnection()),
