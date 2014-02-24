@@ -2,11 +2,14 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
+use Doctrine\Tests\Models\DDC2984\DDC2984DomainUserId;
+use Doctrine\Tests\Models\DDC2984\DDC2984User;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 
@@ -228,6 +231,63 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         $this->_unitOfWork->lock(null, null, null);
+    }
+
+    /**
+     * @group DDC-2984
+     */
+    public function testIllegalOffsetTypeWarningWhenUsingCustomDBALTypeAsIdentifier()
+    {
+        if(!Type::hasType('ddc2984_domain_user_id')) {
+            Type::addType('ddc2984_domain_user_id', 'Doctrine\Tests\Models\DDC2984\DDC2984UserIdCustomDbalType');
+        }
+
+        //sorry, could not reproduce the bug with all the mocked classes... so I use my own test setup for demonstration
+        $config = new \Doctrine\ORM\Configuration();
+
+        $config->setAutoGenerateProxyClasses(true);
+        $config->setProxyDir(\sys_get_temp_dir());
+        $config->setProxyNamespace(get_class($this) . '\Entities');
+        $config->setMetadataDriverImpl(
+            new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(
+                new \Doctrine\Common\Annotations\IndexedReader(
+                    new \Doctrine\Common\Annotations\AnnotationReader()
+                )
+            )
+        );
+
+        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
+        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
+
+        $em = \Doctrine\ORM\EntityManager::create(array(
+            'driver' => 'pdo_sqlite',
+            'memory' => true
+        ), $config);
+
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+
+        $schema = $em->getClassMetadata("Doctrine\Tests\Models\DDC2984\DDC2984User");
+        $schemaTool->createSchema(array($schema));
+
+        //ok, lets start reproducing the bug
+        $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
+        $user->applyName('Alex');
+
+        $em->persist($user);
+        $em->flush($user);
+
+        $sameUser = $em->getRepository("Doctrine\Tests\Models\DDC2984\DDC2984User")->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
+
+        //Until know, everything works as expected
+        $this->assertTrue($user->sameIdentityAs($sameUser));
+
+        $em->clear();
+
+        //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
+        $equalUser = $em->getRepository("Doctrine\Tests\Models\DDC2984\DDC2984User")->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
+
+        $this->assertNotSame($user, $equalUser);
+        $this->assertTrue($user->sameIdentityAs($equalUser));
     }
 }
 
