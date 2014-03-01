@@ -284,7 +284,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null, $timestamp = null)
     {
-        list($params) = $this->persister->expandParameters($criteria);
+        list($params) = ($criteria instanceof Criteria)
+            ? $this->persister->expandCriteriaParameters($criteria)
+            : $this->persister->expandParameters($criteria);
 
         return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset . $timestamp);
     }
@@ -295,6 +297,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function expandParameters($criteria)
     {
         return $this->persister->expandParameters($criteria);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function expandCriteriaParameters(Criteria $criteria)
+    {
+        return $this->persister->expandCriteriaParameters($criteria);
     }
 
     /**
@@ -480,7 +490,36 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadCriteria(Criteria $criteria)
     {
-        return $this->persister->loadCriteria($criteria);
+        $query       = $this->persister->getSelectSQL($criteria);
+        $timestamp   = $this->timestampRegion->get($this->timestampKey);
+        $hash        = $this->getHash($query, $criteria, null, null, null, $timestamp ? $timestamp->time : null);
+        $rsm         = $this->getResultSetMapping();
+        $querykey    = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL);
+        $queryCache  = $this->cache->getQueryCache($this->regionName);
+        $cacheResult = $queryCache->get($querykey, $rsm);
+
+        if ($cacheResult !== null) {
+            if ($this->cacheLogger) {
+                $this->cacheLogger->queryCacheHit($this->regionName, $querykey);
+            }
+
+            return $cacheResult;
+        }
+
+        $result = $this->persister->loadCriteria($criteria);
+        $cached = $queryCache->put($querykey, $rsm, $result);
+
+        if ($this->cacheLogger) {
+            if ($result) {
+                $this->cacheLogger->queryCacheMiss($this->regionName, $querykey);
+            }
+
+            if ($cached) {
+                $this->cacheLogger->queryCachePut($this->regionName, $querykey);
+            }
+        }
+
+        return $result;
     }
 
     /**
