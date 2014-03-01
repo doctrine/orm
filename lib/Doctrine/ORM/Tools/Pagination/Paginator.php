@@ -182,12 +182,14 @@ class Paginator implements \Countable, \IteratorAggregate
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
             $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
+            $whereInQuery->setCacheable($this->query->isCacheable());
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
         } else {
             $result = $this->cloneQuery($this->query)
                 ->setMaxResults($length)
                 ->setFirstResult($offset)
+                ->setCacheable($this->query->isCacheable())
                 ->getResult($this->query->getHydrationMode())
             ;
         }
@@ -208,6 +210,7 @@ class Paginator implements \Countable, \IteratorAggregate
         $cloneQuery = clone $query;
 
         $cloneQuery->setParameters(clone $query->getParameters());
+        $cloneQuery->setCacheable(false);
 
         foreach ($query->getHints() as $name => $value) {
             $cloneQuery->setHint($name, $value);
