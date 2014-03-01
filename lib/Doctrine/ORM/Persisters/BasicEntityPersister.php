@@ -829,14 +829,9 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * Expands Criteria Parameters by walking the expressions and grabbing all
-     * parameters and types from it.
-     *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array(array(), array())
+     * {@inheritdoc}
      */
-    private function expandCriteriaParameters(Criteria $criteria)
+    public function expandCriteriaParameters(Criteria $criteria)
     {
         $expression = $criteria->getWhereExpression();
 

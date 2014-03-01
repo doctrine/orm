@@ -84,6 +84,15 @@ interface EntityPersister
     public function expandParameters($criteria);
 
     /**
+     * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
+     *
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
+     * @return array
+     */
+    public function expandCriteriaParameters(Criteria $criteria);
+
+    /**
      * Gets the SQL WHERE condition for matching a field with a given value.
      *
      * @param string      $field

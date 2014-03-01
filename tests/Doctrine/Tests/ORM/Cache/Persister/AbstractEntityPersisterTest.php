@@ -56,6 +56,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'getInsertSQL',
         'getSelectSQL',
         'expandParameters',
+        'expandCriteriaParameters',
         'getSelectConditionStatementSQL',
         'addInsert',
         'executeInserts',
@@ -179,6 +180,19 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
             ->will($this->returnValue(array('name'=>'Foo')));
 
         $this->assertEquals(array('name'=>'Foo'), $persister->expandParameters(array('name'=>'Foo')));
+    }
+
+    public function testInvokeExpandCriteriaParameters()
+    {
+        $persister = $this->createPersisterDefault();
+        $criteria  = new Criteria();
+
+        $this->entityPersister->expects($this->once())
+            ->method('expandCriteriaParameters')
+            ->with($this->equalTo($criteria))
+            ->will($this->returnValue(array('name'=>'Foo')));
+
+        $this->assertEquals(array('name'=>'Foo'), $persister->expandCriteriaParameters($criteria));
     }
 
     public function testInvokeSelectConditionStatementSQL()
@@ -320,9 +334,17 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
     public function testInvokeLoadCriteria()
     {
+        $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
         $criteria  = new Criteria();
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $rsm->addEntityResult(Country::CLASSNAME, 'c');
+
+        $this->entityPersister->expects($this->once())
+            ->method('getResultSetMapping')
+            ->will($this->returnValue($rsm));
 
         $this->entityPersister->expects($this->once())
             ->method('loadCriteria')
