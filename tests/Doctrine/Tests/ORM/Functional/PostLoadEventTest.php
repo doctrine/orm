@@ -55,9 +55,10 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
 
-        // CmsUser and CmsAddres, because it's a ToOne inverse side on CmsUser
+        // CmsUser
+        // Shouldn't be called for CmsAddress (ToOne inverse side)
         $mockListener
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('postLoad')
             ->will($this->returnValue(true));
 
@@ -75,9 +76,10 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
 
-        // CmsUser (root), CmsAddress (ToOne inverse side), CmsEmail (joined association)
+        // CmsUser (root), CmsEmail (joined association)
+        // Shouldn't be called for CmsAddress (ToOne inverse side)
         $mockListener
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('postLoad')
             ->will($this->returnValue(true));
 

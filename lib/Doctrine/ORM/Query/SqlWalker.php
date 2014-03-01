@@ -390,6 +390,73 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
 
+    private function _generateToOneAutoJoins(ClassMetadata $class, $dqlAlias)
+    {
+        $sql = '';
+
+        foreach ($class->getAssociationMappings() as $relation) {
+            if (!$class->isSingleValuedAssociation($relation['fieldName'])) {
+                continue;
+            }
+
+            $targetTableAlias = NULL;
+            foreach ($this->queryComponents as $componentAlias => $component) {
+                if ($componentAlias === $dqlAlias || empty($component['autoJoin']) || $component['parent'] !== $dqlAlias) {
+                    continue;
+                }
+
+                if ($relation['sourceEntity'] === $component['relation']['sourceEntity'] && $relation['fieldName'] === $component['relation']['fieldName']) {
+                    $targetTableAlias = $componentAlias;
+                    break;
+                }
+            }
+
+            if (!$targetTableAlias) {
+                continue;
+            }
+
+            $targetClass = $this->em->getClassMetadata($relation['targetEntity']);
+            $sourceClass = $this->em->getClassMetadata($relation['sourceEntity']);
+            $targetTableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+
+            $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $dqlAlias);
+
+            // Ensure we got the owning side, since it has all mapping info
+            $assoc = (!$relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
+
+            $conditions = array();
+            foreach ($assoc['joinColumns'] as $joinColumn) {
+                $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+                $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
+
+                if ($relation['isOwningSide']) {
+                    $conditions[] = $sourceTableAlias . '.' . $quotedSourceColumn . ' = ' . $targetTableAlias . '.' . $quotedTargetColumn;
+                    continue;
+                }
+
+                $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $quotedSourceColumn;
+            }
+
+            if ($discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($targetTableAlias))) {
+                $conditions[] = $discrSql;
+            }
+
+            if ($filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+                $conditions[] = $filterExpr;
+            }
+
+            $sql .= ' LEFT JOIN ' . $targetTableName . ' ' . $targetTableAlias . ' ON ' . implode(' AND ', $conditions);
+
+            if ($targetClass->isInheritanceTypeJoined()) {
+                $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $dqlAlias);
+            }
+
+            $sql .= $this->_generateToOneAutoJoins($targetClass, $targetTableAlias);
+        }
+
+        return $sql;
+    }
+
     /**
      * @return string
      */
@@ -724,17 +791,8 @@ class SqlWalker implements TreeWalker
                 );
             }
 
-            if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
-                // Add discriminator columns to SQL
-                $rootClass   = $this->em->getClassMetadata($class->rootEntityName);
-                $tblAlias    = $this->getSQLTableAlias($rootClass->getTableName(), $dqlAlias);
-                $discrColumn = $rootClass->discriminatorColumn;
-                $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
-
-                $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
-
-                $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
+            if ($expr = $this->_generateDiscriminatorSelectColumns($class, $dqlAlias)) {
+                $sqlSelectExpressions[] = $expr;
             }
 
             // Add foreign key columns to SQL, if necessary
@@ -743,24 +801,7 @@ class SqlWalker implements TreeWalker
             }
 
             // Add foreign key columns of class and also parent classes
-            foreach ($class->associationMappings as $assoc) {
-                if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
-                    continue;
-                } else if ( !$addMetaColumns && !isset($assoc['id'])) {
-                    continue;
-                }
-
-                $owningClass   = (isset($assoc['inherited'])) ? $this->em->getClassMetadata($assoc['inherited']) : $class;
-                $sqlTableAlias = $this->getSQLTableAlias($owningClass->getTableName(), $dqlAlias);
-
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
-                    $columnAlias = $this->getSQLColumnAlias($srcColumn);
-
-                    $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
-
-                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
-                }
-            }
+            $sqlSelectExpressions = array_merge($sqlSelectExpressions, $this->_generateAssociationSelects($class, $addMetaColumns, $dqlAlias));
 
             // Add foreign key columns to SQL, if necessary
             if ( ! $addMetaColumns) {
@@ -769,29 +810,146 @@ class SqlWalker implements TreeWalker
 
             // Add foreign key columns of subclasses
             foreach ($class->subClasses as $subClassName) {
-                $subClass      = $this->em->getClassMetadata($subClassName);
-                $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
-
-                foreach ($subClass->associationMappings as $assoc) {
-                    // Skip if association is inherited
-                    if (isset($assoc['inherited'])) continue;
-
-                    if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) continue;
-
-                    foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
-                        $columnAlias = $this->getSQLColumnAlias($srcColumn);
-
-                        $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
-
-                        $this->rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
-                    }
-                }
+                $subClass = $this->em->getClassMetadata($subClassName);
+                $sqlSelectExpressions = array_merge($sqlSelectExpressions, $this->_generateAssociationSelects($subClass, $addMetaColumns, $dqlAlias, TRUE));
             }
         }
 
         $sql .= implode(', ', $sqlSelectExpressions);
 
         return $sql;
+    }
+
+    // todo: tests
+    private function _generateAssociationSelects(ClassMetadata $class, $addMetaColumns, $dqlAlias, $skipInherited = FALSE)
+    {
+        $sqlSelectExpressions = array();
+
+        foreach ($class->associationMappings as $assoc) {
+            if (!($assoc['type'] & ClassMetadata::TO_ONE)) {
+                continue;
+            } elseif (!$addMetaColumns && !isset($assoc['id'])) {
+                continue;
+            } elseif (!empty($assoc['inherited']) && $skipInherited) {
+                continue;
+            }
+
+            if ($assoc['isOwningSide'] && empty($this->queryComponents[$dqlAlias]['backReference'])) {
+                $owningClass = (isset($assoc['inherited']) && !$skipInherited) ? $this->em->getClassMetadata($assoc['inherited']) : $class;
+                $sqlTableAlias = $this->getSQLTableAlias($owningClass->getTableName(), $dqlAlias);
+
+                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                    $columnAlias = $this->getSQLColumnAlias($srcColumn);
+                    $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
+                }
+
+                if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
+                    $sqlSelectExpressions = array_merge($sqlSelectExpressions, $this->_generateAutoJoinQueryComponent($assoc, $dqlAlias));
+                }
+
+                continue;
+            }
+
+            // try figuring out if the entity is already joined in query
+            foreach ($this->queryComponents as $componentAlias => $component) {
+                if ($dqlAlias === $componentAlias || empty($component['relation']) || $component['parent'] !== $dqlAlias) {
+                    continue;
+                }
+
+                if ($assoc['sourceEntity'] === $component['relation']['sourceEntity'] && $assoc['fieldName'] === $component['relation']['fieldName']) {
+                    if (isset($this->selectedClasses[$componentAlias])) {
+                        continue 2; // do not join one relation twice
+                    }
+                }
+            }
+
+            $sqlSelectExpressions = array_merge($sqlSelectExpressions, $this->_generateAutoJoinQueryComponent($assoc, $dqlAlias));
+        }
+
+        return $sqlSelectExpressions;
+    }
+
+    private function _generateAutoJoinQueryComponent(array $assoc, $dqlAlias)
+    {
+        $sqlSelectExpressions = array();
+        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+        // if it's self-referencing, we have to change the table alias
+        if ($assoc['sourceEntity'] === $assoc['targetEntity']) {
+            // self referencing eager join would cause recursion
+            if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
+                return array();
+            }
+
+            $sqlTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $dqlAlias . '.' . $assoc['fieldName']);
+
+        } else {
+            $sqlTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $dqlAlias);
+        }
+
+        $this->setSQLTableAlias($targetClass->getTableName(), $sqlTableAlias, $sqlTableAlias);
+
+        $this->selectedClasses[$sqlTableAlias] = array(
+            'class' => $targetClass,
+            'dqlAlias' => $dqlAlias,
+            'resultAlias' => NULL,
+        );
+
+        $this->queryComponents[$sqlTableAlias] = array(
+            'metadata' => $targetClass,
+            'parent' => $dqlAlias,
+            'relation' => $assoc,
+            'map' => NULL,
+            'nestingLevel' => $this->queryComponents[$dqlAlias]['nestingLevel'],
+            'token' => array('value' => 'LEFT', 'type' => 0, 'position' => 0),
+        );
+
+        $this->rsm->addJoinedEntityResult($targetClass->getName(), $sqlTableAlias, $dqlAlias, $assoc['fieldName'], $assoc['fetch'] !== ClassMetadata::FETCH_EAGER);
+
+        if ($expr = $this->_generateDiscriminatorSelectColumns($targetClass, $dqlAlias)) {
+            $sqlSelectExpressions[] = $expr;
+        }
+
+        $this->selectedClasses[$sqlTableAlias]['autoJoin'] = TRUE;
+        $this->queryComponents[$sqlTableAlias]['autoJoin'] = TRUE;
+
+        if ($assoc['fetch'] !== ClassMetadata::FETCH_EAGER) {
+            foreach ($targetClass->getIdentifierColumnNames() as $idColumn) {
+                $idField = $targetClass->getFieldForColumn($idColumn);
+                $columnAlias = $this->getSQLColumnAlias($idColumn);
+                $sqlSelectExpressions[] = $sqlTableAlias . '.' . $idColumn . ' AS ' . $columnAlias;
+
+                if (isset($targetClass->associationMappings[$idField])) {
+                    $this->rsm->addMetaResult($sqlTableAlias, $columnAlias, $idColumn, TRUE);
+                } else {
+                    $this->rsm->addMetaResult($sqlTableAlias, $columnAlias, $idField, TRUE);
+                }
+            }
+
+        } else {
+            $sqlSelectExpressions[] = $this->_expandSelectExpressionToColumns($sqlTableAlias);
+        }
+
+        return $sqlSelectExpressions;
+    }
+
+    private function _generateDiscriminatorSelectColumns(ClassMetadata $class, $dqlAlias)
+    {
+        if (!$class->isInheritanceTypeSingleTable() && !$class->isInheritanceTypeJoined()) {
+            return NULL;
+        }
+
+        // Add discriminator columns to SQL
+        $rootClass = $this->em->getClassMetadata($class->rootEntityName);
+        $tblAlias = $this->getSQLTableAlias($rootClass->getTableName(), $dqlAlias);
+        $discrColumn = $rootClass->discriminatorColumn;
+        $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
+
+        $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
+        $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
+
+        return $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
     }
 
     /**
@@ -803,11 +961,18 @@ class SqlWalker implements TreeWalker
         $sqlParts = array();
 
         foreach ($identificationVarDecls as $identificationVariableDecl) {
-            $sql = $this->walkRangeVariableDeclaration($identificationVariableDecl->rangeVariableDeclaration);
+            $rangeVariableDeclaration = $identificationVariableDecl->rangeVariableDeclaration;
+
+            $sql = $this->walkRangeVariableDeclaration($rangeVariableDeclaration);
 
             foreach ($identificationVariableDecl->joins as $join) {
                 $sql .= $this->walkJoin($join);
             }
+
+            $sql .= $this->_generateToOneAutoJoins(
+                $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName),
+                $rangeVariableDeclaration->aliasIdentificationVariable
+            );
 
             if ($identificationVariableDecl->indexBy) {
                 $alias = $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->identificationVariable;
@@ -1025,6 +1190,10 @@ class SqlWalker implements TreeWalker
             $this->rsm->addIndexBy($joinedDqlAlias, $relation['indexBy']);
         }
 
+        if ($assoc['type'] & ClassMetadata::TO_ONE) {
+            $sql .= $this->_generateToOneAutoJoins($targetClass, $joinedDqlAlias);
+        }
+
         return $sql;
     }
 
@@ -1115,6 +1284,9 @@ class SqlWalker implements TreeWalker
                 }
 
                 $sql .= $condExprConjunction . implode(' AND ', $conditions);
+
+                $sql .= $this->_generateToOneAutoJoins($class, $dqlAlias);
+
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
@@ -1328,93 +1500,100 @@ class SqlWalker implements TreeWalker
 
             default:
                 // IdentificationVariable or PartialObjectExpression
-                if ($expr instanceof AST\PartialObjectExpression) {
-                    $dqlAlias = $expr->identificationVariable;
-                    $partialFieldSet = $expr->partialFieldSet;
-                } else {
-                    $dqlAlias = $expr;
-                    $partialFieldSet = array();
-                }
-
-                $queryComp   = $this->queryComponents[$dqlAlias];
-                $class       = $queryComp['metadata'];
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: null;
-
-                if ( ! isset($this->selectedClasses[$dqlAlias])) {
-                    $this->selectedClasses[$dqlAlias] = array(
-                        'class'       => $class,
-                        'dqlAlias'    => $dqlAlias,
-                        'resultAlias' => $resultAlias
-                    );
-                }
-
-                $sqlParts = array();
-
-                // Select all fields from the queried class
-                foreach ($class->fieldMappings as $fieldName => $mapping) {
-                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet)) {
-                        continue;
-                    }
-
-                    $tableName = (isset($mapping['inherited']))
-                        ? $this->em->getClassMetadata($mapping['inherited'])->getTableName()
-                        : $class->getTableName();
-
-                    $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
-                    $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
-                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
-
-                    $col = $sqlTableAlias . '.' . $quotedColumnName;
-
-                    if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                        $type = Type::getType($class->getTypeOfField($fieldName));
-                        $col = $type->convertToPHPValueSQL($col, $this->platform);
-                    }
-
-                    $sqlParts[] = $col . ' AS '. $columnAlias;
-
-                    $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
-
-                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
-                }
-
-                // Add any additional fields of subclasses (excluding inherited fields)
-                // 1) on Single Table Inheritance: always, since its marginal overhead
-                // 2) on Class Table Inheritance only if partial objects are disallowed,
-                //    since it requires outer joining subtables.
-                if ($class->isInheritanceTypeSingleTable() || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
-                    foreach ($class->subClasses as $subClassName) {
-                        $subClass      = $this->em->getClassMetadata($subClassName);
-                        $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
-
-                        foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                            if (isset($mapping['inherited']) || $partialFieldSet && !in_array($fieldName, $partialFieldSet)) {
-                                continue;
-                            }
-
-                            $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
-                            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
-
-                            $col = $sqlTableAlias . '.' . $quotedColumnName;
-
-                            if (isset($subClass->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                                $type = Type::getType($subClass->getTypeOfField($fieldName));
-                                $col = $type->convertToPHPValueSQL($col, $this->platform);
-                            }
-
-                            $sqlParts[] = $col . ' AS ' . $columnAlias;
-
-                            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
-
-                            $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
-                        }
-                    }
-                }
-
-                $sql .= implode(', ', $sqlParts);
+                $resultAlias = $selectExpression->fieldIdentificationVariable ? : null;
+                $sql .= $this->_expandSelectExpressionToColumns($expr, $resultAlias);
         }
 
         return $sql;
+    }
+
+    private function _expandSelectExpressionToColumns($expr, $resultAlias = NULL)
+    {
+        // IdentificationVariable or PartialObjectExpression
+        if ($expr instanceof AST\PartialObjectExpression) {
+            $dqlAlias = $expr->identificationVariable;
+            $partialFieldSet = $expr->partialFieldSet;
+        } else {
+            $dqlAlias = $expr;
+            $partialFieldSet = array();
+        }
+
+        $queryComp = $this->queryComponents[$dqlAlias];
+        /** @var ClassMetadata $class */
+        $class = $queryComp['metadata'];
+
+        if (!isset($this->selectedClasses[$dqlAlias])) {
+            $this->selectedClasses[$dqlAlias] = array(
+                'class' => $class,
+                'dqlAlias' => $dqlAlias,
+                'resultAlias' => $resultAlias
+            );
+        }
+
+        $sqlParts = array();
+
+        // Select all fields from the queried class
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            if ($partialFieldSet && !in_array($fieldName, $partialFieldSet)) {
+                continue;
+            }
+
+            $tableName = (isset($mapping['inherited']))
+                ? $this->em->getClassMetadata($mapping['inherited'])->getTableName()
+                : $class->getTableName();
+
+            $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
+            $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
+            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+
+            $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+            if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
+                $type = Type::getType($class->getTypeOfField($fieldName));
+                $col = $type->convertToPHPValueSQL($col, $this->platform);
+            }
+
+            $sqlParts[] = $col . ' AS ' . $columnAlias;
+
+            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+
+            $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+        }
+
+        // Add any additional fields of subclasses (excluding inherited fields)
+        // 1) on Single Table Inheritance: always, since its marginal overhead
+        // 2) on Class Table Inheritance only if partial objects are disallowed,
+        //    since it requires outer joining subtables.
+        if ($class->isInheritanceTypeSingleTable() || !$this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+            foreach ($class->subClasses as $subClassName) {
+                $subClass = $this->em->getClassMetadata($subClassName);
+                $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
+
+                foreach ($subClass->fieldMappings as $fieldName => $mapping) {
+                    if (isset($mapping['inherited']) || $partialFieldSet && !in_array($fieldName, $partialFieldSet)) {
+                        continue;
+                    }
+
+                    $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
+                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
+
+                    $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+                    if (isset($subClass->fieldMappings[$fieldName]['requireSQLConversion'])) {
+                        $type = Type::getType($subClass->getTypeOfField($fieldName));
+                        $col = $type->convertToPHPValueSQL($col, $this->platform);
+                    }
+
+                    $sqlParts[] = $col . ' AS ' . $columnAlias;
+
+                    $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+
+                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
+                }
+            }
+        }
+
+        return implode(', ', $sqlParts);
     }
 
     /**
@@ -1459,7 +1638,14 @@ class SqlWalker implements TreeWalker
         $sqlParts = array ();
 
         foreach ($identificationVarDecls as $subselectIdVarDecl) {
-            $sql = $this->walkRangeVariableDeclaration($subselectIdVarDecl->rangeVariableDeclaration);
+            $rangeVariableDeclaration = $subselectIdVarDecl->rangeVariableDeclaration;
+
+            $sql = $this->walkRangeVariableDeclaration($rangeVariableDeclaration);
+
+            $sql .= $this->_generateToOneAutoJoins(
+                $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName),
+                $rangeVariableDeclaration->aliasIdentificationVariable
+            );
 
             foreach ($subselectIdVarDecl->joins as $join) {
                 $sql .= $this->walkJoin($join);

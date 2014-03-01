@@ -169,6 +169,13 @@ class ResultSetMapping
     public $metadataParameterMapping = array();
 
     /**
+     * Whether or not the entity should be created as proxy instead of partial
+     *
+     * @var array
+     */
+    public $isProxy = array();
+
+    /**
      * Adds an entity result to this ResultSetMapping.
      *
      * @param string $class            The class name of the entity.
@@ -354,11 +361,12 @@ class ResultSetMapping
      *
      * @todo Rename: addJoinedEntity
      */
-    public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
+    public function addJoinedEntityResult($class, $alias, $parentAlias, $relation, $proxy = FALSE)
     {
         $this->aliasMap[$alias]       = $class;
         $this->parentAliasMap[$alias] = $parentAlias;
         $this->relationMap[$alias]    = $relation;
+        $this->isProxy[$alias]        = $proxy;
 
         return $this;
     }

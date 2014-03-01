@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 {
+    /** @var \Doctrine\ORM\EntityManager */
     private $_em;
 
     protected function setUp()
@@ -49,6 +50,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             );
 
             $query->free();
+        } catch (\PHPUnit_Framework_AssertionFailedError $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
         }
@@ -729,7 +732,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
             ->setMaxResults(10);
 
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ LIMIT 10', $q->getSql());
+        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c0_.email_id AS email_id5 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id LIMIT 10', $q->getSql());
     }
 
     public function testLimitAndOffsetFromQueryClass()
@@ -739,7 +742,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             ->setMaxResults(10)
             ->setFirstResult(0);
 
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
+        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c0_.email_id AS email_id5 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id LIMIT 10 OFFSET 0', $q->getSql());
     }
 
     public function testSizeFunction()

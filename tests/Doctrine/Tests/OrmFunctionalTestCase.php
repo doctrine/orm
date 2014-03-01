@@ -411,6 +411,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $this->_sqlLoggerStack->enabled = true;
+
+        // set new empty cache so the tests cannot interfere
+        $this->_em->getConfiguration()->setQueryCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
     }
 
     /**

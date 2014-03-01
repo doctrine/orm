@@ -79,19 +79,36 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->assertEquals('Giorgio', $cart->getCustomer()->getName());
     }
 
-    public function testInverseSideIsNeverLazy()
+    public function testInverseSideIsEager()
     {
         $this->_createFixture();
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
-        $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_EAGER;
+        $metadata->associationMappings['cart']['fetch'] = ClassMetadata::FETCH_EAGER;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
         $result = $query->getResult();
         $customer = $result[0];
 
         $this->assertNull($customer->getMentor());
-        $this->assertInstanceOF('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getCart());
+        $this->assertEquals('paypal', $customer->getCart()->getPayment());
+
+        // change back to not interfere with other tests
+        $metadata->associationMappings['cart']['fetch'] = ClassMetadata::FETCH_LAZY;
+    }
+
+    public function testInverseSideCanBeLazy()
+    {
+        $this->_createFixture();
+
+        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
+        $result = $query->getResult();
+        $customer = $result[0];
+
+        $this->assertNull($customer->getMentor());
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getCart());
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
