@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit bootstrap="../Doctrine/Tests/TestInit.php">
 
-    <logging>
-        <log type="coverage-clover" target="../../build/logs/clover.xml"/>
-    </logging>
-
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
         <directory>./../Doctrine/Tests/ORM</directory>
@@ -18,7 +14,6 @@
     <groups>
       <exclude>
          <group>performance</group>
-         <group>non-cacheable</group>
          <group>locking_functional</group>
       </exclude>
     </groups>

@@ -7,12 +7,9 @@ php:
   - hhvm
 
 env:
-  - DB=mysql ENABLE_SECOND_LEVEL_CACHE=1
-  - DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1
-  - DB=sqlite ENABLE_SECOND_LEVEL_CACHE=1
-  - DB=mysql ENABLE_SECOND_LEVEL_CACHE=0
-  - DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0
-  - DB=sqlite ENABLE_SECOND_LEVEL_CACHE=0
+  - DB=mysql
+  - DB=pgsql
+  - DB=sqlite
 
 before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests;' -U postgres; fi"
@@ -22,7 +19,9 @@ before_script:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi"
   - composer install --prefer-source --dev
 
-script: phpunit -v --configuration tests/travis/$DB.travis.xml
+script: 
+  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover.xml
+  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover-slc.xml --exclude-group performance,non-cacheable,locking_functional
 
 after_script:
   - php vendor/bin/coveralls -v
@@ -32,11 +31,6 @@ matrix:
     - php: hhvm
   exclude:
     - php: hhvm
-      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=0  # driver currently unsupported by HHVM
+      env: DB=pgsql  # driver currently unsupported by HHVM
     - php: hhvm
-      env: DB=pgsql ENABLE_SECOND_LEVEL_CACHE=1 # driver currently unsupported by HHVM
-    - php: hhvm
-      env: DB=mysqli ENABLE_SECOND_LEVEL_CACHE=0  # driver currently unsupported by HHVM
-    - php: hhvm
-      env: DB=mysqli ENABLE_SECOND_LEVEL_CACHE=1 # driver currently unsupported by HHVM
-
+      env: DB=mysqli # driver currently unsupported by HHVM
