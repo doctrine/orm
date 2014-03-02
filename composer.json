@@ -20,7 +20,8 @@
         "symfony/console": "2.*"
     },
     "require-dev": {
-        "symfony/yaml": "2.1",
+        "symfony/yaml": "~2.1",
+        "phpunit/phpunit": "~3.7",
         "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {
