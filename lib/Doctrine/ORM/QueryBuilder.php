@@ -118,6 +118,32 @@ class QueryBuilder
      */
     private $joinRootAliases = array();
 
+     /**
+     * Whether to use second level cache, if available.
+     *
+     * @var boolean
+     */
+    protected $cacheable = false;
+
+    /**
+     * Second level cache region name.
+     *
+     * @var string|null
+     */
+    protected $cacheRegion;
+
+    /**
+     * Second level query cache mode.
+     *
+     * @var integer|null
+     */
+    protected $cacheMode;
+
+    /**
+     * @var integer
+     */
+    protected $lifetime = 0;
+
     /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
@@ -149,6 +175,91 @@ class QueryBuilder
     public function expr()
     {
         return $this->_em->getExpressionBuilder();
+    }
+
+    /**
+     *
+     * Enable/disable second level query (result) caching for this query.
+     *
+     * @param boolean $cacheable
+     *
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     */
+    public function setCacheable($cacheable)
+    {
+        $this->cacheable = (boolean) $cacheable;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if the query results are enable for second level cache, FALSE otherwise.
+     */
+    public function isCacheable()
+    {
+        return $this->cacheable;
+    }
+
+    /**
+     * @param string $cacheRegion
+     *
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     */
+    public function setCacheRegion($cacheRegion)
+    {
+        $this->cacheRegion = (string) $cacheRegion;
+
+        return $this;
+    }
+
+    /**
+    * Obtain the name of the second level query cache region in which query results will be stored
+    *
+    * @return The cache region name; NULL indicates the default region.
+    */
+    public function getCacheRegion()
+    {
+        return $this->cacheRegion;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getLifetime()
+    {
+        return $this->lifetime;
+    }
+
+    /**
+     * Sets the life-time for this query into second level cache.
+     *
+     * @param integer $lifetime
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     */
+    public function setLifetime($lifetime)
+    {
+        $this->lifetime = (integer) $lifetime;
+
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getCacheMode()
+    {
+        return $this->cacheMode;
+    }
+
+    /**
+     * @param integer $cacheMode
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     */
+    public function setCacheMode($cacheMode)
+    {
+        $this->cacheMode = (integer) $cacheMode;
+
+        return $this;
     }
 
     /**
@@ -236,11 +347,28 @@ class QueryBuilder
     public function getQuery()
     {
         $parameters = clone $this->parameters;
-
-        return $this->_em->createQuery($this->getDQL())
+        $query      = $this->_em->createQuery($this->getDQL())
             ->setParameters($parameters)
             ->setFirstResult($this->_firstResult)
             ->setMaxResults($this->_maxResults);
+
+        if ($this->lifetime) {
+            $query->setLifetime($this->lifetime);
+        }
+
+        if ($this->cacheMode) {
+            $query->setCacheMode($this->cacheMode);
+        }
+
+        if ($this->cacheable) {
+            $query->setCacheable($this->cacheable);
+        }
+
+        if ($this->cacheRegion) {
+            $query->setCacheRegion($this->cacheRegion);
+        }
+
+        return $query;
     }
 
     /**

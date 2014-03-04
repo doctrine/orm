@@ -19,13 +19,14 @@
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Cache;
 
-use Doctrine\ORM\QueryBuilder,
-    Doctrine\ORM\Query\Expr,
-    Doctrine\ORM\Query\Parameter,
-    Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 
 require_once __DIR__ . '/../TestInit.php';
 
@@ -977,5 +978,44 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->add('where', 'u.foo = ?1')
             ->add('where', 'u.bar = ?2', true)
         ;
+    }
+
+    public function testSecondLevelCacheQueryBuilderOptions()
+    {
+        $defaultQueryBuilder = $this->_em->createQueryBuilder()
+            ->select('s')
+            ->from('Doctrine\Tests\Models\Cache\State', 's');
+
+        $this->assertFalse($defaultQueryBuilder->isCacheable());
+        $this->assertEquals(0, $defaultQueryBuilder->getLifetime());
+        $this->assertNull($defaultQueryBuilder->getCacheRegion());
+        $this->assertNull($defaultQueryBuilder->getCacheMode());
+
+        $defaultQuery = $defaultQueryBuilder->getQuery();
+
+        $this->assertFalse($defaultQuery->isCacheable());
+        $this->assertEquals(0, $defaultQuery->getLifetime());
+        $this->assertNull($defaultQuery->getCacheRegion());
+        $this->assertNull($defaultQuery->getCacheMode());
+
+        $builder = $this->_em->createQueryBuilder()
+            ->select('s')
+            ->setLifetime(123)
+            ->setCacheable(true)
+            ->setCacheRegion('foo_reg')
+            ->setCacheMode(Cache::MODE_REFRESH)
+            ->from('Doctrine\Tests\Models\Cache\State', 's');
+
+        $this->assertTrue($builder->isCacheable());
+        $this->assertEquals(123, $builder->getLifetime());
+        $this->assertEquals('foo_reg', $builder->getCacheRegion());
+        $this->assertEquals(Cache::MODE_REFRESH, $builder->getCacheMode());
+
+        $query = $builder->getQuery();
+
+        $this->assertTrue($query->isCacheable());
+        $this->assertEquals(123, $query->getLifetime());
+        $this->assertEquals('foo_reg', $query->getCacheRegion());
+        $this->assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
     }
 }
