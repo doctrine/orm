@@ -454,6 +454,11 @@ class SqlWalker implements TreeWalker
             $sql .= $this->_generateToOneAutoJoins($targetClass, $targetTableAlias);
         }
 
+        foreach ($class->subClasses as $subClassName) {
+            $subClass = $this->em->getClassMetadata($subClassName);
+            $sql .= $this->_generateToOneAutoJoins($subClass, $dqlAlias);
+        }
+
         return $sql;
     }
 
