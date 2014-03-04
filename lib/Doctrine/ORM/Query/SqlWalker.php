@@ -395,7 +395,7 @@ class SqlWalker implements TreeWalker
         $sql = '';
 
         foreach ($class->getAssociationMappings() as $relation) {
-            if (!$class->isSingleValuedAssociation($relation['fieldName'])) {
+            if ( ! $class->isSingleValuedAssociation($relation['fieldName'])) {
                 continue;
             }
 
@@ -411,7 +411,7 @@ class SqlWalker implements TreeWalker
                 }
             }
 
-            if (!$targetTableAlias) {
+            if ( ! $targetTableAlias) {
                 continue;
             }
 
@@ -422,7 +422,7 @@ class SqlWalker implements TreeWalker
             $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $dqlAlias);
 
             // Ensure we got the owning side, since it has all mapping info
-            $assoc = (!$relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
+            $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
 
             $conditions = array();
             foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -826,11 +826,11 @@ class SqlWalker implements TreeWalker
         $sqlSelectExpressions = array();
 
         foreach ($class->associationMappings as $assoc) {
-            if (!($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if ( ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
                 continue;
-            } elseif (!$addMetaColumns && !isset($assoc['id'])) {
+            } elseif ( ! $addMetaColumns && !isset($assoc['id'])) {
                 continue;
-            } elseif (!empty($assoc['inherited']) && $skipInherited) {
+            } elseif ( ! empty($assoc['inherited']) && $skipInherited) {
                 continue;
             }
 
@@ -914,21 +914,22 @@ class SqlWalker implements TreeWalker
         $this->selectedClasses[$sqlTableAlias]['autoJoin'] = TRUE;
         $this->queryComponents[$sqlTableAlias]['autoJoin'] = TRUE;
 
-        if ($assoc['fetch'] !== ClassMetadata::FETCH_EAGER) {
-            foreach ($targetClass->getIdentifierColumnNames() as $idColumn) {
-                $idField = $targetClass->getFieldForColumn($idColumn);
-                $columnAlias = $this->getSQLColumnAlias($idColumn);
-                $sqlSelectExpressions[] = $sqlTableAlias . '.' . $idColumn . ' AS ' . $columnAlias;
-
-                if (isset($targetClass->associationMappings[$idField])) {
-                    $this->rsm->addMetaResult($sqlTableAlias, $columnAlias, $idColumn, TRUE);
-                } else {
-                    $this->rsm->addMetaResult($sqlTableAlias, $columnAlias, $idField, TRUE);
-                }
-            }
-
-        } else {
+        if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
             $sqlSelectExpressions[] = $this->_expandSelectExpressionToColumns($sqlTableAlias);
+
+            return $sqlSelectExpressions;
+        }
+
+        foreach ($targetClass->getIdentifierColumnNames() as $idColumn) {
+            $idField = $targetClass->getFieldForColumn($idColumn);
+            $columnAlias = $this->getSQLColumnAlias($idColumn);
+            $sqlSelectExpressions[] = $sqlTableAlias . '.' . $idColumn . ' AS ' . $columnAlias;
+
+            if (isset($targetClass->associationMappings[$idField])) {
+                $this->rsm->addMetaResult($sqlTableAlias, $columnAlias, $idColumn, TRUE);
+            } else {
+                $this->rsm->addMetaResult($sqlTableAlias, $columnAlias, $idField, TRUE);
+            }
         }
 
         return $sqlSelectExpressions;
@@ -936,7 +937,7 @@ class SqlWalker implements TreeWalker
 
     private function _generateDiscriminatorSelectColumns(ClassMetadata $class, $dqlAlias)
     {
-        if (!$class->isInheritanceTypeSingleTable() && !$class->isInheritanceTypeJoined()) {
+        if ( ! $class->isInheritanceTypeSingleTable() && ! $class->isInheritanceTypeJoined()) {
             return NULL;
         }
 
@@ -1522,7 +1523,7 @@ class SqlWalker implements TreeWalker
         /** @var ClassMetadata $class */
         $class = $queryComp['metadata'];
 
-        if (!isset($this->selectedClasses[$dqlAlias])) {
+        if ( ! isset($this->selectedClasses[$dqlAlias])) {
             $this->selectedClasses[$dqlAlias] = array(
                 'class' => $class,
                 'dqlAlias' => $dqlAlias,
