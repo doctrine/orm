@@ -839,7 +839,7 @@ class SqlWalker implements TreeWalker
                 continue;
             }
 
-            if ($assoc['isOwningSide'] && empty($this->queryComponents[$dqlAlias]['backReference'])) {
+            if ($assoc['isOwningSide']) {
                 $owningClass = (isset($assoc['inherited']) && !$skipInherited) ? $this->em->getClassMetadata($assoc['inherited']) : $class;
                 $sqlTableAlias = $this->getSQLTableAlias($owningClass->getTableName(), $dqlAlias);
 
