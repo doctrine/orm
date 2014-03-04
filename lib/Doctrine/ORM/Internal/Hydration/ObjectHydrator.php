@@ -119,7 +119,17 @@ class ObjectHydrator extends AbstractHydrator
 
             $sourceClassName = $this->_rsm->aliasMap[$this->_rsm->parentAliasMap[$dqlAlias]];
             $sourceClass     = $this->getClassMetadata($sourceClassName);
-            $assoc           = $sourceClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
+            $assocName       = $this->_rsm->relationMap[$dqlAlias];
+
+            if (!isset($sourceClass->associationMappings[$assocName])) {
+                foreach ($sourceClass->subClasses as $parentClass) {
+                    $sourceClass = $this->getClassMetadata($parentClass);
+                    if (isset($sourceClass->associationMappings[$assocName])) {
+                        break;
+                    }
+                }
+            }
+            $assoc = $sourceClass->associationMappings[$assocName];
 
             $this->_hints['fetched'][$this->_rsm->parentAliasMap[$dqlAlias]][$assoc['fieldName']] = true;
 
