@@ -2,14 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC446Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC446Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC446Entity'),
         ));
