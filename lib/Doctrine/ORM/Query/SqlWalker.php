@@ -820,7 +820,7 @@ class SqlWalker implements TreeWalker
             }
         }
 
-        $sql .= implode(', ', $sqlSelectExpressions);
+        $sql .= implode(', ', array_filter($sqlSelectExpressions));
 
         return $sql;
     }
