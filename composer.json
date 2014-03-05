@@ -29,7 +29,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/localheinz/dbal"
+            "url": "https://github.com/localheinz/dbal.git"
         }
     ],
     "autoload": {
