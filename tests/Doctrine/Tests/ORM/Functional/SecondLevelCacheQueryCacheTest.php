@@ -827,6 +827,54 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
     }
 
+    public function testToOneAssociationShouldUseProxyForCacheableMetaResultColumn()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+
+        $this->_em->clear();
+
+        $stateId     = $this->states[0]->getId();
+        $countryName = $this->states[0]->getCountry()->getName();
+        $dql         = 'SELECT s FROM Doctrine\Tests\Models\Cache\State s WHERE s.id = :id';
+        $query       = $this->_em->createQuery($dql);
+        $queryCount  = $this->getCurrentQueryCount();
+
+        $query1 = clone $query;
+        $state1 = $query1
+            ->setParameter('id', $stateId)
+            ->setCacheable(true)
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $this->assertNotNull($state1);
+        $this->assertNotNull($state1->getCountry());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state1->getCountry());
+        $this->assertEquals($countryName, $state1->getCountry()->getName());
+        $this->assertEquals($stateId, $state1->getId());
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $query2     = clone $query;
+        $state2     = $query2
+            ->setParameter('id', $stateId)
+            ->setCacheable(true)
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $this->assertNotNull($state2);
+        $this->assertNotNull($state2->getCountry());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
+        $this->assertEquals($countryName, $state2->getCountry()->getName());
+        $this->assertEquals($stateId, $state2->getId());
+    }
+
     public function testHintClearEntityRegionUpdateStatement()
     {
         $this->evictRegions();
