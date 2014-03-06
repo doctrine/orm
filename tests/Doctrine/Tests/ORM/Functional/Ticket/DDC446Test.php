@@ -25,7 +25,7 @@ class DDC446Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $entity = $this->_em->find(
-            DDC446Entity::class,
+            __NAMESPACE__ . '\DDC446Entity',
             $entity->getId()
         );
 
