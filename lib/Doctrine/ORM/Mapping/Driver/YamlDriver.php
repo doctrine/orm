@@ -213,8 +213,7 @@ class YamlDriver extends FileDriver
                     $columns = $index['columns'];
                 }
 
-                if(!isset($index['flags']))
-                {
+                if( ! isset($index['flags'])) {
                     $flags = array();
                 } elseif (is_string($index['flags'])) {
                     $flags = explode(',', $index['flags']);
