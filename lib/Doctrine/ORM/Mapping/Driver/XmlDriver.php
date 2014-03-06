@@ -197,7 +197,7 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->indexes->index as $index) {
                 $columns = explode(',', (string)$index['columns']);
                 
-                if(!isset($index['flags'])) {
+                if( ! isset($index['flags'])) {
                     $flags = array();
                 } else {
                     $flags = explode(',', (string)$index['flags']);
