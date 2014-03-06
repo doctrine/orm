@@ -29,7 +29,7 @@ class DDC446Test extends OrmFunctionalTestCase
             $entity->getId()
         );
 
-        $this->assertInstanceOf(DDC446Entity::class, $entity);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC446Entity', $entity);
         $this->assertNull($entity->getData());
     }
 }
