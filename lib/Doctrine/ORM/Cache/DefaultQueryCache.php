@@ -108,7 +108,6 @@ class DefaultQueryCache implements QueryCache
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
         $persister   = $this->uow->getEntityPersister($entityName);
-        $metadata    = ( ! $hasRelation) ? $persister->getClassMetadata() : null;
         $region      = $persister->getCacheRegion();
         $regionName  = $region->getName();
 
@@ -127,21 +126,15 @@ class DefaultQueryCache implements QueryCache
             if ($this->cacheLogger !== null) {
                 $this->cacheLogger->entityCacheHit($regionName, $entityKey);
             }
-            $data = $entityEntry->data;
 
             if ( ! $hasRelation) {
-                foreach ($metadata->associationMappings as $name => $assoc) {
-                    if ( ! ($assoc['type'] & ClassMetadata::TO_ONE) || ! isset($assoc['cache']) || ! isset($data[$name])) {
-                        continue;
-                    }
 
-                    $data[$name] = $this->em->getReference($data[$name]->class, $data[$name]->identifier);
-                }
-
-                $result[$index]  = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
+                $result[$index]  = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
 
                 continue;
             }
+
+            $data = $entityEntry->data;
 
             foreach ($entry['associations'] as $name => $assoc) {
 
@@ -159,7 +152,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), self::$hints);
 
                     if ($this->cacheLogger !== null) {
                         $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKey);
@@ -186,7 +179,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), self::$hints);
 
                     $collection->hydrateSet($assocIndex, $element);
 

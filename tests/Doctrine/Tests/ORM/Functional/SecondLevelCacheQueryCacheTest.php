@@ -827,7 +827,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
     }
 
-    public function testToOneAssociationShouldUseProxyForCacheableMetaResultColumn()
+    public function testResolveAssociationCacheEntry()
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -873,6 +873,98 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
         $this->assertEquals($countryName, $state2->getCountry()->getName());
         $this->assertEquals($stateId, $state2->getId());
+    }
+
+    public function testResolveToOneAssociationCacheEntry()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->evictRegions();
+
+        $this->_em->clear();
+
+        $cityId      = $this->cities[0]->getId();
+        $dql         = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s WHERE c.id = :id';
+        $query       = $this->_em->createQuery($dql);
+        $queryCount  = $this->getCurrentQueryCount();
+
+        $query1 = clone $query;
+        $city1 = $query1
+            ->setParameter('id', $cityId)
+            ->setCacheable(true)
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city1);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city1->getState());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city1->getState()->getCities()->get(0));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city1->getState()->getCities()->get(0)->getState());
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $query2     = clone $query;
+        $city2      = $query2
+            ->setParameter('id', $cityId)
+            ->setCacheable(true)
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city2);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city2->getState());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city2->getState()->getCities()->get(0));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city2->getState()->getCities()->get(0)->getState());
+    }
+
+    public function testResolveToManyAssociationCacheEntry()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->evictRegions();
+
+        $this->_em->clear();
+
+        $stateId     = $this->states[0]->getId();
+        $dql         = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c WHERE s.id = :id';
+        $query       = $this->_em->createQuery($dql);
+        $queryCount  = $this->getCurrentQueryCount();
+
+        $query1 = clone $query;
+        $state1 = $query1
+            ->setParameter('id', $stateId)
+            ->setCacheable(true)
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state1->getCountry());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $state1->getCities()->get(0));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1->getCities()->get(0)->getState());
+        $this->assertSame($state1, $state1->getCities()->get(0)->getState());
+
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $query2     = clone $query;
+        $state2     = $query2
+            ->setParameter('id', $stateId)
+            ->setCacheable(true)
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $state2->getCities()->get(0));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2->getCities()->get(0)->getState());
+        $this->assertSame($state2, $state2->getCities()->get(0)->getState());
     }
 
     public function testHintClearEntityRegionUpdateStatement()

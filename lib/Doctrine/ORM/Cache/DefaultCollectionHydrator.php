@@ -89,7 +89,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
                 return null;
             }
 
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
         }
 
         array_walk($list, function($entity, $index) use ($collection) {
