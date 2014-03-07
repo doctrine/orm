@@ -103,8 +103,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 foreach ($tableAnnot->indexes as $indexAnnot) {
                     $index = array(
                         'columns' => $indexAnnot->columns,
-                        'flags' => $indexAnnot->flags
                     );
+                    
+                    if( ! empty($indexAnnot->flags)) {
+                        $index['flags'] = $indexAnnot->flags;
+                    }
 
                     if ( ! empty($indexAnnot->name)) {
                         $primaryTable['indexes'][$indexAnnot->name] = $index;
