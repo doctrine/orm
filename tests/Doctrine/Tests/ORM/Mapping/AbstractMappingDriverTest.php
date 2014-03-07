@@ -1291,4 +1291,25 @@ class Comment
      * @Column(type="text")
      */
     private $content;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setPrimaryTable(array(
+            'indexes' => array(
+                array('columns' => array('content'), 'flags' => array('fulltext'))
+            )
+        ));
+
+        $metadata->mapField(array(
+            'fieldName' => 'content',
+            'type' => 'text',
+            'scale' => 0,
+            'length' => NULL,
+            'unique' => false,
+            'nullable' => false,
+            'precision' => 0,
+            'columnName' => 'content',
+        ));
+    }
 }
