@@ -75,6 +75,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         return $class;
     }
 
+    public function testEntityIndexFlags()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Comment');
+
+        $this->assertEquals(array(
+            0 => array(
+                'columns' => array('content'),
+                'flags' => array('fulltext')
+            )
+        ), $class->table['indexes']);
+    }
+
     /**
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
@@ -1268,3 +1280,15 @@ class DDC807SubClasse2 {}
 class Address {}
 class Phonenumber {}
 class Group {}
+
+/**
+ * @Entity
+ * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"})})
+ */
+class Comment
+{
+    /**
+     * @Column(type="text")
+     */
+    private $content;
+}
