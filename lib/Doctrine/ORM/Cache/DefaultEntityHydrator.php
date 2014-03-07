@@ -144,7 +144,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 return null;
             }
 
-            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints);
+            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), $hints);
         }
 
         if ($entity !== null) {

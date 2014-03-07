@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\EntityManagerInterface;
+
 /**
  * Entity cache entry
  *
@@ -62,5 +64,23 @@ class EntityCacheEntry implements CacheEntry
     public static function __set_state(array $values)
     {
         return new self($values['class'], $values['data']);
+    }
+
+    /**
+     * Retrieves the entity data resolving cache entries
+     *
+     * @param \Doctrine\ORM\EntityManagerInterfac $em
+     *
+     * @return array
+     */
+    public function resolveAssociationEntries(EntityManagerInterface $em)
+    {
+        return array_map(function($value) use ($em) {
+            if ( ! ($value instanceof AssociationCacheEntry)) {
+                return $value;
+            }
+
+            return $em->getReference($value->class, $value->identifier);
+        }, $this->data);
     }
 }
