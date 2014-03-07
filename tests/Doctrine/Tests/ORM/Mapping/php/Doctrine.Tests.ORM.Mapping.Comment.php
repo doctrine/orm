@@ -9,7 +9,6 @@ $metadata->setPrimaryTable(array(
    )
   ));
 
-
 $metadata->mapField(array(
     'fieldName' => 'content',
     'type' => 'text',
