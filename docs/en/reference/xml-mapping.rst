@@ -44,8 +44,6 @@ In order to work, this requires certain conventions:
    convention and you are not forced to do this. You can change the
    file extension easily enough.
 
--
-
 .. code-block:: php
 
     <?php
@@ -63,6 +61,16 @@ of the constructor, like this:
     $config = new \Doctrine\ORM\Configuration();
     $driver = new \Doctrine\ORM\Mapping\Driver\XmlDriver(array('/path/to/files1', '/path/to/files2'));
     $config->setMetadataDriverImpl($driver);
+
+.. warning::
+
+    Note that Doctrine ORM does not modify any settings for ``libxml``,
+    therefore, external XML entities may or may not be enabled or
+    configured correctly.
+    XML mappings are not XXE/XEE attack vectors since they are not
+    related with user input, but it is recommended that you do not
+    use external XML entities in your mapping files to avoid running
+    into unexpected behaviour.
 
 Simplified XML Driver
 ~~~~~~~~~~~~~~~~~~~~~
