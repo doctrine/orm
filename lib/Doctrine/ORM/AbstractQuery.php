@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Cache;
@@ -167,12 +168,14 @@ abstract class AbstractQuery
     {
         $this->_em          = $em;
         $this->parameters   = new ArrayCollection();
-        $this->hasCache     = $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
+        $configuration      = $this->_em->getConfiguration();
+        $this->hasCache     = $configuration->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
-            $this->cacheLogger = $em->getConfiguration()
-                ->getSecondLevelCacheConfiguration()
-                ->getCacheLogger();
+            $cacheConfig            = $configuration->getSecondLevelCacheConfiguration();
+            $cacheFactory           = $cacheConfig->getCacheFactory();
+            $this->timestampRegion  = $cacheFactory->getTimestampRegion();
+            $this->cacheLogger      = $cacheConfig->getCacheLogger();
         }
     }
 
@@ -1113,6 +1116,48 @@ abstract class AbstractQuery
 
         ksort($hints);
 
-        return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
+        $timestamps = array();
+        $alias = $this->getResultSetMapping()->getAliasMap();
+
+        // Use the cached timestamps of all the involved entities
+        // to make sure we refresh the cache when needed
+        foreach ($alias as $alias => $className) {
+            $timestamps = array_merge($timestamps, $this->getCachedTimestamps($className));
+        }
+
+        $key = $query . '-' . serialize($params) . '-' . serialize($hints);
+
+        if(!empty($timestamps)) {
+            $key .= '-' . serialize($timestamps);
+        }
+
+        return sha1($key);
+    }
+
+    /**
+     * Gets the cached timestamps for a given class name (adding its subclasses if any)
+     * @param  string $className Class name
+     * @return array The retrieved cached timestamps
+     */
+    private function getCachedTimestamps($className) {
+        $metadata = $this->_em->getClassMetadata($className);
+        $tableName = $metadata->getTableName();
+        $timestampKey = new TimestampCacheKey($tableName);
+
+        $timestamps = array();
+        $timestamp = $this->timestampRegion->get($timestampKey);
+
+        if(!is_null($timestamp)) {
+            $timestamps[] = $timestamp;
+        }
+
+        if(isset($metadata->subClasses)) {
+            // Process subclasses recursively
+            foreach ($metadata->subClasses as $key => $subClass) {
+                $timestamps = array_merge($timestamps, $this->getCachedTimestamps($subClass));
+            }
+        }
+
+        return $timestamps;
     }
 }
