@@ -123,6 +123,9 @@ Things to note:
    be fully qualified if the classes are contained in the same
    namespace as the entity class on which the discriminator map is
    applied.
+-  If no discriminator map is provided, then the map is generated
+   automatically. The automatically generated discriminator map 
+   contains the lowercase short name of each class as key.
 
 Design-time considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -210,6 +213,9 @@ Things to note:
    be fully qualified if the classes are contained in the same
    namespace as the entity class on which the discriminator map is
    applied.
+-  If no discriminator map is provided, then the map is generated
+   automatically. The automatically generated discriminator map 
+   contains the lowercase short name of each class as key.
 
 .. note::
 
