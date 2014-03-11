@@ -1127,7 +1127,7 @@ abstract class AbstractQuery
 
         $key = $query . '-' . serialize($params) . '-' . serialize($hints);
 
-        if(!empty($timestamps)) {
+        if( ! empty($timestamps)) {
             $key .= '-' . serialize($timestamps);
         }
 
@@ -1147,7 +1147,7 @@ abstract class AbstractQuery
         $timestamps = array();
         $timestamp = $this->timestampRegion->get($timestampKey);
 
-        if(!is_null($timestamp)) {
+        if( ! is_null($timestamp)) {
             $timestamps[] = $timestamp;
         }
 
