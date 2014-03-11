@@ -1040,7 +1040,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $result = $query->setCacheable(true)->getResult();
 
         // Create and persist new Bar (Attraction subclass)
-        $city   = $this->_em->find('Doctrine\Tests\Models\Cache\City', 1);
+        $city   = $this->_em->getRepository('Doctrine\Tests\Models\Cache\City')->findOneByName('Berlin');
         $bar    = new Bar('Coyote', $city);
         $city->addAttraction($bar);
         $this->_em->persist($bar);
