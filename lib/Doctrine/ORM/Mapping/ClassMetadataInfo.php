@@ -3157,7 +3157,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Map Embedded Class
      *
-     * @array $mapping
+     * @param array $mapping
      * @return void
      */
     public function mapEmbedded(array $mapping)
