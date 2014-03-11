@@ -1101,10 +1101,12 @@ abstract class AbstractQuery
      */
     protected function getHash()
     {
-        $self   = $this;
-        $query  = $this->getSQL();
-        $hints  = $this->getHints();
-        $params = array_map(function(Parameter $parameter) use ($self) {
+        $self       = $this;
+        $query      = $this->getSQL();
+        $hints      = $this->getHints();
+        $aliasMap   = array_unique($this->getResultSetMapping()->getAliasMap());
+        $timestamps = array();
+        $params     = array_map(function(Parameter $parameter) use ($self) {
             // Small optimization
             // Does not invoke processParameterValue for scalar values
             if (is_scalar($value = $parameter->getValue())) {
@@ -1116,22 +1118,13 @@ abstract class AbstractQuery
 
         ksort($hints);
 
-        $timestamps = array();
-        $alias = $this->getResultSetMapping()->getAliasMap();
-
         // Use the cached timestamps of all the involved entities
         // to make sure we refresh the cache when needed
-        foreach ($alias as $alias => $className) {
-            $timestamps = array_merge($timestamps, $this->getCachedTimestamps($className));
+        foreach ($aliasMap as $alias => $className) {
+            $this->getCachedTimestamps($className, $timestamps);
         }
 
-        $key = $query . '-' . serialize($params) . '-' . serialize($hints);
-
-        if( ! empty($timestamps)) {
-            $key .= '-' . serialize($timestamps);
-        }
-
-        return sha1($key);
+        return sha1($query . '-' . serialize($params) . '-' . serialize($hints) . '-' . implode('-', $timestamps));
     }
 
     /**
@@ -1139,22 +1132,20 @@ abstract class AbstractQuery
      * @param  string $className Class name
      * @return array The retrieved cached timestamps
      */
-    private function getCachedTimestamps($className) {
-        $metadata = $this->_em->getClassMetadata($className);
-        $tableName = $metadata->getTableName();
-        $timestampKey = new TimestampCacheKey($tableName);
+    private function getCachedTimestamps($className, &$timestamps) {
+        $metadata       = $this->_em->getClassMetadata($className);
+        $tableName      = $metadata->getTableName();
+        $timestampKey   = new TimestampCacheKey($tableName);
+        $timestamp      = $this->timestampRegion->get($timestampKey);
 
-        $timestamps = array();
-        $timestamp = $this->timestampRegion->get($timestampKey);
-
-        if( ! is_null($timestamp)) {
-            $timestamps[] = $timestamp;
+        if (null !== $timestamp) {
+            $timestamps[$className] = $timestamp->time;
         }
 
-        if(isset($metadata->subClasses)) {
+        if (isset($metadata->subClasses)) {
             // Process subclasses recursively
             foreach ($metadata->subClasses as $key => $subClass) {
-                $timestamps = array_merge($timestamps, $this->getCachedTimestamps($subClass));
+                $timestamps = $this->getCachedTimestamps($subClass, $timestamps);
             }
         }
 
