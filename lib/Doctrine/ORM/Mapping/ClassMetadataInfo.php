@@ -3187,7 +3187,7 @@ class ClassMetadataInfo implements ClassMetadata
             $fieldMapping['originalField'] = $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
-            $fieldMapping['columnName'] = ! empty($this->embeddedClasses[$property]['columnPrefix'])
+            $fieldMapping['columnName'] = ! empty($this->embeddedClasses[$property]['columnPrefix']) || $this->embeddedClasses[$property]['columnPrefix'] === false
                     ? $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName']
                         : $this->namingStrategy->embeddedFieldToColumnName($property, $fieldMapping['columnName'], $this->reflClass->name, $embeddable->reflClass->name);
 
