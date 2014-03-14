@@ -180,8 +180,6 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
-
-
     public function testInlineEmbeddableWithPrefix()
     {
         $expectedColumnName = 'foobar_id';
@@ -214,8 +212,6 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals($expectedColumnName, $actualColumnName);
     }
-
-
 }
 
 
