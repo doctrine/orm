@@ -55,6 +55,7 @@ abstract class AbstractCommand extends Command
 
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $emHelper->getEntityManager();
+        $em->getMetadataFactory()->setCacheDriver(null);
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
 

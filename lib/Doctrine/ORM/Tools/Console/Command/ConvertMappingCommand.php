@@ -115,6 +115,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
+        $em->getMetadataFactory()->setCacheDriver(null);
 
         if ($input->getOption('from-database') === true) {
             $databaseDriver = new DatabaseDriver(
