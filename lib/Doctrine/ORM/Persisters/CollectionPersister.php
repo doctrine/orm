@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -136,4 +137,14 @@ interface CollectionPersister
      * @return mixed
      */
     public function get(PersistentCollection $collection, $index);
+
+    /**
+     * Loads association entities matching the given Criteria object.
+     *
+     * @param \Doctrine\ORM\PersistentCollection    $collection
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
+     * @return array
+     */
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria);
 }

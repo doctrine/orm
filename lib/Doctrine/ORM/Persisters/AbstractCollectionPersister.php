@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
 
@@ -51,7 +52,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $platform;
-    
+
     /**
      * The quote strategy.
      *
@@ -201,6 +202,14 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     public function get(PersistentCollection $coll, $index)
     {
         throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadCriteria(PersistentCollection $coll, Criteria $criteria)
+    {
+        throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
     }
 
     /**

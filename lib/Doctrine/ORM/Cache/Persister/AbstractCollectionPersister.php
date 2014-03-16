@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache\Persister;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Persisters\CollectionPersister;
@@ -271,5 +272,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {
         return $this->persister->slice($collection, $offset, $length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
+    {
+        return $this->persister->loadCriteria($collection, $criteria);
     }
 }
