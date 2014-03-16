@@ -1570,8 +1570,7 @@ public function __construct()
     {
         $optionsStr = array();
         
-        foreach($options as $name => $option)
-        {
+        foreach($options as $name => $option) {
             if (is_array($option)) {
                 $optionsStr[] = '"' . $name . '"={' . $this->_exportOptions($option) . '}';
             } else {
