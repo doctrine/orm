@@ -911,7 +911,7 @@ public function __construct()
         }
 
         if (isset($metadata->table['options']) && $metadata->table['options']) {
-            $table[] = 'options={' . $this->_exportOptions((array) $metadata->table['options']) . '}';
+            $table[] = 'options={' . $this->exportTableOptions((array) $metadata->table['options']) . '}';
         }
 
         if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
@@ -1566,13 +1566,13 @@ public function __construct()
      *
      * @param array $options
      */
-    private function _exportOptions(array $options)
+    private function exportTableOptions(array $options)
     {
         $optionsStr = array();
         
         foreach($options as $name => $option) {
             if (is_array($option)) {
-                $optionsStr[] = '"' . $name . '"={' . $this->_exportOptions($option) . '}';
+                $optionsStr[] = '"' . $name . '"={' . $this->exportTableOptions($option) . '}';
             } else {
                 $optionsStr[] = '"' . $name . '"="' . (string) $option . '"';
             }            

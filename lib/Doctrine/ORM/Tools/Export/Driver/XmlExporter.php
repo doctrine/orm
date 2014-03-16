@@ -72,7 +72,7 @@ class XmlExporter extends AbstractExporter
         if (isset($metadata->table['options'])) {
             $optionsXml = $root->addChild('options');
 
-            $this->_exportOptions($optionsXml, $metadata->table['options']);
+            $this->exportTableOptions($optionsXml, $metadata->table['options']);
         }
 
         if ($metadata->discriminatorColumn) {
@@ -391,14 +391,14 @@ class XmlExporter extends AbstractExporter
      * @param \SimpleXMLElement $parentXml
      * @param array $options
      */
-    private function _exportOptions(\SimpleXMLElement $parentXml, array $options)
+    private function exportTableOptions(\SimpleXMLElement $parentXml, array $options)
     {        
         foreach ($options as $name => $option) {
             $optionXml = $parentXml->addChild('option');
             $optionXml->addAttribute('name', (string) $name);
             
             if (is_array($option)) {
-                $this->_exportOptions($optionXml, $option);
+                $this->exportTableOptions($optionXml, $option);
             } else {
                 $optionXml[0] = (string) $option;
             }
