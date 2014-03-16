@@ -1,6 +1,9 @@
 Doctrine\Tests\ORM\Tools\Export\User:
   type: entity
   table: cms_users
+  options:
+    engine: MyISAM
+    foo: { bar: baz }
   id:
     id:
       type: integer

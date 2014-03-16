@@ -6,7 +6,12 @@
                           http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="Doctrine\Tests\ORM\Tools\Export\User" table="cms_users">
-
+        <options>
+            <option name="engine">MyISAM</option>
+            <option name="foo">
+                <option name="bar">baz</option>
+            </option>
+        </options>
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
             <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>

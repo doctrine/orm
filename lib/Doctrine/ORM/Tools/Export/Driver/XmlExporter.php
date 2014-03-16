@@ -45,10 +45,6 @@ class XmlExporter extends AbstractExporter
             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ".
             "xsi:schemaLocation=\"http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd\" />");
 
-        /*$xml->addAttribute('xmlns', 'http://doctrine-project.org/schemas/orm/doctrine-mapping');
-        $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $xml->addAttribute('xsi:schemaLocation', 'http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd');*/
-
         if ($metadata->isMappedSuperclass) {
             $root = $xml->addChild('mapped-superclass');
         } else {
@@ -71,6 +67,12 @@ class XmlExporter extends AbstractExporter
 
         if ($metadata->inheritanceType && $metadata->inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             $root->addAttribute('inheritance-type', $this->_getInheritanceTypeString($metadata->inheritanceType));
+        }
+
+        if (isset($metadata->table['options'])) {
+            $optionsXml = $root->addChild('options');
+
+            $this->_exportOptions($optionsXml, $metadata->table['options']);
         }
 
         if ($metadata->discriminatorColumn) {
@@ -106,6 +108,9 @@ class XmlExporter extends AbstractExporter
                 $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
                 $indexXml->addAttribute('columns', implode(',', $index['columns']));
+                if(isset($index['flags'])) {
+                    $indexXml->addAttribute('flags', implode(',', $index['flags']));
+                }
             }
         }
 
@@ -378,6 +383,26 @@ class XmlExporter extends AbstractExporter
         }
 
         return $this->_asXml($xml);
+    }
+
+    /**
+     * Exports (nested) option elements.
+     *
+     * @param \SimpleXMLElement $parentXml
+     * @param array $options
+     */
+    private function _exportOptions(\SimpleXMLElement $parentXml, array $options)
+    {        
+        foreach ($options as $name => $option) {
+            $optionXml = $parentXml->addChild('option');
+            $optionXml->addAttribute('name', (string) $name);
+            
+            if (is_array($option)) {
+                $this->_exportOptions($optionXml, $option);
+            } else {
+                $optionXml[0] = (string) $option;
+            }
+        }
     }
 
     /**

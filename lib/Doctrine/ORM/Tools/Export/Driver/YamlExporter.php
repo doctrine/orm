@@ -85,6 +85,10 @@ class YamlExporter extends AbstractExporter
             $array['uniqueConstraints'] = $metadata->table['uniqueConstraints'];
         }
 
+        if (isset($metadata->table['options'])) {
+            $array['options'] = $metadata->table['options'];
+        }
+
         $fieldMappings = $metadata->fieldMappings;
 
         $ids = array();
