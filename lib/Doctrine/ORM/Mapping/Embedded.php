@@ -32,7 +32,7 @@ final class Embedded implements Annotation
     public $class;
 
     /**
-     * @var string
+     * @var mixed
      */
     public $columnPrefix;
 }

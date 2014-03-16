@@ -179,7 +179,41 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93PhoneNumber')
         ));
     }
+
+    public function testInlineEmbeddableWithPrefix()
+    {
+        $expectedColumnName = 'foobar_id';
+
+        $actualColumnName = $this->_em
+            ->getClassMetadata(__NAMESPACE__ . '\DDC3028PersonWithPrefix')
+            ->getColumnName('id.id');
+
+        $this->assertEquals($expectedColumnName, $actualColumnName);
+    }
+
+    public function testInlineEmbeddableEmptyPrefix()
+    {
+        $expectedColumnName = 'id_id';
+
+        $actualColumnName = $this->_em
+            ->getClassMetadata(__NAMESPACE__ . '\DDC3028PersonEmptyPrefix')
+            ->getColumnName('id.id');
+
+        $this->assertEquals($expectedColumnName, $actualColumnName);
+    }
+
+    public function testInlineEmbeddablePrefixFalse()
+    {
+        $expectedColumnName = 'id';
+
+        $actualColumnName = $this->_em
+            ->getClassMetadata(__NAMESPACE__ . '\DDC3028PersonPrefixFalse')
+            ->getColumnName('id.id');
+
+        $this->assertEquals($expectedColumnName, $actualColumnName);
+    }
 }
+
 
 /**
  * @Entity
@@ -295,4 +329,70 @@ class DDC93ContactInfo
 {
     /** @Embedded(class = "DDC93Address") */
     private $address;
+}
+
+/**
+ * @Entity
+ */
+class DDC3028PersonWithPrefix
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Embedded(class="DDC3028Id", columnPrefix = "foobar_") */
+    public $id;
+
+    public function __construct(DDC3028Id $id = null)
+    {
+        $this->id = $id;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DDC3028PersonEmptyPrefix
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Embedded(class="DDC3028Id", columnPrefix = "") */
+    public $id;
+
+    public function __construct(DDC3028Id $id = null)
+    {
+        $this->id = $id;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DDC3028PersonPrefixFalse
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Embedded(class="DDC3028Id", columnPrefix = false) */
+    public $id;
+
+    public function __construct(DDC3028Id $id = null)
+    {
+        $this->id = $id;
+    }
+}
+
+/**
+ * @Embeddable
+ */
+class DDC3028Id
+{
+    const CLASSNAME = __CLASS__;
+
+    /**
+     * @Id @Column(type="string")
+     */
+    public $id;
+
+    public function __construct($id = null)
+    {
+        $this->id = $id;
+    }
 }

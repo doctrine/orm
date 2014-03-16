@@ -3158,6 +3158,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Map Embedded Class
      *
      * @param array $mapping
+     * @throws MappingException
      * @return void
      */
     public function mapEmbedded(array $mapping)
@@ -3187,9 +3188,17 @@ class ClassMetadataInfo implements ClassMetadata
             $fieldMapping['originalField'] = $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
-            $fieldMapping['columnName'] = ! empty($this->embeddedClasses[$property]['columnPrefix'])
-                    ? $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName']
-                        : $this->namingStrategy->embeddedFieldToColumnName($property, $fieldMapping['columnName'], $this->reflClass->name, $embeddable->reflClass->name);
+            if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
+                $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
+            } elseif ($this->embeddedClasses[$property]['columnPrefix'] !== false) {
+                $fieldMapping['columnName'] = $this->namingStrategy
+                    ->embeddedFieldToColumnName(
+                        $property,
+                        $fieldMapping['columnName'],
+                        $this->reflClass->name,
+                        $embeddable->reflClass->name
+                    );
+            }
 
             $this->mapField($fieldMapping);
         }
