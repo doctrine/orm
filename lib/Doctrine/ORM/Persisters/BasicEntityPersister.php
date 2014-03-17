@@ -1641,9 +1641,17 @@ class BasicEntityPersister implements EntityPersister
      * @param int|null $limit
      *
      * @return \Doctrine\DBAL\Statement
+     * @throws \Doctrine\ORM\Mapping\MappingException
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
+        if (!array_key_exists($assoc['mappedBy'], $this->class->associationMappings)) {
+            throw new MappingException(
+                'Property ' . $assoc['fieldName'] . ' in ' . $assoc['sourceEntity'] . ' specified mappedBy="'
+                . $assoc['mappedBy'] . '" but ' . $assoc['mappedBy'] . ' is not a property of ' . $assoc['targetEntity']
+            );
+        }
+
         $criteria = array();
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
