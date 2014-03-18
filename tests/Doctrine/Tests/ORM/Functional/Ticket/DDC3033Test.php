@@ -31,23 +31,23 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $product->setTitle("Test product");
         $product->addBuyer($user);
 
-	      $this->_em->persist($product);
+        $this->_em->persist($product);
         $this->_em->flush();
 
-	      $product->setTitle("Test Change title");
-	      $product->addBuyer($user2);
+        $product->setTitle("Test Change title");
+        $product->addBuyer($user2);
 
-	      $this->_em->persist($product);
-	      $this->_em->flush();
+        $this->_em->persist($product);
+        $this->_em->flush();
 
-	      $expect = array(
+        $expect = array(
             'title' => array(
-		            0 => 'Test product',
-		            1 => 'Test Change title',
-	          ),
-	      );
+                0 => 'Test product',
+                1 => 'Test Change title',
+            ),
+        );
 
-	      $this->assertEquals(print_r($expect, true), print_r($product->changeSet, true));
+        $this->assertEquals(print_r($expect, true), print_r($product->changeSet, true));
     }
 }
 
@@ -160,7 +160,7 @@ class DDC3033Product
         $entity        = $eventArgs->getEntity();
         $classMetadata = $em->getClassMetadata(get_class($entity));
 
-	      $uow->computeChangeSet($classMetadata, $entity);
+        $uow->computeChangeSet($classMetadata, $entity);
         $this->changeSet = $uow->getEntityChangeSet($entity);
     }
 }
