@@ -20,22 +20,22 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
 
         $user = new DDC3033User();
-        $user->setTitle("Test User");
+        $user->title = "Test User";
         $this->_em->persist($user);
 
         $user2 = new DDC3033User();
-        $user2->setTitle("Test User 2");
+        $user2->title = "Test User 2";
         $this->_em->persist($user2);
 
         $product = new DDC3033Product();
-        $product->setTitle("Test product");
-        $product->addBuyer($user);
+        $product->title = "Test product";
+        $product->buyers[] = $user;
 
         $this->_em->persist($product);
         $this->_em->flush();
 
-        $product->setTitle("Test Change title");
-        $product->addBuyer($user2);
+        $product->title = "Test Change title";
+        $product->buyers[] = $user2;
 
         $this->_em->persist($product);
         $this->_em->flush();
@@ -47,7 +47,7 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ),
         );
 
-        $this->assertEquals(print_r($expect, true), print_r($product->changeSet, true));
+        $this->assertEquals($expect, $product->changeSet);
     }
 }
 
@@ -66,24 +66,24 @@ class DDC3033Product
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    public $id;
 
     /**
      * @var string $title
      *
      * @Column(name="title", type="string", length=255)
      */
-    private $title;
+    public $title;
 
     /**
      * @ManyToMany(targetEntity="DDC3033User")
      * @JoinTable(
-     *   name="user_purchases",
+     *   name="user_purchases_3033",
      *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
      *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
      * )
      */
-    private $buyers;
+    public $buyers;
 
     /**
      * Default constructor
@@ -91,56 +91,6 @@ class DDC3033Product
     public function __construct()
     {
         $this->buyers = new ArrayCollection();
-    }
-
-    /**
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $buyers
-     */
-    public function setBuyers($buyers)
-    {
-        $this->buyers = $buyers;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBuyers()
-    {
-        return $this->buyers;
-    }
-
-    /**
-     * @param DDC3033User $buyer
-     */
-    public function addBuyer(DDC3033User $buyer)
-    {
-        $this->buyers[] = $buyer;
     }
 
     /**
@@ -178,42 +128,12 @@ class DDC3033User
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    public $id;
 
     /**
      * @var string
      *
      * @Column(name="title", type="string", length=255)
      */
-    private $title;
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set title
-     *
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
+    public $title;
 }
