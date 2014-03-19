@@ -645,7 +645,6 @@ class Expr
         return new Expr\Func('TRIM', $x);
     }
 
-
     /**
      * Creates an instance of MEMBER OF function, with the given arguments.
      *
@@ -658,7 +657,6 @@ class Expr
     {
         return $x . ' MEMBER OF ' . $y;
     }
-
 
     /**
      * Creates an instance of INSTANCE OF function, with the given arguments.
