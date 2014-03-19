@@ -644,4 +644,32 @@ class Expr
     {
         return new Expr\Func('TRIM', $x);
     }
+
+
+    /**
+     * Creates an instance of MEMBER OF function, with the given arguments.
+     *
+     * @param string $x Value to be checked
+     * @param string $y Value to be checked against
+     *
+     * @return string
+     */
+    public function isMemberOf($x, $y)
+    {
+        return $x . ' MEMBER OF ' . $y;
+    }
+
+
+    /**
+     * Creates an instance of INSTANCE OF function, with the given arguments.
+     *
+     * @param string $x Value to be checked
+     * @param string $y Value to be checked against
+
+     * @return string
+     */
+    public function isInstanceOf($x, $y)
+    {
+        return $x . ' INSTANCE OF ' . $y;
+    }
 }
