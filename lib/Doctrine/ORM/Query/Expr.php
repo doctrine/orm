@@ -644,4 +644,30 @@ class Expr
     {
         return new Expr\Func('TRIM', $x);
     }
+
+    /**
+     * Creates an instance of MEMBER OF function, with the given arguments.
+     *
+     * @param string $x Value to be checked
+     * @param string $y Value to be checked against
+     *
+     * @return Expr\Comparison
+     */
+    public function isMemberOf($x, $y)
+    {
+        return new Expr\Comparison($x, 'MEMBER OF', $y);
+    }
+
+    /**
+     * Creates an instance of INSTANCE OF function, with the given arguments.
+     *
+     * @param string $x Value to be checked
+     * @param string $y Value to be checked against
+     *
+     * @return Expr\Comparison
+     */
+    public function isInstanceOf($x, $y)
+    {
+        return new Expr\Comparison($x, 'INSTANCE OF', $y);
+    }
 }
