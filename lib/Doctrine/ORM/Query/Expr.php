@@ -651,11 +651,11 @@ class Expr
      * @param string $x Value to be checked
      * @param string $y Value to be checked against
      *
-     * @return string
+     * @return Expr\Comparison
      */
     public function isMemberOf($x, $y)
     {
-        return $x . ' MEMBER OF ' . $y;
+        return new Expr\Comparison($x, 'MEMBER OF', $y);
     }
 
     /**
@@ -663,11 +663,11 @@ class Expr
      *
      * @param string $x Value to be checked
      * @param string $y Value to be checked against
-
-     * @return string
+     *
+     * @return Expr\Comparison
      */
     public function isInstanceOf($x, $y)
     {
-        return $x . ' INSTANCE OF ' . $y;
+        return new Expr\Comparison($x, 'INSTANCE OF', $y);
     }
 }
