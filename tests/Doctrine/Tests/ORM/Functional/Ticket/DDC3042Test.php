@@ -21,9 +21,14 @@ class DDC3042Test extends OrmFunctionalTestCase
 
     public function testSQLGenerationDoesNotProvokeAliasCollisions()
     {
-        $this->assertSame(
-            '..',
-            $this->_em->createQuery('SELECT f, b FROM Foo f JOIN Bar b')->getSQL()
+        $this->assertStringNotMatchesFormat(
+            '%sfield11%sfield11%s',
+            $this
+                ->_em
+                ->createQuery(
+                    'SELECT f, b FROM ' . __NAMESPACE__ . '\DDC3042Foo f JOIN ' . __NAMESPACE__ . '\DDC3042Bar b WITH 1 = 1'
+                )
+                ->getSQL()
         );
     }
 }
@@ -34,6 +39,8 @@ class DDC3042Test extends OrmFunctionalTestCase
 class DDC3042Foo
 {
     /** @Id @Column(type="integer") @GeneratedValue */
+    public $field;
+    /** @Column(type="integer") */
     public $field1;
     /** @Column(type="integer") */
     public $field2;
@@ -61,5 +68,5 @@ class DDC3042Foo
 class DDC3042Bar
 {
     /** @Id @Column(type="integer") @GeneratedValue */
-    public $field11;
+    public $field;
 }
