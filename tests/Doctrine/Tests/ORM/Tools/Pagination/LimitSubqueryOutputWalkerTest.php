@@ -15,7 +15,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id0 FROM (SELECT m0_.id AS id0, m0_.title AS title1, c1_.id AS id2, a2_.id AS id3, a2_.name AS name4, m0_.author_id AS author_id5, m0_.category_id AS category_id6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result", $limitQuery->getSql()
+            "SELECT DISTINCT id_0 FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, m0_.author_id AS author_id_5, m0_.category_id AS category_id_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result", $limitQuery->getSql()
         );
     }
 
@@ -30,7 +30,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id0, title1 FROM (SELECT m0_.id AS id0, m0_.title AS title1, c1_.id AS id2, a2_.id AS id3, a2_.name AS name4, m0_.author_id AS author_id5, m0_.category_id AS category_id6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result ORDER BY title1 ASC", $limitQuery->getSql()
+            "SELECT DISTINCT id_0, title_1 FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, m0_.author_id AS author_id_5, m0_.category_id AS category_id_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result ORDER BY title_1 ASC", $limitQuery->getSql()
         );
 
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
@@ -48,7 +48,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC) dctrn_result ORDER BY sclr0 ASC",
+            "SELECT DISTINCT id_1, sclr_0 FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC) dctrn_result ORDER BY sclr_0 ASC",
             $limitQuery->getSql()
         );
 
@@ -67,7 +67,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC, u1_.id DESC) dctrn_result ORDER BY sclr0 ASC, id1 DESC",
+            "SELECT DISTINCT id_1, sclr_0 FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC, u1_.id DESC) dctrn_result ORDER BY sclr_0 ASC, id_1 DESC",
             $limitQuery->getSql()
         );
 
@@ -86,7 +86,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id1, sclr0 FROM (SELECT COUNT(g0_.id) AS sclr0, u1_.id AS id1, g0_.id AS id2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr0 ASC, u1_.id DESC) dctrn_result ORDER BY sclr0 ASC, id1 DESC",
+            "SELECT DISTINCT id_1, sclr_0 FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC, u1_.id DESC) dctrn_result ORDER BY sclr_0 ASC, id_1 DESC",
             $limitQuery->getSql()
         );
 
@@ -115,7 +115,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT ID0, TITLE1 FROM (SELECT m0_.id AS ID0, m0_.title AS TITLE1, c1_.id AS ID2, a2_.id AS ID3, a2_.name AS NAME4, m0_.author_id AS AUTHOR_ID5, m0_.category_id AS CATEGORY_ID6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result ORDER BY TITLE1 ASC", $limitQuery->getSql()
+            "SELECT DISTINCT ID_0, TITLE_1 FROM (SELECT m0_.id AS ID_0, m0_.title AS TITLE_1, c1_.id AS ID_2, a2_.id AS ID_3, a2_.name AS NAME_4, m0_.author_id AS AUTHOR_ID_5, m0_.category_id AS CATEGORY_ID_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result ORDER BY TITLE_1 ASC", $limitQuery->getSql()
         );
 
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
@@ -134,7 +134,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT ID1, SCLR0 FROM (SELECT COUNT(g0_.id) AS SCLR0, u1_.id AS ID1, g0_.id AS ID2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR0 ASC) dctrn_result ORDER BY SCLR0 ASC",
+            "SELECT DISTINCT ID_1, SCLR_0 FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR_0 ASC) dctrn_result ORDER BY SCLR_0 ASC",
             $limitQuery->getSql()
         );
 
@@ -154,7 +154,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT ID1, SCLR0 FROM (SELECT COUNT(g0_.id) AS SCLR0, u1_.id AS ID1, g0_.id AS ID2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR0 ASC, u1_.id DESC) dctrn_result ORDER BY SCLR0 ASC, ID1 DESC",
+            "SELECT DISTINCT ID_1, SCLR_0 FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR_0 ASC, u1_.id DESC) dctrn_result ORDER BY SCLR_0 ASC, ID_1 DESC",
             $limitQuery->getSql()
         );
 
@@ -173,7 +173,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT ID0 FROM (SELECT m0_.id AS ID0, m0_.title AS TITLE1, c1_.id AS ID2, a2_.id AS ID3, a2_.name AS NAME4, m0_.author_id AS AUTHOR_ID5, m0_.category_id AS CATEGORY_ID6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result", $limitQuery->getSql()
+            "SELECT DISTINCT ID_0 FROM (SELECT m0_.id AS ID_0, m0_.title AS TITLE_1, c1_.id AS ID_2, a2_.id AS ID_3, a2_.name AS NAME_4, m0_.author_id AS AUTHOR_ID_5, m0_.category_id AS CATEGORY_ID_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result", $limitQuery->getSql()
         );
 
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
@@ -187,7 +187,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_) dctrn_result", $limitQuery->getSql()
+            "SELECT DISTINCT id_0 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1, sum(a0_.name) AS sclr_2 FROM Author a0_) dctrn_result", $limitQuery->getSql()
         );
     }
 }

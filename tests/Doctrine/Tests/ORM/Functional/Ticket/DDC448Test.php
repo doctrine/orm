@@ -19,7 +19,7 @@ class DDC448Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $q = $this->_em->createQuery("select b from ".__NAMESPACE__."\\DDC448SubTable b where b.connectedClassId = ?1");
         $this->assertEquals(
-            strtolower('SELECT d0_.id AS id0, d0_.discr AS discr1, d0_.connectedClassId AS connectedClassId2 FROM SubTable s1_ INNER JOIN DDC448MainTable d0_ ON s1_.id = d0_.id WHERE d0_.connectedClassId = ?'),
+            strtolower('SELECT d0_.id AS id_0, d0_.discr AS discr_1, d0_.connectedClassId AS connectedClassId_2 FROM SubTable s1_ INNER JOIN DDC448MainTable d0_ ON s1_.id = d0_.id WHERE d0_.connectedClassId = ?'),
             strtolower($q->getSQL())
         );
     }

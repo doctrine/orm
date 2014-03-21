@@ -31,7 +31,7 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $qb->getQuery()->getSQL();
 
         $this->assertEquals(
-            strtolower('SELECT p0_.privilegeID AS privilegeID0, p0_.name AS name1, r1_.roleID AS roleID2, r1_.name AS name3, r1_.shortName AS shortName4 FROM Privileges p0_ LEFT JOIN RolePrivileges r2_ ON p0_.privilegeID = r2_.privilegeID LEFT JOIN Roles r1_ ON r1_.roleID = r2_.roleID'),
+            strtolower('SELECT p0_.privilegeID AS privilegeID_0, p0_.name AS name_1, r1_.roleID AS roleID_2, r1_.name AS name_3, r1_.shortName AS shortName_4 FROM Privileges p0_ LEFT JOIN RolePrivileges r2_ ON p0_.privilegeID = r2_.privilegeID LEFT JOIN Roles r1_ ON r1_.roleID = r2_.roleID'),
             strtolower($sql)
         );
     }
