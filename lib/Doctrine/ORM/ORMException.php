@@ -235,6 +235,14 @@ class ORMException extends Exception
     /**
      * @return ORMException
      */
+    public static function metadataLastModifiedCheckEnabled()
+    {
+        return new self('Metadata cache entries are checked for freshness.');
+    }
+
+    /**
+     * @return ORMException
+     */
     public static function proxyClassesAlwaysRegenerating()
     {
         return new self('Proxy Classes are always regenerating.');

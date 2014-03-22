@@ -87,6 +87,14 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getMetadataLastModified($className)
+    {
+        return false;
+    }
+
+    /**
      * Set the namespace for the generated entities.
      *
      * @param string $namespace

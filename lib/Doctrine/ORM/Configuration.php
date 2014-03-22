@@ -307,6 +307,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Gets whether metadata cache entries should be checked for freshness.
+     *
+     * @return bool
+     */
+    public function getCheckMetadataLastModified()
+    {
+        return isset($this->_attributes['_checkMetadataLastModified'])
+             ? $this->_attributes['_checkMetadataLastModified']
+             : false;
+    }
+
+    /**
+     * Sets whether metadata cache entries should be checked for freshness.
+     *
+     * @param bool $checkLastModified
+     */
+    public function setCheckMetadataLastModified($checkMetadataLastModified)
+    {
+        $this->_attributes['_checkMetadataLastModified'] = $checkMetadataLastModified;
+    }
+
+    /**
      * Adds a named DQL query to the configuration.
      *
      * @param string $name The name of the query.
@@ -387,6 +409,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
         if ( ! $this->getMetadataCacheImpl()) {
             throw ORMException::metadataCacheNotConfigured();
+        }
+
+        if ($this->getCheckMetadataLastModified()) {
+            throw ORMException::metadataLastModifiedCheckEnabled();
         }
 
         if ($this->getAutoGenerateProxyClasses()) {

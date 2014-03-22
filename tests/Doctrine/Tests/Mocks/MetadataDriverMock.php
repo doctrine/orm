@@ -29,4 +29,12 @@ class MetadataDriverMock implements \Doctrine\Common\Persistence\Mapping\Driver\
     {
         return array();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMetadataLastModified($className)
+    {
+        return false;
+    }
 }

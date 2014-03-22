@@ -120,6 +120,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
+        if ($parent &&
+            ($class->getLastModified() !== false && $parent->getLastModified() > $class->getLastModified() ||
+             $parent->getLastModified() === false)) {
+
+            $class->setLastModified($parent->getLastModified());
+        }
+
         // If this class has a parent the id generator strategy is inherited.
         // However this is only true if the hierarchy of parents contains the root entity,
         // if it consists of mapped superclasses these don't necessarily include the id field.

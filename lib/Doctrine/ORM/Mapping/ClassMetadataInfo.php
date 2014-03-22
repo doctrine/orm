@@ -204,6 +204,17 @@ class ClassMetadataInfo implements ClassMetadata
     const CACHE_USAGE_READ_WRITE = 3;
 
     /**
+     * READ-ONLY: The time of the last modification of the class metadata.
+     *
+     * This reflects the modification time of the file containing the metadata
+     * definition, not necessarily a modification of the metadata itself.
+     *
+     * @var int|false  A Unix timestamp, or false if the modification time
+     *                 cannot be determined.
+     */
+    public $lastModified;
+
+    /**
      * READ-ONLY: The name of the entity class.
      *
      * @var string
@@ -664,6 +675,28 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Sets the time of the last modification of the class metadata.
+     *
+     * This reflects the modification time of the file containing the metadata
+     * definition, not necessarily a modification of the metadata itself.
+     *
+     * @param int|false  A Unix timestamp, or false if the modification time
+     *                   cannot be determined.
+     */
+    public function setLastModified($lastModified)
+    {
+        $this->lastModified = $lastModified; 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLastModified()
+    {
+        return $this->lastModified;
+    }
+
+    /**
      * Gets the ReflectionProperties of the mapped class.
      *
      * @return array An array of ReflectionProperty instances.
@@ -809,6 +842,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         // This metadata is always serialized/cached.
         $serialized = array(
+            'lastModified',
             'associationMappings',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'fieldMappings',

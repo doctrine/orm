@@ -42,10 +42,29 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         return $factory;
     }
 
+    public function supportsLastModified()
+    {
+        return true;
+    }
+
     public function testLoadMapping()
     {
         $entityClassName = 'Doctrine\Tests\ORM\Mapping\User';
         return $this->createClassMetadata($entityClassName);
+    }
+
+    public function testLastModified()
+    {
+        $driver = $this->_loadDriver();
+        $lastModified = $driver->getMetadataLastModified('Doctrine\Tests\ORM\Mapping\User');
+        if ($this->supportsLastModified()) {
+            $this->assertTrue(is_int($lastModified));
+            $this->assertGreaterThan(0, $lastModified);
+        } else {
+            $this->assertFalse($lastModified);
+        }
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
+        $this->assertSame($lastModified, $class->getLastModified());
     }
 
     /**
@@ -1005,6 +1024,7 @@ class User
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
+        $metadata->setLastModified(filemtime(__FILE__));
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',

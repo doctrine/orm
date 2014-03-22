@@ -155,6 +155,7 @@ use Doctrine\Common\Util\ClassUtils;
         $this->metadataFactory = new $metadataFactoryClassName;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
+        $this->metadataFactory->setCheckLastModified($this->config->getCheckMetadataLastModified());
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
