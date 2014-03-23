@@ -206,6 +206,22 @@ class YamlExporter extends AbstractExporter
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
-        return Yaml::dump(array($metadata->name => $array), 10);
+        return $this->yamlDump(array($metadata->name => $array), 10);
+    }
+
+    /**
+     * Dumps a PHP array to a YAML string.
+     *
+     * The yamlDump method, when supplied with an array, will do its best
+     * to convert the array into friendly YAML.
+     *
+     * @param array   $array  PHP array
+     * @param integer $inline [optional] The level where you switch to inline YAML
+     *
+     * @return string A YAML string representing the original PHP array
+     */
+    protected function yamlDump($array, $inline = 2)
+    {
+        return Yaml::dump($array, $inline);
     }
 }
