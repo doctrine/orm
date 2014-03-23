@@ -918,7 +918,9 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = array();
 
         foreach ($class->reflFields as $name => $refProp) {
-            if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
+            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
+                && ($name !== $class->versionField)
+                && ! $class->isCollectionValuedAssociation($name)) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
         }
@@ -929,9 +931,7 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
 
-            if (is_object($orgValue) && $orgValue !== $actualValue) {
-                $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+            if ($orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
         }
