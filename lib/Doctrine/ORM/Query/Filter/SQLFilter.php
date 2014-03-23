@@ -108,6 +108,22 @@ abstract class SQLFilter
     }
 
     /**
+     * Checks if a parameter was set for the filter.
+     *
+     * @param string $name Name of the parameter.
+     *
+     * @return boolean
+     */
+    final public function hasParameter($name)
+    {
+        if (!isset($this->parameters[$name])) {
+            return false;
+        }
+
+        return true;
+    }
+    
+    /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *
      * @return string String representation of the SQLFilter.
