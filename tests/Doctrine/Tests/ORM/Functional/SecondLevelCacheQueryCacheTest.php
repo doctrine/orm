@@ -6,6 +6,7 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityCacheEntry;
@@ -997,6 +998,58 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertFalse($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[0]->getId()));
         $this->assertFalse($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[1]->getId()));
+    }
+
+    public function testQueryCacheInvalidation()
+    {
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+
+        $this->_em->clear();
+
+        // Select and cache results
+        $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $query  = $this->_em->createQuery($dql);
+        
+        $result = $query->setCacheable(true)->getResult();
+
+        // Create and persist new country
+        $country = new Country('United Kingdom');
+        $this->_em->persist($country);
+        $this->_em->flush();
+
+        // The cached results should have been invalidated
+        $result2 = $query->setCacheable(true)->getResult();
+
+        $this->assertCount(count($result)+1, $result2);
+    }
+
+    public function testQueryCacheInvalidationSubclasses()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+
+        $this->_em->clear();
+
+        // Select and cache results
+        $dql    = 'SELECT a FROM Doctrine\Tests\Models\Cache\Attraction a';
+        $query  = $this->_em->createQuery($dql);
+
+        $result = $query->setCacheable(true)->getResult();
+
+        // Create and persist new Bar (Attraction subclass)
+        $city   = $this->_em->getRepository('Doctrine\Tests\Models\Cache\City')->findOneByName('Berlin');
+        $bar    = new Bar('Coyote', $city);
+        $city->addAttraction($bar);
+        $this->_em->persist($bar);
+        $this->_em->flush();
+
+        // The cached results should have been invalidated
+        $result2 = $query->setCacheable(true)->getResult();
+
+        $this->assertCount(count($result)+1, $result2);
     }
 
     /**
