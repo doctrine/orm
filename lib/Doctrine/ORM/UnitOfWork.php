@@ -925,6 +925,10 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        if ( ! isset($this->originalEntityData[$oid])) {
+            throw new \RuntimeException('Cannot call recomputeSingleEntityChangeSet before computeChangeSet on an entity.');
+        }
+
         $originalData = $this->originalEntityData[$oid];
         $changeSet = array();
 
@@ -937,11 +941,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($changeSet) {
-            if (isset($this->entityChangeSets[$oid])) {
-                $this->entityChangeSets[$oid] = array_merge($this->entityChangeSets[$oid], $changeSet);
-            }
+            $this->entityChangeSets[$oid] = (isset($this->entityChangeSets[$oid]))
+                ? array_merge($this->entityChangeSets[$oid], $changeSet)
+                : $changeSet;
 
             $this->originalEntityData[$oid] = $actualData;
+            $this->entityUpdates[$oid]      = $entity;
         }
     }
 
