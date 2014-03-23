@@ -284,6 +284,20 @@ class ORMException extends Exception
     }
 
     /**
+     * @param string $className
+     * @param string $fieldName
+     *
+     * @return ORMException
+     */
+    public static function unrecognizedIdentifierFields($className, $fieldNames)
+    {
+        return new self(
+            "Unrecognized identifier fields: '" . implode("', '", $fieldNames) . "' " .
+            "are not present on class '" . $className . "'."
+        );
+    }
+
+    /**
      * @param string $functionName
      *
      * @return ORMException
