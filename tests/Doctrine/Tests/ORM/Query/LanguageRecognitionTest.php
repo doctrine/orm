@@ -592,11 +592,19 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @gorup DDC-1858
+     * @group DDC-1858
      */
     public function testHavingSupportIsNullExpression()
     {
         $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL");
+    }
+
+    /**
+     * @group DDC-3018
+     */
+    public function testNewLiteralExpression()
+    {
+        $this->assertValidDQL("SELECT new " . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', 1, true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
 }
 
@@ -616,4 +624,11 @@ class DQLKeywordsModelGroup
     private $id;
     /** @Column */
     private $from;
+}
+
+class DummyStruct
+{
+    public function __construct($id, $arg1, $arg2, $arg3)
+    {
+    }
 }
