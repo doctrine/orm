@@ -2574,20 +2574,17 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalEntityData[$oid] = $data;
             }
         } else {
-            $entity = $this->newInstance($class);
-            $oid    = spl_object_hash($entity);
+            if (empty($hints[Query::HINT_BACK_REFERENCE_PROXY])) {
+                $entity = $this->newInstance($class);
+                $overrideLocalValues = true;
 
-            $this->entityIdentifiers[$oid]  = $id;
-            $this->entityStates[$oid]       = self::STATE_MANAGED;
-            $this->originalEntityData[$oid] = $data;
-
-            $this->identityMap[$class->rootEntityName][$idHash] = $entity;
-
-            if ($entity instanceof NotifyPropertyChanged) {
-                $entity->addPropertyChangedListener($this);
+            } else {
+                $entity = $this->em->getProxyFactory()->getProxy($class->getName(), $id);
+                $overrideLocalValues = false;
             }
 
-            $overrideLocalValues = true;
+            $this->registerManaged($entity, $id, $overrideLocalValues ? $data : array());
+            $oid = spl_object_hash($entity);
         }
 
         if ( ! $overrideLocalValues) {

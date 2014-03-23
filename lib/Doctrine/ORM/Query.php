@@ -111,6 +111,11 @@ final class Query extends AbstractQuery
      */
     const HINT_CUSTOM_OUTPUT_WALKER = 'doctrine.customOutputWalker';
 
+    /**
+     * @var string
+     */
+    const HINT_BACK_REFERENCE_PROXY = 'doctrine.backReferenceProxy';
+
     //const HINT_READ_ONLY = 'doctrine.readOnly';
 
     /**

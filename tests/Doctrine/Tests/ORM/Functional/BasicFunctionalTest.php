@@ -135,9 +135,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter(1, $userId)
                 ->getSingleResult();
 
-        // Address has been eager-loaded because it cant be lazy
+        // Address is a proxy because it wasn't joined in the query
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $user2->address);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $user2->address);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $user2->address);
     }
 
     /**

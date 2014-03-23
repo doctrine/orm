@@ -64,7 +64,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE c0_.id = 1",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c0_.email_id AS email_id5 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
     }
@@ -73,7 +73,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c0_.email_id AS email_id5 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
     }
@@ -82,7 +82,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c0_.email_id AS email_id5 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.name = ? AND c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
     }
