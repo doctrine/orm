@@ -882,5 +882,51 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\ORM\Query\ResultSetMappingBuilder', $rsm);
         $this->assertEquals(array('u' => 'Doctrine\Tests\Models\CMS\CmsUser'), $rsm->aliasMap);
     }
+
+    /**
+     * @group DDC-3045
+     */
+    public function testFindByFieldInjectionPrevented()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $repository->findBy(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test'));
+    }
+
+    /**
+     * @group DDC-3045
+     */
+    public function testFindOneByFieldInjectionPrevented()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $repository->findOneBy(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test'));
+    }
+
+    /**
+     * @group DDC-3045
+     */
+    public function testMatchingInjectionPrevented()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $repository->matching(new Criteria(
+            Criteria::expr()->eq('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1', 'beberlei')
+        ));
+    }
+
+    /**
+     * @group DDC-3045
+     */
+    public function testFindInjectionPrevented()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized identifier fields: ');
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $repository->find(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test', 'id' => 1));
+    }
 }
 

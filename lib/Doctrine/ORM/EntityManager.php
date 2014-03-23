@@ -397,6 +397,11 @@ use Doctrine\Common\Util\ClassUtils;
             }
 
             $sortedId[$identifier] = $id[$identifier];
+            unset($id[$identifier]);
+        }
+
+        if ($id) {
+            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
