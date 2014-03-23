@@ -20,11 +20,11 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
 
         $user = new DDC3033User();
-        $user->title = "Test User";
+        $user->name = "Test User";
         $this->_em->persist($user);
 
         $user2 = new DDC3033User();
-        $user2->title = "Test User 2";
+        $user2->name = "Test User 2";
         $this->_em->persist($user2);
 
         $product = new DDC3033Product();
@@ -135,5 +135,5 @@ class DDC3033User
      *
      * @Column(name="title", type="string", length=255)
      */
-    public $title;
+    public $name;
 }
