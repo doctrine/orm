@@ -321,7 +321,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets whether metadata cache entries should be checked for freshness.
      *
-     * @param bool $checkLastModified
+     * @param bool $checkMetadataLastModified
      */
     public function setCheckMetadataLastModified($checkMetadataLastModified)
     {
