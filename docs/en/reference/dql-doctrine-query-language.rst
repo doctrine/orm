@@ -1141,7 +1141,7 @@ Scalar Hydration:
 Single Scalar Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you a query which returns just a single scalar value you can use
+If you have a query which returns just a single scalar value you can use
 single scalar hydration:
 
 .. code-block:: php
