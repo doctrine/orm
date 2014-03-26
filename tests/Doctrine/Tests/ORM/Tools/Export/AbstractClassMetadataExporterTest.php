@@ -226,7 +226,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             $this->assertEquals(1, count($nodes));
         }
         else {
-            $this->markTestSkipped('Test available only for '.$type.' driver');
+            $this->markTestSkipped('Test not available for '.$type.' driver');
         }
     }
 
@@ -248,6 +248,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
+        $this->assertEquals(ClassMetadataInfo::FETCH_EAGER, $class->associationMappings['address']['fetch']);
 
         return $class;
     }
@@ -279,6 +280,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        $this->assertEquals(ClassMetadataInfo::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
         return $class;
     }
@@ -306,6 +308,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
         $this->assertTrue($class->associationMappings['groups']['isCascadeMerge']);
         $this->assertTrue($class->associationMappings['groups']['isCascadeDetach']);
+        $this->assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
 
         return $class;
     }
@@ -376,7 +379,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             $this->assertEquals('all', $value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade'][0]);
 
         } else {
-            $this->markTestSkipped('Test available only for '.$type.' driver');
+            $this->markTestSkipped('Test not available for '.$type.' driver');
         }
     }
     public function __destruct()

@@ -260,6 +260,10 @@ class XmlExporter extends AbstractExporter
             if (isset($associationMapping['orphanRemoval']) && $associationMapping['orphanRemoval'] !== false) {
                 $associationMappingXml->addAttribute('orphan-removal', 'true');
             }
+
+            if (isset($associationMapping['fetch'])) {
+                $associationMappingXml->addAttribute('fetch', $this->_getFetchModeString($associationMapping['fetch']));
+            }
             
             $cascade = array();
             if ($associationMapping['isCascadeRemove']) {
