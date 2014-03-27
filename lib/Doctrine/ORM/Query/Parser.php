@@ -3350,10 +3350,13 @@ class Parser
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
-        $funcName  = strtolower($this->lexer->lookahead['value']);
-        $funcClass = $this->em->getConfiguration()->getCustomNumericFunction($funcName);
+        $functionName  = strtolower($this->lexer->lookahead['value']);
+        $functionClass = $this->em->getConfiguration()->getCustomNumericFunction($functionName);
 
-        $function = new $funcClass($funcName);
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : $functionClass($functionName);
+
         $function->parse($this);
 
         return $function;
@@ -3381,10 +3384,13 @@ class Parser
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
-        $funcName  = $this->lexer->lookahead['value'];
-        $funcClass = $this->em->getConfiguration()->getCustomDatetimeFunction($funcName);
+        $functionName  = $this->lexer->lookahead['value'];
+        $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
 
-        $function = new $funcClass($funcName);
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : $functionClass($functionName);
+
         $function->parse($this);
 
         return $function;
@@ -3417,10 +3423,13 @@ class Parser
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive
-        $funcName  = $this->lexer->lookahead['value'];
-        $funcClass = $this->em->getConfiguration()->getCustomStringFunction($funcName);
+        $functionName  = $this->lexer->lookahead['value'];
+        $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
 
-        $function = new $funcClass($funcName);
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : $functionClass($functionName);
+
         $function->parse($this);
 
         return $function;
