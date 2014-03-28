@@ -565,8 +565,8 @@ Could be used by an entity that extends a mapped superclass to override a field 
 Things to note:
 
 -  The "attribute override" specifies the overrides base on the property name.
--  The column type *CANNOT* be changed. if the column type is not equals you got a ``MappingException``
--  The override can redefine all the column except the type.
+-  The column type *CANNOT* be changed. If the column type is not equal you get a ``MappingException``
+-  The override can redefine all the columns except the type.
 
 Query the Type
 --------------
