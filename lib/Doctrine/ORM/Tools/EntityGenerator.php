@@ -133,7 +133,9 @@ class EntityGenerator
     protected $regenerateEntityIfExists = false;
 
     /**
-     * @var boolean
+     * Visibility of the field
+     * 
+     * @var string
      */
     protected $fieldVisibility = 'private';
 
