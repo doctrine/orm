@@ -528,12 +528,13 @@ use Doctrine\Common\Util\ClassUtils;
      * by this EntityManager become detached.
      *
      * @param string|null $entityName if given, only entities of this type will get detached
+     * @param boolean $noCascade if true and $entityName given, don't cascade detach operation of the specified Entity
      *
      * @return void
      */
-    public function clear($entityName = null)
+    public function clear($entityName = null, $noCascade = true)
     {
-        $this->unitOfWork->clear($entityName);
+        $this->unitOfWork->clear($entityName, $noCascade);
     }
 
     /**
