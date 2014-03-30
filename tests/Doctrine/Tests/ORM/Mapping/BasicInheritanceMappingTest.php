@@ -169,56 +169,6 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
     }
-
-    public function testLastModifiedNewerParent()
-    {
-        $lastModified = filemtime(__FILE__);
-
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperclassBase');
-        $class->setLastModified($lastModified + 10);
-        $this->_factory->setMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperclassBase', $class);
-
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass2');
-        $this->assertEquals($lastModified + 10, $class->getLastModified());
-    }
-
-    public function testLastModifiedOlderParent()
-    {
-        $lastModified = filemtime(__FILE__);
-
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperclassBase');
-        $class->setLastModified($lastModified - 10);
-        $this->_factory->setMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperclassBase', $class);
-
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass2');
-        $this->assertEquals($lastModified, $class->getLastModified());
-    }
-
-    public function testLastModifiedUnknownSuperclassLastModified()
-    {
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperclassBase');
-        $class->setLastModified(false);
-        $this->_factory->setMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperclassBase', $class);
-
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass2');
-        $this->assertFalse($class->getLastModified());
-    }
-
-    public function testLastModifiedUnknownSubclassLastModified()
-    {
-        // Annotation driver has unknown last modified time for eval'd class definitions.
-        eval('namespace Doctrine\Tests\ORM\Mapping;
-            /** @Entity */
-            class EntitySubClass3 extends MappedSuperclassBase {
-                /** @Id @Column(type="integer") */
-                private $id;
-                /** @Column(type="string") */
-                private $name;
-            }');
-
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass3');
-        $this->assertFalse($class->getLastModified());
-    }
 }
 
 class TransientBaseClass {

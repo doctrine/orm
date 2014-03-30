@@ -27,6 +27,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\LastModifiedMappingDriver;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
@@ -411,7 +412,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw ORMException::metadataCacheNotConfigured();
         }
 
-        if ($this->getCheckMetadataLastModified()) {
+        if ($this->getMetadataCacheImpl instanceof LastModifiedMappingDriver && $this->getCheckMetadataLastModified()) {
             throw ORMException::metadataLastModifiedCheckEnabled();
         }
 

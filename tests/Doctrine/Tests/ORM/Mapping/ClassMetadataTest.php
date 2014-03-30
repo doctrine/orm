@@ -25,7 +25,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
-        $cm->setLastModified(1234567890);
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
@@ -48,7 +47,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('UserParent', $cm->rootEntityName);
         $this->assertEquals(array('Doctrine\Tests\Models\CMS\One', 'Doctrine\Tests\Models\CMS\Two', 'Doctrine\Tests\Models\CMS\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
-        $this->assertEquals(1234567890, $cm->getLastModified());
         $this->assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals(array('name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'), $cm->discriminatorColumn);
         $this->assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);

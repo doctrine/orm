@@ -2,7 +2,6 @@
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
-$metadata->setLastModified(filemtime(__FILE__));
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'name' => 'cms_users',

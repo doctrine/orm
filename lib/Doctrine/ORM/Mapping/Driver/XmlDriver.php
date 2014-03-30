@@ -54,8 +54,6 @@ class XmlDriver extends FileDriver
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
-        $metadata->setLastModified($this->getMetadataLastModified($className));
-
         /* @var $xmlRoot SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
 

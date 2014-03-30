@@ -60,8 +60,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class = new \ReflectionClass($metadata->name);
         }
 
-        $metadata->setLastModified($this->getMetadataLastModified($className));
-
         $classAnnotations = $this->reader->getClassAnnotations($class);
 
         if ($classAnnotations) {

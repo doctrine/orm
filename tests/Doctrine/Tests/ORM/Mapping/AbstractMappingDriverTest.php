@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\Driver\LastModifiedMappingDriver;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -42,11 +43,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         return $factory;
     }
 
-    public function supportsLastModified()
-    {
-        return true;
-    }
-
     public function testLoadMapping()
     {
         $entityClassName = 'Doctrine\Tests\ORM\Mapping\User';
@@ -56,15 +52,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testLastModified()
     {
         $driver = $this->_loadDriver();
-        $lastModified = $driver->getMetadataLastModified('Doctrine\Tests\ORM\Mapping\User');
-        if ($this->supportsLastModified()) {
-            $this->assertTrue(is_int($lastModified));
-            $this->assertGreaterThan(0, $lastModified);
-        } else {
-            $this->assertFalse($lastModified);
+        if (!$driver instanceof LastModifiedMappingDriver) {
+            return;
         }
-        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
-        $this->assertSame($lastModified, $class->getLastModified());
+        $lastModified = $driver->getMetadataLastModified('Doctrine\Tests\ORM\Mapping\User');
+        $this->assertGreaterThan(0, $lastModified);
     }
 
     /**
@@ -1024,7 +1016,6 @@ class User
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->setLastModified(filemtime(__FILE__));
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',
