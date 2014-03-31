@@ -606,7 +606,7 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
         $sql  = 'SELECT ' . $rsm->generateSelectClause() . ' FROM ' . $tableName . ' te'
             . ' JOIN ' . $joinTable  . ' t ON'
             . implode(' AND ', $onConditions)
-            . ' WHERE ' . implode(' AND ', $whereClauses);
+            . ' WHERE ' . implode(' AND ', array_filter($whereClauses));
 
         $stmt     = $this->conn->executeQuery($sql, $params);
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
@@ -626,7 +626,7 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
     {
         $expression = $criteria->getWhereExpression();
 
-        if ($expression === null) {
+        if (!$expression) {
             return '';
         }
 
