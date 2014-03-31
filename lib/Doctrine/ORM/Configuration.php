@@ -412,7 +412,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw ORMException::metadataCacheNotConfigured();
         }
 
-        if ($this->getMetadataCacheImpl instanceof LastModifiedMappingDriver && $this->getCheckMetadataLastModified()) {
+        if ($this->getMetadataCacheImpl() instanceof LastModifiedMappingDriver && $this->getCheckMetadataLastModified()) {
             throw ORMException::metadataLastModifiedCheckEnabled();
         }
 
