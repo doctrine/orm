@@ -108,7 +108,7 @@ class PhpExporter extends AbstractExporter
                 'cascade'     => $cascade,
             );
 
-            if(isset($associationMapping['fetch'])){
+            if (isset($associationMapping['fetch'])) {
                 $associationMappingArray['fetch'] = $associationMapping['fetch'];
             }
 
