@@ -150,7 +150,7 @@ class YamlExporter extends AbstractExporter
                 'cascade'     => $cascade,
             );
 
-            if(isset($associationMapping['fetch'])){
+            if (isset($associationMapping['fetch'])) {
                 $associationMappingArray['fetch'] = $this->_getFetchModeString($associationMapping['fetch']);
             }
 
