@@ -20,6 +20,8 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
@@ -33,8 +35,24 @@ use Doctrine\ORM\UnitOfWork;
  * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
-class ManyToManyPersister extends AbstractCollectionPersister
+class ManyToManyPersister extends AbstractCollectionPersister implements SelectConditionGeneratorInterface
 {
+    /**
+     * @var array
+     */
+    static private $comparisonMap = array(
+        Comparison::EQ       => '= %s',
+        Comparison::IS       => '= %s',
+        Comparison::NEQ      => '!= %s',
+        Comparison::GT       => '> %s',
+        Comparison::GTE      => '>= %s',
+        Comparison::LT       => '< %s',
+        Comparison::LTE      => '<= %s',
+        Comparison::IN       => 'IN (%s)',
+        Comparison::NIN      => 'NOT IN (%s)',
+        Comparison::CONTAINS => 'LIKE %s',
+    );
+
     /**
      * {@inheritdoc}
      *
@@ -568,11 +586,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $params[]       = $ownerMetadata->getFieldValue($owner, $value);
         }
 
-        $parameters = $this->expandCriteriaParameters($criteria);
+        $parameters     = $this->expandCriteriaParameters($criteria);
+        $whereClauses[] = $this->getSelectConditionCriteriaSQL($criteria, $ownerMetadata);
 
         foreach ($parameters as $parameter) {
             list($name, $value) = $parameter;
-            $whereClauses[]     = sprintf('te.%s = ?', $name);
             $params[]           = $value;
         }
 
@@ -594,6 +612,27 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
 
         return $hydrator->hydrateAll($stmt, $rsm);
+    }
+
+    /**
+     * Gets the Select Where Condition from a Criteria object.
+     *
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     * @param ClassMetadata $classMetadata
+     *
+     * @return string
+     */
+    protected function getSelectConditionCriteriaSQL(Criteria $criteria, ClassMetadata $classMetadata)
+    {
+        $expression = $criteria->getWhereExpression();
+
+        if ($expression === null) {
+            return '';
+        }
+
+        $visitor = new SqlExpressionVisitor($this, $classMetadata);
+
+        return $visitor->dispatch($expression);
     }
 
     /**
@@ -619,5 +658,48 @@ class ManyToManyPersister extends AbstractCollectionPersister
         list($values, $types) = $valueVisitor->getParamsAndTypes();
 
         return $types;
+    }
+
+    /**
+     * Gets the SQL WHERE condition for matching a field with a given value.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @param array|null $assoc
+     * @param string|null $comparison
+     * @param ClassMetadata|null $class
+     *
+     * @return string
+     */
+    public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null, ClassMetadata $class = null)
+    {
+        $placeholder  = '?';
+        $condition    = 'te.' . $field;
+
+        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
+            $placeholder = Type::getType($class->getTypeOfField($field))->convertToDatabaseValueSQL($placeholder, $this->platform);
+        }
+
+        if ($comparison !== null) {
+
+            // special case null value handling
+            if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
+                return $condition . ' IS NULL';
+            } else if ($comparison === Comparison::NEQ && $value === null) {
+                return $condition . ' IS NOT NULL';
+            }
+
+            return $condition . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
+        }
+
+        if (is_array($value)) {
+            return sprintf('%s IN (%s)' , $condition, $placeholder);
+        }
+
+        if ($value === null) {
+            return sprintf('%s IS NULL' , $condition);
+        }
+
+        return sprintf('%s = %s' , $condition, $placeholder);
     }
 }

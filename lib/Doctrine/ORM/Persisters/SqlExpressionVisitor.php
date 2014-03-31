@@ -35,9 +35,9 @@ use Doctrine\Common\Collections\Expr\CompositeExpression;
 class SqlExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * @var \Doctrine\ORM\Persisters\BasicEntityPersister
+     * @var \Doctrine\ORM\Persisters\SelectConditionGeneratorInterface
      */
-    private $persister;
+    private $conditionGenerator;
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
@@ -45,11 +45,12 @@ class SqlExpressionVisitor extends ExpressionVisitor
     private $classMetadata;
 
     /**
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister $persister
+     * @param \Doctrine\ORM\Persisters\SelectConditionGeneratorInterface $conditionGenerator
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $classMetadata
      */
-    public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)
+    public function __construct(SelectConditionGeneratorInterface $conditionGenerator, ClassMetadata $classMetadata)
     {
-        $this->persister = $persister;
+        $this->conditionGenerator = $conditionGenerator;
         $this->classMetadata = $classMetadata;
     }
 
@@ -73,7 +74,13 @@ class SqlExpressionVisitor extends ExpressionVisitor
             throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->name, $field);
         }
 
-        return $this->persister->getSelectConditionStatementSQL($field, $value, null, $comparison->getOperator());
+        return $this->conditionGenerator->getSelectConditionStatementSQL(
+            $field,
+            $value,
+            null,
+            $comparison->getOperator(),
+            $this->classMetadata
+        );
     }
 
     /**

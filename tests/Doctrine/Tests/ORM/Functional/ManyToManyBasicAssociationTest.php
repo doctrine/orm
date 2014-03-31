@@ -399,4 +399,22 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
 
         $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
     }
+
+    public function testMatchingWithOtherOperators()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+
+        $criteria = Criteria::create()->where(Criteria::expr()->neq('name', (string) 'Developers_0'));
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(1, $result);
+
+        $firstGroup = $result->first();
+        $this->assertEquals('Developers_1', $firstGroup->name);
+    }
 }

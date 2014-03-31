@@ -29,7 +29,7 @@ use Doctrine\Common\Collections\Criteria;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
  */
-interface EntityPersister
+interface EntityPersister extends SelectConditionGeneratorInterface
 {
     /**
      * @return \Doctrine\ORM\Mapping\ClassMetadata
@@ -91,18 +91,6 @@ interface EntityPersister
      * @return array
      */
     public function expandCriteriaParameters(Criteria $criteria);
-
-    /**
-     * Gets the SQL WHERE condition for matching a field with a given value.
-     *
-     * @param string      $field
-     * @param mixed       $value
-     * @param array|null  $assoc
-     * @param string|null $comparison
-     *
-     * @return string
-     */
-    public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null);
 
     /**
      * Adds an entity to the queued insertions.
