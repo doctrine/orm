@@ -928,5 +928,89 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repository->find(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test', 'id' => 1));
     }
+
+    /**
+     * @group DDC-3056
+     */
+    public function testFindByNullValueInInCondition()
+    {
+        $user1 = new CmsUser();
+        $user2 = new CmsUser();
+
+        $user1->username = 'ocramius';
+        $user1->name = 'Marco';
+        $user2->status = null;
+        $user2->username = 'deeky666';
+        $user2->name = 'Steve';
+        $user2->status = 'dbal maintainer';
+
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->flush();
+
+        $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findBy(array('status' => array(null)));
+
+        $this->assertCount(1, $users);
+        $this->assertSame($user1, reset($users));
+    }
+
+    /**
+     * @group DDC-3056
+     */
+    public function testFindByNullValueInMultipleInCriteriaValues()
+    {
+        $user1 = new CmsUser();
+        $user2 = new CmsUser();
+
+        $user1->username = 'ocramius';
+        $user1->name = 'Marco';
+        $user2->status = null;
+        $user2->username = 'deeky666';
+        $user2->name = 'Steve';
+        $user2->status = 'dbal maintainer';
+
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->flush();
+
+        $users = $this
+            ->_em
+            ->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
+            ->findBy(array('status' => array('foo', null)));
+
+        $this->assertCount(1, $users);
+        $this->assertSame($user1, reset($users));
+    }
+
+    /**
+     * @group DDC-3056
+     */
+    public function testFindMultipleByNullValueInMultipleInCriteriaValues()
+    {
+        $user1 = new CmsUser();
+        $user2 = new CmsUser();
+
+        $user1->username = 'ocramius';
+        $user1->name = 'Marco';
+        $user2->status = null;
+        $user2->username = 'deeky666';
+        $user2->name = 'Steve';
+        $user2->status = 'dbal maintainer';
+
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->flush();
+
+        $users = $this
+            ->_em
+            ->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
+            ->findBy(array('status' => array('dbal maintainer', null)));
+
+        $this->assertCount(2, $users);
+
+        foreach ($users as $user) {
+            $this->assertTrue(in_array($user, array($user1, $user2)));
+        }
+    }
 }
 
