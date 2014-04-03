@@ -928,5 +928,23 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repository->find(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test', 'id' => 1));
     }
+
+    /**
+     * @group DDC-3056
+     */
+    public function testFindByNullValueInInCondition()
+    {
+        $user = new CmsUser();
+
+        $user->username = 'ocramius';
+        $user->name = 'Marco';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findBy(array('email' => array(null)));
+
+        $this->assertCount(1, $users);
+    }
 }
 
