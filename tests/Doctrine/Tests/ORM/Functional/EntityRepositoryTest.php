@@ -942,9 +942,18 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findBy(array('email' => array(null)));
+        $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findBy(array('status' => array(null)));
 
         $this->assertCount(1, $users);
+        $this->assertSame($user, reset($users));
+
+        $users = $this
+            ->_em
+            ->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
+            ->findBy(array('status' => array('foo', null)));
+
+        $this->assertCount(1, $users);
+        $this->assertSame($user, reset($users));
     }
 }
 
