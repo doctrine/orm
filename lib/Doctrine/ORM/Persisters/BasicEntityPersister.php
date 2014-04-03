@@ -1534,7 +1534,13 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (is_array($value)) {
-            return sprintf('%s IN (%s)' , $condition, $placeholder);
+            $in = sprintf('%s IN (%s)' , $condition, $placeholder);
+
+            if (false !== array_search(null, $value, true)) {
+                return sprintf('(%s OR %s IS NULL)' , $in, $condition);
+            }
+
+            return $in;
         }
 
         if ($value === null) {
