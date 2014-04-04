@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\SQLServer2008Platform;
 use Doctrine\ORM\Query;
 
 class LimitSubqueryOutputWalkerTest extends PaginationTestCase
@@ -189,6 +190,34 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $this->assertEquals(
             "SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_) dctrn_result", $limitQuery->getSql()
         );
+    }
+
+    /**
+     * @group DDC-2622
+     */
+    public function testLimitSubquerySqlServer()
+    {
+        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
+
+        $this->entityManager->getConnection()->setDatabasePlatform(new SQLServer2008Platform());
+
+        $query = clone $this->entityManager->createQuery(
+            'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p '
+            . 'JOIN p.category c WHERE c.id = ?1 ORDER BY p.title DESC'
+        );
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+        $query->setMaxResults(10);
+
+        $this->assertEquals(
+            'SELECT * FROM (SELECT DISTINCT id0, ROW_NUMBER() OVER (ORDER BY title1 DESC) AS doctrine_rownum FROM '
+            . '(SELECT m0_.id AS id0, m0_.title AS title1, c1_.id AS id2, m0_.author_id AS author_id3, m0_.category_id '
+            . 'AS category_id4 FROM MyBlogPost m0_ WITH (NOLOCK) INNER JOIN Category c1_ ON m0_.category_id = c1_.id '
+            . 'WHERE c1_.id = ?) dctrn_result) AS doctrine_tbl WHERE doctrine_rownum BETWEEN 1 AND 10',
+            $query->getSql()
+        );
+
+        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 }
 
