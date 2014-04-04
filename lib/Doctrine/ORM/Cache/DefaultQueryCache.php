@@ -148,6 +148,7 @@ class DefaultQueryCache implements QueryCache
                         if ($this->cacheLogger !== null) {
                             $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
                         }
+                        $this->uow->hydrationComplete();
 
                         return null;
                     }
@@ -175,6 +176,7 @@ class DefaultQueryCache implements QueryCache
                         if ($this->cacheLogger !== null) {
                             $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
                         }
+                        $this->uow->hydrationComplete();
 
                         return null;
                     }
@@ -195,6 +197,8 @@ class DefaultQueryCache implements QueryCache
 
             $result[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
         }
+
+        $this->uow->hydrationComplete();
 
         return $result;
     }

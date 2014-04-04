@@ -277,6 +277,15 @@ class UnitOfWork implements PropertyChangedListener
     protected $hasCache = false;
 
     /**
+     * Map of entities, loaded in current hydration cycle.
+     * After hydration cycle is finished, some of events should be fired for this entities.
+     * Array contains arrays of two values. First value is ClassMetadata object, second is entity object
+     *
+     * @var array
+     */
+    private $deferredToInvokeLoadEventEntities = array();
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param \Doctrine\ORM\EntityManager $em
@@ -2801,11 +2810,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($overrideLocalValues) {
-            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
-
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
-            }
+            // defer invoking of postLoad event to hydration complete step
+            $this->deferredToInvokeLoadEventEntities[] = array($class, $entity);
         }
 
         return $entity;
@@ -3378,5 +3384,24 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+    }
+
+    /**
+     * This method called by hydrators, and indicates that hydrator totally completed current hydration cycle.
+     * Unit of work able to fire deferred events, related to loading events here.
+     *
+     * @internal should be called internally from object hydrators
+     */
+    public function hydrationComplete()
+    {
+        foreach ($this->deferredToInvokeLoadEventEntities as $metaAndEntity) {
+            list($class, $entity) = $metaAndEntity;
+            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
+
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
+            }
+        }
+        $this->deferredToInvokeLoadEventEntities = array();
     }
 }

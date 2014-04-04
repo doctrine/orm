@@ -50,6 +50,17 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
+    protected function cleanup()
+    {
+        parent::cleanup();
+
+        $this->_uow->triggerEagerLoads();
+        $this->_uow->hydrationComplete();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function hydrateAllData()
     {
         $result = array();

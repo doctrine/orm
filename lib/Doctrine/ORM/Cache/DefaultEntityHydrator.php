@@ -151,6 +151,9 @@ class DefaultEntityHydrator implements EntityHydrator
             $this->uow->registerManaged($entity, $key->identifier, $data);
         }
 
-        return $this->uow->createEntity($entry->class, $data, $hints);
+        $result = $this->uow->createEntity($entry->class, $data, $hints);
+        $this->uow->hydrationComplete();
+
+        return $result;
     }
 }
