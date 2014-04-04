@@ -48,9 +48,18 @@ class SimpleObjectHydrator extends AbstractHydrator
             $this->hydrateRowData($row, $cache, $result);
         }
 
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
-
         return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function cleanup()
+    {
+        parent::cleanup();
+
+        $this->_uow->triggerEagerLoads();
+        $this->_uow->hydrationComplete();
     }
 
     /**

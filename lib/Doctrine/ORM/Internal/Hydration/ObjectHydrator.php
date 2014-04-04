@@ -163,8 +163,10 @@ class ObjectHydrator extends AbstractHydrator
         $this->resultPointers = array();
 
         if ($eagerLoad) {
-            $this->_em->getUnitOfWork()->triggerEagerLoads();
+            $this->_uow->triggerEagerLoads();
         }
+
+        $this->_uow->hydrationComplete();
     }
 
     /**
