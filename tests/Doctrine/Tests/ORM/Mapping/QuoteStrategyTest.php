@@ -134,10 +134,10 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     public function testColumnAlias()
     {
         $i = 0;
-        $this->assertEquals('columnName0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
-        $this->assertEquals('column_name1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
-        $this->assertEquals('COLUMN_NAME2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
-        $this->assertEquals('COLUMNNAME3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
+        $this->assertEquals('columnName_0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
+        $this->assertEquals('column_name_1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
+        $this->assertEquals('COLUMN_NAME_2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
+        $this->assertEquals('COLUMNNAME_3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
     }
 
     public function testQuoteIdentifierJoinColumns()

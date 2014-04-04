@@ -95,7 +95,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testColumnAlias()
     {
-        $this->assertEquals('columnName1', $this->strategy->getColumnAlias('columnName', 1, $this->platform));
+        $this->assertEquals('columnName_1', $this->strategy->getColumnAlias('columnName', 1, $this->platform));
     }
 
     public function testJoinColumnName()

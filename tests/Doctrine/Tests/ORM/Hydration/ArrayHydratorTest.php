@@ -502,7 +502,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * join u.phonenumbers p
      * join u.articles a
      * =
-     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0, a.id, a.topic
+     * select u.id, u.status, p.phonenumber, upper(u.name) AS u___0, a.id, a.topic
      * from USERS u
      * inner join PHONENUMBERS p ON u.id = p.user_id
      * inner join ARTICLES a ON u.id = a.user_id
@@ -618,7 +618,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * join u.articles a
      * left join a.comments c
      * =
-     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0, a.id, a.topic,
+     * select u.id, u.status, p.phonenumber, upper(u.name) AS u___0, a.id, a.topic,
      * c.id, c.topic
      * from USERS u
      * inner join PHONENUMBERS p ON u.id = p.user_id
