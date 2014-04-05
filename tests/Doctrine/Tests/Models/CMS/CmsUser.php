@@ -236,6 +236,9 @@ class CmsUser
         }
     }
 
+    /**
+     * @return CmsEmail
+     */
     public function getEmail() { return $this->email; }
 
     public function setEmail(CmsEmail $email = null) {
@@ -387,7 +390,7 @@ class CmsUser
                   )
             )
         ));
-        
+
         $metadata->addSqlResultSetMapping(array(
             'name'      => 'mappingMultipleJoinsEntityResults',
             'entities'  => array(array(
