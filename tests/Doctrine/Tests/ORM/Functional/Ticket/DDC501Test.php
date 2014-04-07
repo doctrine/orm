@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\ORM\UnitOfWork;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * ----------------- !! NOTE !! --------------------
  * To reproduce the manyToMany-Bug it's necessary

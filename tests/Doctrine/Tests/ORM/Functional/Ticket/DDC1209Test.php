@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC1209Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 {
     abstract protected function _loadDriver();

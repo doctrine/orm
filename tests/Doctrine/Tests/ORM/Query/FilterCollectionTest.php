@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 use Doctrine\ORM\Mapping\ClassMetaData,
     Doctrine\ORM\Query\Filter\SQLFilter;
 

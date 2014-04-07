@@ -9,8 +9,6 @@ use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
 use Doctrine\Common\Collections\Expr\Comparison;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 {
     protected $_persister;

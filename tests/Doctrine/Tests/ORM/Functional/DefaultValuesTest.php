@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests basic operations on entities with default values.
  *

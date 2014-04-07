@@ -11,8 +11,6 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group performance
  */

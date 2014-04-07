@@ -12,8 +12,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Functional Query tests.
  *

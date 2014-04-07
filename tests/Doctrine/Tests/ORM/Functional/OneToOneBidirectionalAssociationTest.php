@@ -7,8 +7,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */

@@ -1,10 +1,9 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener;
-
-require_once __DIR__ . '/../../../TestInit.php';
 
 class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

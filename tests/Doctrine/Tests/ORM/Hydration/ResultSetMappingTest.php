@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Description of ResultSetMappingTest
  *

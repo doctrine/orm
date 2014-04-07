@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Tools\SchemaValidator;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
 {
     /**

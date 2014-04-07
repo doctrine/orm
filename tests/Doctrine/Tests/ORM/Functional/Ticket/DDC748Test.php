@@ -7,8 +7,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

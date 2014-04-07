@@ -25,8 +25,6 @@ use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests SQLFilter functionality.
  *

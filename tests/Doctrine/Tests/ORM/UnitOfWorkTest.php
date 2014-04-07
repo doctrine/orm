@@ -10,8 +10,6 @@ use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 
-require_once __DIR__ . '/../TestInit.php';
-
 /**
  * UnitOfWork tests.
  */

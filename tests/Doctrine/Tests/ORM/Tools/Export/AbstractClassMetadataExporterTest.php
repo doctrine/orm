@@ -33,8 +33,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * Test case for ClassMetadataExporter
  *

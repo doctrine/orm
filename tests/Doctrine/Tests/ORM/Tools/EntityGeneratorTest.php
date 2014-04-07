@@ -10,8 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 {
 

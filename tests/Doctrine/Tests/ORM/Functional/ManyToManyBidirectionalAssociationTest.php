@@ -7,8 +7,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests a bidirectional many-to-many association mapping (without inheritance).
  * Owning side is ECommerceProduct, inverse side is ECommerceCategory.

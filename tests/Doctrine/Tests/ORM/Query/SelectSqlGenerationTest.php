@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_em;
