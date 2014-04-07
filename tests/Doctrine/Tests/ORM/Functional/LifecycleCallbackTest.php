@@ -3,8 +3,6 @@
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp() {

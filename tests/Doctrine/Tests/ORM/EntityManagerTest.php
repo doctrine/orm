@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM;
 
-require_once __DIR__ . '/../TestInit.php';
-
 class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_em;

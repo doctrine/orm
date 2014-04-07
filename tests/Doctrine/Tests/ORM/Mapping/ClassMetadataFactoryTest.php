@@ -10,8 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testGetMetadataForSingleClass()

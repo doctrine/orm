@@ -5,7 +5,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 
-require_once __DIR__ . '/../../TestInit.php';
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase

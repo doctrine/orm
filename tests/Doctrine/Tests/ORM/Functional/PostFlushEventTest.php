@@ -1,9 +1,10 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional;
+
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
-require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * PostFlushEventTest

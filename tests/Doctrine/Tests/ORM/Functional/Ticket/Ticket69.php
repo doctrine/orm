@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Query;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  *

@@ -3,12 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-
 use Doctrine\Common\Persistence\ObjectManager;
-
 use Doctrine\Common\Persistence\ObjectManagerAware;
-
-require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * @group DDC-2231

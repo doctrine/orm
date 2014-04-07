@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\SchemaTool;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_factory;

@@ -21,8 +21,6 @@
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * Test case for AnnotationClassMetadataExporterTest
  *

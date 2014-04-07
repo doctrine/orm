@@ -6,8 +6,6 @@ use Doctrine\Tests\Models\Taxi\Car,
     Doctrine\Tests\Models\Taxi\Ride,
     Doctrine\Tests\Models\Taxi\PaidRide;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1884
  * @author Sander Coolen <sander@jibber.nl>

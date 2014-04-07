@@ -9,8 +9,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart,
 
 use Doctrine\ORM\Mapping\AssociationMapping;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests capabilities of the persister.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>

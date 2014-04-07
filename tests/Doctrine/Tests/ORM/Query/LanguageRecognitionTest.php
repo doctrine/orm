@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_em;

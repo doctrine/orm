@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use PDO, Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class CustomHydratorTest extends HydrationTestCase
 {
     public function testCustomHydrator()

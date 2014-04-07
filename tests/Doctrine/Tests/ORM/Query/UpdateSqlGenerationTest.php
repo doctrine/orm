@@ -23,8 +23,6 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\Types\Type as DBALType;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *

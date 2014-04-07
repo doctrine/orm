@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Schema;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  *

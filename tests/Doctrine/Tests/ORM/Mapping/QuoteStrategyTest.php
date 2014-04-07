@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-1845
  */

@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class ScalarHydratorTest extends HydrationTestCase
 {
     /**
