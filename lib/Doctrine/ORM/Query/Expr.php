@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Query;
 
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions.
-
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
