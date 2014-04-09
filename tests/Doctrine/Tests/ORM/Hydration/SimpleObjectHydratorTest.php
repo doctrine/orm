@@ -68,15 +68,18 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     public function testInvalidDiscriminatorValueException()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
+
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p ', 'discr', 'discr');
+        $rsm->addMetaResult('p', 'discr', 'discr');
         $rsm->setDiscriminatorColumn('p', 'discr');
+
         $resultSet = array(
               array(
-                  'u__id'   => '1',
-                  'u__name' => 'Fabio B. Silva',
+                  'p__id'   => '1',
+                  'p__name' => 'Fabio B. Silva',
                   'discr'   => 'subworker'
               ),
          );
