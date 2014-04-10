@@ -55,13 +55,6 @@ interface Cache
     const MODE_REFRESH = 4;
 
     /**
-     * Construct
-     *
-     * @param \Doctrine\ORM\EntityManagerInterface $em
-     */
-    public function __construct(EntityManagerInterface $em);
-
-    /**
      * @param string $className The entity class.
      *
      * @return \Doctrine\ORM\Cache\Region|null
