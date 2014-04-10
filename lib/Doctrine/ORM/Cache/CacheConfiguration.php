@@ -58,11 +58,6 @@ class CacheConfiguration
     private $cacheInstantiator;
 
     /**
-     * @var string
-     */
-    private $cacheClassName = 'Doctrine\ORM\Cache\DefaultCache';
-
-    /**
      * @return \Doctrine\ORM\Cache\CacheFactory|null
      */
     public function getCacheFactory()
@@ -163,29 +158,5 @@ class CacheConfiguration
         }
 
         return $this->cacheInstantiator;
-    }
-
-    /**
-     * @param string $className
-     *
-     * @throws \Doctrine\ORM\ORMException If is not a \Doctrine\ORM\Cache
-     */
-    public function setCacheClassName($className)
-    {
-        $reflectionClass = new \ReflectionClass($className);
-
-        if ( ! $reflectionClass->implementsInterface('Doctrine\ORM\Cache')) {
-            throw ORMException::invalidSecondLevelCache($className);
-        }
-
-        $this->cacheClassName = $className;
-    }
-
-    /**
-     * @return string A \Doctrine\ORM\Cache class name
-     */
-    public function getCacheClassName()
-    {
-        return $this->cacheClassName;
     }
 }
