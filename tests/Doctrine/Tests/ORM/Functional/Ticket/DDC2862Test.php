@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\ORM\Tools\ToolsException;
 
 /**
