@@ -20,8 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 
 /**
