@@ -263,6 +263,19 @@ class ORMException extends Exception
     }
 
     /**
+     * @param mixed $instantiator
+     *
+     * @return ORMException
+     */
+    public static function invalidSecondLevelCacheInstantiator($instantiator)
+    {
+        return new self(sprintf(
+            'The provided instantiator is not a valid callable, "%s" given.',
+            is_object($instantiator) ? get_class($instantiator) : gettype($instantiator)
+        ));
+    }
+
+    /**
      * @param string $className
      *
      * @return ORMException
