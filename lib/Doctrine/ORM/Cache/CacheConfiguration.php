@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 
@@ -50,6 +51,11 @@ class CacheConfiguration
      * @var \Doctrine\ORM\Cache\QueryCacheValidator|null
      */
     private $queryValidator;
+
+    /**
+     * @var callable|null
+     */
+    private $cacheInstantiator;
 
     /**
      * @var string
@@ -128,6 +134,35 @@ class CacheConfiguration
     public function setQueryValidator(QueryCacheValidator $validator)
     {
         $this->queryValidator = $validator;
+    }
+
+    /**
+     * @param callable $instantiator responsible of retrieving an {@see \Doctrine\ORM\Cache} instance given
+     *                               a {@see \Doctrine\ORM\EntityManagerInterface} instance
+     *
+     * @throws ORMException if the given instantiator is not a valid callable
+     */
+    public function setCacheInstantiator($instantiator)
+    {
+        if ( ! is_callable($instantiator)) {
+            throw ORMException::invalidSecondLevelCacheInstantiator($instantiator);
+        }
+
+        $this->cacheInstantiator = $instantiator;
+    }
+
+    /**
+     * @return callable that
+     */
+    public function getCacheInstantiator()
+    {
+        if ( ! $this->cacheInstantiator) {
+            $this->cacheInstantiator = function (EntityManagerInterface $entityManager) {
+                return new DefaultCache($entityManager);
+            };
+        }
+
+        return $this->cacheInstantiator;
     }
 
     /**
