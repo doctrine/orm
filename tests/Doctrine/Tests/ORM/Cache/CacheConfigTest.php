@@ -27,18 +27,6 @@ class CacheConfigTest extends DoctrineTestCase
         $this->config = new CacheConfiguration();
     }
 
-    public function testSetGetCacheClassName()
-    {
-        $mockClass = get_class($this->getMock('Doctrine\ORM\Cache'));
-
-        $this->assertEquals('Doctrine\ORM\Cache\DefaultCache', $this->config->getCacheClassName());
-        $this->config->setCacheClassName($mockClass);
-        $this->assertEquals($mockClass, $this->config->getCacheClassName());
-
-        $this->setExpectedException('Doctrine\ORM\ORMException');
-        $this->config->setCacheClassName(__CLASS__);
-    }
-
     /**
      * @covers \Doctrine\ORM\Cache\CacheConfiguration::getCacheInstantiator
      */
