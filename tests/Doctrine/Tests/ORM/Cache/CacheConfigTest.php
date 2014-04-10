@@ -32,18 +32,7 @@ class CacheConfigTest extends DoctrineTestCase
      */
     public function testGetDefaultCacheIstantiator()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
-        $config        = $this->getMock('Doctrine\ORM\Configuration');
-
-        $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($config));
-        $config
-            ->expects($this->any())
-            ->method('getSecondLevelCacheConfiguration')
-            ->will($this->returnValue($this->config));
-
-        $defaultIstantiator = $this->config->getCacheInstantiator();
-
-        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultCache', $defaultIstantiator($entityManager));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultInstantiator', $this->config->getCacheInstantiator());
     }
 
     /**
@@ -51,14 +40,10 @@ class CacheConfigTest extends DoctrineTestCase
      */
     public function testSetGetCacheIstantiator()
     {
-        $istantiator = function () {};
+        $istantiator = $this->getMock('Doctrine\ORM\Cache\CacheInstantiator');
 
         $this->config->setCacheInstantiator($istantiator);
         $this->assertSame($istantiator, $this->config->getCacheInstantiator());
-
-        $this->setExpectedException('Doctrine\ORM\ORMException');
-
-        $this->config->setCacheInstantiator(null);
     }
 
     public function testSetGetRegionLifetime()

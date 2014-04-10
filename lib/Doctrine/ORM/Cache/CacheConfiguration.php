@@ -53,7 +53,7 @@ class CacheConfiguration
     private $queryValidator;
 
     /**
-     * @var callable|null
+     * @var CacheInstantiator|null
      */
     private $cacheInstantiator;
 
@@ -132,31 +132,18 @@ class CacheConfiguration
     }
 
     /**
-     * @param callable $instantiator responsible of retrieving an {@see \Doctrine\ORM\Cache} instance given
-     *                               a {@see \Doctrine\ORM\EntityManagerInterface} instance
-     *
-     * @throws ORMException if the given instantiator is not a valid callable
+     * @param CacheInstantiator
      */
-    public function setCacheInstantiator($instantiator)
+    public function setCacheInstantiator(CacheInstantiator $cacheInstantiator)
     {
-        if ( ! is_callable($instantiator)) {
-            throw ORMException::invalidSecondLevelCacheInstantiator($instantiator);
-        }
-
-        $this->cacheInstantiator = $instantiator;
+        $this->cacheInstantiator = $cacheInstantiator;
     }
 
     /**
-     * @return callable that
+     * @return CacheInstantiator
      */
     public function getCacheInstantiator()
     {
-        if ( ! $this->cacheInstantiator) {
-            $this->cacheInstantiator = function (EntityManagerInterface $entityManager) {
-                return new DefaultCache($entityManager);
-            };
-        }
-
-        return $this->cacheInstantiator;
+        return $this->cacheInstantiator ?: $this->cacheInstantiator = new DefaultCacheInstantiator();
     }
 }
