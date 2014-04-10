@@ -32,7 +32,7 @@ class CacheConfigTest extends DoctrineTestCase
      */
     public function testGetDefaultCacheIstantiator()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultInstantiator', $this->config->getCacheInstantiator());
+        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultCacheInstantiator', $this->config->getCacheInstantiator());
     }
 
     /**
