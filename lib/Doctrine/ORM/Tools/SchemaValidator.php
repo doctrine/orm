@@ -219,7 +219,7 @@ class SchemaValidator
                         }
 
                         $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
-                                "have to match to ALL identifier columns of the target entity '". $class->name . "', " .
+                                "have to match to ALL identifier columns of the target entity '". $targetMetadata->name . "', " .
                                 "however '" . implode(", ", array_diff($targetMetadata->getIdentifierColumnNames(), $ids)) .
                                 "' are missing.";
                     }

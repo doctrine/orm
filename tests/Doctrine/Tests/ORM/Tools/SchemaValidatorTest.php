@@ -102,7 +102,7 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(
             array(
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
-                "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key1, key2' are missing."
+                "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing."
             ),
             $ce
         );
