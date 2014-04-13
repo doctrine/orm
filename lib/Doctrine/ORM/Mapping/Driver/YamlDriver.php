@@ -207,20 +207,14 @@ class YamlDriver extends FileDriver
                 }
 
                 if (is_string($indexYml['columns'])) {
-                    $columns = explode(',', $indexYml['columns']);
-                    $columns = array_map('trim', $columns);
+                    $index = array('columns' => array_map('trim', explode(',', $indexYml['columns'])));
                 } else {
-                    $columns = $indexYml['columns'];
+                    $index = array('columns' => $indexYml['columns']);
                 }
-                
-                $index = array(
-                  'columns' => $columns  
-                );
 
-                if(isset($indexYml['flags'])) {
+                if (isset($indexYml['flags'])) {
                     if (is_string($indexYml['flags'])) {
-                        $flags = explode(',', $indexYml['flags']);
-                        $index['flags'] = array_map('trim', $flags);
+                        $index['flags'] = array_map('trim', explode(',', $indexYml['flags']));
                     } else {
                         $index['flags'] = $indexYml['flags'];
                     }
