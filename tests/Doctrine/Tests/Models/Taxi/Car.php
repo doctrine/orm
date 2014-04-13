@@ -44,4 +44,9 @@ class Car
     {
         $this->model = $model;
     }
+
+    public function getCarRides()
+    {
+        return $this->carRides;
+    }
 }
