@@ -201,7 +201,7 @@ class XmlDriver extends FileDriver
                   'columns' => $columns  
                 );
                 
-                if( isset($indexXml['flags'])) {
+                if (isset($indexXml['flags'])) {
                     $index['flags'] = explode(',', (string)$indexXml['flags']);
                 }
                 
