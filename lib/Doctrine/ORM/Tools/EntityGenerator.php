@@ -912,6 +912,10 @@ public function __construct()
             $table[] = 'name="' . $metadata->table['name'] . '"';
         }
 
+        if (isset($metadata->table['options']) && $metadata->table['options']) {
+            $table[] = 'options={' . $this->exportTableOptions((array) $metadata->table['options']) . '}';
+        }
+
         if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
             $constraints = $this->generateTableConstraints('UniqueConstraint', $metadata->table['uniqueConstraints']);
             $table[] = 'uniqueConstraints={' . $constraints . '}';
@@ -1557,5 +1561,25 @@ public function __construct()
         }
 
         return static::$generatorStrategyMap[$type];
+    }
+
+    /**
+     * Exports (nested) option elements.
+     *
+     * @param array $options
+     */
+    private function exportTableOptions(array $options)
+    {
+        $optionsStr = array();
+        
+        foreach($options as $name => $option) {
+            if (is_array($option)) {
+                $optionsStr[] = '"' . $name . '"={' . $this->exportTableOptions($option) . '}';
+            } else {
+                $optionsStr[] = '"' . $name . '"="' . (string) $option . '"';
+            }            
+        }
+        
+        return implode(',', $optionsStr);
     }
 }

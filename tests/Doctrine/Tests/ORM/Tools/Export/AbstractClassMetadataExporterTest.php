@@ -155,6 +155,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testTableIsExported($class)
     {
         $this->assertEquals('cms_users', $class->table['name']);
+        $this->assertEquals(array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
+            $class->table['options']);
 
         return $class;
     }

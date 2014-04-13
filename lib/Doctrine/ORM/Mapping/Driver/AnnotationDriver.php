@@ -123,7 +123,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
             }
 
-            if ($tableAnnot->options !== null) {
+            if ($tableAnnot->options) {
                 $primaryTable['options'] = $tableAnnot->options;
             }
 
