@@ -201,21 +201,32 @@ class YamlDriver extends FileDriver
 
         // Evaluate indexes
         if (isset($element['indexes'])) {
-            foreach ($element['indexes'] as $name => $index) {
-                if ( ! isset($index['name'])) {
-                    $index['name'] = $name;
+            foreach ($element['indexes'] as $name => $indexYml) {
+                if ( ! isset($indexYml['name'])) {
+                    $indexYml['name'] = $name;
                 }
 
-                if (is_string($index['columns'])) {
-                    $columns = explode(',', $index['columns']);
+                if (is_string($indexYml['columns'])) {
+                    $columns = explode(',', $indexYml['columns']);
                     $columns = array_map('trim', $columns);
                 } else {
-                    $columns = $index['columns'];
+                    $columns = $indexYml['columns'];
+                }
+                
+                $index = array(
+                  'columns' => $columns  
+                );
+
+                if(isset($indexYml['flags'])) {
+                    if (is_string($indexYml['flags'])) {
+                        $flags = explode(',', $indexYml['flags']);
+                        $index['flags'] = array_map('trim', $flags);
+                    } else {
+                        $index['flags'] = $indexYml['flags'];
+                    }
                 }
 
-                $metadata->table['indexes'][$index['name']] = array(
-                    'columns' => $columns
-                );
+                $metadata->table['indexes'][$indexYml['name']] = $index;
             }
         }
 
