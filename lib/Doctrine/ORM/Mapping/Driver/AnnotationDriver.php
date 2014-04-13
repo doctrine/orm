@@ -105,7 +105,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         'columns' => $indexAnnot->columns,
                     );
                     
-                    if( ! empty($indexAnnot->flags)) {
+                    if ( ! empty($indexAnnot->flags)) {
                         $index['flags'] = $indexAnnot->flags;
                     }
 
