@@ -266,7 +266,13 @@ class ObjectHydrator extends AbstractHydrator
                 throw HydrationException::emptyDiscriminatorValue($dqlAlias);
             }
 
-            $className = $this->ce[$className]->discriminatorMap[$data[$discrColumn]];
+            $discrMap = $this->ce[$className]->discriminatorMap;
+
+            if ( ! isset($discrMap[$data[$discrColumn]])) {
+                throw HydrationException::invalidDiscriminatorValue($data[$discrColumn], array_keys($discrMap));
+            }
+
+            $className = $discrMap[$data[$discrColumn]];
 
             unset($data[$discrColumn]);
         }

@@ -98,7 +98,13 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
             }
 
-            $entityName = $this->class->discriminatorMap[$sqlResult[$discrColumnName]];
+            $discrMap = $this->class->discriminatorMap;
+
+            if ( ! isset($discrMap[$sqlResult[$discrColumnName]])) {
+                throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
+            }
+            
+            $entityName = $discrMap[$sqlResult[$discrColumnName]];
 
             unset($sqlResult[$discrColumnName]);
         }
