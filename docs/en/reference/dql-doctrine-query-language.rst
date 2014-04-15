@@ -434,7 +434,7 @@ Starting with 2.4, the IDENTITY() DQL function also works for composite primary 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1');
+    $query = $em->createQuery("SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1");
 
 Joins between entities without associations were not possible until version
 2.4, where you can generate an arbitrary join with the following syntax:
