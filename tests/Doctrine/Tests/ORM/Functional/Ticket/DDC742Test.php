@@ -79,7 +79,7 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="users")
+ * @Table(name="ddc742_users")
  */
 class DDC742User
 {
@@ -112,7 +112,7 @@ class DDC742User
 
 /**
  * @Entity
- * @Table(name="comments")
+ * @Table(name="ddc742_comments")
  */
 class DDC742Comment
 {
