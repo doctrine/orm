@@ -55,6 +55,7 @@ $metadata->mapOneToOne(array(
    ),
    ),
    'orphanRemoval' => true,
+   'fetch' => ClassMetadataInfo::FETCH_EAGER,
   ));
 $metadata->mapOneToMany(array(
    'fieldName' => 'phonenumbers',
@@ -66,6 +67,7 @@ $metadata->mapOneToMany(array(
    ),
    'mappedBy' => 'user',
    'orphanRemoval' => true,
+   'fetch' => ClassMetadataInfo::FETCH_LAZY,
    'orderBy' =>
    array(
    'number' => 'ASC',
@@ -74,6 +76,7 @@ $metadata->mapOneToMany(array(
 $metadata->mapManyToMany(array(
    'fieldName' => 'groups',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Group',
+   'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
    'cascade' =>
    array(
    0 => 'remove',

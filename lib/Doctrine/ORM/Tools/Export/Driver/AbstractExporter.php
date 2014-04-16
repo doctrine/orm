@@ -201,6 +201,25 @@ abstract class AbstractExporter
     }
 
     /**
+     * @param int $mode
+     *
+     * @return string
+     */
+    protected function _getFetchModeString($mode)
+    {
+        switch ($mode) {
+            case ClassMetadataInfo::FETCH_EAGER:
+                return 'EAGER';
+
+            case ClassMetadataInfo::FETCH_EXTRA_LAZY:
+                return 'EXTRA_LAZY';
+
+            case ClassMetadataInfo::FETCH_LAZY:
+                return 'LAZY';
+        }
+    }
+
+    /**
      * @param int $policy
      *
      * @return string
