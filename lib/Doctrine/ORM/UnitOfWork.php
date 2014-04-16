@@ -2376,10 +2376,11 @@ class UnitOfWork implements PropertyChangedListener
      * Clears the UnitOfWork.
      *
      * @param string|null $entityName if given, only entities of this type will get detached.
+     * @param boolean $noCascade if true and $entityName given, don't cascade detach operation of the specified Entity
      *
      * @return void
      */
-    public function clear($entityName = null)
+    public function clear($entityName = null, $noCascade = true)
     {
         if ($entityName === null) {
             $this->identityMap =
@@ -2406,7 +2407,7 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($this->identityMap as $className => $entities) {
                 if ($className === $entityName) {
                     foreach ($entities as $entity) {
-                        $this->doDetach($entity, $visited, true);
+                        $this->doDetach($entity, $visited, $noCascade);
                     }
                 }
             }
