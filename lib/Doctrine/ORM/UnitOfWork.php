@@ -2426,15 +2426,15 @@ class UnitOfWork implements PropertyChangedListener
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
                     : $data[$fieldName];
             }
-
-            $idHash = implode(' ', $id);
         } else {
-            $idHash = isset($class->associationMappings[$class->identifier[0]])
+            $id = isset($class->associationMappings[$class->identifier[0]])
                 ? $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]
                 : $data[$class->identifier[0]];
 
-            $id = array($class->identifier[0] => $idHash);
+            $id = array($class->identifier[0] => $id);
         }
+        
+        $idHash = implode(' ', $id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
