@@ -39,10 +39,12 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $client->setName('Client1');
 
         $phone = new DDC440Phone;
+        $phone->setId(1);
         $phone->setNumber('418 111-1111');
         $phone->setClient($client);
 
         $phone2 = new DDC440Phone;
+        $phone2->setId(2);
         $phone2->setNumber('418 222-2222');
         $phone2->setClient($client);
 
@@ -56,20 +58,22 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $uw = $this->_em->getUnitOfWork();
         $client = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC440Client', $id);
         $clientPhones = $client->getPhones();
-        $p1 = $clientPhones[0];
-        $p2 = $clientPhones[1];
+        $p = [
+            $clientPhones[0]->getId() => $clientPhones[0],
+            $clientPhones[1]->getId() => $clientPhones[1],
+        ];
 
         // Test the first phone.  The assertion actually failed because original entity data is not set properly.
         // This was because it is also set as MainPhone and that one is created as a proxy, not the
         // original object when the find on Client is called. However loading proxies did not work correctly.
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone', $p1);
-        $originalData = $uw->getOriginalEntityData($p1);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone', $p[1]);
+        $originalData = $uw->getOriginalEntityData($p[1]);
         $this->assertEquals($phone->getNumber(), $originalData['number']);
 
 
         //If you comment out previous test, this one should pass
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone', $p2);
-        $originalData = $uw->getOriginalEntityData($p2);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone', $p[2]);
+        $originalData = $uw->getOriginalEntityData($p[2]);
         $this->assertEquals($phone2->getNumber(), $originalData['number']);
     }
 
