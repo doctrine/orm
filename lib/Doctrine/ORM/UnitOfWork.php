@@ -2403,11 +2403,14 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $visited = array();
+            
             foreach ($this->identityMap as $className => $entities) {
-                if ($className === $entityName) {
-                    foreach ($entities as $entity) {
-                        $this->doDetach($entity, $visited, true);
-                    }
+                if ($className !== $entityName) {
+                    continue;
+                }
+                
+                foreach ($entities as $entity) {
+                    $this->doDetach($entity, $visited, false);
                 }
             }
         }
