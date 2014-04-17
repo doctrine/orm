@@ -166,8 +166,7 @@ use Doctrine\Common\Util\ClassUtils;
         );
 
         if ($config->isSecondLevelCacheEnabled()) {
-            $cacheClass  = $config->getSecondLevelCacheConfiguration()->getCacheClassName();
-            $this->cache = new $cacheClass($this);
+            $this->cache = $config->getSecondLevelCacheConfiguration()->getCacheInstantiator()->getCache($this);
         }
     }
 

@@ -7,6 +7,8 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 
 /**
  * @group DDC-2183
+ *
+ * @covers \Doctrine\ORM\Cache\CacheConfiguration
  */
 class CacheConfigTest extends DoctrineTestCase
 {
@@ -15,6 +17,9 @@ class CacheConfigTest extends DoctrineTestCase
      */
     private $config;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
@@ -22,16 +27,23 @@ class CacheConfigTest extends DoctrineTestCase
         $this->config = new CacheConfiguration();
     }
 
-    public function testSetGetCacheClassName()
+    /**
+     * @covers \Doctrine\ORM\Cache\CacheConfiguration::getCacheInstantiator
+     */
+    public function testGetDefaultCacheIstantiator()
     {
-        $mockClass = get_class($this->getMock('Doctrine\ORM\Cache'));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultCacheInstantiator', $this->config->getCacheInstantiator());
+    }
 
-        $this->assertEquals('Doctrine\ORM\Cache\DefaultCache', $this->config->getCacheClassName());
-        $this->config->setCacheClassName($mockClass);
-        $this->assertEquals($mockClass, $this->config->getCacheClassName());
+    /**
+     * @covers \Doctrine\ORM\Cache\CacheConfiguration::getCacheInstantiator
+     */
+    public function testSetGetCacheIstantiator()
+    {
+        $istantiator = $this->getMock('Doctrine\ORM\Cache\CacheInstantiator');
 
-        $this->setExpectedException('Doctrine\ORM\ORMException');
-        $this->config->setCacheClassName(__CLASS__);
+        $this->config->setCacheInstantiator($istantiator);
+        $this->assertSame($istantiator, $this->config->getCacheInstantiator());
     }
 
     public function testSetGetRegionLifetime()

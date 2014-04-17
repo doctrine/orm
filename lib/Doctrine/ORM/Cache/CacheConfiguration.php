@@ -20,7 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 
 /**
@@ -52,9 +51,9 @@ class CacheConfiguration
     private $queryValidator;
 
     /**
-     * @var string
+     * @var CacheInstantiator|null
      */
-    private $cacheClassName = 'Doctrine\ORM\Cache\DefaultCache';
+    private $cacheInstantiator;
 
     /**
      * @return \Doctrine\ORM\Cache\CacheFactory|null
@@ -131,26 +130,18 @@ class CacheConfiguration
     }
 
     /**
-     * @param string $className
-     *
-     * @throws \Doctrine\ORM\ORMException If is not a \Doctrine\ORM\Cache
+     * @param CacheInstantiator
      */
-    public function setCacheClassName($className)
+    public function setCacheInstantiator(CacheInstantiator $cacheInstantiator)
     {
-        $reflectionClass = new \ReflectionClass($className);
-
-        if ( ! $reflectionClass->implementsInterface('Doctrine\ORM\Cache')) {
-            throw ORMException::invalidSecondLevelCache($className);
-        }
-
-        $this->cacheClassName = $className;
+        $this->cacheInstantiator = $cacheInstantiator;
     }
 
     /**
-     * @return string A \Doctrine\ORM\Cache class name
+     * @return CacheInstantiator
      */
-    public function getCacheClassName()
+    public function getCacheInstantiator()
     {
-        return $this->cacheClassName;
+        return $this->cacheInstantiator ?: $this->cacheInstantiator = new DefaultCacheInstantiator();
     }
 }
