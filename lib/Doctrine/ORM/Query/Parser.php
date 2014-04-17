@@ -3404,7 +3404,8 @@ class Parser
      *   "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
      *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
      *   "LOWER" "(" StringPrimary ")" |
-     *   "UPPER" "(" StringPrimary ")"
+     *   "UPPER" "(" StringPrimary ")" |
+     *   "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
      *
      * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
