@@ -1647,7 +1647,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
-    NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
+    NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | AggregateExpression | FunctionDeclaration | IdentificationVariable | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
     ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
     ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
 

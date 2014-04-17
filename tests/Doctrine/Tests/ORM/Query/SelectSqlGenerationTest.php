@@ -2062,6 +2062,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL',
             'SELECT c0_.name AS name_0 FROM cms_users c0_ HAVING c0_.username IS NULL'
         );
+        
+        $this->assertSqlGeneration(
+            'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING MAX(u.name) IS NULL',
+            'SELECT c0_.name AS name_0 FROM cms_users c0_ HAVING MAX(c0_.name) IS NULL'
+        );
     }
 
     /**
