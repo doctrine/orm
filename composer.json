@@ -16,7 +16,7 @@
         "php": ">=5.3.2",
         "ext-pdo": "*",
         "doctrine/collections": "~1.1",
-        "doctrine/dbal": ">=2.5-dev,<2.6-dev",
+        "doctrine/dbal": "dev-bugfix/nullable-json-array-mapped-to-empty-array",
         "symfony/console": "2.*"
     },
     "require-dev": {
@@ -27,6 +27,12 @@
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/localheinz/dbal.git"
+        }
+    ],
     "autoload": {
         "psr-0": { "Doctrine\\ORM\\": "lib/" }
     },
