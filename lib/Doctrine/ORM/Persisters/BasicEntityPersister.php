@@ -1161,7 +1161,7 @@ class BasicEntityPersister implements EntityPersister
 
             $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
             $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
-            
+
             if ( ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
             }
@@ -1191,6 +1191,10 @@ class BasicEntityPersister implements EntityPersister
 
             $association    = $assoc;
             $joinCondition  = array();
+
+            if (isset($assoc['indexBy'])) {
+                $this->rsm->addIndexBy($assocAlias, $assoc['indexBy']);
+            }
 
             if ( ! $assoc['isOwningSide']) {
                 $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
