@@ -1836,6 +1836,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testOrderByClauseSupportsFunction()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY CONCAT(u.username, u.name) ',
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 FROM cms_users c0_ ORDER BY c0_.username || c0_.name ASC'
+        );
+    }
+
     /**
      * @group DDC-1719
      */

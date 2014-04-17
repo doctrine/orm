@@ -1456,37 +1456,41 @@ class Parser
     /**
      * OrderByItem ::= (
      *      SimpleArithmeticExpression | SingleValuedPathExpression |
-     *      ScalarExpression | ResultVariable
+     *      ScalarExpression | ResultVariable | FunctionDeclaration
      * ) ["ASC" | "DESC"]
      *
      * @return \Doctrine\ORM\Query\AST\OrderByItem
      */
     public function OrderByItem()
     {
-
         $this->lexer->peek(); // lookahead => '.'
         $this->lexer->peek(); // lookahead => token after '.'
+
         $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
+
         $this->lexer->resetPeek();
+
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
+            case ($this->isFunction($peek)):
+                $expr = $this->FunctionDeclaration();
+                break;
 
             case ($this->isMathOperator($peek)):
                 $expr = $this->SimpleArithmeticExpression();
-
                 break;
+
             case ($glimpse['type'] === Lexer::T_DOT):
                 $expr = $this->SingleValuedPathExpression();
-
                 break;
+
             case ($this->lexer->peek() && $this->isMathOperator($this->peekBeyondClosingParenthesis())):
                 $expr = $this->ScalarExpression();
-
                 break;
+
             default:
                 $expr = $this->ResultVariable();
-
                 break;
         }
 

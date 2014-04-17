@@ -1512,7 +1512,7 @@ Items
 .. code-block:: php
 
     UpdateItem  ::= SingleValuedPathExpression "=" NewValue
-    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable) ["ASC" | "DESC"]
+    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable | FunctionDeclaration) ["ASC" | "DESC"]
     GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
     NewValue    ::= SimpleArithmeticExpression | "NULL"
 
