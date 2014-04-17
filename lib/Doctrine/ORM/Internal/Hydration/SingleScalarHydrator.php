@@ -48,7 +48,7 @@ class SingleScalarHydrator extends AbstractHydrator
         }
         
         if (count($data[key($data)]) > 1) {
-            throw new NonUniqueResultException('The row contains multiple columns. Change the query or use a different result function like getScalarResult().');
+            throw new NonUniqueResultException('The query returned a row containing multiple columns. Change the query or use a different result function like getScalarResult().');
         }
 
         $cache  = array();
