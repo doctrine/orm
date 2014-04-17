@@ -51,11 +51,6 @@ class CacheConfiguration
     private $queryValidator;
 
     /**
-     * @var CacheInstantiator|null
-     */
-    private $cacheInstantiator;
-
-    /**
      * @return \Doctrine\ORM\Cache\CacheFactory|null
      */
     public function getCacheFactory()
@@ -127,21 +122,5 @@ class CacheConfiguration
     public function setQueryValidator(QueryCacheValidator $validator)
     {
         $this->queryValidator = $validator;
-    }
-
-    /**
-     * @param CacheInstantiator
-     */
-    public function setCacheInstantiator(CacheInstantiator $cacheInstantiator)
-    {
-        $this->cacheInstantiator = $cacheInstantiator;
-    }
-
-    /**
-     * @return CacheInstantiator
-     */
-    public function getCacheInstantiator()
-    {
-        return $this->cacheInstantiator ?: $this->cacheInstantiator = new DefaultCacheInstantiator();
     }
 }

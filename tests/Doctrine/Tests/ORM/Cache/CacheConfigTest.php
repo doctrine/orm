@@ -27,25 +27,6 @@ class CacheConfigTest extends DoctrineTestCase
         $this->config = new CacheConfiguration();
     }
 
-    /**
-     * @covers \Doctrine\ORM\Cache\CacheConfiguration::getCacheInstantiator
-     */
-    public function testGetDefaultCacheIstantiator()
-    {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\DefaultCacheInstantiator', $this->config->getCacheInstantiator());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Cache\CacheConfiguration::getCacheInstantiator
-     */
-    public function testSetGetCacheIstantiator()
-    {
-        $istantiator = $this->getMock('Doctrine\ORM\Cache\CacheInstantiator');
-
-        $this->config->setCacheInstantiator($istantiator);
-        $this->assertSame($istantiator, $this->config->getCacheInstantiator());
-    }
-
     public function testSetGetRegionLifetime()
     {
         $config = $this->config->getRegionsConfiguration();
