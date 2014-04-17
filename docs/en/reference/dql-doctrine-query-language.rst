@@ -1682,6 +1682,6 @@ Functions
             "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
-            "IDENTITY" "(" SingleValuedAssociationPathExpression ")"
+            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
 
 
