@@ -398,13 +398,15 @@ class XmlExporter extends AbstractExporter
     private function exportTableOptions(\SimpleXMLElement $parentXml, array $options)
     {        
         foreach ($options as $name => $option) {
-            $optionXml = $parentXml->addChild('option');
+            $isArray   = is_array($option);
+            $optionXml = $isArray
+                ? $parentXml->addChild('option')
+                : $parentXml->addChild('option', (string) $option);
+
             $optionXml->addAttribute('name', (string) $name);
-            
-            if (is_array($option)) {
+
+            if ($isArray) {
                 $this->exportTableOptions($optionXml, $option);
-            } else {
-                $optionXml[0] = (string) $option;
             }
         }
     }
