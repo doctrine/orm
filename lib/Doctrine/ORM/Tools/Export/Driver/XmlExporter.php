@@ -269,7 +269,7 @@ class XmlExporter extends AbstractExporter
             if (isset($associationMapping['fetch'])) {
                 $associationMappingXml->addAttribute('fetch', $this->_getFetchModeString($associationMapping['fetch']));
             }
-            
+
             $cascade = array();
             if ($associationMapping['isCascadeRemove']) {
                 $cascade[] = 'cascade-remove';
@@ -396,15 +396,16 @@ class XmlExporter extends AbstractExporter
      * @param array $options
      */
     private function exportTableOptions(\SimpleXMLElement $parentXml, array $options)
-    {        
+    {
         foreach ($options as $name => $option) {
-            $optionXml = $parentXml->addChild('option');
+            $optionXml = is_array($option)
+                ? $parentXml->addChild('option')
+                : $parentXml->addChild('option', (string) $option);
+
             $optionXml->addAttribute('name', (string) $name);
-            
+
             if (is_array($option)) {
                 $this->exportTableOptions($optionXml, $option);
-            } else {
-                $optionXml[0] = (string) $option;
             }
         }
     }
