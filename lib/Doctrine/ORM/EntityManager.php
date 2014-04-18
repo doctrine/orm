@@ -378,16 +378,18 @@ use Doctrine\Common\Util\ClassUtils;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        if (is_object($id) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($id))) {
-            $id = $this->unitOfWork->getSingleIdentifierValue($id);
-
-            if ($id === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-            }
-        }
-
         if ( ! is_array($id)) {
             $id = array($class->identifier[0] => $id);
+        }
+
+        foreach ($id as $i => $value) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($id[$i] === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
+            }
         }
 
         $sortedId = array();
