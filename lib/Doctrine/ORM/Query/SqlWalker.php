@@ -1509,6 +1509,10 @@ class SqlWalker implements TreeWalker
                     $sqlSelectExpressions[] = $e->dispatch($this);
                     break;
 
+                case ($e instanceof AST\Subselect):
+                    $sqlSelectExpressions[] = '(' . $e->dispatch($this) . ') AS ' . $columnAlias;
+                    break;
+
                 default:
                     $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;

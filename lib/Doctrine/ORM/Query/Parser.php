@@ -1819,6 +1819,19 @@ class Parser
      */
     public function NewObjectArg()
     {
+        $lookahead = $this->lexer->lookahead['type'];
+        $peek      = $this->lexer->glimpse();
+
+        switch (true) {
+            case ($lookahead === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT):
+                $this->match(Lexer::T_OPEN_PARENTHESIS);
+                $expression = $this->Subselect();
+                $this->match(Lexer::T_CLOSE_PARENTHESIS);
+                return $expression;
+                break;
+
+        }
+
         return $this->ScalarExpression();
     }
 
