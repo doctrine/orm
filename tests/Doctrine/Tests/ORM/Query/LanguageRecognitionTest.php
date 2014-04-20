@@ -612,6 +612,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDQL("SELECT new " . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', 1, true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
+
+    /**
+     * @group DDC-3075
+     */
+    public function testNewLiteralWithSubselectExpression()
+    {
+        $this->assertValidDQL("SELECT new " . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser su), true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
+    }
 }
 
 /** @Entity */

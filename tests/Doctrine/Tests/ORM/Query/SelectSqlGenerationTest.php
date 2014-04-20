@@ -1707,6 +1707,10 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS sclr_0, c0_.country AS sclr_1, c0_.city AS sclr_2, c1_.name AS sclr_3, c2_.email AS sclr_4 FROM cms_users c1_ INNER JOIN cms_emails c2_ ON c1_.email_id = c2_.id INNER JOIN cms_addresses c0_ ON c1_.id = c0_.user_id ORDER BY c1_.name ASC"
         );
 
+        $this->assertSqlGeneration(
+            "SELECT new Doctrine\Tests\Models\CMS\CmsUserDTO(a.id, (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser su), a.country, a.city), new Doctrine\Tests\Models\CMS\CmsAddressDTO(u.name, e.email) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a ORDER BY u.name",
+            "SELECT c0_.id AS sclr_0, (SELECT 1 AS sclr_2 FROM cms_users c1_) AS sclr_1, c0_.country AS sclr_3, c0_.city AS sclr_4, c2_.name AS sclr_5, c3_.email AS sclr_6 FROM cms_users c2_ INNER JOIN cms_emails c3_ ON c2_.email_id = c3_.id INNER JOIN cms_addresses c0_ ON c2_.id = c0_.user_id ORDER BY c2_.name ASC"
+        );
     }
 
     /**

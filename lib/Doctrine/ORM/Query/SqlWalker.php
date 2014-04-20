@@ -1503,25 +1503,25 @@ class SqlWalker implements TreeWalker
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
             $columnAlias = $this->getSQLColumnAlias('sclr');
+            $fieldType   = 'string';
 
             switch (true) {
                 case ($e instanceof AST\NewObjectExpression):
                     $sqlSelectExpressions[] = $e->dispatch($this);
                     break;
 
-                default:
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                case ($e instanceof AST\Subselect):
+                    $sqlSelectExpressions[] = '(' . $e->dispatch($this) . ') AS ' . $columnAlias;
                     break;
-            }
 
-            $fieldType = 'string';
-            switch (true) {
                 case ($e instanceof AST\PathExpression):
                     $fieldName = $e->field;
                     $dqlAlias  = $e->identificationVariable;
                     $qComp     = $this->queryComponents[$dqlAlias];
                     $class     = $qComp['metadata'];
                     $fieldType = $class->getTypeOfField($fieldName);
+                    
+                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
                 case ($e instanceof AST\Literal):
@@ -1534,6 +1534,12 @@ class SqlWalker implements TreeWalker
                             $fieldType = is_float($e->value) ? 'float' : 'integer';
                             break;
                     }
+
+                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    break;
+
+                default:
+                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
             }
 

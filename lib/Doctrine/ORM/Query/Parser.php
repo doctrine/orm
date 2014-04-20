@@ -1811,14 +1811,23 @@ class Parser
     }
 
     /**
-     * NewObjectArg ::= ScalarExpression
+     * NewObjectArg ::= ScalarExpression | "(" Subselect ")"
      *
-     * @TODO - Maybe you should support other expressions and nested "new" operator
-     *
-     * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
+     * @return mixed
      */
     public function NewObjectArg()
     {
+        $token = $this->lexer->lookahead;
+        $peek  = $this->lexer->glimpse();
+        
+        if ($token['type'] === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT) {
+            $this->match(Lexer::T_OPEN_PARENTHESIS);
+            $expression = $this->Subselect();
+            $this->match(Lexer::T_CLOSE_PARENTHESIS);
+
+            return $expression;
+        }
+        
         return $this->ScalarExpression();
     }
 
