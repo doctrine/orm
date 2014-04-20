@@ -1440,6 +1440,12 @@ Identifiers
     /* identifier that must be a class name (the "User" of "FROM User u") */
     AbstractSchemaName ::= identifier
 
+    /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
+    AliasResultVariable = identifier
+
+    /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
+    ResultVariable = identifier
+
     /* identifier that must be a field (the "name" of "u.name") */
     /* This is responsible to know if the field exists in Object, no matter if it's a relation or a simple field */
     FieldIdentificationVariable ::= identifier
@@ -1450,18 +1456,12 @@ Identifiers
     /* identifier that must be a single-valued association field (to-one) (the "Group" of "u.Group") */
     SingleValuedAssociationField ::= FieldIdentificationVariable
 
-    /* identifier that must be an embedded class state field (for the future) */
+    /* identifier that must be an embedded class state field */
     EmbeddedClassStateField ::= FieldIdentificationVariable
 
     /* identifier that must be a simple state field (name, email, ...) (the "name" of "u.name") */
     /* The difference between this and FieldIdentificationVariable is only semantical, because it points to a single field (not mapping to a relation) */
     SimpleStateField ::= FieldIdentificationVariable
-
-    /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
-    AliasResultVariable = identifier
-
-    /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
-    ResultVariable = identifier
 
 Path Expressions
 ~~~~~~~~~~~~~~~~
@@ -1521,11 +1521,11 @@ From, Join and Index by
 
 .. code-block:: php
 
-    IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
-    SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
-    JoinVariableDeclaration                    ::= Join [IndexBy]
+    IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {Join}*
+    SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
-    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]
+    JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
+    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
     IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
 
 Select Expressions
@@ -1533,10 +1533,12 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
+    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
     SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
+    NewObjectExpression     ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
+    NewObjectArg            ::= ScalarExpression | "(" Subselect ")"
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
