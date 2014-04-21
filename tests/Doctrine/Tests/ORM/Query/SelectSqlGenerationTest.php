@@ -2185,6 +2185,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.name AS name_0 FROM cms_users c0_ HAVING name_0 LIKE '3'"
         );
     }
+    
+    /**
+     * @group DDC-3085
+     */
+    public function testHavingSupportResultVariableNullComparisonExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a WITH a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5",
+            "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, SUM(c1_.id) AS sclr_4 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON (c1_.user_id = c0_.id) GROUP BY c0_.id, c0_.status, c0_.username, c0_.name, c0_.email_id HAVING sclr_4 IS NOT NULL AND sclr_4 >= 5"
+        );
+    }
 
     /**
      * @group DDC-1858

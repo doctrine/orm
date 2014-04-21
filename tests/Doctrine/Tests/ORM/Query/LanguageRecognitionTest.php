@@ -596,6 +596,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL");
     }
+    
+    /**
+     * @group DDC-3085
+     */
+    public function testHavingSupportResultVariableInNullComparisonExpression()
+    {
+        $this->assertValidDQL("SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a WITH a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5");
+    }
 
     /**
      * @group DDC-1858
