@@ -55,6 +55,11 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * @var array
      */
+    private $_identifiersGroups = array();
+
+    /**
+     * @var array
+     */
     private $_resultPointers = array();
 
     /**
@@ -72,14 +77,14 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        $this->_isSimpleQuery  = count($this->_rsm->aliasMap) <= 1;
-        $this->_identifierMap  = array();
-        $this->_resultPointers = array();
-        $this->_idTemplate     = array();
-        $this->_resultCounter  = 0;
+        $this->_isSimpleQuery     = count($this->_rsm->aliasMap) <= 1;
+        $this->_identifierMap     = array();
+        $this->_identifiersGroups = array();
+        $this->_resultPointers    = array();
+        $this->_idTemplate        = array();
+        $this->_resultCounter     = 0;
 
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
-            $this->_identifierMap[$dqlAlias]  = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias]     = '';
         }
@@ -150,8 +155,9 @@ class ArrayHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                $relation = $this->getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
+                $identifiersGroup = $this->getIdentifiersGroup($baseElement);
+                $relationAlias    = $this->_rsm->relationMap[$dqlAlias];
+                $relation         = $this->getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
@@ -162,8 +168,8 @@ class ArrayHydrator extends AbstractHydrator
                             $baseElement[$relationAlias] = array();
                         }
 
-                        $indexExists  = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
-                        $index        = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
+                        $indexExists  = isset($this->_identifierMap[$identifiersGroup][$path][$id[$parent]][$id[$dqlAlias]]);
+                        $index        = $indexExists ? $this->_identifierMap[$identifiersGroup][$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
 
                         if ( ! $indexExists || ! $indexIsValid) {
@@ -177,7 +183,7 @@ class ArrayHydrator extends AbstractHydrator
 
                             end($baseElement[$relationAlias]);
 
-                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
+                            $this->_identifierMap[$identifiersGroup][$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
                         }
                     } else if ( ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = array();
@@ -204,7 +210,8 @@ class ArrayHydrator extends AbstractHydrator
                 // It's a root result element
 
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root
-                $entityKey = $this->_rsm->entityMappings[$dqlAlias] ?: 0;
+                $entityKey                     = $this->_rsm->entityMappings[$dqlAlias] ?: 0;
+                $identifiersGroup              = $this->getIdentifiersGroup($result);
 
                 // if this row has a NULL value for the root result id then make it a null result.
                 if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
@@ -219,7 +226,7 @@ class ArrayHydrator extends AbstractHydrator
                 }
 
                 // Check for an existing element
-                if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
+                if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$identifiersGroup][$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->_rsm->isMixed
                         ? array($entityKey => $rowData[$dqlAlias])
                         : $rowData[$dqlAlias];
@@ -234,9 +241,9 @@ class ArrayHydrator extends AbstractHydrator
                         ++$this->_resultCounter;
                     }
 
-                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
+                    $this->_identifierMap[$identifiersGroup][$dqlAlias][$id[$dqlAlias]] = $resultKey;
                 } else {
-                    $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    $index = $this->_identifierMap[$identifiersGroup][$dqlAlias][$id[$dqlAlias]];
                     $resultKey = $index;
 
                     /*if ($this->_rsm->isMixed) {
@@ -262,6 +269,30 @@ class ArrayHydrator extends AbstractHydrator
                 $result[$resultKey][$name] = $value;
             }
         }
+    }
+
+    /**
+     * Returns number of the group in which given baseElement's childrens identifiers are mapped.
+     *
+     * @param string $baseElement
+     *
+     * @return integer
+     */
+    private function getIdentifiersGroup(& $baseElement)
+    {
+        $index = 0;
+
+        foreach ($this->_identifiersGroups as & $identifierMap) {
+            if ($identifierMap === $baseElement) {
+                return $index;
+            }
+
+            $index += 1;
+        }
+
+        $this->_identifiersGroups[] = & $baseElement;
+
+        return $index;
     }
 
     /**
