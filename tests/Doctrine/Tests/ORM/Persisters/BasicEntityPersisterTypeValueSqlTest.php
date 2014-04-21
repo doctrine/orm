@@ -11,9 +11,19 @@ use Doctrine\Common\Collections\Expr\Comparison;
 
 class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 {
+    /**
+     * @var BasicEntityPersister
+     */
     protected $_persister;
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     protected $_em;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
@@ -107,5 +117,26 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('test', null, array(), Comparison::NEQ);
         $this->assertEquals('test IS NOT NULL', $statement);
+    }
+
+    /**
+     * @group DDC-3056
+     */
+    public function testSelectConditionStatementWithMultipleValuesContainingNull()
+    {
+        $this->assertEquals(
+            '(t0.id IN (?) OR t0.id IS NULL)',
+            $this->_persister->getSelectConditionStatementSQL('id', array(null))
+        );
+
+        $this->assertEquals(
+            '(t0.id IN (?) OR t0.id IS NULL)',
+            $this->_persister->getSelectConditionStatementSQL('id', array(null, 123))
+        );
+
+        $this->assertEquals(
+            '(t0.id IN (?) OR t0.id IS NULL)',
+            $this->_persister->getSelectConditionStatementSQL('id', array(123, null))
+        );
     }
 }
