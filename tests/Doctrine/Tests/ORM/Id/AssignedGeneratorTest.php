@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\Id\AssignedGenerator;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * AssignedGeneratorTest
  *

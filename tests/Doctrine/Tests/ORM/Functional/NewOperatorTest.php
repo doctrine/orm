@@ -7,8 +7,6 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-1574
  */

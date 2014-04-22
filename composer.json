@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "symfony/yaml": "~2.1",
-        "phpunit/phpunit": "~3.7",
+        "phpunit/phpunit": "~4.0",
         "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {

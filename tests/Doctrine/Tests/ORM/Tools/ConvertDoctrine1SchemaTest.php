@@ -31,8 +31,6 @@ use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Test case for converting a Doctrine 1 style schema to Doctrine 2 mapping files
  *

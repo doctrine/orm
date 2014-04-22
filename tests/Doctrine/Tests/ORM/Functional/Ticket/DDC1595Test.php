@@ -37,14 +37,14 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // DDC-1596
         $this->assertSQLEquals(
-            "SELECT t0.id AS id1, t0.type FROM base t0 WHERE t0.id = ? AND t0.type IN ('Entity1')",
+            "SELECT t0.id AS id_1, t0.type FROM base t0 WHERE t0.id = ? AND t0.type IN ('Entity1')",
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
 
         $entities = $entity1->getEntities()->getValues();
 
         $this->assertEquals(
-            "SELECT t0.id AS id1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
+            "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
 

@@ -17,8 +17,6 @@ use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * NativeQueryTest
  *

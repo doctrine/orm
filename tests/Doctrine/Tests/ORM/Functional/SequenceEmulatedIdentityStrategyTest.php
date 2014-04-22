@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Schema\Sequence;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SequenceEmulatedIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     /**

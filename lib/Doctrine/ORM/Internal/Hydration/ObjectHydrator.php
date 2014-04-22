@@ -266,7 +266,13 @@ class ObjectHydrator extends AbstractHydrator
                 throw HydrationException::emptyDiscriminatorValue($dqlAlias);
             }
 
-            $className = $this->ce[$className]->discriminatorMap[$data[$discrColumn]];
+            $discrMap = $this->ce[$className]->discriminatorMap;
+
+            if ( ! isset($discrMap[$data[$discrColumn]])) {
+                throw HydrationException::invalidDiscriminatorValue($data[$discrColumn], array_keys($discrMap));
+            }
+
+            $className = $discrMap[$data[$discrColumn]];
 
             unset($data[$discrColumn]);
         }
@@ -398,6 +404,11 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
+                $parentClass    = $this->ce[$this->_rsm->aliasMap[$parentAlias]];
+                $relationField  = $this->_rsm->relationMap[$dqlAlias];
+                $relation       = $parentClass->associationMappings[$relationField];
+                $reflField      = $parentClass->reflFields[$relationField];
+                
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->_rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
                     $first = reset($this->resultPointers);
@@ -405,20 +416,28 @@ class ObjectHydrator extends AbstractHydrator
                 } else if (isset($this->resultPointers[$parentAlias])) {
                     $parentObject = $this->resultPointers[$parentAlias];
                 } else {
-                    // Parent object of relation not found, so skip it.
+                    // Parent object of relation not found, mark as not-fetched again
+                    $element = $this->getEntity($data, $dqlAlias);
+                    
+                    // Update result pointer and provide initial fetch data for parent
+                    $this->resultPointers[$dqlAlias] = $element;
+                    $rowData[$parentAlias][$relationField] = $element;
+                    
+                    // Mark as not-fetched again
+                    unset($this->_hints['fetched'][$parentAlias][$relationField]);
+                    
+                    ////unset($rowData[$dqlAlias]);
+                    //$rowData[$dqlAlias] = $data;
                     continue;
                 }
 
-                $parentClass    = $this->ce[$this->_rsm->aliasMap[$parentAlias]];
-                $oid            = spl_object_hash($parentObject);
-                $relationField  = $this->_rsm->relationMap[$dqlAlias];
-                $relation       = $parentClass->associationMappings[$relationField];
-                $reflField      = $parentClass->reflFields[$relationField];
+                $oid = spl_object_hash($parentObject);
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
-                    $reflFieldValue = $reflField->getValue($parentObject);
                     // PATH A: Collection-valued association
+                    $reflFieldValue = $reflField->getValue($parentObject);
+                    
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $collKey = $oid . $relationField;
                         if (isset($this->initializedCollections[$collKey])) {
@@ -467,6 +486,7 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
+                    
                     if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an unitialized proxy.
@@ -525,7 +545,7 @@ class ObjectHydrator extends AbstractHydrator
 
                 // check for existing result from the iterations before
                 if ( ! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
-                    $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
+                    $element = $this->getEntity($data, $dqlAlias);
 
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);
@@ -560,10 +580,6 @@ class ObjectHydrator extends AbstractHydrator
                     $index = $this->identifierMap[$dqlAlias][$id[$dqlAlias]];
                     $this->resultPointers[$dqlAlias] = $result[$index];
                     $resultKey = $index;
-                    /*if ($this->_rsm->isMixed) {
-                        $result[] = $result[$index];
-                        ++$this->_resultCounter;
-                    }*/
                 }
             }
         }

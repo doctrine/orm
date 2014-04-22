@@ -5,7 +5,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
-require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * @group DDC-1040

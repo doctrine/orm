@@ -1159,7 +1159,10 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            if ( ! (($assoc['type'] & ClassMetadata::TO_ONE) && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide']))) {
+            $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
+            $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
+
+            if ( ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
             }
 
@@ -1188,6 +1191,10 @@ class BasicEntityPersister implements EntityPersister
 
             $association    = $assoc;
             $joinCondition  = array();
+
+            if (isset($assoc['indexBy'])) {
+                $this->rsm->addIndexBy($assocAlias, $assoc['indexBy']);
+            }
 
             if ( ! $assoc['isOwningSide']) {
                 $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -1534,7 +1541,13 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (is_array($value)) {
-            return sprintf('%s IN (%s)' , $condition, $placeholder);
+            $in = sprintf('%s IN (%s)' , $condition, $placeholder);
+
+            if (false !== array_search(null, $value, true)) {
+                return sprintf('(%s OR %s IS NULL)' , $in, $condition);
+            }
+
+            return $in;
         }
 
         if ($value === null) {

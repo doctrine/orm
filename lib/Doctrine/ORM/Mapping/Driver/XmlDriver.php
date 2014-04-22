@@ -194,17 +194,17 @@ class XmlDriver extends FileDriver
         // Evaluate <indexes...>
         if (isset($xmlRoot->indexes)) {
             $metadata->table['indexes'] = array();
-            foreach ($xmlRoot->indexes->index as $index) {
-                $columns = explode(',', (string)$index['columns']);
-
-                if (isset($index['name'])) {
-                    $metadata->table['indexes'][(string)$index['name']] = array(
-                        'columns' => $columns
-                    );
+            foreach ($xmlRoot->indexes->index as $indexXml) {
+                $index = array('columns' => explode(',', (string) $indexXml['columns']));
+                
+                if (isset($indexXml['flags'])) {
+                    $index['flags'] = explode(',', (string) $indexXml['flags']);
+                }
+                
+                if (isset($indexXml['name'])) {
+                    $metadata->table['indexes'][(string) $indexXml['name']] = $index;
                 } else {
-                    $metadata->table['indexes'][] = array(
-                        'columns' => $columns
-                    );
+                    $metadata->table['indexes'][] = $index;
                 }
             }
         }

@@ -6,8 +6,6 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
 {
     /**

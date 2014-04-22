@@ -10,8 +10,6 @@ use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\LockMode;
 use DateTime;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

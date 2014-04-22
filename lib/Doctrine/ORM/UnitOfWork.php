@@ -1842,7 +1842,7 @@ class UnitOfWork implements PropertyChangedListener
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
                     if ( ! $class->isIdentifierNatural()) {
-                        throw new EntityNotFoundException;
+                        throw new EntityNotFoundException($class->getName());
                     }
 
                     $managedCopy = $this->newInstance($class);
@@ -2403,11 +2403,14 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $visited = array();
+            
             foreach ($this->identityMap as $className => $entities) {
-                if ($className === $entityName) {
-                    foreach ($entities as $entity) {
-                        $this->doDetach($entity, $visited, true);
-                    }
+                if ($className !== $entityName) {
+                    continue;
+                }
+                
+                foreach ($entities as $entity) {
+                    $this->doDetach($entity, $visited, false);
                 }
             }
         }
@@ -2510,15 +2513,15 @@ class UnitOfWork implements PropertyChangedListener
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
                     : $data[$fieldName];
             }
-
-            $idHash = implode(' ', $id);
         } else {
-            $idHash = isset($class->associationMappings[$class->identifier[0]])
+            $id = isset($class->associationMappings[$class->identifier[0]])
                 ? $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]
                 : $data[$class->identifier[0]];
 
-            $id = array($class->identifier[0] => $idHash);
+            $id = array($class->identifier[0] => $id);
         }
+        
+        $idHash = implode(' ', $id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];

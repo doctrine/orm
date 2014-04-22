@@ -11,8 +11,6 @@ use Doctrine\ORM\Query;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class ObjectHydratorTest extends HydrationTestCase
 {
     public function provideDataForUserEntityResult()
@@ -1926,6 +1924,36 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator->hydrateAll($stmt, $rsm);
+    }
+
+    /**
+     * @group DDC-3076
+     *
+     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
+     * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
+     */
+    public function testInvalidDiscriminatorValueException()
+    {
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
+
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'p__name', 'name');
+        $rsm->addMetaResult('p', 'discr', 'discr');
+        $rsm->setDiscriminatorColumn('p', 'discr');
+
+        $resultSet = array(
+              array(
+                  'p__id'   => '1',
+                  'p__name' => 'Fabio B. Silva',
+                  'discr'   => 'subworker'
+              ),
+         );
+
+        $stmt       = new HydratorMockStatement($resultSet);
+        $hydrator   = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
         $hydrator->hydrateAll($stmt, $rsm);
     }
 }
