@@ -120,6 +120,17 @@ class ArrayHydrator extends AbstractHydrator
                 ++$this->_resultCounter;
             }
         }
+        
+        // Extract "new" object constructor arguments. They're appended at the end.
+        if (isset($rowData['newObjects'])) {
+            $newObjects = $rowData['newObjects'];
+
+            unset($rowData['newObjects']);
+
+            if (empty($rowData)) {
+                ++$this->_resultCounter;
+            }
+        }
 
         // 2) Now hydrate the data found in the current row.
         foreach ($rowData as $dqlAlias => $data) {
@@ -260,6 +271,29 @@ class ArrayHydrator extends AbstractHydrator
 
             foreach ($scalars as $name => $value) {
                 $result[$resultKey][$name] = $value;
+            }
+        }
+        
+        // Append new object to mixed result sets
+        if (isset($newObjects)) {
+            if ( ! isset($resultKey) ) {
+                $resultKey = $this->_resultCounter - 1;
+            }
+
+            $count = count($newObjects);
+
+            foreach ($newObjects as $objIndex => $newObject) {
+                $class  = $newObject['class'];
+                $args   = $newObject['args'];
+                $obj    = $class->newInstanceArgs($args);
+
+                if ($count === 1) {
+                    $result[$resultKey] = $obj;
+
+                    continue;
+                }
+
+                $result[$resultKey][$objIndex] = $obj;
             }
         }
     }
