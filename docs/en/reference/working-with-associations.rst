@@ -702,6 +702,7 @@ methods:
 * ``isNull($field)``
 * ``in($field, array $values)``
 * ``notIn($field, array $values)``
+* ``contains($field, $value)``
 
 
 .. note::
