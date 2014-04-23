@@ -168,6 +168,18 @@ abstract class AbstractHydrator
     }
 
     /**
+     * When executed in a hydrate() loop we have to clear internal state to
+     * decrease memory consumption.
+     *
+     * @param mixed $eventArgs
+     *
+     * @return void
+     */
+    public function onClear($eventArgs)
+    {
+    }
+
+    /**
      * Executes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
      *
@@ -251,6 +263,19 @@ abstract class AbstractHydrator
                         $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                         $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
                         break;
+                    
+                    case (isset($this->_rsm->newObjectMappings[$key])):
+                        // WARNING: A NEW object is also a scalar, so it must be declared before!
+                        $mapping = $this->_rsm->newObjectMappings[$key];
+
+                        $cache[$key]['isScalar']             = true;
+                        $cache[$key]['isNewObjectParameter'] = true;
+                        $cache[$key]['fieldName']            = $this->_rsm->scalarMappings[$key];
+                        $cache[$key]['type']                 = Type::getType($this->_rsm->typeMappings[$key]);
+                        $cache[$key]['argIndex']             = $mapping['argIndex'];
+                        $cache[$key]['objIndex']             = $mapping['objIndex'];
+                        $cache[$key]['class']                = new \ReflectionClass($mapping['className']);
+                        break;
 
                     case (isset($this->_rsm->scalarMappings[$key])):
                         $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
@@ -274,63 +299,69 @@ abstract class AbstractHydrator
                         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
                         continue 2;
                 }
-
-                if (isset($this->_rsm->newObjectMappings[$key])) {
-                    $mapping = $this->_rsm->newObjectMappings[$key];
-
-                    $cache[$key]['isNewObjectParameter'] = true;
-                    $cache[$key]['argIndex']             = $mapping['argIndex'];
-                    $cache[$key]['objIndex']             = $mapping['objIndex'];
-                    $cache[$key]['class']                = new \ReflectionClass($mapping['className']);
-                }
             }
+            
+            switch (true) {
+                case (isset($cache[$key]['isNewObjectParameter'])):
+                    $fieldName = $cache[$key]['fieldName'];
+                    $argIndex  = $cache[$key]['argIndex'];
+                    $objIndex  = $cache[$key]['objIndex'];
+                    $type      = $cache[$key]['type'];
+                    $value     = $type->convertToPHPValue($value, $this->_platform);
 
-            if (isset($cache[$key]['isNewObjectParameter'])) {
-                $class    = $cache[$key]['class'];
-                $argIndex = $cache[$key]['argIndex'];
-                $objIndex = $cache[$key]['objIndex'];
-                $value    = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
+                    $rowData['newObjects'][$objIndex]['class']           = $cache[$key]['class'];
+                    $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
+                    
+                    $rowData['scalars'][$fieldName] = $value;
+                    break;
+                
+                case (isset($cache[$key]['isScalar'])):
+                    $value = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
 
-                $rowData['newObjects'][$objIndex]['class']           = $class;
-                $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
-            }
-
-            if (isset($cache[$key]['isScalar'])) {
-                $value = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
-
-                $rowData['scalars'][$cache[$key]['fieldName']] = $value;
-
-                continue;
-            }
-
-            $dqlAlias = $cache[$key]['dqlAlias'];
-
-            if ($cache[$key]['isIdentifier']) {
-                $id[$dqlAlias] .= '|' . $value;
-            }
-
-            if (isset($cache[$key]['isMetaColumn'])) {
-                if ( ! isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) && $value !== null) {
-                    $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
+                    $rowData['scalars'][$cache[$key]['fieldName']] = $value;
+                    break;
+                
+                case (isset($cache[$key]['isMetaColumn'])):
+                    $dqlAlias  = $cache[$key]['dqlAlias'];
+                    $fieldName = $cache[$key]['fieldName'];
+                    
+                    // Avoid double setting or null assignment
+                    if (isset($rowData[$dqlAlias][$fieldName]) || $value === null) {
+                        break;
+                    }
+                    
                     if ($cache[$key]['isIdentifier']) {
+                        $id[$dqlAlias] .= '|' . $value;
                         $nonemptyComponents[$dqlAlias] = true;
                     }
-                }
+                    
+                    $rowData[$dqlAlias][$fieldName] = $value;
+                    break;
+                    
+                default:
+                    $dqlAlias  = $cache[$key]['dqlAlias'];
+                    $fieldName = $cache[$key]['fieldName'];
+                    $type      = $cache[$key]['type'];
+                    
+                    // in an inheritance hierarchy the same field could be defined several times.
+                    // We overwrite this value so long we don't have a non-null value, that value we keep.
+                    // Per definition it cannot be that a field is defined several times and has several values.
+                    if (isset($rowData[$dqlAlias][$fieldName]) && $value === null) {
+                        break;
+                    }
 
-                continue;
-            }
-
-            // in an inheritance hierarchy the same field could be defined several times.
-            // We overwrite this value so long we don't have a non-null value, that value we keep.
-            // Per definition it cannot be that a field is defined several times and has several values.
-            if (isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) && $value === null) {
-                continue;
-            }
-
-            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
-
-            if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
-                $nonemptyComponents[$dqlAlias] = true;
+                    if ($cache[$key]['isIdentifier']) {
+                        $id[$dqlAlias] .= '|' . $value;
+                    }
+                    
+                    $value = $type->convertToPHPValue($value, $this->_platform);
+                    
+                    if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
+                        $nonemptyComponents[$dqlAlias] = true;
+                    }
+                    
+                    $rowData[$dqlAlias][$fieldName] = $value;
+                    break;
             }
         }
 
@@ -423,33 +454,21 @@ abstract class AbstractHydrator
     {
         if ($class->isIdentifierComposite) {
             $id = array();
+            
             foreach ($class->identifier as $fieldName) {
-                if (isset($class->associationMappings[$fieldName])) {
-                    $id[$fieldName] = $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']];
-                } else {
-                    $id[$fieldName] = $data[$fieldName];
-                }
+                $id[$fieldName] = isset($class->associationMappings[$fieldName])
+                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
+                    : $data[$fieldName];
             }
         } else {
-            if (isset($class->associationMappings[$class->identifier[0]])) {
-                $id = array($class->identifier[0] => $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]);
-            } else {
-                $id = array($class->identifier[0] => $data[$class->identifier[0]]);
-            }
+            $identifier = $class->identifier[0];
+            $id         = array(
+                $identifier => isset($class->associationMappings[$identifier])
+                    ? $data[$class->associationMappings[$identifier]['joinColumns'][0]['name']]
+                    : $data[$identifier]
+            );
         }
 
         $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
-    }
-
-    /**
-     * When executed in a hydrate() loop we have to clear internal state to
-     * decrease memory consumption.
-     *
-     * @param mixed $eventArgs
-     *
-     * @return void
-     */
-    public function onClear($eventArgs)
-    {
     }
 }
