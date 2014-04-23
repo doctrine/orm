@@ -250,87 +250,42 @@ abstract class AbstractHydrator
         $rowData = array();
 
         foreach ($data as $key => $value) {
-            // Parse each column name only once. Cache the results.
-            if ( ! isset($cache[$key])) {
-                switch (true) {
-                    // NOTE: Most of the times it's a field mapping, so keep it first!!!
-                    case (isset($this->_rsm->fieldMappings[$key])):
-                        $fieldName     = $this->_rsm->fieldMappings[$key];
-                        $classMetadata = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$key]);
+            $cacheKeyInfo = $this->getColumnCacheInfo($key, $cache);
 
-                        $cache[$key]['fieldName']    = $fieldName;
-                        $cache[$key]['type']         = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
-                        $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
-                        $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
-                        break;
-
-                    case (isset($this->_rsm->newObjectMappings[$key])):
-                        // WARNING: A NEW object is also a scalar, so it must be declared before!
-                        $mapping = $this->_rsm->newObjectMappings[$key];
-
-                        $cache[$key]['isScalar']             = true;
-                        $cache[$key]['isNewObjectParameter'] = true;
-                        $cache[$key]['fieldName']            = $this->_rsm->scalarMappings[$key];
-                        $cache[$key]['type']                 = Type::getType($this->_rsm->typeMappings[$key]);
-                        $cache[$key]['argIndex']             = $mapping['argIndex'];
-                        $cache[$key]['objIndex']             = $mapping['objIndex'];
-                        $cache[$key]['class']                = new \ReflectionClass($mapping['className']);
-                        break;
-
-                    case (isset($this->_rsm->scalarMappings[$key])):
-                        $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
-                        $cache[$key]['type']      = Type::getType($this->_rsm->typeMappings[$key]);
-                        $cache[$key]['isScalar']  = true;
-                        break;
-
-                    case (isset($this->_rsm->metaMappings[$key])):
-                        // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
-                        $fieldName     = $this->_rsm->metaMappings[$key];
-                        $classMetadata = $this->_em->getClassMetadata($this->_rsm->aliasMap[$this->_rsm->columnOwnerMap[$key]]);
-
-                        $cache[$key]['isMetaColumn'] = true;
-                        $cache[$key]['fieldName']    = $fieldName;
-                        $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
-                        $cache[$key]['isIdentifier'] = isset($this->_rsm->isIdentifierColumn[$cache[$key]['dqlAlias']][$key]);
-                        break;
-
-                    default:
-                        // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
-                        // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
-                        continue 2;
-                }
+            if ( ! $cacheKeyInfo) {
+                continue;
             }
 
             switch (true) {
-                case (isset($cache[$key]['isNewObjectParameter'])):
-                    $fieldName = $cache[$key]['fieldName'];
-                    $argIndex  = $cache[$key]['argIndex'];
-                    $objIndex  = $cache[$key]['objIndex'];
-                    $type      = $cache[$key]['type'];
+                case (isset($cacheKeyInfo['isNewObjectParameter'])):
+                    $fieldName = $cacheKeyInfo['fieldName'];
+                    $argIndex  = $cacheKeyInfo['argIndex'];
+                    $objIndex  = $cacheKeyInfo['objIndex'];
+                    $type      = $cacheKeyInfo['type'];
                     $value     = $type->convertToPHPValue($value, $this->_platform);
 
-                    $rowData['newObjects'][$objIndex]['class']           = $cache[$key]['class'];
+                    $rowData['newObjects'][$objIndex]['class']           = $cacheKeyInfo['class'];
                     $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
 
                     $rowData['scalars'][$fieldName] = $value;
                     break;
 
-                case (isset($cache[$key]['isScalar'])):
-                    $value = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
+                case (isset($cacheKeyInfo['isScalar'])):
+                    $value = $cacheKeyInfo['type']->convertToPHPValue($value, $this->_platform);
 
-                    $rowData['scalars'][$cache[$key]['fieldName']] = $value;
+                    $rowData['scalars'][$cacheKeyInfo['fieldName']] = $value;
                     break;
 
-                case (isset($cache[$key]['isMetaColumn'])):
-                    $dqlAlias  = $cache[$key]['dqlAlias'];
-                    $fieldName = $cache[$key]['fieldName'];
+                case (isset($cacheKeyInfo['isMetaColumn'])):
+                    $dqlAlias  = $cacheKeyInfo['dqlAlias'];
+                    $fieldName = $cacheKeyInfo['fieldName'];
 
                     // Avoid double setting or null assignment
                     if (isset($rowData[$dqlAlias][$fieldName]) || $value === null) {
                         break;
                     }
 
-                    if ($cache[$key]['isIdentifier']) {
+                    if ($cacheKeyInfo['isIdentifier']) {
                         $id[$dqlAlias] .= '|' . $value;
                         $nonemptyComponents[$dqlAlias] = true;
                     }
@@ -339,9 +294,9 @@ abstract class AbstractHydrator
                     break;
 
                 default:
-                    $dqlAlias  = $cache[$key]['dqlAlias'];
-                    $fieldName = $cache[$key]['fieldName'];
-                    $type      = $cache[$key]['type'];
+                    $dqlAlias  = $cacheKeyInfo['dqlAlias'];
+                    $fieldName = $cacheKeyInfo['fieldName'];
+                    $type      = $cacheKeyInfo['type'];
 
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
@@ -350,7 +305,7 @@ abstract class AbstractHydrator
                         break;
                     }
 
-                    if ($cache[$key]['isIdentifier']) {
+                    if ($cacheKeyInfo['isIdentifier']) {
                         $id[$dqlAlias] .= '|' . $value;
                     }
 
@@ -386,37 +341,10 @@ abstract class AbstractHydrator
         $rowData = array();
 
         foreach ($data as $key => $value) {
-            // Parse each column name only once. Cache the results.
-            if ( ! isset($cache[$key])) {
-                switch (true) {
-                    // NOTE: During scalar hydration, most of the times it's a scalar mapping, keep it first!!!
-                    case (isset($this->_rsm->scalarMappings[$key])):
-                        $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
-                        $cache[$key]['type']      = Type::getType($this->_rsm->typeMappings[$key]);
-                        $cache[$key]['isScalar']  = true;
-                        break;
+            $cacheKeyInfo = $this->getColumnCacheInfo($key, $cache);
 
-                    case (isset($this->_rsm->fieldMappings[$key])):
-                        $fieldName     = $this->_rsm->fieldMappings[$key];
-                        $classMetadata = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$key]);
-
-                        $cache[$key]['fieldName'] = $fieldName;
-                        $cache[$key]['type']      = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
-                        $cache[$key]['dqlAlias']  = $this->_rsm->columnOwnerMap[$key];
-                        break;
-
-                    case (isset($this->_rsm->metaMappings[$key])):
-                        // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
-                        $cache[$key]['isMetaColumn'] = true;
-                        $cache[$key]['fieldName']    = $this->_rsm->metaMappings[$key];
-                        $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
-                        break;
-
-                    default:
-                        // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
-                        // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
-                        continue 2;
-                }
+            if ( ! $cacheKeyInfo) {
+                continue;
             }
 
             $fieldName = $cache[$key]['fieldName'];
@@ -448,6 +376,72 @@ abstract class AbstractHydrator
         }
 
         return $rowData;
+    }
+
+    /**
+     * Retrieve column information from cache.
+     *
+     * @param string  $key   Column name
+     * @param array  &$cache Cache for column to field result information.
+     *
+     * @return array|null
+     */
+    protected function getColumnCacheInfo($key, &$cache)
+    {
+        if (isset($cache[$key])) {
+            return $cache[$key];
+        }
+
+        switch (true) {
+            // NOTE: Most of the times it's a field mapping, so keep it first!!!
+            case (isset($this->_rsm->fieldMappings[$key])):
+                $fieldName     = $this->_rsm->fieldMappings[$key];
+                $classMetadata = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$key]);
+
+                $cache[$key]['fieldName']    = $fieldName;
+                $cache[$key]['type']         = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
+                $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
+                $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
+
+                return $cache[$key];
+
+            case (isset($this->_rsm->newObjectMappings[$key])):
+                // WARNING: A NEW object is also a scalar, so it must be declared before!
+                $mapping = $this->_rsm->newObjectMappings[$key];
+
+                $cache[$key]['isScalar']             = true;
+                $cache[$key]['isNewObjectParameter'] = true;
+                $cache[$key]['fieldName']            = $this->_rsm->scalarMappings[$key];
+                $cache[$key]['type']                 = Type::getType($this->_rsm->typeMappings[$key]);
+                $cache[$key]['argIndex']             = $mapping['argIndex'];
+                $cache[$key]['objIndex']             = $mapping['objIndex'];
+                $cache[$key]['class']                = new \ReflectionClass($mapping['className']);
+
+                return $cache[$key];
+
+            case (isset($this->_rsm->scalarMappings[$key])):
+                $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
+                $cache[$key]['type']      = Type::getType($this->_rsm->typeMappings[$key]);
+                $cache[$key]['isScalar']  = true;
+
+                return $cache[$key];
+
+            case (isset($this->_rsm->metaMappings[$key])):
+                // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
+                $fieldName     = $this->_rsm->metaMappings[$key];
+                $classMetadata = $this->_em->getClassMetadata($this->_rsm->aliasMap[$this->_rsm->columnOwnerMap[$key]]);
+
+                $cache[$key]['isMetaColumn'] = true;
+                $cache[$key]['fieldName']    = $fieldName;
+                $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
+                $cache[$key]['isIdentifier'] = isset($this->_rsm->isIdentifierColumn[$cache[$key]['dqlAlias']][$key]);
+
+                return $cache[$key];
+        }
+
+        // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
+        // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
+        return null;
     }
 
     /**
