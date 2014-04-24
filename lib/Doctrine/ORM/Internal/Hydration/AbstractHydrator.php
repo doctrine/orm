@@ -347,28 +347,28 @@ abstract class AbstractHydrator
                 continue;
             }
 
-            $fieldName = $cache[$key]['fieldName'];
+            $fieldName = $cacheKeyInfo['fieldName'];
 
             switch (true) {
-                case (isset($cache[$key]['isScalar'])):
+                case (isset($cacheKeyInfo['isScalar'])):
                     // WARNING: BC break! We know this is the desired behavior to type convert values, but this
                     // erroneous behavior exists since 2.0 and we're forced to keep compatibility. For 3.0 release,
                     // uncomment these 2 lines of code.
-                    //$type  = $cache[$key]['type'];
+                    //$type  = $cacheKeyInfo['type'];
                     //$value = $type->convertToPHPValue($value, $this->_platform);
 
                     $rowData[$fieldName] = $value;
                     break;
 
-                case (isset($cache[$key]['isMetaColumn'])):
-                    $dqlAlias = $cache[$key]['dqlAlias'];
+                case (isset($cacheKeyInfo['isMetaColumn'])):
+                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
 
                     $rowData[$dqlAlias . '_' . $fieldName] = $value;
                     break;
 
                 default:
-                    $dqlAlias = $cache[$key]['dqlAlias'];
-                    $type     = $cache[$key]['type'];
+                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
+                    $type     = $cacheKeyInfo['type'];
                     $value    = $type->convertToPHPValue($value, $this->_platform);
 
                     $rowData[$dqlAlias . '_' . $fieldName] = $value;

@@ -364,28 +364,6 @@ class ObjectHydrator extends AbstractHydrator
         // Split the row data into chunks of class data.
         $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
 
-        // Extract scalar values. They're appended at the end.
-        if (isset($rowData['scalars'])) {
-            $scalars = $rowData['scalars'];
-
-            unset($rowData['scalars']);
-
-            if (empty($rowData)) {
-                ++$this->resultCounter;
-            }
-        }
-
-        // Extract "new" object constructor arguments. They're appended at the end.
-        if (isset($rowData['newObjects'])) {
-            $newObjects = $rowData['newObjects'];
-
-            unset($rowData['newObjects']);
-
-            if (empty($rowData)) {
-                ++$this->resultCounter;
-            }
-        }
-
         // Hydrate the data chunks
         foreach ($rowData['data'] as $dqlAlias => $data) {
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
@@ -586,29 +564,27 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         // Append scalar values to mixed result sets
-        if (isset($scalars)) {
+        if (isset($rowData['scalars'])) {
             if ( ! isset($resultKey) ) {
-                if (isset($this->_rsm->indexByMap['scalars'])) {
-                    $resultKey = $row[$this->_rsm->indexByMap['scalars']];
-                } else {
-                    $resultKey = $this->resultCounter - 1;
-                }
+                $resultKey = (isset($this->_rsm->indexByMap['scalars']))
+                    ? $row[$this->_rsm->indexByMap['scalars']]
+                    : $this->resultCounter - 1;
             }
 
-            foreach ($scalars as $name => $value) {
+            foreach ($rowData['scalars'] as $name => $value) {
                 $result[$resultKey][$name] = $value;
             }
         }
 
         // Append new object to mixed result sets
-        if (isset($newObjects)) {
+        if (isset($rowData['newObjects'])) {
             if ( ! isset($resultKey) ) {
                 $resultKey = $this->resultCounter - 1;
             }
 
-            $count = count($newObjects);
+            $count = count($rowData['newObjects']);
 
-            foreach ($newObjects as $objIndex => $newObject) {
+            foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class  = $newObject['class'];
                 $args   = $newObject['args'];
                 $obj    = $class->newInstanceArgs($args);
