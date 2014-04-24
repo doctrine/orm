@@ -12,6 +12,8 @@ class ArrayHydratorTest extends HydrationTestCase
         return array(
             array(0),
             array('user'),
+            array('scalars'),
+            array('newObjects'),
         );
     }
 
@@ -51,6 +53,61 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, $result[1]['id']);
         $this->assertEquals('jwage', $result[1]['name']);
+    }
+
+    /**
+     * SELECT PARTIAL scalars.{id, name}, UPPER(scalars.name) AS nameUpper
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser scalars
+     *
+     * @dataProvider provideDataForUserEntityResult
+     */
+    public function testSimpleEntityWithScalarQuery($userEntityKey)
+    {
+        $alias = $userEntityKey ?: 'u';
+
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', $alias);
+        $rsm->addFieldResult($alias, 's__id', 'id');
+        $rsm->addFieldResult($alias, 's__name', 'name');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                's__id' => '1',
+                's__name' => 'romanb',
+                'sclr0' => 'ROMANB',
+            ),
+            array(
+                's__id' => '2',
+                's__name' => 'jwage',
+                'sclr0' => 'JWAGE',
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(2, count($result));
+
+        $this->assertTrue(is_array($result));
+
+        $this->assertArrayHasKey('nameUpper', $result[0]);
+        $this->assertArrayNotHasKey('id', $result[0]);
+        $this->assertArrayNotHasKey('name', $result[0]);
+
+        $this->assertArrayHasKey(0, $result[0]);
+        $this->assertArrayHasKey('id', $result[0][0]);
+        $this->assertArrayHasKey('name', $result[0][0]);
+
+        $this->assertArrayHasKey('nameUpper', $result[1]);
+        $this->assertArrayNotHasKey('id', $result[1]);
+        $this->assertArrayNotHasKey('name', $result[1]);
+
+        $this->assertArrayHasKey(0, $result[1]);
+        $this->assertArrayHasKey('id', $result[1][0]);
+        $this->assertArrayHasKey('name', $result[1][0]);
     }
 
     /**

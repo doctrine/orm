@@ -387,7 +387,7 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         // Hydrate the data chunks
-        foreach ($rowData as $dqlAlias => $data) {
+        foreach ($rowData['data'] as $dqlAlias => $data) {
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
 
             if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
@@ -408,7 +408,7 @@ class ObjectHydrator extends AbstractHydrator
                 $relationField  = $this->_rsm->relationMap[$dqlAlias];
                 $relation       = $parentClass->associationMappings[$relationField];
                 $reflField      = $parentClass->reflFields[$relationField];
-                
+
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->_rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
                     $first = reset($this->resultPointers);
@@ -418,16 +418,13 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // Parent object of relation not found, mark as not-fetched again
                     $element = $this->getEntity($data, $dqlAlias);
-                    
+
                     // Update result pointer and provide initial fetch data for parent
                     $this->resultPointers[$dqlAlias] = $element;
-                    $rowData[$parentAlias][$relationField] = $element;
-                    
+                    $rowData['data'][$parentAlias][$relationField] = $element;
+
                     // Mark as not-fetched again
                     unset($this->_hints['fetched'][$parentAlias][$relationField]);
-                    
-                    ////unset($rowData[$dqlAlias]);
-                    //$rowData[$dqlAlias] = $data;
                     continue;
                 }
 
@@ -437,7 +434,7 @@ class ObjectHydrator extends AbstractHydrator
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
                     // PATH A: Collection-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
-                    
+
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $collKey = $oid . $relationField;
                         if (isset($this->initializedCollections[$collKey])) {
@@ -486,7 +483,7 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
-                    
+
                     if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an unitialized proxy.
@@ -582,6 +579,10 @@ class ObjectHydrator extends AbstractHydrator
                     $resultKey = $index;
                 }
             }
+        }
+
+        if ( ! isset($resultKey) ) {
+            $this->resultCounter++;
         }
 
         // Append scalar values to mixed result sets

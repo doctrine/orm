@@ -110,30 +110,8 @@ class ArrayHydrator extends AbstractHydrator
         $nonemptyComponents = array();
         $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
 
-        // Extract scalar values. They're appended at the end.
-        if (isset($rowData['scalars'])) {
-            $scalars = $rowData['scalars'];
-
-            unset($rowData['scalars']);
-
-            if (empty($rowData)) {
-                ++$this->_resultCounter;
-            }
-        }
-        
-        // Extract "new" object constructor arguments. They're appended at the end.
-        if (isset($rowData['newObjects'])) {
-            $newObjects = $rowData['newObjects'];
-
-            unset($rowData['newObjects']);
-
-            if (empty($rowData)) {
-                ++$this->_resultCounter;
-            }
-        }
-
         // 2) Now hydrate the data found in the current row.
-        foreach ($rowData as $dqlAlias => $data) {
+        foreach ($rowData['data'] as $dqlAlias => $data) {
             $index = false;
 
             if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
@@ -232,8 +210,8 @@ class ArrayHydrator extends AbstractHydrator
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->_rsm->isMixed
-                        ? array($entityKey => $rowData[$dqlAlias])
-                        : $rowData[$dqlAlias];
+                        ? array($entityKey => $data)
+                        : $data;
 
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                         $resultKey = $row[$this->_rsm->indexByMap[$dqlAlias]];
@@ -249,40 +227,39 @@ class ArrayHydrator extends AbstractHydrator
                 } else {
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
                     $resultKey = $index;
-
-                    /*if ($this->_rsm->isMixed) {
-                        $result[] =& $result[$index];
-                        ++$this->_resultCounter;
-                    }*/
                 }
 
                 $this->updateResultPointer($result, $index, $dqlAlias, false);
             }
         }
 
+        if ( ! isset($resultKey)) {
+            $this->_resultCounter++;
+        }
+
         // Append scalar values to mixed result sets
-        if (isset($scalars)) {
-            if ( ! isset($resultKey) ) {
+        if (isset($rowData['scalars'])) {
+            if ( ! isset($resultKey)) {
                 // this only ever happens when no object is fetched (scalar result only)
                 $resultKey = isset($this->_rsm->indexByMap['scalars'])
                     ? $row[$this->_rsm->indexByMap['scalars']]
                     : $this->_resultCounter - 1;
             }
 
-            foreach ($scalars as $name => $value) {
+            foreach ($rowData['scalars'] as $name => $value) {
                 $result[$resultKey][$name] = $value;
             }
         }
-        
+
         // Append new object to mixed result sets
-        if (isset($newObjects)) {
-            if ( ! isset($resultKey) ) {
+        if (isset($rowData['newObjects'])) {
+            if ( ! isset($resultKey)) {
                 $resultKey = $this->_resultCounter - 1;
             }
 
-            $count = count($newObjects);
+            $count = count($rowData['newObjects']);
 
-            foreach ($newObjects as $objIndex => $newObject) {
+            foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class  = $newObject['class'];
                 $args   = $newObject['args'];
                 $obj    = $class->newInstanceArgs($args);

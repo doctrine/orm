@@ -247,7 +247,7 @@ abstract class AbstractHydrator
      */
     protected function gatherRowData(array $data, array &$cache, array &$id, array &$nonemptyComponents)
     {
-        $rowData = array();
+        $rowData = array('data' => array());
 
         foreach ($data as $key => $value) {
             $cacheKeyInfo = $this->getColumnCacheInfo($key, $cache);
@@ -281,7 +281,7 @@ abstract class AbstractHydrator
                     $fieldName = $cacheKeyInfo['fieldName'];
 
                     // Avoid double setting or null assignment
-                    if (isset($rowData[$dqlAlias][$fieldName]) || $value === null) {
+                    if (isset($rowData['data'][$dqlAlias][$fieldName]) || $value === null) {
                         break;
                     }
 
@@ -290,7 +290,7 @@ abstract class AbstractHydrator
                         $nonemptyComponents[$dqlAlias] = true;
                     }
 
-                    $rowData[$dqlAlias][$fieldName] = $value;
+                    $rowData['data'][$dqlAlias][$fieldName] = $value;
                     break;
 
                 default:
@@ -301,7 +301,7 @@ abstract class AbstractHydrator
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
                     // Per definition it cannot be that a field is defined several times and has several values.
-                    if (isset($rowData[$dqlAlias][$fieldName]) && $value === null) {
+                    if (isset($rowData['data'][$dqlAlias][$fieldName]) && $value === null) {
                         break;
                     }
 
@@ -315,7 +315,7 @@ abstract class AbstractHydrator
                         $nonemptyComponents[$dqlAlias] = true;
                     }
 
-                    $rowData[$dqlAlias][$fieldName] = $value;
+                    $rowData['data'][$dqlAlias][$fieldName] = $value;
                     break;
             }
         }
