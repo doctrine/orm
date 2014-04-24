@@ -689,12 +689,15 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Gets the repository for an entity class.
      *
-     * @param string $entityName The name of the entity.
+     * @param string|mixed $entityName The name of the entity or a object, from which the FQNS will be used.
      *
      * @return \Doctrine\ORM\EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {
+        if(is_object($entityName)){
+            $entityName = get_class($entityName);
+        }
         return $this->repositoryFactory->getRepository($this, $entityName);
     }
 
