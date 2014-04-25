@@ -1,5 +1,13 @@
 # Upgrade to 2.5
 
+## Minor BC BREAK: Custom Hydrators API change
+
+As of 2.5, `AbstractHydrator` does not enforce the usage of cache as part of 
+API, and now provides you a clean API for column information through the method
+`hydrateColumnInfo($column)`.
+Cache variable being passed around by reference is no longer needed since 
+Hydrators are per query instantiated since Doctrine 2.4.
+
 ## Minor BC BREAK: Entity based ``EntityManager#clear()`` calls follow cascade detach
 
 Whenever ``EntityManager#clear()`` method gets called with a given entity class 

@@ -173,10 +173,9 @@ class ObjectHydrator extends AbstractHydrator
     protected function hydrateAllData()
     {
         $result = array();
-        $cache  = array();
 
         while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->hydrateRowData($row, $cache, $result);
+            $this->hydrateRowData($row, $result);
         }
 
         // Take snapshots from all newly initialized collections
@@ -351,18 +350,17 @@ class ObjectHydrator extends AbstractHydrator
      *         specified by the FROM clause in a DQL query.
      *
      * @param array $row    The data of the row to process.
-     * @param array $cache  The cache to use.
      * @param array $result The result array to fill.
      *
      * @return void
      */
-    protected function hydrateRowData(array $row, array &$cache, array &$result)
+    protected function hydrateRowData(array $row, array &$result)
     {
         // Initialize
         $id = $this->idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
         // Split the row data into chunks of class data.
-        $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
+        $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
         // Hydrate the data chunks
         foreach ($rowData['data'] as $dqlAlias => $data) {

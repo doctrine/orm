@@ -91,10 +91,9 @@ class ArrayHydrator extends AbstractHydrator
     protected function hydrateAllData()
     {
         $result = array();
-        $cache  = array();
 
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->hydrateRowData($data, $cache, $result);
+            $this->hydrateRowData($data, $result);
         }
 
         return $result;
@@ -103,12 +102,12 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $row, array &$cache, array &$result)
+    protected function hydrateRowData(array $row, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
-        $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
+        $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
         // 2) Now hydrate the data found in the current row.
         foreach ($rowData['data'] as $dqlAlias => $data) {
