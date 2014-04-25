@@ -197,10 +197,11 @@ abstract class AbstractHydrator
      */
     protected function cleanup()
     {
-        $this->_rsm = null;
-
         $this->_stmt->closeCursor();
-        $this->_stmt = null;
+
+        $this->_stmt  = null;
+        $this->_rsm   = null;
+        $this->_cache = array();
     }
 
     /**
@@ -277,6 +278,7 @@ abstract class AbstractHydrator
                 case (isset($cacheKeyInfo['isMetaColumn'])):
                     $dqlAlias  = $cacheKeyInfo['dqlAlias'];
                     $fieldName = $cacheKeyInfo['fieldName'];
+                    $type      = $cacheKeyInfo['type'];
 
                     // Avoid double setting or null assignment
                     if (isset($rowData['data'][$dqlAlias][$fieldName]) || $value === null) {
@@ -286,6 +288,10 @@ abstract class AbstractHydrator
                     if ($cacheKeyInfo['isIdentifier']) {
                         $id[$dqlAlias] .= '|' . $value;
                         $nonemptyComponents[$dqlAlias] = true;
+                    }
+
+                    if ($type) {
+                        $value = $type->convertToPHPValue($value, $this->_platform);
                     }
 
                     $rowData['data'][$dqlAlias][$fieldName] = $value;
@@ -359,6 +365,11 @@ abstract class AbstractHydrator
 
                 case (isset($cacheKeyInfo['isMetaColumn'])):
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
+                    $type     = $cacheKeyInfo['type'];
+
+                    if ($type) {
+                        $value = $type->convertToPHPValue($value, $this->_platform);
+                    }
 
                     $rowData[$dqlAlias . '_' . $fieldName] = $value;
                     break;
