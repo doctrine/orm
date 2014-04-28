@@ -35,11 +35,6 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * @var array
      */
-    private $_ce = array();
-
-    /**
-     * @var array
-     */
     private $_rootAliases = array();
 
     /**
@@ -313,21 +308,5 @@ class ArrayHydrator extends AbstractHydrator
         $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
 
         return;
-    }
-
-    /**
-     * Retrieve ClassMetadata associated to entity class name.
-     *
-     * @param string $className
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private function getClassMetadata($className)
-    {
-        if ( ! isset($this->_ce[$className])) {
-            $this->_ce[$className] = $this->_em->getClassMetadata($className);
-        }
-
-        return $this->_ce[$className];
     }
 }

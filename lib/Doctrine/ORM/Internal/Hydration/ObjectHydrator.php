@@ -40,16 +40,6 @@ use Doctrine\ORM\Proxy\Proxy;
 class ObjectHydrator extends AbstractHydrator
 {
     /**
-     * Local ClassMetadata cache to avoid going to the EntityManager all the time.
-     * This local cache is maintained between hydration runs and not cleared.
-     *
-     * @var array
-     */
-    private $ce = array();
-
-    /* The following parts are reinitialized on every hydration run. */
-
-    /**
      * @var array
      */
     private $identifierMap;
@@ -312,24 +302,6 @@ class ObjectHydrator extends AbstractHydrator
         } else {
             return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
         }
-    }
-
-    /**
-     * Gets a ClassMetadata instance from the local cache.
-     * If the instance is not yet in the local cache, it is loaded into the
-     * local cache.
-     *
-     * @param string $className The name of the class.
-     *
-     * @return ClassMetadata
-     */
-    private function getClassMetadata($className)
-    {
-        if ( ! isset($this->ce[$className])) {
-            $this->ce[$className] = $this->_em->getClassMetadata($className);
-        }
-
-        return $this->ce[$className];
     }
 
     /**
