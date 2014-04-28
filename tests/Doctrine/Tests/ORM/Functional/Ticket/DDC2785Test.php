@@ -40,12 +40,13 @@ class DDC2785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private function createObject()
     {
         $phone = new CmsPhonenumber();
-        $phone->phonenumber = "1234";
+        $phone->phonenumber = uniqid();
         $hash = spl_object_hash($phone);
-        $this->_em->persist($phone);
 
         if (!array_key_exists($hash, $this->hashes))
         {
+            $x = $this->_em->getReference(get_class($phone), $phone->phonenumber);
+            $this->_em->persist($phone);
             $this->hashes[$hash] = true;
             $this->_em->flush();
             $this->_em->remove($phone);
