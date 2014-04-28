@@ -263,13 +263,14 @@ abstract class AbstractHydrator
                 continue;
             }
 
+            $fieldName = $cacheKeyInfo['fieldName'];
+
             switch (true) {
                 case (isset($cacheKeyInfo['isNewObjectParameter'])):
-                    $fieldName = $cacheKeyInfo['fieldName'];
-                    $argIndex  = $cacheKeyInfo['argIndex'];
-                    $objIndex  = $cacheKeyInfo['objIndex'];
-                    $type      = $cacheKeyInfo['type'];
-                    $value     = $type->convertToPHPValue($value, $this->_platform);
+                    $argIndex = $cacheKeyInfo['argIndex'];
+                    $objIndex = $cacheKeyInfo['objIndex'];
+                    $type     = $cacheKeyInfo['type'];
+                    $value    = $type->convertToPHPValue($value, $this->_platform);
 
                     $rowData['newObjects'][$objIndex]['class']           = $cacheKeyInfo['class'];
                     $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
@@ -278,15 +279,15 @@ abstract class AbstractHydrator
                     break;
 
                 case (isset($cacheKeyInfo['isScalar'])):
-                    $value = $cacheKeyInfo['type']->convertToPHPValue($value, $this->_platform);
+                    $type  = $cacheKeyInfo['type'];
+                    $value = $type->convertToPHPValue($value, $this->_platform);
 
-                    $rowData['scalars'][$cacheKeyInfo['fieldName']] = $value;
+                    $rowData['scalars'][$fieldName] = $value;
                     break;
 
                 case (isset($cacheKeyInfo['isMetaColumn'])):
-                    $dqlAlias  = $cacheKeyInfo['dqlAlias'];
-                    $fieldName = $cacheKeyInfo['fieldName'];
-                    $type      = $cacheKeyInfo['type'];
+                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
+                    $type     = $cacheKeyInfo['type'];
 
                     // Avoid double setting or null assignment
                     if (isset($rowData['data'][$dqlAlias][$fieldName]) || $value === null) {
@@ -298,17 +299,14 @@ abstract class AbstractHydrator
                         $nonemptyComponents[$dqlAlias] = true;
                     }
 
-                    if ($type) {
-                        $value = $type->convertToPHPValue($value, $this->_platform);
-                    }
-
-                    $rowData['data'][$dqlAlias][$fieldName] = $value;
+                    $rowData['data'][$dqlAlias][$fieldName] = $type
+                        ? $type->convertToPHPValue($value, $this->_platform)
+                        : $value;
                     break;
 
                 default:
-                    $dqlAlias  = $cacheKeyInfo['dqlAlias'];
-                    $fieldName = $cacheKeyInfo['fieldName'];
-                    $type      = $cacheKeyInfo['type'];
+                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
+                    $type     = $cacheKeyInfo['type'];
 
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
@@ -375,11 +373,9 @@ abstract class AbstractHydrator
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
 
-                    if ($type) {
-                        $value = $type->convertToPHPValue($value, $this->_platform);
-                    }
-
-                    $rowData[$dqlAlias . '_' . $fieldName] = $value;
+                    $rowData[$dqlAlias . '_' . $fieldName] = $type
+                        ? $type->convertToPHPValue($value, $this->_platform)
+                        : $value;
                     break;
 
                 default:

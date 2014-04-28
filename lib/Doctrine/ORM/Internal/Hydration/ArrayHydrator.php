@@ -67,11 +67,7 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        $this->_isSimpleQuery  = count($this->_rsm->aliasMap) <= 1;
-        $this->_identifierMap  = array();
-        $this->_resultPointers = array();
-        $this->_idTemplate     = array();
-        $this->_resultCounter  = 0;
+        $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
 
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias]  = array();
@@ -134,7 +130,8 @@ class ArrayHydrator extends AbstractHydrator
                 }
 
                 $relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                $relation = $this->getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
+                $parentClass   = $this->_metadataCache[$this->_rsm->aliasMap[$parent]];
+                $relation      = $parentClass->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
