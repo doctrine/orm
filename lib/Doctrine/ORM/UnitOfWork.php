@@ -1652,7 +1652,7 @@ class UnitOfWork implements PropertyChangedListener
 
             case self::STATE_DETACHED:
                 // Can actually not happen right now since we assume STATE_NEW.
-                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "persist");
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "persisted");
 
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
@@ -1723,7 +1723,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             case self::STATE_DETACHED:
-                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "remove");
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "removed");
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
@@ -2403,12 +2403,12 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $visited = array();
-            
+
             foreach ($this->identityMap as $className => $entities) {
                 if ($className !== $entityName) {
                     continue;
                 }
-                
+
                 foreach ($entities as $entity) {
                     $this->doDetach($entity, $visited, false);
                 }
@@ -2520,7 +2520,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $id = array($class->identifier[0] => $id);
         }
-        
+
         $idHash = implode(' ', $id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
