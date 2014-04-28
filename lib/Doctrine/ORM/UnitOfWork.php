@@ -1655,7 +1655,7 @@ class UnitOfWork implements PropertyChangedListener
 
             case self::STATE_DETACHED:
                 // Can actually not happen right now since we assume STATE_NEW.
-                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "persist");
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "persisted");
 
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
@@ -1726,7 +1726,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             case self::STATE_DETACHED:
-                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "remove");
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "removed");
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
