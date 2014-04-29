@@ -137,11 +137,11 @@ class ArrayHydrator extends AbstractHydrator
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
                     $oneToOne = false;
 
-                    if (isset($nonemptyComponents[$dqlAlias])) {
-                        if ( ! isset($baseElement[$relationAlias])) {
-                            $baseElement[$relationAlias] = array();
-                        }
+                    if ( ! isset($baseElement[$relationAlias])) {
+                        $baseElement[$relationAlias] = array();
+                    }
 
+                    if (isset($nonemptyComponents[$dqlAlias])) {
                         $indexExists  = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
                         $index        = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
@@ -159,8 +159,6 @@ class ArrayHydrator extends AbstractHydrator
 
                             $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
                         }
-                    } else if ( ! isset($baseElement[$relationAlias])) {
-                        $baseElement[$relationAlias] = array();
                     }
                 } else {
                     $oneToOne = true;

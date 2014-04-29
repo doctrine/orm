@@ -232,12 +232,13 @@ class ObjectHydrator extends AbstractHydrator
         $className = $this->_rsm->aliasMap[$dqlAlias];
 
         if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
+            $fieldName = $this->_rsm->discriminatorColumns[$dqlAlias];
 
-            if ( ! isset($this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]])) {
-                throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $this->_rsm->discriminatorColumns[$dqlAlias], $dqlAlias);
+            if ( ! isset($this->_rsm->metaMappings[$fieldName])) {
+                throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $fieldName, $dqlAlias);
             }
 
-            $discrColumn = $this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]];
+            $discrColumn = $this->_rsm->metaMappings[$fieldName];
 
             if ( ! isset($data[$discrColumn])) {
                 throw HydrationException::missingDiscriminatorColumn($className, $discrColumn, $dqlAlias);
@@ -281,19 +282,19 @@ class ObjectHydrator extends AbstractHydrator
         /* @var $class ClassMetadata */
         if ($class->isIdentifierComposite) {
             $idHash = '';
+
             foreach ($class->identifier as $fieldName) {
-                if (isset($class->associationMappings[$fieldName])) {
-                    $idHash .= $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']] . ' ';
-                } else {
-                    $idHash .= $data[$fieldName] . ' ';
-                }
+                $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
+                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
+                    : $data[$fieldName]);
             }
-            return $this->_uow->tryGetByIdHash(rtrim($idHash), $class->rootEntityName);
+
+            return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
         } else if (isset($class->associationMappings[$class->identifier[0]])) {
             return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
-        } else {
-            return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
         }
+
+        return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
     }
 
     /**

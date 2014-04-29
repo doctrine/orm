@@ -257,9 +257,7 @@ abstract class AbstractHydrator
         $rowData = array('data' => array());
 
         foreach ($data as $key => $value) {
-            $cacheKeyInfo = $this->hydrateColumnInfo($key);
-
-            if ( ! $cacheKeyInfo) {
+            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
                 continue;
             }
 
@@ -285,25 +283,7 @@ abstract class AbstractHydrator
                     $rowData['scalars'][$fieldName] = $value;
                     break;
 
-                case (isset($cacheKeyInfo['isMetaColumn'])):
-                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
-                    $type     = $cacheKeyInfo['type'];
-
-                    // Avoid double setting or null assignment
-                    if (isset($rowData['data'][$dqlAlias][$fieldName]) || $value === null) {
-                        break;
-                    }
-
-                    if ($cacheKeyInfo['isIdentifier']) {
-                        $id[$dqlAlias] .= '|' . $value;
-                        $nonemptyComponents[$dqlAlias] = true;
-                    }
-
-                    $rowData['data'][$dqlAlias][$fieldName] = $type
-                        ? $type->convertToPHPValue($value, $this->_platform)
-                        : $value;
-                    break;
-
+                //case (isset($cacheKeyInfo['isMetaColumn'])):
                 default:
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
@@ -311,21 +291,18 @@ abstract class AbstractHydrator
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
                     // Per definition it cannot be that a field is defined several times and has several values.
-                    if (isset($rowData['data'][$dqlAlias][$fieldName]) && $value === null) {
+                    if (isset($rowData['data'][$dqlAlias][$fieldName])) {
                         break;
                     }
 
-                    if ($cacheKeyInfo['isIdentifier']) {
+                    $rowData['data'][$dqlAlias][$fieldName] = $type
+                        ? $type->convertToPHPValue($value, $this->_platform)
+                        : $value;
+
+                    if ($cacheKeyInfo['isIdentifier'] && $value !== null) {
                         $id[$dqlAlias] .= '|' . $value;
-                    }
-
-                    $value = $type->convertToPHPValue($value, $this->_platform);
-
-                    if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                         $nonemptyComponents[$dqlAlias] = true;
                     }
-
-                    $rowData['data'][$dqlAlias][$fieldName] = $value;
                     break;
             }
         }
@@ -350,41 +327,24 @@ abstract class AbstractHydrator
         $rowData = array();
 
         foreach ($data as $key => $value) {
-            $cacheKeyInfo = $this->hydrateColumnInfo($key);
-
-            if ( ! $cacheKeyInfo) {
+            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
                 continue;
             }
 
             $fieldName = $cacheKeyInfo['fieldName'];
 
-            switch (true) {
-                case (isset($cacheKeyInfo['isScalar'])):
-                    // WARNING: BC break! We know this is the desired behavior to type convert values, but this
-                    // erroneous behavior exists since 2.0 and we're forced to keep compatibility. For 3.0 release,
-                    // uncomment these 2 lines of code.
-                    //$type  = $cacheKeyInfo['type'];
-                    //$value = $type->convertToPHPValue($value, $this->_platform);
-
-                    $rowData[$fieldName] = $value;
-                    break;
-
-                case (isset($cacheKeyInfo['isMetaColumn'])):
-                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
-                    $type     = $cacheKeyInfo['type'];
-
-                    $rowData[$dqlAlias . '_' . $fieldName] = $type
-                        ? $type->convertToPHPValue($value, $this->_platform)
-                        : $value;
-                    break;
-
-                default:
-                    $dqlAlias = $cacheKeyInfo['dqlAlias'];
-                    $type     = $cacheKeyInfo['type'];
-                    $value    = $type->convertToPHPValue($value, $this->_platform);
-
-                    $rowData[$dqlAlias . '_' . $fieldName] = $value;
+            // WARNING: BC break! We know this is the desired behavior to type convert values, but this
+            // erroneous behavior exists since 2.0 and we're forced to keep compatibility.
+            if ( ! isset($cacheKeyInfo['isScalar'])) {
+                $dqlAlias  = $cacheKeyInfo['dqlAlias'];
+                $type      = $cacheKeyInfo['type'];
+                $fieldName = $dqlAlias . '_' . $fieldName;
+                $value     = $type
+                    ? $type->convertToPHPValue($value, $this->_platform)
+                    : $value;
             }
+
+            $rowData[$fieldName] = $value;
         }
 
         return $rowData;
@@ -406,12 +366,12 @@ abstract class AbstractHydrator
         switch (true) {
             // NOTE: Most of the times it's a field mapping, so keep it first!!!
             case (isset($this->_rsm->fieldMappings[$key])):
-                $fieldName     = $this->_rsm->fieldMappings[$key];
                 $classMetadata = $this->getClassMetadata($this->_rsm->declaringClasses[$key]);
+                $fieldName     = $this->_rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
 
                 return $this->_cache[$key] = array(
-                    'isIdentifier' => $classMetadata->isIdentifier($fieldName),
+                    'isIdentifier' => in_array($fieldName, $classMetadata->identifier),
                     'fieldName'    => $fieldName,
                     'type'         => Type::getType($fieldMapping['type']),
                     'dqlAlias'     => $this->_rsm->columnOwnerMap[$key],
@@ -499,11 +459,11 @@ abstract class AbstractHydrator
                     : $data[$fieldName];
             }
         } else {
-            $identifier = $class->identifier[0];
-            $id         = array(
-                $identifier => isset($class->associationMappings[$identifier])
-                    ? $data[$class->associationMappings[$identifier]['joinColumns'][0]['name']]
-                    : $data[$identifier]
+            $fieldName = $class->identifier[0];
+            $id        = array(
+                $fieldName => isset($class->associationMappings[$fieldName])
+                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
+                    : $data[$fieldName]
             );
         }
 
