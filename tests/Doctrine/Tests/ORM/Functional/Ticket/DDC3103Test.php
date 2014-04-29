@@ -9,9 +9,12 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    /**
+     * @covers \Doctrine\ORM\Mapping\ClassMetadataInfo::__sleep
+     */
     public function testIssue()
     {
-        $className = __NAMESPACE__ . '\\DDC3103ArticleId';
+        $className     = __NAMESPACE__ . '\\DDC3103ArticleId';
         $classMetadata = new ClassMetadata($className);
 
         $this->createAnnotationDriver()->loadMetadataForClass($className, $classMetadata);
@@ -21,11 +24,8 @@ class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
             'The isEmbeddedClass property should be true from the mapping data.'
         );
 
-        $serialized = serialize($classMetadata);
-        $classMetadata = unserialize($serialized);
-
         $this->assertTrue(
-            $classMetadata->isEmbeddedClass,
+            unserialize(serialize($classMetadata))->isEmbeddedClass,
             'The isEmbeddedClass property should still be true after serialization and unserialization.'
         );
     }
@@ -42,5 +42,3 @@ class DDC3103ArticleId
      */
     protected $nameValue;
 }
-
-
