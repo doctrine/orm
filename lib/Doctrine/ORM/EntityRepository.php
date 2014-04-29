@@ -38,7 +38,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityRepository implements ObjectRepository, Selectable
+class EntityRepository implements ObjectRepository, Selectable, \IteratorAggregate
 {
     /**
      * @var string
@@ -302,5 +302,16 @@ class EntityRepository implements ObjectRepository, Selectable
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
         return new ArrayCollection($persister->loadCriteria($criteria));
+    }
+
+    /**
+     * Finds all entities in the repository
+     * and creates ArrayIterator of them
+     *
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->findBy([]));
     }
 }

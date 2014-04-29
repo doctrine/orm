@@ -253,6 +253,15 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(4, count($users));
     }
 
+    public function testIterator()
+    {
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $iterator = $repository->getIterator();
+
+        $this->assertInstanceOf('ArrayIterator', $iterator);
+        $this->assertEquals(4, count($iterator));
+    }
+
     public function testFindByAlias()
     {
         $user1Id = $this->loadFixture();
