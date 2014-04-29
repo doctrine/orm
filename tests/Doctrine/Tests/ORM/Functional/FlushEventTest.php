@@ -67,6 +67,24 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, $listener->preFlush);
         $this->assertEquals(2, $listener->onFlush);
     }
+
+    public function testEndFlush()
+    {
+        $listener = new OnFlushCalledListener();
+        $this->_em->getEventManager()->addEventListener(Events::endFlush, $listener);
+
+        // end flush is not called when there is nothing to flush
+        $this->_em->flush();
+        $this->assertEquals(0, $listener->endFlush);
+
+        $phone = new CmsPhonenumber;
+        $phone->phonenumber = 12345;
+
+        $this->_em->persist($phone);
+        $this->_em->flush();
+
+        $this->assertEquals(1, $listener->endFlush);
+    }
 }
 
 class OnFlushListener
@@ -115,6 +133,7 @@ class OnFlushCalledListener
     public $preFlush = 0;
     public $onFlush = 0;
     public $postFlush = 0;
+    public $endFlush = 0;
 
     public function preFlush($args)
     {
@@ -130,5 +149,9 @@ class OnFlushCalledListener
     {
         $this->postFlush++;
     }
-}
 
+    public function endFlush($args)
+    {
+        $this->endFlush++;
+    }
+}
