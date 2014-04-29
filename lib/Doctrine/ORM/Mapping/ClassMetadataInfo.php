@@ -852,6 +852,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'isMappedSuperclass';
         }
 
+        if ($this->isEmbeddedClass) {
+            $serialized[] = 'isEmbeddedClass';
+        }
+
         if ($this->containsForeignIdentifier) {
             $serialized[] = 'containsForeignIdentifier';
         }
