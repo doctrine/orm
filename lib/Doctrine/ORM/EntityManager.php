@@ -24,6 +24,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
@@ -321,7 +322,11 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function createNamedNativeQuery($name)
     {
-        list($sql, $rsm) = $this->config->getNamedNativeQuery($name);
+        list($sql, $rsm, $placeholder, $tableAliases) = $this->config->getNamedNativeQuery($name);
+        
+        if ($rsm instanceof ResultSetMappingBuilder && !empty($placeholder)) {
+            $sql = str_replace($placeholder, $rsm->generateSelectClause($tableAliases), $sql);
+        }
 
         return $this->createNativeQuery($sql, $rsm);
     }

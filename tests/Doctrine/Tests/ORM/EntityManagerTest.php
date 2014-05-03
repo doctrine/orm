@@ -59,6 +59,18 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSame('SELECT foo', $query->getSql());
     }
+    
+    public function testCreateNamedNativeQueryWithResultSetMappingBuilder()
+    {
+        $rsmb = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);
+        $rsmb->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT {SELECTCLAUSE}', $rsmb, '{SELECTCLAUSE}');
+        
+        $query = $this->_em->createNamedNativeQuery('foo');
+        
+        $selectClause = $rsmb->generateSelectClause();
+        $this->assertSame("SELECT {$selectClause}", $query->getSql());
+    }
 
     /**
      * @covers Doctrine\ORM\EntityManager::createNamedNativeQuery

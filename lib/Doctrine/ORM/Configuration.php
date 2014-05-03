@@ -346,9 +346,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
+    public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm, $placeholder = null, $tableAliases = array())
     {
-        $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
+        $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm, $placeholder, $tableAliases);
     }
 
     /**
