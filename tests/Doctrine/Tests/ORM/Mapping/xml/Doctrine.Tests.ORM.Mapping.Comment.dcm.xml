@@ -8,7 +8,7 @@
     <entity name="Doctrine\Tests\ORM\Mapping\Comment">
 
         <indexes>
-            <index columns="content" flags="fulltext"/>
+            <index columns="content" flags="fulltext" where="content IS NOT NULL"/>
         </indexes>
 
         <field name="content" type="text"/>

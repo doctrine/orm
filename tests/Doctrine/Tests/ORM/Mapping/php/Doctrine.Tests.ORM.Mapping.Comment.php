@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'indexes' => array(
-       array('columns' => array('content'), 'flags' => array('fulltext'))
+       array('columns' => array('content'), 'flags' => array('fulltext'), 'where' => 'content IS NOT NULL')
    )
   ));
 

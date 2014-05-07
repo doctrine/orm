@@ -418,6 +418,12 @@ Required attributes:
 -  **name**: Name of the Index
 -  **columns**: Array of columns.
 
+Optional attributes:
+
+-  **options**: Array of platform specific options
+
+    -  **where**: SQL WHERE condition to be used for partial indexes. It will only have effect on supported platforms.
+
 Example:
 
 .. code-block:: php
@@ -1150,6 +1156,12 @@ Required attributes:
 
 -  **name**: Name of the Index
 -  **columns**: Array of columns.
+
+Optional attributes:
+
+-  **options**: Array of platform specific options
+
+    -  **where**: SQL WHERE condition to be used for partial indexes. It will only have effect on supported platforms.
 
 Example:
 
