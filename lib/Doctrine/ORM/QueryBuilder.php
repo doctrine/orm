@@ -911,6 +911,15 @@ class QueryBuilder
 
         $rootAlias = $this->findRootAlias($alias, $parentAlias);
 
+        $joins = $this->getDQLPart('join');
+        if (isset($joins[$parentAlias])) {
+            foreach ($joins[$parentAlias] as $existedJoin) {
+                if ($join == $existedJoin->getJoin()) {
+                    return $this;
+                }
+            }
+        }
+
         $join = new Expr\Join(
             Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy
         );

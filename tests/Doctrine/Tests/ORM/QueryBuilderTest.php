@@ -128,6 +128,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a');
     }
 
+    public function testInnerJoinOverride()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'a')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->innerJoin('u.articles', 'a')
+            ->innerJoin('u.articles', 'a');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a');
+    }
+
     public function testComplexInnerJoin()
     {
         $qb = $this->_em->createQueryBuilder()
