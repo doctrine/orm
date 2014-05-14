@@ -167,6 +167,7 @@ abstract class AbstractQuery
     {
         $this->_em          = $em;
         $this->parameters   = new ArrayCollection();
+        $this->_hints       = $em->getConfiguration()->getDefaultQueryHints();
         $this->hasCache     = $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
@@ -299,7 +300,7 @@ abstract class AbstractQuery
     {
         $this->parameters = new ArrayCollection();
 
-        $this->_hints = array();
+        $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
     }
 
     /**
@@ -1089,6 +1090,7 @@ abstract class AbstractQuery
         $this->parameters = new ArrayCollection();
 
         $this->_hints = array();
+        $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
     }
 
     /**
