@@ -483,6 +483,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityChangeSets[$oid] = $changeset;
             $this->getEntityPersister(get_class($entity))->update($entity);
         }
+
+        $this->extraUpdates = array();
     }
 
     /**
