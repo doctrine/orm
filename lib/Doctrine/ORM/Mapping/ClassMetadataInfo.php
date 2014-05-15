@@ -3132,6 +3132,22 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * @param integer $type
+     *
+     * @return array
+     */
+    public function getAssociationsByType($type)
+    {
+        $relations = array();
+        foreach ($this->associationMappings as $mapping) {
+            if ($mapping['type'] == $type) {
+                $relations[$mapping['fieldName']] = $mapping;
+            }
+        }
+        return $relations;
+    }
+
+    /**
      * @param   string $className
      * @return  string
      */
