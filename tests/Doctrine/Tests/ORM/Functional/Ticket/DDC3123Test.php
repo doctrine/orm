@@ -28,17 +28,13 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $uow->scheduleExtraUpdate($user, array('name' => 'changed name'));
 
-        $listener = $this->getMock('stdClass', array('postFlush'));
+        $listener = $this->getMock('stdClass', array(Events::postFlush));
 
         $listener
             ->expects($this->once())
-            ->method('postFlush')
+            ->method(Events::postFlush)
             ->will($this->returnCallback(function () use ($uow, $test) {
-                $extraUpdatesReflection = new \ReflectionProperty($uow, 'extraUpdates');
-
-                $extraUpdatesReflection->setAccessible(true);
-
-                $test->assertEmpty($extraUpdatesReflection->getValue($uow));
+                $test->assertAttributeEmpty('extraUpdates', $uow, 'ExtraUpdates are reset before postFlush');
             }));
 
         $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
