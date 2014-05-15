@@ -394,14 +394,14 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFindOneByOrderBy()
     {
     	$this->loadFixture();
-    	
+
     	$repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
     	$userAsc = $repos->findOneBy(array(), array("username" => "ASC"));
     	$userDesc = $repos->findOneBy(array(), array("username" => "DESC"));
-    	
+
     	$this->assertNotSame($userAsc, $userDesc);
     }
-    
+
     /**
      * @group DDC-817
      */
@@ -613,7 +613,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-1376
-     * 
+     *
      * @expectedException Doctrine\ORM\ORMException
      * @expectedExceptionMessage You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association.
      */
@@ -913,9 +913,12 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
-        $repository->matching(new Criteria(
+        $result     = $repository->matching(new Criteria(
             Criteria::expr()->eq('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1', 'beberlei')
         ));
+
+        // Because repository returns a lazy collection, we call toArray to force initialization
+        $result->toArray();
     }
 
     /**
