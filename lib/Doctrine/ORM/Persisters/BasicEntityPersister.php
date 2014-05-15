@@ -811,6 +811,20 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function count($criteria = array())
+    {
+        $sql = $this->getCountSQL($criteria);
+
+        list($params, $types) = ($criteria instanceof Criteria)
+            ? $this->expandCriteriaParameters($criteria)
+            : $this->expandParameters($criteria);
+
+        return $this->conn->executeQuery($sql, $params, $types)->fetchColumn();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function loadCriteria(Criteria $criteria)
@@ -843,20 +857,20 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        list($values, $types) = $valueVisitor->getParamsAndTypes();
+        list($params, $types) = $valueVisitor->getParamsAndTypes();
 
-        $sqlValues = array();
-        foreach ($values as $value) {
-            $sqlValues[] = $this->getValue($value);
+        $sqlParams = array();
+        foreach ($params as $param) {
+            $sqlParams[] = $this->getValue($param);
         }
 
         $sqlTypes = array();
         foreach ($types as $type) {
             list($field, $value) = $type;
-            $sqlTypes[] = $this->getType($field, $value);
+            $sqlTypes[]          = $this->getType($field, $value);
         }
 
-        return array($sqlValues, $sqlTypes);
+        return array($sqlParams, $sqlTypes);
     }
 
     /**
@@ -1064,6 +1078,33 @@ class BasicEntityPersister implements EntityPersister
             . $orderBySql;
 
         return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCountSQL($criteria = array())
+    {
+        $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $tableAlias = $this->getSQLTableAlias($this->class->name);
+
+        $conditionSql = ($criteria instanceof Criteria)
+            ? $this->getSelectConditionCriteriaSQL($criteria)
+            : $this->getSelectConditionSQL($criteria);
+
+        $filterSql = $this->generateFilterConditionSQL($this->class, $tableAlias);
+
+        if ('' !== $filterSql) {
+            $conditionSql = $conditionSql
+                ? $conditionSql . ' AND ' . $filterSql
+                : $filterSql;
+        }
+
+        $sql = 'SELECT COUNT(*) '
+            . 'FROM ' . $tableName . ' ' . $tableAlias
+            . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
+
+        return $sql;
     }
 
     /**

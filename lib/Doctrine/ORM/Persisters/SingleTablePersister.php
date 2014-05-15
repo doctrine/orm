@@ -43,7 +43,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc} 
+     * {@inheritdoc}
      */
     protected function getSelectColumnsSQL()
     {
@@ -80,7 +80,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if ( ! $assoc['isOwningSide'] 
+                if ( ! $assoc['isOwningSide']
                         || ! ($assoc['type'] & ClassMetadata::TO_ONE)
                         || isset($assoc['inherited'])) {
                     continue;
