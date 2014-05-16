@@ -401,8 +401,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string $name
-     * @param string $className
+     * @param string          $name      Function name.
+     * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
      *
@@ -459,8 +459,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string $name
-     * @param string $className
+     * @param string          $name      Function name.
+     * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
      *
@@ -517,8 +517,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string $name
-     * @param string $className
+     * @param string          $name      Function name.
+     * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
      *
