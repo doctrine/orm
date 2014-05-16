@@ -560,15 +560,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     private function getJoinSql($baseTableAlias)
     {
-        $joinSql            = '';
-        $identifierColumn   = $this->class->getIdentifierColumnNames();
+        $joinSql          = '';
+        $identifierColumn = $this->class->getIdentifierColumnNames();
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
-            $conditions     = array();
-            $parentClass    = $this->em->getClassMetadata($parentClassName);
-            $tableAlias     = $this->getSQLTableAlias($parentClassName);
-            $joinSql       .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
+            $conditions   = array();
+            $parentClass  = $this->em->getClassMetadata($parentClassName);
+            $tableAlias   = $this->getSQLTableAlias($parentClassName);
+            $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
 
             foreach ($identifierColumn as $idColumn) {

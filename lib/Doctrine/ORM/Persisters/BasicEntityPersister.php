@@ -848,9 +848,11 @@ class BasicEntityPersister implements EntityPersister
     public function expandCriteriaParameters(Criteria $criteria)
     {
         $expression = $criteria->getWhereExpression();
+        $sqlParams  = array();
+        $sqlTypes   = array();
 
         if ($expression === null) {
-            return array(array(), array());
+            return array($sqlParams, $sqlTypes);
         }
 
         $valueVisitor = new SqlValueVisitor();
@@ -859,12 +861,10 @@ class BasicEntityPersister implements EntityPersister
 
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
-        $sqlParams = array();
         foreach ($params as $param) {
             $sqlParams[] = $this->getValue($param);
         }
 
-        $sqlTypes = array();
         foreach ($types as $type) {
             list($field, $value) = $type;
             $sqlTypes[]          = $this->getType($field, $value);

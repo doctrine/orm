@@ -28,8 +28,12 @@ use Doctrine\ORM\Persisters\EntityPersister;
 
 /**
  * A lazy collection that allow a fast count when using criteria object
+ * Once count gets executed once without collection being initialized, result
+ * is cached and returned on subsequent calls until collection gets loaded,
+ * then returning the number of loaded results. 
  *
  * @since   2.5
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Michaël Gallego <mic.gallego@gmail.com>
  */
 class LazyCriteriaCollection extends AbstractLazyCollection implements Selectable
@@ -45,6 +49,11 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     protected $criteria;
 
     /**
+     * @var integer
+     */
+    private $count;
+
+    /**
      * @param EntityPersister $entityPersister
      * @param Criteria        $criteria
      */
@@ -57,7 +66,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * Do an efficient count on the collection
      *
-     * @return int
+     * @return integer
      */
     public function count()
     {
@@ -65,7 +74,12 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             return $this->collection->count();
         }
 
-        return $this->entityPersister->count($this->criteria);
+        // Return cached result in case count query was already executed
+        if ($this->count) {
+            return $this->count;
+        }
+
+        return $this->count = $this->entityPersister->count($this->criteria);
     }
 
     /**
@@ -74,6 +88,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     public function matching(Criteria $criteria)
     {
         $this->initialize();
+
         return $this->collection->matching($criteria);
     }
 
