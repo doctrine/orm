@@ -3411,7 +3411,7 @@ class Parser
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
-            : $functionClass($functionName);
+            : call_user_func($functionClass, $functionName);
 
         $function->parse($this);
 
@@ -3450,7 +3450,7 @@ class Parser
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
-            : $functionClass($functionName);
+            : call_user_func($functionClass, $functionName);
 
         $function->parse($this);
 
@@ -3490,7 +3490,7 @@ class Parser
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
-            : $functionClass($functionName);
+            : call_user_func($functionClass, $functionName);
 
         $function->parse($this);
 
