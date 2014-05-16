@@ -607,7 +607,7 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
             . ' JOIN ' . $joinTable  . ' t ON'
             . implode(' AND ', $onConditions);
 
-        if (!empty($whereClauses)) {
+        if ( ! empty($whereClauses)) {
             $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
         }
 
@@ -684,11 +684,12 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
         }
 
         if ($comparison !== null) {
-
             // special case null value handling
             if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
                 return $condition . ' IS NULL';
-            } else if ($comparison === Comparison::NEQ && $value === null) {
+            }
+
+            if ($comparison === Comparison::NEQ && $value === null) {
                 return $condition . ' IS NOT NULL';
             }
 
