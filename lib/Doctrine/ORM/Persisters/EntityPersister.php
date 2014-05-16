@@ -29,7 +29,7 @@ use Doctrine\Common\Collections\Criteria;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
  */
-interface EntityPersister extends SelectConditionGeneratorInterface
+interface EntityPersister
 {
     /**
      * @return \Doctrine\ORM\Mapping\ClassMetadata

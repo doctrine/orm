@@ -78,7 +78,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.0
  */
-class BasicEntityPersister implements EntityPersister
+class BasicEntityPersister implements EntityPersister, SelectConditionGeneratorInterface
 {
     /**
      * @var array

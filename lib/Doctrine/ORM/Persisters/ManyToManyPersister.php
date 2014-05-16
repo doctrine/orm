@@ -605,8 +605,11 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
 
         $sql  = 'SELECT ' . $rsm->generateSelectClause() . ' FROM ' . $tableName . ' te'
             . ' JOIN ' . $joinTable  . ' t ON'
-            . implode(' AND ', $onConditions)
-            . ' WHERE ' . implode(' AND ', array_filter($whereClauses));
+            . implode(' AND ', $onConditions);
+
+        if (!empty($whereClauses)) {
+            $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
+        }
 
         $stmt     = $this->conn->executeQuery($sql, $params);
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
@@ -693,7 +696,13 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
         }
 
         if (is_array($value)) {
-            return sprintf('%s IN (%s)' , $condition, $placeholder);
+            $in = sprintf('%s IN (%s)' , $condition, $placeholder);
+
+            if (false !== array_search(null, $value, true)) {
+                return sprintf('(%s OR %s IS NULL)' , $in, $condition);
+            }
+
+            return $in;
         }
 
         if ($value === null) {
