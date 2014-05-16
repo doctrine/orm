@@ -142,7 +142,7 @@ class ProxyFactory extends AbstractProxyFactory
                     $proxy->__setCloner($cloner);
                     $proxy->__setInitialized(false);
 
-                    throw new EntityNotFoundException();
+                    throw new EntityNotFoundException($classMetadata->getName());
                 }
             };
         }
@@ -173,7 +173,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
 
-                throw new EntityNotFoundException();
+                throw new EntityNotFoundException($classMetadata->getName());
             }
         };
     }
@@ -202,7 +202,7 @@ class ProxyFactory extends AbstractProxyFactory
             $original = $entityPersister->loadById($classMetadata->getIdentifierValues($proxy));
 
             if (null === $original) {
-                throw new EntityNotFoundException();
+                throw new EntityNotFoundException($classMetadata->getName());
             }
 
             foreach ($class->getReflectionClass()->getProperties() as $property) {

@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1225
  */
@@ -34,7 +32,7 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
            ->setParameter(1, 0);
 
         $this->assertEquals(
-            strtolower('SELECT t0_.test_entity2_id AS test_entity2_id0 FROM te1 t0_ WHERE t0_.test_entity2_id = ?'),
+            strtolower('SELECT t0_.test_entity2_id AS test_entity2_id_0 FROM te1 t0_ WHERE t0_.test_entity2_id = ?'),
             strtolower($qb->getQuery()->getSQL())
         );
     }

@@ -16,7 +16,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $this->_em->createQuery($dql)->getSQL();
 
         $this->assertEquals(
-            'SELECT d0_."SmallText" AS SmallText0, d0_."PublishDate" AS PublishDate1 FROM "DDC1695News" d0_',
+            'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',
             $sql
         );
     }

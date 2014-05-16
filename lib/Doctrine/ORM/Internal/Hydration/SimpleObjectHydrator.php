@@ -32,28 +32,6 @@ class SimpleObjectHydrator extends AbstractHydrator
     private $class;
 
     /**
-     * @var array
-     */
-    private $declaringClasses = array();
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function hydrateAllData()
-    {
-        $result = array();
-        $cache = array();
-
-        while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->hydrateRowData($row, $cache, $result);
-        }
-
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
-
-        return $result;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function prepare()
@@ -66,22 +44,29 @@ class SimpleObjectHydrator extends AbstractHydrator
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
         }
 
-        $this->class = $this->_em->getClassMetadata(reset($this->_rsm->aliasMap));
-
-        // We only need to add declaring classes if we have inheritance.
-        if ($this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_NONE) {
-            return;
-        }
-
-        foreach ($this->_rsm->declaringClasses as $column => $class) {
-            $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
-        }
+        $this->class = $this->getClassMetadata(reset($this->_rsm->aliasMap));
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $sqlResult, array &$cache, array &$result)
+    protected function hydrateAllData()
+    {
+        $result = array();
+
+        while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+            $this->hydrateRowData($row, $result);
+        }
+
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateRowData(array $sqlResult, array &$result)
     {
         $entityName = $this->class->name;
         $data       = array();
@@ -98,29 +83,40 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
             }
 
-            $entityName = $this->class->discriminatorMap[$sqlResult[$discrColumnName]];
+            $discrMap = $this->class->discriminatorMap;
+
+            if ( ! isset($discrMap[$sqlResult[$discrColumnName]])) {
+                throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
+            }
+
+            $entityName = $discrMap[$sqlResult[$discrColumnName]];
 
             unset($sqlResult[$discrColumnName]);
         }
 
         foreach ($sqlResult as $column => $value) {
-            // Hydrate column information if not yet present
-            if ( ! isset($cache[$column])) {
-                if (($info = $this->hydrateColumnInfo($entityName, $column)) === null) {
-                    continue;
-                }
+            // An ObjectHydrator should be used instead of SimpleObjectHydrator
+            if (isset($this->_rsm->relationMap[$column])) {
+                throw new \Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
+            }
 
-                $cache[$column] = $info;
+            $cacheKeyInfo = $this->hydrateColumnInfo($column);
+
+            if ( ! $cacheKeyInfo) {
+                continue;
             }
 
             // Convert field to a valid PHP value
-            if (isset($cache[$column]['type'])) {
-                $value = Type::getType($cache[$column]['type'])->convertToPHPValue($value, $this->_platform);
+            if (isset($cacheKeyInfo['type'])) {
+                $type  = $cacheKeyInfo['type'];
+                $value = $type->convertToPHPValue($value, $this->_platform);
             }
 
+            $fieldName = $cacheKeyInfo['fieldName'];
+
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
-            if (isset($cache[$column]) && ( ! isset($data[$cache[$column]['name']]) || $value !== null)) {
-                $data[$cache[$column]['name']] = $value;
+            if ( ! isset($data[$fieldName]) || $value !== null) {
+                $data[$fieldName] = $value;
             }
         }
 
@@ -132,48 +128,5 @@ class SimpleObjectHydrator extends AbstractHydrator
         $entity = $uow->createEntity($entityName, $data, $this->_hints);
 
         $result[] = $entity;
-    }
-
-    /**
-     * Retrieve column information form ResultSetMapping.
-     *
-     * @param string $entityName
-     * @param string $column
-     *
-     * @return array
-     */
-    protected function hydrateColumnInfo($entityName, $column)
-    {
-
-        if (isset($this->_rsm->fieldMappings[$column])) {
-            $name  = $this->_rsm->fieldMappings[$column];
-            $class = isset($this->declaringClasses[$column])
-                ? $this->declaringClasses[$column]
-                : $this->class;
-
-            // If class is not part of the inheritance, ignore
-            if ( ! ($class->name === $entityName || is_subclass_of($entityName, $class->name))) {
-                return null;
-            }
-
-            return array(
-                'name'  => $name,
-                'type'  => $class->fieldMappings[$name]['type']
-            );
-        }
-
-        if (isset($this->_rsm->metaMappings[$column])) {
-            return array(
-                'name'  => $this->_rsm->metaMappings[$column],
-                'type'  => (isset($this->_rsm->typeMappings[$column]) ? $this->_rsm->typeMappings[$column] : null)
-            );
-        }
-
-        // An ObjectHydrator should be used instead of SimpleObjectHydrator
-        if (isset($this->_rsm->relationMap[$column])) {
-            throw new \Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
-        }
-
-        return null;
     }
 }

@@ -392,7 +392,7 @@ class DatabaseDriver implements MappingDriver
         $fieldMapping = array(
             'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
             'columnName' => $column->getName(),
-            'type'       => strtolower((string) $column->getType()),
+            'type'       => $column->getType()->getName(),
             'nullable'   => ( ! $column->getNotNull()),
         );
 

@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Performance;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 /**

@@ -1,7 +1,6 @@
 <?php
-namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -19,7 +18,7 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $q = $this->_em->createQuery("select u, c.data from ".__NAMESPACE__."\\DDC493Distributor u JOIN u.contact c");
         $this->assertEquals(
-            strtolower('SELECT d0_.id AS id0, d1_.data AS data1, d0_.discr AS discr2, d0_.contact AS contact3 FROM DDC493Distributor d2_ INNER JOIN DDC493Customer d0_ ON d2_.id = d0_.id INNER JOIN DDC493Contact d1_ ON d0_.contact = d1_.id'),
+            strtolower('SELECT d0_.id AS id_0, d1_.data AS data_1, d0_.discr AS discr_2, d0_.contact AS contact_3 FROM DDC493Distributor d2_ INNER JOIN DDC493Customer d0_ ON d2_.id = d0_.id INNER JOIN DDC493Contact d1_ ON d0_.contact = d1_.id'),
             strtolower($q->getSQL())
         );
     }

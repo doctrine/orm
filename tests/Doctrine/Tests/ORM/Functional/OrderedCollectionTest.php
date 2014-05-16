@@ -7,8 +7,6 @@ use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\Models\Routing\RoutingRouteBooking;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected $locations = array();

@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\DDC117\DDC117ApproveChanges;
 use Doctrine\Tests\Models\DDC117\DDC117Editor;
 use Doctrine\Tests\Models\DDC117\DDC117Link;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-117
  */

@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()

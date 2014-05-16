@@ -95,7 +95,7 @@ class QueryBuilder
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
-    private $parameters = array();
+    private $parameters;
 
     /**
      * The index of the first result to retrieve.

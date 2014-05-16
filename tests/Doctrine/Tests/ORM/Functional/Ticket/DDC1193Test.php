@@ -1,8 +1,6 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 use DateTime, Doctrine\DBAL\Types\Type;
 
 class DDC1193Test extends \Doctrine\Tests\OrmFunctionalTestCase

@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-559
  */

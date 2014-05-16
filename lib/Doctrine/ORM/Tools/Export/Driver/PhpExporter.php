@@ -108,6 +108,10 @@ class PhpExporter extends AbstractExporter
                 'cascade'     => $cascade,
             );
 
+            if (isset($associationMapping['fetch'])) {
+                $associationMappingArray['fetch'] = $associationMapping['fetch'];
+            }
+
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $method = 'mapOneToOne';
                 $oneToOneMappingArray = array(

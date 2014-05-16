@@ -101,4 +101,13 @@ interface CacheFactory
      * @return \Doctrine\ORM\Cache\TimestampRegion The timestamp region.
      */
     public function getTimestampRegion();
+
+    /**
+     * Build \Doctrine\ORM\Cache
+     *
+     * @param EntityManagerInterface $entityManager
+     *
+     * @return \Doctrine\ORM\Cache
+     */
+    public function createCache(EntityManagerInterface $entityManager);
 }

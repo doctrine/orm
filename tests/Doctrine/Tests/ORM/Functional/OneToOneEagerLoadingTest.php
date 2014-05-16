@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\UnitOfWork;
-
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-952
  */
@@ -144,14 +140,14 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $train = $this->_em->find(get_class($train), $train->id);
         $this->assertSQLEquals(
-            "SELECT t0.id AS id1, t0.driver_id AS driver_id2, t3.id AS id4, t3.name AS name5, t0.owner_id AS owner_id6, t7.id AS id8, t7.name AS name9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?",
+            "SELECT t0.id AS id_1, t0.driver_id AS driver_id_2, t3.id AS id_4, t3.name AS name_5, t0.owner_id AS owner_id_6, t7.id AS id_8, t7.name AS name_9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?",
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
         $this->_em->clear();
         $driver = $this->_em->find(get_class($driver), $driver->id);
         $this->assertSQLEquals(
-            "SELECT t0.id AS id1, t0.name AS name2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)",
+            "SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)",
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }
@@ -175,13 +171,13 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // The last query is the eager loading of the owner of the train
         $this->assertSQLEquals(
-            "SELECT t0.id AS id1, t0.name AS name2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)",
+            "SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)",
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
         // The one before is the fetching of the waggon and train
         $this->assertSQLEquals(
-            "SELECT t0.id AS id1, t0.train_id AS train_id2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?",
+            "SELECT t0.id AS id_1, t0.train_id AS train_id_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?",
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
         );
     }
@@ -199,7 +195,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $waggon = $this->_em->find(get_class($owner), $owner->id);
         $this->assertSQLEquals(
-            "SELECT t0.id AS id1, t0.name AS name2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?",
+            "SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?",
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }

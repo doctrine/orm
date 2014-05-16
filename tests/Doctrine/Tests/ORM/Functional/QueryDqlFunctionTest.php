@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyManager;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Functional Query tests.
  *

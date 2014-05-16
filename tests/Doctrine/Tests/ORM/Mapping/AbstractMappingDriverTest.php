@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 {
     abstract protected function _loadDriver();
@@ -73,6 +71,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         ), $class->table['indexes']);
 
         return $class;
+    }
+
+    public function testEntityIndexFlags()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Comment');
+
+        $this->assertEquals(array(
+            0 => array(
+                'columns' => array('content'),
+                'flags' => array('fulltext')
+            )
+        ), $class->table['indexes']);
     }
 
     /**
@@ -1268,3 +1278,36 @@ class DDC807SubClasse2 {}
 class Address {}
 class Phonenumber {}
 class Group {}
+
+/**
+ * @Entity
+ * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"})})
+ */
+class Comment
+{
+    /**
+     * @Column(type="text")
+     */
+    private $content;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setPrimaryTable(array(
+            'indexes' => array(
+                array('columns' => array('content'), 'flags' => array('fulltext'))
+            )
+        ));
+
+        $metadata->mapField(array(
+            'fieldName' => 'content',
+            'type' => 'text',
+            'scale' => 0,
+            'length' => NULL,
+            'unique' => false,
+            'nullable' => false,
+            'precision' => 0,
+            'columnName' => 'content',
+        ));
+    }
+}

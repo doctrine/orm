@@ -17,6 +17,8 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Vehicle'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Car'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Animal'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog'),
             ));
         } catch(\Exception $e) {
         }
@@ -212,6 +214,15 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals($expectedColumnName, $actualColumnName);
     }
+
+    public function testInlineEmbeddableInMappedSuperClass()
+    {
+        $isFieldMapped = $this->_em
+            ->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog')
+            ->hasField('address.street');
+
+        $this->assertTrue($isFieldMapped);
+    }
 }
 
 
@@ -395,4 +406,23 @@ class DDC3028Id
     {
         $this->id = $id;
     }
+}
+
+/**
+ * @MappedSuperclass
+ */
+abstract class DDC3027Animal
+{
+    /** @Id @GeneratedValue(strategy = "AUTO") @Column(type = "integer") */
+    public $id;
+
+    /** @Embedded(class = "DDC93Address") */
+    public $address;
+}
+
+/**
+ * @Entity
+ */
+class DDC3027Dog extends DDC3027Animal
+{
 }

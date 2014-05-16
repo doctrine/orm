@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Description of ExtraLazyCollectionTest
  *

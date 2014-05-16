@@ -183,6 +183,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\AttractionContactInfo',
             'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
         ),
+        'tweet' => array(
+            'Doctrine\Tests\Models\Tweet\User',
+            'Doctrine\Tests\Models\Tweet\Tweet'
+        )
     );
 
     /**

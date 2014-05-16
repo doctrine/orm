@@ -6,8 +6,6 @@ use Doctrine\Tests\Models\StockExchange\Stock;
 use Doctrine\Tests\Models\StockExchange\Market;
 use Doctrine\Tests\Models\StockExchange\Bond;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-250
  */

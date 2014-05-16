@@ -7,6 +7,8 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 
 /**
  * @group DDC-2183
+ *
+ * @covers \Doctrine\ORM\Cache\CacheConfiguration
  */
 class CacheConfigTest extends DoctrineTestCase
 {
@@ -15,23 +17,14 @@ class CacheConfigTest extends DoctrineTestCase
      */
     private $config;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
 
         $this->config = new CacheConfiguration();
-    }
-
-    public function testSetGetCacheClassName()
-    {
-        $mockClass = get_class($this->getMock('Doctrine\ORM\Cache'));
-
-        $this->assertEquals('Doctrine\ORM\Cache\DefaultCache', $this->config->getCacheClassName());
-        $this->config->setCacheClassName($mockClass);
-        $this->assertEquals($mockClass, $this->config->getCacheClassName());
-
-        $this->setExpectedException('Doctrine\ORM\ORMException');
-        $this->config->setCacheClassName(__CLASS__);
     }
 
     public function testSetGetRegionLifetime()

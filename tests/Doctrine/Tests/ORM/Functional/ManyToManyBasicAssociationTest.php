@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsGroup,
     Doctrine\Common\Collections\ArrayCollection;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Basic many-to-many association tests.
  * ("Working with associations")

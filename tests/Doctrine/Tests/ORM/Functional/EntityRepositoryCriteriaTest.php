@@ -140,4 +140,29 @@ class EntityRepositoryCriteriaTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(1, count($dates));
     }
+
+    public function testCanCountWithoutLoadingCollection()
+    {
+        $this->loadFixture();
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+
+        $dates = $repository->matching(new Criteria());
+
+        $this->assertFalse($dates->isInitialized());
+        $this->assertCount(3, $dates);
+        $this->assertFalse($dates->isInitialized());
+
+        // Test it can work even with a constraint
+        $dates = $repository->matching(new Criteria(
+            Criteria::expr()->lte('datetime', new \DateTime('today'))
+        ));
+
+        $this->assertFalse($dates->isInitialized());
+        $this->assertCount(2, $dates);
+        $this->assertFalse($dates->isInitialized());
+
+        // Trigger a loading, to make sure collection is initialized
+        $date = $dates[0];
+        $this->assertTrue($dates->isInitialized());
+    }
 }
