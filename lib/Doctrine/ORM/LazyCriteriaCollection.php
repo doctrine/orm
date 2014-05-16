@@ -75,7 +75,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
         }
 
         // Return cached result in case count query was already executed
-        if ($this->count) {
+        if ($this->count !== null) {
             return $this->count;
         }
 
