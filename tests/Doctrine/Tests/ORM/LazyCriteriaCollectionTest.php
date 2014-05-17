@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Mocks\ConnectionMock;
+use stdClass;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -72,5 +73,34 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
 
         $this->assertSame(3, $this->lazyCriteriaCollection->count());
+    }
+
+    public function testMatchingUsesThePersisterOnlyOnce()
+    {
+        $foo = new stdClass();
+        $bar = new stdClass();
+        $baz = new stdClass();
+
+        $foo->val = 'foo';
+        $bar->val = 'bar';
+        $baz->val = 'baz';
+
+        $this
+            ->persister
+            ->expects($this->once())
+            ->method('loadCriteria')
+            ->with($this->criteria)
+            ->will($this->returnValue(array($foo, $bar, $baz)));
+
+        $criteria = new Criteria();
+
+        $criteria->andWhere($criteria->expr()->eq('val', 'foo'));
+
+        $filtered = $this->lazyCriteriaCollection->matching($criteria);
+
+        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $filtered);
+        $this->assertEquals(array($foo), $filtered->toArray());
+
+        $this->assertEquals(array($foo), $this->lazyCriteriaCollection->matching($criteria)->toArray());
     }
 }
