@@ -190,9 +190,6 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
     /**
      * {@inheritdoc}
-     * @param object         $entity
-     * @param array|Criteria $extraConditions
-     * @return bool
      */
     public function exists($entity, $extraConditions = array())
     {
