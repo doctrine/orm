@@ -168,7 +168,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         return (bool) $this->conn->fetchColumn($sql, $params);
     }
-    
+
     private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
     {
         $mapping     = $coll->getMapping();

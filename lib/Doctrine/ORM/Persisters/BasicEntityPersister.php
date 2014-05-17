@@ -1834,8 +1834,11 @@ class BasicEntityPersister implements EntityPersister
 
     /**
      * {@inheritdoc}
+     * @param object $entity
+     * @param array $extraConditions
+     * @return bool
      */
-    public function exists($entity, array $extraConditions = array())
+    public function exists($entity, $extraConditions = array())
     {
         $criteria = $this->class->getIdentifierValues($entity);
 
@@ -1843,7 +1846,7 @@ class BasicEntityPersister implements EntityPersister
             return false;
         }
 
-        if ($extraConditions) {
+        if (is_array($extraConditions)) {
             $criteria = array_merge($criteria, $extraConditions);
         }
 
@@ -1853,11 +1856,18 @@ class BasicEntityPersister implements EntityPersister
              . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
+        list($params) = $this->expandParameters($criteria);
+
+        if ($extraConditions instanceof Criteria) {
+            $sql                           .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
+            list($criteriaParams, $values) = $this->expandCriteriaParameters($extraConditions);
+
+            $params = array_merge($params, $criteriaParams);
+        }
+
         if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
-
-        list($params) = $this->expandParameters($criteria);
 
         return (bool) $this->conn->fetchColumn($sql, $params);
     }

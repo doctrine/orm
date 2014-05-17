@@ -190,8 +190,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
     /**
      * {@inheritdoc}
+     * @param object $entity
+     * @param array $extraConditions
+     * @return bool
      */
-    public function exists($entity, array $extraConditions = array())
+    public function exists($entity, $extraConditions = array())
     {
         if (empty($extraConditions)) {
             $key = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
