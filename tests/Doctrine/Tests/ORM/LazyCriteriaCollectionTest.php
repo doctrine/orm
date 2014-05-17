@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use PHPUnit_Framework_TestCase;
 
@@ -13,10 +15,27 @@ use PHPUnit_Framework_TestCase;
 class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var \Doctrine\ORM\Persisters\EntityPersister|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $persister;
+
+    /**
+     * @var Criteria
+     */
+    private $criteria;
+
+    /**
+     * @var LazyCriteriaCollection
+     */
+    private $lazyCriteriaCollection;
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp()
     {
-
+        $this->persister               = $this->getMock('Doctrine\ORM\Persisters\EntityPersister');
+        $this->criteria                = new Criteria();
+        $this->$lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
     }
 }
