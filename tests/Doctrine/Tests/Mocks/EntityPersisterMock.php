@@ -87,9 +87,6 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
 
     /**
      * {@inheritdoc}
-     * @param object $entity
-     * @param array $extraConditions
-     * @return bool|void
      */
     public function exists($entity, $extraConditions = array())
     {

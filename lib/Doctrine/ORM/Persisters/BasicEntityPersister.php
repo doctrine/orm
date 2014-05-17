@@ -1834,9 +1834,6 @@ class BasicEntityPersister implements EntityPersister
 
     /**
      * {@inheritdoc}
-     * @param object $entity
-     * @param array $extraConditions
-     * @return bool
      */
     public function exists($entity, $extraConditions = array())
     {
