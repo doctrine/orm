@@ -1,11 +1,5 @@
 # Upgrade to 2.5
 
-## Minor BC BREAK: EntityPersister `exists` now supports Criteria object
-
-As of 2.5, `EntityPersister` interface supports a Criteria object as the `extraConditions` params. It
-was previously typehinted to be an array, so if you implement your own persister, you need to modify
-the signature.
-
 ## Minor BC BREAK: Custom Hydrators API change
 
 As of 2.5, `AbstractHydrator` does not enforce the usage of cache as part of
