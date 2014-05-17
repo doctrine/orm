@@ -49,7 +49,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     protected $criteria;
 
     /**
-     * @var integer
+     * @var integer|null
      */
     private $count;
 
