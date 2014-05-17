@@ -34,8 +34,17 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->persister               = $this->getMock('Doctrine\ORM\Persisters\EntityPersister');
-        $this->criteria                = new Criteria();
-        $this->$lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
+        $this->persister              = $this->getMock('Doctrine\ORM\Persisters\EntityPersister');
+        $this->criteria               = new Criteria();
+        $this->lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
+    }
+
+    public function testCountIsCached()
+    {
+        $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(10));
+
+        $this->assertSame(10, $this->lazyCriteriaCollection->count());
+        $this->assertSame(10, $this->lazyCriteriaCollection->count());
+        $this->assertSame(10, $this->lazyCriteriaCollection->count());
     }
 }
