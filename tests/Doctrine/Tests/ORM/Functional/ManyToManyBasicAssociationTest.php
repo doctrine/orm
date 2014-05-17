@@ -420,9 +420,9 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals('Developers_1', $firstGroup->name);
         $this->assertFalse($groups->isInitialized());
 
-        // TEST GT OPERATOR
+        // TEST CONTAINS OPERATOR
 
-        $criteria = Criteria::create()->where(Criteria::expr()->gt('id', 1));
+        $criteria = Criteria::create()->where(Criteria::expr()->contains('name', '_1'));
         $result   = $groups->matching($criteria);
 
         $this->assertCount(1, $result);
@@ -430,18 +430,6 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $firstGroup = $result->first();
 
         $this->assertEquals('Developers_1', $firstGroup->name);
-        $this->assertFalse($groups->isInitialized());
-
-        // TEST LT OPERATOR
-
-        $criteria = Criteria::create()->where(Criteria::expr()->lt('id', 2));
-        $result   = $groups->matching($criteria);
-
-        $this->assertCount(1, $result);
-
-        $firstGroup = $result->first();
-
-        $this->assertEquals('Developers_0', $firstGroup->name);
         $this->assertFalse($groups->isInitialized());
     }
 }

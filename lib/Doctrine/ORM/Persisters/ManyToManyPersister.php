@@ -610,7 +610,7 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
         if ( ! empty($whereClauses)) {
             $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
         }
-
+var_dump($sql);
         $stmt     = $this->conn->executeQuery($sql, $params);
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
 
@@ -629,7 +629,7 @@ class ManyToManyPersister extends AbstractCollectionPersister implements SelectC
     {
         $expression = $criteria->getWhereExpression();
 
-        if (!$expression) {
+        if ( ! $expression) {
             return '';
         }
 
