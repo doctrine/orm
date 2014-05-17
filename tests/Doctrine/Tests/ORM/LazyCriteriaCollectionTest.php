@@ -56,4 +56,21 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertSame(0, $this->lazyCriteriaCollection->count());
         $this->assertSame(0, $this->lazyCriteriaCollection->count());
     }
+
+    public function testCountUsesWrappedCollectionWhenInitialized()
+    {
+        $this
+            ->persister
+            ->expects($this->once())
+            ->method('loadCriteria')
+            ->with($this->criteria)
+            ->will($this->returnValue(array('foo', 'bar', 'baz')));
+
+        // should never call the persister's count
+        $this->persister->expects($this->never())->method('count');
+
+        $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
+
+        $this->assertSame(3, $this->lazyCriteriaCollection->count());
+    }
 }
