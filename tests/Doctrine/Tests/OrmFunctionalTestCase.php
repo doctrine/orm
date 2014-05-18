@@ -186,6 +186,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         'tweet' => array(
             'Doctrine\Tests\Models\Tweet\User',
             'Doctrine\Tests\Models\Tweet\Tweet'
+        ),
+        'quote' => array(
+            'Doctrine\Tests\Models\Quote\Address',
+            'Doctrine\Tests\Models\Quote\Group',
+            'Doctrine\Tests\Models\Quote\NumericEntity',
+            'Doctrine\Tests\Models\Quote\Phone',
+            'Doctrine\Tests\Models\Quote\SimpleEntity',
+            'Doctrine\Tests\Models\Quote\User'
         )
     );
 

@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 
@@ -129,10 +130,13 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param Criteria|null $criteria
+     * @return int|mixed|void
      */
-    public function count(PersistentCollection $coll)
+    public function count(PersistentCollection $collection, Criteria $criteria = null)
     {
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($collection, true);
 
         $sql = 'SELECT count(*) FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
@@ -168,7 +172,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         return (bool) $this->conn->fetchColumn($sql, $params);
     }
-    
+
     private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
     {
         $mapping     = $coll->getMapping();

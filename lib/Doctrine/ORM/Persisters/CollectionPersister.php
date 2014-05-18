@@ -71,11 +71,12 @@ interface CollectionPersister
     /**
      * Counts the size of this persistent collection.
      *
-     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param \Doctrine\ORM\PersistentCollection         $collection
+     * @param \Doctrine\Common\Collections\Criteria|null $criteria
      *
      * @return integer
      */
-    public function count(PersistentCollection $collection);
+    public function count(PersistentCollection $collection, Criteria $criteria = null);
 
     /**
      * Slices elements.

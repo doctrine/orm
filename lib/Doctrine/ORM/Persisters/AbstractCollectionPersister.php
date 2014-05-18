@@ -150,8 +150,12 @@ abstract class AbstractCollectionPersister implements CollectionPersister
 
     /**
      * {@inheritdoc}
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param \Doctrine\Common\Collections\Criteria|null $criteria
+     * @throws \BadMethodCallException
+     * @return int|void
      */
-    public function count(PersistentCollection $coll)
+    public function count(PersistentCollection $collection, Criteria $criteria = null)
     {
         throw new \BadMethodCallException("Counting the size of this persistent collection is not supported by this CollectionPersister.");
     }
@@ -260,4 +264,27 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      * @return array
      */
     abstract protected function getInsertRowSQLParameters(PersistentCollection $coll, $element);
+
+    /**
+     * Gets the Select Where Condition from a Criteria object.
+     *
+     * @param \Doctrine\ORM\PersistentCollection    $coll
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
+     * @return string
+     */
+    protected function getSelectConditionCriteriaSQL(PersistentCollection $coll, Criteria $criteria)
+    {
+        $mapping    = $coll->getMapping();
+        $expression = $criteria->getWhereExpression();
+        $persister  = $this->uow->getEntityPersister($mapping['targetEntity']);
+
+        if ($expression === null) {
+            return '';
+        }
+
+        $visitor = new SqlExpressionVisitor($persister, $persister->getClassMetadata());
+
+        return $visitor->dispatch($expression);
+    }
 }
