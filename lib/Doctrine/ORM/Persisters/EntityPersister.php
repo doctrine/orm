@@ -319,10 +319,10 @@ interface EntityPersister
     /**
      * Checks whether the given managed entity exists in the database.
      *
-     * @param object         $entity
-     * @param array|Criteria $extraConditions
+     * @param object        $entity
+     * @param Criteria|null $extraConditions
      *
      * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
      */
-    public function exists($entity, $extraConditions = array());
+    public function exists($entity, Criteria $extraConditions = null);
 }

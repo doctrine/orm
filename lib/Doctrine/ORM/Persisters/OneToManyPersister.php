@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 
@@ -227,9 +228,9 @@ class OneToManyPersister extends AbstractCollectionPersister
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $id = current($uow->getEntityIdentifier($coll->getOwner()));
+        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $coll->getOwner()));
 
-        return $persister->exists($element, array($mapping['mappedBy'] => $id));
+        return $persister->exists($element, $criteria);
     }
 
     /**

@@ -1835,16 +1835,12 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function exists($entity, $extraConditions = array())
+    public function exists($entity, Criteria $extraConditions = null)
     {
         $criteria = $this->class->getIdentifierValues($entity);
 
         if ( ! $criteria) {
             return false;
-        }
-
-        if (is_array($extraConditions)) {
-            $criteria = array_merge($criteria, $extraConditions);
         }
 
         $alias = $this->getSQLTableAlias($this->class->name);
@@ -1855,7 +1851,7 @@ class BasicEntityPersister implements EntityPersister
 
         list($params) = $this->expandParameters($criteria);
 
-        if ($extraConditions instanceof Criteria) {
+        if (null !== $extraConditions) {
             $sql                           .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
             list($criteriaParams, $values) = $this->expandCriteriaParameters($extraConditions);
 
