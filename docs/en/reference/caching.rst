@@ -224,9 +224,8 @@ Deleting
 ~~~~~~~~
 
 As you might guess, deleting is just as easy as saving, checking
-and fetching. We have a few ways to delete cache entries. You can
-delete by an individual ID, regular expression, prefix, suffix or
-you can delete all entries.
+and fetching. You can delete by an individual ID, or you can 
+delete all entries.
 
 By Cache ID
 ^^^^^^^^^^^
