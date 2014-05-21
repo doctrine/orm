@@ -233,7 +233,7 @@ public function <methodName>()
 '/**
  * <description>
  *
- * @param <variableType>$<variableName>
+ * @param <variableType> $<variableName>
  *
  * @return <entity>
  */
@@ -251,7 +251,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 '/**
  * <description>
  *
- * @param <variableType>$<variableName>
+ * @param <variableType> $<variableName>
  *
  * @return <entity>
  */
@@ -269,7 +269,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 '/**
  * <description>
  *
- * @param <variableType>$<variableName>
+ * @param <variableType> $<variableName>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
@@ -1163,7 +1163,7 @@ public function __construct()
 
         $methodTypeHint = null;
         $types          = Type::getTypesMap();
-        $variableType   = $typeHint ? $this->getType($typeHint) . ' ' : null;
+        $variableType   = $typeHint ? $this->getType($typeHint) : null;
 
         if ($typeHint && ! isset($types[$typeHint])) {
             $variableType   =  '\\' . ltrim($variableType, '\\');
