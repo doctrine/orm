@@ -161,7 +161,7 @@ Add caching strategy to a root entity or a collection.
 
 Optional attributes:
 
--  **usage**: One of ``READ_ONLY``, ``READ_READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
+-  **usage**: One of ``READ_ONLY``, ``READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
 -  **region**: An specific region name
 
 .. _annref_changetrackingpolicy:
