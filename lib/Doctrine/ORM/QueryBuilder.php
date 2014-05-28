@@ -972,7 +972,28 @@ class QueryBuilder
     {
         return $this->add('set', new Expr\Comparison($key, Expr\Comparison::EQ, $value), true);
     }
-
+    
+     /**
+     * Check if a dql 'where' part already exists
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder();
+     *
+     *     // (...)
+     *
+     *     if ($hasWhere = $qb->hasWhere()) {
+     *         // (...)
+     *     }
+     * </code>
+     *
+     *
+     * @return boolean
+     */
+    public function hasWhere()
+    {
+        return is_null($this->_dqlParts['where']);
+    }
+    
     /**
      * Specifies one or more restrictions to the query result.
      * Replaces any previously specified restrictions, if any.
