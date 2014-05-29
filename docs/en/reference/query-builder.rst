@@ -156,6 +156,8 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
         public function where($where);
 
+        // NOTE: ->andWhere() can be used directly, without any ->where() before
+        //
         // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
         public function andWhere($where);
 
@@ -518,7 +520,7 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
     // "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC"
     // using QueryBuilder string support
     $qb->add('select', 'u')
-       ->add('from', 'User u')
+       ->add('from', 'UserH u')
        ->add('where', 'u.id = ?1')
        ->add('orderBy', 'u.name ASC');
 
