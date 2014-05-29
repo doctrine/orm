@@ -520,7 +520,7 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
     // "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC"
     // using QueryBuilder string support
     $qb->add('select', 'u')
-       ->add('from', 'UserH u')
+       ->add('from', 'User u')
        ->add('where', 'u.id = ?1')
        ->add('orderBy', 'u.name ASC');
 
