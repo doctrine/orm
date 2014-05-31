@@ -908,8 +908,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function newInstance()
     {
         if ($this->_prototype === null) {
-            if (version_compare(PHP_VERSION, '5.4') >= 0) {
-                $rc = new \ReflectionClass($this->name);
+            if (PHP_VERSION_ID >= 50400) {
+                $rc               = new \ReflectionClass($this->name);
                 $this->_prototype = $rc->newInstanceWithoutConstructor();
             } else {
                 $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
