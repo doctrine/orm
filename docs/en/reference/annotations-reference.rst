@@ -1071,7 +1071,7 @@ Example:
 
 Annotation describes the table an entity is persisted in. It is
 placed on the entity-class PHP DocBlock and is optional. If it is
-not specified the table name will default to the entities
+not specified the table name will default to the entity's
 unqualified classname.
 
 Required attributes:
