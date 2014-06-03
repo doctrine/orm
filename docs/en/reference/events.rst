@@ -178,8 +178,11 @@ the life-time of their registered entities.
 -  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
--  postFlush - The postFlush event occurs at the end of a flush operation. This
-   event is not a lifecycle callback.
+-  postFlush - The postFlush event occurs at the end of a flush operation **before** the
+   ``UnitOfWork`` has been reinitialized. This event is not a lifecycle callback.
+-  endFlush - The endFlush event occurs **after** the ``UnitOfWork`
+   has been reinitialized. It is possible to call the ``flush`` method within this
+   event. This event is not a lifecycle callback.
 -  onClear - The onClear event occurs when the EntityManager#clear() operation is
    invoked, after all references to entities have been removed from the unit of
    work. This event is not a lifecycle callback.
@@ -619,7 +622,9 @@ The following restrictions apply to the onFlush event:
 postFlush
 ~~~~~~~~~
 
-``postFlush`` is called at the end of ``EntityManager#flush()``.
+``postFlush`` is called after the ``EntityManager#flush()`` has completed, but
+before the ``UnitOfWork`` has been reinitialized. 
+
 ``EntityManager#flush()`` can **NOT** be called safely inside its listeners.
 
 .. code-block:: php
@@ -631,6 +636,29 @@ postFlush
     class PostFlushExampleListener
     {
         public function postFlush(PostFlushEventArgs $args)
+        {
+            // ...
+        }
+    }
+
+endFlush
+~~~~~~~~
+
+``endFlush`` is called after the ``EntityManager#flush()`` has completed and
+the ``UnitOfWork`` has been reinitialized. The event will only be fired  when
+there are pending changes in the ``UnitOfWork``.
+
+``EntityManager#flush()`` can safely be called inside its listeners.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ORM\Event\EndFlushEventArgs;
+
+    class EndFlushExampleListener
+    {
+        public function endFlush(EndFlushEventArgs $args)
         {
             // ...
         }

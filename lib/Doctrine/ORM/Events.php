@@ -150,6 +150,14 @@ final class Events
     const postFlush = 'postFlush';
 
     /**
+     * The endFlush event is identical to postFlush except that it is fired after the state
+     * of the UOW has been reset -- i.e. it is "safe" for listeners to call EntityManager#flush().
+     *
+     * @var string
+     */
+    const endFlush = 'endFlush';
+
+    /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
      * after all references to entities have been removed from the unit of work.
      *

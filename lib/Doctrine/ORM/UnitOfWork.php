@@ -45,6 +45,7 @@ use Doctrine\ORM\Persisters\SingleTablePersister;
 use Doctrine\ORM\Persisters\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\OneToManyPersister;
 use Doctrine\ORM\Persisters\ManyToManyPersister;
+use Doctrine\ORM\Event\EndFlushEventArgs;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -408,6 +409,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
         $this->orphanRemovals = array();
+
+        $this->dispatchEndFlushEvent();
     }
 
     /**
@@ -3321,6 +3324,9 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
+    /**
+     * Dispatch the Doctrine\ORM\Events::onFlush event
+     */
     private function dispatchOnFlushEvent()
     {
         if ($this->evm->hasListeners(Events::onFlush)) {
@@ -3328,10 +3334,23 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
+    /**
+     * Dispatch the Doctrine\ORM\Events::postFlush event
+     */
     private function dispatchPostFlushEvent()
     {
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
+        }
+    }
+
+    /**
+     * Dispatch the Doctrine\ORM\Events::endFlush event
+     */
+    private function dispatchEndFlushEvent()
+    {
+        if ($this->evm->hasListeners(Events::endFlush)) {
+            $this->evm->dispatchEvent(Events::endFlush, new EndFlushEventArgs($this->em));
         }
     }
 
