@@ -655,7 +655,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function noInheritanceOnMappedSuperClass($className)
     {
-        return new self("Its not supported to define inheritance information on a mapped superclass '" . $className . "'.");
+        return new self("It is not supported to define inheritance information on a mapped superclass '" . $className . "'.");
     }
 
     /**
