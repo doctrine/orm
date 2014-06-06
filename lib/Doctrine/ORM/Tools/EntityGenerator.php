@@ -134,7 +134,7 @@ class EntityGenerator
 
     /**
      * Visibility of the field
-     * 
+     *
      * @var string
      */
     protected $fieldVisibility = 'private';
@@ -570,7 +570,7 @@ public function __construct()
             return 'namespace ' . $this->getNamespace($metadata) .';';
         }
     }
-    
+
     protected function generateEntityUse()
     {
         if ($this->generateAnnotations) {
@@ -696,9 +696,9 @@ public function __construct()
                 $inClass = true;
             } elseif ($token[0] == T_FUNCTION) {
                 if ($tokens[$i+2][0] == T_STRING) {
-                    $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+2][1];
+                    $this->staticReflection[$lastSeenClass]['methods'][] = strtolower($tokens[$i+2][1]);
                 } elseif ($tokens[$i+2] == "&" && $tokens[$i+3][0] == T_STRING) {
-                    $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+3][1];
+                    $this->staticReflection[$lastSeenClass]['methods'][] = strtolower($tokens[$i+3][1]);
                 }
             } elseif (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i+2][0] != T_FUNCTION) {
                 $this->staticReflection[$lastSeenClass]['properties'][] = substr($tokens[$i+2][1], 1);
@@ -761,7 +761,7 @@ public function __construct()
 
         return (
             isset($this->staticReflection[$metadata->name]) &&
-            in_array($method, $this->staticReflection[$metadata->name]['methods'])
+            in_array(strtolower($method), $this->staticReflection[$metadata->name]['methods'])
         );
     }
 
@@ -1156,7 +1156,7 @@ public function __construct()
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
         }
-        $this->staticReflection[$metadata->name]['methods'][] = $methodName;
+        $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
         $var = sprintf('%sMethodTemplate', $type);
         $template = static::$$var;
@@ -1445,11 +1445,11 @@ public function __construct()
             if (isset($fieldMapping['nullable'])) {
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
-            
+
             if (isset($fieldMapping['unsigned']) && $fieldMapping['unsigned']) {
                 $column[] = 'options={"unsigned"=true}';
             }
-            
+
             if (isset($fieldMapping['columnDefinition'])) {
                 $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
             }
@@ -1571,15 +1571,15 @@ public function __construct()
     private function exportTableOptions(array $options)
     {
         $optionsStr = array();
-        
+
         foreach($options as $name => $option) {
             if (is_array($option)) {
                 $optionsStr[] = '"' . $name . '"={' . $this->exportTableOptions($option) . '}';
             } else {
                 $optionsStr[] = '"' . $name . '"="' . (string) $option . '"';
-            }            
+            }
         }
-        
+
         return implode(',', $optionsStr);
     }
 }

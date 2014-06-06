@@ -170,6 +170,30 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-3152
+     */
+    public function testDoesNotRegenerateExistingMethodsWithDifferentCase()
+    {
+        $metadata = $this->generateBookEntityFixture();
+
+        // Workaround to change existing fields case (just to simulate the use case)
+        $metadata->fieldMappings['status']['fieldName'] = 'STATUS';
+
+        // Should not throw a PHP fatal error
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
+
+        $this->newInstance($metadata);
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        $this->assertTrue($reflClass->hasProperty('status'));
+        $this->assertTrue($reflClass->hasProperty('STATUS'));
+        $this->assertTrue($reflClass->hasMethod('getStatus'));
+        $this->assertTrue($reflClass->hasMethod('setStatus'));
+    }
+
+    /**
      * @group DDC-2121
      */
     public function testMethodDocBlockShouldStartWithBackSlash()
