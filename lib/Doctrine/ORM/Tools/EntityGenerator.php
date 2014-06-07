@@ -1158,7 +1158,7 @@ public function __construct()
         }
 
         // Skips generating the SET method if the field is marked read-only
-        $fieldMapping = $metadata->fieldMappings[$fieldName];
+        $fieldMapping = isset($metadata->fieldMappings[$fieldName]) ? $metadata->fieldMappings[$fieldName] : array();
         if ($type === 'set' && isset($fieldMapping['readonly']) && $fieldMapping['readonly'] === true) {
             return '';
         }
