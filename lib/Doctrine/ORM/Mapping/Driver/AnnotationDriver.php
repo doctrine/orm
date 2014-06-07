@@ -593,6 +593,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             'length'    => $column->length,
             'unique'    => $column->unique,
             'nullable'  => $column->nullable,
+            'readonly'  => $column->readonly,
             'precision' => $column->precision
         );
 
