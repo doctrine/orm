@@ -243,6 +243,24 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("'en'", $filter->getParameter('locale'));
     }
 
+    public function testSQLFilterGetConnection()
+    {
+        // Setup mock connection
+        $conn = $this->getMockConnection();
+
+        $em = $this->getMockEntityManager($conn);
+        $em->expects($this->once())
+            ->method('getConnection')
+            ->will($this->returnValue($conn));
+
+        $filter = new MyLocaleFilter($em);
+
+        $reflMethod = new \ReflectionMethod('Doctrine\ORM\Query\Filter\SQLFilter', 'getConnection');
+        $reflMethod->setAccessible(true);
+
+        $this->assertTrue($reflMethod->invoke($filter) === $conn);
+    }
+
     public function testSQLFilterSetParameterInfersType()
     {
         // Setup mock connection
