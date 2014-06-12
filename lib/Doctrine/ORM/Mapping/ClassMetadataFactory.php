@@ -141,13 +141,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->completeIdGeneratorMapping($class);
         }
 
-        foreach ($class->embeddedClasses as $property => $embeddableClass) {
-            if (isset($embeddableClass['inherited'])) {
-                continue;
-            }
+        if (!$class->isMappedSuperclass) {
 
-            $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
-            $class->inlineEmbeddable($property, $embeddableMetadata);
+            foreach ($class->embeddedClasses as $property => $embeddableClass) {
+
+                if (isset($embeddableClass['inherited'])) {
+                    continue;
+                }
+
+                $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
+                $class->inlineEmbeddable($property, $embeddableMetadata);
+            }
         }
 
         if ($parent && $parent->isInheritanceTypeSingleTable()) {

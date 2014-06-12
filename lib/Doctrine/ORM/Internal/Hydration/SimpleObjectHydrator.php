@@ -32,9 +32,20 @@ class SimpleObjectHydrator extends AbstractHydrator
     private $class;
 
     /**
-     * @var array
+     * {@inheritdoc}
      */
-    private $declaringClasses = array();
+    protected function prepare()
+    {
+        if (count($this->_rsm->aliasMap) !== 1) {
+            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
+        }
+
+        if ($this->_rsm->scalarMappings) {
+            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
+        }
+
+        $this->class = $this->getClassMetadata(reset($this->_rsm->aliasMap));
+    }
 
     /**
      * {@inheritdoc}
@@ -50,31 +61,6 @@ class SimpleObjectHydrator extends AbstractHydrator
         $this->_em->getUnitOfWork()->triggerEagerLoads();
 
         return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function prepare()
-    {
-        if (count($this->_rsm->aliasMap) !== 1) {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
-        }
-
-        if ($this->_rsm->scalarMappings) {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
-        }
-
-        $this->class = $this->_em->getClassMetadata(reset($this->_rsm->aliasMap));
-
-        // We only need to add declaring classes if we have inheritance.
-        if ($this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_NONE) {
-            return;
-        }
-
-        foreach ($this->_rsm->declaringClasses as $column => $class) {
-            $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
-        }
     }
 
     /**

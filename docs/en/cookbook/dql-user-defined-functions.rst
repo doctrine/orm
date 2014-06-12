@@ -53,6 +53,17 @@ DQL query. ``$class`` is a string of a class-name which has to
 extend ``Doctrine\ORM\Query\Node\FunctionNode``. This is a class
 that offers all the necessary API and methods to implement a UDF.
 
+Instead of providing the function class name, you can also provide
+a callable that returns the function object:
+
+.. code-block:: php
+
+    <?php
+    $config = new \Doctrine\ORM\Configuration();
+    $config->addCustomStringFunction($name, function () {
+        return new MyCustomFunction();
+    });
+
 In this post we will implement some MySql specific Date calculation
 methods, which are quite handy in my opinion:
 

@@ -156,6 +156,8 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
         public function where($where);
 
+        // NOTE: ->andWhere() can be used directly, without any ->where() before
+        //
         // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
         public function andWhere($where);
 

@@ -75,6 +75,14 @@ interface EntityPersister
     public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null);
 
     /**
+     * Get the COUNT SQL to count entities (optionally based on a criteria)
+     *
+     * @param  array|\Doctrine\Common\Collections\Criteria $criteria
+     * @return string
+     */
+    public function getCountSQL($criteria = array());
+
+    /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
      *
      * @param $criteria
@@ -148,6 +156,14 @@ interface EntityPersister
      * @return void
      */
     public function delete($entity);
+
+    /**
+     * Count entities (optionally filtered by a criteria)
+     *
+     * @param  array|\Doctrine\Common\Collections\Criteria $criteria
+     * @return int
+     */
+    public function count($criteria = array());
 
     /**
      * Gets the name of the table that owns the column the given field is mapped to.

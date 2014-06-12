@@ -852,6 +852,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'isMappedSuperclass';
         }
 
+        if ($this->isEmbeddedClass) {
+            $serialized[] = 'isEmbeddedClass';
+        }
+
         if ($this->containsForeignIdentifier) {
             $serialized[] = 'containsForeignIdentifier';
         }
@@ -904,7 +908,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function newInstance()
     {
         if ($this->_prototype === null) {
-            $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+            if (PHP_VERSION_ID === 50429 || PHP_VERSION_ID === 50513) {
+                $this->_prototype = $this->reflClass->newInstanceWithoutConstructor();
+            } else {
+                $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+            }
         }
 
         return clone $this->_prototype;

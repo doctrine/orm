@@ -5,10 +5,12 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 
 class QueryTest extends \Doctrine\Tests\OrmTestCase
 {
+    /** @var EntityManager */
     protected $_em = null;
 
     protected function setUp()
@@ -176,5 +178,23 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsAddress',
             $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
         );
+    }
+
+    public function testDefaultQueryHints()
+    {
+        $config = $this->_em->getConfiguration();
+        $defaultHints = array(
+            'hint_name_1' => 'hint_value_1',
+            'hint_name_2' => 'hint_value_2',
+            'hint_name_3' => 'hint_value_3',
+        );
+
+        $config->setDefaultQueryHints($defaultHints);
+        $query = $this->_em->createQuery();
+        $this->assertSame($config->getDefaultQueryHints(), $query->getHints());
+        $this->_em->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
+        $this->assertNotSame($config->getDefaultQueryHints(), $query->getHints());
+        $q2 = clone $query;
+        $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
 }
