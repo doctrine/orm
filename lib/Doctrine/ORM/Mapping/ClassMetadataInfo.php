@@ -910,6 +910,9 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->_prototype === null) {
             if (method_exists($this->reflClass, 'newInstanceWithoutConstructor')) {
                 $this->_prototype = $this->reflClass->newInstanceWithoutConstructor();
+                if (method_exists($this->_prototype, '__wakeup')) {
+                    $this->_prototype->__wakeup();
+                }
             } else {
                 $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
             }
