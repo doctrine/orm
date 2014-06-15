@@ -612,7 +612,7 @@ Optional attributes:
 -  **mappedBy**: This option specifies the property name on the
    targetEntity that is the owning side of this relation. It is a
    required attribute for the inverse side of a relationship.
--  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
+-  **inversedBy**: The inversedBy attribute designates the field in the
    entity that is the inverse side of the relationship.
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY, EXTRA_LAZY or EAGER
@@ -786,7 +786,7 @@ Optional attributes:
 -  **orphanRemoval**: Boolean that specifies if orphans, inverse
    OneToOne entities that are not connected to any owning instance,
    should be removed by Doctrine. Defaults to false.
--  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
+-  **inversedBy**: The inversedBy attribute designates the field in the
    entity that is the inverse side of the relationship.
 
 Example:
