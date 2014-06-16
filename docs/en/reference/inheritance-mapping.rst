@@ -109,19 +109,19 @@ Example:
 
     .. code-block:: yaml
     
-    MyProject\Model\Person:
-        type: entity
-        inheritanceType: SINGLE_TABLE
-        discriminatorColumn:
+        MyProject\Model\Person:
+          type: entity
+          inheritanceType: SINGLE_TABLE
+          discriminatorColumn:
             name: discr
             type: string
-        discriminatorMap:
+          discriminatorMap:
             person: Person
             employee: Employee
+                
+        MyProject\Model\Employee:
+          type: entity
             
-    MyProject\Model\Employee:
-        type: entity
-        
 Things to note:
 
 
