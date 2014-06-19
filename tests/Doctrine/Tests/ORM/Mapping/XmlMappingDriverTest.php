@@ -23,9 +23,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $mappingDriver->loadMetadataForClass($className, $class);
 
         $expectedMap = array(
-            "foo" => "Doctrine\Tests\ORM\Mapping\CTIFoo",
-            "bar" => "Doctrine\Tests\ORM\Mapping\CTIBar",
-            "baz" => "Doctrine\Tests\ORM\Mapping\CTIBaz",
+            'foo' => 'Doctrine\Tests\ORM\Mapping\CTIFoo',
+            'bar' => 'Doctrine\Tests\ORM\Mapping\CTIBar',
+            'baz' => 'Doctrine\Tests\ORM\Mapping\CTIBaz',
         );
 
         $this->assertEquals(3, count($class->discriminatorMap));
