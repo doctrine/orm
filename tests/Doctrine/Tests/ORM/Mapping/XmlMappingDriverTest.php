@@ -2,10 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataFactory,
-    Doctrine\ORM\Mapping\Driver\XmlDriver,
-    Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -24,9 +23,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $mappingDriver->loadMetadataForClass($className, $class);
 
         $expectedMap = array(
-            "foo" => "Doctrine\Tests\ORM\Mapping\CTIFoo",
-            "bar" => "Doctrine\Tests\ORM\Mapping\CTIBar",
-            "baz" => "Doctrine\Tests\ORM\Mapping\CTIBaz",
+            'foo' => 'Doctrine\Tests\ORM\Mapping\CTIFoo',
+            'bar' => 'Doctrine\Tests\ORM\Mapping\CTIBar',
+            'baz' => 'Doctrine\Tests\ORM\Mapping\CTIBaz',
         );
 
         $this->assertEquals(3, count($class->discriminatorMap));
@@ -117,7 +116,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-889
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml' for class 'Doctrine\Tests\Models\DDC889\DDC889Class'.
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
