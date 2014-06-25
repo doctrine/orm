@@ -89,4 +89,19 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame($cache, $config->getMetadataCacheImpl());
         $this->assertSame($cache, $config->getQueryCacheImpl());
     }
+
+    /**
+     * @group DDC-3190
+     */
+    public function testConfigureCacheCustomInstance()
+    {
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+        $cache->expects($this->never())->method('setNamespace');
+
+        $config = Setup::createConfiguration(array(), true, $cache);
+
+        $this->assertSame($cache, $config->getResultCacheImpl());
+        $this->assertSame($cache, $config->getMetadataCacheImpl());
+        $this->assertSame($cache, $config->getQueryCacheImpl());
+    }
 }
