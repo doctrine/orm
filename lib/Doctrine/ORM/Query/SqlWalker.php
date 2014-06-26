@@ -753,12 +753,20 @@ class SqlWalker implements TreeWalker
                 $owningClass   = (isset($assoc['inherited'])) ? $this->em->getClassMetadata($assoc['inherited']) : $class;
                 $sqlTableAlias = $this->getSQLTableAlias($owningClass->getTableName(), $dqlAlias);
 
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                     $columnAlias = $this->getSQLColumnAlias($srcColumn);
 
+                    $type                   = null;
+                    $isIdentifier           = (isset($assoc['id']) && $assoc['id'] === true);
                     $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
 
-                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
+                    if (isset($targetClass->fieldNames[$targetColumn])) {
+                        $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
+                    }
+
+                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn, $isIdentifier, $type);
                 }
             }
 
