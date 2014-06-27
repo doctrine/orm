@@ -682,8 +682,14 @@ final class Query extends AbstractQuery
     {
         ksort($this->_hints);
 
+        $platform = $this->getEntityManager()
+            ->getConnection()
+            ->getDatabasePlatform()
+            ->getName();
+
         return md5(
             $this->getDql() . serialize($this->_hints) .
+            '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
