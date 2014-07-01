@@ -109,8 +109,14 @@ class FilterCollection
 
         if ( ! $this->isEnabled($name)) {
             $filterClass = $this->config->getFilterClassName($name);
+            $filterParameters = $this->config->getFilterParameters($name);
+            $filter = new $filterClass($this->em);
 
-            $this->enabledFilters[$name] = new $filterClass($this->em);
+            foreach ($filterParameters as $param => $value) {
+                $filter->setParameter($param, $value);
+            }
+
+            $this->enabledFilters[$name] = $filter;
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);

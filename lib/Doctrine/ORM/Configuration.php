@@ -638,12 +638,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Adds a filter to the list of possible filters.
      *
-     * @param string $name      The name of the filter.
-     * @param string $className The class name of the filter.
+     * @param string $name       The name of the filter.
+     * @param string $className  The class name of the filter.
+     * @param array  $parameters The parameters for the filter.
      */
-    public function addFilter($name, $className)
+    public function addFilter($name, $className, array $parameters = array())
     {
-        $this->_attributes['filters'][$name] = $className;
+        $this->_attributes['filters'][$name] = array(
+            'class' => $className,
+            'parameters' => $parameters
+        );
     }
 
     /**
@@ -651,13 +655,26 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
-     *  defined.
+     * @return string|null The class name of the filter, or null if it is undefined
      */
     public function getFilterClassName($name)
     {
         return isset($this->_attributes['filters'][$name])
-            ? $this->_attributes['filters'][$name]
+            ? $this->_attributes['filters'][$name]['class']
+            : null;
+    }
+
+    /**
+     * Gets the parameters for a given filter name.
+     *
+     * @param string $name The name of the filter.
+     *
+     * @return array The parameters for the filter, or null if it is undefined
+     */
+    public function getFilterParameters($name)
+    {
+        return isset($this->_attributes['filters'][$name])
+            ? $this->_attributes['filters'][$name]['parameters']
             : null;
     }
 
