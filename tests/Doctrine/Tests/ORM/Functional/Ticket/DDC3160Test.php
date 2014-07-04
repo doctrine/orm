@@ -3,16 +3,16 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * FlushEventTest
  *
  * @author robo
  */
-class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3160Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         $this->useModelSet('cms');
@@ -24,7 +24,7 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testNoUpdateOnInsert()
     {
-        $listener = new OnFlushListener();
+        $listener = new DDC3160OnFlushListener();
         $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
 
         $user = new CmsUser;
@@ -43,7 +43,7 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-class OnFlushListener
+class DDC3160OnFlushListener
 {
     public $inserts = 0;
     public $updates = 0;
