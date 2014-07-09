@@ -628,6 +628,24 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsMemberOfExpressionManyToManyParameterArray()
+    {
+        // "Get all users who are members of $group."
+        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+
+        $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group->id = 101;
+        $group2 = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group2->id = 105;
+        $q->setParameter('param', array($group, $group2));
+
+        $this->assertEquals(
+            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (?))',
+            $q->getSql()
+        );
+    }
+
     public function testSupportsMemberOfExpressionSelfReferencing()
     {
         // "Get all persons who have $person as a friend."
