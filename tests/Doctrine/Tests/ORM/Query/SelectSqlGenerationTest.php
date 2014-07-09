@@ -630,7 +630,6 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsMemberOfExpressionManyToManyParameterArray()
     {
-        // "Get all users who are members of $group."
         $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
         $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
