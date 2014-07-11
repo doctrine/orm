@@ -925,12 +925,13 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($changeSet) {
-            $this->entityChangeSets[$oid] = (isset($this->entityChangeSets[$oid]))
-                ? array_merge($this->entityChangeSets[$oid], $changeSet)
-                : $changeSet;
-
+            if (isset($this->entityChangeSets[$oid])) {
+                $this->entityChangeSets[$oid] = array_merge($this->entityChangeSets[$oid], $changeSet);
+            } else if ( ! isset($this->entityInsertions[$oid])) {
+                $this->entityChangeSets[$oid] = $changeSet;
+                $this->entityUpdates[$oid]    = $entity;
+            }
             $this->originalEntityData[$oid] = $actualData;
-            $this->entityUpdates[$oid]      = $entity;
         }
     }
 
@@ -2499,7 +2500,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $id = array($class->identifier[0] => $id);
         }
-        
+
         $idHash = implode(' ', $id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
