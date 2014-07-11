@@ -623,7 +623,24 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $q->setParameter('param', $group);
 
         $this->assertEquals(
-            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id = ?)',
+            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (?))',
+            $q->getSql()
+        );
+    }
+
+    public function testSupportsMemberOfExpressionManyToManyParameterArray()
+    {
+        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+
+        $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group->id = 101;
+        $group2 = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group2->id = 105;
+        $q->setParameter('param', array($group, $group2));
+
+        $this->assertEquals(
+            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (?))',
             $q->getSql()
         );
     }
@@ -637,7 +654,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, array('id' => 101));
         $q->setParameter('param', $person);
         $this->assertEquals(
-            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id = ?)',
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id IN (?))',
             $q->getSql()
         );
     }
@@ -648,7 +665,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.email MEMBER OF u.groups');
 
         $this->assertEquals(
-            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id = c0_.email_id)',
+            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (c0_.email_id))',
             $q->getSql()
         );
     }
@@ -659,7 +676,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u MEMBER OF u.groups');
 
         $this->assertEquals(
-            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id = c0_.id)',
+            'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (c0_.id))',
             $q->getSql()
         );
     }
