@@ -21,7 +21,7 @@ class DDC2785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $counter = 0;
         do {
-            $object = $this->createObject();
+            $object = $this->createObject($counter);
             $counter++;
             if ($counter > 1000) {
                 //mark as skipped ? (I never hit this on PHP 5.3 at least)
@@ -32,10 +32,10 @@ class DDC2785Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($object));
     }
 
-    private function createObject()
+    private function createObject($counter)
     {
         $phone = new CmsPhonenumber();
-        $phone->phonenumber = uniqid();
+        $phone->phonenumber = 'pn-' . $counter;
         $hash = spl_object_hash($phone);
 
         if (!array_key_exists($hash, $this->hashes)) {
