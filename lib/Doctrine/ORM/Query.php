@@ -287,9 +287,13 @@ final class Query extends AbstractQuery
 
         // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
+        $paramCount = count($this->parameters);
+        $mappingCount = count($paramMappings);
 
-        if (count($paramMappings) != count($this->parameters)) {
-            throw QueryException::invalidParameterNumber();
+        if ($paramCount > $mappingCount) {
+            throw QueryException::tooManyParameters($mappingCount, $paramCount);
+        } elseif ($paramCount < $mappingCount) {
+            throw QueryException::tooFewParameters($mappingCount, $paramCount);
         }
 
         // evict all cache for the entity region
