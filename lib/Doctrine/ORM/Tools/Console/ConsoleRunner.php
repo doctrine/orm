@@ -32,6 +32,15 @@ use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
  */
 class ConsoleRunner
 {
+    
+    /**
+     * Collection of commands to be added to the cli.
+     * Used for registering commands for other Doctrine related projects, such as Migrations.
+     *
+     * @var array|Command[]
+     */
+    static protected $additionalCommands = array();
+    
     /**
      * Create a Symfony Console HelperSet
      *
@@ -61,6 +70,7 @@ class ConsoleRunner
         $cli->setHelperSet($helperSet);
         self::addCommands($cli);
         $cli->addCommands($commands);
+        $cli->addCommands(self::$additionalCommands);
         $cli->run();
     }
 
@@ -93,6 +103,14 @@ class ConsoleRunner
             new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
             new \Doctrine\ORM\Tools\Console\Command\InfoCommand()
         ));
+    }
+
+    /**
+     * @param Command $command
+     */
+    static public function addAdditionalCommand(Command $command)
+    {
+        self::$additionalCommands[] = $command;
     }
 
     static public function printCliConfigTemplate()
