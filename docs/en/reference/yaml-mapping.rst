@@ -94,6 +94,14 @@ of several common elements:
           unique: true
           options:
             fixed: true
+            comment: User's email address
+        loginCount:
+          type: integer
+          column: login_count
+          nullable: false
+          options:
+            unsigned: true
+            default: 0
       oneToOne:
         address:
           targetEntity: Address

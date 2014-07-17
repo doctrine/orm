@@ -109,6 +109,26 @@ Optional attributes:
 
 -  **nullable**: Determines if NULL values allowed for this column.
 
+-  **options**: Array of additional options:
+
+   -  ``default``: The default value to set for the column if no value
+      is supplied.
+
+   -  ``unsigned``: Boolean value to determine if the column should
+      be capable of representing only non-negative integers
+      (applies only for integer column and might not be supported by
+      all vendors).
+
+   -  ``fixed``: Boolean value to determine if the specified length of
+      a string column should be fixed or varying (applies only for
+      string/binary column and might not be supported by all vendors).
+
+   -  ``comment``: The comment of the column in the schema (might not
+      be supported by all vendors).
+
+   -  ``customSchemaOptions``: Array of additional schema options
+      which are mostly vendor specific.
+
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
@@ -120,7 +140,12 @@ Optional attributes:
    attribute still handles the conversion between PHP and Database
    values. If you use this attribute on a column that is used for
    joins between tables you should also take a look at
-   :ref:`@JoinColumn <annref_joincolumn>`. 
+   :ref:`@JoinColumn <annref_joincolumn>`.
+
+.. note::
+
+    For more detailed information on each attribute, please refer to
+    the DBAL ``Schema-Representation`` documentation.
 
 Examples:
 
@@ -131,16 +156,26 @@ Examples:
      * @Column(type="string", length=32, unique=true, nullable=false)
      */
     protected $username;
-    
+
     /**
      * @Column(type="string", columnDefinition="CHAR(2) NOT NULL")
      */
     protected $country;
-    
+
     /**
      * @Column(type="decimal", precision=2, scale=1)
      */
     protected $height;
+
+    /**
+     * @Column(type="string", length=2, options={"fixed":true, "comment":"Initial letters of first and last name"})
+     */
+    protected $initials;
+
+    /**
+     * @Column(type="integer", name="login_count" nullable=false, options={"unsigned":true, "default":0})
+     */
+    protected $loginCount;
 
 .. _annref_column_result:
 
@@ -222,7 +257,7 @@ Optional attributes:
 ~~~~~~~~~~~~~~~~~~~~~
 
 The discriminator map is a required annotation on the
-topmost/super class in an inheritance hierarchy. Its only argument is an 
+topmost/super class in an inheritance hierarchy. Its only argument is an
 array which defines which class should be saved under
 which name in the database. Keys are the database value and values
 are the classes, either as fully- or as unqualified class names
@@ -447,7 +482,7 @@ Examples:
     {
         // ...
     }
-    
+
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -640,7 +675,7 @@ Example:
      *      )
      */
     private $groups;
-    
+
     /**
      * Inverse Side
      *
