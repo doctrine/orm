@@ -41,7 +41,7 @@ final class Index implements Annotation
     public $flags;
 
     /**
-     * @var string
+     * @var array
      */
-    public $where;
+    public $options;
 }

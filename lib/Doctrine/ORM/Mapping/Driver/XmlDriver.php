@@ -201,8 +201,8 @@ class XmlDriver extends FileDriver
                     $index['flags'] = explode(',', (string) $indexXml['flags']);
                 }
 
-                if (isset($indexXml['where'])) {
-                    $index['where'] = $indexXml['where'];
+                if (isset($indexXml->options)) {
+                    $index['options'] = $this->_parseOptions($indexXml->options->children());
                 }
 
                 if (isset($indexXml['name'])) {
@@ -219,8 +219,9 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
                 $unique = array('columns' => explode(',', (string) $uniqueXml['columns']));
 
-                if (isset($uniqueXml['where'])) {
-                    $unique['where'] = $uniqueXml['where'];
+
+                if (isset($uniqueXml->options)) {
+                    $unique['options'] = $this->_parseOptions($uniqueXml->options->children());
                 }
 
                 if (isset($uniqueXml['name'])) {

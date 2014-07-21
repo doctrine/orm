@@ -36,7 +36,7 @@ final class UniqueConstraint implements Annotation
     public $columns;
 
     /**
-     * @var string
+     * @var array
      */
-    public $where;
+    public $options;
 }

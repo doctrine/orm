@@ -320,11 +320,11 @@
 
   <xs:complexType name="unique-constraint">
     <xs:sequence>
+      <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
     <xs:attribute name="columns" type="xs:string" use="required"/>
-    <xs:attribute name="where" type="xs:string" use="optional"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
@@ -338,12 +338,12 @@
 
   <xs:complexType name="index">
     <xs:sequence>
+      <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
     <xs:attribute name="columns" type="xs:string" use="required"/>
     <xs:attribute name="flags" type="xs:string" use="optional"/>
-    <xs:attribute name="where" type="xs:string" use="optional"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 

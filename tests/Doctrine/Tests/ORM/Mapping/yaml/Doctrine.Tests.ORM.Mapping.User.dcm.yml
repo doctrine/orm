@@ -74,7 +74,8 @@ Doctrine\Tests\ORM\Mapping\User:
   uniqueConstraints:
     search_idx:
       columns: name,user_email
-      where: name IS NOT NULL
+      options:
+        where: name IS NOT NULL
   indexes:
     name_idx:
       columns: name

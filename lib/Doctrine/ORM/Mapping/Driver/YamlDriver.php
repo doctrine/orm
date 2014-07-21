@@ -220,8 +220,8 @@ class YamlDriver extends FileDriver
                     }
                 }
 
-                if (isset($indexYml['where'])) {
-                    $index['where'] = $indexYml['where'];
+                if (isset($indexYml['options'])) {
+                    $index['options'] = $indexYml['options'];
                 }
 
                 $metadata->table['indexes'][$indexYml['name']] = $index;
@@ -241,8 +241,8 @@ class YamlDriver extends FileDriver
                     $unique = array('columns' => $uniqueYml['columns']);
                 }
 
-                if (isset($uniqueYml['where'])) {
-                    $unique['where'] = $uniqueYml['where'];
+                if (isset($uniqueYml['options'])) {
+                    $unique['options'] = $uniqueYml['options'];
                 }
 
                 $metadata->table['uniqueConstraints'][$uniqueYml['name']] = $unique;

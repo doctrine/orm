@@ -7,4 +7,5 @@ Doctrine\Tests\ORM\Mapping\Comment:
     0:
       columns: content
       flags: fulltext
-      where: "content IS NOT NULL"
+      options:
+        where: "content IS NOT NULL"

@@ -81,7 +81,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             0 => array(
                 'columns' => array('content'),
                 'flags' => array('fulltext'),
-                'where' => 'content IS NOT NULL',
+                'options' => array('where' => 'content IS NOT NULL'),
             )
         ), $class->table['indexes']);
     }
@@ -96,7 +96,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.');
 
         $this->assertEquals(array(
-            "search_idx" => array("columns" => array("name", "user_email"), 'where' => 'name IS NOT NULL')
+            "search_idx" => array("columns" => array("name", "user_email"), 'options' => array('where' => 'name IS NOT NULL'))
         ), $class->table['uniqueConstraints']);
 
         return $class;
@@ -939,7 +939,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  * @HasLifecycleCallbacks
  * @Table(
  *  name="cms_users",
- *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, where="name IS NOT NULL")},
+ *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"})},
  *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
@@ -1123,7 +1123,7 @@ class User
            'orderBy' => NULL,
           ));
         $metadata->table['uniqueConstraints'] = array(
-            'search_idx' => array('columns' => array('name', 'user_email'), 'where' => 'name IS NOT NULL'),
+            'search_idx' => array('columns' => array('name', 'user_email'), 'options'=> array('where' => 'name IS NOT NULL')),
         );
         $metadata->table['indexes'] = array(
             'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
@@ -1282,7 +1282,7 @@ class Group {}
 
 /**
  * @Entity
- * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, where="content IS NOT NULL")})
+ * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
  */
 class Comment
 {
@@ -1296,7 +1296,7 @@ class Comment
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
             'indexes' => array(
-                array('columns' => array('content'), 'flags' => array('fulltext'), 'where' => 'content IS NOT NULL')
+                array('columns' => array('content'), 'flags' => array('fulltext'), 'options' => array('where' => 'content IS NOT NULL'))
             )
         ));
 
