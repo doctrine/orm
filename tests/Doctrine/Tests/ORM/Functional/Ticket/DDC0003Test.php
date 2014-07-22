@@ -1,0 +1,104 @@
+<?php
+
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/**
+ * Functional tests for get Id after clone child entity
+ *
+ * @author Lallement Thomas <thomas.lallement@9online.fr>
+ */
+class DDC0003Test extends OrmFunctionalTestCase
+{
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->setUpEntitySchema(array(
+            'Doctrine\Tests\ORM\Functional\Ticket\Journalist',
+            'Doctrine\Tests\ORM\Functional\Ticket\Participant',
+            'Doctrine\Tests\ORM\Functional\Ticket\Status',
+            'Doctrine\Tests\ORM\Functional\Ticket\ProfileStatus',
+        ));
+    }
+
+    public function testIssueGetId()
+    {
+        $profileStatus = new ProfileStatus();
+
+        $participant = new Journalist();
+        $participant->profileStatus = $profileStatus;
+
+        $this->_em->persist($profileStatus);
+        $this->_em->persist($participant);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $participant = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\Participant', $participant->id);
+
+        $profileStatus = clone $participant->profileStatus;
+
+        $this->assertEquals('integer', gettype($profileStatus->getId()));
+        $this->assertEquals(1, $profileStatus->getId());
+    }
+}
+
+/**
+ * @Entity @Table(name="ddc0003_journalist")
+ */
+class Journalist extends Participant
+{
+}
+
+/**
+ * @Entity @Table(name="ddc0003_participant")
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({
+ *     "journalist" = "Journalist",
+ * })
+ */
+class Participant
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @ManyToOne(targetEntity="ProfileStatus")
+     */
+    public $profileStatus;
+}
+
+/**
+ * @Entity @Table(name="ddc0003_status")
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({
+ *     "profile" = "ProfileStatus",
+ * })
+ */
+class Status
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+
+/**
+ * @Entity
+ */
+class ProfileStatus extends Status
+{
+
+}
