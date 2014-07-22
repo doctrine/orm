@@ -420,9 +420,10 @@ Required attributes:
 
 Optional attributes:
 
--  **options**: Array of platform specific options
+-  **options**: Array of platform specific options:
 
-    -  **where**: SQL WHERE condition to be used for partial indexes. It will only have effect on supported platforms.
+   -  ``where``: SQL WHERE condition to be used for partial indexes. It will
+      only have effect on supported platforms.
 
 Example:
 
@@ -1159,9 +1160,10 @@ Required attributes:
 
 Optional attributes:
 
--  **options**: Array of platform specific options
+-  **options**: Array of platform specific options:
 
-    -  **where**: SQL WHERE condition to be used for partial indexes. It will only have effect on supported platforms.
+   -  ``where``: SQL WHERE condition to be used for partial indexes. It will
+      only have effect on supported platforms.
 
 Example:
 
