@@ -21,7 +21,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 $autoloadFiles = array(__DIR__ . '/../vendor/autoload.php',
-                       __DIR__ . '/../vendor/autoload.php');
+                       __DIR__ . '/../../../autoload.php');
 
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
