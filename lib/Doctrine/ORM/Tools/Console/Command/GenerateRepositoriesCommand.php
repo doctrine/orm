@@ -93,9 +93,9 @@ EOT
         if (count($metadatas)) {
             $numRepositories = 0;
             $generator = new EntityRepositoryGenerator();
-            
+
             $generator->setDefaultRepositoryName($repositoryName);
-            
+
             foreach ($metadatas as $metadata) {
                 if ($metadata->customRepositoryClassName) {
                     $output->writeln(

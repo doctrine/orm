@@ -90,7 +90,7 @@ class <className> extends <repositoryName>
         $repositoryName = $this->getDefaultRepositoryName();
 
         if (substr($repositoryName, 0, 1) != '\\') {
-            $repositoryName = '\\'.$repositoryName;
+            $repositoryName = '\\' . $repositoryName;
         }
 
         return $repositoryName;
