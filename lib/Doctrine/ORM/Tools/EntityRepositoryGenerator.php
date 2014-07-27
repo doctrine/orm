@@ -57,12 +57,10 @@ class <className> extends <repositoryName>
      */
     public function generateEntityRepositoryClass($fullClassName)
     {
-        $className = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
-
         $variables = array(
             '<namespace>'       => $this->generateEntityRepositoryNamespace($fullClassName),
             '<repositoryName>'  => $this->generateEntityRepositoryName($fullClassName),
-            '<className>'       => $className
+            '<className>'       => $this->generateClassName($fullClassName)
         );
 
         return str_replace(array_keys($variables), array_values($variables), self::$_template);
@@ -80,6 +78,26 @@ class <className> extends <repositoryName>
         $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
 
         return $namespace;
+    }
+
+    /**
+     * Generates the class name
+     * 
+     * @param string $fullClassName
+     * 
+     * @return string
+     */
+    protected function generateClassName($fullClassName)
+    {
+        $namespace = $this->getClassNamespace($fullClassName);
+
+        $className = $fullClassName;
+
+        if ($namespace) {
+            $className = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
+        }
+
+        return $className;
     }
 
     /**
