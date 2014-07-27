@@ -107,10 +107,10 @@ class <className> extends <repositoryName>
      *
      * @return string $namespace
      */
-    private function generateEntityRepositoryNamespace($fullClassName)
+    protected function generateEntityRepositoryNamespace($fullClassName)
     {
         $namespace = $this->getClassNamespace($fullClassName);
-        
+
         return $namespace ? 'namespace ' . $namespace . ';' : '';
     }
 
