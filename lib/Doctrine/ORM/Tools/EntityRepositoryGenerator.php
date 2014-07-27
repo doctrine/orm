@@ -61,11 +61,25 @@ class <className> extends <repositoryName>
 
         $variables = array(
             '<namespace>'       => $this->generateEntityRepositoryNamespace($fullClassName),
-            '<repositoryName>'  => $this->generateEntityRepositoryName(),
+            '<repositoryName>'  => $this->generateEntityRepositoryName($fullClassName),
             '<className>'       => $className
         );
 
         return str_replace(array_keys($variables), array_values($variables), self::$_template);
+    }
+
+    /**
+     * Generates the namespace, if class do not have namespace, return empty string instead.
+     *
+     * @param string $fullClassName
+     * 
+     * @return string $namespace
+     */
+    protected function getClassNamespace($fullClassName)
+    {
+        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+
+        return $namespace;
     }
 
     /**
@@ -77,19 +91,23 @@ class <className> extends <repositoryName>
      */
     private function generateEntityRepositoryNamespace($fullClassName)
     {
-        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+        $namespace = $this->getClassNamespace($fullClassName);
         
         return $namespace ? 'namespace ' . $namespace . ';' : '';
     }
 
     /**
+     * @param string $fullClassName
+     * 
      * @return string $repositoryName
      */
-    protected function generateEntityRepositoryName()
+    protected function generateEntityRepositoryName($fullClassName)
     {
+        $namespace = $this->getClassNamespace($fullClassName);
+
         $repositoryName = $this->_repositoryName;
 
-        if (substr($repositoryName, 0, 1) != '\\') {
+        if ($namespace && $repositoryName[0] !== '\\') {
             $repositoryName = '\\' . $repositoryName;
         }
 
@@ -121,6 +139,7 @@ class <className> extends <repositoryName>
 
     /**
      * @param string $repositoryName
+     * 
      * @return \Doctrine\ORM\Tools\EntityRepositoryGenerator
      */
     public function setDefaultRepositoryName($repositoryName)
