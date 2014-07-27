@@ -75,10 +75,10 @@ class <className> extends <repositoryName>
      *
      * @return string $namespace
      */
-    protected function generateEntityRepositoryNamespace($fullClassName)
+    private function generateEntityRepositoryNamespace($fullClassName)
     {
         $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
-
+        
         return $namespace ? 'namespace ' . $namespace . ';' : '';
     }
 
@@ -87,7 +87,7 @@ class <className> extends <repositoryName>
      */
     protected function generateEntityRepositoryName()
     {
-        $repositoryName = $this->getDefaultRepositoryName();
+        $repositoryName = $this->_repositoryName;
 
         if (substr($repositoryName, 0, 1) != '\\') {
             $repositoryName = '\\' . $repositoryName;
@@ -128,14 +128,6 @@ class <className> extends <repositoryName>
         $this->_repositoryName = $repositoryName;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultRepositoryName()
-    {
-        return $this->_repositoryName;
     }
 
 }
