@@ -43,7 +43,9 @@ class DefaultFilterFactory implements FilterFactory
         if(! $this->canCreate($em, $name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
+
         $filterClass = $em->getConfiguration()->getFilterClassName($name);
+
         return new $filterClass($em);
     }
 }

@@ -340,11 +340,11 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetGetSecondLevelCacheConfig()
     {
-        $mockClass = $this->getMock('Doctrine\ORM\Cache\CacheConfiguration');
+        $cacheConfiguration = $this->getMock('Doctrine\ORM\Cache\CacheConfiguration');
 
         $this->assertNull($this->configuration->getSecondLevelCacheConfiguration());
-        $this->configuration->setSecondLevelCacheConfiguration($mockClass);
-        $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
+        $this->configuration->setSecondLevelCacheConfiguration($cacheConfiguration);
+        $this->assertSame($cacheConfiguration, $this->configuration->getSecondLevelCacheConfiguration());
     }
 
     /**
@@ -352,11 +352,11 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetGetFilterFactory()
     {
-      $mockClass = $this->getMock('Doctrine\ORM\Query\Filter\FilterFactory');
+      $filterFactory = $this->getMock('Doctrine\ORM\Query\Filter\FilterFactory');
 
       $this->assertInstanceOf('Doctrine\ORM\Query\Filter\DefaultFilterFactory', $this->configuration->getFilterFactory());
-      $this->configuration->setFilterFactory($mockClass);
-      $this->assertEquals($mockClass, $this->configuration->getFilterFactory());
+      $this->configuration->setFilterFactory($filterFactory);
+      $this->assertSame($filterFactory, $this->configuration->getFilterFactory());
     }
 }
 

@@ -47,8 +47,10 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertTrue($filterCollection->has('testFilter'));
         $this->assertFalse($filterCollection->has('fakeFilter'));
+    }
 
-        // And try with a custom factory
+    public function testHasFilterWithCustomFactory()
+    {
         $em = $this->_getTestEntityManager();
         $factory = $this->getMock('Doctrine\ORM\Query\Filter\FilterFactory');
         $factory->expects($this->once())

@@ -30,8 +30,14 @@ use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
 class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var \Doctrine\ORM\Query\Filter\DefaultFilterFactory
+     */
     private $filterFactory;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
     /**
@@ -77,9 +83,10 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
 class MockFilter extends SQLFilter
 {
 
-    public function addFilterConstraint(ClassMetadata $targetEntity,
-            $targetTableAlias)
-    {
+    public function addFilterConstraint(
+        ClassMetadata $targetEntity,
+        $targetTableAlias
+    ) {
     }
 }
 
