@@ -23,7 +23,6 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
@@ -78,7 +77,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function createQueryBuilder($alias, $indexBy = null)
     {
-        return $this->_em->createQueryBuilder()
+        return $this->getEntityManager()->createQueryBuilder()
             ->select($alias)
             ->from($this->_entityName, $alias, $indexBy);
     }
@@ -94,7 +93,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function createResultSetMappingBuilder($alias)
     {
-        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager(), ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, $alias);
 
         return $rsm;
@@ -109,7 +108,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function createNamedQuery($queryName)
     {
-        return $this->_em->createQuery($this->_class->getNamedQuery($queryName));
+        return $this->getEntityManager()->createQuery($this->getClassMetadata()->getNamedQuery($queryName));
     }
 
     /**
@@ -121,11 +120,11 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function createNativeNamedQuery($queryName)
     {
-        $queryMapping   = $this->_class->getNamedNativeQuery($queryName);
-        $rsm            = new Query\ResultSetMappingBuilder($this->_em);
-        $rsm->addNamedNativeQueryMapping($this->_class, $queryMapping);
+        $queryMapping   = $this->getClassMetadata()->getNamedNativeQuery($queryName);
+        $rsm            = new Query\ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addNamedNativeQueryMapping($this->getClassMetadata(), $queryMapping);
 
-        return $this->_em->createNativeQuery($queryMapping['query'], $rsm);
+        return $this->getEntityManager()->createNativeQuery($queryMapping['query'], $rsm);
     }
 
     /**
@@ -135,7 +134,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function clear()
     {
-        $this->_em->clear($this->_class->rootEntityName);
+        $this->getEntityManager()->clear($this->getClassMetadata()->rootEntityName);
     }
 
     /**
@@ -151,7 +150,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function find($id, $lockMode = null, $lockVersion = null)
     {
-        return $this->_em->find($this->_entityName, $id, $lockMode, $lockVersion);
+        return $this->getEntityManager()->find($this->_entityName, $id, $lockMode, $lockVersion);
     }
 
     /**
@@ -176,7 +175,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->getEntityManager()->getUnitOfWork()->getEntityPersister($this->_entityName);
 
         return $persister->loadAll($criteria, $orderBy, $limit, $offset);
     }
@@ -191,7 +190,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findOneBy(array $criteria, array $orderBy = null)
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->getEntityManager()->getUnitOfWork()->getEntityPersister($this->_entityName);
 
         return $persister->load($criteria, null, null, array(), null, 1, $orderBy);
     }
@@ -235,7 +234,7 @@ class EntityRepository implements ObjectRepository, Selectable
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
-        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
+        if ($this->getClassMetadata()->hasField($fieldName) || $this->getClassMetadata()->hasAssociation($fieldName)) {
             switch (count($arguments)) {
                 case 1:
                     return $this->$method(array($fieldName => $arguments[0]));
@@ -274,17 +273,21 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * @return EntityManager
+	 * Returns the `EntityManager` object used to construct the repository.
+	 * 
+     * @return Doctrine\ORM\EntityManager
      */
-    protected function getEntityManager()
+    public function getEntityManager()
     {
         return $this->_em;
     }
 
     /**
-     * @return Mapping\ClassMetadata
+	 * Returns the `ClassMetadata` object used to construct the repository.
+	 * 
+     * @return Doctrine\ORM\Mapping\ClassMetadata
      */
-    protected function getClassMetadata()
+    public function getClassMetadata()
     {
         return $this->_class;
     }
@@ -299,7 +302,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function matching(Criteria $criteria)
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->getEntityManager()->getUnitOfWork()->getEntityPersister($this->_entityName);
 
         return new LazyCriteriaCollection($persister, $criteria);
     }
