@@ -95,10 +95,7 @@ class FilterCollection
      */
     private function getFilterFactory()
     {
-        if (! $this->filterFactory) {
-            $this->filterFactory = $this->em->getConfiguration()->getFilterFactory();
-        }
-        return $this->filterFactory;
+        return $this->filterFactory ?: $this->filterFactory = $this->em->getConfiguration()->getFilterFactory();
     }
 
     /**

@@ -40,8 +40,8 @@ class DefaultFilterFactory implements FilterFactory
      */
     public function createFilter(EntityManagerInterface $em, $name)
     {
-        if(! $this->canCreate($em, $name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+        if (! $this->canCreate($em, $name)) {
+            throw new FilterNotFoundException($name);
         }
 
         $filterClass = $em->getConfiguration()->getFilterClassName($name);

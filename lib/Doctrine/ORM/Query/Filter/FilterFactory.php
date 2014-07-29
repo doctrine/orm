@@ -41,7 +41,7 @@ interface FilterFactory
      * Creates a filter by that name
      * @param EntityManagerInterface $em
      * @param string $name
-     * @throws \InvalidArgumentException If filter with that name doesn't exist
+     * @throws FilterNotFoundException If filter with that name doesn't exist
      * @return SQLFilter
      */
     public function createFilter(EntityManagerInterface $em, $name);

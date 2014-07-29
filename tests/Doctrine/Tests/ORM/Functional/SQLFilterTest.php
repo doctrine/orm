@@ -171,11 +171,11 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Check for a disabled filter
         $em->getFilters()->disable("locale");
         $this->assertFalse($em->getFilters()->isEnabled("locale"));
-        
+
         // Check a non-existing filter
-        $this->assertFalse($em->getFilters()->isEnabled("foo_filter"));        
+        $this->assertFalse($em->getFilters()->isEnabled("foo_filter"));
     }
-    
+
     protected function configureFilters($em)
     {
         // Add filters to the configuration of the EM

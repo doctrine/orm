@@ -122,7 +122,7 @@ abstract class SQLFilter
 
         return true;
     }
-    
+
     /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *

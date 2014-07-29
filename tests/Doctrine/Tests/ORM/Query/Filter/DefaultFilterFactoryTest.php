@@ -25,7 +25,7 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
 
 /**
- * DefaultFilterFactory test case.
+ * @coversDefaultClass Doctrine\ORM\Query\Filter\DefaultFilterFactory
  */
 class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,13 +41,13 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
     private $em;
 
     /**
-     * Prepares the environment before running a test.
+     * {@inheritDoc}
      */
     protected function setUp()
     {
         $this->filterFactory = new DefaultFilterFactory();
 
-        $this->em = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+        $this->em = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $config = new Configuration();
@@ -56,7 +56,7 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests DefaultFilterFactory->canCreate()
+     * @covers ::canCreate
      */
     public function testCanCreate()
     {
@@ -65,18 +65,21 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests DefaultFilterFactory->createFilter()
+     * @covers ::createFilter
      */
     public function testCreateFilter()
     {
         $filter = $this->filterFactory->createFilter($this->em, 'existingFilter');
         $this->assertInstanceOf('Doctrine\Tests\ORM\Query\Filter\MockFilter', $filter);
+    }
 
-        try {
-            $this->filterFactory->createFilter($this->em, 'wrongFilter');
-            $this->fail('Should have thrown exception');
-        } catch (\InvalidArgumentException $e) {
-        }
+    /**
+     * @covers ::createFilter
+     * @expectedException Doctrine\ORM\Query\Filter\FilterNotFoundException
+     */
+    public function testCreateFilterWithWrongFilter()
+    {
+        $this->filterFactory->createFilter($this->em, 'wrongFilter');
     }
 }
 
