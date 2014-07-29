@@ -20,8 +20,6 @@
 namespace Doctrine\Tests\ORM\Query\Filter;
 
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
 
 /**
@@ -51,7 +49,7 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $config = new Configuration();
-        $config->addFilter('existingFilter', 'Doctrine\Tests\ORM\Query\Filter\MockFilter');
+        $config->addFilter('existingFilter', 'Doctrine\Tests\Mocks\NullFilter');
         $this->em->expects($this->any())->method('getConfiguration')->will($this->returnValue($config));
     }
 
@@ -70,7 +68,7 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateFilter()
     {
         $filter = $this->filterFactory->createFilter($this->em, 'existingFilter');
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Query\Filter\MockFilter', $filter);
+        $this->assertInstanceOf('Doctrine\Tests\Mocks\NullFilter', $filter);
     }
 
     /**
@@ -82,14 +80,3 @@ class DefaultFilterFactoryTest extends \PHPUnit_Framework_TestCase
         $this->filterFactory->createFilter($this->em, 'wrongFilter');
     }
 }
-
-class MockFilter extends SQLFilter
-{
-
-    public function addFilterConstraint(
-        ClassMetadata $targetEntity,
-        $targetTableAlias
-    ) {
-    }
-}
-
