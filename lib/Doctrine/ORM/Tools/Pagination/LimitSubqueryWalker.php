@@ -60,37 +60,34 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $parent = null;
-        $parentName = null;
+        $queryComponents = $this->_getQueryComponents();
+        // Get the root entity and alias from the AST fromClause
+        $from = $AST->fromClause->identificationVariableDeclarations;
+        $rootAlias = $from[0]->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass = $queryComponents[$rootAlias]['metadata'];
         $selectExpressions = array();
 
-        foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
+        foreach ($queryComponents as $dqlAlias => $qComp) {
             // Preserve mixed data in query for ordering.
             if (isset($qComp['resultVariable'])) {
                 $selectExpressions[] = new SelectExpression($qComp['resultVariable'], $dqlAlias);
                 continue;
             }
-
-            if ($qComp['parent'] === null && $qComp['nestingLevel'] == 0) {
-                $parent = $qComp;
-                $parentName = $dqlAlias;
-                continue;
-            }
         }
-
-        $identifier = $parent['metadata']->getSingleIdentifierFieldName();
-        if (isset($parent['metadata']->associationMappings[$identifier])) {
+        
+        $identifier = $rootClass->getSingleIdentifierFieldName();
+        if (isset($rootClass->associationMappings[$identifier])) {
             throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
         }
 
         $this->_getQuery()->setHint(
             self::IDENTIFIER_TYPE,
-            Type::getType($parent['metadata']->getTypeOfField($identifier))
+            Type::getType($rootClass->getTypeOfField($identifier))
         );
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
-            $parentName,
+            $rootAlias,
             $identifier
         );
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;

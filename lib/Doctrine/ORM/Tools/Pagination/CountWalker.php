@@ -50,40 +50,24 @@ class CountWalker extends TreeWalkerAdapter
             throw new \RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
         }
 
-        $rootComponents = array();
-        foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
-            $isParent = array_key_exists('parent', $qComp)
-                && $qComp['parent'] === null
-                && $qComp['nestingLevel'] == 0
-            ;
-            if ($isParent) {
-                foreach($AST->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
-                    $isRoot = $identificationVariableDeclaration->rangeVariableDeclaration
-                        && $identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable == $dqlAlias
-                        && $identificationVariableDeclaration->rangeVariableDeclaration->isRoot
-                    ;
-                    if ($isRoot) {
-                        $rootComponents[] = array($dqlAlias => $qComp);
-                        break;
-                    }
-                }
-            }
-        }
-        if (count($rootComponents) > 1) {
+        $queryComponents = $this->_getQueryComponents();
+        // Get the root entity and alias from the AST fromClause
+        $from = $AST->fromClause->identificationVariableDeclarations;
+        if (count($from) > 1) {
             throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
         }
-        $root                = reset($rootComponents);
-        $parentName          = key($root);
-        $parent              = current($root);
-        $identifierFieldName = $parent['metadata']->getSingleIdentifierFieldName();
+       
+        $rootAlias = $from[0]->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass = $queryComponents[$rootAlias]['metadata'];
+        $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
         $pathType = PathExpression::TYPE_STATE_FIELD;
-        if (isset($parent['metadata']->associationMappings[$identifierFieldName])) {
+        if (isset($rootClass->associationMappings[$identifierFieldName])) {
             $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
         }
 
         $pathExpression = new PathExpression(
-            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
+            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias,
             $identifierFieldName
         );
         $pathExpression->type = $pathType;
