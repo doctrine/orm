@@ -42,6 +42,8 @@ internally but also mean more work during ``flush``.
             $em->clear(); // Detaches all objects from Doctrine!
         }
     }
+    $em->flush(); //Persist objects that did not make up an entire batch
+    $em->clear();
 
 Bulk Updates
 ------------
