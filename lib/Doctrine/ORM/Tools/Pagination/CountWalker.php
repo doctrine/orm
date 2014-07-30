@@ -57,7 +57,16 @@ class CountWalker extends TreeWalkerAdapter
                 && $qComp['nestingLevel'] == 0
             ;
             if ($isParent) {
-                $rootComponents[] = array($dqlAlias => $qComp);
+                foreach($AST->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
+                    $isRoot = $identificationVariableDeclaration->rangeVariableDeclaration
+                        && $identificationVariableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable == $dqlAlias
+                        && $identificationVariableDeclaration->rangeVariableDeclaration->isRoot
+                    ;
+                    if ($isRoot) {
+                        $rootComponents[] = array($dqlAlias => $qComp);
+                        break;
+                    }
+                }
             }
         }
         if (count($rootComponents) > 1) {
