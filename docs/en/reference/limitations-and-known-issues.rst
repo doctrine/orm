@@ -65,18 +65,6 @@ Where the ``attribute_name`` column contains the key and
 The feature request for persistence of primitive value arrays
 `is described in the DDC-298 ticket <http://www.doctrine-project.org/jira/browse/DDC-298>`_.
 
-Value Objects
-~~~~~~~~~~~~~
-
-There is currently no native support value objects in Doctrine
-other than for ``DateTime`` instances or if you serialize the
-objects using ``serialize()/deserialize()`` which the DBAL Type
-"object" supports.
-
-The feature request for full value-object support
-`is described in the DDC-93 ticket <http://www.doctrine-project.org/jira/browse/DDC-93>`_.
-
-
 Cascade Merge with Bi-directional Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -133,6 +133,14 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
 
+        $reflMethod = new \ReflectionMethod($metadata->name, 'addComment');
+        $addCommentParameters = $reflMethod->getParameters();
+        $this->assertEquals('comment', $addCommentParameters[0]->getName());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'removeComment');
+        $removeCommentParameters = $reflMethod->getParameters();
+        $this->assertEquals('comment', $removeCommentParameters[0]->getName());
+
         $author = new EntityGeneratorAuthor();
         $book->setAuthor($author);
         $this->assertEquals($author, $book->getAuthor());
@@ -167,6 +175,30 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
         $this->assertTrue($reflClass->hasMethod('setTest'), "Check for method 'getTest' failed.");
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
+    }
+
+    /**
+     * @group DDC-3152
+     */
+    public function testDoesNotRegenerateExistingMethodsWithDifferentCase()
+    {
+        $metadata = $this->generateBookEntityFixture();
+
+        // Workaround to change existing fields case (just to simulate the use case)
+        $metadata->fieldMappings['status']['fieldName'] = 'STATUS';
+
+        // Should not throw a PHP fatal error
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
+
+        $this->newInstance($metadata);
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        $this->assertTrue($reflClass->hasProperty('status'));
+        $this->assertTrue($reflClass->hasProperty('STATUS'));
+        $this->assertTrue($reflClass->hasMethod('getStatus'));
+        $this->assertTrue($reflClass->hasMethod('setStatus'));
     }
 
     /**

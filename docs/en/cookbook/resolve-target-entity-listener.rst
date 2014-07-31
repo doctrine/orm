@@ -3,7 +3,7 @@ Keeping your Modules independent
 
 .. versionadded:: 2.2
 
-One of the goals of using modules is to create discreet units of functionality
+One of the goals of using modules is to create discrete units of functionality
 that do not have many (if any) dependencies, allowing you to use that
 functionality in other applications without including unnecessary items.
 

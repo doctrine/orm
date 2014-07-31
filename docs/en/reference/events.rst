@@ -191,6 +191,12 @@ the life-time of their registered entities.
     safe to access associations in a postLoad callback or event
     handler.
 
+.. warning::
+
+    Note that the postRemove event or any events triggered after an entity removal
+    can receive an uninitializable proxy in case you have configured an entity to
+    cascade remove relations. In this case, you should load yourself the proxy in
+    the associated pre event.
 
 You can access the Event constants from the ``Events`` class in the
 ORM package.

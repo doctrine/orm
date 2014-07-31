@@ -30,7 +30,7 @@ use Doctrine\ORM\Persisters\EntityPersister;
  * A lazy collection that allow a fast count when using criteria object
  * Once count gets executed once without collection being initialized, result
  * is cached and returned on subsequent calls until collection gets loaded,
- * then returning the number of loaded results. 
+ * then returning the number of loaded results.
  *
  * @since   2.5
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -80,6 +80,21 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
         }
 
         return $this->count = $this->entityPersister->count($this->criteria);
+    }
+
+    /**
+     * Do an optimized search of an element
+     *
+     * @param  object $element
+     * @return bool
+     */
+    public function contains($element)
+    {
+        if ($this->isInitialized()) {
+            return $this->collection->contains($element);
+        }
+
+        return $this->entityPersister->exists($element, $this->criteria);
     }
 
     /**
