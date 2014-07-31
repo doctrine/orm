@@ -134,7 +134,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT b0_.id AS id_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id WHERE b0_.id IN (?)", $whereInQuery->getSql()
+            "SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ INNER JOIN Category c1_ ON (b0_.category_id = c1_.id) WHERE b0_.id IN (?)", $whereInQuery->getSql()
         );
     }
     
@@ -147,7 +147,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT b0_.id AS id_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id WHERE 1 = 1 AND b0_.id IN (?)", $whereInQuery->getSql()
+            "SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ INNER JOIN Category c1_ ON (b0_.category_id = c1_.id) WHERE 1 = 1 AND b0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 }

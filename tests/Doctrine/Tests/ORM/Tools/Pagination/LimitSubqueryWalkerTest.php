@@ -80,7 +80,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id", 
+            "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id)", 
             $limitQuery->getSql()
         );
     }
@@ -94,7 +94,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id ORDER BY m0_.title ASC", 
+            "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id) ORDER BY m0_.title ASC", 
             $limitQuery->getSql()
         );
     }
