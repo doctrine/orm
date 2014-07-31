@@ -267,6 +267,15 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 
+    public function testSetGetRepositoryFactory()
+    {
+        $this->assertInstanceOf('Doctrine\ORM\Repository\RepositoryFactory', $this->configuration->getRepositoryFactory());
+        $this->assertInstanceOf('Doctrine\ORM\Repository\DefaultRepositoryFactory', $this->configuration->getRepositoryFactory());
+        $factory = $this->getMock('Doctrine\ORM\Repository\RepositoryFactory');
+        $this->assertSame($this->configuration, $this->configuration->setRepositoryFactory($factory));
+        $this->assertSame($factory, $this->configuration->getRepositoryFactory());
+    }
+
     /**
      * @group DDC-2183
      */

@@ -844,6 +844,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
     {
         $this->_attributes['repositoryFactory'] = $repositoryFactory;
+
+        return $this;
     }
 
     /**
