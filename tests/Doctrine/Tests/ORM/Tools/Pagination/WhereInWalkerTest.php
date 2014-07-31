@@ -128,7 +128,7 @@ class WhereInWalkerTest extends PaginationTestCase
     public function testWhereInQueryWithArbitraryJoin_NoWhere()
     {
         $whereInQuery  = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH b.category = c'
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c'
         );
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
@@ -141,7 +141,7 @@ class WhereInWalkerTest extends PaginationTestCase
     public function testWhereInQueryWithArbitraryJoin_SingleWhere()
     {
         $whereInQuery = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH b.category = c WHERE 1 = 1'
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c WHERE 1 = 1'
         );
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
