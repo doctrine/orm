@@ -121,5 +121,34 @@ class WhereInWalkerTest extends PaginationTestCase
             "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (NOT 1 = 2) AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
+    
+    /**
+     * Arbitrary Join 
+     */
+    public function testWhereInQueryWithArbitraryJoin_NoWhere()
+    {
+        $whereInQuery  = $this->entityManager->createQuery(
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH b.category = c'
+        );
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
+
+        $this->assertEquals(
+            "SELECT b0_.id AS id_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id WHERE b0_.id IN (?)", $whereInQuery->getSql()
+        );
+    }
+    
+    public function testWhereInQueryWithArbitraryJoin_SingleWhere()
+    {
+        $whereInQuery = $this->entityManager->createQuery(
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH b.category = c WHERE 1 = 1'
+        );
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
+
+        $this->assertEquals(
+            "SELECT b0_.id AS id_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id WHERE 1 = 1 AND b0_.id IN (?)", $whereInQuery->getSql()
+        );
+    }
 }
 
