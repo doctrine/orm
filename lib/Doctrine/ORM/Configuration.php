@@ -60,6 +60,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setProxyDir($dir)
     {
         $this->_attributes['proxyDir'] = $dir;
+
+        return $this;
     }
 
     /**
@@ -98,6 +100,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setAutoGenerateProxyClasses($bool)
     {
         $this->_attributes['autoGenerateProxyClasses'] = $bool;
+
+        return $this;
     }
 
     /**
@@ -122,6 +126,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setProxyNamespace($ns)
     {
         $this->_attributes['proxyNamespace'] = $ns;
+
+        return $this;
     }
 
     /**
@@ -137,6 +143,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setMetadataDriverImpl(MappingDriver $driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
+
+        return $this;
     }
 
     /**
@@ -178,6 +186,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function addEntityNamespace($alias, $namespace)
     {
         $this->_attributes['entityNamespaces'][$alias] = $namespace;
+
+        return $this;
     }
 
     /**
@@ -208,6 +218,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setEntityNamespaces(array $entityNamespaces)
     {
         $this->_attributes['entityNamespaces'] = $entityNamespaces;
+
+        return $this;
     }
 
     /**
@@ -256,6 +268,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setQueryCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
+
+        return $this;
     }
 
     /**
@@ -280,6 +294,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setHydrationCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
+
+        return $this;
     }
 
     /**
@@ -304,6 +320,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setMetadataCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+
+        return $this;
     }
 
     /**
@@ -317,6 +335,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function addNamedQuery($name, $dql)
     {
         $this->_attributes['namedQueries'][$name] = $dql;
+
+        return $this;
     }
 
     /**
@@ -349,6 +369,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
         $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
+
+        return $this;
     }
 
     /**
@@ -415,6 +437,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
+
+        return $this;
     }
 
     /**
@@ -450,6 +474,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($functions as $name => $className) {
             $this->addCustomStringFunction($name, $className);
         }
+
+        return $this;
     }
 
     /**
@@ -473,6 +499,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
+
+        return $this;
     }
 
     /**
@@ -489,6 +517,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['customNumericFunctions'][$name])
             ? $this->_attributes['customNumericFunctions'][$name]
             : null;
+
+        return $this;
     }
 
     /**
@@ -508,6 +538,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($functions as $name => $className) {
             $this->addCustomNumericFunction($name, $className);
         }
+
+        return $this;
     }
 
     /**
@@ -531,6 +563,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
+
+        return $this;
     }
 
     /**
@@ -566,6 +600,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($functions as $name => $className) {
             $this->addCustomDatetimeFunction($name, $className);
         }
+
+        return $this;
     }
 
     /**
@@ -582,6 +618,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
         }
+
+        return $this;
     }
 
     /**
@@ -609,6 +647,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function addCustomHydrationMode($modeName, $hydrator)
     {
         $this->_attributes['customHydrationModes'][$modeName] = $hydrator;
+
+        return $this;
     }
 
     /**
@@ -621,6 +661,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setClassMetadataFactoryName($cmfName)
     {
         $this->_attributes['classMetadataFactoryName'] = $cmfName;
+
+        return $this;
     }
 
     /**
@@ -644,6 +686,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function addFilter($name, $className)
     {
         $this->_attributes['filters'][$name] = $className;
+
+        return $this;
     }
 
     /**
@@ -681,6 +725,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['defaultRepositoryClassName'] = $className;
+
+        return $this;
     }
 
     /**
@@ -709,6 +755,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setNamingStrategy(NamingStrategy $namingStrategy)
     {
         $this->_attributes['namingStrategy'] = $namingStrategy;
+
+        return $this;
     }
 
     /**
@@ -739,6 +787,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
         $this->_attributes['quoteStrategy'] = $quoteStrategy;
+
+        return $this;
     }
 
     /**
@@ -766,6 +816,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setEntityListenerResolver(EntityListenerResolver $resolver)
     {
         $this->_attributes['entityListenerResolver'] = $resolver;
+
+        return $this;
     }
 
     /**
@@ -792,6 +844,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
     {
         $this->_attributes['repositoryFactory'] = $repositoryFactory;
+
+        return $this;
     }
 
     /**
@@ -841,6 +895,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig)
     {
         $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
+
+        return $this;
     }
 
     /**
