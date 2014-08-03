@@ -548,6 +548,85 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-1590
+     */
+    public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses()
+    {
+        $cmf    = new ClassMetadataFactory();
+        $em     = $this->_getTestEntityManager();
+
+        $cmf->setEntityManager($em);
+
+        $ns     = $this->_namespace;
+        $nsdir  = $this->_tmpDir . '/' . $ns;
+
+        $content = str_replace(
+            'namespace Doctrine\Tests\Models\DDC1590',
+            'namespace '.$ns,
+            file_get_contents(__DIR__ . '/../../Models/DDC1590/DDC1590User.php')
+        );
+
+        $fname = $nsdir . "/DDC1590User.php";
+        file_put_contents($fname, $content);
+        require $fname;
+
+
+        $metadata = $cmf->getMetadataFor($ns . '\DDC1590User');
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        // class DDC1590User extends DDC1590Entity { ... }
+        $source = file_get_contents($fname);
+
+        // class _DDC1590User extends DDC1590Entity { ... }
+        $source2    = str_replace('class DDC1590User', 'class _DDC1590User', $source);
+        $fname2     = $fname = $nsdir . "/_DDC1590User.php";
+        file_put_contents($fname2, $source2);
+        require $fname2;
+
+        // class __DDC1590User { ... }
+        $source3    = str_replace('class DDC1590User extends DDC1590Entity', 'class __DDC1590User', $source);
+        $fname3     = $fname = $nsdir . "/__DDC1590User.php";
+        file_put_contents($fname3, $source3);
+        require $fname3;
+
+
+        // class _DDC1590User extends DDC1590Entity { ... }
+        $rc2 = new \ReflectionClass($ns.'\_DDC1590User');
+
+        $this->assertSame($rc2->hasProperty('name'), true);
+        $this->assertSame($rc2->hasProperty('id'), true);
+        $this->assertSame($rc2->hasProperty('created_at'), true);
+        $this->assertSame($rc2->hasProperty('updated_at'), true);
+
+        $this->assertSame($rc2->hasMethod('getName'), true);
+        $this->assertSame($rc2->hasMethod('setName'), true);
+        $this->assertSame($rc2->hasMethod('getId'), true);
+        $this->assertSame($rc2->hasMethod('setId'), false);
+        $this->assertSame($rc2->hasMethod('getCreatedAt'), true);
+        $this->assertSame($rc2->hasMethod('setCreatedAt'), true);
+        $this->assertSame($rc2->hasMethod('getUpdatedAt'), true);
+        $this->assertSame($rc2->hasMethod('setUpdatedAt'), true);
+
+
+        // class __DDC1590User { ... }
+        $rc3 = new \ReflectionClass($ns.'\__DDC1590User');
+
+        $this->assertSame($rc3->hasProperty('name'), true);
+        $this->assertSame($rc3->hasProperty('id'), false);
+        $this->assertSame($rc3->hasProperty('created_at'), false);
+        $this->assertSame($rc3->hasProperty('updated_at'), false);
+
+        $this->assertSame($rc3->hasMethod('getName'), true);
+        $this->assertSame($rc3->hasMethod('setName'), true);
+        $this->assertSame($rc3->hasMethod('getId'), false);
+        $this->assertSame($rc3->hasMethod('setId'), false);
+        $this->assertSame($rc3->hasMethod('getCreatedAt'), false);
+        $this->assertSame($rc3->hasMethod('setCreatedAt'), false);
+        $this->assertSame($rc3->hasMethod('getUpdatedAt'), false);
+        $this->assertSame($rc3->hasMethod('setUpdatedAt'), false);
+    }
+    
+    /**
      * @return array
      */
     public function getEntityTypeAliasDataProvider()
