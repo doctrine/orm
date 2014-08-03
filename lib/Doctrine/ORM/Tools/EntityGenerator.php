@@ -751,7 +751,7 @@ public function __construct()
                 return true;
             }
         }
-        
+
         // check traits for existing method
         foreach ($this->getTraits($metadata) as $trait) {
             if ($trait->hasMethod($method)) {
