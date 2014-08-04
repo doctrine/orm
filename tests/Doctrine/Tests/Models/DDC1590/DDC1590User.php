@@ -15,27 +15,4 @@ class DDC1590User extends DDC1590Entity
      */
     protected $name;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return DDC1590User
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 }

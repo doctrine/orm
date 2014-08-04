@@ -21,11 +21,6 @@ abstract class DDC1590Entity
     protected $created_at;
 
     /**
-     * @Column(type="datetime")
-     */
-    protected $updated_at;
-
-    /**
      * Get id
      *
      * @return integer
@@ -57,29 +52,5 @@ abstract class DDC1590Entity
     public function getCreatedAt()
     {
         return $this->created_at;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     *
-     * @return DDC1590User
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updated_at = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updated_at;
     }
 }
