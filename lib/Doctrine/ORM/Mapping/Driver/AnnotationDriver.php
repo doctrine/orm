@@ -107,7 +107,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $index['flags'] = $indexAnnot->flags;
                     }
 
-                    if (! empty($indexAnnot->options)) {
+                    if ( ! empty($indexAnnot->options)) {
                         $index['options'] = $indexAnnot->options;
                     }
 
