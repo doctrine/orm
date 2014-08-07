@@ -1764,7 +1764,7 @@ class UnitOfWork implements PropertyChangedListener
         $flatId = array();
 
         foreach ($id as $idField => $idValue) {
-            if (isset($class->associationMappings[$idField])) {
+            if (isset($class->associationMappings[$idField]) && is_object($idValue)) {
                 $targetClassMetadata = $this->em->getClassMetadata($class->associationMappings[$idField]['targetEntity']);
                 $associatedId        = $this->getEntityIdentifier($idValue);
 
