@@ -31,6 +31,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Criteria;
@@ -76,6 +77,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Alexander <iam.asm89@gmail.com>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author Rob Caiger <rob@clocal.co.uk>
  * @since 2.0
  */
 class BasicEntityPersister implements EntityPersister
@@ -207,6 +209,13 @@ class BasicEntityPersister implements EntityPersister
     protected $quoteStrategy;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
@@ -215,11 +224,12 @@ class BasicEntityPersister implements EntityPersister
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
-        $this->em               = $em;
-        $this->class            = $class;
-        $this->conn             = $em->getConnection();
-        $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->em                  = $em;
+        $this->class               = $class;
+        $this->conn                = $em->getConnection();
+        $this->platform            = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy       = $em->getConfiguration()->getQuoteStrategy();
+        $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
     }
 
     /**
@@ -338,7 +348,9 @@ class BasicEntityPersister implements EntityPersister
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
-        $value = $this->conn->fetchColumn($sql, array_values((array) $id));
+        $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, (array) $id);
+
+        $value = $this->conn->fetchColumn($sql, array_values($flatId));
 
         return Type::getType($versionedClass->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->platform);
     }
