@@ -1759,7 +1759,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $id
      * @return array
      */
-    private function flattenIdentifier($class, $id)
+    public function flattenIdentifier($class, $id)
     {
         $flatId = array();
 
