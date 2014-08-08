@@ -258,7 +258,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $reflMethod = new \ReflectionMethod('Doctrine\ORM\Query\Filter\SQLFilter', 'getConnection');
         $reflMethod->setAccessible(true);
 
-        $this->assertTrue($reflMethod->invoke($filter) === $conn);
+        $this->assertSame($conn, $reflMethod->invoke($filter));
     }
 
     public function testSQLFilterSetParameterInfersType()
