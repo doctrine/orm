@@ -61,11 +61,11 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param EntityManager         $em    The EntityManager to use.
      * @param Mapping\ClassMetadata $class The class descriptor.
      */
-    public function __construct($em, Mapping\ClassMetadata $class)
+    public function __construct($em, Mapping\ClassMetadata $class = null)
     {
         $this->_entityName = $class->name;
         $this->_em         = $em;
-        $this->_class      = $class;
+        $this->_class      = $class ? $class : $this->_em->getMetadataFactory()->getMetadataFor($this->_entityName);
     }
 
     /**
