@@ -282,6 +282,19 @@ class Expr
     {
         return new Expr\Func('EXISTS', array($subquery));
     }
+    
+    /**
+     * Creates an instance of NOTEXISTS() function, with the given DQL Subquery.
+     *
+     * @param mixed $subquery DQL Subquery to be used in NOTEXISTS() function.
+     *
+     * @return Expr\Func
+     */
+    public function notExists($subquery)
+    {
+        return new Expr\Func('NOT EXISTS', array($subquery));
+    }
+
 
     /**
      * Creates an instance of ALL() function, with the given DQL Subquery.
