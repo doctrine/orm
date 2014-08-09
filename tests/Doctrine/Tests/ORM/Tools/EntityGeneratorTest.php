@@ -593,31 +593,31 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         // class _DDC1590User extends DDC1590Entity { ... }
         $rc2 = new \ReflectionClass($ns.'\_DDC1590User');
 
-        $this->assertSame($rc2->hasProperty('name'), true);
-        $this->assertSame($rc2->hasProperty('id'), true);
-        $this->assertSame($rc2->hasProperty('created_at'), true);
+        $this->assertTrue($rc2->hasProperty('name'));
+        $this->assertTrue($rc2->hasProperty('id'));
+        $this->assertTrue($rc2->hasProperty('created_at'));
 
-        $this->assertSame($rc2->hasMethod('getName'), true);
-        $this->assertSame($rc2->hasMethod('setName'), true);
-        $this->assertSame($rc2->hasMethod('getId'), true);
-        $this->assertSame($rc2->hasMethod('setId'), false);
-        $this->assertSame($rc2->hasMethod('getCreatedAt'), true);
-        $this->assertSame($rc2->hasMethod('setCreatedAt'), true);
+        $this->assertTrue($rc2->hasMethod('getName'));
+        $this->assertTrue($rc2->hasMethod('setName'));
+        $this->assertTrue($rc2->hasMethod('getId'));
+        $this->assertFalse($rc2->hasMethod('setId'));
+        $this->assertTrue($rc2->hasMethod('getCreatedAt'));
+        $this->assertTrue($rc2->hasMethod('setCreatedAt'));
 
 
         // class __DDC1590User { ... }
         $rc3 = new \ReflectionClass($ns.'\__DDC1590User');
 
-        $this->assertSame($rc3->hasProperty('name'), true);
-        $this->assertSame($rc3->hasProperty('id'), false);
-        $this->assertSame($rc3->hasProperty('created_at'), false);
+        $this->assertTrue($rc3->hasProperty('name'));
+        $this->assertFalse($rc3->hasProperty('id'));
+        $this->assertFalse($rc3->hasProperty('created_at'));
 
-        $this->assertSame($rc3->hasMethod('getName'), true);
-        $this->assertSame($rc3->hasMethod('setName'), true);
-        $this->assertSame($rc3->hasMethod('getId'), false);
-        $this->assertSame($rc3->hasMethod('setId'), false);
-        $this->assertSame($rc3->hasMethod('getCreatedAt'), false);
-        $this->assertSame($rc3->hasMethod('setCreatedAt'), false);
+        $this->assertTrue($rc3->hasMethod('getName'));
+        $this->assertTrue($rc3->hasMethod('setName'));
+        $this->assertFalse($rc3->hasMethod('getId'));
+        $this->assertFalse($rc3->hasMethod('setId'));
+        $this->assertFalse($rc3->hasMethod('getCreatedAt'));
+        $this->assertFalse($rc3->hasMethod('setCreatedAt'));
     }
     
     /**
