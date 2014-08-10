@@ -154,7 +154,7 @@ class EntityGenerator
         Type::SMALLINT      => 'integer',
         Type::TEXT          => 'string',
         Type::BLOB          => 'string',
-        Type::DECIMAL       => 'string',
+        Type::DECIMAL       => 'float',
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
     );
