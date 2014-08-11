@@ -142,14 +142,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         if (!$class->isMappedSuperclass) {
-
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
 
                 if (isset($embeddableClass['inherited'])) {
                     continue;
                 }
 
+                if ($embeddableClass['class'] === $class->name) {
+                    throw MappingException::infiniteEmbeddableNesting($class->name, $property);
+                }
+
                 $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
+
+                if ($embeddableMetadata->isEmbeddedClass) {
+                    $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
+                }
+
                 $class->inlineEmbeddable($property, $embeddableMetadata);
             }
         }
@@ -367,6 +375,34 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $subClass->embeddedClasses[$field] = $embeddedClass;
+        }
+    }
+
+    /**
+     * Adds nested embedded classes metadata to a parent class.
+     *
+     * @param ClassMetadata $subClass    Sub embedded class metadata to add nested embedded classes metadata from.
+     * @param ClassMetadata $parentClass Parent class to add nested embedded classes metadata to.
+     * @param string        $prefix      Embedded classes' prefix to use for nested embedded classes field names.
+     */
+    private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
+    {
+        foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
+            if (isset($embeddableClass['inherited'])) {
+                continue;
+            }
+
+            $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
+
+            $parentClass->mapEmbedded(array(
+                'fieldName' => $prefix . '.' . $property,
+                'class' => $embeddableMetadata->name,
+                'columnPrefix' => $embeddableClass['columnPrefix'],
+                'declaredField' => $embeddableClass['declaredField']
+                        ? $prefix . '.' . $embeddableClass['declaredField']
+                        : $prefix,
+                'originalField' => $embeddableClass['originalField'] ?: $property,
+            ));
         }
     }
 

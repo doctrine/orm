@@ -929,15 +929,31 @@ class ClassMetadataInfo implements ClassMetadata
         // Restore ReflectionClass and properties
         $this->reflClass = $reflService->getClass($this->name);
 
+        $parentReflFields = array();
+
+        foreach ($this->embeddedClasses as $property => $embeddedClass) {
+            if (isset($embeddedClass['declaredField'])) {
+                $parentReflFields[$property] = new ReflectionEmbeddedProperty(
+                    $parentReflFields[$embeddedClass['declaredField']],
+                    $reflService->getAccessibleProperty(
+                        $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
+                        $embeddedClass['originalField']
+                    ),
+                    $embeddedClass['class']
+                );
+
+                continue;
+            }
+
+            $parentReflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
+        }
+
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField'])) {
-                $declaringClass = isset($this->embeddedClasses[$mapping['declaredField']]['declared'])
-                                      ? $this->embeddedClasses[$mapping['declaredField']]['declared'] : $this->name;
-
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
-                    $reflService->getAccessibleProperty($declaringClass, $mapping['declaredField']),
-                    $reflService->getAccessibleProperty($this->embeddedClasses[$mapping['declaredField']]['class'], $mapping['originalField']),
-                    $this->embeddedClasses[$mapping['declaredField']]['class']
+                    $parentReflFields[$mapping['declaredField']],
+                    $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
+                    $mapping['originalClass']
                 );
                 continue;
             }
@@ -3171,15 +3187,13 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapEmbedded(array $mapping)
     {
-        if ($this->isEmbeddedClass) {
-            throw MappingException::noEmbeddablesInEmbeddable($this->name);
-        }
-
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = array(
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
+            'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
+            'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
         );
     }
 
@@ -3192,8 +3206,15 @@ class ClassMetadataInfo implements ClassMetadata
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['declaredField'] = $property;
-            $fieldMapping['originalField'] = $fieldMapping['fieldName'];
+            $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
+                ? $fieldMapping['originalClass']
+                : $embeddable->name;
+            $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
+                ? $property . '.' . $fieldMapping['declaredField']
+                : $property;
+            $fieldMapping['originalField'] = isset($fieldMapping['originalField'])
+                ? $fieldMapping['originalField']
+                : $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
