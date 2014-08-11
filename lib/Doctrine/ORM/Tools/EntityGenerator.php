@@ -1149,8 +1149,10 @@ public function __construct()
     protected function generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null,  $defaultValue = null)
     {
         $methodName = $type . Inflector::classify($fieldName);
+        $variableName = Inflector::camelize($fieldName);
         if (in_array($type, array("add", "remove"))) {
             $methodName = Inflector::singularize($methodName);
+            $variableName = Inflector::singularize($variableName);
         }
 
         if ($this->hasMethod($methodName, $metadata)) {
@@ -1171,10 +1173,10 @@ public function __construct()
         }
 
         $replacements = array(
-          '<description>'       => ucfirst($type) . ' ' . $fieldName,
+          '<description>'       => ucfirst($type) . ' ' . $variableName . ".\n",
           '<methodTypeHint>'    => $methodTypeHint,
           '<variableType>'      => $variableType,
-          '<variableName>'      => Inflector::camelize($fieldName),
+          '<variableName>'      => $variableName,
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
           '<variableDefault>'   => ($defaultValue !== null ) ? (' = '.$defaultValue) : '',

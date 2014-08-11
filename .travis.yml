@@ -38,3 +38,5 @@ matrix:
       env: DB=pgsql  # driver currently unsupported by HHVM
     - php: hhvm-nightly
       env: DB=mysqli # driver currently unsupported by HHVM
+  allow_failures:
+    - php: hhvm-nightly # hhvm-nightly currently chokes on composer installation

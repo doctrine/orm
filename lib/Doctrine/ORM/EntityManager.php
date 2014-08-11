@@ -425,7 +425,7 @@ use Doctrine\Common\Util\ClassUtils;
                     break;
 
                 case LockMode::NONE === $lockMode:
-                case LockMode::PESSIMISTIC_READ === $lockMode;
+                case LockMode::PESSIMISTIC_READ === $lockMode:
                 case LockMode::PESSIMISTIC_WRITE === $lockMode:
                     $persister = $unitOfWork->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
