@@ -65,6 +65,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $evm;
 
     /**
+     * @var array
+     */
+    private $embeddablesActiveNesting = array();
+
+    /**
      * @param EntityManager $em
      */
     public function setEntityManager(EntityManager $em)
@@ -148,9 +153,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     continue;
                 }
 
-                if ($embeddableClass['class'] === $class->name) {
+                if (isset($this->embeddablesActiveNesting[$embeddableClass['class']])) {
                     throw MappingException::infiniteEmbeddableNesting($class->name, $property);
                 }
+
+                $this->embeddablesActiveNesting[$class->name] = true;
 
                 $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
 
@@ -159,6 +166,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
 
                 $class->inlineEmbeddable($property, $embeddableMetadata);
+
+                unset($this->embeddablesActiveNesting[$class->name]);
             }
         }
 

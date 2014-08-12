@@ -223,20 +223,31 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($isFieldMapped);
     }
 
-    public function testThrowsExceptionOnInfiniteEmbeddableNesting()
+    /**
+     * @dataProvider getInfiniteEmbeddableNestingData
+     */
+    public function testThrowsExceptionOnInfiniteEmbeddableNesting($embeddableClassName, $declaredEmbeddableClassName)
     {
         $this->setExpectedException(
             'Doctrine\ORM\Mapping\MappingException',
             sprintf(
                 'Infinite nesting detected for embedded property %s::nested. ' .
                 'You cannot embed an embeddable from the same type inside an embeddable.',
-                __NAMESPACE__ . '\DDCInfiniteNestingEmbeddable'
+                __NAMESPACE__ . '\\' . $declaredEmbeddableClassName
             )
         );
 
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDCInfiniteNestingEmbeddable'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
         ));
+    }
+
+    public function getInfiniteEmbeddableNestingData()
+    {
+        return array(
+            array('DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'),
+            array('DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'),
+        );
     }
 }
 
@@ -510,5 +521,65 @@ class DDC3027Dog extends DDC3027Animal
 class DDCInfiniteNestingEmbeddable
 {
     /** @Embedded(class="DDCInfiniteNestingEmbeddable") */
+    public $nested;
+}
+
+/**
+ * @Embeddable
+ */
+class DDCNestingEmbeddable1
+{
+    /** @Embedded(class="DDC3028Id") */
+    public $id1;
+
+    /** @Embedded(class="DDC3028Id") */
+    public $id2;
+
+    /** @Embedded(class="DDCNestingEmbeddable2") */
+    public $nested;
+}
+
+/**
+ * @Embeddable
+ */
+class DDCNestingEmbeddable2
+{
+    /** @Embedded(class="DDC3028Id") */
+    public $id1;
+
+    /** @Embedded(class="DDC3028Id") */
+    public $id2;
+
+    /** @Embedded(class="DDCNestingEmbeddable3") */
+    public $nested;
+}
+
+/**
+ * @Embeddable
+ */
+class DDCNestingEmbeddable3
+{
+    /** @Embedded(class="DDC3028Id") */
+    public $id1;
+
+    /** @Embedded(class="DDC3028Id") */
+    public $id2;
+
+    /** @Embedded(class="DDCNestingEmbeddable4") */
+    public $nested;
+}
+
+/**
+ * @Embeddable
+ */
+class DDCNestingEmbeddable4
+{
+    /** @Embedded(class="DDC3028Id") */
+    public $id1;
+
+    /** @Embedded(class="DDC3028Id") */
+    public $id2;
+
+    /** @Embedded(class="DDCNestingEmbeddable1") */
     public $nested;
 }
