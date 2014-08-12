@@ -917,6 +917,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         return clone $this->_prototype;
     }
+
     /**
      * Restores some state that can not be serialized/unserialized.
      *
