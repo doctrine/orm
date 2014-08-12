@@ -2721,6 +2721,11 @@ class ClassMetadataInfo implements ClassMetadata
             }
             if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
                 $this->subClasses[] = $className;
+                foreach(array_values(class_parents($className)) as $childClass) {
+                    if ($childClass != $this->name && is_subclass_of($className, $childClass) && ! in_array($childClass, $this->subClasses)) {
+                        $this->subClasses[] = $childClass;
+                    }
+                }
             }
         }
     }
