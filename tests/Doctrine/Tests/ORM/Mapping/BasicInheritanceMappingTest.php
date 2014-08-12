@@ -167,6 +167,16 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
     }
+
+    /**
+     * @group DDC-3250
+     */
+    public function testSubClassesHierarchy() {
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyBase');
+
+        $this->assertContains("Doctrine\\Tests\\ORM\\Mapping\\HierarchyFEntity", $class->subClasses);
+        $this->assertContains("Doctrine\\Tests\\ORM\\Mapping\\HierarchyG", $class->subClasses);
+    }
 }
 
 class TransientBaseClass {
@@ -213,7 +223,8 @@ class EntitySubClass2 extends MappedSuperclassBase {
  * @DiscriminatorMap({
  *     "c"   = "HierarchyC",
  *     "d"   = "HierarchyD",
- *     "e"   = "HierarchyE"
+ *     "e"   = "HierarchyE",
+ *     "g"   = "HierarchyG"
  * })
  */
 abstract class HierarchyBase
@@ -270,6 +281,27 @@ class HierarchyE extends HierarchyBEntity
     /** @Column(type="string") */
     public $e;
 }
+
+/**
+ * @Entity
+ */
+abstract class HierarchyFEntity extends HierarchyBase
+{
+    /** @Column(type="string") */
+    public $f;
+}
+
+/**
+ * @Entity
+ */
+class HierarchyG extends HierarchyFEntity
+{
+    /** @Column(type="string") */
+    public $g;
+}
+
+
+
 
 /**
  * @Entity
