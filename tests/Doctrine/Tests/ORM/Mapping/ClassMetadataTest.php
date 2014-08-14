@@ -1111,6 +1111,17 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
+    {
+        /* @var $classMetadata ClassMetadata */
+        $classMetadata = unserialize(serialize(new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity')));
+
+        $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
+    }
 }
 
 /**
