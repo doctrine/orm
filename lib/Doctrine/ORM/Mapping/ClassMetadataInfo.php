@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
+use Doctrine\Instantiator\Instantiator;
 use InvalidArgumentException;
 use RuntimeException;
 use Doctrine\DBAL\Types\Type;
@@ -643,11 +644,9 @@ class ClassMetadataInfo implements ClassMetadata
     public $reflFields = array();
 
     /**
-     * The prototype from which new instances of the mapped class are created.
-     *
-     * @var object
+     * @var \Doctrine\Instantiator\InstantiatorInterface|null
      */
-    private $_prototype;
+    private $instantiator;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -661,6 +660,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->name = $entityName;
         $this->rootEntityName = $entityName;
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
+        $this->instantiator   = new Instantiator();
     }
 
     /**
@@ -907,15 +907,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function newInstance()
     {
-        if ($this->_prototype === null) {
-            if (PHP_VERSION_ID === 50429 || PHP_VERSION_ID === 50513) {
-                $this->_prototype = $this->reflClass->newInstanceWithoutConstructor();
-            } else {
-                $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-            }
-        }
-
-        return clone $this->_prototype;
+        return $this->instantiator->instantiate($this->name);
     }
 
     /**
@@ -928,7 +920,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function wakeupReflection($reflService)
     {
         // Restore ReflectionClass and properties
-        $this->reflClass = $reflService->getClass($this->name);
+        $this->reflClass    = $reflService->getClass($this->name);
+        $this->instantiator = $this->instantiator ?: new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField'])) {
