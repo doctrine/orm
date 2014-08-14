@@ -17,7 +17,7 @@
         "ext-pdo": "*",
         "doctrine/collections": "~1.2",
         "doctrine/dbal": ">=2.5-dev,<2.6-dev",
-        "doctrine/instantiator": "1.0.*",
+        "doctrine/instantiator": "~1.0.1",
         "symfony/console": "2.*"
     },
     "require-dev": {
