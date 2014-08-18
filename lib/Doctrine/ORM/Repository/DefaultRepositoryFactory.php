@@ -41,8 +41,6 @@ class DefaultRepositoryFactory implements RepositoryFactory
      */
     public function getRepository(EntityManagerInterface $entityManager, $entityName)
     {
-        $entityName = ltrim($entityName, '\\');
-
         $className = $entityManager->getClassMetadata($entityName)->getName();
 
         if (isset($this->repositoryList[$className])) {
