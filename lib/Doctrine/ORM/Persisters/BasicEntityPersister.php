@@ -1579,14 +1579,14 @@ class BasicEntityPersister implements EntityPersister
 
                 // special case null value handling
                 if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
-                     $selectedColumns[] = $column . ' IS NULL';
+                    $selectedColumns[] = $column . ' IS NULL';
                     continue;
                 } else if ($comparison === Comparison::NEQ && $value === null) {
-                     $selectedColumns[] = $column . ' IS NOT NULL';
+                    $selectedColumns[] = $column . ' IS NOT NULL';
                     continue;
                 }
 
-                 $selectedColumns[] = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
+                $selectedColumns[] = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
                 continue;
             }
 
