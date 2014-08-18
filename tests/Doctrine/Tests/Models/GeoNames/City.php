@@ -23,13 +23,21 @@ class City
 
     /**
      * @ManyToOne(targetEntity="Admin1", inversedBy="cities")
-     * @JoinColumn(name="country", referencedColumnName="id")
+     * @JoinColumn(name="admin1", referencedColumnName="id")
      */
-    private $country;
+    private $admin1;
 
     /**
      * @Column(type="string", length=255);
      */
     private $name;
+
+
+    public function __construct($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
+
 
 }

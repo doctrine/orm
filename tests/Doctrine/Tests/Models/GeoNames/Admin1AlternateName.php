@@ -29,4 +29,13 @@ class Admin1AlternateName
      */
     public $name;
 
+
+    public function __construct($id, $name, Admin1 $admin1)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->admin1 = $admin1;
+    }
+
+
 }

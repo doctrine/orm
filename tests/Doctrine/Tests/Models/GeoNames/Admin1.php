@@ -25,11 +25,17 @@ class Admin1
     /**
      * @OneToMany(targetEntity="Admin1AlternateName", mappedBy="admin1")
      */
-    public $names;
+    public $names = array();
 
     /**
      * @Column(type="string", length=255);
      */
     public $name;
+
+    public function __construct($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
 
 }

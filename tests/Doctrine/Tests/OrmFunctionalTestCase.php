@@ -186,6 +186,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         'tweet' => array(
             'Doctrine\Tests\Models\Tweet\User',
             'Doctrine\Tests\Models\Tweet\Tweet'
+        ),
+        'geonames' => array(
+            'Doctrine\Tests\Models\GeoNames\Country',
+            'Doctrine\Tests\Models\GeoNames\Admin1',
+            'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
+            'Doctrine\Tests\Models\GeoNames\City'
         )
     );
 
