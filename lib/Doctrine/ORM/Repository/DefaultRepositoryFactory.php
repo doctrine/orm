@@ -32,7 +32,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * The list of EntityRepository instances.
      *
-     * @var array<\Doctrine\Common\Persistence\ObjectRepository>
+     * @var \Doctrine\Common\Persistence\ObjectRepository[]
      */
     private $repositoryList = array();
 
