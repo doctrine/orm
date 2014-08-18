@@ -43,15 +43,15 @@ class DefaultRepositoryFactory implements RepositoryFactory
     {
         $entityName = ltrim($entityName, '\\');
 
-        $class = $entityManager->getClassMetadata($entityName)->getName();
+        $className = $entityManager->getClassMetadata($entityName)->getName();
 
-        if (isset($this->repositoryList[$class])) {
-            return $this->repositoryList[$class];
+        if (isset($this->repositoryList[$className])) {
+            return $this->repositoryList[$className];
         }
 
         $repository = $this->createRepository($entityManager, $entityName);
 
-        $this->repositoryList[$class] = $repository;
+        $this->repositoryList[$className] = $repository;
 
         return $repository;
     }
