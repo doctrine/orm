@@ -628,6 +628,17 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-3257
+     */
+    public function testCanRetrieveRepositoryFromClassNameWithLeadingBackslash()
+    {
+        $this->assertSame(
+            $this->_em->getRepository('\\Doctrine\\Tests\\Models\\CMS\\CmsUser'),
+            $this->_em->getRepository('Doctrine\\Tests\\Models\\CMS\\CmsUser')
+        );
+    }
+
+    /**
      * @group DDC-1376
      *
      * @expectedException Doctrine\ORM\ORMException
