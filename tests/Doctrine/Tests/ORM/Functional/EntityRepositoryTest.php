@@ -611,6 +611,9 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\Tests\Models\DDC753\DDC753InvalidRepository");
     }
 
+    /**
+     * @group DDC-3257
+     */
     public function testSingleRepositoryInstanceForDifferentEntityAliases()
     {
         $config = $this->_em->getConfiguration();
