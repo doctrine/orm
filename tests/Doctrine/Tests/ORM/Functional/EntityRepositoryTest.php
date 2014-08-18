@@ -611,6 +611,23 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\Tests\Models\DDC753\DDC753InvalidRepository");
     }
 
+    public function testSingleRepositoryInstanceForAnEntity()
+    {
+        $config = $this->_em->getConfiguration();
+        $config->addEntityNamespace('Aliased', 'Doctrine\Tests\Models\CMS');
+        $config->addEntityNamespace('AliasedAgain', 'Doctrine\Tests\Models\CMS');
+
+        $this->assertSame(
+            $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser'),
+            $this->_em->getRepository('Aliased:CmsUser')
+        );
+
+        $this->assertSame(
+            $this->_em->getRepository('Aliased:CmsUser'),
+            $this->_em->getRepository('AliasedAgain:CmsUser')
+        );
+    }
+
     /**
      * @group DDC-1376
      *
