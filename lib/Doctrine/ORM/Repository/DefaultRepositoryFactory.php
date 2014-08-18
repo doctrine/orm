@@ -49,11 +49,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
             return $this->repositoryList[$className];
         }
 
-        $repository = $this->createRepository($entityManager, $entityName);
-
-        $this->repositoryList[$className] = $repository;
-
-        return $repository;
+        return $this->repositoryList[$className] = $this->createRepository($entityManager, $entityName);
     }
 
     /**
