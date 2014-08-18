@@ -60,10 +60,11 @@ class DefaultRepositoryFactory implements RepositoryFactory
      */
     protected function createRepository(EntityManagerInterface $entityManager, $entityName)
     {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata            = $entityManager->getClassMetadata($entityName);
         $repositoryClassName = $metadata->customRepositoryClassName;
 
-        if ($repositoryClassName === null) {
+        if (null === $repositoryClassName) {
             $configuration       = $entityManager->getConfiguration();
             $repositoryClassName = $configuration->getDefaultRepositoryClassName();
         }
