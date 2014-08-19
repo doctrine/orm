@@ -344,6 +344,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_country');
         }
 
+        if (isset($this->_usedModelSets['geonames'])) {
+            $conn->executeUpdate('DELETE FROM geonames_admin1_alternate_name');
+            $conn->executeUpdate('DELETE FROM geonames_admin1');
+            $conn->executeUpdate('DELETE FROM geonames_city');
+            $conn->executeUpdate('DELETE FROM geonames_country');
+        }
+
         $this->_em->clear();
     }
 

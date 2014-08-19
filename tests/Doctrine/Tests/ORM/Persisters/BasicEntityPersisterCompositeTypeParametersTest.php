@@ -38,13 +38,8 @@ class BasicEntityPersisterCompositeTypeParametersTest extends \Doctrine\Tests\Or
 
     public function testExpandParameters()
     {
-        $country = new Country();
-        $country->id = "IT";
-        $country->name = "Ialy";
-
-        $admin1 = new Admin1();
-        $admin1->id = 10;
-        $admin1->country = $country;
+        $country = new Country("IT", "Italy");
+        $admin1 = new Admin1(10, "Rome", $country);
 
 
         list($values, $types) = $this->_persister->expandParameters(array(
@@ -57,13 +52,8 @@ class BasicEntityPersisterCompositeTypeParametersTest extends \Doctrine\Tests\Or
 
     public function testExpandCriteriaParameters()
     {
-        $country = new Country();
-        $country->id = "IT";
-        $country->name = "Ialy";
-
-        $admin1 = new Admin1();
-        $admin1->id = 10;
-        $admin1->country = $country;
+        $country = new Country("IT", "Italy");
+        $admin1 = new Admin1(10, "Rome", $country);
 
         $criteria = Criteria::create();
 

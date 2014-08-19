@@ -17,8 +17,7 @@ class CompositePrimaryKeyFindsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($it);
         $this->_em->flush();
 
-        $admin1 = new Admin1(1, "Rome");
-        $admin1->country = $it;
+        $admin1 = new Admin1(1, "Rome", $it);
 
         $this->_em->persist($admin1);
         $this->_em->flush();
@@ -36,18 +35,14 @@ class CompositePrimaryKeyFindsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->clear();
-
-
     }
 
     public function testFindBy()
     {
-        $countryRepo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Country');
         $admin1Repo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1');
         $admin1NamesRepo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1AlternateName');
 
-        $italy = $countryRepo->findOneBy(array('id' => 'IT'));
-        $admin1Rome = $admin1Repo->findOneBy(array('country' => $italy, 'id' => 1));
+        $admin1Rome = $admin1Repo->findOneBy(array('country' => 'IT', 'id' => 1));
 
         $names = $admin1NamesRepo->findBy(array('admin1' => $admin1Rome));
         $this->assertCount(2, $names);
@@ -60,7 +55,6 @@ class CompositePrimaryKeyFindsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(2, $name2->id);
         $this->assertEquals("Rome", $name2->name);
-
     }
 
 }

@@ -16,14 +16,17 @@ class City
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="Country", inversedBy="cities")
+     * @ManyToOne(targetEntity="Country")
      * @JoinColumn(name="country", referencedColumnName="id")
      */
     private $country;
 
     /**
-     * @ManyToOne(targetEntity="Admin1", inversedBy="cities")
-     * @JoinColumn(name="admin1", referencedColumnName="id")
+     * @ManyToOne(targetEntity="Admin1")
+     * @JoinColumns({
+     *   @JoinColumn(name="admin1", referencedColumnName="id"),
+     *   @JoinColumn(name="country", referencedColumnName="country")
+     * })
      */
     private $admin1;
 

@@ -1566,7 +1566,7 @@ class BasicEntityPersister implements EntityPersister
         $columns    = $this->getSelectConditionStatementColumnSQL($field, $assoc);
 
         if (count($columns)>1 && $comparison === Comparison::IN){
-            throw ORMException::cantUseInOperatorOnComposteKeys();
+            throw ORMException::cantUseInOperatorOnCompositeKeys();
         }
 
         foreach ($columns as $column) {
@@ -1638,8 +1638,8 @@ class BasicEntityPersister implements EntityPersister
                 throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
             }
             $className  = (isset($this->class->associationMappings[$field]['inherited']))
-            ? $this->class->associationMappings[$field]['inherited']
-            : $this->class->name;
+                ? $this->class->associationMappings[$field]['inherited']
+                : $this->class->name;
 
             $columns = array();
             foreach ($this->class->associationMappings[$field]['joinColumns'] as $joinColumn) {

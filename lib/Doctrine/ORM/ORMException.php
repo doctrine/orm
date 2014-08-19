@@ -298,11 +298,9 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $functionName
-     *
      * @return ORMException
      */
-    public static function cantUseInOperatorOnComposteKeys()
+    public static function cantUseInOperatorOnCompositeKeys()
     {
         return new self("Can't use IN operator on entities that have composte keys.");
     }
