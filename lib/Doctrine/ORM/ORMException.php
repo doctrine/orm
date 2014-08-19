@@ -296,4 +296,12 @@ class ORMException extends Exception
     {
         return new self("It is not allowed to overwrite internal function '$functionName' in the DQL parser through user-defined functions.");
     }
+
+    /**
+     * @return ORMException
+     */
+    public static function cantUseInOperatorOnCompositeKeys()
+    {
+        return new self("Can't use IN operator on entities that have composte keys.");
+    }
 }

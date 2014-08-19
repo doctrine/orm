@@ -186,6 +186,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         'tweet' => array(
             'Doctrine\Tests\Models\Tweet\User',
             'Doctrine\Tests\Models\Tweet\Tweet'
+        ),
+        'geonames' => array(
+            'Doctrine\Tests\Models\GeoNames\Country',
+            'Doctrine\Tests\Models\GeoNames\Admin1',
+            'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
+            'Doctrine\Tests\Models\GeoNames\City'
         )
     );
 
@@ -336,6 +342,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
+        }
+
+        if (isset($this->_usedModelSets['geonames'])) {
+            $conn->executeUpdate('DELETE FROM geonames_admin1_alternate_name');
+            $conn->executeUpdate('DELETE FROM geonames_admin1');
+            $conn->executeUpdate('DELETE FROM geonames_city');
+            $conn->executeUpdate('DELETE FROM geonames_country');
         }
 
         $this->_em->clear();

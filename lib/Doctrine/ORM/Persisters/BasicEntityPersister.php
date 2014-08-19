@@ -862,12 +862,12 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = $this->getValue($param);
+            $sqlParams = array_merge($sqlParams, $this->getValues($param));
         }
 
         foreach ($types as $type) {
             list($field, $value) = $type;
-            $sqlTypes[]          = $this->getType($field, $value);
+            $sqlTypes = array_merge($sqlTypes, $this->getTypes($field, $value));
         }
 
         return array($sqlParams, $sqlTypes);
@@ -1562,40 +1562,54 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null)
     {
-        $placeholder  = '?';
-        $condition    = $this->getSelectConditionStatementColumnSQL($field, $assoc);
+        $selectedColumns = array();
+        $columns    = $this->getSelectConditionStatementColumnSQL($field, $assoc);
 
-        if (isset($this->class->fieldMappings[$field]['requireSQLConversion'])) {
-            $placeholder = Type::getType($this->class->getTypeOfField($field))->convertToDatabaseValueSQL($placeholder, $this->platform);
+        if (count($columns)>1 && $comparison === Comparison::IN){
+            throw ORMException::cantUseInOperatorOnCompositeKeys();
         }
 
-        if ($comparison !== null) {
-
-            // special case null value handling
-            if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
-                return $condition . ' IS NULL';
-            } else if ($comparison === Comparison::NEQ && $value === null) {
-                return $condition . ' IS NOT NULL';
+        foreach ($columns as $column) {
+            $placeholder  = '?';
+            if (isset($this->class->fieldMappings[$field]['requireSQLConversion'])) {
+                $placeholder = Type::getType($this->class->getTypeOfField($field))->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
-            return $condition . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
-        }
+            if ($comparison !== null) {
 
-        if (is_array($value)) {
-            $in = sprintf('%s IN (%s)' , $condition, $placeholder);
+                // special case null value handling
+                if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
+                    $selectedColumns[] = $column . ' IS NULL';
+                    continue;
+                } else if ($comparison === Comparison::NEQ && $value === null) {
+                    $selectedColumns[] = $column . ' IS NOT NULL';
+                    continue;
+                }
 
-            if (false !== array_search(null, $value, true)) {
-                return sprintf('(%s OR %s IS NULL)' , $in, $condition);
+                $selectedColumns[] = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
+                continue;
             }
 
-            return $in;
+            if (is_array($value)) {
+                $in = sprintf('%s IN (%s)' , $column, $placeholder);
+
+                if (false !== array_search(null, $value, true)) {
+                    $selectedColumns[] = sprintf('(%s OR %s IS NULL)' , $in, $column);
+                    continue;
+                }
+
+                $selectedColumns[] = $in;
+                continue;
+            }
+            if ($value === null) {
+                $selectedColumns[] = sprintf('%s IS NULL' , $column);
+                continue;
+            }
+
+            $selectedColumns[] = sprintf('%s = %s' , $column, $placeholder);
         }
 
-        if ($value === null) {
-            return sprintf('%s IS NULL' , $condition);
-        }
-
-        return sprintf('%s = %s' , $condition, $placeholder);
+        return implode(' AND ', $selectedColumns);
     }
 
     /**
@@ -1604,18 +1618,18 @@ class BasicEntityPersister implements EntityPersister
      * @param string     $field
      * @param array|null $assoc
      *
-     * @return string
+     * @return array
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    protected function getSelectConditionStatementColumnSQL($field, $assoc = null)
+    private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
         if (isset($this->class->columnNames[$field])) {
             $className = (isset($this->class->fieldMappings[$field]['inherited']))
                 ? $this->class->fieldMappings[$field]['inherited']
                 : $this->class->name;
 
-            return $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
+            return array($this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $this->class, $this->platform));
         }
 
         if (isset($this->class->associationMappings[$field])) {
@@ -1623,13 +1637,15 @@ class BasicEntityPersister implements EntityPersister
             if ( ! $this->class->associationMappings[$field]['isOwningSide']) {
                 throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
             }
-
-            $joinColumn = $this->class->associationMappings[$field]['joinColumns'][0];
             $className  = (isset($this->class->associationMappings[$field]['inherited']))
                 ? $this->class->associationMappings[$field]['inherited']
                 : $this->class->name;
 
-            return $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+            $columns = array();
+            foreach ($this->class->associationMappings[$field]['joinColumns'] as $joinColumn) {
+                $columns[] = $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+            }
+            return $columns;
         }
 
         if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
@@ -1637,7 +1653,7 @@ class BasicEntityPersister implements EntityPersister
             // therefore checking for spaces and function calls which are not allowed.
 
             // found a join column condition, not really a "field"
-            return $field;
+            return array($field);
         }
 
         throw ORMException::unrecognizedField($field);
@@ -1741,79 +1757,86 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types[]  = $this->getType($field, $value);
-            $params[] = $this->getValue($value);
+            $types = array_merge($types, $this->getTypes($field, $value));
+            $params = array_merge($params, $this->getValues($value));
         }
 
         return array($params, $types);
     }
 
     /**
-     * Infers field type to be used by parameter type casting.
+     * Infers field types to be used by parameter type casting.
      *
      * @param string $field
      * @param mixed  $value
      *
-     * @return integer
+     * @return array
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function getType($field, $value)
+    private function getTypes($field, $value)
     {
+        $types = array();
         switch (true) {
             case (isset($this->class->fieldMappings[$field])):
-                $type = $this->class->fieldMappings[$field]['type'];
+                $types[] = $this->class->fieldMappings[$field]['type'];
                 break;
-
             case (isset($this->class->associationMappings[$field])):
                 $assoc = $this->class->associationMappings[$field];
 
-                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
-                    throw Query\QueryException::associationPathCompositeKeyNotSupported();
+                $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($assoc['targetEntity']);
+
+                if ($assoc['isOwningSide']) {
+                    $parameters = $targetPersister->expandParameters($assoc['targetToSourceKeyColumns']);
+                }else{
+                    $parameters = $targetPersister->expandParameters($assoc['sourceToTargetKeyColumns']);
                 }
-
-                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
-                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
-                $type         = null;
-
-                if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
-                }
-
+                $types = array_merge($types, $parameters[1]);
                 break;
-
             default:
-                $type = null;
+                $types[] = null;
+                break;
         }
 
         if (is_array($value)) {
-            $type = Type::getType($type)->getBindingType();
-            $type += Connection::ARRAY_PARAM_OFFSET;
+            $types = array_map(function ($type) {
+                $type = Type::getType($type)->getBindingType();
+                return $type + Connection::ARRAY_PARAM_OFFSET;
+            }, $types);
         }
-
-        return $type;
+        return $types;
     }
 
     /**
-     * Retrieves parameter value.
+     * Retrieves the parameters that identifies a value.
      *
      * @param mixed $value
      *
-     * @return mixed
+     * @return array
      */
-    private function getValue($value)
+    private function getValues($value)
     {
-        if ( ! is_array($value)) {
-            return $this->getIndividualValue($value);
+        if (is_array($value)) {
+            $newValue = array();
+
+            foreach ($value as $itemValue) {
+                $newValue = array_merge($newValue, $this->getValues($itemValue));
+            }
+            return array($newValue);
         }
 
-        $newValue = array();
-
-        foreach ($value as $itemValue) {
-            $newValue[] = $this->getIndividualValue($itemValue);
+        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+            $class = $this->em->getClassMetadata(ClassUtils::getClass($value));
+            if ($class->isIdentifierComposite) {
+                $newValue = array();
+                foreach ($class->getIdentifierValues($value) as $innerValue) {
+                    $newValue = array_merge($newValue, $this->getValues($innerValue));
+                }
+                return $newValue;
+            }
         }
 
-        return $newValue;
+        return array($this->getIndividualValue($value));
     }
 
     /**
