@@ -5,6 +5,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 /**
  * @Entity
  * @Table(name="geonames_admin1")
+ * @Cache
  */
 class Admin1
 {
@@ -19,6 +20,7 @@ class Admin1
      * @Id
      * @ManyToOne(targetEntity="Country")
      * @JoinColumn(name="country", referencedColumnName="id")
+     * @Cache
      */
     public $country;
 
