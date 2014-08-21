@@ -65,7 +65,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             array(
                 'name' => array(
                     'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
-                    'columnPrefix' => 'nm_'
+                    'columnPrefix' => 'nm_',
+                    'declaredField' => null,
+                    'originalField' => null,
                 )
             ),
             $class->embeddedClasses
