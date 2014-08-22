@@ -390,7 +390,7 @@ class QueryBuilder
         } else {
             // Should never happen with correct joining order. Might be
             // thoughtful to throw exception instead.
-            $rootAlias = $this->getRootAlias();
+            $rootAlias = $this->getRootAliases()[0];
         }
 
         $this->joinRootAliases[$alias] = $rootAlias;
@@ -680,7 +680,7 @@ class QueryBuilder
             $newDqlPart = array();
 
             foreach ($dqlPart as $k => $v) {
-                $k = is_numeric($k) ? $this->getRootAlias() : $k;
+                $k = is_numeric($k) ? $this->getRootAliases()[0] : $k;
 
                 $newDqlPart[$k] = $v;
             }
@@ -1221,7 +1221,7 @@ class QueryBuilder
      */
     public function addCriteria(Criteria $criteria)
     {
-        $rootAlias = $this->getRootAlias();
+        $rootAlias = $this->getRootAliases()[0];
         $visitor = new QueryExpressionVisitor($rootAlias);
 
         if ($whereExpression = $criteria->getWhereExpression()) {
