@@ -8,6 +8,8 @@ php:
   - hhvm
   - hhvm-nightly
 
+sudo: false
+
 env:
   - DB=mysql
   - DB=pgsql
