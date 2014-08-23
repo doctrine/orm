@@ -23,6 +23,8 @@ use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Helper\TableHelper;
 
 /**
  * Show information about mapped entities.
@@ -34,17 +36,32 @@ use Symfony\Component\Console\Command\Command;
 class InfoCommand extends Command
 {
     /**
+     * @var OutputInterface
+     */
+    protected $output;
+
+    /**
+     * @var array
+     */
+    protected $out;
+
+    /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
             ->setName('orm:info')
-            ->setDescription('Show basic information about all mapped entities')
+            ->addArgument('entityName', InputArgument::OPTIONAL, 'Show detailed information about the given class')
+            ->setDescription('Validate and display information about informations')
             ->setHelp(<<<EOT
-The <info>%command.name%</info> shows basic information about which
-entities exist and possibly if their mapping information contains errors or
-not.
+The <info>%command.name%</info> without arguments shows basic information about
+which entities exist and possibly if their mapping information contains errors
+or not.
+
+You can display the complete metadata for a given entity by specifying it, e.g.
+
+    <info>%command.full_name%</info> My\Namespace\Entity\MyEntity
 EOT
         );
     }
@@ -54,10 +71,100 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $entityName = $input->getArgument('entityName');
+
         /* @var $entityManager \Doctrine\ORM\EntityManager */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
-        $entityClassNames = $entityManager->getConfiguration()
+        $this->output = $output;
+        $this->entityManager = $entityManager;
+
+        if (null === $entityName) {
+            return $this->displayAll($output);
+        } else {
+            $this->displayEntity($entityName);
+            return 0;
+        }
+    }
+
+    protected function displayAll()
+    {
+        $entityClassNames = $this->getMappedEntities();
+
+        $this->output->writeln(sprintf("Found <info>%d</info> mapped entities:", count($entityClassNames)));
+
+        $failure = false;
+
+        foreach ($entityClassNames as $entityClassName) {
+            try {
+                $meta = $this->entityManager->getClassMetadata($entityClassName);
+                $this->output->writeln(sprintf("<info>[OK]</info>   %s", $entityClassName));
+            } catch (MappingException $e) {
+                $this->output->writeln("<error>[FAIL]</error> ".$entityClassName);
+                $this->output->writeln(sprintf("<comment>%s</comment>", $e->getMessage()));
+                $this->output->writeln('');
+
+                $failure = true;
+            }
+        }
+
+        return $failure ? 1 : 0;
+    }
+
+    protected function displayEntity($entityName)
+    {
+        $meta = $this->getClassMetadata($entityName);
+
+        $this->formatField('Name', $meta->name);
+        $this->formatField('Root entity name', $meta->rootEntityName);
+        $this->formatField('Custom generator definition', $meta->customGeneratorDefinition);
+        $this->formatField('Custom repository class', $meta->customRepositoryClassName);
+        $this->formatField('Mapped super class?', $meta->isMappedSuperclass);
+        $this->formatField('Embedded class?', $meta->isEmbeddedClass);
+        $this->formatListField('Parent classes', $meta->parentClasses);
+        $this->formatListField('Sub classes', $meta->subClasses);
+        $this->formatListField('Embedded classes', $meta->subClasses);
+        $this->formatField('Named queries', $meta->namedQueries);
+        $this->formatField('Named native queries', $meta->namedNativeQueries);
+        $this->formatField('SQL result set mappings', $meta->sqlResultSetMappings);
+        $this->formatField('Identifier', $meta->identifier);
+        $this->formatField('Inheritance type', $meta->inheritanceType);
+        $this->formatField('Discriminator column', $meta->discriminatorColumn);
+        $this->formatField('Discriminator value', $meta->discriminatorValue);
+        $this->formatField('Discriminator map', $meta->discriminatorMap);
+        $this->formatField('Generator type', $meta->generatorType);
+        $this->formatField('Table', $meta->table);
+        $this->formatField('Composite identifier?', $meta->isIdentifierComposite);
+        $this->formatField('Foreign identifier?', $meta->containsForeignIdentifier);
+        $this->formatField('Sequence generator definition', $meta->sequenceGeneratorDefinition);
+        $this->formatField('Table generator definition', $meta->tableGeneratorDefinition);
+        $this->formatField('Change tracking policy', $meta->changeTrackingPolicy);
+        $this->formatField('Versioned?', $meta->isVersioned);
+        $this->formatField('Version field', $meta->versionField);
+        $this->formatField('Read only?', $meta->isReadOnly);
+
+        $this->formatEntityListeners($meta->entityListeners);
+        $this->formatAssociationMappings($meta->associationMappings);
+        $this->formatFieldMappings($meta->fieldMappings);
+
+        if (class_exists('Symfony\Component\Console\Helper\TableHelper')) {
+            $table = new TableHelper();
+            $table->setHeaders(array('Field', 'Value'));
+            foreach ($this->out as $tuple) {
+                $table->addRow($tuple);
+            }
+            $table->render($this->output);
+        } else {
+            foreach ($this->out as $tuple) {
+                list($label, $value) = $tuple;
+                $this->output->writeln(sprintf('<info>%s</info>: %s', $label, $value));
+            }
+        }
+    }
+
+    protected function getMappedEntities()
+    {
+        $entityClassNames = $this->entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
@@ -68,23 +175,130 @@ EOT
             );
         }
 
-        $output->writeln(sprintf("Found <info>%d</info> mapped entities:", count($entityClassNames)));
+        return $entityClassNames;
+    }
 
-        $failure = false;
+    protected function getClassMetadata($entityName)
+    {
+        try {
+            $meta = $this->entityManager->getClassMetadata($entityName);
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            $mappedEntities = $this->getMappedEntities();
+            $matches = array_filter($mappedEntities, function ($mappedEntity) use ($entityName) {
+                if (preg_match('{' . $entityName . '}', $mappedEntity)) {
+                    return true;
+                }
 
-        foreach ($entityClassNames as $entityClassName) {
-            try {
-                $entityManager->getClassMetadata($entityClassName);
-                $output->writeln(sprintf("<info>[OK]</info>   %s", $entityClassName));
-            } catch (MappingException $e) {
-                $output->writeln("<error>[FAIL]</error> ".$entityClassName);
-                $output->writeln(sprintf("<comment>%s</comment>", $e->getMessage()));
-                $output->writeln('');
+                return false;
+            });
 
-                $failure = true;
+            if (0 === count($matches)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Could not find any mapped Entity classes matching "%s"',
+                    $entityName
+                ));
+            }
+
+            if (1 === count($matches)) {
+                $meta = $this->entityManager->getClassMetadata(current($matches));
+            } else {
+                throw new \InvalidArgumentException(sprintf(
+                    'Entity name "%s" is ambigous, possible matches: "%s"',
+                    $entityName, implode(', ', $matches)
+                ));
             }
         }
 
-        return $failure ? 1 : 0;
+        return $meta;
+    }
+
+    protected function formatValue($value, $formatBoolean = true)
+    {
+        if ('' === $value) {
+            return '';
+        }
+
+        if (null === $value) {
+            return '<comment>Null</comment>';
+        }
+
+        if (empty($value)) {
+            return '<comment>Empty</comment>';
+        }
+
+        if (is_array($value)) {
+            return json_encode($value);
+        }
+
+        if (is_object($value)) {
+            return sprintf('<%s>', get_class($value));
+        }
+
+        if (is_scalar($value)) {
+            return $value;
+        }
+
+        throw new \Exception(sprintf('Do not know how to format value "%s"', print_r($value, true)));
+    }
+
+    protected function formatField($label, $value)
+    {
+        if (null === $value) {
+            $value = '<comment>None</comment>';
+        }
+
+        $this->out[] = array(sprintf('<info>%s</info>', $label), $this->formatValue($value));
+    }
+
+    protected function formatListField($label, $values)
+    {
+        if (!$values) {
+            $out = '<comment>Empty</comment>';
+        } else {
+            $this->formatField($label, array_shift($values));
+
+            foreach ($values as $value) {
+                $this->formatField($label, $value);
+            }
+        }
+
+        $this->formatField($label, $out);
+    }
+
+    protected function formatAssociationMappings($associationMappings)
+    {
+        $this->formatField('Association mappings:', '');
+        foreach ($associationMappings as $associationName => $mapping) {
+            $this->formatField(sprintf('  %s',$associationName), '');
+            foreach ($mapping as $field => $value) {
+                $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
+            }
+        }
+    }
+
+    protected function formatEntityListeners($entityListeners)
+    {
+        $entityListenerNames = array();
+        foreach ($entityListeners as $entityListener) {
+            $entityListenerNames[] = get_class($entityListener);
+        }
+
+        $this->formatListField('Entity listeners', $entityListenerNames);
+    }
+
+    protected function formatFieldMappings($fieldMappings)
+    {
+        $this->formatField('Field mappings:', '');
+        foreach ($fieldMappings as $fieldName => $mapping) {
+            $this->formatField(sprintf('  %s',$fieldName), '');
+            foreach ($mapping as $field => $value) {
+                $formatBoolean = true;
+                if (in_array($field, array('id'))) {
+                    $formatBoolean = false;
+                }
+
+                $this->formatField(sprintf('    %s', $field), $this->formatValue($value, $formatBoolean));
+            }
+        }
     }
 }
