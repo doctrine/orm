@@ -18,7 +18,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
     private $application;
 
     /**
-     * @var \Doctrine\ORM\Tools\Console\Command\ClearCache\InfoCommand
+     * @var \Doctrine\ORM\Tools\Console\Command\InfoCommand
      */
     private $command;
 
@@ -68,7 +68,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage possible matches: "Doctrine\Tests\Models\Cache\AttractionInfo
+     * @expectedExceptionMessage possible matches
      */
     public function testShowSpecificFuzzyAmbiguous()
     {
@@ -88,22 +88,5 @@ class InfoCommandTest extends OrmFunctionalTestCase
             'command' => $this->command->getName(),
             'entityName' => 'AttractionFooBar'
         ));
-    }
-
-    /**
-     * This test takes a long time
-     */
-    public function testShowSpecificSmokeTest()
-    {
-        $entityClassNames = $this->_em->getConfiguration()
-            ->getMetadataDriverImpl()
-            ->getAllClassNames();
-
-        foreach ($entityClassNames as $entityClassName) {
-            $this->tester->Execute(array(
-                'command' => $this->command->getName(),
-                'entityName' => $entityClassName
-            ));
-        }
     }
 }
