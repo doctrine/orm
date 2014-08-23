@@ -32,6 +32,7 @@ use Symfony\Component\Console\Helper\TableHelper;
  * @link    www.doctrine-project.org
  * @since   2.1
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Daniel Leech <daniel@dantleech.com>
  */
 class InfoCommand extends Command
 {
@@ -62,6 +63,10 @@ or not.
 You can display the complete metadata for a given entity by specifying it, e.g.
 
     <info>%command.full_name%</info> My\Namespace\Entity\MyEntity
+
+You can also specify a partial class name (as a regex):
+
+    <info>%command.full_name%</info> MyEntity
 EOT
         );
     }
@@ -253,7 +258,7 @@ EOT
     protected function formatListField($label, $values)
     {
         if (!$values) {
-            $out = '<comment>Empty</comment>';
+            $this->formatField($label, '<comment>Empty</comment>');
         } else {
             $this->formatField($label, array_shift($values));
 
@@ -261,8 +266,6 @@ EOT
                 $this->formatField($label, $value);
             }
         }
-
-        $this->formatField($label, $out);
     }
 
     protected function formatAssociationMappings($associationMappings)
