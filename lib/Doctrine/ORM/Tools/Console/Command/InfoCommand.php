@@ -39,12 +39,12 @@ class InfoCommand extends Command
     /**
      * @var OutputInterface
      */
-    protected $output;
+    private $output;
 
     /**
      * @var array
      */
-    protected $out;
+    private $out;
 
     /**
      * {@inheritdoc}
@@ -54,7 +54,7 @@ class InfoCommand extends Command
         $this
             ->setName('orm:info')
             ->addArgument('entityName', InputArgument::OPTIONAL, 'Show detailed information about the given class')
-            ->setDescription('Validate and display information about informations')
+            ->setDescription('Display information about mapped objects')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> without arguments shows basic information about
 which entities exist and possibly if their mapping information contains errors
@@ -86,13 +86,14 @@ EOT
 
         if (null === $entityName) {
             return $this->displayAll($output);
-        } else {
-            $this->displayEntity($entityName);
-            return 0;
         }
+
+        $this->displayEntity($entityName);
+
+        return 0;
     }
 
-    protected function displayAll()
+    private function displayAll()
     {
         $entityClassNames = $this->getMappedEntities();
 
@@ -116,7 +117,7 @@ EOT
         return $failure ? 1 : 0;
     }
 
-    protected function displayEntity($entityName)
+    private function displayEntity($entityName)
     {
         $meta = $this->getClassMetadata($entityName);
 
@@ -126,9 +127,9 @@ EOT
         $this->formatField('Custom repository class', $meta->customRepositoryClassName);
         $this->formatField('Mapped super class?', $meta->isMappedSuperclass);
         $this->formatField('Embedded class?', $meta->isEmbeddedClass);
-        $this->formatListField('Parent classes', $meta->parentClasses);
-        $this->formatListField('Sub classes', $meta->subClasses);
-        $this->formatListField('Embedded classes', $meta->subClasses);
+        $this->formatField('Parent classes', $meta->parentClasses);
+        $this->formatField('Sub classes', $meta->subClasses);
+        $this->formatField('Embedded classes', $meta->subClasses);
         $this->formatField('Named queries', $meta->namedQueries);
         $this->formatField('Named native queries', $meta->namedNativeQueries);
         $this->formatField('SQL result set mappings', $meta->sqlResultSetMappings);
@@ -147,6 +148,7 @@ EOT
         $this->formatField('Versioned?', $meta->isVersioned);
         $this->formatField('Version field', $meta->versionField);
         $this->formatField('Read only?', $meta->isReadOnly);
+        $this->formatField('Foo', array('Foo', 'Bar', 'Boo'));
 
         $this->formatEntityListeners($meta->entityListeners);
         $this->formatAssociationMappings($meta->associationMappings);
@@ -167,14 +169,14 @@ EOT
         }
     }
 
-    protected function getMappedEntities()
+    private function getMappedEntities()
     {
         $entityClassNames = $this->entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
         if (!$entityClassNames) {
-            throw new \Exception(
+            throw new \InvalidArgumentException(
                 'You do not have any mapped Doctrine ORM entities according to the current configuration. '.
                 'If you have entities or mapping files you should check your mapping configuration for errors.'
             );
@@ -183,7 +185,7 @@ EOT
         return $entityClassNames;
     }
 
-    protected function getClassMetadata($entityName)
+    private function getClassMetadata($entityName)
     {
         try {
             $meta = $this->entityManager->getClassMetadata($entityName);
@@ -217,7 +219,7 @@ EOT
         return $meta;
     }
 
-    protected function formatValue($value, $formatBoolean = true)
+    private function formatValue($value)
     {
         if ('' === $value) {
             return '';
@@ -227,11 +229,19 @@ EOT
             return '<comment>Null</comment>';
         }
 
+        if (is_bool($value)) {
+            return '<comment>' . ($value ? 'True' : 'False') . '</comment>';
+        }
+
         if (empty($value)) {
             return '<comment>Empty</comment>';
         }
 
         if (is_array($value)) {
+            if (version_compare(phpversion(), '5.4.0', '>=')) {
+                return json_encode($value, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+            }
+
             return json_encode($value);
         }
 
@@ -243,10 +253,10 @@ EOT
             return $value;
         }
 
-        throw new \Exception(sprintf('Do not know how to format value "%s"', print_r($value, true)));
+        throw new \InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
     }
 
-    protected function formatField($label, $value)
+    private function formatField($label, $value)
     {
         if (null === $value) {
             $value = '<comment>None</comment>';
@@ -255,20 +265,7 @@ EOT
         $this->out[] = array(sprintf('<info>%s</info>', $label), $this->formatValue($value));
     }
 
-    protected function formatListField($label, $values)
-    {
-        if (!$values) {
-            $this->formatField($label, '<comment>Empty</comment>');
-        } else {
-            $this->formatField($label, array_shift($values));
-
-            foreach ($values as $value) {
-                $this->formatField($label, $value);
-            }
-        }
-    }
-
-    protected function formatAssociationMappings($associationMappings)
+    private function formatAssociationMappings($associationMappings)
     {
         $this->formatField('Association mappings:', '');
         foreach ($associationMappings as $associationName => $mapping) {
@@ -279,28 +276,23 @@ EOT
         }
     }
 
-    protected function formatEntityListeners($entityListeners)
+    private function formatEntityListeners($entityListeners)
     {
         $entityListenerNames = array();
         foreach ($entityListeners as $entityListener) {
             $entityListenerNames[] = get_class($entityListener);
         }
 
-        $this->formatListField('Entity listeners', $entityListenerNames);
+        $this->formatField('Entity listeners', $entityListenerNames);
     }
 
-    protected function formatFieldMappings($fieldMappings)
+    private function formatFieldMappings($fieldMappings)
     {
         $this->formatField('Field mappings:', '');
         foreach ($fieldMappings as $fieldName => $mapping) {
             $this->formatField(sprintf('  %s',$fieldName), '');
             foreach ($mapping as $field => $value) {
-                $formatBoolean = true;
-                if (in_array($field, array('id'))) {
-                    $formatBoolean = false;
-                }
-
-                $this->formatField(sprintf('    %s', $field), $this->formatValue($value, $formatBoolean));
+                $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
         }
     }
