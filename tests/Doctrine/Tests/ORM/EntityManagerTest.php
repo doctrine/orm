@@ -67,9 +67,9 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     {
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
         $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
-        
+
         $query = $this->_em->createNamedNativeQuery('foo');
-        
+
         $this->assertInstanceOf('Doctrine\ORM\NativeQuery', $query);
     }
 
@@ -111,14 +111,14 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\Query', $q);
         $this->assertEquals('SELECT 1', $q->getDql());
     }
-    
+
     /**
      * @covers Doctrine\ORM\EntityManager::createNamedQuery
      */
     public function testCreateNamedQuery()
     {
         $this->_em->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
-        
+
         $query = $this->_em->createNamedQuery('foo');
         $this->assertInstanceOf('Doctrine\ORM\Query', $query);
         $this->assertEquals('SELECT 1', $query->getDql());
@@ -194,5 +194,14 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSame($this->_em, $em);
         return 'callback';
+    }
+    /**
+     * @group DDC-3156
+     * @group DDC-3120
+     */
+    public function testDDC3120EntityCanExtendSPLClass()
+    {
+        $one = $this->_em->getPartialReference('Doctrine\Tests\Models\DDC3120\DDC3120EntityOne', 1);
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC3120\DDC3120EntityOne', $one);
     }
 }
