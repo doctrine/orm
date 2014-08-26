@@ -87,7 +87,7 @@ class <className> extends <repositoryName>
      * 
      * @return string
      */
-    protected function generateClassName($fullClassName)
+    private function generateClassName($fullClassName)
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
