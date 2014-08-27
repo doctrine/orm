@@ -516,7 +516,13 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // Update result pointer
                     $index = $this->identifierMap[$dqlAlias][$id[$dqlAlias]];
-                    $this->resultPointers[$dqlAlias] = $result[$index];
+                    
+                    if(isset($result[$index])) {
+                        $this->resultPointers[$dqlAlias] = $result[$index];
+                    } else {
+                        $this->resultPointers[$dqlAlias] = null;
+                    }
+                    
                     $resultKey = $index;
                 }
             }
