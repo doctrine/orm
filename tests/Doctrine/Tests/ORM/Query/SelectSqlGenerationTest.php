@@ -263,6 +263,9 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-3276
+     */
     public function testSupportsAggregateCountFunctionWithSimpleArithmetic()
     {
         $connMock = $this->_em->getConnection();
