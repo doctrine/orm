@@ -2939,8 +2939,7 @@ class Parser
 
     /**
      * AggregateExpression ::=
-     *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+     *  ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
      *
      * @return \Doctrine\ORM\Query\AST\AggregateExpression
      */
