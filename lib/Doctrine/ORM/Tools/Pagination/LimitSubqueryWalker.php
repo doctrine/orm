@@ -62,7 +62,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     {
         $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause
-        $from = $AST->fromClause->identificationVariableDeclarations;
+        $from      = $AST->fromClause->identificationVariableDeclarations;
         $rootAlias = $from[0]->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
         $selectExpressions = array();
@@ -76,6 +76,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         }
         
         $identifier = $rootClass->getSingleIdentifierFieldName();
+        
         if (isset($rootClass->associationMappings[$identifier])) {
             throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
         }
