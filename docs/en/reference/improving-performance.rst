@@ -62,3 +62,7 @@ A lot of the points mentioned in the Best Practices chapter will
 also positively affect the performance of Doctrine.
 
 
+Change Tracking policies
+------------------------
+
+See Change tracking policies chapter
