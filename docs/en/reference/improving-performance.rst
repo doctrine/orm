@@ -65,4 +65,4 @@ also positively affect the performance of Doctrine.
 Change Tracking policies
 ------------------------
 
-See Change tracking policies chapter
+See: :doc:`Change Tracking Policies <reference/change-tracking-policies>`
