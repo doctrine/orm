@@ -93,6 +93,14 @@ EOT
         return 0;
     }
 
+    /**
+     * List all the mapped classes
+     *
+     * Returns the exit code, which will be 1 if there are any mapping exceptions
+     * encountered when listing the mapped classes.
+     *
+     * @return integer
+     */
     private function displayAll()
     {
         $entityClassNames = $this->getMappedEntities();
@@ -117,6 +125,11 @@ EOT
         return $failure ? 1 : 0;
     }
 
+    /**
+     * Display all the mapping information for a single Entity.
+     *
+     * @param string $entityName Full or partial entity class name
+     */
     private function displayEntity($entityName)
     {
         $meta = $this->getClassMetadata($entityName);
@@ -169,6 +182,11 @@ EOT
         }
     }
 
+    /**
+     * Return all mapped entity class names
+     *
+     * @return array
+     */
     private function getMappedEntities()
     {
         $entityClassNames = $this->entityManager->getConfiguration()
@@ -185,6 +203,12 @@ EOT
         return $entityClassNames;
     }
 
+    /**
+     * Return the class metadata for the given entity
+     * name
+     *
+     * @param string $entityName Full or partial entity name
+     */
     private function getClassMetadata($entityName)
     {
         try {
@@ -192,7 +216,7 @@ EOT
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
             $mappedEntities = $this->getMappedEntities();
             $matches = array_filter($mappedEntities, function ($mappedEntity) use ($entityName) {
-                if (preg_match('{' . $entityName . '}', $mappedEntity)) {
+                if (preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)) {
                     return true;
                 }
 
@@ -219,6 +243,11 @@ EOT
         return $meta;
     }
 
+    /**
+     * Format the given value for console output
+     *
+     * @param mixed $value
+     */
     private function formatValue($value)
     {
         if ('' === $value) {
@@ -256,6 +285,13 @@ EOT
         throw new \InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
     }
 
+    /**
+     * Add the given label and value to the two column table
+     * output
+     *
+     * @param string $label Label for the value
+     * @param mixed $valueA Value to show
+     */
     private function formatField($label, $value)
     {
         if (null === $value) {
@@ -265,6 +301,11 @@ EOT
         $this->out[] = array(sprintf('<info>%s</info>', $label), $this->formatValue($value));
     }
 
+    /**
+     * Format the association mappings
+     *
+     * @param array
+     */
     private function formatAssociationMappings($associationMappings)
     {
         $this->formatField('Association mappings:', '');
@@ -276,6 +317,11 @@ EOT
         }
     }
 
+    /**
+     * Format the entity listeners
+     *
+     * @param array $entityListeners
+     */
     private function formatEntityListeners($entityListeners)
     {
         $entityListenerNames = array();
@@ -286,6 +332,11 @@ EOT
         $this->formatField('Entity listeners', $entityListenerNames);
     }
 
+    /**
+     * Form the field mappings
+     *
+     * @param array $fieldMappings
+     */
     private function formatFieldMappings($fieldMappings)
     {
         $this->formatField('Field mappings:', '');
