@@ -189,14 +189,14 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         if ( ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform AND
              ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform) {
             $this->assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
-            $this->assertTrue($metadata->fieldMappings['columnUnsigned']['unsigned']);
+            $this->assertTrue($metadata->fieldMappings['columnUnsigned']['options']['unsigned']);
         }
 
         $this->assertArrayHasKey('columnComment', $metadata->fieldMappings);
-        $this->assertEquals('test_comment', $metadata->fieldMappings['columnComment']['comment']);
+        $this->assertEquals('test_comment', $metadata->fieldMappings['columnComment']['options']['comment']);
 
         $this->assertArrayHasKey('columnDefault', $metadata->fieldMappings);
-        $this->assertEquals('test_default', $metadata->fieldMappings['columnDefault']['default']);
+        $this->assertEquals('test_default', $metadata->fieldMappings['columnDefault']['options']['default']);
 
         $this->assertArrayHasKey('columnDecimal', $metadata->fieldMappings);
         $this->assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
