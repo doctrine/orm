@@ -219,6 +219,7 @@ class EntityGenerator
 '/**
  * <description>
  *
+ *
  * @return <variableType>
  */
 public function <methodName>()
@@ -232,6 +233,7 @@ public function <methodName>()
     protected static $setMethodTemplate =
 '/**
  * <description>
+ *
  *
  * @param <variableType> $<variableName>
  *
@@ -251,6 +253,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 '/**
  * <description>
  *
+ *
  * @param <variableType> $<variableName>
  *
  * @return <entity>
@@ -268,6 +271,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
     protected static $removeMethodTemplate =
 '/**
  * <description>
+ *
  *
  * @param <variableType> $<variableName>
  */
@@ -1173,7 +1177,7 @@ public function __construct()
         }
 
         $replacements = array(
-          '<description>'       => ucfirst($type) . ' ' . $variableName . ".\n",
+          '<description>'       => ucfirst($type) . ' ' . $variableName,
           '<methodTypeHint>'    => $methodTypeHint,
           '<variableType>'      => $variableType,
           '<variableName>'      => $variableName,
