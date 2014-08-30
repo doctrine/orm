@@ -1173,7 +1173,7 @@ public function __construct()
         }
 
         $replacements = array(
-          '<description>'       => ucfirst($type) . ' ' . $variableName . ".\n",
+          '<description>'       => ucfirst($type) . ' ' . $variableName,
           '<methodTypeHint>'    => $methodTypeHint,
           '<variableType>'      => $variableType,
           '<variableName>'      => $variableName,
