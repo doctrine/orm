@@ -53,40 +53,4 @@ class InfoCommandTest extends OrmFunctionalTestCase
         $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $this->tester->getDisplay());
         $this->assertContains('Doctrine\Tests\Models\Cache\City', $this->tester->getDisplay());
     }
-
-    public function testShowSpecificFuzzySingle()
-    {
-        $this->tester->execute(array(
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionInfo',
-        ));
-
-        $display = $this->tester->getDisplay();
-        $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $display);
-        $this->assertContains('Root entity name', $display);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage possible matches
-     */
-    public function testShowSpecificFuzzyAmbiguous()
-    {
-        $this->tester->execute(array(
-            'command' => $this->command->getName(),
-            'entityName' => 'Attraction',
-        ));
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Could not find any mapped Entity classes matching "AttractionFooBar"
-     */
-    public function testShowSpecificNotFound()
-    {
-        $this->tester->execute(array(
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionFooBar'
-        ));
-    }
 }
