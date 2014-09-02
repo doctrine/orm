@@ -96,7 +96,8 @@ class CountOutputWalker extends SqlWalker
             throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
         }
 
-        $rootAlias      = $from[0]->rangeVariableDeclaration->aliasIdentificationVariable;
+        $fromRoot       = reset($from);
+        $rootAlias      = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass      = $this->queryComponents[$rootAlias]['metadata'];
         $rootIdentifier = $rootClass->identifier;
 

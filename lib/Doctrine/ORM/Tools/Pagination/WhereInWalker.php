@@ -79,7 +79,8 @@ class WhereInWalker extends TreeWalkerAdapter
             throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
         }
        
-        $rootAlias           = $from[0]->rangeVariableDeclaration->aliasIdentificationVariable;
+        $fromRoot            = reset($from);
+        $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass           = $queryComponents[$rootAlias]['metadata'];
         $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
