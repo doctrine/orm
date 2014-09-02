@@ -45,31 +45,31 @@ class FilterCollection
      *
      * @var \Doctrine\ORM\Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * The EntityManager that "owns" this FilterCollection instance.
      *
      * @var \Doctrine\ORM\EntityManager
      */
-    private $em;
+    protected $em;
 
     /**
      * Instances of enabled filters.
      *
      * @var array
      */
-    private $enabledFilters = array();
+    protected $enabledFilters = array();
 
     /**
      * @var string The filter hash from the last time the query was parsed.
      */
-    private $filterHash;
+    protected $filterHash;
 
     /**
      * @var integer The current state of this filter.
      */
-    private $filtersState = self::FILTERS_STATE_CLEAN;
+    protected $filtersState = self::FILTERS_STATE_CLEAN;
 
     /**
      * Constructor.
