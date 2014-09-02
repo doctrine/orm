@@ -126,6 +126,12 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->select(array('u', 'p'))
         // Example - $qb->select($qb->expr()->select('u', 'p'))
         public function select($select = null);
+        
+        // addSelect does not override previous calls to select
+        //
+        // Example - $qb->select('u');
+        //              ->addSelect('p.area_code');
+        public function addSelect($select = null);
 
         // Example - $qb->delete('User', 'u')
         public function delete($delete = null, $alias = null);
