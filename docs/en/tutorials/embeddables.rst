@@ -77,9 +77,16 @@ just as if you had declared them directly there.
 Column Prefixing
 ----------------
 
-By default, Doctrine prefixes your columns by using the value object name.
+By default, Doctrine names your columns by prefixing them, using the value
+object name.
 
-You can change this behaviour in the following ways:
+Following the example above, your columns would be named as ``address_street``,
+``address_postalCode``...
+
+You can change this behaviour to meet your needs by changing the
+``columnPrefix`` attribute in the ``@Embeddable`` notation.
+
+The following example shows you how to set your prefix to ``myPrefix_``:
 
 .. configuration-block::
 
@@ -87,33 +94,36 @@ You can change this behaviour in the following ways:
 
         <?php
 
-        // Default behaviour
-        // Will name your columns by prefixing them with "address_"
-        // Your columns will be named as:
-        // "address_street", "address_postalCode" ...
-
         /** @Entity */
         class User
         {
-            /** @Embedded(class = "Address") */
+            /** @Embedded(class = "Address", columnPrefix = "myPrefix_") */
             private $address;
         }
 
+    .. code-block:: xml
 
-        // Will name your columns by prefixing them with "prefix_"
-        // Your columns will be named as:
-        // "prefix_street", "prefix_postalCode" ...
+        <entity name="User">
+            <embedded name="address" class="Address" column-prefix="myPrefix_" />
+        </entity>
 
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address", columnPrefix = "prefix_") */
-            private $address;
-        }
+    .. code-block:: yaml
 
-        // Will NOT prefix your columns
-        // Your columns will be named as:
-        // "street", "postalCode" ...
+        User:
+          type: entity
+          embedded:
+            address:
+              class: Address
+              columnPrefix: myPrefix_
+
+To have Doctrine drop the prefix and use the value object's property name
+directly, set ``columnPrefix=false`` (not yet supported with XML configuration):
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
 
         /** @Entity */
         class User
@@ -122,43 +132,8 @@ You can change this behaviour in the following ways:
             private $address;
         }
 
-    .. code-block:: xml
-
-        <!-- Default behaviour -->
-        <!-- Will name your columns by prefixing them with "address_" -->
-        <entity name="User">
-            <embedded name="address" class="Address" />
-        </entity>
-
-        <!-- Will name your columns by prefixing them with "prefix_" -->
-        <entity name="User">
-            <embedded name="address" class="Address" columnPrefix="prefix_" />
-        </entity>
-
-        <!-- Will NOT prefix your columns -->
-        <entity name="User">
-            <embedded name="address" class="Address" columnPrefix="false" />
-        </entity>
-
     .. code-block:: yaml
 
-        # Default behaviour
-        # Will name your columns by prefixing them with "address_"
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-
-        # Will name your columns by prefixing them with "prefix_"
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-              columnPrefix: prefix_
-
-        # Will NOT prefix your columns
         User:
           type: entity
           embedded:
