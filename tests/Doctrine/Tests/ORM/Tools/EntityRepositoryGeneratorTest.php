@@ -57,17 +57,17 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @group DDC-1089
+     * @group DDC-3231
      */
     public function testGeneratedEntityRepositoryClass()
     {
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-        $className = 'DDC1089User';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC1089\\' . $className, $ns . '\\' . $className);
+        $className = 'DDC3231User';
+        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\\' . $className, $ns . '\\' . $className);
 
-        $rpath = $this->writeRepositoryClass($ns . '\\' . $className, 'Doctrine\Tests\Models\DDC1089\DDC1089EntityRepository');
+        $rpath = $this->writeRepositoryClass($ns . '\\' . $className, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
 
         $this->assertNotNull($rpath);
         $this->assertFileExists($rpath);
@@ -77,11 +77,11 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $repo = new \ReflectionClass($em->getRepository($ns . '\\' . $className));
 
         $this->assertSame($ns . '\\' . $className . 'Repository', $repo->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC1089\DDC1089EntityRepository', $repo->getParentClass()->getName());
+        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
 
 
-        $className2 = 'DDC1089User2';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC1089\\' . $className2, $ns . '\\' . $className2);
+        $className2 = 'DDC3231User2';
+        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\\' . $className2, $ns . '\\' . $className2);
 
         $rpath2 = $this->writeRepositoryClass($ns . '\\' . $className2);
 

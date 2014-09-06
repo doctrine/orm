@@ -1,12 +1,12 @@
 <?php
 
-namespace Doctrine\Tests\Models\DDC1089;
+namespace Doctrine\Tests\Models\DDC3231;
 
 /**
- * @Entity(repositoryClass="DDC1089UserRepository")
- * @Table(name="users")
+ * @Entity(repositoryClass="DDC3231User2Repository")
+ * @Table(name="users2")
  */
-class DDC1089User
+class DDC3231User2
 {
     /**
      * @Id
