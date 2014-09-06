@@ -1626,8 +1626,7 @@ Aggregate Expressions
 
 .. code-block:: php
 
-    AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-                            "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+    AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
 
 Case Expressions
 ~~~~~~~~~~~~~~~~

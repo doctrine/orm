@@ -407,7 +407,7 @@ class DatabaseDriver implements MappingDriver
             case Type::STRING:
             case Type::TEXT:
                 $fieldMapping['length'] = $column->getLength();
-                $fieldMapping['fixed']  = $column->getFixed();
+                $fieldMapping['options']['fixed']  = $column->getFixed();
                 break;
 
             case Type::DECIMAL:
@@ -419,18 +419,18 @@ class DatabaseDriver implements MappingDriver
             case Type::INTEGER:
             case Type::BIGINT:
             case Type::SMALLINT:
-                $fieldMapping['unsigned'] = $column->getUnsigned();
+                $fieldMapping['options']['unsigned'] = $column->getUnsigned();
                 break;
         }
 
         // Comment
         if (($comment = $column->getComment()) !== null) {
-            $fieldMapping['comment'] = $comment;
+            $fieldMapping['options']['comment'] = $comment;
         }
 
         // Default
         if (($default = $column->getDefault()) !== null) {
-            $fieldMapping['default'] = $default;
+            $fieldMapping['options']['default'] = $default;
         }
 
         return $fieldMapping;

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
+use Doctrine\Instantiator\Instantiator;
 use InvalidArgumentException;
 use RuntimeException;
 use Doctrine\DBAL\Types\Type;
@@ -643,11 +644,9 @@ class ClassMetadataInfo implements ClassMetadata
     public $reflFields = array();
 
     /**
-     * The prototype from which new instances of the mapped class are created.
-     *
-     * @var object
+     * @var \Doctrine\Instantiator\InstantiatorInterface|null
      */
-    private $_prototype;
+    private $instantiator;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -661,6 +660,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->name = $entityName;
         $this->rootEntityName = $entityName;
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
+        $this->instantiator   = new Instantiator();
     }
 
     /**
@@ -907,16 +907,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function newInstance()
     {
-        if ($this->_prototype === null) {
-            if (PHP_VERSION_ID === 50429 || PHP_VERSION_ID === 50513) {
-                $this->_prototype = $this->reflClass->newInstanceWithoutConstructor();
-            } else {
-                $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-            }
-        }
-
-        return clone $this->_prototype;
+        return $this->instantiator->instantiate($this->name);
     }
+
     /**
      * Restores some state that can not be serialized/unserialized.
      *
@@ -927,17 +920,34 @@ class ClassMetadataInfo implements ClassMetadata
     public function wakeupReflection($reflService)
     {
         // Restore ReflectionClass and properties
-        $this->reflClass = $reflService->getClass($this->name);
+        $this->reflClass    = $reflService->getClass($this->name);
+        $this->instantiator = $this->instantiator ?: new Instantiator();
+
+        $parentReflFields = array();
+
+        foreach ($this->embeddedClasses as $property => $embeddedClass) {
+            if (isset($embeddedClass['declaredField'])) {
+                $parentReflFields[$property] = new ReflectionEmbeddedProperty(
+                    $parentReflFields[$embeddedClass['declaredField']],
+                    $reflService->getAccessibleProperty(
+                        $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
+                        $embeddedClass['originalField']
+                    ),
+                    $embeddedClass['class']
+                );
+
+                continue;
+            }
+
+            $parentReflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
+        }
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField'])) {
-                $declaringClass = isset($this->embeddedClasses[$mapping['declaredField']]['declared'])
-                                      ? $this->embeddedClasses[$mapping['declaredField']]['declared'] : $this->name;
-
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
-                    $reflService->getAccessibleProperty($declaringClass, $mapping['declaredField']),
-                    $reflService->getAccessibleProperty($this->embeddedClasses[$mapping['declaredField']]['class'], $mapping['originalField']),
-                    $this->embeddedClasses[$mapping['declaredField']]['class']
+                    $parentReflFields[$mapping['declaredField']],
+                    $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
+                    $mapping['originalClass']
                 );
                 continue;
             }
@@ -3171,15 +3181,13 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapEmbedded(array $mapping)
     {
-        if ($this->isEmbeddedClass) {
-            throw MappingException::noEmbeddablesInEmbeddable($this->name);
-        }
-
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = array(
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
+            'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
+            'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
         );
     }
 
@@ -3192,8 +3200,15 @@ class ClassMetadataInfo implements ClassMetadata
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['declaredField'] = $property;
-            $fieldMapping['originalField'] = $fieldMapping['fieldName'];
+            $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
+                ? $fieldMapping['originalClass']
+                : $embeddable->name;
+            $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
+                ? $property . '.' . $fieldMapping['declaredField']
+                : $property;
+            $fieldMapping['originalField'] = isset($fieldMapping['originalField'])
+                ? $fieldMapping['originalField']
+                : $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {

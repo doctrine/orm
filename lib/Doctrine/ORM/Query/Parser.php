@@ -2939,8 +2939,7 @@ class Parser
 
     /**
      * AggregateExpression ::=
-     *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+     *  ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
      *
      * @return \Doctrine\ORM\Query\AST\AggregateExpression
      */
@@ -2962,9 +2961,7 @@ class Parser
             $isDistinct = true;
         }
 
-        $pathExp = ($lookaheadType === Lexer::T_COUNT)
-            ? $this->SingleValuedPathExpression()
-            : $this->SimpleArithmeticExpression();
+        $pathExp = $this->SimpleArithmeticExpression();
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 

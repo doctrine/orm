@@ -612,6 +612,33 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-3257
+     */
+    public function testSingleRepositoryInstanceForDifferentEntityAliases()
+    {
+        $config = $this->_em->getConfiguration();
+
+        $config->addEntityNamespace('Aliased', 'Doctrine\Tests\Models\CMS');
+        $config->addEntityNamespace('AliasedAgain', 'Doctrine\Tests\Models\CMS');
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->assertSame($repository, $this->_em->getRepository('Aliased:CmsUser'));
+        $this->assertSame($repository, $this->_em->getRepository('AliasedAgain:CmsUser'));
+    }
+
+    /**
+     * @group DDC-3257
+     */
+    public function testCanRetrieveRepositoryFromClassNameWithLeadingBackslash()
+    {
+        $this->assertSame(
+            $this->_em->getRepository('\\Doctrine\\Tests\\Models\\CMS\\CmsUser'),
+            $this->_em->getRepository('Doctrine\\Tests\\Models\\CMS\\CmsUser')
+        );
+    }
+
+    /**
      * @group DDC-1376
      *
      * @expectedException Doctrine\ORM\ORMException

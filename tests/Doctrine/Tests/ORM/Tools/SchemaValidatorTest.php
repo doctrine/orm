@@ -134,6 +134,24 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
             "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
         ), $ce);
     }
+
+    /**
+     * @group DDC-3274
+     */
+    public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute()
+    {
+        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3274One');
+        $ce = $this->validator->validateClass($class);
+
+        $this->assertEquals(
+            array(
+                "The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional " .
+                "relationship, but the specified mappedBy association on the target-entity " .
+                "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy=\"two\"' attribute."
+            ),
+            $ce
+        );
+    }
 }
 
 /**
@@ -263,3 +281,30 @@ class DDC1649Three
     private $two;
 }
 
+/**
+ * @Entity
+ */
+class DDC3274One
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @OneToMany(targetEntity="DDC3274Two", mappedBy="one")
+     */
+    private $two;
+}
+
+/**
+ * @Entity
+ */
+class DDC3274Two
+{
+    /**
+     * @Id
+     * @ManyToOne(targetEntity="DDC3274One")
+     */
+    private $one;
+}
