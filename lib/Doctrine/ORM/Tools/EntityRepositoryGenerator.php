@@ -32,7 +32,7 @@ namespace Doctrine\ORM\Tools;
  */
 class EntityRepositoryGenerator
 {
-    private $repositoryName = 'Doctrine\ORM\EntityRepository';
+    private $repositoryName;
 
     protected static $_template =
 '<?php
@@ -123,7 +123,7 @@ class <className> extends <repositoryName>
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
-        $repositoryName = $this->repositoryName;
+        $repositoryName = $this->repositoryName ?: 'Doctrine\ORM\EntityRepository';
 
         if ($namespace && $repositoryName[0] !== '\\') {
             $repositoryName = '\\' . $repositoryName;
@@ -136,7 +136,7 @@ class <className> extends <repositoryName>
      * @param string $fullClassName
      * @param string $outputDirectory
      *
-     * @return void
+     * @return string
      */
     public function writeEntityRepositoryClass($fullClassName, $outputDirectory)
     {
@@ -152,7 +152,11 @@ class <className> extends <repositoryName>
 
         if ( ! file_exists($path)) {
             file_put_contents($path, $code);
+
+            return $path;
         }
+
+        return null;
     }
 
     /**
