@@ -26,10 +26,10 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function setUp()
     {
-        $this->_namespace   = uniqid("doctrine_");
-        $this->_tmpDir      = \sys_get_temp_dir();
-        \mkdir($this->_tmpDir . \DIRECTORY_SEPARATOR . $this->_namespace);
-        
+        $this->_namespace   = uniqid('doctrine_');
+        $this->_tmpDir      = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_namespace;
+        \mkdir($this->_tmpDir);
+
         $this->_generator = new EntityGenerator();
         $this->_generator->setAnnotationPrefix("");
         $this->_generator->setGenerateAnnotations(true);
@@ -46,14 +46,23 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function tearDown()
     {
-        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
+        $dirs = array();
+
+        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir));
         foreach ($ri AS $file) {
             /* @var $file \SplFileInfo */
             if ($file->isFile()) {
                 \unlink($file->getPathname());
+            } elseif ($file->getBasename() === '.') {
+                $dirs[] = $file->getRealpath();
             }
         }
-        rmdir($this->_tmpDir . '/' . $this->_namespace);
+
+        arsort($dirs);
+
+        foreach ($dirs as $dir) {
+            \rmdir($dir);
+        }
     }
 
     /**
@@ -64,36 +73,90 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-        $className = 'DDC3231User';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\\' . $className, $ns . '\\' . $className);
 
-        $rpath = $this->writeRepositoryClass($ns . '\\' . $className, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+        require_once __DIR__.'/../../Models/DDC3231/DDC3231User1.php';
+
+        $className = $ns . '\DDC3231User1Tmp';
+        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User1', $className);
+
+        $rpath = $this->writeRepositoryClass($className);
 
         $this->assertNotNull($rpath);
         $this->assertFileExists($rpath);
 
         require $rpath;
-        
-        $repo = new \ReflectionClass($em->getRepository($ns . '\\' . $className));
 
-        $this->assertSame($ns . '\\' . $className . 'Repository', $repo->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
+        $repo = new \ReflectionClass($em->getRepository($className));
+
+        $this->assertTrue($repo->inNamespace());
+        $this->assertSame($className . 'Repository', $repo->getName());
+        $this->assertSame('Doctrine\ORM\EntityRepository', $repo->getParentClass()->getName());
 
 
-        $className2 = 'DDC3231User2';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\\' . $className2, $ns . '\\' . $className2);
+        require_once __DIR__.'/../../Models/DDC3231/DDC3231User1NoNamespace.php';
 
-        $rpath2 = $this->writeRepositoryClass($ns . '\\' . $className2);
+        $className2 = 'DDC3231User1NoNamespaceTmp';
+        $this->writeEntityClass('DDC3231User1NoNamespace', $className2);
+
+        $rpath2 = $this->writeRepositoryClass($className2);
 
         $this->assertNotNull($rpath2);
         $this->assertFileExists($rpath2);
 
         require $rpath2;
 
-        $repo2 = new \ReflectionClass($em->getRepository($ns . '\\' . $className2));
+        $repo2 = new \ReflectionClass($em->getRepository($className2));
 
-        $this->assertSame($ns . '\\' . $className2 . 'Repository', $repo2->getName());
+        $this->assertFalse($repo2->inNamespace());
+        $this->assertSame($className2 . 'Repository', $repo2->getName());
         $this->assertSame('Doctrine\ORM\EntityRepository', $repo2->getParentClass()->getName());
+    }
+
+    /**
+     * @group DDC-3231
+     */
+    public function testGeneratedEntityRepositoryClassCustomDefaultRepository()
+    {
+        $em = $this->_getTestEntityManager();
+        $ns = $this->_namespace;
+
+        
+        require_once __DIR__.'/../../Models/DDC3231/DDC3231User2.php';
+        
+        $className = $ns . '\DDC3231User2Tmp';
+        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User2', $className);
+
+        $rpath = $this->writeRepositoryClass($className, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+
+        $this->assertNotNull($rpath);
+        $this->assertFileExists($rpath);
+
+        require $rpath;
+        
+        $repo = new \ReflectionClass($em->getRepository($className));
+
+        $this->assertTrue($repo->inNamespace());
+        $this->assertSame($className . 'Repository', $repo->getName());
+        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
+
+        
+        require_once __DIR__.'/../../Models/DDC3231/DDC3231User2NoNamespace.php';
+
+        $className2 = 'DDC3231User2NoNamespaceTmp';
+        $this->writeEntityClass('DDC3231User2NoNamespace', $className2);
+
+        $rpath2 = $this->writeRepositoryClass($className2, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+
+        $this->assertNotNull($rpath2);
+        $this->assertFileExists($rpath2);
+
+        require $rpath2;
+
+        $repo2 = new \ReflectionClass($em->getRepository($className2));
+
+        $this->assertFalse($repo2->inNamespace());
+        $this->assertSame($className2 . 'Repository', $repo2->getName());
+        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo2->getParentClass()->getName());
     }
 
     /**
@@ -114,7 +177,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-        require $this->_tmpDir . '/' . str_replace('\\', '/', $newClassName) . ".php";
+        require $this->_tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $newClassName) . ".php";
     }
 
     /**

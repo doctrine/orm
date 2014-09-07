@@ -1,12 +1,10 @@
 <?php
 
-namespace Doctrine\Tests\Models\DDC3231;
-
 /**
- * @Entity(repositoryClass="DDC3231UserRepository")
- * @Table(name="users")
+ * @Entity(repositoryClass="DDC3231User2NoNamespaceRepository")
+ * @Table(name="no_namespace_users2")
  */
-class DDC3231User
+class DDC3231User2NoNamespace
 {
     /**
      * @Id
