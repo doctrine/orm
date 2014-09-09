@@ -73,7 +73,7 @@ class <className> extends <repositoryName>
      * 
      * @return string $namespace
      */
-    protected function getClassNamespace($fullClassName)
+    private function getClassNamespace($fullClassName)
     {
         $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
 
@@ -119,7 +119,7 @@ class <className> extends <repositoryName>
      * 
      * @return string $repositoryName
      */
-    protected function generateEntityRepositoryName($fullClassName)
+    private function generateEntityRepositoryName($fullClassName)
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
@@ -136,7 +136,7 @@ class <className> extends <repositoryName>
      * @param string $fullClassName
      * @param string $outputDirectory
      *
-     * @return string
+     * @return void
      */
     public function writeEntityRepositoryClass($fullClassName, $outputDirectory)
     {
@@ -152,11 +152,7 @@ class <className> extends <repositoryName>
 
         if ( ! file_exists($path)) {
             file_put_contents($path, $code);
-
-            return $path;
         }
-
-        return null;
     }
 
     /**

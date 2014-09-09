@@ -74,7 +74,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $ns = $this->_namespace;
 
 
-        require_once __DIR__.'/../../Models/DDC3231/DDC3231User1.php';
+        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1.php';
 
         $className = $ns . '\DDC3231User1Tmp';
         $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User1', $className);
@@ -93,7 +93,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame('Doctrine\ORM\EntityRepository', $repo->getParentClass()->getName());
 
 
-        require_once __DIR__.'/../../Models/DDC3231/DDC3231User1NoNamespace.php';
+        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1NoNamespace.php';
 
         $className2 = 'DDC3231User1NoNamespaceTmp';
         $this->writeEntityClass('DDC3231User1NoNamespace', $className2);
@@ -121,7 +121,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $ns = $this->_namespace;
 
         
-        require_once __DIR__.'/../../Models/DDC3231/DDC3231User2.php';
+        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2.php';
         
         $className = $ns . '\DDC3231User2Tmp';
         $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User2', $className);
@@ -140,7 +140,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
 
         
-        require_once __DIR__.'/../../Models/DDC3231/DDC3231User2NoNamespace.php';
+        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2NoNamespace.php';
 
         $className2 = 'DDC3231User2NoNamespaceTmp';
         $this->writeEntityClass('DDC3231User2NoNamespace', $className2);
@@ -162,6 +162,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @param string $className
      * @param string $newClassName
+     * @return string
      */
     private function writeEntityClass($className, $newClassName)
     {
@@ -189,7 +190,9 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->_repositoryGenerator->setDefaultRepositoryName($defaultRepository);
         
-        return $this->_repositoryGenerator->writeEntityRepositoryClass($className . 'Repository', $this->_tmpDir);
+        $this->_repositoryGenerator->writeEntityRepositoryClass($className . 'Repository', $this->_tmpDir);
+
+        return $this->_tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . 'Repository.php';
     }
     
 }
