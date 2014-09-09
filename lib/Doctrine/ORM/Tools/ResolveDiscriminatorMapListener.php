@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * Mechanism to overwrite interfaces or classes specified in discrimination map
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @since 2.2
+ * @since  2.2
  */
 class ResolveDiscriminatorMapListener
 {
@@ -38,18 +38,15 @@ class ResolveDiscriminatorMapListener
     private $resolveTargetEntities = array();
 
     /**
-     * Adds a target-entity class name to resolve to a new class name.
+     * Construct
      *
      * @param string $originalEntity
      * @param string $newEntity
      * @param array  $mapping
-     *
-     * @return void
      */
-    public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
+    public function __construct($originalEntity, $newEntity, array $mapping)
     {
-        $mapping['targetEntity'] = ltrim($newEntity, "\\");
-        $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = $mapping;
+        $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = ltrim($newEntity, "\\");
     }
 
     /**
@@ -80,7 +77,7 @@ class ResolveDiscriminatorMapListener
 
             if (isset($this->resolveTargetEntities[$interface])) {
 
-                $classMetadata->discriminatorMap[$name] = $this->resolveTargetEntities[$interface]['targetEntity'];
+                $classMetadata->discriminatorMap[$name] = $this->resolveTargetEntities[$interface];
             }
         }
     }
