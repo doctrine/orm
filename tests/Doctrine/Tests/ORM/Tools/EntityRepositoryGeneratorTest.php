@@ -81,7 +81,6 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $rpath = $this->writeRepositoryClass($className);
 
-        $this->assertNotNull($rpath);
         $this->assertFileExists($rpath);
 
         require $rpath;
@@ -100,7 +99,6 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $rpath2 = $this->writeRepositoryClass($className2);
 
-        $this->assertNotNull($rpath2);
         $this->assertFileExists($rpath2);
 
         require $rpath2;
