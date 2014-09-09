@@ -17,16 +17,16 @@ class DDC0000Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->setUpEntitySchema(array(
-            'Doctrine\Tests\ORM\Functional\Ticket\User',
-            'Doctrine\Tests\ORM\Functional\Ticket\Role',
-            'Doctrine\Tests\ORM\Functional\Ticket\ActionLog',
+            'Doctrine\Tests\ORM\Functional\Ticket\DDC0000_User',
+            'Doctrine\Tests\ORM\Functional\Ticket\DDC0000_Role',
+            'Doctrine\Tests\ORM\Functional\Ticket\DDC0000_ActionLog',
         ));
     }
 
     public function testIssueCascadeRemoveOrphanRemoval()
     {
-        $user = new User();
-        $role = new Role();
+        $user = new DDC0000_User();
+        $role = new DDC0000_Role();
 
         $user->addRole($role);
 
@@ -34,7 +34,7 @@ class DDC0000Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\User', $user->id);
+        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC0000_User', $user->id);
         $role = $user->roles->get(0);
 
         $this->assertEquals(1, count($user->roles));
@@ -47,11 +47,11 @@ class DDC0000Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\User', $user->id);
+        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC0000_User', $user->id);
 
         $this->assertEquals(0, count($user->roles));
 
-        $actionLog = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\ActionLog', 1);
+        $actionLog = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC0000_ActionLog', 1);
 
         $this->assertEquals('1 - remove', $actionLog->id.' - '.$actionLog->action);
     }
@@ -60,7 +60,7 @@ class DDC0000Test extends OrmFunctionalTestCase
 /**
  * @Entity @Table(name="ddc0000_role") @HasLifecycleCallbacks
  */
-class Role
+class DDC0000_Role
 {
     /**
      * @Id @Column(type="integer")
@@ -89,7 +89,7 @@ class Role
 /**
  * @Entity @Table(name="ddc0000_user")
  */
-class User
+class DDC0000_User
 {
     public $changeSet = array();
 
@@ -114,7 +114,7 @@ class User
 /**
  * @Entity @Table(name="ddc0000_action_log")
  */
-class ActionLog
+class DDC0000_ActionLog
 {
     /**
      * @Id @Column(type="integer")
