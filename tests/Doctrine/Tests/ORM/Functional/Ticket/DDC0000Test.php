@@ -104,7 +104,7 @@ class DDC0000_User
      */
     public $roles;
 
-    public function addRole(Role $role)
+    public function addRole(DDC0000_Role $role)
     {
         $this->roles[] = $role;
         $role->user = $this;
