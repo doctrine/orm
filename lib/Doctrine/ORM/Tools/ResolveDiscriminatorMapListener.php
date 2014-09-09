@@ -40,12 +40,11 @@ class ResolveDiscriminatorMapListener
     /**
      * Construct
      *
-     * @param string $originalEntity
-     * @param string $newEntity
+     * @param array $resolveTargetEntities
      */
-    public function __construct($originalEntity, $newEntity)
+    public function __construct(array $resolveTargetEntities)
     {
-        $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = ltrim($newEntity, "\\");
+        $this->resolveTargetEntities = $resolveTargetEntities;
     }
 
     /**
