@@ -42,9 +42,8 @@ class ResolveDiscriminatorMapListener
      *
      * @param string $originalEntity
      * @param string $newEntity
-     * @param array  $mapping
      */
-    public function __construct($originalEntity, $newEntity, array $mapping)
+    public function __construct($originalEntity, $newEntity)
     {
         $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = ltrim($newEntity, "\\");
     }
