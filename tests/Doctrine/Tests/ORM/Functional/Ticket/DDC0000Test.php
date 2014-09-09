@@ -80,7 +80,7 @@ class DDC0000_Role
     {
         $em = $eventArgs->getEntityManager();
 
-        $actionLog = new ActionLog();
+        $actionLog = new DDC0000_ActionLog();
         $actionLog->action = 'remove';
         $em->persist($actionLog);
     }
