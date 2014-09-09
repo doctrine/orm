@@ -69,7 +69,7 @@ class DDC0000_Role
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="roles")
+     * @ManyToOne(targetEntity="DDC0000_User", inversedBy="roles")
      */
     public $user;
 
@@ -100,7 +100,7 @@ class DDC0000_User
     public $id;
 
     /**
-     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="DDC0000_Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
      */
     public $roles;
 
