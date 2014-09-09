@@ -1838,7 +1838,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
-                    $managedCopy = $this->em->find($class->name, $flatId);
+                    $managedCopy = $this->em->getRepository($class->name)->find($flatId);
                 }
 
                 if ($managedCopy === null) {
