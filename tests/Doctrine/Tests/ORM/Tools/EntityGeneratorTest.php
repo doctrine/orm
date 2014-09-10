@@ -285,6 +285,36 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-3272
+     */
+    public function testMappedSuperclassAnnotationGeneration()
+    {
+        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
+
+        $metadata->namespace          = $this->_namespace;
+        $metadata->isMappedSuperclass = true;
+
+        $this->_generator->setAnnotationPrefix('ORM\\');
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        // force instantiation (causes autoloading to kick in)
+        $this->newInstance($metadata);
+
+        $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(
+            new \Doctrine\Common\Annotations\AnnotationReader(),
+            array()
+        );
+
+        $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
+
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $driver->loadMetadataForClass($cm->name, $cm);
+
+        $this->assertTrue($cm->isMappedSuperclass);
+    }
+
+    /**
      * @dataProvider getParseTokensInEntityFileData
      */
     public function testParseTokensInEntityFile($php, $classes)
