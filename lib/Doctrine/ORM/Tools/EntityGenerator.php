@@ -875,15 +875,13 @@ public function __construct()
                 }
             }
 
-            if ($metadata->isMappedSuperclass) {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'MappedSuperClass';
-            } else {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'Entity';
-            }
+            $customRepository = $metadata->customRepositoryClassName
+                ? '(repositoryClass="' . $metadata->customRepositoryClassName . '")'
+                : '';
 
-            if ($metadata->customRepositoryClassName) {
-                $lines[count($lines) - 1] .= '(repositoryClass="' . $metadata->customRepositoryClassName . '")';
-            }
+            $lines[] = ' * @' . $this->annotationsPrefix
+                . ($metadata->isMappedSuperclass ? 'MappedSuperclass' : 'Entity')
+                . $customRepository;
 
             if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
                 $lines[] = ' * @' . $this->annotationsPrefix . 'HasLifecycleCallbacks';
