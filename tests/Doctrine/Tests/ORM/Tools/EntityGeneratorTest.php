@@ -2,15 +2,18 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\EntityGenerator;
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\Tests\Models\DDC2372\DDC2372User;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
+use Doctrine\Tests\Models\DDC2372\DDC2372User;
+use Doctrine\Tests\OrmTestCase;
 
-class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class EntityGeneratorTest extends OrmTestCase
 {
 
     /**
@@ -245,8 +248,8 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $book = $this->newInstance($metadata);
 
-        $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm = new ClassMetadata($metadata->name);
+        $cm->initializeReflection(new RuntimeReflectionService);
 
         $driver = $this->createAnnotationDriver();
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -266,13 +269,13 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_generator->setAnnotationPrefix('ORM\\');
         $metadata = $this->generateBookEntityFixture();
 
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, array());
+        $reader = new AnnotationReader();
+        $driver = new AnnotationDriver($reader, array());
 
         $book = $this->newInstance($metadata);
 
-        $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm = new ClassMetadata($metadata->name);
+        $cm->initializeReflection(new RuntimeReflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
 
@@ -282,6 +285,28 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->identifier, $metadata->identifier);
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
+    }
+
+    /**
+     * @group DDC-3272
+     */
+    public function testMappedSuperclassAnnotationGeneration()
+    {
+        $metadata                     = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
+        $metadata->namespace          = $this->_namespace;
+        $metadata->isMappedSuperclass = true;
+
+        $this->_generator->setAnnotationPrefix('ORM\\');
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
+
+        $driver = new AnnotationDriver(new AnnotationReader(), array());
+        $cm     = new ClassMetadata($metadata->name);
+
+        $cm->initializeReflection(new RuntimeReflectionService);
+        $driver->loadMetadataForClass($cm->name, $cm);
+
+        $this->assertTrue($cm->isMappedSuperclass);
     }
 
     /**
