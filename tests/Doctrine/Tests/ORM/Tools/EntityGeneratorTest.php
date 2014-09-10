@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
+use Doctrine\Tests\OrmTestCase;
 
-class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class EntityGeneratorTest extends OrmTestCase
 {
 
     /**
@@ -291,23 +292,18 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassAnnotationGeneration()
     {
-        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
-
+        $metadata                     = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
         $metadata->namespace          = $this->_namespace;
         $metadata->isMappedSuperclass = true;
 
         $this->_generator->setAnnotationPrefix('ORM\\');
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
-
-        // force instantiation (causes autoloading to kick in)
-        $this->newInstance($metadata);
-
-        $cm = new ClassMetadata($metadata->name);
-
-        $cm->initializeReflection(new RuntimeReflectionService);
+        $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
 
         $driver = new AnnotationDriver(new AnnotationReader(), array());
+        $cm     = new ClassMetadata($metadata->name);
 
+        $cm->initializeReflection(new RuntimeReflectionService);
         $driver->loadMetadataForClass($cm->name, $cm);
 
         $this->assertTrue($cm->isMappedSuperclass);
