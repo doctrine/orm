@@ -1,4 +1,3 @@
-/tests export-ignore
 /tools export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
@@ -8,5 +7,3 @@ build.properties export-ignore
 build.properties.dev export-ignore
 build.xml export-ignore
 CONTRIBUTING.md export-ignore
-phpunit.xml.dist export-ignore
-run-all.sh export-ignore
