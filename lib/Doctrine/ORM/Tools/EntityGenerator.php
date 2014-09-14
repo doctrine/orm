@@ -299,6 +299,8 @@ public function __construct()
 }
 ';
 
+    protected $skipStartingNameSpaceInPath = false;
+
     /**
      * Constructor.
      */
@@ -336,7 +338,7 @@ public function __construct()
      */
     public function writeEntityClass(ClassMetadataInfo $metadata, $outputDirectory)
     {
-        $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->extension;
+        $path = $this->getEntityClassFilePath($metadata, $outputDirectory);
         $dir = dirname($path);
 
         if ( ! is_dir($dir)) {
@@ -365,6 +367,17 @@ public function __construct()
         } elseif ( ! $this->isNew && $this->updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
         }
+    }
+
+    protected function getEntityClassFilePath(ClassMetadataInfo $metadata, $outputDirectory)
+    {
+        $name = $metadata->name;
+        if ($this->skipStartingNameSpaceInPath && 0 === strpos($name, $this->skipStartingNameSpaceInPath . '\\')) {
+            $name = substr($name, strlen($this->skipStartingNameSpaceInPath) + 1);
+        }
+
+        $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $name) . $this->extension;
+        return $path;
     }
 
     /**
@@ -437,6 +450,16 @@ public function __construct()
     public function setExtension($extension)
     {
         $this->extension = $extension;
+    }
+
+    /**
+     * Skip starting namespace - to make entities compatible with psr-4 autoloader
+     *
+     * @param string $skipStartingNameSpaceInPath
+     */
+    public function setSkipStartingNamespaceInPath($skipStartingNameSpaceInPath)
+    {
+        $this->skipStartingNameSpaceInPath = $skipStartingNameSpaceInPath;
     }
 
     /**
