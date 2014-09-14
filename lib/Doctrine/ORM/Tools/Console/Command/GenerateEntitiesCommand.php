@@ -84,6 +84,10 @@ class GenerateEntitiesCommand extends Command
             new InputOption(
                 'no-backup', null, InputOption::VALUE_NONE,
                 'Flag to define if generator should avoid backuping existing entity file if it exists.'
+            ),
+            new InputOption(
+                'skip-namespace', null, InputOption::VALUE_OPTIONAL,
+                'Skip starting namespace in entities filepath, for psr-4 autoload', false
             )
         ))
         ->setHelp(<<<EOT
@@ -139,7 +143,7 @@ EOT
         if (count($metadatas)) {
             // Create EntityGenerator
             $entityGenerator = new EntityGenerator();
-
+            $entityGenerator->setSkipStartingNamespaceInPath($input->getOption('skip-namespace'));
             $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
             $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
