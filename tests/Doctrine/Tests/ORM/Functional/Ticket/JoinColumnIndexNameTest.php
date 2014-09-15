@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Query\ResultSetMapping;
+
 class JoinColumnIndexNameTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testCreateSchemaJoinColumnExplicitIndexName()
@@ -22,6 +24,42 @@ class JoinColumnIndexNameTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $expected,
             $sql
         );
+    }
+
+    public function testUpdateSchemaJoinColumnExplicitIndexName()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\Car'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\Maker'),
+        );
+
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+        $schemaTool->createSchema($classes);
+
+        $sql = $schemaTool->getUpdateSchemaSql($classes, true);
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        $carTable = $schema->getTable('Car');
+
+        $indexes = $this->_em->getConnection()->getSchemaManager()->listTableIndexes('Car');
+
+        unset($indexes['primary']);
+
+        /** @var \Doctrine\DBAL\Schema\Index $makerIdIndex */
+        $makerIdIndex = current($indexes);
+
+        $this->_em->getConnection()->getSchemaManager()->dropIndex($makerIdIndex, $carTable);
+
+        $query = $this->_em->createNativeQuery(
+            'CREATE INDEX idx_maker_id ON Car(maker_id)',
+            $rsm = new ResultSetMapping()
+        );
+        $query->execute();
+
+        $sql = $schemaTool->getUpdateSchemaSql($classes, true);
+
+        $this->assertEmpty($sql, "There should not be any changes, all indexes are present.");
     }
 }
 
