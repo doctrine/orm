@@ -46,6 +46,8 @@ use Doctrine\ORM\Persisters\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\OneToManyPersister;
 use Doctrine\ORM\Persisters\ManyToManyPersister;
 
+use Doctrine\ORM\Utility\IdentifierConverter;
+
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
@@ -56,6 +58,7 @@ use Doctrine\ORM\Persisters\ManyToManyPersister;
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Rob Caiger <rob@clocal.co.uk>
  * @internal    This class contains highly performance-sensitive code.
  */
 class UnitOfWork implements PropertyChangedListener
@@ -242,6 +245,13 @@ class UnitOfWork implements PropertyChangedListener
     private $listenersInvoker;
 
     /**
+     * The IdentifierConverter used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierConverter
+     */
+    private $identifierConverter;
+
+    /**
      * Orphaned entities that are scheduled for removal.
      *
      * @var array
@@ -274,10 +284,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function __construct(EntityManager $em)
     {
-        $this->em               = $em;
-        $this->evm              = $em->getEventManager();
-        $this->listenersInvoker = new ListenersInvoker($em);
-        $this->hasCache         = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->em                  = $em;
+        $this->evm                 = $em->getEventManager();
+        $this->listenersInvoker    = new ListenersInvoker($em);
+        $this->hasCache            = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->identifierConverter = new IdentifierConverter();
     }
 
     /**
@@ -1754,27 +1765,16 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * convert foreign identifiers into scalar foreign key values to avoid object to string conversion failures.
+     *   This logic has now moved to \Doctrine\ORM\Utility\IdentifierConverter, but this method remains for backwards
+     *   compatability
      *
      * @param ClassMetadata $class
      * @param array $id
      * @return array
      */
-    public function flattenIdentifier($class, $id)
+    private function flattenIdentifier($class, $id)
     {
-        $flatId = array();
-
-        foreach ($id as $idField => $idValue) {
-            if (isset($class->associationMappings[$idField]) && is_object($idValue)) {
-                $targetClassMetadata = $this->em->getClassMetadata($class->associationMappings[$idField]['targetEntity']);
-                $associatedId        = $this->getEntityIdentifier($idValue);
-
-                $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
-            } else {
-                $flatId[$idField] = $idValue;
-            }
-        }
-
-        return $flatId;
+        return $this->identifierConverter->flattenIdentifier($class, $id);
     }
 
     /**
