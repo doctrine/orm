@@ -263,6 +263,24 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-3276
+     */
+    public function testSupportsAggregateCountFunctionWithSimpleArithmetic()
+    {
+        $connMock = $this->_em->getConnection();
+        $orgPlatform = $connMock->getDatabasePlatform();
+
+        $connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+
+        $this->assertSqlGeneration(
+            'SELECT COUNT(CONCAT(u.id, u.name)) FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id',
+            'SELECT COUNT(CONCAT(c0_.id, c0_.name)) AS sclr_0 FROM cms_users c0_ GROUP BY c0_.id'
+        );
+
+        $connMock->setDatabasePlatform($orgPlatform);
+    }
+
     public function testSupportsWhereClauseWithPositionalParameter()
     {
         $this->assertSqlGeneration(

@@ -85,7 +85,7 @@ class CacheConfiguration
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\QueryCacheValidator
+     * @return \Doctrine\ORM\Cache\RegionsConfiguration
      */
     public function getRegionsConfiguration()
     {

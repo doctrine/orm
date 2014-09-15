@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="../Doctrine/Tests/TestInit.php">
+<phpunit bootstrap="../Doctrine/Tests/TestInit.php" colors="true">
     <php>
    <!-- "Real" test database -->
         <var name="db_type" value="pdo_pgsql"/>

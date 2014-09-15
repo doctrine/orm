@@ -466,7 +466,7 @@ Basic entity cache
     $country1  = $em->find('Country', 1); // Retrieve item from cache
 
     $country->setName("New Name");
-    $em->persist($state);
+    $em->persist($country);
     $em->flush();                         // Hit database to update the row and update cache
 
     $em->clear();                         // Clear entity manager

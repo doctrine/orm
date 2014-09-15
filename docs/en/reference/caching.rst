@@ -410,39 +410,6 @@ When you use the ``--result`` option you can use some other options
 to be more specific about which queries' result sets you want to
 clear.
 
-Just like the API of the cache drivers you can clear based on an
-ID, regular expression, prefix or suffix.
-
-.. code-block:: php
-
-    $ ./doctrine clear-cache --result --id=cache_id
-
-Or if you want to clear based on a regular expressions:
-
-.. code-block:: php
-
-    $ ./doctrine clear-cache --result --regex=users_.*
-
-Or with a prefix:
-
-.. code-block:: php
-
-    $ ./doctrine clear-cache --result --prefix=users_
-
-And finally with a suffix:
-
-.. code-block:: php
-
-    $ ./doctrine clear-cache --result --suffix=_my_account
-
-.. note::
-
-    Using the ``--id``, ``--regex``, etc. options with the
-    ``--query`` and ``--metadata`` are not allowed as it is not
-    necessary to be specific about what you clear. You only ever need
-    to completely clear the cache to remove stale entries.
-
-
 Cache Slams
 -----------
 
