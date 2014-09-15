@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 class JoinColumnIndexNameTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function testMergeManyToMany()
+    public function testCreateSchemaJoinColumnExplicitIndexName()
     {
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
         $sql = $schemaTool->getCreateSchemaSql(array(
