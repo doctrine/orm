@@ -288,7 +288,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->evm                 = $em->getEventManager();
         $this->listenersInvoker    = new ListenersInvoker($em);
         $this->hasCache            = $em->getConfiguration()->isSecondLevelCacheEnabled();
-        $this->identifierConverter = new IdentifierConverter();
+        $this->identifierConverter = new IdentifierConverter($em);
     }
 
     /**

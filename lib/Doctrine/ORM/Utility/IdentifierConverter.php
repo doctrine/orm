@@ -20,6 +20,9 @@
 
 namespace Doctrine\ORM\Utility;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 /**
  * The IdentifierConverter utility now houses some of the identifier manipulation logic from unit of work, so that it
  * can be re-used elsewhere.
@@ -37,6 +40,23 @@ namespace Doctrine\ORM\Utility;
 class IdentifierConverter
 {
     /**
+     * The EntityManager that "owns" this UnitOfWork instance.
+     *
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $em;
+
+    /**
+     * Initializes a new IdentifierConverter instance, bound to the given EntityManager.
+     *
+     * @param \Doctrine\ORM\EntityManager $em
+     */
+    public function __construct(EntityManager $em)
+    {
+        $this->em = $em;
+    }
+
+    /**
      * convert foreign identifiers into scalar foreign key values to avoid object to string conversion failures.
      *
      * @param ClassMetadata $class
@@ -50,7 +70,7 @@ class IdentifierConverter
         foreach ($id as $idField => $idValue) {
             if (isset($class->associationMappings[$idField]) && is_object($idValue)) {
                 $targetClassMetadata = $this->em->getClassMetadata($class->associationMappings[$idField]['targetEntity']);
-                $associatedId        = $this->getEntityIdentifier($idValue);
+                $associatedId        = $this->em->getUnitOfWork()->getEntityIdentifier($idValue);
 
                 $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
             } else {
