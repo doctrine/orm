@@ -1438,7 +1438,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($class->containsForeignIdentifier) {
-            $id = $this->flattenIdentifier($class, $id);
+            $id = $this->identifierConverter->flattenIdentifier($class, $id);
         }
 
         switch (true) {
@@ -1764,20 +1764,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * convert foreign identifiers into scalar foreign key values to avoid object to string conversion failures.
-     *   This logic has now moved to \Doctrine\ORM\Utility\IdentifierConverter, but this method remains for backwards
-     *   compatability
-     *
-     * @param ClassMetadata $class
-     * @param array $id
-     * @return array
-     */
-    private function flattenIdentifier($class, $id)
-    {
-        return $this->identifierConverter->flattenIdentifier($class, $id);
-    }
-
-    /**
      * Executes a merge operation on an entity.
      *
      * @param object      $entity
@@ -1826,7 +1812,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->persistNew($class, $managedCopy);
             } else {
                 $flatId = ($class->containsForeignIdentifier)
-                    ? $this->flattenIdentifier($class, $id)
+                    ? $this->identifierConverter->flattenIdentifier($class, $id)
                     : $id;
 
                 $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
@@ -3361,10 +3347,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $id1 = isset($this->entityIdentifiers[$oid1])
             ? $this->entityIdentifiers[$oid1]
-            : $this->flattenIdentifier($class, $class->getIdentifierValues($entity1));
+            : $this->identifierConverter->flattenIdentifier($class, $class->getIdentifierValues($entity1));
         $id2 = isset($this->entityIdentifiers[$oid2])
             ? $this->entityIdentifiers[$oid2]
-            : $this->flattenIdentifier($class, $class->getIdentifierValues($entity2));
+            : $this->identifierConverter->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
