@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional\Locking;
+namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
