@@ -1870,8 +1870,14 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
+            $properties = $class->reflClass->getProperties();
+            $parent     = $class->reflClass;
+            while (($parent = $parent->getParentClass()) != null) {
+                $properties = array_merge($parent->getProperties(), $properties);
+            }
+
             // Merge state of $entity into existing (managed) entity
-            foreach ($class->reflClass->getProperties() as $prop) {
+            foreach ($properties as $prop) {
                 $name = $prop->name;
                 $prop->setAccessible(true);
                 if ( ! isset($class->associationMappings[$name])) {
