@@ -447,6 +447,8 @@ It caches the primary keys of association and cache each element will be cached 
                 usage : NONSTRICT_READ_WRITE
 
 
+> Note: for this to work, the target entity must also be marked as cacheable.
+
 Cache usage
 ~~~~~~~~~~~
 
@@ -464,7 +466,7 @@ Basic entity cache
     $country1  = $em->find('Country', 1); // Retrieve item from cache
 
     $country->setName("New Name");
-    $em->persist($state);
+    $em->persist($country);
     $em->flush();                         // Hit database to update the row and update cache
 
     $em->clear();                         // Clear entity manager

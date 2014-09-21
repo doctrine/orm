@@ -4,7 +4,9 @@ php:
   - 5.3
   - 5.4
   - 5.5
+  - 5.6
   - hhvm
+  - hhvm-nightly
 
 env:
   - DB=mysql
@@ -27,10 +29,14 @@ after_script:
   - php vendor/bin/coveralls -v
 
 matrix:
-  allow_failures:
-    - php: hhvm
   exclude:
     - php: hhvm
       env: DB=pgsql  # driver currently unsupported by HHVM
     - php: hhvm
       env: DB=mysqli # driver currently unsupported by HHVM
+    - php: hhvm-nightly
+      env: DB=pgsql  # driver currently unsupported by HHVM
+    - php: hhvm-nightly
+      env: DB=mysqli # driver currently unsupported by HHVM
+  allow_failures:
+    - php: hhvm-nightly # hhvm-nightly currently chokes on composer installation

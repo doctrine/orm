@@ -287,9 +287,13 @@ final class Query extends AbstractQuery
 
         // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
+        $paramCount = count($this->parameters);
+        $mappingCount = count($paramMappings);
 
-        if (count($paramMappings) != count($this->parameters)) {
-            throw QueryException::invalidParameterNumber();
+        if ($paramCount > $mappingCount) {
+            throw QueryException::tooManyParameters($mappingCount, $paramCount);
+        } elseif ($paramCount < $mappingCount) {
+            throw QueryException::tooFewParameters($mappingCount, $paramCount);
         }
 
         // evict all cache for the entity region
@@ -682,8 +686,14 @@ final class Query extends AbstractQuery
     {
         ksort($this->_hints);
 
+        $platform = $this->getEntityManager()
+            ->getConnection()
+            ->getDatabasePlatform()
+            ->getName();
+
         return md5(
-            $this->getDql() . var_export($this->_hints, true) .
+            $this->getDql() . serialize($this->_hints) .
+            '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'

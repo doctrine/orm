@@ -109,6 +109,26 @@ Optional attributes:
 
 -  **nullable**: Determines if NULL values allowed for this column.
 
+-  **options**: Array of additional options:
+
+   -  ``default``: The default value to set for the column if no value
+      is supplied.
+
+   -  ``unsigned``: Boolean value to determine if the column should
+      be capable of representing only non-negative integers
+      (applies only for integer column and might not be supported by
+      all vendors).
+
+   -  ``fixed``: Boolean value to determine if the specified length of
+      a string column should be fixed or varying (applies only for
+      string/binary column and might not be supported by all vendors).
+
+   -  ``comment``: The comment of the column in the schema (might not
+      be supported by all vendors).
+
+   -  ``customSchemaOptions``: Array of additional schema options
+      which are mostly vendor specific.
+
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
@@ -120,7 +140,12 @@ Optional attributes:
    attribute still handles the conversion between PHP and Database
    values. If you use this attribute on a column that is used for
    joins between tables you should also take a look at
-   :ref:`@JoinColumn <annref_joincolumn>`. 
+   :ref:`@JoinColumn <annref_joincolumn>`.
+
+.. note::
+
+    For more detailed information on each attribute, please refer to
+    the DBAL ``Schema-Representation`` documentation.
 
 Examples:
 
@@ -131,16 +156,26 @@ Examples:
      * @Column(type="string", length=32, unique=true, nullable=false)
      */
     protected $username;
-    
+
     /**
      * @Column(type="string", columnDefinition="CHAR(2) NOT NULL")
      */
     protected $country;
-    
+
     /**
      * @Column(type="decimal", precision=2, scale=1)
      */
     protected $height;
+
+    /**
+     * @Column(type="string", length=2, options={"fixed":true, "comment":"Initial letters of first and last name"})
+     */
+    protected $initials;
+
+    /**
+     * @Column(type="integer", name="login_count" nullable=false, options={"unsigned":true, "default":0})
+     */
+    protected $loginCount;
 
 .. _annref_column_result:
 
@@ -161,7 +196,7 @@ Add caching strategy to a root entity or a collection.
 
 Optional attributes:
 
--  **usage**: One of ``READ_ONLY``, ``READ_READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
+-  **usage**: One of ``READ_ONLY``, ``READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
 -  **region**: An specific region name
 
 .. _annref_changetrackingpolicy:
@@ -222,11 +257,11 @@ Optional attributes:
 ~~~~~~~~~~~~~~~~~~~~~
 
 The discriminator map is a required annotation on the
-top-most/super class in an inheritance hierarchy. It takes an array
-as only argument which defines which class should be saved under
+topmost/super class in an inheritance hierarchy. Its only argument is an
+array which defines which class should be saved under
 which name in the database. Keys are the database value and values
 are the classes, either as fully- or as unqualified class names
-depending if the classes are in the namespace or not.
+depending on whether the classes are in the namespace or not.
 
 .. code-block:: php
 
@@ -247,8 +282,8 @@ depending if the classes are in the namespace or not.
 @Entity
 ~~~~~~~
 
-Required annotation to mark a PHP class as Entity. Doctrine manages
-the persistence of all classes marked as entity.
+Required annotation to mark a PHP class as an entity. Doctrine manages
+the persistence of all classes marked as entities.
 
 Optional attributes:
 
@@ -344,7 +379,7 @@ Example:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Annotation which has to be set on the entity-class PHP DocBlock to
-notify Doctrine that this entity has entity life-cycle callback
+notify Doctrine that this entity has entity lifecycle callback
 annotations set on at least one of its methods. Using @PostLoad,
 @PrePersist, @PostPersist, @PreRemove, @PostRemove, @PreUpdate or
 @PostUpdate without this marker annotation will make Doctrine
@@ -373,7 +408,7 @@ Example:
 ~~~~~~~
 
 Annotation is used inside the :ref:`@Table <annref_table>` annotation on
-the entity-class level. It allows to hint the SchemaTool to
+the entity-class level. It provides a hint to the SchemaTool to
 generate a database index on the specified table columns. It only
 has meaning in the SchemaTool schema generation context.
 
@@ -447,7 +482,7 @@ Examples:
     {
         // ...
     }
-    
+
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -467,7 +502,7 @@ Examples:
 This annotation is used in the context of relations in
 :ref:`@ManyToOne <annref_manytoone>`, :ref:`@OneToOne <annref_onetoone>` fields
 and in the Context of :ref:`@JoinTable <annref_jointable>` nested inside
-a @ManyToMany. This annotation is not required. If its not
+a @ManyToMany. This annotation is not required. If it is not
 specified the attributes *name* and *referencedColumnName* are
 inferred from the table and primary key names.
 
@@ -483,15 +518,15 @@ Required attributes:
 Optional attributes:
 
 
--  **unique**: Determines if this relation exclusive between the
-   affected entities and should be enforced so on the database
+-  **unique**: Determines whether this relation is exclusive between the
+   affected entities and should be enforced as such on the database
    constraint level. Defaults to false.
--  **nullable**: Determine if the related entity is required, or if
+-  **nullable**: Determine whether the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
 -  **onDelete**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
-   This attribute allows to make use of advanced RMDBS features. Using
+   This attribute enables the use of advanced RMDBS features. Using
    this attribute on @JoinColumn is necessary if you need slightly
    different column definitions for joining columns, for example
    regarding NULL/NOT NULL defaults. However by default a
@@ -593,7 +628,7 @@ Example:
 @ManyToMany
 ~~~~~~~~~~~~~~
 
-Defines an instance variable holds a many-to-many relationship
+Defines that the annotated instance variable holds a many-to-many relationship
 between two entities. :ref:`@JoinTable <annref_jointable>` is an
 additional, optional annotation that has reasonable default
 configuration values using the table and names of the two related
@@ -610,9 +645,9 @@ Optional attributes:
 
 
 -  **mappedBy**: This option specifies the property name on the
-   targetEntity that is the owning side of this relation. Its a
+   targetEntity that is the owning side of this relation. It is a
    required attribute for the inverse side of a relationship.
--  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
+-  **inversedBy**: The inversedBy attribute designates the field in the
    entity that is the inverse side of the relationship.
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY, EXTRA_LAZY or EAGER
@@ -640,7 +675,7 @@ Example:
      *      )
      */
     private $groups;
-    
+
     /**
      * Inverse Side
      *
@@ -653,7 +688,7 @@ Example:
 @MappedSuperclass
 ~~~~~~~~~~~~~~~~~~~~~
 
-An mapped superclass is an abstract or concrete class that provides
+A mapped superclass is an abstract or concrete class that provides
 persistent entity state and mapping information for its subclasses,
 but which is not itself an entity. This annotation is specified on
 the Class docblock and has no additional attributes.
@@ -766,7 +801,7 @@ Example:
 ~~~~~~~~~~~~~~
 
 The @OneToOne annotation works almost exactly as the
-:ref:`@ManyToOne <annref_manytoone>` with one additional option that can
+:ref:`@ManyToOne <annref_manytoone>` with one additional option which can
 be specified. The configuration defaults for
 :ref:`@JoinColumn <annref_joincolumn>` using the target entity table and
 primary key column names apply here too.
@@ -786,7 +821,7 @@ Optional attributes:
 -  **orphanRemoval**: Boolean that specifies if orphans, inverse
    OneToOne entities that are not connected to any owning instance,
    should be removed by Doctrine. Defaults to false.
--  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
+-  **inversedBy**: The inversedBy attribute designates the field in the
    entity that is the inverse side of the relationship.
 
 Example:
@@ -933,7 +968,7 @@ DocBlock.
 @SequenceGenerator
 ~~~~~~~~~~~~~~~~~~~~~
 
-For the use with @GeneratedValue(strategy="SEQUENCE") this
+For use with @GeneratedValue(strategy="SEQUENCE") this
 annotation allows to specify details about the sequence, such as
 the increment size and initial values of the sequence.
 
@@ -946,10 +981,10 @@ Optional attributes:
 
 
 -  **allocationSize**: Increment the sequence by the allocation size
-   when its fetched. A value larger than 1 allows to optimize for
+   when its fetched. A value larger than 1 allows optimization for
    scenarios where you create more than one new entity per request.
    Defaults to 10
--  **initialValue**: Where does the sequence start, defaults to 1.
+-  **initialValue**: Where the sequence starts, defaults to 1.
 
 Example:
 
@@ -1071,7 +1106,7 @@ Example:
 
 Annotation describes the table an entity is persisted in. It is
 placed on the entity-class PHP DocBlock and is optional. If it is
-not specified the table name will default to the entities
+not specified the table name will default to the entity's
 unqualified classname.
 
 Required attributes:

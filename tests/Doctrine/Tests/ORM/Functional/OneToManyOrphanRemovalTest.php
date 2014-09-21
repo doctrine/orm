@@ -6,8 +6,6 @@ use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsAddress,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests a bidirectional one-to-many association mapping with orphan removal.
  */

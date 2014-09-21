@@ -811,6 +811,20 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function count($criteria = array())
+    {
+        $sql = $this->getCountSQL($criteria);
+
+        list($params, $types) = ($criteria instanceof Criteria)
+            ? $this->expandCriteriaParameters($criteria)
+            : $this->expandParameters($criteria);
+
+        return $this->conn->executeQuery($sql, $params, $types)->fetchColumn();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function loadCriteria(Criteria $criteria)
@@ -834,29 +848,29 @@ class BasicEntityPersister implements EntityPersister
     public function expandCriteriaParameters(Criteria $criteria)
     {
         $expression = $criteria->getWhereExpression();
+        $sqlParams  = array();
+        $sqlTypes   = array();
 
         if ($expression === null) {
-            return array(array(), array());
+            return array($sqlParams, $sqlTypes);
         }
 
         $valueVisitor = new SqlValueVisitor();
 
         $valueVisitor->dispatch($expression);
 
-        list($values, $types) = $valueVisitor->getParamsAndTypes();
+        list($params, $types) = $valueVisitor->getParamsAndTypes();
 
-        $sqlValues = array();
-        foreach ($values as $value) {
-            $sqlValues[] = $this->getValue($value);
+        foreach ($params as $param) {
+            $sqlParams[] = $this->getValue($param);
         }
 
-        $sqlTypes = array();
         foreach ($types as $type) {
             list($field, $value) = $type;
-            $sqlTypes[] = $this->getType($field, $value);
+            $sqlTypes[]          = $this->getType($field, $value);
         }
 
-        return array($sqlValues, $sqlTypes);
+        return array($sqlParams, $sqlTypes);
     }
 
     /**
@@ -1067,6 +1081,33 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getCountSQL($criteria = array())
+    {
+        $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $tableAlias = $this->getSQLTableAlias($this->class->name);
+
+        $conditionSql = ($criteria instanceof Criteria)
+            ? $this->getSelectConditionCriteriaSQL($criteria)
+            : $this->getSelectConditionSQL($criteria);
+
+        $filterSql = $this->generateFilterConditionSQL($this->class, $tableAlias);
+
+        if ('' !== $filterSql) {
+            $conditionSql = $conditionSql
+                ? $conditionSql . ' AND ' . $filterSql
+                : $filterSql;
+        }
+
+        $sql = 'SELECT COUNT(*) '
+            . 'FROM ' . $tableName . ' ' . $tableAlias
+            . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
+
+        return $sql;
+    }
+
+    /**
      * Gets the ORDER BY SQL snippet for ordered collections.
      *
      * @param array  $orderBy
@@ -1159,7 +1200,10 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            if ( ! (($assoc['type'] & ClassMetadata::TO_ONE) && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide']))) {
+            $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
+            $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
+
+            if ( ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
             }
 
@@ -1188,6 +1232,10 @@ class BasicEntityPersister implements EntityPersister
 
             $association    = $assoc;
             $joinCondition  = array();
+
+            if (isset($assoc['indexBy'])) {
+                $this->rsm->addIndexBy($assocAlias, $assoc['indexBy']);
+            }
 
             if ( ! $assoc['isOwningSide']) {
                 $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -1534,7 +1582,13 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (is_array($value)) {
-            return sprintf('%s IN (%s)' , $condition, $placeholder);
+            $in = sprintf('%s IN (%s)' , $condition, $placeholder);
+
+            if (false !== array_search(null, $value, true)) {
+                return sprintf('(%s OR %s IS NULL)' , $in, $condition);
+            }
+
+            return $in;
         }
 
         if ($value === null) {
@@ -1781,16 +1835,12 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function exists($entity, array $extraConditions = array())
+    public function exists($entity, Criteria $extraConditions = null)
     {
         $criteria = $this->class->getIdentifierValues($entity);
 
         if ( ! $criteria) {
             return false;
-        }
-
-        if ($extraConditions) {
-            $criteria = array_merge($criteria, $extraConditions);
         }
 
         $alias = $this->getSQLTableAlias($this->class->name);
@@ -1799,11 +1849,18 @@ class BasicEntityPersister implements EntityPersister
              . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
+        list($params) = $this->expandParameters($criteria);
+
+        if (null !== $extraConditions) {
+            $sql                           .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
+            list($criteriaParams, $values) = $this->expandCriteriaParameters($extraConditions);
+
+            $params = array_merge($params, $criteriaParams);
+        }
+
         if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
-
-        list($params) = $this->expandParameters($criteria);
 
         return (bool) $this->conn->fetchColumn($sql, $params);
     }

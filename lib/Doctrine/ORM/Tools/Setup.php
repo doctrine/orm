@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\ClassLoader;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -144,7 +145,9 @@ class Setup
             $cache = new ArrayCache();
         }
 
-        $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
+        if ($cache instanceof CacheProvider) {
+            $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
+        }
 
         $config = new Configuration();
         $config->setMetadataCacheImpl($cache);

@@ -8,8 +8,6 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
  * Inverse side is not present.

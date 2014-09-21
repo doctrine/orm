@@ -7,8 +7,6 @@ use Doctrine\Tests\Models\Navigation\NavTour;
 use Doctrine\Tests\Models\Navigation\NavPhotos;
 use Doctrine\Tests\Models\Navigation\NavUser;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()

@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests the generation of a proxy object for lazy loading.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>

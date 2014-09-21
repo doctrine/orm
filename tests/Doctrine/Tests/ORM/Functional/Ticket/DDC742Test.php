@@ -2,36 +2,27 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
-
-require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * @group non-cacheable
  */
 class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    private $userCm;
-    private $commentCm;
-
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
 
-        if (\extension_loaded('memcache') && @fsockopen('localhost', 11211)) {
-            $memcache = new \Memcache();
-            $memcache->addServer('localhost');
-            $memcache->flush();
+        $testDir = sys_get_temp_dir() . '/DDC742Test' . uniqid();
 
-            $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
-            $cacheDriver->setMemcache($memcache);
+        mkdir($testDir);
 
-            $this->_em->getMetadataFactory()->setCacheDriver($cacheDriver);
-        } else if (\extension_loaded('apc')) {
-            $this->_em->getMetadataFactory()->setCacheDriver(new \Doctrine\Common\Cache\ApcCache());
-        } else {
-            $this->markTestSkipped('Test only works with a cache enabled.');
-        }
+        // using a Filesystemcache to ensure that the cached data is serialized
+        $this->_em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
         try {
             $this->_schemaTool->createSchema(array(
@@ -39,7 +30,6 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742Comment')
             ));
         } catch(\Exception $e) {
-
         }
 
         // make sure classes will be deserialized from caches
@@ -81,7 +71,7 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="users")
+ * @Table(name="ddc742_users")
  */
 class DDC742User
 {
@@ -114,7 +104,7 @@ class DDC742User
 
 /**
  * @Entity
- * @Table(name="comments")
+ * @Table(name="ddc742_comments")
  */
 class DDC742Comment
 {

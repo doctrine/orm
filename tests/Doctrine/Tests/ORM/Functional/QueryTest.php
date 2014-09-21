@@ -12,8 +12,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Functional Query tests.
  *
@@ -129,16 +127,28 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $q->getSingleResult();
     }
 
-    public function testMismatchingParamExpectedParamCount()
+    public function testTooManyParametersShouldThrowException()
     {
         $this->setExpectedException(
             "Doctrine\ORM\Query\QueryException",
-            "Invalid parameter number: number of bound variables does not match number of tokens"
+            "Too many parameters: the query defines 1 parameters and you bound 2"
         );
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
         $q->setParameter(1, 'jwage');
         $q->setParameter(2, 'jwage');
+
+        $user = $q->getSingleResult();
+    }
+
+    public function testTooFewParametersShouldThrowException()
+    {
+        $this->setExpectedException(
+            "Doctrine\ORM\Query\QueryException",
+            "Too few parameters: the query defines 1 parameters but you only bound 0"
+        );
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
 
         $user = $q->getSingleResult();
     }

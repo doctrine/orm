@@ -1049,7 +1049,7 @@ class Parser
      * Parses an arbitrary path expression and defers semantical validation
      * based on expected types.
      *
-     * PathExpression ::= IdentificationVariable "." identifier [ ("." identifier)* ]
+     * PathExpression ::= IdentificationVariable {"." identifier}*
      *
      * @param integer $expectedTypes
      *
@@ -1456,37 +1456,41 @@ class Parser
     /**
      * OrderByItem ::= (
      *      SimpleArithmeticExpression | SingleValuedPathExpression |
-     *      ScalarExpression | ResultVariable
+     *      ScalarExpression | ResultVariable | FunctionDeclaration
      * ) ["ASC" | "DESC"]
      *
      * @return \Doctrine\ORM\Query\AST\OrderByItem
      */
     public function OrderByItem()
     {
-
         $this->lexer->peek(); // lookahead => '.'
         $this->lexer->peek(); // lookahead => token after '.'
+
         $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
+
         $this->lexer->resetPeek();
+
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
+            case ($this->isFunction($peek)):
+                $expr = $this->FunctionDeclaration();
+                break;
 
             case ($this->isMathOperator($peek)):
                 $expr = $this->SimpleArithmeticExpression();
-
                 break;
+
             case ($glimpse['type'] === Lexer::T_DOT):
                 $expr = $this->SingleValuedPathExpression();
-
                 break;
+
             case ($this->lexer->peek() && $this->isMathOperator($this->peekBeyondClosingParenthesis())):
                 $expr = $this->ScalarExpression();
-
                 break;
+
             default:
                 $expr = $this->ResultVariable();
-
                 break;
         }
 
@@ -1549,12 +1553,13 @@ class Parser
      */
     public function IdentificationVariableDeclaration()
     {
+        $joins                    = array();
         $rangeVariableDeclaration = $this->RangeVariableDeclaration();
+        $indexBy                  = $this->lexer->isNextToken(Lexer::T_INDEX)
+            ? $this->IndexBy()
+            : null;
 
         $rangeVariableDeclaration->isRoot = true;
-
-        $indexBy = $this->lexer->isNextToken(Lexer::T_INDEX) ? $this->IndexBy() : null;
-        $joins   = array();
 
         while (
             $this->lexer->isNextToken(Lexer::T_LEFT) ||
@@ -1570,24 +1575,59 @@ class Parser
     }
 
     /**
+     *
+     * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
+     *
+     * {@internal WARNING: Solution is harder than a bare implementation.
+     * Desired EBNF support:
+     *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
+     *
+     * It demands that entire SQL generation to become programmatical. This is
+     * needed because association based subselect requires "WHERE" conditional
+     * expressions to be injected, but there is no scope to do that. Only scope
+     * accessible is "FROM", prohibiting an easy implementation without larger
+     * changes.}
      *
      * @return \Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration |
      *         \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration
      */
     public function SubselectIdentificationVariableDeclaration()
     {
-        $this->lexer->glimpse();
+        /*
+        NOT YET IMPLEMENTED!
 
-        /* NOT YET IMPLEMENTED!
+        $glimpse = $this->lexer->glimpse();
 
         if ($glimpse['type'] == Lexer::T_DOT) {
-            $subselectIdVarDecl = new AST\SubselectIdentificationVariableDeclaration();
-            $subselectIdVarDecl->associationPathExpression = $this->AssociationPathExpression();
-            $this->match(Lexer::T_AS);
-            $subselectIdVarDecl->aliasIdentificationVariable = $this->AliasIdentificationVariable();
+            $associationPathExpression = $this->AssociationPathExpression();
 
-            return $subselectIdVarDecl;
+            if ($this->lexer->isNextToken(Lexer::T_AS)) {
+                $this->match(Lexer::T_AS);
+            }
+
+            $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+            $identificationVariable      = $associationPathExpression->identificationVariable;
+            $field                       = $associationPathExpression->associationField;
+
+            $class       = $this->queryComponents[$identificationVariable]['metadata'];
+            $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]['targetEntity']);
+
+            // Building queryComponent
+            $joinQueryComponent = array(
+                'metadata'     => $targetClass,
+                'parent'       => $identificationVariable,
+                'relation'     => $class->getAssociationMapping($field),
+                'map'          => null,
+                'nestingLevel' => $this->nestingLevel,
+                'token'        => $this->lexer->lookahead
+            );
+
+            $this->queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
+
+            return new AST\SubselectIdentificationVariableDeclaration(
+                $associationPathExpression, $aliasIdentificationVariable
+            );
         }
         */
 
@@ -1807,14 +1847,23 @@ class Parser
     }
 
     /**
-     * NewObjectArg ::= ScalarExpression
+     * NewObjectArg ::= ScalarExpression | "(" Subselect ")"
      *
-     * @TODO - Maybe you should support other expressions and nested "new" operator
-     *
-     * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
+     * @return mixed
      */
     public function NewObjectArg()
     {
+        $token = $this->lexer->lookahead;
+        $peek  = $this->lexer->glimpse();
+
+        if ($token['type'] === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT) {
+            $this->match(Lexer::T_OPEN_PARENTHESIS);
+            $expression = $this->Subselect();
+            $this->match(Lexer::T_CLOSE_PARENTHESIS);
+
+            return $expression;
+        }
+
         return $this->ScalarExpression();
     }
 
@@ -2084,7 +2133,7 @@ class Parser
     /**
      * SelectExpression ::= (
      *     IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration |
-     *     PartialObjectExpression | "(" Subselect ")" | CaseExpression
+     *     PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression
      * ) [["AS"] ["HIDDEN"] AliasResultVariable]
      *
      * @return \Doctrine\ORM\Query\AST\SelectExpression
@@ -2890,8 +2939,7 @@ class Parser
 
     /**
      * AggregateExpression ::=
-     *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+     *  ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
      *
      * @return \Doctrine\ORM\Query\AST\AggregateExpression
      */
@@ -2913,9 +2961,7 @@ class Parser
             $isDistinct = true;
         }
 
-        $pathExp = ($lookaheadType === Lexer::T_COUNT)
-            ? $this->SingleValuedPathExpression()
-            : $this->SimpleArithmeticExpression();
+        $pathExp = $this->SimpleArithmeticExpression();
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
@@ -3127,7 +3173,7 @@ class Parser
     }
 
     /**
-     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
+     * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | AggregateExpression | FunctionDeclaration | IdentificationVariable | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
      *
      * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
      */
@@ -3146,6 +3192,10 @@ class Parser
 
             case $this->lexer->isNextToken(Lexer::T_COALESCE):
                 $expr = $this->CoalesceExpression();
+                break;
+
+            case $this->isAggregateFunction($this->lexer->lookahead['type']):
+                $expr = $this->AggregateExpression();
                 break;
 
             case $this->isFunction():
@@ -3329,7 +3379,10 @@ class Parser
      *      "ABS" "(" SimpleArithmeticExpression ")" |
      *      "SQRT" "(" SimpleArithmeticExpression ")" |
      *      "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
-     *      "SIZE" "(" CollectionValuedPathExpression ")"
+     *      "SIZE" "(" CollectionValuedPathExpression ")" |
+     *      "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+     *      "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+     *      "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
      *
      * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
@@ -3350,17 +3403,25 @@ class Parser
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
-        $funcName  = strtolower($this->lexer->lookahead['value']);
-        $funcClass = $this->em->getConfiguration()->getCustomNumericFunction($funcName);
+        $functionName  = strtolower($this->lexer->lookahead['value']);
+        $functionClass = $this->em->getConfiguration()->getCustomNumericFunction($functionName);
 
-        $function = new $funcClass($funcName);
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : call_user_func($functionClass, $functionName);
+
         $function->parse($this);
 
         return $function;
     }
 
     /**
-     * FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
+     * FunctionsReturningDateTime ::=
+     *     "CURRENT_DATE" |
+     *     "CURRENT_TIME" |
+     *     "CURRENT_TIMESTAMP" |
+     *     "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")" |
+     *     "DATE_SUB" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
      *
      * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
@@ -3381,10 +3442,13 @@ class Parser
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
-        $funcName  = $this->lexer->lookahead['value'];
-        $funcClass = $this->em->getConfiguration()->getCustomDatetimeFunction($funcName);
+        $functionName  = $this->lexer->lookahead['value'];
+        $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
 
-        $function = new $funcClass($funcName);
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : call_user_func($functionClass, $functionName);
+
         $function->parse($this);
 
         return $function;
@@ -3396,7 +3460,8 @@ class Parser
      *   "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
      *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
      *   "LOWER" "(" StringPrimary ")" |
-     *   "UPPER" "(" StringPrimary ")"
+     *   "UPPER" "(" StringPrimary ")" |
+     *   "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
      *
      * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
@@ -3417,10 +3482,13 @@ class Parser
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive
-        $funcName  = $this->lexer->lookahead['value'];
-        $funcClass = $this->em->getConfiguration()->getCustomStringFunction($funcName);
+        $functionName  = $this->lexer->lookahead['value'];
+        $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
 
-        $function = new $funcClass($funcName);
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : call_user_func($functionClass, $functionName);
+
         $function->parse($this);
 
         return $function;

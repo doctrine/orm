@@ -20,9 +20,10 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\ORM\Query\AST\SelectStatement;
-use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
 
 /**
  * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent.
@@ -99,21 +100,37 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         if (isset($AST->orderByClause)) {
             foreach ($AST->orderByClause->orderByItems as $item) {
-                if ($item->expression instanceof PathExpression) {
-                    $pathExpression = new PathExpression(
-                        PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
-                        $item->expression->identificationVariable,
-                        $item->expression->field
-                    );
-                    $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-                    $AST->selectClause->selectExpressions[] = new SelectExpression(
-                        $pathExpression,
-                        '_dctrn_ord' . $this->_aliasCounter++
-                    );
+                if ( ! $item->expression instanceof PathExpression) {
+                    continue;
                 }
+                
+                $AST->selectClause->selectExpressions[] = new SelectExpression(
+                    $this->createSelectExpressionItem($item->expression),
+                    '_dctrn_ord' . $this->_aliasCounter++
+                );
             }
         }
 
         $AST->selectClause->isDistinct = true;
+    }
+    
+    /**
+     * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
+     * 
+     * @param \Doctrine\ORM\Query\AST\PathExpression $pathExpression
+     * 
+     * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
+     */
+    private function createSelectExpressionItem(PathExpression $pathExpression)
+    {
+        if ($pathExpression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
+            $identity = new IdentityFunction('identity');
+            
+            $identity->pathExpression = clone $pathExpression;
+            
+            return $identity;
+        }
+        
+        return clone $pathExpression;
     }
 }

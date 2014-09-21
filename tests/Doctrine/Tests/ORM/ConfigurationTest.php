@@ -8,8 +8,6 @@ use Doctrine\ORM\ORMException;
 use ReflectionClass;
 use PHPUnit_Framework_TestCase;
 
-require_once __DIR__ . '/../TestInit.php';
-
 /**
  * Tests for the Configuration object
  * @author Marco Pivetta <ocramius@gmail.com>

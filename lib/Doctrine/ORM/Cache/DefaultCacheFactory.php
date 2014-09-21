@@ -230,4 +230,12 @@ class DefaultCacheFactory implements CacheFactory
 
         return $this->timestampRegion;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createCache(EntityManagerInterface $em)
+    {
+        return new DefaultCache($em);
+    }
 }

@@ -6,8 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1276
  */

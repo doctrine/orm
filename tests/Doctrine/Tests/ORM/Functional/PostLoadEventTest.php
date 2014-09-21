@@ -9,8 +9,6 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * PostLoadEventTest
  *

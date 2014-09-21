@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

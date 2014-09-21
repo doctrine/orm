@@ -6,8 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group performance
  * @group DDC-2602

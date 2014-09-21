@@ -22,9 +22,9 @@ setup for the latest code in trunk.
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                        https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
-    
+
         ...
-    
+
     </doctrine-mapping>
 
 The XML mapping document of a class is loaded on-demand the first
@@ -108,37 +108,37 @@ of several common elements:
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
-    
+
         <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
+
             <indexes>
                 <index name="name_idx" columns="name"/>
                 <index columns="user_email"/>
             </indexes>
-    
+
             <unique-constraints>
                 <unique-constraint columns="name,user_email" name="search_idx" />
             </unique-constraints>
-    
+
             <lifecycle-callbacks>
                 <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
                 <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>
                 <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
             </lifecycle-callbacks>
-    
+
             <id name="id" type="integer" column="id">
                 <generator strategy="AUTO"/>
                 <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
             </id>
-    
+
             <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
             <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
-    
+
             <one-to-one field="address" target-entity="Address" inversed-by="user">
                 <cascade><cascade-remove /></cascade>
                 <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
             </one-to-one>
-    
+
             <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
                 <cascade>
                     <cascade-persist/>
@@ -147,7 +147,7 @@ of several common elements:
                     <order-by-field name="number" direction="ASC" />
                 </order-by>
             </one-to-many>
-    
+
             <many-to-many field="groups" target-entity="Group">
                 <cascade>
                     <cascade-all/>
@@ -161,9 +161,9 @@ of several common elements:
                     </inverse-join-columns>
                 </join-table>
             </many-to-many>
-    
+
         </entity>
-    
+
     </doctrine-mapping>
 
 Be aware that class-names specified in the XML files should be
@@ -224,12 +224,18 @@ entity. For the ID mapping you have to use the ``<id />`` element.
 .. code-block:: xml
 
     <entity name="MyProject\User">
-    
+
         <field name="name" type="string" length="50" />
         <field name="username" type="string" unique="true" />
         <field name="age" type="integer" nullable="true" />
         <field name="isActive" column="is_active" type="boolean" />
         <field name="weight" type="decimal" scale="5" precision="2" />
+        <field name="login_count" type="integer" nullable="false">
+            <options>
+                <option name="comment">The number of times the user has logged in.</option>
+                <option name="default">0</option>
+            </options>
+        </field>
     </entity>
 
 Required attributes:
@@ -255,11 +261,31 @@ Optional attributes:
    works on fields with type integer or datetime.
 -  scale - Scale of a decimal type.
 -  precision - Precision of a decimal type.
+-  options - Array of additional options:
+
+   -  default - The default value to set for the column if no value
+      is supplied.
+   -  unsigned - Boolean value to determine if the column should
+      be capable of representing only non-negative integers
+      (applies only for integer column and might not be supported by
+      all vendors).
+   -  fixed - Boolean value to determine if the specified length of
+      a string column should be fixed or varying (applies only for
+      string/binary column and might not be supported by all vendors).
+   -  comment - The comment of the column in the schema (might not
+      be supported by all vendors).
+   -  customSchemaOptions - Array of additional schema options
+      which are mostly vendor specific.
 -  column-definition - Optional alternative SQL representation for
    this column. This definition begin after the field-name and has to
    specify the complete column definition. Using this feature will
    turn this field dirty for Schema-Tool update commands at all
    times.
+
+.. note::
+
+    For more detailed information on each attribute, please refer to
+    the DBAL ``Schema-Representation`` documentation.
 
 Defining Identity and Generator Strategies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -423,7 +449,7 @@ using the ``<lifecycle-callbacks />`` element:
 .. code-block:: xml
 
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
+
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="onPrePersist" />
         </lifecycle-callbacks>
@@ -716,12 +742,12 @@ table you can use the ``<indexes />`` and
 .. code-block:: xml
 
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
+
         <indexes>
             <index name="name_idx" columns="name"/>
             <index columns="user_email"/>
         </indexes>
-    
+
         <unique-constraints>
             <unique-constraint columns="name,user_email" name="search_idx" />
         </unique-constraints>

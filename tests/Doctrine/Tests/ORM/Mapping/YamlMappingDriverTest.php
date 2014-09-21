@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\Driver\XmlDriver,
     Doctrine\ORM\Mapping\Driver\YamlDriver;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()

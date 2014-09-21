@@ -341,6 +341,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
     <xs:attribute name="columns" type="xs:string" use="required"/>
+    <xs:attribute name="flags" type="xs:string" use="optional"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
   
@@ -428,7 +429,6 @@
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
     <xs:attribute name="on-delete" type="orm:fk-action" />
-    <xs:attribute name="on-update" type="orm:fk-action" />
     <xs:attribute name="column-definition" type="xs:string" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>

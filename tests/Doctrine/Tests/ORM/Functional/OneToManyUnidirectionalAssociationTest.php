@@ -6,8 +6,6 @@ use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */

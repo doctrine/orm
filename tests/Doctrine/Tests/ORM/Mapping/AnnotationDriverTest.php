@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
     /**
@@ -162,7 +160,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "Its not supported to define inheritance information on a mapped ".
+            "It is not supported to define inheritance information on a mapped ".
             "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'.");
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence');
     }

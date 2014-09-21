@@ -22,8 +22,6 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
  * a programmatic interface

@@ -48,8 +48,9 @@ class ProxiesLikeEntitiesTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPersistUpdate()
     {
         // Considering case (a)
-        $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', array('id' => null));
+        $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', array('id' => 123));
         $proxy->__isInitialized__ = true;
+        $proxy->id = null;
         $proxy->username = 'ocra';
         $proxy->name = 'Marco';
         $this->_em->persist($proxy);

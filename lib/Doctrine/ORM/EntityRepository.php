@@ -301,6 +301,6 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
-        return new ArrayCollection($persister->loadCriteria($criteria));
+        return new LazyCriteriaCollection($persister, $criteria);
     }
 }

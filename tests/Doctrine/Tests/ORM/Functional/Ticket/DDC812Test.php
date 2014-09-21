@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC812Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

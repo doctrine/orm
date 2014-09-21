@@ -1,0 +1,9 @@
+Doctrine\Tests\ORM\Mapping\Comment:
+  type: entity
+  fields:
+    content:
+      type: text
+  indexes:
+    0:
+      columns: content
+      flags: fulltext

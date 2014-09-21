@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'name' => 'cms_users',
+   'options' => array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
   ));
 $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
@@ -54,6 +55,7 @@ $metadata->mapOneToOne(array(
    ),
    ),
    'orphanRemoval' => true,
+   'fetch' => ClassMetadataInfo::FETCH_EAGER,
   ));
 $metadata->mapOneToMany(array(
    'fieldName' => 'phonenumbers',
@@ -65,6 +67,7 @@ $metadata->mapOneToMany(array(
    ),
    'mappedBy' => 'user',
    'orphanRemoval' => true,
+   'fetch' => ClassMetadataInfo::FETCH_LAZY,
    'orderBy' =>
    array(
    'number' => 'ASC',
@@ -73,6 +76,7 @@ $metadata->mapOneToMany(array(
 $metadata->mapManyToMany(array(
    'fieldName' => 'groups',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Group',
+   'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
    'cascade' =>
    array(
    0 => 'remove',

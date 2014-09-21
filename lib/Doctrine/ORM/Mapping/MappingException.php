@@ -655,7 +655,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function noInheritanceOnMappedSuperClass($className)
     {
-        return new self("Its not supported to define inheritance information on a mapped superclass '" . $className . "'.");
+        return new self("It is not supported to define inheritance information on a mapped superclass '" . $className . "'.");
     }
 
     /**
@@ -782,11 +782,21 @@ class MappingException extends \Doctrine\ORM\ORMException
         );
     }
 
-    public static function noEmbeddablesInEmbeddable($className)
+    /**
+     * @param string $className
+     * @param string $propertyName
+     *
+     * @return MappingException
+     */
+    public static function infiniteEmbeddableNesting($className, $propertyName)
     {
-        return new self(sprintf(
-            "You embedded one or more embeddables in embeddable '%s', but this behavior is currently unsupported.",
-            $className
-        ));
+        return new self(
+            sprintf(
+                'Infinite nesting detected for embedded property %s::%s. ' .
+                'You cannot embed an embeddable from the same type inside an embeddable.',
+                $className,
+                $propertyName
+            )
+        );
     }
 }

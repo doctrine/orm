@@ -65,7 +65,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     static public function entityWithoutIdentity($className, $entity)
     {
         return new self(
-            "The given entity of type '" . $className . "' (".self::objToStr($entity).") has no identity/no " . 
+            "The given entity of type '" . $className . "' (".self::objToStr($entity).") has no identity/no " .
             "id values set. It cannot be added to the identity map."
         );
     }
@@ -154,7 +154,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      */
     static public function detachedEntityCannot($entity, $operation)
     {
-        return new self("A detached entity was found during " . $operation . " " . self::objToStr($entity));
+        return new self("Detached entity " . self::objToStr($entity) . " cannot be " . $operation);
     }
 
     /**

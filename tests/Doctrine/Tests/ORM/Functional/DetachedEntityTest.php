@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\ORM\UnitOfWork;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Description of DetachedEntityTest
  *

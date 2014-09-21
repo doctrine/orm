@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Mocks;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * EntityPersister implementation used for mocking during tests.
@@ -88,7 +89,7 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function exists($entity, array $extraConditions = array())
+    public function exists($entity, Criteria $extraConditions = null)
     {
         $this->existsCalled = true;
     }

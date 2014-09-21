@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Tools\ToolsException;
+
 /**
  * @group DDC-2862
  * @group DDC-2183
@@ -18,8 +20,7 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(DDC2862User::CLASSNAME),
                 $this->_em->getClassMetadata(DDC2862Driver::CLASSNAME),
             ));
-        } catch (\Doctrine\ORM\Tools\ToolsException $exc) {
-            $this->assertInstanceOf('Doctrine\DBAL\Exception\TableExistsException', $exc->getPrevious());
+        } catch (ToolsException $exc) {
         }
     }
 

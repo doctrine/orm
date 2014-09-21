@@ -86,13 +86,13 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     public static function create($conn, \Doctrine\ORM\Configuration $config = null,
             \Doctrine\Common\EventManager $eventManager = null)
     {
-        if (is_null($config)) {
+        if (null === $config) {
             $config = new \Doctrine\ORM\Configuration();
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
         }
-        if (is_null($eventManager)) {
+        if (null === $eventManager) {
             $eventManager = new \Doctrine\Common\EventManager();
         }
 

@@ -2,19 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-
-require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * @group DDC-1574
  */
 class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     /**
      * @var array
      */
@@ -26,6 +24,14 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         $this->loadFixtures();
+    }
+    
+    public function provideDataForHydrationMode()
+    {
+        return array(
+            array(Query::HYDRATE_ARRAY),
+            array(Query::HYDRATE_OBJECT),
+        );
     }
 
     private function loadFixtures()
@@ -89,7 +95,10 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->fixtures = array($u1, $u2, $u3);
     }
 
-    public function testShouldSupportsBasicUsage()
+    /**
+     * @dataProvider provideDataForHydrationMode
+     */
+    public function testShouldSupportsBasicUsage($hydrationMode)
     {
         $dql = "
             SELECT
@@ -108,7 +117,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 u.name";
 
         $query  = $this->_em->createQuery($dql);
-        $result = $query->getResult();
+        $result = $query->getResult($hydrationMode);
 
         $this->assertCount(3, $result);
 

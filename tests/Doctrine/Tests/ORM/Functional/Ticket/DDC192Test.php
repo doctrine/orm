@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testSchemaCreation()

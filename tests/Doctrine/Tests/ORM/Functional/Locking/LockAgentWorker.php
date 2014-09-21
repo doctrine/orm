@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-require_once __DIR__ . "/../../../TestInit.php";
-
 class LockAgentWorker
 {
     private $em;

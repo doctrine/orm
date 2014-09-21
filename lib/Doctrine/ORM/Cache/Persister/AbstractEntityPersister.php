@@ -157,6 +157,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getCountSQL($criteria = array())
+    {
+        return $this->persister->getCountSQL($criteria);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getInsertSQL()
@@ -183,9 +191,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function exists($entity, array $extraConditions = array())
+    public function exists($entity, Criteria $extraConditions = null)
     {
-        if (empty($extraConditions)) {
+        if (null === $extraConditions) {
             $key = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
 
             if ($this->region->contains($key)) {
@@ -483,6 +491,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         return $entity;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function count($criteria = array())
+    {
+        return $this->persister->count($criteria);
     }
 
     /**

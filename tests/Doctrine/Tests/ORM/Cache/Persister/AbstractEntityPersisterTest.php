@@ -55,6 +55,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'getInserts',
         'getInsertSQL',
         'getSelectSQL',
+        'getCountSQL',
         'expandParameters',
         'expandCriteriaParameters',
         'getSelectConditionStatementSQL',
@@ -66,6 +67,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'load',
         'loadById',
         'loadOneToOneEntity',
+        'count',
         'refresh',
         'loadCriteria',
         'loadAll',
@@ -431,8 +433,8 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('exists')
-            ->with($this->equalTo($entity), $this->equalTo(array()));
+            ->with($this->equalTo($entity), $this->equalTo(null));
 
-        $this->assertNull($persister->exists($entity, array()));
+        $this->assertNull($persister->exists($entity));
     }
 }

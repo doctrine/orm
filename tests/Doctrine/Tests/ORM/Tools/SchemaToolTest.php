@@ -7,8 +7,6 @@ use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testAddUniqueIndexForUniqueFieldAnnotation()

@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Tools\SchemaValidator;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
@@ -104,7 +102,7 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(
             array(
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
-                "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key1, key2' are missing."
+                "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing."
             ),
             $ce
         );
@@ -135,6 +133,24 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
             "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
             "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
         ), $ce);
+    }
+
+    /**
+     * @group DDC-3274
+     */
+    public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute()
+    {
+        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3274One');
+        $ce = $this->validator->validateClass($class);
+
+        $this->assertEquals(
+            array(
+                "The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional " .
+                "relationship, but the specified mappedBy association on the target-entity " .
+                "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy=\"two\"' attribute."
+            ),
+            $ce
+        );
     }
 }
 
@@ -265,3 +281,30 @@ class DDC1649Three
     private $two;
 }
 
+/**
+ * @Entity
+ */
+class DDC3274One
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @OneToMany(targetEntity="DDC3274Two", mappedBy="one")
+     */
+    private $two;
+}
+
+/**
+ * @Entity
+ */
+class DDC3274Two
+{
+    /**
+     * @Id
+     * @ManyToOne(targetEntity="DDC3274One")
+     */
+    private $one;
+}

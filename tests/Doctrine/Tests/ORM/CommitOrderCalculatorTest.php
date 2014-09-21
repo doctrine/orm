@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-require_once __DIR__ . '/../TestInit.php';
-
 /**
  * Tests of the commit order calculation.
  *

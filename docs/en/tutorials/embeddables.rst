@@ -74,6 +74,77 @@ In terms of your database schema, Doctrine will automatically inline all
 columns from the ``Address`` class into the table of the ``User`` class,
 just as if you had declared them directly there.
 
+Column Prefixing
+----------------
+
+By default, Doctrine names your columns by prefixing them, using the value
+object name.
+
+Following the example above, your columns would be named as ``address_street``,
+``address_postalCode``...
+
+You can change this behaviour to meet your needs by changing the
+``columnPrefix`` attribute in the ``@Embeddable`` notation.
+
+The following example shows you how to set your prefix to ``myPrefix_``:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /** @Entity */
+        class User
+        {
+            /** @Embedded(class = "Address", columnPrefix = "myPrefix_") */
+            private $address;
+        }
+
+    .. code-block:: xml
+
+        <entity name="User">
+            <embedded name="address" class="Address" column-prefix="myPrefix_" />
+        </entity>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          embedded:
+            address:
+              class: Address
+              columnPrefix: myPrefix_
+
+To have Doctrine drop the prefix and use the value object's property name
+directly, set ``columnPrefix=false`` (not yet supported with XML configuration):
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /** @Entity */
+        class User
+        {
+            /** @Embedded(class = "Address", columnPrefix = false) */
+            private $address;
+        }
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          embedded:
+            address:
+              class: Address
+              columnPrefix: false
+
+
+DQL
+---
+
 You can also use mapped fields of embedded classes in DQL queries, just
 as if they were declared in the ``User`` class:
 

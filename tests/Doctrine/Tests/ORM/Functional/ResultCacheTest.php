@@ -6,8 +6,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Common\Cache\ArrayCache;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * ResultCacheTest
  *

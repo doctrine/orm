@@ -507,3 +507,22 @@ defined ones) is possible through the command:
         new \MyProject\Tools\Console\Commands\AnotherCommand(),
         new \MyProject\Tools\Console\Commands\OneMoreCommand(),
     ));
+
+
+Re-use console application
+--------------------------
+
+You are also able to retrieve and re-use the default console application.
+Just call ``ConsoleRunner::createApplication(...)`` with an appropriate
+HelperSet, like it is described in the configuration section.
+
+.. code-block:: php
+
+    <?php
+
+    // Retrieve default console application
+    $cli = ConsoleRunner::createApplication($helperSet);
+
+    // Runs console application
+    $cli->run();
+

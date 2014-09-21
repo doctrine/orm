@@ -28,8 +28,6 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 
-require_once __DIR__ . '/../TestInit.php';
-
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
  * object oriented way.

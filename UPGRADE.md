@@ -1,5 +1,21 @@
 # Upgrade to 2.5
 
+## Minor BC BREAK: Custom Hydrators API change
+
+As of 2.5, `AbstractHydrator` does not enforce the usage of cache as part of
+API, and now provides you a clean API for column information through the method
+`hydrateColumnInfo($column)`.
+Cache variable being passed around by reference is no longer needed since
+Hydrators are per query instantiated since Doctrine 2.4.
+
+## Minor BC BREAK: Entity based ``EntityManager#clear()`` calls follow cascade detach
+
+Whenever ``EntityManager#clear()`` method gets called with a given entity class
+name, until 2.4, it was only detaching the specific requested entity.
+As of 2.5, ``EntityManager`` will follow configured cascades, providing a better
+memory management since associations will be garbage collected, optimizing
+resources consumption on long running jobs.
+
 ## BC BREAK: NamingStrategy has a new method ``embeddedFieldToColumnName($propertyName, $embeddedColumnName)``
 
 This method generates the column name for fields of embedded objects. If you implement your custom NamingStrategy, you

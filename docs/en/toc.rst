@@ -86,5 +86,4 @@ Cookbook
    cookbook/mysql-enums
    cookbook/advanced-field-value-conversion-using-custom-mapping-types
    cookbook/entities-in-session
-   cookbook/resolve-target-entity-listener
 

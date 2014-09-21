@@ -1,6 +1,9 @@
 Doctrine\Tests\ORM\Tools\Export\User:
   type: entity
   table: cms_users
+  options:
+    engine: MyISAM
+    foo: { bar: baz }
   id:
     id:
       type: integer
@@ -26,6 +29,7 @@ Doctrine\Tests\ORM\Tools\Export\User:
       cascade: [ persist ]
       inversedBy: user
       orphanRemoval: true
+      fetch: EAGER
   manyToOne:
     mainGroup:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Group
@@ -37,6 +41,7 @@ Doctrine\Tests\ORM\Tools\Export\User:
         number: ASC
       cascade: [ persist, merge ]
       orphanRemoval: true
+      fetch: LAZY
     interests:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Interests
       mappedBy: user
@@ -45,6 +50,7 @@ Doctrine\Tests\ORM\Tools\Export\User:
   manyToMany:
     groups:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Group
+      fetch: EXTRA_LAZY
       joinTable:
         name: cms_users_groups
         joinColumns:

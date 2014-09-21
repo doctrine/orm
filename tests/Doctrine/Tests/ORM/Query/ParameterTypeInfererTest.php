@@ -23,8 +23,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use PDO;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class ParameterTypeInfererTest extends \Doctrine\Tests\OrmTestCase
 {
 

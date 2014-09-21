@@ -28,6 +28,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
             Criteria::expr()->eq('name', $name)
         ));
 
+        // Because matching returns lazy collection, we force initialization
+        $result1->toArray();
+
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -64,6 +67,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
             Criteria::expr()->eq('name', $this->countries[0]->getName())
         ));
 
+        // Because matching returns lazy collection, we force initialization
+        $result1->toArray();
+
         $this->assertCount(1, $result1);
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertEquals($this->countries[0]->getId(), $result1[0]->getId());
@@ -74,6 +80,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $result2 = $repository->matching(new Criteria(
             Criteria::expr()->eq('name', $this->countries[0]->getName())
         ));
+
+        // Because matching returns lazy collection, we force initialization
+        $result2->toArray();
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertCount(1, $result2);
@@ -86,6 +95,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $result3 = $repository->matching(new Criteria(
             Criteria::expr()->eq('name', $this->countries[1]->getName())
         ));
+
+        // Because matching returns lazy collection, we force initialization
+        $result3->toArray();
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
         $this->assertCount(1, $result3);

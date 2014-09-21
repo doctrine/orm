@@ -124,7 +124,7 @@ class SchemaValidator
                     $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the inverse side of a ".
                             "bi-directional relationship, but the specified mappedBy association on the target-entity ".
                             $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " does not contain the required ".
-                            "'inversedBy=".$fieldName."' attribute.";
+                            "'inversedBy=\"" . $fieldName . "\"' attribute.";
                 } elseif ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] != $fieldName) {
                     $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
                             $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " are ".
@@ -219,7 +219,7 @@ class SchemaValidator
                         }
 
                         $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
-                                "have to match to ALL identifier columns of the target entity '". $class->name . "', " .
+                                "have to match to ALL identifier columns of the target entity '". $targetMetadata->name . "', " .
                                 "however '" . implode(", ", array_diff($targetMetadata->getIdentifierColumnNames(), $ids)) .
                                 "' are missing.";
                     }

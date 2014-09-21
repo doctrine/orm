@@ -56,12 +56,28 @@ class ConsoleRunner
      */
     static public function run(HelperSet $helperSet, $commands = array())
     {
+        $cli = self::createApplication($helperSet, $commands);
+        $cli->run();
+    }
+
+    /**
+     * Creates a console application with the given helperset and
+     * optional commands.
+     *
+     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
+     * @param array $commands
+     *
+     * @return \Symfony\Component\Console\Application
+     */
+    static public function createApplication(HelperSet $helperSet, $commands = array())
+    {
         $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
         $cli->setCatchExceptions(true);
         $cli->setHelperSet($helperSet);
         self::addCommands($cli);
         $cli->addCommands($commands);
-        $cli->run();
+
+        return $cli;
     }
 
     /**
