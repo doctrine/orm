@@ -186,13 +186,6 @@ the life-time of their registered entities.
 
 .. warning::
 
-    Note that the postLoad event occurs for an entity
-    before any associations have been initialized. Therefore it is not
-    safe to access associations in a postLoad callback or event
-    handler.
-
-.. warning::
-
     Note that the postRemove event or any events triggered after an entity removal
     can receive an uninitializable proxy in case you have configured an entity to
     cascade remove relations. In this case, you should load yourself the proxy in
