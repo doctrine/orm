@@ -208,7 +208,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testAssociationsArePopulatedWhenEventIsFired()
     {
-        $checkerListener = new PostLoadListener_CheckAssociationsArePopulated();
+        $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
         $this->_em->getEventManager()->addEventListener(array(Events::postLoad), $checkerListener);
 
         $qb = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->createQueryBuilder('u');
@@ -223,7 +223,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler()
     {
         $eventManager = $this->_em->getEventManager();
-        $listener = new PostLoadListener_LoadEntityInEventHandler();
+        $listener = new PostLoadListenerLoadEntityInEventHandler();
         $eventManager->addEventListener(array(Events::postLoad), $listener);
 
         $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
@@ -277,7 +277,7 @@ class PostLoadListener
     }
 }
 
-class PostLoadListener_CheckAssociationsArePopulated
+class PostLoadListenerCheckAssociationsArePopulated
 {
     public $checked = false;
 
@@ -296,7 +296,7 @@ class PostLoadListener_CheckAssociationsArePopulated
     }
 }
 
-class PostLoadListener_LoadEntityInEventHandler
+class PostLoadListenerLoadEntityInEventHandler
 {
     private $firedByClasses = array();
 
