@@ -2681,7 +2681,15 @@ class UnitOfWork implements PropertyChangedListener
                     // FIXME: Can break easily with composite keys if join column values are in
                     //        wrong order. The correct order is the one in ClassMetadata#identifier.
                     $relatedIdHash = implode(' ', $associatedId);
-
+                    
+                    if (isset($assoc["id"]) && count($associatedId)===1 && ($col = key($associatedId)) && $targetClass->hasAssociation($col) && !is_object(reset($associatedId))) {
+                        $relationAssociation = $targetClass->getAssociationMapping($col);
+                        if (isset($relationAssociation["id"])) {
+                            $relatedClass = $this->em->getClassMetadata($relationAssociation['targetEntity']);
+                            $associatedId[$col] = $this->em->getProxyFactory()->getProxy($relationAssociation['targetEntity'], array($relatedClass->identifier[0] => reset($associatedId)));
+                        }
+                    }
+                    
                     switch (true) {
                         case (isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash])):
                             $newValue = $this->identityMap[$targetClass->rootEntityName][$relatedIdHash];
@@ -2708,6 +2716,7 @@ class UnitOfWork implements PropertyChangedListener
                             break;
 
                         default:
+
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case ($hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER):
