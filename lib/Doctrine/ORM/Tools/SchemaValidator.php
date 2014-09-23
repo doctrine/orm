@@ -228,9 +228,20 @@ class SchemaValidator
 
             if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
                 foreach ($assoc['orderBy'] as $orderField => $orientation) {
-                    if (!$targetMetadata->hasField($orderField)) {
+                    if (!$targetMetadata->hasField($orderField) && !$targetMetadata->hasAssociation($orderField)) {
                         $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a foreign field " .
-                                $orderField . " that is not a field on the target entity " . $targetMetadata->name;
+                                $orderField . " that is not a field on the target entity " . $targetMetadata->name . ".";
+                        continue;
+                    }
+                    if ($targetMetadata->isCollectionValuedAssociation($orderField)) {
+                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by an field " .
+                                $orderField . " on " . $targetMetadata->name . " that is a collection-valued association.";
+                        continue;
+                    }
+                    if ($targetMetadata->isAssociationInverseSide($orderField)) {
+                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a field " .
+                                $orderField . " on " . $targetMetadata->name . " that is the inverse side of an association.";
+                        continue;
                     }
                 }
             }
