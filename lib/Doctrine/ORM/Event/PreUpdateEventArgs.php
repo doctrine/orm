@@ -29,7 +29,7 @@ use Doctrine\ORM\EntityManager;
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @since  2.0
  */
-class PreUpdateEventArgs extends LifecycleEventArgs
+class PreUpdateEventArgs extends \Doctrine\Common\Persistence\Event\PreUpdateEventArgs
 {
     /**
      * @var array
@@ -113,6 +113,26 @@ class PreUpdateEventArgs extends LifecycleEventArgs
         $this->assertValidField($field);
 
         $this->entityChangeSet[$field][1] = $value;
+    }
+
+    /**
+     * Retrieves associated Entity.
+     *
+     * @return object
+     */
+    public function getEntity()
+    {
+    	return $this->getObject();
+    }
+
+    /**
+     * Retrieves associated EntityManager.
+     *
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+    	return $this->getObjectManager();
     }
 
     /**
