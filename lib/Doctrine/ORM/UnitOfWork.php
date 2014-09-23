@@ -46,6 +46,8 @@ use Doctrine\ORM\Persisters\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\OneToManyPersister;
 use Doctrine\ORM\Persisters\ManyToManyPersister;
 
+use Doctrine\ORM\Utility\IdentifierConverter;
+
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
@@ -56,6 +58,7 @@ use Doctrine\ORM\Persisters\ManyToManyPersister;
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Rob Caiger <rob@clocal.co.uk>
  * @internal    This class contains highly performance-sensitive code.
  */
 class UnitOfWork implements PropertyChangedListener
@@ -242,6 +245,13 @@ class UnitOfWork implements PropertyChangedListener
     private $listenersInvoker;
 
     /**
+     * The IdentifierConverter used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierConverter
+     */
+    private $identifierConverter;
+
+    /**
      * Orphaned entities that are scheduled for removal.
      *
      * @var array
@@ -274,10 +284,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function __construct(EntityManager $em)
     {
-        $this->em               = $em;
-        $this->evm              = $em->getEventManager();
-        $this->listenersInvoker = new ListenersInvoker($em);
-        $this->hasCache         = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->em                  = $em;
+        $this->evm                 = $em->getEventManager();
+        $this->listenersInvoker    = new ListenersInvoker($em);
+        $this->hasCache            = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->identifierConverter = new IdentifierConverter($em);
     }
 
     /**
@@ -1427,7 +1438,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($class->containsForeignIdentifier) {
-            $id = $this->flattenIdentifier($class, $id);
+            $id = $this->identifierConverter->flattenIdentifier($class, $id);
         }
 
         switch (true) {
@@ -1753,31 +1764,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * convert foreign identifiers into scalar foreign key values to avoid object to string conversion failures.
-     *
-     * @param ClassMetadata $class
-     * @param array $id
-     * @return array
-     */
-    private function flattenIdentifier($class, $id)
-    {
-        $flatId = array();
-
-        foreach ($id as $idField => $idValue) {
-            if (isset($class->associationMappings[$idField])) {
-                $targetClassMetadata = $this->em->getClassMetadata($class->associationMappings[$idField]['targetEntity']);
-                $associatedId        = $this->getEntityIdentifier($idValue);
-
-                $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
-            } else {
-                $flatId[$idField] = $idValue;
-            }
-        }
-
-        return $flatId;
-    }
-
-    /**
      * Executes a merge operation on an entity.
      *
      * @param object      $entity
@@ -1826,7 +1812,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->persistNew($class, $managedCopy);
             } else {
                 $flatId = ($class->containsForeignIdentifier)
-                    ? $this->flattenIdentifier($class, $id)
+                    ? $this->identifierConverter->flattenIdentifier($class, $id)
                     : $id;
 
                 $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
@@ -3361,10 +3347,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $id1 = isset($this->entityIdentifiers[$oid1])
             ? $this->entityIdentifiers[$oid1]
-            : $this->flattenIdentifier($class, $class->getIdentifierValues($entity1));
+            : $this->identifierConverter->flattenIdentifier($class, $class->getIdentifierValues($entity1));
         $id2 = isset($this->entityIdentifiers[$oid2])
             ? $this->entityIdentifiers[$oid2]
-            : $this->flattenIdentifier($class, $class->getIdentifierValues($entity2));
+            : $this->identifierConverter->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
