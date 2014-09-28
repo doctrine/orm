@@ -112,7 +112,8 @@ class SqlValueVisitor extends ExpressionVisitor
         $value = $comparison->getValue()->getValue();
 
         return $comparison->getOperator() == Comparison::CONTAINS
-            ? "%{$value}%"
+            ? ((strpos($value, '%') !== false && strpos($value, '\%') === false)
+                || (strpos($value, '_') !== false && strpos($value, '\_') === false) ? $value : "%{$value}%")
             : $value;
     }
 }
