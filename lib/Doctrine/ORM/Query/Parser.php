@@ -748,6 +748,12 @@ class Parser
             $class = $qComp['metadata'];
 
             if (($field = $pathExpression->field) === null) {
+                if ($class->isIdentifierComposite) {
+                    $this->semanticalError(
+                        'Class ' . $class->name . ' has a composite identifier. Use them explicitly',
+                        $deferredItem['token']
+                    );
+                }
                 $field = $pathExpression->field = $class->identifier[0];
             }
 
