@@ -199,9 +199,12 @@ list:
 - ``nullable``: (optional, default FALSE) Whether the database
   column is nullable.
 - ``precision``: (optional, default 0) The precision for a decimal
-  (exact numeric) column. (Applies only if a decimal column is used.)
+  (exact numeric) column (applies only for decimal column),
+  which is the maximum number of digits that are stored for the values.
 - ``scale``: (optional, default 0) The scale for a decimal (exact
-  numeric) column. (Applies only if a decimal column is used.)
+  numeric) column (applies only for decimal column), which represents
+  the number of digits to the right of the decimal point and must
+  not be greater than *precision*.
 - ``columnDefinition``: (optional) Allows to define a custom
   DDL snippet that is used to create the column. Warning: This normally
   confuses the SchemaTool to always detect the column as changed.
