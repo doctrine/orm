@@ -90,7 +90,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
-            
+
             if ( ! isset($sqlResult[$discrColumnName])) {
                 throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
             }
