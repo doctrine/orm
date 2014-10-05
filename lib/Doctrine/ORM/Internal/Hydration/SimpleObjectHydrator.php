@@ -43,6 +43,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         if ($this->_rsm->scalarMappings) {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
         }
+
         $this->class = $this->getClassMetadata(reset($this->_rsm->aliasMap));
     }
 
@@ -87,7 +88,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
-            
+
             if ( ! isset($sqlResult[$discrColumnName])) {
                 throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
             }

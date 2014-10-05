@@ -55,8 +55,6 @@ class HydrationCompleteHandler
      * @param UnitOfWork $uow
      * @param \Doctrine\ORM\Event\ListenersInvoker $listenersInvoker
      * @param \Doctrine\ORM\EntityManager $em
-     *
-     * @since 2.5
      */
     public function __construct(UnitOfWork $uow, ListenersInvoker $listenersInvoker, EntityManager $em)
     {
@@ -68,8 +66,6 @@ class HydrationCompleteHandler
     /**
      * Method schedules invoking of postLoad entity to the very end of current hydration cycle.
      *
-     * @since 2.5
-     *
      * @param ClassMetadata $class
      * @param object $entity
      */
@@ -80,7 +76,6 @@ class HydrationCompleteHandler
 
     /**
      * This method should me called after any hydration cycle completed.
-     * @since 2.5
      */
     public function hydrationComplete()
     {
@@ -89,7 +84,6 @@ class HydrationCompleteHandler
 
     /**
      * Method fires all deferred invocations of postLoad events
-     * @since 2.5
      */
     private function invokeAllDeferredPostLoadEvents()
     {
