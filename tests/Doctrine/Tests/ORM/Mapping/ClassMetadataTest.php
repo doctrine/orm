@@ -1109,6 +1109,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         $classMetadata = new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity');
 
+        $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
         $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
 
@@ -1119,6 +1121,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         /* @var $classMetadata ClassMetadata */
         $classMetadata = unserialize(serialize(new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity')));
+
+        $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
         $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
