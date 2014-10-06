@@ -1101,6 +1101,31 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertFalse($class->isIdentifier('foo'));
     }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclass()
+    {
+        $classMetadata = new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity');
+
+        $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
+    }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
+    {
+        /* @var $classMetadata ClassMetadata */
+        $classMetadata = unserialize(serialize(new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity')));
+
+        $classMetadata->wakeupReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
+    }
 }
 
 /**
@@ -1136,4 +1161,8 @@ class MyPrefixNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
     {
         return strtolower($this->classToTableName($className)) . '_' . $propertyName;
     }
+}
+
+class MyArrayObjectEntity extends \ArrayObject
+{
 }
