@@ -209,6 +209,14 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         return $this->persister->containsKey($collection, $key);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function max(PersistentCollection $collection, $key)
+    {
+        return $this->persister->max($collection, $key);
+    }
 
     /**
      * {@inheritdoc}

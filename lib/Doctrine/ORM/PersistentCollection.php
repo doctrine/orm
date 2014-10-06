@@ -485,6 +485,23 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * {@inheritdoc}
      */
+    public function max($key)
+    {
+
+        if (! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
+            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+
+            // return $this->coll->max($key) || $persister->max($this, $key);
+            return $persister->max($this, $key);
+        }
+        $this->initialize();
+
+        return $this->coll->max($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function contains($element)
     {
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {

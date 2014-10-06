@@ -109,6 +109,16 @@ interface CollectionPersister
     public function containsKey(PersistentCollection $collection, $key);
 
     /**
+     * Retrun maximum value.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param mixed                              $key
+     *
+     * @return mixed
+     */
+    public function max(PersistentCollection $collection, $key);
+
+    /**
      * Removes an element.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection

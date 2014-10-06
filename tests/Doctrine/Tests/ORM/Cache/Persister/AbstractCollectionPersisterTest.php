@@ -55,6 +55,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'slice',
         'contains',
         'containsKey',
+        'max',
         'removeElement',
         'removeKey',
         'get',
