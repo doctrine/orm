@@ -65,6 +65,11 @@ This in fact is really a minor BC BREAK and should not have any affect on databa
 other than SQL Server because it is the only one that supports and therefore cares about
 ``LockMode::NONE``. It's really just a FIX for SQL Server environments using ORM.
 
+## Minor BC BREAK: `__clone` method not called anymore when entities are instantiated via metadata API
+
+As of PHP 5.6, instantiation of new entities is deferred to the
+[`doctrine/instantiator`](https://github.com/doctrine/instantiator) library, which will avoid calling `__clone`
+or any public API on instantiated objects.
 
 # Upgrade to 2.4
 
