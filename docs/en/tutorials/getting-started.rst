@@ -194,7 +194,7 @@ Doctrine command-line tool:
 ::
 
     $ cd project/
-    $ php vendor/bin/doctrine orm:schema-tool:create
+    $ vendor/bin/doctrine orm:schema-tool:create
 
 At this point no entitiy metadata exists in `src` so you will see a message like 
 "No Metadata Classes to process." Don't worry, we'll create a Product entity and 
@@ -207,14 +207,14 @@ You can easily recreate the database:
 
 ::
 
-    $ php vendor/bin/doctrine orm:schema-tool:drop --force
-    $ php vendor/bin/doctrine orm:schema-tool:create
+    $ vendor/bin/doctrine orm:schema-tool:drop --force
+    $ vendor/bin/doctrine orm:schema-tool:create
 
 Or use the update functionality:
 
 ::
 
-    $ php vendor/bin/doctrine orm:schema-tool:update --force
+    $ vendor/bin/doctrine orm:schema-tool:update --force
 
 The updating of databases uses a Diff Algorithm for a given
 Database Schema, a cornerstone of the ``Doctrine\DBAL`` package,
@@ -342,7 +342,7 @@ Now that we have defined our first entity, lets update the database:
 
 ::
 
-    $ php vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
+    $ vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
 
 Specifying both flags ``--force`` and ``-dump-sql`` prints and executes the DDL
 statements.
@@ -1001,6 +1001,12 @@ class that holds the owning sides.
 
 This example has a fair overview of the most basic features of the
 metadata definition language.
+
+Update your database running:
+::
+
+    $ vendor/bin/doctrine orm:schema-tool:update --force
+
 
 Implementing more Requirements
 ------------------------------
