@@ -42,6 +42,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
     public function getRepository(EntityManagerInterface $entityManager, $entityName)
     {
         $className = $entityManager->getClassMetadata($entityName)->getName();
+        $className = $entityManager->getConnection()->getDatabase().$className; // Support multiple databases on the same entity
 
         if (isset($this->repositoryList[$className])) {
             return $this->repositoryList[$className];
