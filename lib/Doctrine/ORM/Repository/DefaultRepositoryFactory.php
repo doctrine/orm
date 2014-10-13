@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.4
  */
-class DefaultRepositoryFactory implements RepositoryFactory
+final class DefaultRepositoryFactory implements RepositoryFactory
 {
     /**
      * The list of EntityRepository instances.
@@ -58,7 +58,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
      *
      * @return \Doctrine\Common\Persistence\ObjectRepository
      */
-    protected function createRepository(EntityManagerInterface $entityManager, $entityName)
+    private function createRepository(EntityManagerInterface $entityManager, $entityName)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata            = $entityManager->getClassMetadata($entityName);
