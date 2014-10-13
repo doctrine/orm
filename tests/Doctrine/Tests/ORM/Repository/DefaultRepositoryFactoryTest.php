@@ -40,12 +40,6 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         $this
             ->entityManager
             ->expects($this->any())
-            ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
-
-        $this
-            ->entityManager
-            ->expects($this->any())
             ->method('getConfiguration')
             ->will($this->returnValue($this->configuration));
 
@@ -58,6 +52,12 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testCreatesRepositoryFromDefaultRepositoryClass()
     {
+        $this
+            ->entityManager
+            ->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+
         $this->assertInstanceOf(
             'Doctrine\\Tests\\Models\\DDC869\\DDC869PaymentRepository',
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
@@ -66,8 +66,32 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testCreatedRepositoriesAreCached()
     {
+        $this
+            ->entityManager
+            ->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+
         $this->assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__),
+            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
+        );
+    }
+
+    public function testCreatesRepositoryFromCustomClassMetadata()
+    {
+        $customMetadata = $this->buildClassMetadata(__DIR__);
+
+        $customMetadata->customRepositoryClassName = 'Doctrine\\Tests\\Models\\DDC753\\DDC753DefaultRepository';
+
+        $this
+            ->entityManager
+            ->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnValue($customMetadata));
+
+        $this->assertInstanceOf(
+            'Doctrine\\Tests\\Models\\DDC753\\DDC753DefaultRepository',
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
     }
@@ -77,10 +101,11 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
      *
      * @param string $className
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return \PHPUnit_Framework_MockObject_MockObject|\Doctrine\ORM\Mapping\ClassMetadata
      */
     public function buildClassMetadata($className)
     {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata|\PHPUnit_Framework_MockObject_MockObject */
         $metadata = $this
             ->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
             ->disableOriginalConstructor()
