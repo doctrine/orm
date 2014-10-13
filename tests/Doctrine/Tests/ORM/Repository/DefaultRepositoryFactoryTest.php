@@ -33,15 +33,9 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->entityManager     = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
         $this->configuration     = $this->getMock('Doctrine\\ORM\\Configuration');
+        $this->entityManager     = $this->createEntityManager();
         $this->repositoryFactory = new DefaultRepositoryFactory();
-
-        $this
-            ->entityManager
-            ->expects($this->any())
-            ->method('getConfiguration')
-            ->will($this->returnValue($this->configuration));
 
         $this
             ->configuration
@@ -96,6 +90,29 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCachesDistinctRepositoriesPerDistinctEntityManager()
+    {
+        $em1 = $this->createEntityManager();
+        $em2 = $this->createEntityManager();
+
+        $em1
+            ->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+        $em2
+            ->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+
+        $repo1 = $this->repositoryFactory->getRepository($em1, __CLASS__);
+        $repo2 = $this->repositoryFactory->getRepository($em2, __CLASS__);
+
+        $this->assertSame($repo1, $this->repositoryFactory->getRepository($em1, __CLASS__));
+        $this->assertSame($repo2, $this->repositoryFactory->getRepository($em2, __CLASS__));
+
+        $this->assertNotSame($repo1, $repo2);
+    }
+
     /**
      * @private
      *
@@ -116,5 +133,20 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         $metadata->customRepositoryClassName = null;
 
         return $metadata;
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createEntityManager()
+    {
+        $entityManager = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
+
+        $entityManager
+            ->expects($this->any())
+            ->method('getConfiguration')
+            ->will($this->returnValue($this->configuration));
+
+        return $entityManager;
     }
 }
