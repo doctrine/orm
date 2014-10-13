@@ -90,5 +90,21 @@ class CountWalkerTest extends PaginationTestCase
 
         $query->getSql();
     }
+    
+    /**
+     * Arbitrary Join 
+     */
+    public function testCountQueryWithArbitraryJoin()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p LEFT JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c');
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(CountWalker::HINT_DISTINCT, true);
+        $query->setFirstResult(null)->setMaxResults(null);
+
+        $this->assertEquals(
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ LEFT JOIN Category c1_ ON (b0_.category_id = c1_.id)", $query->getSql()
+        );
+    }
 }
 

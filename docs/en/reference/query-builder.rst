@@ -139,15 +139,23 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         public function set($key, $value);
 
         // Example - $qb->from('Phonenumber', 'p')
-        public function from($from, $alias = null);
+        // Example - $qb->from('Phonenumber', 'p', 'p.id')
+        public function from($from, $alias, $indexBy = null);
+
+        // Example - $qb->join('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
+        // Example - $qb->join('u.Group', 'g', 'WITH', 'u.status = ?1')
+        // Example - $qb->join('u.Group', 'g', 'WITH', 'u.status = ?1', 'g.id')
+        public function join($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
         // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
         // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
-        public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
+        // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1', 'g.id')
+        public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
         // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
         // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
-        public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
+        // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55', 'p.id')
+        public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
         // NOTE: ->where() overrides all previously set conditions
         //

@@ -99,10 +99,13 @@ Optional attributes:
    string values for you.
 
 -  **precision**: The precision for a decimal (exact numeric) column
-   (Applies only for decimal column)
+   (applies only for decimal column), which is the maximum number of
+   digits that are stored for the values.
 
--  **scale**: The scale for a decimal (exact numeric) column (Applies
-   only for decimal column)
+-  **scale**: The scale for a decimal (exact numeric) column (applies
+   only for decimal column), which represents the number of digits
+   to the right of the decimal point and must not be greater than
+   *precision*.
 
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
