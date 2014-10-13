@@ -71,6 +71,11 @@ As of PHP 5.6, instantiation of new entities is deferred to the
 [`doctrine/instantiator`](https://github.com/doctrine/instantiator) library, which will avoid calling `__clone`
 or any public API on instantiated objects.
 
+## BC BREAK: `Doctrine\ORM\Repository\DefaultRepositoryFactory` is now `final`
+
+Please implement the `Doctrine\ORM\Repository\RepositoryFactory` interface instead of extending
+the `Doctrine\ORM\Repository\DefaultRepositoryFactory`.
+
 # Upgrade to 2.4
 
 ## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
