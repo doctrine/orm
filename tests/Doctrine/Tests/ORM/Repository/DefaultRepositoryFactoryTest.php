@@ -64,6 +64,14 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCreatedRepositoriesAreCached()
+    {
+        $this->assertSame(
+            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__),
+            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
+        );
+    }
+
     /**
      * @private
      *
