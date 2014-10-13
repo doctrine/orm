@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Repository;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use PHPUnit_Framework_TestCase;
 
