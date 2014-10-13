@@ -41,13 +41,13 @@ class DefaultRepositoryFactory implements RepositoryFactory
      */
     public function getRepository(EntityManagerInterface $entityManager, $entityName)
     {
-        $className = $entityManager->getClassMetadata($entityName)->getName();
+        $repositoryHash = $entityManager->getClassMetadata($entityName)->getName() . spl_object_hash($entityManager);
 
-        if (isset($this->repositoryList[$className])) {
-            return $this->repositoryList[$className];
+        if (isset($this->repositoryList[$repositoryHash])) {
+            return $this->repositoryList[$repositoryHash];
         }
 
-        return $this->repositoryList[$className] = $this->createRepository($entityManager, $entityName);
+        return $this->repositoryList[$repositoryHash] = $this->createRepository($entityManager, $entityName);
     }
 
     /**
