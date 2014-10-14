@@ -27,3 +27,7 @@ if ( ! file_exists(__DIR__ . '/Proxies') && ! mkdir(__DIR__ . '/Proxies')) {
 if ( ! file_exists(__DIR__ . '/ORM/Proxy/generated') &&  ! mkdir(__DIR__ . '/ORM/Proxy/generated')) {
     throw new \Exception('Could not create ' . __DIR__ . '/ORM/Proxy/generated Folder.');
 }
+
+\Doctrine\Common\Annotations\AnnotationRegistry::registerAutoloadNamespace(
+    'Doctrine\ORM\Mapping', realpath(__DIR__ . '/../../../lib')
+);

@@ -57,6 +57,22 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * Exception for invalid id order override.
+     *
+     * @param string $className The entity's name.
+     * @param array $idFields
+     *
+     * @return MappingException
+     */
+    public static function invalidIdOrderOverride($className, array $idFields)
+    {
+        return new self(
+            "The fields of id order override for class '$className' are divergent from declared. " .
+            "The id fields are: " . implode(', ', $idFields)
+        );
+    }
+
+    /**
      * @param string $entityName
      * @param string $type
      *
