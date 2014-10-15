@@ -50,6 +50,17 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
+    protected function cleanup()
+    {
+        parent::cleanup();
+
+        $this->_uow->triggerEagerLoads();
+        $this->_uow->hydrationComplete();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function hydrateAllData()
     {
         $result = array();
@@ -57,8 +68,6 @@ class SimpleObjectHydrator extends AbstractHydrator
         while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->hydrateRowData($row, $result);
         }
-
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
 
         return $result;
     }
@@ -79,7 +88,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
-            
+
             if ( ! isset($sqlResult[$discrColumnName])) {
                 throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
             }

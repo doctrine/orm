@@ -96,6 +96,8 @@ class DefaultCollectionHydrator implements CollectionHydrator
             $collection->hydrateSet($index, $entity);
         });
 
+        $this->uow->hydrationComplete();
+
         return $list;
     }
 }
