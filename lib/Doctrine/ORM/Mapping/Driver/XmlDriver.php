@@ -596,7 +596,7 @@ class XmlDriver extends FileDriver
 
         // Evaluate id-order-override
         if (isset($xmlRoot->{'id-order-override'})) {
-            $fields = [];
+            $fields = array();
             foreach ($xmlRoot->{'id-order-override'}->{'id'} as $idElement) {
                 $fields[] = (string) $idElement['name'];
             }
