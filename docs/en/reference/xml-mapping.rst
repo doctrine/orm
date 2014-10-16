@@ -776,6 +776,6 @@ entity relationship. You can define this in XML with the "association-key" attri
             <field name="value" type="string" />
 
             <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
-         <entity>
+         </entity>
 
     </doctrine-mapping>
