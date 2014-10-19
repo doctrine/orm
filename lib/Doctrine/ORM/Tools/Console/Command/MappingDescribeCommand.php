@@ -89,6 +89,7 @@ EOT
      *
      * @param string                 $entityName    Full or partial entity class name
      * @param EntityManagerInterface $entityManager
+     * @param OutputInterface        $output
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
     {
