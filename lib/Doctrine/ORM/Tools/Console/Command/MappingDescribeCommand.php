@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\TableHelper;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,7 +43,7 @@ final class MappingDescribeCommand extends Command
     /**
      * @var array
      */
-    private $out;
+    private $out = array();
 
     /**
      * {@inheritdoc}
@@ -78,7 +78,7 @@ EOT
 
         $this->output = $output;
 
-        $this->displayEntity($entityName, $entityManager);
+        $this->displayEntity($entityName, $entityManager, $output);
 
         return 0;
     }
@@ -89,7 +89,7 @@ EOT
      * @param string                 $entityName    Full or partial entity class name
      * @param EntityManagerInterface $entityManager
      */
-    private function displayEntity($entityName, EntityManagerInterface $entityManager)
+    private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
     {
         $meta = $this->getClassMetadata($entityName, $entityManager);
 
@@ -126,19 +126,15 @@ EOT
         $this->formatAssociationMappings($meta->associationMappings);
         $this->formatFieldMappings($meta->fieldMappings);
 
-        if (class_exists('Symfony\Component\Console\Helper\TableHelper')) {
-            $table = new TableHelper();
-            $table->setHeaders(array('Field', 'Value'));
-            foreach ($this->out as $tuple) {
-                $table->addRow($tuple);
-            }
-            $table->render($this->output);
-        } else {
-            foreach ($this->out as $tuple) {
-                list($label, $value) = $tuple;
-                $this->output->writeln(sprintf('<info>%s</info>: %s', $label, $value));
-            }
+        $table = new Table($output);
+
+        $table->setHeaders(array('Field', 'Value'));
+
+        foreach ($this->out as $tuple) {
+            $table->addRow($tuple);
         }
+
+        $table->render();
     }
 
     /**
