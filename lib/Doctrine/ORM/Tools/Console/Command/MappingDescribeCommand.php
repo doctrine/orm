@@ -93,47 +93,51 @@ EOT
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
     {
-        $meta = $this->getClassMetadata($entityName, $entityManager);
+        $metadata = $this->getClassMetadata($entityName, $entityManager);
 
-        $this->formatField('Name', $meta->name);
-        $this->formatField('Root entity name', $meta->rootEntityName);
-        $this->formatField('Custom generator definition', $meta->customGeneratorDefinition);
-        $this->formatField('Custom repository class', $meta->customRepositoryClassName);
-        $this->formatField('Mapped super class?', $meta->isMappedSuperclass);
-        $this->formatField('Embedded class?', $meta->isEmbeddedClass);
-        $this->formatField('Parent classes', $meta->parentClasses);
-        $this->formatField('Sub classes', $meta->subClasses);
-        $this->formatField('Embedded classes', $meta->subClasses);
-        $this->formatField('Named queries', $meta->namedQueries);
-        $this->formatField('Named native queries', $meta->namedNativeQueries);
-        $this->formatField('SQL result set mappings', $meta->sqlResultSetMappings);
-        $this->formatField('Identifier', $meta->identifier);
-        $this->formatField('Inheritance type', $meta->inheritanceType);
-        $this->formatField('Discriminator column', $meta->discriminatorColumn);
-        $this->formatField('Discriminator value', $meta->discriminatorValue);
-        $this->formatField('Discriminator map', $meta->discriminatorMap);
-        $this->formatField('Generator type', $meta->generatorType);
-        $this->formatField('Table', $meta->table);
-        $this->formatField('Composite identifier?', $meta->isIdentifierComposite);
-        $this->formatField('Foreign identifier?', $meta->containsForeignIdentifier);
-        $this->formatField('Sequence generator definition', $meta->sequenceGeneratorDefinition);
-        $this->formatField('Table generator definition', $meta->tableGeneratorDefinition);
-        $this->formatField('Change tracking policy', $meta->changeTrackingPolicy);
-        $this->formatField('Versioned?', $meta->isVersioned);
-        $this->formatField('Version field', $meta->versionField);
-        $this->formatField('Read only?', $meta->isReadOnly);
+        $rows = array(
+            $this->formatField('Name', $metadata->name),
+            $this->formatField('Root entity name', $metadata->rootEntityName),
+            $this->formatField('Custom generator definition', $metadata->customGeneratorDefinition),
+            $this->formatField('Custom repository class', $metadata->customRepositoryClassName),
+            $this->formatField('Mapped super class?', $metadata->isMappedSuperclass),
+            $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
+            $this->formatField('Parent classes', $metadata->parentClasses),
+            $this->formatField('Sub classes', $metadata->subClasses),
+            $this->formatField('Embedded classes', $metadata->subClasses),
+            $this->formatField('Named queries', $metadata->namedQueries),
+            $this->formatField('Named native queries', $metadata->namedNativeQueries),
+            $this->formatField('SQL result set mappings', $metadata->sqlResultSetMappings),
+            $this->formatField('Identifier', $metadata->identifier),
+            $this->formatField('Inheritance type', $metadata->inheritanceType),
+            $this->formatField('Discriminator column', $metadata->discriminatorColumn),
+            $this->formatField('Discriminator value', $metadata->discriminatorValue),
+            $this->formatField('Discriminator map', $metadata->discriminatorMap),
+            $this->formatField('Generator type', $metadata->generatorType),
+            $this->formatField('Table', $metadata->table),
+            $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
+            $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
+            $this->formatField('Sequence generator definition', $metadata->sequenceGeneratorDefinition),
+            $this->formatField('Table generator definition', $metadata->tableGeneratorDefinition),
+            $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
+            $this->formatField('Versioned?', $metadata->isVersioned),
+            $this->formatField('Version field', $metadata->versionField),
+            $this->formatField('Read only?', $metadata->isReadOnly),
 
-        $this->formatEntityListeners($meta->entityListeners);
-        $this->formatAssociationMappings($meta->associationMappings);
-        $this->formatFieldMappings($meta->fieldMappings);
+            $this->formatEntityListeners($metadata->entityListeners),
+        );
+
+        $rows = array_merge(
+            $rows,
+            $this->formatAssociationMappings($metadata->associationMappings),
+            $this->formatFieldMappings($metadata->fieldMappings)
+        );
 
         $table = new Table($output);
 
         $table->setHeaders(array('Field', 'Value'));
 
-        foreach ($this->out as $tuple) {
-            $table->addRow($tuple);
-        }
+        array_map(array($table, 'addRow'), $rows);
 
         $table->render();
     }
@@ -255,6 +259,8 @@ EOT
      *
      * @param string $label Label for the value
      * @param mixed  $value A Value to show
+     *
+     * @return array
      */
     private function formatField($label, $value)
     {
@@ -262,31 +268,38 @@ EOT
             $value = '<comment>None</comment>';
         }
 
-        $this->out[] = array(sprintf('<info>%s</info>', $label), $this->formatValue($value));
+        return array(sprintf('<info>%s</info>', $label), $this->formatValue($value));
     }
 
     /**
      * Format the association mappings
      *
      * @param array
+     *
+     * @return array
      */
     private function formatAssociationMappings($associationMappings)
     {
-        $this->formatField('Association mappings:', '');
+        $output   = array();
+        $output[] = $this->formatField('Association mappings:', '');
 
         foreach ($associationMappings as $associationName => $mapping) {
-            $this->formatField(sprintf('  %s', $associationName), '');
+            $output[] = $this->formatField(sprintf('  %s', $associationName), '');
 
             foreach ($mapping as $field => $value) {
-                $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
+                $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
         }
+
+        return $output;
     }
 
     /**
      * Format the entity listeners
      *
      * @param array $entityListeners
+     *
+     * @return array
      */
     private function formatEntityListeners($entityListeners)
     {
@@ -296,24 +309,29 @@ EOT
             $entityListenerNames[] = get_class($entityListener);
         }
 
-        $this->formatField('Entity listeners', $entityListenerNames);
+        return $this->formatField('Entity listeners', $entityListenerNames);
     }
 
     /**
      * Form the field mappings
      *
      * @param array $fieldMappings
+     *
+     * @return array
      */
     private function formatFieldMappings($fieldMappings)
     {
-        $this->formatField('Field mappings:', '');
+        $output   = array();
+        $output[] = $this->formatField('Field mappings:', '');
 
         foreach ($fieldMappings as $fieldName => $mapping) {
-            $this->formatField(sprintf('  %s',$fieldName), '');
+            $output[] = $this->formatField(sprintf('  %s',$fieldName), '');
 
             foreach ($mapping as $field => $value) {
-                $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
+                $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
         }
+
+        return $output;
     }
 }
