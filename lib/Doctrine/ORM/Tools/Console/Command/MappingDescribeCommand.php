@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\TableHelper;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Helper\TableHelper;
 
 /**
  * Show information about mapped entities.
@@ -79,7 +79,7 @@ EOT
         $this->output = $output;
         $this->entityManager = $entityManager;
 
-        $this->displayEntity($entityName);
+        $this->displayEntity($entityName, $entityManager);
 
         return 0;
     }
@@ -87,11 +87,12 @@ EOT
     /**
      * Display all the mapping information for a single Entity.
      *
-     * @param string $entityName Full or partial entity class name
+     * @param string                 $entityName    Full or partial entity class name
+     * @param EntityManagerInterface $entityManager
      */
-    private function displayEntity($entityName)
+    private function displayEntity($entityName, EntityManagerInterface $entityManager)
     {
-        $meta = $this->getClassMetadata($entityName);
+        $meta = $this->getClassMetadata($entityName, $entityManager);
 
         $this->formatField('Name', $meta->name);
         $this->formatField('Root entity name', $meta->rootEntityName);
@@ -144,15 +145,18 @@ EOT
     /**
      * Return all mapped entity class names
      *
-     * @return array
+     * @param EntityManagerInterface $entityManager
+     *
+     * @return \Doctrine\ORM\Mapping\ClassMetadata[]
      */
-    private function getMappedEntities()
+    private function getMappedEntities(EntityManagerInterface $entityManager)
     {
-        $entityClassNames = $this->entityManager->getConfiguration()
-                                          ->getMetadataDriverImpl()
-                                          ->getAllClassNames();
+        $entityClassNames = $entityManager
+            ->getConfiguration()
+            ->getMetadataDriverImpl()
+            ->getAllClassNames();
 
-        if (!$entityClassNames) {
+        if ( ! $entityClassNames) {
             throw new \InvalidArgumentException(
                 'You do not have any mapped Doctrine ORM entities according to the current configuration. '.
                 'If you have entities or mapping files you should check your mapping configuration for errors.'
@@ -166,14 +170,17 @@ EOT
      * Return the class metadata for the given entity
      * name
      *
-     * @param string $entityName Full or partial entity name
+     * @param string                 $entityName    Full or partial entity name
+     * @param EntityManagerInterface $entityManager
+     *
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    private function getClassMetadata($entityName)
+    private function getClassMetadata($entityName, EntityManagerInterface $entityManager)
     {
         try {
-            $meta = $this->entityManager->getClassMetadata($entityName);
+            $meta = $entityManager->getClassMetadata($entityName);
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-            $mappedEntities = $this->getMappedEntities();
+            $mappedEntities = $this->getMappedEntities($entityManager);
             $matches = array_filter($mappedEntities, function ($mappedEntity) use ($entityName) {
                 if (preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)) {
                     return true;
@@ -190,7 +197,7 @@ EOT
             }
 
             if (1 === count($matches)) {
-                $meta = $this->entityManager->getClassMetadata(current($matches));
+                $meta = $entityManager->getClassMetadata(current($matches));
             } else {
                 throw new \InvalidArgumentException(sprintf(
                     'Entity name "%s" is ambigous, possible matches: "%s"',
@@ -206,6 +213,8 @@ EOT
      * Format the given value for console output
      *
      * @param mixed $value
+     *
+     * @return string
      */
     private function formatValue($value)
     {
@@ -245,11 +254,10 @@ EOT
     }
 
     /**
-     * Add the given label and value to the two column table
-     * output
+     * Add the given label and value to the two column table output
      *
      * @param string $label Label for the value
-     * @param mixed $valueA Value to show
+     * @param mixed  $value A Value to show
      */
     private function formatField($label, $value)
     {
@@ -284,6 +292,7 @@ EOT
     private function formatEntityListeners($entityListeners)
     {
         $entityListenerNames = array();
+
         foreach ($entityListeners as $entityListener) {
             $entityListenerNames[] = get_class($entityListener);
         }
