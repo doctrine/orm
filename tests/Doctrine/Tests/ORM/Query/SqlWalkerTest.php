@@ -15,14 +15,24 @@ use Doctrine\ORM\Query\ParserResult;
 class SqlWalkerTest extends OrmTestCase
 {
     /**
+     * @var SqlWalker
+     */
+    private $sqlWalker;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp()
+    {
+        $this->sqlWalker = new SqlWalker(new Query($this->_getTestEntityManager()), new ParserResult(), array());
+    }
+
+    /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
     public function testGetSQLTableAlias($tableName, $expectedAlias)
     {
-        $query     = new Query($this->_getTestEntityManager());
-        $sqlWalker = new SqlWalker($query, new ParserResult(), array());
-
-        $this->assertSame($expectedAlias, $sqlWalker->getSQLTableAlias($tableName));
+        $this->assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
     /**
@@ -30,10 +40,10 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function testGetSQLTableAliasIsSameForMultipleCalls($tableName)
     {
-        $query     = new Query($this->_getTestEntityManager());
-        $sqlWalker = new SqlWalker($query, new ParserResult(), array());
-
-        $this->assertSame($sqlWalker->getSQLTableAlias($tableName), $sqlWalker->getSQLTableAlias($tableName));
+        $this->assertSame(
+            $this->sqlWalker->getSQLTableAlias($tableName),
+            $this->sqlWalker->getSQLTableAlias($tableName)
+        );
     }
 
     /**
