@@ -493,7 +493,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * @group DDC-117
      */
     public function testIndexByOnCompositeKeyField()
-    {   
+    {
         $article = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article1->id());
 
         $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Article', $article);
