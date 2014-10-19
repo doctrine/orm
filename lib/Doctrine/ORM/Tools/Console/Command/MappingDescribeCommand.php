@@ -301,15 +301,17 @@ EOT
      *
      * @return array
      */
-    private function formatEntityListeners($entityListeners)
+    private function formatEntityListeners(array $entityListeners)
     {
-        $entityListenerNames = array();
-
-        foreach ($entityListeners as $entityListener) {
-            $entityListenerNames[] = get_class($entityListener);
-        }
-
-        return $this->formatField('Entity listeners', $entityListenerNames);
+        return $this->formatField(
+            'Entity listeners',
+            array_map(
+                function ($entityListener) {
+                    return get_class($entityListener);
+                },
+                $entityListeners
+            )
+        );
     }
 
     /**
