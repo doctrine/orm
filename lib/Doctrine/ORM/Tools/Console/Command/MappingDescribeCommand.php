@@ -77,7 +77,6 @@ EOT
         $entityManager = $this->getHelper('em')->getEntityManager();
 
         $this->output = $output;
-        $this->entityManager = $entityManager;
 
         $this->displayEntity($entityName, $entityManager);
 
