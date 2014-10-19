@@ -37,16 +37,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class MappingDescribeCommand extends Command
 {
     /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
-     * @var array
-     */
-    private $out = array();
-
-    /**
      * {@inheritdoc}
      */
     protected function configure()
@@ -74,10 +64,8 @@ EOT
     {
         $entityName = $input->getArgument('entityName');
 
-        /* @var $entityManager \Doctrine\ORM\EntityManager */
+        /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
-
-        $this->output = $output;
 
         $this->displayEntity($entityName, $entityManager, $output);
 
