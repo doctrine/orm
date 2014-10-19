@@ -276,6 +276,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
         return (bool) $this->conn->fetchColumn($sql, $params);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function max(PersistentCollection $coll, $key)
+    {
+        // list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictionsWithKey($coll, $key, true);
+        // $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+        // return (bool) $this->conn->fetchColumn($sql, $params);
+    }
 
     /**
      * {@inheritDoc}

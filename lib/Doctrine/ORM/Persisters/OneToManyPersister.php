@@ -169,6 +169,23 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         return (bool) $this->conn->fetchColumn($sql, $params);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function max(PersistentCollection $coll, $key)
+    {
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+
+        $mapping     = $coll->getMapping();
+        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+
+        $whereClauses[] = $sourceClass->getColumnName($mapping['indexBy']) . ' = ?';
+
+        $sql = 'SELECT MAX(' . $key . ') FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+
+        return $this->conn->fetchColumn($sql, $params);
+    }
 
     private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
     {

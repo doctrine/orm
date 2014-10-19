@@ -183,6 +183,14 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     /**
      * {@inheritdoc}
      */
+    public function max(PersistentCollection $coll, $key)
+    {
+        throw new \BadMethodCallException("Checking for max value is not supported by this CollectionPersister.");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function removeElement(PersistentCollection $coll, $element)
     {
         throw new \BadMethodCallException("Removing an element is not supported by this CollectionPersister.");

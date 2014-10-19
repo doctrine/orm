@@ -566,6 +566,18 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($article, $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId));
     }
 
+    public function testMaxByOneToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $value = $user->articles->max('topic');
+        
+        error_log($value);
+    }
+
     /**
      * @group DDC-1398
      */
