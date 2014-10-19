@@ -120,7 +120,6 @@ EOT
         $this->formatField('Versioned?', $meta->isVersioned);
         $this->formatField('Version field', $meta->versionField);
         $this->formatField('Read only?', $meta->isReadOnly);
-        $this->formatField('Foo', array('Foo', 'Bar', 'Boo'));
 
         $this->formatEntityListeners($meta->entityListeners);
         $this->formatAssociationMappings($meta->associationMappings);
