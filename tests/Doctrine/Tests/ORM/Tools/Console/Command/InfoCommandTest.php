@@ -32,7 +32,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->application = new Application();
-        $command     = new InfoCommand();
+        $command           = new InfoCommand();
 
         $this->application->setHelperSet(new HelperSet(array(
             'em' => new EntityManagerHelper($this->_em)

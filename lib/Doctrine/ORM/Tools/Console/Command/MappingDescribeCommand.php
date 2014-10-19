@@ -54,7 +54,7 @@ Or:
 
     <info>%command.full_name%</info> MyEntity
 EOT
-        );
+            );
     }
 
     /**
@@ -79,7 +79,6 @@ EOT
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
     {
-
         $table = new Table($output);
 
         $table->setHeaders(array('Field', 'Value'));
@@ -177,7 +176,7 @@ EOT
             }
         );
 
-        if (! $matches) {
+        if ( ! $matches) {
             throw new \InvalidArgumentException(sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
                 $entityName
