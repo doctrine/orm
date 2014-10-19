@@ -234,7 +234,7 @@ EOT
         }
 
         if (is_array($value)) {
-            if (version_compare(phpversion(), '5.4.0', '>=')) {
+            if (defined('JSON_UNESCAPED_UNICODE') && defined('JSON_UNESCAPED_SLASHES')) {
                 return json_encode($value, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
             }
 
@@ -275,8 +275,10 @@ EOT
     private function formatAssociationMappings($associationMappings)
     {
         $this->formatField('Association mappings:', '');
+
         foreach ($associationMappings as $associationName => $mapping) {
-            $this->formatField(sprintf('  %s',$associationName), '');
+            $this->formatField(sprintf('  %s', $associationName), '');
+
             foreach ($mapping as $field => $value) {
                 $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
