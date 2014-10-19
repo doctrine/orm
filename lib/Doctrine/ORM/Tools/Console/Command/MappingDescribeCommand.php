@@ -142,7 +142,7 @@ EOT
      *
      * @param EntityManagerInterface $entityManager
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata[]
+     * @return string[]
      */
     private function getMappedEntities(EntityManagerInterface $entityManager)
     {
@@ -175,33 +175,34 @@ EOT
         try {
             return $entityManager->getClassMetadata($entityName);
         } catch (MappingException $e) {
-            $mappedEntities = $this->getMappedEntities($entityManager);
-            $matches = array_filter($mappedEntities, function ($mappedEntity) use ($entityName) {
+        }
+
+        $matches = array_filter(
+            $this->getMappedEntities($entityManager),
+            function ($mappedEntity) use ($entityName) {
                 if (preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)) {
                     return true;
                 }
 
                 return false;
-            });
-
-            if (0 === count($matches)) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Could not find any mapped Entity classes matching "%s"',
-                    $entityName
-                ));
             }
+        );
 
-            if (1 === count($matches)) {
-                $meta = $entityManager->getClassMetadata(current($matches));
-            } else {
-                throw new \InvalidArgumentException(sprintf(
-                    'Entity name "%s" is ambigous, possible matches: "%s"',
-                    $entityName, implode(', ', $matches)
-                ));
-            }
-
-            return $meta;
+        if (! $matches) {
+            throw new \InvalidArgumentException(sprintf(
+                'Could not find any mapped Entity classes matching "%s"',
+                $entityName
+            ));
         }
+
+        if (count($matches) > 1) {
+            throw new \InvalidArgumentException(sprintf(
+                'Entity name "%s" is ambigous, possible matches: "%s"',
+                $entityName, implode(', ', $matches)
+            ));
+        }
+
+        return $entityManager->getClassMetadata(current($matches));
     }
 
     /**
@@ -231,7 +232,7 @@ EOT
 
         if (is_array($value)) {
             if (defined('JSON_UNESCAPED_UNICODE') && defined('JSON_UNESCAPED_SLASHES')) {
-                return json_encode($value, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             }
 
             return json_encode($value);
@@ -305,8 +306,10 @@ EOT
     private function formatFieldMappings($fieldMappings)
     {
         $this->formatField('Field mappings:', '');
+
         foreach ($fieldMappings as $fieldName => $mapping) {
             $this->formatField(sprintf('  %s',$fieldName), '');
+
             foreach ($mapping as $field => $value) {
                 $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
