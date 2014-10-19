@@ -7,6 +7,11 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Query\ParserResult;
 
+/**
+ * Tests for {@see \Doctrine\ORM\Query\SqlWalker}
+ *
+ * @covers \Doctrine\ORM\Query\SqlWalker
+ */
 class SqlWalkerTest extends OrmTestCase
 {
     public function testGetSQLTableAlias()
