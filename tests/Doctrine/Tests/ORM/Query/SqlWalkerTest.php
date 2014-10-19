@@ -14,12 +14,28 @@ use Doctrine\ORM\Query\ParserResult;
  */
 class SqlWalkerTest extends OrmTestCase
 {
-    public function testGetSQLTableAlias()
+    /**
+     * @dataProvider getColumnNamesAndSqlAliases
+     */
+    public function testGetSQLTableAlias($tableName, $expectedAlias)
     {
         $query     = new Query($this->_getTestEntityManager());
         $sqlWalker = new SqlWalker($query, new ParserResult(), array());
 
-        $this->assertSame('t0_', $sqlWalker->getSQLTableAlias('table'));
-        $this->assertSame('t1_', $sqlWalker->getSQLTableAlias('çtable'));
+        $this->assertSame($expectedAlias, $sqlWalker->getSQLTableAlias($tableName));
+    }
+
+    /**
+     * @private data provider
+     *
+     * @return string[][]
+     */
+    public function getColumnNamesAndSqlAliases()
+    {
+        return array(
+            array('aaaaa', 'a0_'),
+            array('table', 't0_'),
+            array('çtable', 't0_'),
+        );
     }
 }
