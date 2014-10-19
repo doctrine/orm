@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -172,8 +173,8 @@ EOT
     private function getClassMetadata($entityName, EntityManagerInterface $entityManager)
     {
         try {
-            $meta = $entityManager->getClassMetadata($entityName);
-        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            return $entityManager->getClassMetadata($entityName);
+        } catch (MappingException $e) {
             $mappedEntities = $this->getMappedEntities($entityManager);
             $matches = array_filter($mappedEntities, function ($mappedEntity) use ($entityName) {
                 if (preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)) {
@@ -198,9 +199,9 @@ EOT
                     $entityName, implode(', ', $matches)
                 ));
             }
-        }
 
-        return $meta;
+            return $meta;
+        }
     }
 
     /**
