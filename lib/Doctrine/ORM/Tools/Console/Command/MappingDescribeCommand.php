@@ -62,12 +62,10 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $entityName = $input->getArgument('entityName');
-
         /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
-        $this->displayEntity($entityName, $entityManager, $output);
+        $this->displayEntity($input->getArgument('entityName'), $entityManager, $output);
 
         return 0;
     }
@@ -122,8 +120,10 @@ EOT
 
                     $this->formatEntityListeners($metadata->entityListeners),
                 ),
-                $this->formatAssociationMappings($metadata->associationMappings),
-                $this->formatFieldMappings($metadata->fieldMappings)
+                array($this->formatField('Association mappings:', '')),
+                $this->formatMappings($metadata->associationMappings),
+                array($this->formatField('Field mappings:', '')),
+                $this->formatMappings($metadata->fieldMappings)
             )
         );
 
@@ -262,13 +262,12 @@ EOT
      *
      * @return array
      */
-    private function formatAssociationMappings($associationMappings)
+    private function formatMappings(array $propertyMappings)
     {
-        $output   = array();
-        $output[] = $this->formatField('Association mappings:', '');
+        $output = array();
 
-        foreach ($associationMappings as $associationName => $mapping) {
-            $output[] = $this->formatField(sprintf('  %s', $associationName), '');
+        foreach ($propertyMappings as $propertyName => $mapping) {
+            $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
 
             foreach ($mapping as $field => $value) {
                 $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
@@ -296,28 +295,5 @@ EOT
                 $entityListeners
             )
         );
-    }
-
-    /**
-     * Form the field mappings
-     *
-     * @param array $fieldMappings
-     *
-     * @return array
-     */
-    private function formatFieldMappings($fieldMappings)
-    {
-        $output   = array();
-        $output[] = $this->formatField('Field mappings:', '');
-
-        foreach ($fieldMappings as $fieldName => $mapping) {
-            $output[] = $this->formatField(sprintf('  %s',$fieldName), '');
-
-            foreach ($mapping as $field => $value) {
-                $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
-            }
-        }
-
-        return $output;
     }
 }
