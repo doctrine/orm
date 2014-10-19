@@ -26,6 +26,17 @@ class SqlWalkerTest extends OrmTestCase
     }
 
     /**
+     * @dataProvider getColumnNamesAndSqlAliases
+     */
+    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName)
+    {
+        $query     = new Query($this->_getTestEntityManager());
+        $sqlWalker = new SqlWalker($query, new ParserResult(), array());
+
+        $this->assertSame($sqlWalker->getSQLTableAlias($tableName), $sqlWalker->getSQLTableAlias($tableName));
+    }
+
+    /**
      * @private data provider
      *
      * @return string[][]
