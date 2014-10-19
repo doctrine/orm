@@ -33,7 +33,7 @@ use Symfony\Component\Console\Helper\TableHelper;
  * @since   2.4
  * @author  Daniel Leech <daniel@dantleech.com>
  */
-class MappingDescribeCommand extends Command
+final class MappingDescribeCommand extends Command
 {
     /**
      * @var OutputInterface
