@@ -173,11 +173,7 @@ EOT
         $matches = array_filter(
             $this->getMappedEntities($entityManager),
             function ($mappedEntity) use ($entityName) {
-                if (preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)) {
-                    return true;
-                }
-
-                return false;
+                return preg_match('{' . preg_quote($entityName) . '}', $mappedEntity);
             }
         );
 
