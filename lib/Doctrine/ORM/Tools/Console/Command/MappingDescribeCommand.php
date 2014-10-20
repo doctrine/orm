@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -79,7 +79,7 @@ EOT
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
     {
-        $table = new Table($output);
+        $table = new TableHelper();
 
         $table->setHeaders(array('Field', 'Value'));
 
@@ -126,7 +126,7 @@ EOT
             )
         );
 
-        $table->render();
+        $table->render($output);
     }
 
     /**
