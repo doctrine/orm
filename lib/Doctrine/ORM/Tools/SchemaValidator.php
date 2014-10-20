@@ -58,7 +58,6 @@ class SchemaValidator
      * 1. Check if a relation with "mappedBy" is actually connected to that specified field.
      * 2. Check if "mappedBy" and "inversedBy" are consistent to each other.
      * 3. Check if "referencedColumnName" attributes are really pointing to primary key columns.
-     * 4. Check if there are public properties that might cause problems with lazy loading.
      *
      * @return array
      */
