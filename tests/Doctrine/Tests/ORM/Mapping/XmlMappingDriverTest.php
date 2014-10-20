@@ -8,31 +8,6 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    /**
-     * @var string
-     *
-     * @see https://github.com/facebook/hhvm/blob/3445a26e54faba5828eb6b8f6e74e52b472cf282/hphp/doc/inconsistencies#L131-L134
-     */
-    private $originalEntityWhitelistPolicy;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp()
-    {
-        $this->originalEntityWhitelistPolicy = ini_get('hhvm.libxml.ext_entity_whitelist');
-
-        ini_set('hhvm.libxml.ext_entity_whitelist', 'file,http,https');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function tearDown()
-    {
-        ini_set('hhvm.libxml.ext_entity_whitelist', $this->originalEntityWhitelistPolicy);
-    }
-
     protected function _loadDriver()
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
