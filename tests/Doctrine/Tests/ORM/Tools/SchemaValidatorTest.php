@@ -152,6 +152,57 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
             $ce
         );
     }
+
+    /**
+     * @group DDC-3322
+     */
+    public function testInvalidOrderByInvalidField()
+    {
+        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322One');
+        $ce = $this->validator->validateClass($class);
+
+        $this->assertEquals(
+            array(
+                "The association Doctrine\Tests\ORM\Tools\DDC3322One#invalidAssoc is ordered by a foreign field " .
+                "invalidField that is not a field on the target entity Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1."
+            ),
+            $ce
+        );
+    }
+
+    /**
+     * @group DDC-3322
+     */
+    public function testInvalidOrderByCollectionValuedAssociation()
+    {
+        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Two');
+        $ce = $this->validator->validateClass($class);
+
+        $this->assertEquals(
+            array(
+                "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by an field oneToMany " .
+                "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association."
+            ),
+            $ce
+        );
+    }
+
+    /**
+     * @group DDC-3322
+     */
+    public function testInvalidOrderByAssociationInverseSide()
+    {
+        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Three');
+        $ce = $this->validator->validateClass($class);
+
+        $this->assertEquals(
+            array(
+                "The association Doctrine\Tests\ORM\Tools\DDC3322Three#invalidAssoc is ordered by a field oneToOneInverse " .
+                "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is the inverse side of an association."
+            ),
+            $ce
+        );
+    }
 }
 
 /**
@@ -307,4 +358,165 @@ class DDC3274Two
      * @ManyToOne(targetEntity="DDC3274One")
      */
     private $one;
+}
+
+/**
+ * @Entity
+ */
+class DDC3322ValidEntity1
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322One", inversedBy="validAssoc")
+     */
+    private $oneValid;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322One", inversedBy="invalidAssoc")
+     */
+    private $oneInvalid;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322Two", inversedBy="validAssoc")
+     */
+    private $twoValid;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322Two", inversedBy="invalidAssoc")
+     */
+    private $twoInvalid;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322Three", inversedBy="validAssoc")
+     */
+    private $threeValid;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322Three", inversedBy="invalidAssoc")
+     */
+    private $threeInvalid;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity2", mappedBy="manyToOne")
+     */
+    private $oneToMany;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToMany")
+     */
+    private $manyToOne;
+
+    /**
+     * @OneToOne(targetEntity="DDC3322ValidEntity2", mappedBy="oneToOneOwning")
+     */
+    private $oneToOneInverse;
+
+    /**
+     * @OneToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToOneInverse")
+     */
+    private $oneToOneOwning;
+}
+
+/**
+ * @Entity
+ */
+class DDC3322ValidEntity2
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany")
+     */
+    private $manyToOne;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne")
+     */
+    private $oneToMany;
+
+    /**
+     * @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse")
+     */
+    private $oneToOneOwning;
+
+    /**
+     * @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning")
+     */
+    private $oneToOneInverse;
+}
+
+/**
+ * @Entity
+ */
+class DDC3322One
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneValid")
+     * @OrderBy({"id" = "ASC"})
+     */
+    private $validAssoc;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneInvalid")
+     * @OrderBy({"invalidField" = "ASC"})
+     */
+    private $invalidAssoc;
+}
+
+/**
+ * @Entity
+ */
+class DDC3322Two
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoValid")
+     * @OrderBy({"manyToOne" = "ASC"})
+     */
+    private $validAssoc;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoInvalid")
+     * @OrderBy({"oneToMany" = "ASC"})
+     */
+    private $invalidAssoc;
+}
+
+/**
+ * @Entity
+ */
+class DDC3322Three
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeValid")
+     * @OrderBy({"oneToOneOwning" = "ASC"})
+     */
+    private $validAssoc;
+
+    /**
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeInvalid")
+     * @OrderBy({"oneToOneInverse" = "ASC"})
+     */
+    private $invalidAssoc;
 }
