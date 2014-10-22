@@ -233,7 +233,7 @@ class SchemaValidator
                         continue;
                     }
                     if ($targetMetadata->isCollectionValuedAssociation($orderField)) {
-                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by an field " .
+                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a field " .
                                 $orderField . " on " . $targetMetadata->name . " that is a collection-valued association.";
                         continue;
                     }
