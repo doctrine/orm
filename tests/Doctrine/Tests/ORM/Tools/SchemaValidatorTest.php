@@ -180,7 +180,7 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(
             array(
-                "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by an field oneToMany " .
+                "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by a field oneToMany " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association."
             ),
             $ce
