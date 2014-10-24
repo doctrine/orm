@@ -39,14 +39,11 @@ class DDC3343Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $group->users->removeElement($user);
 
-        $this->_em->persist($group);
-        $this->_em->flush();
-
-        // Even if the collection is extra lazy, the user should not have been deleted.
+        // Even though the collection is extra lazy, the user should not have been deleted.
         $this->_em->clear();
 
         $user = $this->_em->find(__NAMESPACE__ . '\DDC3343User', $user->id);
-        $this->assertNotNull($user);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC3343User', $user);
     }
 }
 
