@@ -107,7 +107,7 @@ abstract class SQLFilter
 
         $param = $this->parameters[$name];
         $isIterable = is_array($param['value']) || $param['value'] instanceof \Iterator;
-        if ($isIterable && !in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
+        if ($isIterable && ! in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
             foreach ($param['value'] as $key => & $value) {
                 $value = $this->em->getConnection()->quote($value, $param['type']);
             }
