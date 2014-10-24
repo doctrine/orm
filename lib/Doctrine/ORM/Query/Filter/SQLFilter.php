@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query\Filter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * The base class that user defined filters should extend.
