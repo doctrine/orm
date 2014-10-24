@@ -104,7 +104,16 @@ abstract class SQLFilter
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
+        $param = $this->parameters[$name];
+        $isIterable = is_array($param['value']) || $param['value'] instanceof \Iterator;
+        if ($isIterable && !in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
+            foreach ($param['value'] as $key => & $value) {
+                $value = $this->em->getConnection()->quote($value, $param['type']);
+            }
+            return implode(',', $param['value']);
+        }
+
+        return $this->em->getConnection()->quote($param['value'], $param['type']);
     }
 
     /**
