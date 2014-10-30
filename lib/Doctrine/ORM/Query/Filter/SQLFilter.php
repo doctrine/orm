@@ -106,12 +106,14 @@ abstract class SQLFilter
         }
 
         $param = $this->parameters[$name];
-        $isIterable = is_array($param['value']) || $param['value'] instanceof \Traversable;
-        if ($isIterable && ! in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
-            foreach ($param['value'] as $key => & $value) {
-                $value = $this->em->getConnection()->quote($value, $param['type']);
-            }
-            return implode(',', $param['value']);
+        $isTraversable = is_array($param['value']) || $param['value'] instanceof \Traversable;
+        if ($isTraversable && ! in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
+            $connection = $this->em->getConnection();
+            $quoted = array_map(function($value) use ($connection, $param) {
+                return $connection->quote($value, $param['type']);
+            }, $param['value']);
+
+            return implode(',', $quoted);
         }
 
         return $this->em->getConnection()->quote($param['value'], $param['type']);
