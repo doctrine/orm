@@ -220,27 +220,32 @@ class YamlDriver extends FileDriver
                     }
                 }
 
+                if (isset($indexYml['options'])) {
+                    $index['options'] = $indexYml['options'];
+                }
+
                 $metadata->table['indexes'][$indexYml['name']] = $index;
             }
         }
 
         // Evaluate uniqueConstraints
         if (isset($element['uniqueConstraints'])) {
-            foreach ($element['uniqueConstraints'] as $name => $unique) {
-                if ( ! isset($unique['name'])) {
-                    $unique['name'] = $name;
+            foreach ($element['uniqueConstraints'] as $name => $uniqueYml) {
+                if ( ! isset($uniqueYml['name'])) {
+                    $uniqueYml['name'] = $name;
                 }
 
-                if (is_string($unique['columns'])) {
-                    $columns = explode(',', $unique['columns']);
-                    $columns = array_map('trim', $columns);
+                if (is_string($uniqueYml['columns'])) {
+                    $unique = array('columns' => array_map('trim', explode(',', $uniqueYml['columns'])));
                 } else {
-                    $columns = $unique['columns'];
+                    $unique = array('columns' => $uniqueYml['columns']);
                 }
 
-                $metadata->table['uniqueConstraints'][$unique['name']] = array(
-                    'columns' => $columns
-                );
+                if (isset($uniqueYml['options'])) {
+                    $unique['options'] = $uniqueYml['options'];
+                }
+
+                $metadata->table['uniqueConstraints'][$uniqueYml['name']] = $unique;
             }
         }
 

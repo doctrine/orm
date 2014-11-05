@@ -267,14 +267,14 @@ class SchemaTool
                     if( ! isset($indexData['flags'])) {
                         $indexData['flags'] = array();
                     }
-                    
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array)$indexData['flags']);
+
+                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array)$indexData['flags'], isset($indexData['options']) ? $indexData['options'] : array());
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName);
+                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, isset($indexData['options']) ? $indexData['options'] : array());
                 }
             }
 

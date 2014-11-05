@@ -102,9 +102,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($tableAnnot->indexes !== null) {
                 foreach ($tableAnnot->indexes as $indexAnnot) {
                     $index = array('columns' => $indexAnnot->columns);
-                    
+
                     if ( ! empty($indexAnnot->flags)) {
                         $index['flags'] = $indexAnnot->flags;
+                    }
+
+                    if ( ! empty($indexAnnot->options)) {
+                        $index['options'] = $indexAnnot->options;
                     }
 
                     if ( ! empty($indexAnnot->name)) {
@@ -118,6 +122,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($tableAnnot->uniqueConstraints !== null) {
                 foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
                     $uniqueConstraint = array('columns' => $uniqueConstraintAnnot->columns);
+
+                    if ( ! empty($uniqueConstraintAnnot->options)) {
+                        $uniqueConstraint['options'] = $uniqueConstraintAnnot->options;
+                    }
 
                     if ( ! empty($uniqueConstraintAnnot->name)) {
                         $primaryTable['uniqueConstraints'][$uniqueConstraintAnnot->name] = $uniqueConstraint;

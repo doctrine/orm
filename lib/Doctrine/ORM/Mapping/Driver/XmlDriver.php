@@ -196,11 +196,15 @@ class XmlDriver extends FileDriver
             $metadata->table['indexes'] = array();
             foreach ($xmlRoot->indexes->index as $indexXml) {
                 $index = array('columns' => explode(',', (string) $indexXml['columns']));
-                
+
                 if (isset($indexXml['flags'])) {
                     $index['flags'] = explode(',', (string) $indexXml['flags']);
                 }
-                
+
+                if (isset($indexXml->options)) {
+                    $index['options'] = $this->_parseOptions($indexXml->options->children());
+                }
+
                 if (isset($indexXml['name'])) {
                     $metadata->table['indexes'][(string) $indexXml['name']] = $index;
                 } else {
@@ -212,17 +216,18 @@ class XmlDriver extends FileDriver
         // Evaluate <unique-constraints..>
         if (isset($xmlRoot->{'unique-constraints'})) {
             $metadata->table['uniqueConstraints'] = array();
-            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $unique) {
-                $columns = explode(',', (string)$unique['columns']);
+            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
+                $unique = array('columns' => explode(',', (string) $uniqueXml['columns']));
 
-                if (isset($unique['name'])) {
-                    $metadata->table['uniqueConstraints'][(string)$unique['name']] = array(
-                        'columns' => $columns
-                    );
+
+                if (isset($uniqueXml->options)) {
+                    $unique['options'] = $this->_parseOptions($uniqueXml->options->children());
+                }
+
+                if (isset($uniqueXml['name'])) {
+                    $metadata->table['uniqueConstraints'][(string)$uniqueXml['name']] = $unique;
                 } else {
-                    $metadata->table['uniqueConstraints'][] = array(
-                        'columns' => $columns
-                    );
+                    $metadata->table['uniqueConstraints'][] = $unique;
                 }
             }
         }
