@@ -90,7 +90,7 @@ abstract class AbstractCollectionPersister
 
         $sql = $this->getDeleteSQL($coll);
 
-        // DDC-x: getDeleteSQLParameters() now returns array of params and types
+        // DDC-3373: getDeleteSQLParameters() now returns array of params and types
         list($params, $types) = $this->getDeleteSQLParameters($coll);
 
         $this->conn->executeUpdate($sql, $params, $types);
@@ -148,7 +148,7 @@ abstract class AbstractCollectionPersister
         $sql    = $this->getDeleteRowSQL($coll);
 
         foreach ($diff as $element) {
-            // DDC-x: getDeleteRowSQLParameters() now returns array of params and types
+            // DDC-3373: getDeleteRowSQLParameters() now returns array of params and types
             list($params, $types) = $this->getDeleteRowSQLParameters($coll, $element);
 
             $this->conn->executeUpdate($sql, $params, $types);
@@ -168,7 +168,7 @@ abstract class AbstractCollectionPersister
         $sql    = $this->getInsertRowSQL($coll);
 
         foreach ($diff as $element) {
-            // DDC-x: getInsertRowSQLParameters() now returns array of params and types
+            // DDC-3373: getInsertRowSQLParameters() now returns array of params and types
             list($params, $types) = $this->getInsertRowSQLParameters($coll, $element);
 
             $this->conn->executeUpdate($sql, $params, $types);

@@ -136,7 +136,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $identifier1 = $this->uow->getEntityIdentifier($coll->getOwner());
         $identifier2 = $this->uow->getEntityIdentifier($element);
 
-        // DDC-x: We cannot optimize by not using class-metadata when not
+        // DDC-3373: We cannot optimize by not using class-metadata when not
         // composite, because we need to find the correct binding type.
 
         $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
@@ -160,14 +160,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $types[]  = $this->getType($field, $class2);
         }
 
-        // DDC-x: We need to return params and types
+        // DDC-3373: We need to return params and types
         return array($params, $types);
     }
 
     /**
      * Infers field type to be used by parameter type casting.
      *
-     * Needed here for DDC-x.
+     * Needed here for DDC-3373.
      *
      * @param string                              $field
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
@@ -239,7 +239,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping    = $coll->getMapping();
         $identifier = $this->uow->getEntityIdentifier($coll->getOwner());
 
-        // DDC-x: We cannot optimize by simply returing the identifier when not
+        // DDC-3373: We cannot optimize by simply returing the identifier when not
         // composite, because we need to find the correct binding type.
 
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
@@ -253,7 +253,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $types[]  = $this->getType($field, $sourceClass);
         }
 
-        // DDC-x: We need to return params and types
+        // DDC-3373: We need to return params and types
         return array($params, $types);
     }
 

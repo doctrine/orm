@@ -674,8 +674,8 @@ class BasicEntityPersister
                     : $targetClass->fieldNames[$targetColumn];
 
                 $this->quotedColumns[$sourceColumn] = $quotedColumn;
-                $this->columnTypes[$sourceColumn]   = $this->getType($targetField, null, $targetClass);
-                // $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
+//                $this->columnTypes[$sourceColumn]   = $this->getType($targetField, null, $targetClass);
+                 $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
 
                 if ($newVal === null) {
                     $value = null;
@@ -1811,7 +1811,7 @@ class BasicEntityPersister
      * Expands the parameters from the given criteria and use the correct binding types if found,
      * specialized for OneToMany or ManyToMany associations.
      *
-     * Needed for DDC-x, used in getManyToManyStatement() and getOneToManyStatement().
+     * Needed for DDC-3373, used in getManyToManyStatement() and getOneToManyStatement().
      *
      * @param array $criteria
      *
@@ -1837,7 +1837,7 @@ class BasicEntityPersister
     /**
      * Infers field type to be used by parameter type casting.
      *
-     * DDC-x: Added optional $class argument.
+     * DDC-3373: Added optional $class argument.
      *
      * @param string                                   $field
      * @param mixed                                    $value
