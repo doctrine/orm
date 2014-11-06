@@ -416,7 +416,7 @@ class BasicEntityPersister
 
                     break;
             }
- 
+
             $params[]   = $value;
             $set[]      = $column . ' = ' . $placeholder;
             $types[]    = $this->columnTypes[$columnName];
@@ -669,21 +669,18 @@ class BasicEntityPersister
                 $targetColumn = $joinColumn['referencedColumnName'];
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
+                $targetField = $targetClass->containsForeignIdentifier
+                    ? $targetClass->getFieldForColumn($targetColumn)
+                    : $targetClass->fieldNames[$targetColumn];
+
                 $this->quotedColumns[$sourceColumn] = $quotedColumn;
-                $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
+//                $this->columnTypes[$sourceColumn]   = $this->getType($targetField, null, $targetClass);
+                 $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
 
-                switch (true) {
-                    case $newVal === null:
-                        $value = null;
-                        break;
-
-                    case $targetClass->containsForeignIdentifier:
-                        $value = $newValId[$targetClass->getFieldForColumn($targetColumn)];
-                        break;
-
-                    default:
-                        $value = $newValId[$targetClass->fieldNames[$targetColumn]];
-                        break;
+                if ($newVal === null) {
+                    $value = null;
+                } else {
+                    $value = $newValId[$targetField];
                 }
 
                 $result[$owningTable][$sourceColumn] = $value;
@@ -850,7 +847,7 @@ class BasicEntityPersister
         $sql = $this->getSelectSQL($id, null, $lockMode);
         list($params, $types) = $this->expandParameters($id);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
- 
+
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
         $hydrator->hydrateAll($stmt, $this->rsm, array(Query::HINT_REFRESH => true));
     }
@@ -1025,11 +1022,11 @@ class BasicEntityPersister
      */
     private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $sourceClass    = $this->em->getClassMetadata($assoc['sourceEntity']);
-        $class          = $sourceClass;
-        $association    = $assoc;
-        $criteria       = array();
-
+        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $class       = $sourceClass;
+        $association = $assoc;
+        $criteria    = array();
+        $parameters  = array();
 
         if ( ! $assoc['isOwningSide']) {
             $class       = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -1043,9 +1040,8 @@ class BasicEntityPersister
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
 
         foreach ($joinColumns as $joinColumn) {
-
-            $sourceKeyColumn    = $joinColumn['referencedColumnName'];
-            $quotedKeyColumn    = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $sourceKeyColumn = $joinColumn['referencedColumnName'];
+            $quotedKeyColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
 
             switch (true) {
                 case $sourceClass->containsForeignIdentifier:
@@ -1072,10 +1068,11 @@ class BasicEntityPersister
             }
 
             $criteria[$quotedJoinTable . '.' . $quotedKeyColumn] = $value;
+            $parameters[] = array('value' => $value, 'field' => $field, 'class' => $sourceClass);
         }
 
         $sql = $this->getSelectSQL($criteria, $assoc, 0, $limit, $offset);
-        list($params, $types) = $this->expandParameters($criteria);
+        list($params, $types) = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1130,7 +1127,7 @@ class BasicEntityPersister
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if ('' !== $filterSql) {
-            $conditionSql = $conditionSql 
+            $conditionSql = $conditionSql
                 ? $conditionSql . ' AND ' . $filterSql
                 : $filterSql;
         }
@@ -1283,7 +1280,7 @@ class BasicEntityPersister
             if ($assoc['isOwningSide']) {
                 $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
                 $this->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
-                
+
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1415,7 +1412,7 @@ class BasicEntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldNames[$column]) 
+            if (isset($this->class->fieldNames[$column])
                 && isset($this->columnTypes[$this->class->fieldNames[$column]])
                 && isset($this->class->fieldMappings[$this->class->fieldNames[$column]]['requireSQLConversion'])) {
 
@@ -1488,7 +1485,7 @@ class BasicEntityPersister
         $columnName     = $this->quoteStrategy->getColumnName($field, $class, $this->platform);
         $sql            = $tableAlias . '.' . $columnName;
         $columnAlias    = $this->getSQLColumnAlias($class->columnNames[$field]);
-        
+
         $this->rsm->addFieldResult($alias, $columnAlias, $field);
 
         if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
@@ -1749,7 +1746,9 @@ class BasicEntityPersister
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $criteria = array();
+        $criteria   = array();
+        $parameters = array();
+
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
 
@@ -1766,15 +1765,20 @@ class BasicEntityPersister
                 }
 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+                $parameters[] = array('value' => $value, 'field' => $field, 'class' => $sourceClass);
 
                 continue;
             }
 
-            $criteria[$tableAlias . "." . $targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            $field = $sourceClass->fieldNames[$sourceKeyColumn];
+            $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+
+            $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+            $parameters[] = array('value' => $value, 'field' => $field, 'class' => $sourceClass);
         }
 
         $sql = $this->getSelectSQL($criteria, $assoc, 0, $limit, $offset);
-        list($params, $types) = $this->expandParameters($criteria);
+        list($params, $types) = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1804,24 +1808,58 @@ class BasicEntityPersister
     }
 
     /**
+     * Expands the parameters from the given criteria and use the correct binding types if found,
+     * specialized for OneToMany or ManyToMany associations.
+     *
+     * Needed for DDC-3373, used in getManyToManyStatement() and getOneToManyStatement().
+     *
+     * @param array $criteria
+     *
+     * @return array
+     */
+    private function expandToManyParameters($criteria)
+    {
+        $params = array();
+        $types  = array();
+
+        foreach ($criteria as $criterion) {
+            if ($criterion['value'] === null) {
+                continue; // skip null values.
+            }
+
+            $types[]  = $this->getType($criterion['field'], $criterion['value'], $criterion['class']);
+            $params[] = $this->getValue($criterion['value']);
+        }
+
+        return array($params, $types);
+    }
+
+    /**
      * Infers field type to be used by parameter type casting.
      *
-     * @param string $field
-     * @param mixed  $value
+     * DDC-3373: Added optional $class argument.
+     *
+     * @param string                                   $field
+     * @param mixed                                    $value
+     * @param \Doctrine\ORM\Mapping\ClassMetadata|null $class
      *
      * @return integer
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function getType($field, $value)
+    private function getType($field, $value, ClassMetadata $class = null)
     {
+        if ($class === null) {
+            $class = $this->class;
+        }
+
         switch (true) {
-            case (isset($this->class->fieldMappings[$field])):
-                $type = $this->class->fieldMappings[$field]['type'];
+            case (isset($class->fieldMappings[$field])):
+                $type = $class->fieldMappings[$field]['type'];
                 break;
 
-            case (isset($this->class->associationMappings[$field])):
-                $assoc = $this->class->associationMappings[$field];
+            case (isset($class->associationMappings[$field])):
+                $assoc = $class->associationMappings[$field];
 
                 if (count($assoc['sourceToTargetKeyColumns']) > 1) {
                     throw Query\QueryException::associationPathCompositeKeyNotSupported();

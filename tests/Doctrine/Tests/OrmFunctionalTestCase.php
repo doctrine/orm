@@ -162,6 +162,27 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Taxi\Car',
             'Doctrine\Tests\Models\Taxi\Driver',
         ),
+        'act' => array(
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\AuxiliaryEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedManyToManyCompositeIdEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedManyToManyCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedManyToManyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedOneToManyCompositeIdEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedOneToManyCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedOneToManyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedOneToOneCompositeIdEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedOneToOneCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\InversedOneToOneEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningManyToManyCompositeIdEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningManyToManyCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningManyToManyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningManyToOneCompositeIdEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningManyToOneCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningManyToOneEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningOneToOneCompositeIdEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningOneToOneCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\AssociationWithCustomTypeForId\OwningOneToOneEntity',
+        ),
     );
 
     /**
@@ -295,6 +316,31 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM taxi_ride');
             $conn->executeUpdate('DELETE FROM taxi_car');
             $conn->executeUpdate('DELETE FROM taxi_driver');
+        }
+
+        if (isset($this->_usedModelSets['act'])) {
+            $conn->executeUpdate('DELETE FROM act_auxiliary_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_manytomany_compositeid_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_manytomany_compositeid_foreignkey_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_manytomany_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_onetomany_compositeid_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_onetomany_compositeid_foreignkey_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_onetomany_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_onetoone_compositeid_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_onetoone_compositeid_foreignkey_entities');
+            $conn->executeUpdate('DELETE FROM act_inversed_onetoone_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_manytomany_compositeid_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_manytomany_compositeid_foreignkey_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_manytomany_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_manytoone_compositeid_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_manytoone_compositeid_foreignkey_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_manytoone_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_onetoone_compositeid_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_onetoone_compositeid_foreignkey_entities');
+            $conn->executeUpdate('DELETE FROM act_owning_onetoone_entities');
+            $conn->executeUpdate('DELETE FROM act_xref_manytomany');
+            $conn->executeUpdate('DELETE FROM act_xref_manytomany_compositeid');
+            $conn->executeUpdate('DELETE FROM act_xref_manytomany_compositeid_foreignkey');
         }
 
         $this->_em->clear();

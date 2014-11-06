@@ -51,7 +51,7 @@ abstract class AbstractCollectionPersister
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $platform;
-    
+
     /**
      * The quote strategy.
      *
@@ -90,7 +90,10 @@ abstract class AbstractCollectionPersister
 
         $sql = $this->getDeleteSQL($coll);
 
-        $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
+        // DDC-3373: getDeleteSQLParameters() now returns array of params and types
+        list($params, $types) = $this->getDeleteSQLParameters($coll);
+
+        $this->conn->executeUpdate($sql, $params, $types);
     }
 
     /**
@@ -103,8 +106,8 @@ abstract class AbstractCollectionPersister
     abstract protected function getDeleteSQL(PersistentCollection $coll);
 
     /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete
-     * the given collection.
+     * Gets the SQL parameters and binding types for the corresponding SQL
+     * statement to delete the given collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
      *
@@ -145,7 +148,10 @@ abstract class AbstractCollectionPersister
         $sql    = $this->getDeleteRowSQL($coll);
 
         foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+            // DDC-3373: getDeleteRowSQLParameters() now returns array of params and types
+            list($params, $types) = $this->getDeleteRowSQLParameters($coll, $element);
+
+            $this->conn->executeUpdate($sql, $params, $types);
         }
     }
 
@@ -162,7 +168,10 @@ abstract class AbstractCollectionPersister
         $sql    = $this->getInsertRowSQL($coll);
 
         foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
+            // DDC-3373: getInsertRowSQLParameters() now returns array of params and types
+            list($params, $types) = $this->getInsertRowSQLParameters($coll, $element);
+
+            $this->conn->executeUpdate($sql, $params, $types);
         }
     }
 
@@ -170,7 +179,7 @@ abstract class AbstractCollectionPersister
      * Counts the size of this persistent collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * 
+     *
      * @return integer
      *
      * @throws \BadMethodCallException
@@ -258,10 +267,10 @@ abstract class AbstractCollectionPersister
 
     /**
      * Gets an element by key.
-     * 
+     *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed                              $index
-     * 
+     *
      * @return mixed
      *
      * @throws \BadMethodCallException
@@ -310,8 +319,9 @@ abstract class AbstractCollectionPersister
     abstract protected function getInsertRowSQL(PersistentCollection $coll);
 
     /**
-     * Gets the SQL parameters for the corresponding SQL statement to insert the given
-     * element of the given collection into the database.
+     * Gets the SQL parameters and binding types for the corresponding SQL
+     * statement to insert the given element of the given collection into the
+     * database.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed                              $element

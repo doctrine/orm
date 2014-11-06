@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
 
 /**
@@ -129,36 +130,81 @@ class ManyToManyPersister extends AbstractCollectionPersister
     private function collectJoinTableColumnParameters(PersistentCollection $coll, $element)
     {
         $params      = array();
+        $types       = array();
         $mapping     = $coll->getMapping();
-        $isComposite = count($mapping['joinTableColumns']) > 2;
 
         $identifier1 = $this->uow->getEntityIdentifier($coll->getOwner());
         $identifier2 = $this->uow->getEntityIdentifier($element);
 
-        if ($isComposite) {
-            $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
-            $class2 = $coll->getTypeClass();
-        }
+        // DDC-3373: We cannot optimize by not using class-metadata when not
+        // composite, because we need to find the correct binding type.
+
+        $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
+        $class2 = $coll->getTypeClass();
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
+            if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
+                $column = $mapping['relationToSourceKeyColumns'][$joinTableColumn];
+                $field  = $class1->getFieldForColumn($column);
 
-            if ( ! $isComposite) {
-                $params[] = $isRelationToSource ? array_pop($identifier1) : array_pop($identifier2);
-
-                continue;
-            }
-
-            if ($isRelationToSource) {
-                $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+                $params[] = $identifier1[$field];
+                $types[]  = $this->getType($field, $class1);
 
                 continue;
             }
 
-            $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+            $column = $mapping['relationToTargetKeyColumns'][$joinTableColumn];
+            $field  = $class2->getFieldForColumn($column);
+
+            $params[] = $identifier2[$field];
+            $types[]  = $this->getType($field, $class2);
         }
 
-        return $params;
+        // DDC-3373: We need to return params and types
+        return array($params, $types);
+    }
+
+    /**
+     * Infers field type to be used by parameter type casting.
+     *
+     * Needed here for DDC-3373.
+     *
+     * @param string                              $field
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     *
+     * @return integer
+     *
+     * @throws QueryException
+     */
+    private function getType($field, ClassMetadata $class)
+    {
+        switch (true) {
+            case (isset($class->fieldMappings[$field])):
+                $type = $class->fieldMappings[$field]['type'];
+                break;
+
+            case (isset($class->associationMappings[$field])):
+                $assoc = $class->associationMappings[$field];
+
+                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
+                    throw QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
+                $type         = null;
+
+                if (isset($targetClass->fieldNames[$targetColumn])) {
+                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
+                }
+
+                break;
+
+            default:
+                $type = null;
+        }
+
+        return $type;
     }
 
     /**
@@ -193,22 +239,22 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping    = $coll->getMapping();
         $identifier = $this->uow->getEntityIdentifier($coll->getOwner());
 
-        // Optimization for single column identifier
-        if (count($mapping['relationToSourceKeyColumns']) === 1) {
-            return array(reset($identifier));
-        }
+        // DDC-3373: We cannot optimize by simply returing the identifier when not
+        // composite, because we need to find the correct binding type.
 
-        // Composite identifier
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         $params      = array();
+        $types       = array();
 
         foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
-            $params[] = isset($sourceClass->fieldNames[$refColumnName])
-                ? $identifier[$sourceClass->fieldNames[$refColumnName]]
-                : $identifier[$sourceClass->getFieldForColumn($columnName)];
+            $field = $sourceClass->getFieldForColumn($refColumnName);
+
+            $params[] = $identifier[$field];
+            $types[]  = $this->getType($field, $sourceClass);
         }
 
-        return $params;
+        // DDC-3373: We need to return params and types
+        return array($params, $types);
     }
 
     /**
