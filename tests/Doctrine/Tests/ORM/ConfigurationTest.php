@@ -115,6 +115,14 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
     }
 
+    public function testSetGetCheckMetadataLastModified()
+    {
+        $this->assertSame(false, $this->configuration->getCheckMetadataLastModified()); // defaults
+
+        $this->configuration->setCheckMetadataLastModified(true);
+        $this->assertSame(true, $this->configuration->getCheckMetadataLastModified());
+    }
+
     public function testAddGetNamedQuery()
     {
         $dql = 'SELECT u FROM User u';

@@ -27,6 +27,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\LastModifiedMappingDriver;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
@@ -307,6 +308,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Gets whether metadata cache entries should be checked for freshness.
+     *
+     * @return bool
+     */
+    public function getCheckMetadataLastModified()
+    {
+        return isset($this->_attributes['_checkMetadataLastModified'])
+             ? $this->_attributes['_checkMetadataLastModified']
+             : false;
+    }
+
+    /**
+     * Sets whether metadata cache entries should be checked for freshness.
+     *
+     * @param bool $checkMetadataLastModified
+     */
+    public function setCheckMetadataLastModified($checkMetadataLastModified)
+    {
+        $this->_attributes['_checkMetadataLastModified'] = $checkMetadataLastModified;
+    }
+
+    /**
      * Adds a named DQL query to the configuration.
      *
      * @param string $name The name of the query.
@@ -387,6 +410,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
         if ( ! $this->getMetadataCacheImpl()) {
             throw ORMException::metadataCacheNotConfigured();
+        }
+
+        if ($this->getMetadataCacheImpl() instanceof LastModifiedMappingDriver && $this->getCheckMetadataLastModified()) {
+            throw ORMException::metadataLastModifiedCheckEnabled();
         }
 
         if ($this->getAutoGenerateProxyClasses()) {

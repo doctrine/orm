@@ -30,7 +30,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $annotationDriver = $this->_loadDriver();
 
-        $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
+        $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\ColumnWithoutType', $cm);
         $this->assertEquals('string', $cm->fieldMappings['id']['type']);
     }
 

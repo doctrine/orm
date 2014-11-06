@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\Driver\LastModifiedMappingDriver;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -44,6 +45,16 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $entityClassName = 'Doctrine\Tests\ORM\Mapping\User';
         return $this->createClassMetadata($entityClassName);
+    }
+
+    public function testLastModified()
+    {
+        $driver = $this->_loadDriver();
+        if (!$driver instanceof LastModifiedMappingDriver) {
+            return;
+        }
+        $lastModified = $driver->getMetadataLastModified('Doctrine\Tests\ORM\Mapping\User');
+        $this->assertGreaterThan(0, $lastModified);
     }
 
     /**
