@@ -23,7 +23,6 @@ class MergeCompositeToOneKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $state->state = 'CA';
         $state->country = $country;
 
-        $this->_em->merge($country);
         $this->_em->merge($state);
     }
 }
@@ -55,7 +54,7 @@ class MergeCompositeToOneKeyState
 
     /**
      * @Id
-     * @ManyToOne(targetEntity="MergeCompositeToOneKeyCountry")
+     * @ManyToOne(targetEntity="MergeCompositeToOneKeyCountry", cascade={"MERGE"})
      * @JoinColumn(name="country", referencedColumnName="country")
      */
     public $country;
