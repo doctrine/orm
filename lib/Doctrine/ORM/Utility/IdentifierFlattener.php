@@ -76,7 +76,9 @@ final class IdentifierFlattener
                     $class->associationMappings[$idField]['targetEntity']
                 );
 
-                $associatedId = $this->unitOfWork->getEntityIdentifier($idValue);
+                $associatedId = $this->unitOfWork->isInIdentityMap($idValue)
+                    ? $this->unitOfWork->getEntityIdentifier($idValue)
+                    : $targetClassMetadata->getIdentifierValues($idValue);
 
                 $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
             } else {
