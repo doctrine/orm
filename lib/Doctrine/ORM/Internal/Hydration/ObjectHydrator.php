@@ -553,7 +553,7 @@ class ObjectHydrator extends AbstractHydrator
                 $args   = $newObject['args'];
                 $obj    = $class->newInstanceArgs($args);
 
-                if (count($args) == $scalarCount || ($scalarCount == 0 && count($rowData['newObjects']))) {
+                if (count($args) == $scalarCount || ($scalarCount == 0 && count($rowData['newObjects']) == 1 )) {
                     $result[$resultKey] = $obj;
 
                     continue;
