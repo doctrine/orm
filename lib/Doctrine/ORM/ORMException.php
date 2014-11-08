@@ -235,6 +235,14 @@ class ORMException extends Exception
     /**
      * @return ORMException
      */
+    public static function metadataCacheUsesArrayCache()
+    {
+        return new self('Metadata Cache uses ArrayCache.');
+    }
+
+    /**
+     * @return ORMException
+     */
     public static function proxyClassesAlwaysRegenerating()
     {
         return new self('Proxy Classes are always regenerating.');

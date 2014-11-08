@@ -388,6 +388,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
         if ( ! $this->getMetadataCacheImpl()) {
             throw ORMException::metadataCacheNotConfigured();
         }
+        if ($this->getMetadataCacheImpl() instanceof ArrayCache) {
+            throw ORMException::metadataCacheUsesArrayCache();
+        }
 
         if ($this->getAutoGenerateProxyClasses()) {
             throw ORMException::proxyClassesAlwaysRegenerating();

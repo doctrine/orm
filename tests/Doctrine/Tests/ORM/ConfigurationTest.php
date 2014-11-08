@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\ORMException;
@@ -136,31 +137,52 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->getNamedQuery('NonExistingQuery');
     }
 
-    public function ensureProductionSettings()
+    protected function setProductionSettings($skipCache = false)
     {
         $cache = $this->getMock('Doctrine\Common\Cache\Cache');
-        $this->configuration->setAutoGenerateProxyClasses(true);
-
-        try {
-            $this->configuration->ensureProductionSettings();
-            $this->fail('Didn\'t check all production settings');
-        } catch (ORMException $e) {}
-
-        $this->configuration->setQueryCacheImpl($cache);
-
-        try {
-            $this->configuration->ensureProductionSettings();
-            $this->fail('Didn\'t check all production settings');
-        } catch (ORMException $e) {}
-
-        $this->configuration->setMetadataCacheImpl($cache);
-
-        try {
-            $this->configuration->ensureProductionSettings();
-            $this->fail('Didn\'t check all production settings');
-        } catch (ORMException $e) {}
 
         $this->configuration->setAutoGenerateProxyClasses(false);
+        if ($skipCache !== 'query') {
+            $this->configuration->setQueryCacheImpl($cache);
+        }
+        if ($skipCache !== 'metadata') {
+            $this->configuration->setMetadataCacheImpl($cache);
+        }
+    }
+
+    public function testEnsureProductionSettings()
+    {
+        $this->setProductionSettings();
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsQueryCache()
+    {
+        $this->setProductionSettings('query');
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Query Cache is not configured.');
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsMetadataCache()
+    {
+        $this->setProductionSettings('metadata');
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Metadata Cache is not configured.');
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsMetadataArrayCache()
+    {
+        $this->setProductionSettings();
+        $this->configuration->setMetadataCacheImpl(new ArrayCache());
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Metadata Cache uses ArrayCache.');
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsAutoGenerateProxyClasses()
+    {
+        $this->setProductionSettings();
+        $this->configuration->setAutoGenerateProxyClasses(true);
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Proxy Classes are always regenerating.');
         $this->configuration->ensureProductionSettings();
     }
 
