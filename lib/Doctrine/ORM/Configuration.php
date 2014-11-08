@@ -25,6 +25,7 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -75,29 +76,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets a boolean flag that indicates whether proxy classes should always be regenerated
-     * during each script execution.
+     * Gets the strategy for automatically generating proxy classes.
      *
-     * @return boolean
+     * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      */
     public function getAutoGenerateProxyClasses()
     {
         return isset($this->_attributes['autoGenerateProxyClasses'])
             ? $this->_attributes['autoGenerateProxyClasses']
-            : true;
+            : AbstractProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
-     * Sets a boolean flag that indicates whether proxy classes should always be regenerated
-     * during each script execution.
+     * Sets the strategy for automatically generating proxy classes.
      *
-     * @param boolean|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
+     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     *                                  True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
      * @return void
      */
-    public function setAutoGenerateProxyClasses($bool)
+    public function setAutoGenerateProxyClasses($autoGenerate)
     {
-        $this->_attributes['autoGenerateProxyClasses'] = $bool;
+        $this->_attributes['autoGenerateProxyClasses'] = (int)$autoGenerate;
     }
 
     /**

@@ -37,10 +37,16 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testSetGetAutoGenerateProxyClasses()
     {
-        $this->assertSame(true, $this->configuration->getAutoGenerateProxyClasses()); // defaults
+        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
 
         $this->configuration->setAutoGenerateProxyClasses(false);
-        $this->assertSame(false, $this->configuration->getAutoGenerateProxyClasses());
+        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_NEVER, $this->configuration->getAutoGenerateProxyClasses());
+
+        $this->configuration->setAutoGenerateProxyClasses(true);
+        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses());
+
+        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
     }
 
     public function testSetGetProxyNamespace()
