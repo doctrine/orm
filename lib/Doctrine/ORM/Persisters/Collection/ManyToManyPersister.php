@@ -374,22 +374,20 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping    = $collection->getMapping();
         $identifier = $this->uow->getEntityIdentifier($collection->getOwner());
 
-        // Optimization for single column identifier
-        if (count($mapping['relationToSourceKeyColumns']) === 1) {
-            return array(reset($identifier));
-        }
-
-        // Composite identifier
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         $params      = array();
+        $types       = array();
 
         foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
-            $params[] = isset($sourceClass->fieldNames[$refColumnName])
-                ? $identifier[$sourceClass->fieldNames[$refColumnName]]
-                : $identifier[$sourceClass->getFieldForColumn($columnName)];
+            $field = isset($sourceClass->fieldNames[$refColumnName])
+                ? $sourceClass->fieldNames[$refColumnName]
+                : $sourceClass->getFieldForColumn($columnName);
+
+            $params[] = $identifier[$field];
+            $types[]  = $this->getType($field, $sourceClass);
         }
 
-        return $params;
+        return array($params, $types);
     }
 
     /**
