@@ -71,11 +71,27 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * DDC-3380: Should return an array of parameters and binding types.
+     *
+     * @param PersistentCollection $coll
+     * @param mixed $element
+     *
+     * @return array
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {
-        return array_values($this->uow->getEntityIdentifier($element));
+        $params  = array();
+        $types   = array();
+
+        $identifier = $this->uow->getEntityIdentifier($element);
+        $class      = $coll->getTypeClass();
+
+        foreach ($identifier as $field => $value) {
+            $params[] = $value;
+            $types[]  = $this->getType($field, $class);
+        }
+
+        return array($params, $types);
     }
 
     /**
@@ -255,9 +271,11 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $mapping = $coll->getMapping();
         $class   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sql     = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-                 . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
 
-        return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+        $sql = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
+            . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        list($params, $types) = $this->getDeleteRowSQLParameters($coll, $element);
+
+        return (bool) $this->conn->executeUpdate($sql, $params, $types);
     }
 }

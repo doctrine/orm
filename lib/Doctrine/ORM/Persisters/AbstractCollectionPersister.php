@@ -21,7 +21,9 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query\QueryException;
 
 /**
  * Base class for all collection persisters.
@@ -85,7 +87,10 @@ abstract class AbstractCollectionPersister implements CollectionPersister
             return; // ignore inverse side
         }
 
-        $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
+        // DDC-3380: getDeleteSQLParameters() now returns array of params and types.
+        list($params, $types) = $this->getDeleteSQLParameters($coll);
+
+        $this->conn->executeUpdate($this->getDeleteSQL($coll), $params, $types);
     }
 
     /**
@@ -98,8 +103,10 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     abstract protected function getDeleteSQL(PersistentCollection $coll);
 
     /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete
-     * the given collection.
+     * Gets the SQL parameters and binding types for the corresponding SQL
+     * statement to delete the given collection.
+     *
+     * DDC-3380: Should return an array of parameters and binding types.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
      *
@@ -131,7 +138,10 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $sql    = $this->getDeleteRowSQL($coll);
 
         foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+            // DDC-3380: getDeleteRowSQLParameters() now returns array of params and types.
+            list($params, $types) = $this->getDeleteRowSQLParameters($coll, $element);
+
+            $this->conn->executeUpdate($sql, $params, $types);
         }
     }
 
@@ -144,7 +154,10 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $sql    = $this->getInsertRowSQL($coll);
 
         foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
+            // DDC-3380: getInsertRowSQLParameters() now returns array of params and types.
+            list($params, $types) = $this->getInsertRowSQLParameters($coll, $element);
+
+            $this->conn->executeUpdate($sql, $params, $types);
         }
     }
 
@@ -225,6 +238,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      * Gets the SQL parameters for the corresponding SQL statement to delete the given
      * element from the given collection.
      *
+     * DDC-3380: Should return an array of parameters and binding types.
+     *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed                              $element
      *
@@ -254,10 +269,58 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      * Gets the SQL parameters for the corresponding SQL statement to insert the given
      * element of the given collection into the database.
      *
+     * DDC-3380: Should return an array of parameters and binding types.
+     *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed                              $element
      *
      * @return array
      */
     abstract protected function getInsertRowSQLParameters(PersistentCollection $coll, $element);
+
+    /**
+     * Infers the binding type of a field by parameter type casting.
+     *
+     * DDC-3380:
+     *     {@see \Doctrine\ORM\Persisters\OneToManyPersister::getDeleteRowSQLParameters()}
+     *     {@see \Doctrine\ORM\Persisters\ManyToManyPersister::collectJoinTableColumnParameters()}
+     *     {@see \Doctrine\ORM\Persisters\ManyToManyPersister::getDeleteSQLParameters()}
+     *
+     * @param string $field
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     *
+     * @return int|string|null
+     *
+     * @throws QueryException
+     */
+    protected function getType($field, ClassMetadata $class)
+    {
+        switch (true) {
+            case (isset($class->fieldMappings[$field])):
+                $type = $class->fieldMappings[$field]['type'];
+                break;
+
+            case (isset($class->associationMappings[$field])):
+                $assoc = $class->associationMappings[$field];
+
+                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
+                    throw QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
+                $type         = null;
+
+                if (isset($targetClass->fieldNames[$targetColumn])) {
+                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
+                }
+                break;
+
+            default:
+                $type = null;
+                break;
+        }
+
+        return $type;
+    }
 }

@@ -123,6 +123,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Collects the parameters for inserting/deleting on the join table in the order
      * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
      *
+     * DDC-3380: We need to return parameters as well as binding types.
+     *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param object                             $element
      *
@@ -130,37 +132,35 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function collectJoinTableColumnParameters(PersistentCollection $coll, $element)
     {
-        $params      = array();
-        $mapping     = $coll->getMapping();
-        $isComposite = count($mapping['joinTableColumns']) > 2;
+        $params  = array();
+        $types   = array();
+        $mapping = $coll->getMapping();
 
         $identifier1 = $this->uow->getEntityIdentifier($coll->getOwner());
         $identifier2 = $this->uow->getEntityIdentifier($element);
 
-        if ($isComposite) {
-            $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
-            $class2 = $coll->getTypeClass();
-        }
+        $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
+        $class2 = $coll->getTypeClass();
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
+            if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
+                $column = $mapping['relationToSourceKeyColumns'][$joinTableColumn];
+                $field  = $class1->getFieldForColumn($column);
 
-            if ( ! $isComposite) {
-                $params[] = $isRelationToSource ? array_pop($identifier1) : array_pop($identifier2);
-
-                continue;
-            }
-
-            if ($isRelationToSource) {
-                $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+                $params[] = $identifier1[$field];
+                $types[]  = $this->getType($field, $class1);
 
                 continue;
             }
 
-            $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+            $column = $mapping['relationToTargetKeyColumns'][$joinTableColumn];
+            $field  = $class2->getFieldForColumn($column);
+
+            $params[] = $identifier2[$field];
+            $types[]  = $this->getType($field, $class2);
         }
 
-        return $params;
+        return array($params, $types);
     }
 
     /**
@@ -195,22 +195,20 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping    = $coll->getMapping();
         $identifier = $this->uow->getEntityIdentifier($coll->getOwner());
 
-        // Optimization for single column identifier
-        if (count($mapping['relationToSourceKeyColumns']) === 1) {
-            return array(reset($identifier));
-        }
-
-        // Composite identifier
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         $params      = array();
+        $types       = array();
 
         foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
-            $params[] = isset($sourceClass->fieldNames[$refColumnName])
-                ? $identifier[$sourceClass->fieldNames[$refColumnName]]
-                : $identifier[$sourceClass->getFieldForColumn($columnName)];
+            $field = isset($sourceClass->fieldNames[$refColumnName])
+                ? $sourceClass->fieldNames[$refColumnName]
+                : $sourceClass->getFieldForColumn($columnName);
+
+            $params[] = $identifier[$field];
+            $types[]  = $this->getType($field, $sourceClass);
         }
 
-        return $params;
+        return array($params, $types);
     }
 
     /**
