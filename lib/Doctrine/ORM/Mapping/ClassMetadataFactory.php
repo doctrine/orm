@@ -22,6 +22,10 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
+use ReflectionException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -78,7 +82,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}.
+     * {@inheritDoc}
      */
     protected function initialize()
     {
@@ -86,6 +90,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
         $this->evm = $this->em->getEventManager();
         $this->initialized = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function onNotFoundMetadata($className)
+    {
+        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+            return;
+        }
+
+        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->em);
+
+        $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+
+        // @todo to be discussed: event is used as a mutable data vector here, which may be undesired.
+        return $eventArgs->getFoundMetadata();
     }
 
     /**
