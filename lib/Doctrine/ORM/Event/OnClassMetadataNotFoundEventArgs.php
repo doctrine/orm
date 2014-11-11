@@ -20,7 +20,9 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
@@ -31,25 +33,46 @@ use Doctrine\ORM\EntityManager;
 class OnClassMetadataNotFoundEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var string
      */
     private $className;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
+     * @var ClassMetadata|null
+     */
+    private $foundMetadata;
+
+    /**
      * Constructor.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param string                 $className
+     * @param EntityManagerInterface $em
      */
-    public function __construct($className, EntityManager $em)
+    public function __construct($className, EntityManagerInterface $em)
     {
-        $this->className = $className;
+        $this->className = (string) $className;
         $this->em        = $em;
+    }
+
+    /**
+     * @param ClassMetadata|null $classMetadata
+     */
+    public function setFoundMetadata(ClassMetadata $classMetadata = null)
+    {
+        $this->foundMetadata = $classMetadata;
+    }
+
+    /**
+     * @return ClassMetadata|null
+     */
+    public function getFoundMetadata()
+    {
+        return $this->foundMetadata;
     }
 
     /**
