@@ -9,6 +9,7 @@ use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\Models\Mapping\ClassMetadataFactoryTestSubject;
 
 class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -52,7 +53,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cm1->customGeneratorDefinition = array(
-            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
+            "class" => "Doctrine\\Tests\\Models\\Mapping\\CustomIdGenerator");
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
@@ -60,7 +61,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
             $actual->generatorType);
-        $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator",
+        $this->assertInstanceOf("Doctrine\\Tests\\Models\\Mapping\\CustomIdGenerator",
             $actual->idGenerator);
     }
 
@@ -223,7 +224,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     protected function _createValidClassMetadata()
     {
         // Self-made metadata
-        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1 = new ClassMetadata('Doctrine\\Tests\\Models\\Mapping\\TestEntity1');
         $cm1->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $cm1->setPrimaryTable(array('name' => '`group`'));
         // Add a mapped field
@@ -321,46 +322,15 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
     }
-}
 
-/* Test subject class with overridden factory method for mocking purposes */
-class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadataFactory
-{
-    private $mockMetadata = array();
-    private $requestedClasses = array();
-
-    /** @override */
-    protected function newClassMetadataInstance($className)
+    public function testRetrieveMetadataForEmbeddedPropertyClass()
     {
-        $this->requestedClasses[] = $className;
-        if ( ! isset($this->mockMetadata[$className])) {
-            throw new InvalidArgumentException("No mock metadata found for class $className.");
-        }
-        return $this->mockMetadata[$className];
-    }
+        $cmf    = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Mapping/'));
+        $em     = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
 
-    public function setMetadataForClass($className, $metadata)
-    {
-        $this->mockMetadata[$className] = $metadata;
-    }
-
-    public function getRequestedClasses()
-    {
-        return $this->requestedClasses;
-    }
-}
-
-class TestEntity1
-{
-    private $id;
-    private $name;
-    private $other;
-    private $association;
-}
-
-class CustomIdGenerator extends \Doctrine\ORM\Id\AbstractIdGenerator
-{
-    public function generate(\Doctrine\ORM\EntityManager $em, $entity)
-    {
+        $embeddedMetadata       = $cmf->getMetadataFor('Doctrine\\Tests\\Models\\Mapping\\EmbeddedMappedEntity');
+        $this->assertContains('embedded', $embeddedMetadata->getFieldNames());
     }
 }
