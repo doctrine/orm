@@ -457,7 +457,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     ? $mapping['inherited']
                     : $this->class->name;
 
-                $columnList[] = $this->getSelectJoinColumnSQL($tableAlias, $srcColumn, $className);
+                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+
+                $columnList[] = $this->getSelectJoinColumnSQL(
+                    $tableAlias,
+                    $srcColumn,
+                    $className,
+                    $targetClass->getTypeOfColumn($mapping['sourceToTargetKeyColumns'][$srcColumn])
+                );
             }
         }
 
@@ -495,7 +502,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         ? $mapping['inherited']
                         : $subClass->name;
 
-                    $columnList[] = $this->getSelectJoinColumnSQL($tableAlias, $srcColumn, $className);
+                    $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+
+                    $columnList[] = $this->getSelectJoinColumnSQL(
+                        $tableAlias,
+                        $srcColumn,
+                        $className,
+                        $targetClass->getTypeOfColumn($mapping['sourceToTargetKeyColumns'][$srcColumn])
+                    );
                 }
             }
         }

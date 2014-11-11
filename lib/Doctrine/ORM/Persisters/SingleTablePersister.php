@@ -88,7 +88,15 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
                 foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                     $className      = isset($assoc['inherited']) ? $assoc['inherited'] : $this->class->name;
-                    $columnList[]   = $this->getSelectJoinColumnSQL($tableAlias, $srcColumn, $className);
+
+                    $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+
+                    $columnList[] = $this->getSelectJoinColumnSQL(
+                        $tableAlias,
+                        $srcColumn,
+                        $className,
+                        $targetClass->getTypeOfColumn($mapping['sourceToTargetKeyColumns'][$srcColumn])
+                    );
                 }
             }
         }
