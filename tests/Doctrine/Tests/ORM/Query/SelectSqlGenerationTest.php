@@ -1990,7 +1990,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id || c0_.name || c0_.status AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
 
-    	/*$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
+    	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id0 FROM cms_users c0_ WHERE (c0_.name + c0_.status + 's') = ?"
@@ -1998,7 +1998,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     	$this->assertSqlGeneration(
             "SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
             "SELECT (c0_.id + c0_.name + c0_.status) AS sclr0 FROM cms_users c0_ WHERE c0_.id = ?"
-    	);*/
+    	);
 
     	$connMock->setDatabasePlatform($orgPlatform);
     }
