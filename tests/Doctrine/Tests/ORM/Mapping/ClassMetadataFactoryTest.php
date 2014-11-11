@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -320,6 +322,35 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($groups['joinTable']['inverseJoinColumns'][0]['quoted']);
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
+    }
+
+    public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata()
+    {
+        $test          = $this;
+        /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
+        $metadata      = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $cmf           = new ClassMetadataFactory();
+        $mockDriver    = new MetadataDriverMock();
+        $em = $this->_createEntityManager($mockDriver);
+        $listener      = $this->getMock('stdClass', array('onClassMetadataNotFound'));
+        $eventManager  = $em->getEventManager();
+
+        $cmf->setEntityManager($em);
+
+        $listener
+            ->expects($this->any())
+            ->method('onClassMetadataNotFound')
+            ->will($this->returnCallback(function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test) {
+                $test->assertNull($args->getFoundMetadata());
+                $test->assertSame('Foo', $args->getClassName());
+                $test->assertSame($em, $args->getEntityManager());
+
+                $args->setFoundMetadata($metadata);
+            }));
+
+        $eventManager->addEventListener(array(Events::onClassMetadataNotFound), $listener);
+
+        $this->assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }
 
     /**
