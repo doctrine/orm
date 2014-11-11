@@ -1785,7 +1785,7 @@ class UnitOfWork implements PropertyChangedListener
             $managedCopy = $visited[$oid];
 
             if ($prevManagedCopy !== null) {
-                $this->updateAssociationWithMergedEntity($entity, $prevManagedCopy, $assoc, $managedCopy);
+                $this->updateAssociationWithMergedEntity($entity, $assoc, $prevManagedCopy, $managedCopy);
             }
 
             return $managedCopy;
@@ -1939,7 +1939,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($prevManagedCopy !== null) {
-            $this->updateAssociationWithMergedEntity($entity, $prevManagedCopy, $assoc, $managedCopy);
+            $this->updateAssociationWithMergedEntity($entity, $assoc, $prevManagedCopy, $managedCopy);
         }
 
         // Mark the managed copy visited as well
@@ -1951,27 +1951,33 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Sets/adds associated managed copies into the previous entity's association field
+     *
      * @param object $entity
-     * @param object $prevManagedCopy
-     * @param array  $assoc
+     * @param array  $association
+     * @param object $previousManagedCopy
      * @param object $managedCopy
+     *
+     * @return void
      */
-    private function updateAssociationWithMergedEntity($entity, $prevManagedCopy, array $assoc, $managedCopy)
+    private function updateAssociationWithMergedEntity($entity, array $association, $previousManagedCopy, $managedCopy)
     {
-        $assocField = $assoc['fieldName'];
-        $prevClass = $this->em->getClassMetadata(get_class($prevManagedCopy));
+        $assocField = $association['fieldName'];
+        $prevClass  = $this->em->getClassMetadata(get_class($previousManagedCopy));
 
-        if ($assoc['type'] & ClassMetadata::TO_ONE) {
-            $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
+        if ($association['type'] & ClassMetadata::TO_ONE) {
+            $prevClass->reflFields[$assocField]->setValue($previousManagedCopy, $managedCopy);
+
             return;
         }
 
-        $value = $prevClass->reflFields[$assocField]->getValue($prevManagedCopy);
+        $value   = $prevClass->reflFields[$assocField]->getValue($previousManagedCopy);
         $value[] = $managedCopy;
 
-        if ($assoc['type'] == ClassMetadata::ONE_TO_MANY) {
+        if ($association['type'] == ClassMetadata::ONE_TO_MANY) {
             $class = $this->em->getClassMetadata(get_class($entity));
-            $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
+
+            $class->reflFields[$association['mappedBy']]->setValue($managedCopy, $previousManagedCopy);
         }
     }
 
