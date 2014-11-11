@@ -1773,8 +1773,6 @@ class BasicEntityPersister implements EntityPersister
      * Expands the parameters from the given criteria and use the correct binding types if found,
      * specialized for OneToMany or ManyToMany associations.
      *
-     * DDC-3380: {@see getManyToManyStatement()} and {@see getOneToManyStatement()}.
-     *
      * @param array $criteria
      *
      * @return array
@@ -1798,8 +1796,6 @@ class BasicEntityPersister implements EntityPersister
 
     /**
      * Infers the binding type of a field by parameter type casting.
-     *
-     * DDC-3380: Added optional $class argument.
      *
      * @param string             $field
      * @param mixed              $value
