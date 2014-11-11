@@ -43,9 +43,7 @@ class DDC3223Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity @Table(name="ddc3223_journalist")
- */
+/** @Entity @Table(name="ddc3223_journalist") */
 class Journalist extends Participant
 {
 }
@@ -60,15 +58,10 @@ class Journalist extends Participant
  */
 class Participant
 {
-    /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity="ProfileStatus")
-     */
+    /** @ManyToOne(targetEntity="ProfileStatus") */
     public $profileStatus;
 }
 
@@ -82,10 +75,7 @@ class Participant
  */
 class Status
 {
-    /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     private $id;
 
     public function getId()
@@ -99,5 +89,4 @@ class Status
  */
 class ProfileStatus extends Status
 {
-
 }
