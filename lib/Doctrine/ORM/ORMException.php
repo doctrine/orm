@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Cache\Cache as CacheDriver;
 use Exception;
 
 /**
@@ -230,6 +231,16 @@ class ORMException extends Exception
     public static function metadataCacheNotConfigured()
     {
         return new self('Class Metadata Cache is not configured.');
+    }
+
+    /**
+     * @param \Doctrine\Common\Cache\Cache $cache
+     *
+     * @return ORMException
+     */
+    public static function metadataCacheUsesNonPersistentCache(CacheDriver $cache)
+    {
+        return new self('Metadata Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
     }
 
     /**
