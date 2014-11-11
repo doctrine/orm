@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Configuration;
@@ -137,15 +138,22 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->getNamedQuery('NonExistingQuery');
     }
 
+    /**
+     * Configures $this->configuration to use production settings.
+     *
+     * @param boolean $skipCache Do not configure a cache of this type, either "query" or "metadata".
+     */
     protected function setProductionSettings($skipCache = false)
     {
+        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_NEVER);
+
         $cache = $this->getMock('Doctrine\Common\Cache\Cache');
 
-        $this->configuration->setAutoGenerateProxyClasses(false);
-        if ($skipCache !== 'query') {
+        if ('query' !== $skipCache) {
             $this->configuration->setQueryCacheImpl($cache);
         }
-        if ($skipCache !== 'metadata') {
+
+        if ('metadata' !== $skipCache) {
             $this->configuration->setMetadataCacheImpl($cache);
         }
     }
@@ -174,14 +182,32 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'Metadata Cache uses ArrayCache.');
+        $this->setExpectedException(
+            'Doctrine\ORM\ORMException',
+            'Metadata Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsAutoGenerateProxyClasses()
+    public function testEnsureProductionSettingsAutoGenerateProxyClassesAlways()
     {
         $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(true);
+        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Proxy Classes are always regenerating.');
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsAutoGenerateProxyClassesFileNotExists()
+    {
+        $this->setProductionSettings();
+        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Proxy Classes are always regenerating.');
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsAutoGenerateProxyClassesEval()
+    {
+        $this->setProductionSettings();
+        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
         $this->setExpectedException('Doctrine\ORM\ORMException', 'Proxy Classes are always regenerating.');
         $this->configuration->ensureProductionSettings();
     }
