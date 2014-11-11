@@ -123,8 +123,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Collects the parameters for inserting/deleting on the join table in the order
      * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
      *
-     * DDC-3380: We need to return parameters as well as binding types.
-     *
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param object                             $element
      *

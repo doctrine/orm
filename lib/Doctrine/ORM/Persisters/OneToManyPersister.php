@@ -71,10 +71,11 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * DDC-3380: Should return an array of parameters and binding types.
+     * Gets the SQL parameters for the corresponding SQL statement to delete the given
+     * element from the given collection.
      *
-     * @param PersistentCollection $coll
-     * @param mixed $element
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed                              $element
      *
      * @return array
      */
