@@ -1,125 +1,113 @@
 <?php
-
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\Tests\ORM\Functional;
 
-
 use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class MergeSharedEntitiesTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 {
-
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
-                array(
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\MSEFile'),
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\MSEPicture'),
-                )
-            );
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\MSEFile'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\MSEPicture'),
+            ));
         } catch (ToolsException $ignored) {
         }
     }
 
     public function testMergeSharedNewEntities()
     {
-
-        /** @var MSEPicture $picture */
-        $file = new MSEFile;
-
+        $file    = new MSEFile;
         $picture = new MSEPicture;
-        $picture->file = $file;
+
+        $picture->file      = $file;
         $picture->otherFile = $file;
 
-        $em = $this->_em;
+        $picture = $this->_em->merge($picture);
 
-        $picture = $em->merge($picture);
-
-        $this->assertEquals($picture->file, $picture->otherFile, "Identical entities must remain identical");
+        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     public function testMergeSharedManagedEntities()
     {
-
-        /** @var MSEPicture $picture */
-        $file = new MSEFile;
-
+        $file    = new MSEFile;
         $picture = new MSEPicture;
-        $picture->file = $file;
+
+        $picture->file      = $file;
         $picture->otherFile = $file;
 
-        $em = $this->_em;
-        $em->persist($file);
-        $em->flush();
-        $em->clear();
+        $this->_em->persist($file);
+        $this->_em->persist($picture);
+        $this->_em->flush();
+        $this->_em->clear();
 
-        $picture = $em->merge($picture);
+        $picture = $this->_em->merge($picture);
 
-        $this->assertEquals($picture->file, $picture->otherFile, "Identical entities must remain identical");
+        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
-    public function testMergeSharedManagedEntitiesSerialize()
+    public function testMergeSharedDetachedSerializedEntities()
     {
-
-        /** @var MSEPicture $picture */
-        $file = new MSEFile;
-
+        $file    = new MSEFile;
         $picture = new MSEPicture;
-        $picture->file = $file;
+
+        $picture->file      = $file;
         $picture->otherFile = $file;
 
         $serializedPicture = serialize($picture);
 
-        $em = $this->_em;
-        $em->persist($file);
-        $em->flush();
-        $em->clear();
+        $this->_em->persist($file);
+        $this->_em->persist($picture);
+        $this->_em->flush();
+        $this->_em->clear();
 
-        $picture = unserialize($serializedPicture);
-        $picture = $em->merge($picture);
+        $picture = $this->_em->merge(unserialize($serializedPicture));
 
-        $this->assertEquals($picture->file, $picture->otherFile, "Identical entities must remain identical");
+        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
-
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MSEPicture
 {
-    /**
-     * @Column(name="picture_id", type="integer")
-     * @Id @GeneratedValue
-     */
-    public $pictureId;
+    /** @Column(type="integer") @Id @GeneratedValue */
+    public $id;
 
-    /**
-     * @ManyToOne(targetEntity="MSEFile", cascade={"persist", "merge"})
-     * @JoinColumn(name="file_id", referencedColumnName="file_id")
-     */
+    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
     public $file;
 
-    /**
-     * @ManyToOne(targetEntity="MSEFile", cascade={"persist", "merge"})
-     * @JoinColumn(name="other_file_id", referencedColumnName="file_id")
-     */
+    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
     public $otherFile;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MSEFile
 {
-    /**
-     * @Column(name="file_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    public $fileId;
-
+    /** @Column(type="integer") @Id @GeneratedValue(strategy="AUTO") */
+    public $id;
 }
