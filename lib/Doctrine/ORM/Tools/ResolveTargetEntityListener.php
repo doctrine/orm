@@ -20,7 +20,10 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Events;
 
 /**
  * ResolveTargetEntityListener
@@ -31,13 +34,20 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @since 2.2
  */
-class ResolveTargetEntityListener
+class ResolveTargetEntityListener implements EventSubscriber
 {
     /**
      * @var array
      */
     private $resolveTargetEntities = array();
 
+    public function getSubscribedEvents()
+    {
+        return array(
+            Events::loadClassMetadata,
+            Events::onClassMetadataNotFound
+        );
+    }
     /**
      * Adds a target-entity class name to resolve to a new class name.
      *
@@ -51,6 +61,13 @@ class ResolveTargetEntityListener
     {
         $mapping['targetEntity'] = ltrim($newEntity, "\\");
         $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = $mapping;
+    }
+
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    {
+        if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
+            $args->getEntityManager()->getClassMetadata($this->resolveTargetEntities[$args->getClassname()]['targetEntity']);
+        }
     }
 
     /**
@@ -67,6 +84,12 @@ class ResolveTargetEntityListener
         foreach ($cm->associationMappings as $mapping) {
             if (isset($this->resolveTargetEntities[$mapping['targetEntity']])) {
                 $this->remapAssociation($cm, $mapping);
+            }
+        }
+
+        foreach ($this->resolveTargetEntities as $interface => $data) {
+            if ($data['targetEntity'] == $cm->getName()) {
+                $args->getEntityManager()->getMetadataFactory()->setMetadataFor($interface, $cm);
             }
         }
     }
