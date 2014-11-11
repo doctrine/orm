@@ -37,10 +37,13 @@ use Doctrine\ORM\Events;
 class ResolveTargetEntityListener implements EventSubscriber
 {
     /**
-     * @var array
+     * @var array[] indexed by original entity name
      */
     private $resolveTargetEntities = array();
 
+    /**
+     * {@inheritDoc}
+     */
     public function getSubscribedEvents()
     {
         return array(
@@ -48,6 +51,7 @@ class ResolveTargetEntityListener implements EventSubscriber
             Events::onClassMetadataNotFound
         );
     }
+
     /**
      * Adds a target-entity class name to resolve to a new class name.
      *
@@ -59,14 +63,25 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
     {
-        $mapping['targetEntity'] = ltrim($newEntity, "\\");
+        $mapping['targetEntity']                                   = ltrim($newEntity, "\\");
         $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = $mapping;
     }
 
+    /**
+     * @param OnClassMetadataNotFoundEventArgs $args
+     *
+     * @internal this is an event callback, and should not be called directly
+     *
+     * @return void
+     */
     public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
     {
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
-            $args->getEntityManager()->getClassMetadata($this->resolveTargetEntities[$args->getClassname()]['targetEntity']);
+            $args->setFoundMetadata(
+                $args
+                    ->getEntityManager()
+                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassname()]['targetEntity'])
+            );
         }
     }
 
@@ -76,6 +91,8 @@ class ResolveTargetEntityListener implements EventSubscriber
      * @param LoadClassMetadataEventArgs $args
      *
      * @return void
+     *
+     * @internal this is an event callback, and should not be called directly
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
