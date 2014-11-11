@@ -1782,10 +1782,14 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
 
         if (isset($visited[$oid])) {
-            return $visited[$oid]; // Prevent infinite recursion
-        }
+            $managedCopy = $visited[$oid];
 
-        $visited[$oid] = $entity; // mark visited
+            if ($prevManagedCopy !== null) {
+                $this->updateAssociationWithMergedEntity($entity, $assoc, $prevManagedCopy, $managedCopy);
+            }
+
+            return $managedCopy;
+        }
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -1855,6 +1859,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
+            $visited[$oid] = $managedCopy; // mark visited
+
             // Merge state of $entity into existing (managed) entity
             foreach ($class->reflClass->getProperties() as $prop) {
                 $name = $prop->name;
@@ -1898,9 +1904,9 @@ class UnitOfWork implements PropertyChangedListener
                         $managedCol = $prop->getValue($managedCopy);
                         if (!$managedCol) {
                             $managedCol = new PersistentCollection($this->em,
-                                    $this->em->getClassMetadata($assoc2['targetEntity']),
-                                    new ArrayCollection
-                                    );
+                                $this->em->getClassMetadata($assoc2['targetEntity']),
+                                new ArrayCollection
+                            );
                             $managedCol->setOwner($managedCopy, $assoc2);
                             $prop->setValue($managedCopy, $managedCol);
                             $this->originalEntityData[$oid][$name] = $managedCol;
@@ -1933,26 +1939,46 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($prevManagedCopy !== null) {
-            $assocField = $assoc['fieldName'];
-            $prevClass = $this->em->getClassMetadata(get_class($prevManagedCopy));
-
-            if ($assoc['type'] & ClassMetadata::TO_ONE) {
-                $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
-            } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
-
-                if ($assoc['type'] == ClassMetadata::ONE_TO_MANY) {
-                    $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
-                }
-            }
+            $this->updateAssociationWithMergedEntity($entity, $assoc, $prevManagedCopy, $managedCopy);
         }
 
         // Mark the managed copy visited as well
-        $visited[spl_object_hash($managedCopy)] = true;
+        $visited[spl_object_hash($managedCopy)] = $managedCopy;
 
         $this->cascadeMerge($entity, $managedCopy, $visited);
 
         return $managedCopy;
+    }
+
+    /**
+     * Sets/adds associated managed copies into the previous entity's association field
+     *
+     * @param object $entity
+     * @param array  $association
+     * @param object $previousManagedCopy
+     * @param object $managedCopy
+     *
+     * @return void
+     */
+    private function updateAssociationWithMergedEntity($entity, array $association, $previousManagedCopy, $managedCopy)
+    {
+        $assocField = $association['fieldName'];
+        $prevClass  = $this->em->getClassMetadata(get_class($previousManagedCopy));
+
+        if ($association['type'] & ClassMetadata::TO_ONE) {
+            $prevClass->reflFields[$assocField]->setValue($previousManagedCopy, $managedCopy);
+
+            return;
+        }
+
+        $value   = $prevClass->reflFields[$assocField]->getValue($previousManagedCopy);
+        $value[] = $managedCopy;
+
+        if ($association['type'] == ClassMetadata::ONE_TO_MANY) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            $class->reflFields[$association['mappedBy']]->setValue($managedCopy, $previousManagedCopy);
+        }
     }
 
     /**
