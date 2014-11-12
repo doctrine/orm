@@ -4,6 +4,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\ToolsException;
 
 class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase {
@@ -43,6 +44,7 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
 
         $file = $em->find(__NAMESPACE__ . '\MUPFile', $fileId);
         $picture = unserialize($serializedPicture);
+
         $picture = $em->merge($picture);
 
         $this->assertEquals($file, $picture->file, "Unserialized proxy was not merged into managed entity");
@@ -68,6 +70,7 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $em->clear();
 
         $file = $em->find(__NAMESPACE__ . '\MUPFile', $fileId);
+
         $picture = $em->merge($picture);
 
         $this->assertEquals($file, $picture->file, "Detached proxy was not merged into managed entity");
@@ -98,8 +101,16 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $em->clear();
 
         $picture2 = $em->find(__NAMESPACE__ . '\MUPPicture', $picture2Id);
+        $this->assertFalse($picture->file->__isInitialized());
         $picture = unserialize($serializedPicture);
+
+        $this->assertTrue($picture->file instanceof Proxy);
+        $this->assertFalse($picture->file->__isInitialized());
+
         $picture = $em->merge($picture);
+
+        $this->assertTrue($picture->file instanceof Proxy);
+        $this->assertFalse($picture->file->__isInitialized(), 'Proxy has been initialized during merge.');
 
         $this->assertEquals($picture2->file, $picture->file, "Unserialized proxy was not merged into managed proxy");
     }
@@ -128,7 +139,14 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $em->clear();
 
         $picture2 = $em->find(__NAMESPACE__ . '\MUPPicture', $picture2Id);
+
+        $this->assertTrue($picture->file instanceof Proxy);
+        $this->assertFalse($picture->file->__isInitialized());
+
         $picture = $em->merge($picture);
+
+        $this->assertTrue($picture->file instanceof Proxy);
+        $this->assertFalse($picture->file->__isInitialized(), 'Proxy has been initialized during merge.');
 
         $this->assertEquals($picture2->file, $picture->file, "Detached proxy was not merged into managed proxy");
     }
