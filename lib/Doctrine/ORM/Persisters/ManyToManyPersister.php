@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\PersisterHelper as Helper;
 
 /**
  * Persister for many-to-many collections.
@@ -146,7 +147,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $field  = $class1->getFieldForColumn($column);
 
                 $params[] = $identifier1[$field];
-                $types[]  = $this->getType($field, $class1);
+                $types[]  = Helper::getTypeOfField($field, $class1, $this->em);
 
                 continue;
             }
@@ -155,7 +156,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $field  = $class2->getFieldForColumn($column);
 
             $params[] = $identifier2[$field];
-            $types[]  = $this->getType($field, $class2);
+            $types[]  = Helper::getTypeOfField($field, $class2, $this->em);
         }
 
         return array($params, $types);
@@ -203,7 +204,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 : $sourceClass->getFieldForColumn($columnName);
 
             $params[] = $identifier[$field];
-            $types[]  = $this->getType($field, $sourceClass);
+            $types[]  = Helper::getTypeOfField($field, $sourceClass, $this->em);
         }
 
         return array($params, $types);

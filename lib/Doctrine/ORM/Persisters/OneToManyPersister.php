@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\PersisterHelper as Helper;
 
 /**
  * Persister for one-to-many collections.
@@ -89,7 +90,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         foreach ($identifier as $field => $value) {
             $params[] = $value;
-            $types[]  = $this->getType($field, $class);
+            $types[]  = Helper::getTypeOfField($field, $class, $this->em);
         }
 
         return array($params, $types);

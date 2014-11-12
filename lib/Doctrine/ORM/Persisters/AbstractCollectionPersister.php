@@ -265,45 +265,4 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      * @return array
      */
     abstract protected function getInsertRowSQLParameters(PersistentCollection $coll, $element);
-
-    /**
-     * Infers the binding type of a field by parameter type casting.
-     *
-     * @param string $field
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
-     *
-     * @return int|string|null
-     *
-     * @throws QueryException
-     */
-    protected function getType($field, ClassMetadata $class)
-    {
-        switch (true) {
-            case (isset($class->fieldMappings[$field])):
-                $type = $class->fieldMappings[$field]['type'];
-                break;
-
-            case (isset($class->associationMappings[$field])):
-                $assoc = $class->associationMappings[$field];
-
-                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
-                    throw QueryException::associationPathCompositeKeyNotSupported();
-                }
-
-                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
-                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
-                $type         = null;
-
-                if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
-                }
-                break;
-
-            default:
-                $type = null;
-                break;
-        }
-
-        return $type;
-    }
 }
