@@ -12,7 +12,7 @@ class InversedOneToOneEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id1;
 
     /**
      * @Column(type="string", name="some_property")

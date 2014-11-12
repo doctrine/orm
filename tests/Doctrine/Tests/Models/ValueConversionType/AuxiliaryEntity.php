@@ -12,5 +12,5 @@ class AuxiliaryEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id4;
 }

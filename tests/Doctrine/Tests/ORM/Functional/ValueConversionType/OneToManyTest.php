@@ -28,11 +28,11 @@ class OneToManyTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $inversed = new Entity\InversedOneToManyEntity();
-        $inversed->id = 'abc';
+        $inversed->id1 = 'abc';
         $inversed->someProperty = 'some value to be loaded';
 
         $owning = new Entity\OwningManyToOneEntity();
-        $owning->id = 'def';
+        $owning->id2 = 'def';
 
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntity = $inversed;
@@ -56,9 +56,9 @@ class OneToManyTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id FROM vct_inversed_onetomany LIMIT 1'));
+        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetomany LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id FROM vct_owning_manytoone LIMIT 1'));
+        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytoone LIMIT 1'));
         $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
     }
 
@@ -96,8 +96,8 @@ class OneToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertEquals('abc', $inversed->id);
-        $this->assertEquals('def', $owning->id);
+        $this->assertEquals('abc', $inversed->id1);
+        $this->assertEquals('def', $owning->id2);
     }
 
     /**

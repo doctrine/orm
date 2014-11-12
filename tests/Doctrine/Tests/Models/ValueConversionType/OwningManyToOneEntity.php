@@ -12,11 +12,11 @@ class OwningManyToOneEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id2;
 
     /**
      * @ManyToOne(targetEntity="InversedOneToManyEntity", inversedBy="associatedEntities")
-     * @JoinColumn(name="associated_id", referencedColumnName="id")
+     * @JoinColumn(name="associated_id", referencedColumnName="id1")
      */
     public $associatedEntity;
 }

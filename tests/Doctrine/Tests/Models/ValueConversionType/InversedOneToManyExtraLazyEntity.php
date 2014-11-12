@@ -6,9 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
- * @Table(name="vct_inversed_manytomany")
+ * @Table(name="vct_inversed_onetomany_extralazy")
  */
-class InversedManyToManyEntity
+class InversedOneToManyExtraLazyEntity
 {
     /**
      * @Column(type="rot13")
@@ -17,7 +17,12 @@ class InversedManyToManyEntity
     public $id1;
 
     /**
-     * @ManyToMany(targetEntity="OwningManyToManyEntity", mappedBy="associatedEntities")
+     * @OneToMany(
+     *     targetEntity="OwningManyToOneExtraLazyEntity",
+     *     mappedBy="associatedEntity",
+     *     fetch="EXTRA_LAZY",
+     *     indexBy="id2"
+     * )
      */
     public $associatedEntities;
 

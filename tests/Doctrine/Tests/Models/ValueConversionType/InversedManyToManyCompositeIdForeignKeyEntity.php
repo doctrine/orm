@@ -14,11 +14,11 @@ class InversedManyToManyCompositeIdForeignKeyEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id1;
 
     /**
      * @ManyToOne(targetEntity="AuxiliaryEntity")
-     * @JoinColumn(name="foreign_id", referencedColumnName="id")
+     * @JoinColumn(name="foreign_id", referencedColumnName="id4")
      * @Id
      */
     public $foreignEntity;

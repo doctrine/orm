@@ -17,12 +17,12 @@ class OwningOneToOneCompositeIdForeignKeyEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id2;
 
     /**
      * @OneToOne(targetEntity="InversedOneToOneCompositeIdForeignKeyEntity", inversedBy="associatedEntity")
      * @JoinColumns({
-     *     @JoinColumn(name="associated_id", referencedColumnName="id"),
+     *     @JoinColumn(name="associated_id", referencedColumnName="id1"),
      *     @JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")
      * })
      */

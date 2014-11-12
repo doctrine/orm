@@ -28,10 +28,10 @@ class ManyToManyTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $inversed = new Entity\InversedManyToManyEntity();
-        $inversed->id = 'abc';
+        $inversed->id1 = 'abc';
 
         $owning = new Entity\OwningManyToManyEntity();
-        $owning->id = 'def';
+        $owning->id2 = 'def';
 
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntities->add($inversed);
@@ -56,9 +56,9 @@ class ManyToManyTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id FROM vct_inversed_manytomany LIMIT 1'));
+        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id FROM vct_owning_manytomany LIMIT 1'));
+        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
 
         $this->assertEquals('nop', $conn->fetchColumn('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
         $this->assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
@@ -98,8 +98,8 @@ class ManyToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertEquals('abc', $inversed->id);
-        $this->assertEquals('def', $owning->id);
+        $this->assertEquals('abc', $inversed->id1);
+        $this->assertEquals('def', $owning->id2);
     }
 
     /**

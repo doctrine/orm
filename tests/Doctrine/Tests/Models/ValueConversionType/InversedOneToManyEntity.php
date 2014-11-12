@@ -14,7 +14,7 @@ class InversedOneToManyEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id1;
 
     /**
      * @OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity")
