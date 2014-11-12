@@ -71,7 +71,7 @@ class ORMException extends Exception
             "Entity of type " . get_class($entity) . " has identity through a foreign entity " . get_class($relatedEntity) . ", " .
             "however this entity has no identity itself. You have to call EntityManager#persist() on the related entity " .
             "and make sure that an identifier was generated before trying to persist '" . get_class($entity) . "'. In case " .
-            "of Post Insert ID Generation (such as MySQL Auto-Increment or PostgreSQL SERIAL) this means you have to call " .
+            "of Post Insert ID Generation (such as MySQL Auto-Increment) this means you have to call " .
             "EntityManager#flush() between both persist operations."
         );
     }
