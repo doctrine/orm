@@ -12,7 +12,7 @@ class OwningManyToOneCompositeIdEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id3;
 
     /**
      * @ManyToOne(targetEntity="InversedOneToManyCompositeIdEntity", inversedBy="associatedEntities")

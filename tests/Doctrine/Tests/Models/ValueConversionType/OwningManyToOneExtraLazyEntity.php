@@ -4,9 +4,9 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 
 /**
  * @Entity
- * @Table(name="vct_owning_onetoone")
+ * @Table(name="vct_owning_manytoone_extralazy")
  */
-class OwningOneToOneEntity
+class OwningManyToOneExtraLazyEntity
 {
     /**
      * @Column(type="rot13")
@@ -15,7 +15,7 @@ class OwningOneToOneEntity
     public $id2;
 
     /**
-     * @OneToOne(targetEntity="InversedOneToOneEntity", inversedBy="associatedEntity")
+     * @ManyToOne(targetEntity="InversedOneToManyExtraLazyEntity", inversedBy="associatedEntities")
      * @JoinColumn(name="associated_id", referencedColumnName="id1")
      */
     public $associatedEntity;

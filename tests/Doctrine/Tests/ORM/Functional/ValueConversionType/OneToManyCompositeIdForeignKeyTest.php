@@ -29,15 +29,15 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $auxiliary = new Entity\AuxiliaryEntity();
-        $auxiliary->id = 'abc';
+        $auxiliary->id4 = 'abc';
 
         $inversed = new Entity\InversedOneToManyCompositeIdForeignKeyEntity();
-        $inversed->id = 'def';
+        $inversed->id1 = 'def';
         $inversed->foreignEntity = $auxiliary;
         $inversed->someProperty = 'some value to be loaded';
 
         $owning = new Entity\OwningManyToOneCompositeIdForeignKeyEntity();
-        $owning->id = 'ghi';
+        $owning->id2 = 'ghi';
 
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntity = $inversed;
@@ -63,10 +63,12 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id FROM vct_inversed_onetomany_compositeid_foreignkey LIMIT 1'));
+        $this->assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
+
+        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetomany_compositeid_foreignkey LIMIT 1'));
         $this->assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_onetomany_compositeid_foreignkey LIMIT 1'));
 
-        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id FROM vct_owning_manytoone_compositeid_foreignkey LIMIT 1'));
+        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytoone_compositeid_foreignkey LIMIT 1'));
         $this->assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_owning_manytoone_compositeid_foreignkey LIMIT 1'));
         $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_manytoone_compositeid_foreignkey LIMIT 1'));
     }
@@ -76,9 +78,14 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
+        $auxiliary = $this->_em->find(
+            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
+            'abc'
+        );
+
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id' => 'def', 'foreignEntity' => 'abc')
+            array('id1' => 'def', 'foreignEntity' => 'abc')
         );
 
         $owning = $this->_em->find(
@@ -86,6 +93,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
+        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity', $auxiliary);
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity', $inversed);
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity', $owning);
     }
@@ -95,9 +103,14 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
+        $auxiliary = $this->_em->find(
+            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
+            'abc'
+        );
+
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id' => 'def', 'foreignEntity' => 'abc')
+            array('id1' => 'def', 'foreignEntity' => 'abc')
         );
 
         $owning = $this->_em->find(
@@ -105,9 +118,28 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertEquals('def', $inversed->id);
-        $this->assertEquals('abc', $inversed->foreignEntity->id);
-        $this->assertEquals('ghi', $owning->id);
+        $this->assertEquals('abc', $auxiliary->id4);
+        $this->assertEquals('def', $inversed->id1);
+        $this->assertEquals('abc', $inversed->foreignEntity->id4);
+        $this->assertEquals('ghi', $owning->id2);
+    }
+
+    /**
+     * @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase
+     */
+    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId()
+    {
+        $auxiliary = $this->_em->find(
+            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
+            'abc'
+        );
+
+        $inversed = $this->_em->find(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
+            array('id1' => 'def', 'foreignEntity' => $auxiliary)
+        );
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity', $inversed);
     }
 
     /**
@@ -132,7 +164,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id' => 'def', 'foreignEntity' => 'abc')
+            array('id1' => 'def', 'foreignEntity' => 'abc')
         );
 
         $this->assertCount(1, $inversed->associatedEntities);

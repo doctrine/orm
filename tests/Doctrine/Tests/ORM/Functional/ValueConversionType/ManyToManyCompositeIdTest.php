@@ -32,7 +32,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
         $inversed->id2 = 'def';
 
         $owning = new Entity\OwningManyToManyCompositeIdEntity();
-        $owning->id = 'ghi';
+        $owning->id3 = 'ghi';
 
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntities->add($inversed);
@@ -60,7 +60,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
         $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany_compositeid LIMIT 1'));
         $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_inversed_manytomany_compositeid LIMIT 1'));
 
-        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id FROM vct_owning_manytomany_compositeid LIMIT 1'));
+        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id3 FROM vct_owning_manytomany_compositeid LIMIT 1'));
 
         $this->assertEquals('nop', $conn->fetchColumn('SELECT inversed_id1 FROM vct_xref_manytomany_compositeid LIMIT 1'));
         $this->assertEquals('qrs', $conn->fetchColumn('SELECT inversed_id2 FROM vct_xref_manytomany_compositeid LIMIT 1'));
@@ -103,7 +103,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 
         $this->assertEquals('abc', $inversed->id1);
         $this->assertEquals('def', $inversed->id2);
-        $this->assertEquals('ghi', $owning->id);
+        $this->assertEquals('ghi', $owning->id3);
     }
 
     /**

@@ -14,14 +14,14 @@ class OwningManyToManyEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id2;
 
     /**
      * @ManyToMany(targetEntity="InversedManyToManyEntity", inversedBy="associatedEntities")
      * @JoinTable(
      *     name="vct_xref_manytomany",
-     *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="inversed_id", referencedColumnName="id")}
+     *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id2")},
+     *     inverseJoinColumns={@JoinColumn(name="inversed_id", referencedColumnName="id1")}
      * )
      */
     public $associatedEntities;

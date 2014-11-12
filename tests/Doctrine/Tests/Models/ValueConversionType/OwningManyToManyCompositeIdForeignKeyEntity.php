@@ -14,15 +14,15 @@ class OwningManyToManyCompositeIdForeignKeyEntity
      * @Column(type="rot13")
      * @Id
      */
-    public $id;
+    public $id2;
 
     /**
      * @ManyToMany(targetEntity="InversedManyToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
      * @JoinTable(
      *     name="vct_xref_manytomany_compositeid_foreignkey",
-     *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id")},
+     *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id2")},
      *     inverseJoinColumns={
-     *         @JoinColumn(name="associated_id", referencedColumnName="id"),
+     *         @JoinColumn(name="associated_id", referencedColumnName="id1"),
      *         @JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")
      *     }
      * )

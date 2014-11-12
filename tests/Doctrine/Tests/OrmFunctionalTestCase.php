@@ -225,6 +225,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity'
         ),
+        'vct_onetomany_extralazy' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity'
+        ),
         'vct_manytomany' => array(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity'
@@ -427,6 +431,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM vct_owning_manytoone_compositeid_foreignkey');
             $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_compositeid_foreignkey');
             $conn->executeUpdate('DELETE FROM vct_auxiliary');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetomany_extralazy'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_extralazy');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_extralazy');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany'])) {

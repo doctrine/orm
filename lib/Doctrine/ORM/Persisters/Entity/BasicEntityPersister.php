@@ -1883,20 +1883,21 @@ class BasicEntityPersister implements EntityPersister
              . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
-        list($params) = $this->expandParameters($criteria);
+        list($params, $types) = $this->expandParameters($criteria);
 
         if (null !== $extraConditions) {
-            $sql                           .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
-            list($criteriaParams, $values) = $this->expandCriteriaParameters($extraConditions);
+            $sql                            .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
+            list($extraParams, $extraTypes) = $this->expandCriteriaParameters($extraConditions);
 
-            $params = array_merge($params, $criteriaParams);
+            $params = array_merge($params, $extraParams);
+            $types  = array_merge($types, $extraTypes);
         }
 
         if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
 
-        return (bool) $this->conn->fetchColumn($sql, $params);
+        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
     /**
