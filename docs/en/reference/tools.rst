@@ -33,8 +33,8 @@ already registers all the commands that currently ship with
 Doctrine DBAL and ORM. If you want to use additional commands you
 have to register them yourself.
 
-All the commands of the Doctrine Console require access to the EntityManager
-or DBAL Connection. You have to inject them into the console application
+All the commands of the Doctrine Console require access to the ``EntityManager``
+or ``DBAL`` Connection. You have to inject them into the console application
 using so called Helper-Sets. This requires either the ``db``
 or the ``em`` helpers to be defined in order to work correctly.
 
