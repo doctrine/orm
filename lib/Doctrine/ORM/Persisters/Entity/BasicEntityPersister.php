@@ -863,12 +863,12 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = $this->getValue($param);
+            $sqlParams[] = Helper::getValue($param, $this->em);
         }
 
         foreach ($types as $type) {
             list($field, $value) = $type;
-            $sqlTypes[]          = $this->getType($field, $value);
+            $sqlTypes[]          = $this->getType($field, $value, $this->class);
         }
 
         return array($sqlParams, $sqlTypes);
@@ -1306,12 +1306,13 @@ class BasicEntityPersister implements EntityPersister
         $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
-            $type             = $this->getColumnType($joinColumn['referencedColumnName'], null, $targetClass);
             $isIdentifier     = isset($assoc['id']) && $assoc['id'] === true;
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
             $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
+
+            $type = Helper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
             $this->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
         }
@@ -1762,8 +1763,8 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types[]  = $this->getType($field, $value);
-            $params[] = $this->getValue($value);
+            $types[]  = $this->getType($field, $value, $this->class);
+            $params[] = Helper::getValue($value, $this->em);
         }
 
         return array($params, $types);
@@ -1788,7 +1789,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $types[]  = $this->getType($criterion['field'], $criterion['value'], $criterion['class']);
-            $params[] = $this->getValue($criterion['value']);
+            $params[] = Helper::getValue($criterion['value'], $this->em);
         }
 
         return array($params, $types);
@@ -1797,7 +1798,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers the binding type of a field by parameter type casting.
      *
-     * @param string             $field
+     * @param string             $fieldName
      * @param mixed              $value
      * @param ClassMetadata|null $class
      *
@@ -1805,11 +1806,9 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function getType($field, $value, ClassMetadata $class = null)
+    private function getType($fieldName, $value, ClassMetadata $class)
     {
-        if ($class === null) {
-            $class = $this->class;
-        }
+        $type = Helper::getTypeOfField($fieldName, $class, $this->em);
 
         switch (true) {
             case (isset($this->class->fieldMappings[$field])):
@@ -1865,105 +1864,6 @@ class BasicEntityPersister implements EntityPersister
         }
 
         return $type;
-    }
-
-    /**
-     * Infers the binding type of a column by parameter type casting.
-     *
-     * @param string        $columnName
-     * @param mixed         $value
-     * @param ClassMetadata $class
-     * @return int|string|null
-     */
-    private function getColumnType($columnName, $value, ClassMetadata $class)
-    {
-        $type = null;
-
-        switch (true) {
-            case (isset($class->fieldNames[$columnName])):
-                $fieldName = $class->fieldNames[$columnName];
-
-                if (isset($class->fieldMappings[$fieldName])) {
-                    $type = $class->fieldMappings[$fieldName]['type'];
-                }
-
-                break;
-
-            default:
-                $type = $this->getAssociationColumnType($columnName, $class);
-        }
-
-        if (is_array($value)) {
-            $type = Type::getType($type)->getBindingType();
-            $type += Connection::ARRAY_PARAM_OFFSET;
-        }
-
-        return $type;
-    }
-
-    /**
-     * Infers the binding type of a column by traversing association mappings.
-     *
-     * @param string        $columnName
-     * @param ClassMetadata $class
-     * @return string|null
-     */
-    private function getAssociationColumnType($columnName, ClassMetadata $class)
-    {
-        foreach ($class->associationMappings as $assoc) {
-            foreach ($assoc['joinColumns'] as $joinColumn) {
-                if ($joinColumn['name'] == $columnName) {
-                    $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
-                    $targetColumn = $joinColumn['referencedColumnName'];
-
-                    if (isset($targetClass->fieldNames[$targetColumn])) {
-                        return $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
-                    }
-
-                    return $this->getAssociationColumnType($targetColumn, $class);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Retrieves parameter value.
-     *
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    private function getValue($value)
-    {
-        if ( ! is_array($value)) {
-            return $this->getIndividualValue($value);
-        }
-
-        $newValue = array();
-
-        foreach ($value as $itemValue) {
-            $newValue[] = $this->getIndividualValue($itemValue);
-        }
-
-        return $newValue;
-    }
-
-    /**
-     * Retrieves an individual parameter value.
-     *
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    private function getIndividualValue($value)
-    {
-        if ( ! is_object($value) || ! $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            return $value;
-        }
-
-        return $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
     }
 
     /**

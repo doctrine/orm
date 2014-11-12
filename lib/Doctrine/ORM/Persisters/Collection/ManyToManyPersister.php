@@ -25,6 +25,8 @@ use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\PersisterHelper as Helper;
 
 /**
  * Persister for many-to-many collections.
@@ -384,7 +386,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 : $sourceClass->getFieldForColumn($columnName);
 
             $params[] = $identifier[$field];
-            $types[]  = $this->getType($field, $sourceClass);
+            $types[]  = Helper::getTypeOfField($field, $sourceClass, $this->em);
         }
 
         return array($params, $types);
