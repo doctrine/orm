@@ -787,6 +787,16 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function prev()
+    {
+        $this->initialize();
+
+        return $this->coll->prev();
+    }
+
+    /**
      * Retrieves the wrapped Collection instance.
      *
      * @return \Doctrine\Common\Collections\Collection
