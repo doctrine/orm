@@ -140,6 +140,16 @@ class Paginator implements \Countable, \IteratorAggregate
             $countQuery->setFirstResult(null)->setMaxResults(null);
 
             try {
+                $parser = new Query\Parser($countQuery);
+                $parameterMappings = $parser->parse($parser)->getParameterMappings();
+                $parameters = $countQuery->getParameters();
+                foreach($parameters as $k=>$param){
+                    if(!array_key_exists($param->getName(), $parameterMappings)){
+                        $parameters->remove($k);
+                    }
+                }
+                $countQuery->setParameters($parameters);
+                
                 $data =  $countQuery->getScalarResult();
                 $data = array_map('current', $data);
                 $this->count = array_sum($data);
