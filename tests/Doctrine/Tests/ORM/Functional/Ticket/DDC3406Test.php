@@ -43,6 +43,8 @@ class DDC3406Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
         
+        $this->_em->clear();
+        
         $user = $this->_em->find(__NAMESPACE__ . '\DDC3406User', $user->getAddress()
             ->getId());
         
