@@ -36,8 +36,10 @@ class DDC3406Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->setAddress($address);
         
         $this->_em->persist($hierarchy);
+        $this->_em->flush();
         $this->_em->persist($plant);
         $this->_em->persist($address);
+        $this->_em->flush();
         $this->_em->persist($user);
         $this->_em->flush();
         
