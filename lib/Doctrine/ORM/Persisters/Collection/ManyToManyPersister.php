@@ -534,24 +534,28 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $indexBy        = $mapping['indexBy'];
         $id             = $this->uow->getEntityIdentifier($collection->getOwner());
 
-        $targetEntity   = $this->em->getClassMetadata($mapping['targetEntity']);
+        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-        if (! $mapping['isOwningSide']) {
+        if ( ! $mapping['isOwningSide']) {
             $associationSourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
-            $mapping  = $associationSourceClass->associationMappings[$mapping['mappedBy']];
+            $mapping = $associationSourceClass->associationMappings[$mapping['mappedBy']];
             $joinColumns = $mapping['joinTable']['joinColumns'];
-            $relationMode = 'relationToTargetKeyColumns';
+            $sourceRelationMode = 'relationToTargetKeyColumns';
+            $targetRelationMode = 'relationToSourceKeyColumns';
         } else {
-            $joinColumns = $mapping['joinTable']['inverseJoinColumns'];
             $associationSourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-            $relationMode = 'relationToSourceKeyColumns';
+            $joinColumns = $mapping['joinTable']['inverseJoinColumns'];
+            $sourceRelationMode = 'relationToSourceKeyColumns';
+            $targetRelationMode = 'relationToTargetKeyColumns';
         }
 
-        $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform). ' t';
+        $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform) . ' t';
         $whereClauses    = array();
         $params          = array();
+        $types           = array();
 
-        $joinNeeded = !in_array($indexBy, $targetEntity->identifier);
+        $joinNeeded = ! in_array($indexBy, $targetClass->identifier);
 
         if ($joinNeeded) { // extra join needed if indexBy is not a @id
             $joinConditions = array();
@@ -559,21 +563,25 @@ class ManyToManyPersister extends AbstractCollectionPersister
             foreach ($joinColumns as $joinTableColumn) {
                 $joinConditions[] = 't.' . $joinTableColumn['name'] . ' = tr.' . $joinTableColumn['referencedColumnName'];
             }
-            $tableName = $this->quoteStrategy->getTableName($targetEntity, $this->platform);
+            $tableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
             $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
+            $columnName = $targetClass->getColumnName($indexBy);
 
-            $whereClauses[] = 'tr.' . $targetEntity->getColumnName($indexBy) . ' = ?';
+            $whereClauses[] = 'tr.' . $columnName . ' = ?';
             $params[] = $key;
-
+            $types[] = Helper::getTypeOfColumn($columnName, $targetClass, $this->em);
         }
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            if (isset($mapping[$relationMode][$joinTableColumn])) {
+            if (isset($mapping[$sourceRelationMode][$joinTableColumn])) {
+                $column = $mapping[$sourceRelationMode][$joinTableColumn];
+
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $id[$targetEntity->getFieldForColumn($mapping[$relationMode][$joinTableColumn])];
             } elseif (!$joinNeeded) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $key;
+                $types[] = Helper::getTypeOfColumn($column, $targetClass, $this->em);
             }
         }
 
@@ -586,7 +594,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
         }
 
-        return array($quotedJoinTable, $whereClauses, $params);
+        return array($quotedJoinTable, $whereClauses, $params, $types);
     }
 
     /**
@@ -618,12 +626,18 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $sourceClass, $this->platform);
         $whereClauses    = array();
         $params          = array();
+        $types           = array();
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
                 $params[] = $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+
+                $params[] = $targetClass->containsForeignIdentifier
+                    ? $targetId[$targetClass->getFieldForColumn($column)]
+                    : $targetId[$targetClass->fieldNames[$column]];
+                $types[] = Helper::getTypeOfColumn($column, $targetClass, $this->em);
 
                 continue;
             }
