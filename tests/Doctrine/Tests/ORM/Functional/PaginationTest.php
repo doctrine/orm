@@ -161,28 +161,14 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setParameter('id', 100);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (CASE WHEN c0_.id < ? THEN 1 ELSE 0 END) AS sclr4, c0_.email_id AS email_id5 FROM cms_users c0_ WHERE c0_.id < ? ORDER BY sclr4 ASC",
-            $query->getSQL()
-        );
         $paginator = new Paginator($query);
         $countQuery = $paginator->getCountQuery();
-
-        $this->assertEquals(
-            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (CASE WHEN c0_.id < ? THEN 1 ELSE 0 END) AS sclr4, c0_.email_id AS email_id5 FROM cms_users c0_ WHERE c0_.id < ? ORDER BY sclr4 ASC) dctrn_result) dctrn_table",
-            $countQuery->getSQL()
-        );
         $this->assertEquals(2, count($countQuery->getParameters()));
         $this->assertEquals(3, $paginator->count());
-
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
         $paginator = new Paginator($query);
         $countQuery = $paginator->getCountQuery();
-        $this->assertEquals(
-            "SELECT count(DISTINCT c0_.id) AS sclr0 FROM cms_users c0_ WHERE c0_.id < ?",
-            $countQuery->getSQL()
-        );
         //if select part of query is replaced with count(...) paginator should remove parameters from query object not used in new query.
         $this->assertEquals(1, count($countQuery->getParameters()));
         $this->assertEquals(3, $paginator->count());
