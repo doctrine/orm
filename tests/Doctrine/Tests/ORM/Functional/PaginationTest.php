@@ -155,7 +155,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /** @var $query Query */
         $query = $this->_em->createQuery(
-            'SELECT u, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS hidden promotedFirst FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < :id ORDER BY promotedFirst'
+            'SELECT u, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS hidden promotedFirst FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < :id or 1=1 ORDER BY promotedFirst'
         );
         $query->setParameter('vipMaxId', 10);
         $query->setParameter('id', 100);
