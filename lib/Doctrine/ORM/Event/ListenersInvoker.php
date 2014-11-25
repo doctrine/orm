@@ -37,9 +37,9 @@ class ListenersInvoker
     const INVOKE_MANAGER    = 4;
 
     /**
-     * @var \Doctrine\ORM\Mapping\EntityListenerResolver The Entity listener resolver.
+     * @var EntityManager
      */
-    private $resolver;
+    private $em;
 
     /**
      * The EventManager used for dispatching events.
@@ -55,8 +55,8 @@ class ListenersInvoker
      */
     public function __construct(EntityManager $em)
     {
+        $this->em          = $em;
         $this->eventManager = $em->getEventManager();
-        $this->resolver     = $em->getConfiguration()->getEntityListenerResolver();
     }
 
     /**
@@ -107,7 +107,8 @@ class ListenersInvoker
             foreach ($metadata->entityListeners[$eventName] as $listener) {
                 $class      = $listener['class'];
                 $method     = $listener['method'];
-                $instance   = $this->resolver->resolve($class);
+                $resolver   = $this->em->getConfiguration()->getEntityListenerResolver();
+                $instance   = $resolver->resolve($class);
 
                 $instance->$method($entity, $event);
             }
