@@ -302,7 +302,7 @@ With Arithmetic Expression in WHERE clause:
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     $users = $query->getResult(); // array of ForumUser objects
 
-Retrieve user entities with Arithmetic Expression in ORDER close, using the ``HIDDEN`` keyword:
+Retrieve user entities with Arithmetic Expression in ORDER clause, using the ``HIDDEN`` keyword:
 
 .. code-block:: php
 
