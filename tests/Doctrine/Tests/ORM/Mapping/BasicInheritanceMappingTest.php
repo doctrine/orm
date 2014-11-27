@@ -225,7 +225,6 @@ class EntitySubClass2 extends MappedSuperclassBase {
 
 /**
  * @MappedSuperclass
- *
  * @Table(
  *  uniqueConstraints={@UniqueConstraint(name="IDX_MAPPED1_INDEX",columns={"mapped1"})},
  *  indexes={@Index(name="IDX_MAPPED2_INDEX", columns={"mapped2"})}
@@ -238,13 +237,7 @@ class MappedSuperclassBaseIndex {
     private $mapped2;
 }
 
-/**
- * @Entity
- *
- * @Table(
- *  uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}
- * )
- * */
+/** @Entity @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}) */
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
     /** @Id @Column(type="integer") */
@@ -273,92 +266,67 @@ abstract class HierarchyBase
     public $id;
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class HierarchyASuperclass extends HierarchyBase
 {
     /** @Column(type="string") */
     public $a;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class HierarchyBEntity extends HierarchyBase
 {
     /** @Column(type="string") */
     public $b;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class HierarchyC extends HierarchyBase
 {
     /** @Column(type="string") */
     public $c;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class HierarchyD extends HierarchyASuperclass
 {
     /** @Column(type="string") */
     public $d;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class HierarchyE extends HierarchyBEntity
 {
     /** @Column(type="string") */
     public $e;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class SuperclassEntity extends SuperclassBase
 {
-
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class SuperclassBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
      * @SequenceGenerator(sequenceName="foo", initialValue=10)
-     * @var int
      */
     public $id;
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class MediumSuperclassBase extends SuperclassBase
 {
-
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MediumSuperclassEntity extends MediumSuperclassBase
 {
-
 }
 
-/**
- * @Entity(repositoryClass = "Doctrine\ORM\EntityRepository")
- */
+/** @Entity(repositoryClass = "Doctrine\ORM\EntityRepository") */
 class SubclassWithRepository extends \Doctrine\Tests\Models\DDC869\DDC869Payment
 {
-
 }
