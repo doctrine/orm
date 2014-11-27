@@ -119,6 +119,7 @@ class Paginator implements \Countable, \IteratorAggregate
     {
         if ($this->count === null) {
             $countQuery = $this->getCountQuery();
+
             try {
                 $data =  $countQuery->getScalarResult();
                 $data = array_map('current', $data);
@@ -130,8 +131,13 @@ class Paginator implements \Countable, \IteratorAggregate
 
         return $this->count;
     }
-
-    public function getCountQuery(){
+    /**
+     * Returns Query prepared to count.
+     *
+     * @return Query
+     */
+    public function getCountQuery()
+    {
         /* @var $countQuery Query */
         $countQuery = $this->cloneQuery($this->query);
 
@@ -153,10 +159,10 @@ class Paginator implements \Countable, \IteratorAggregate
 
         $countQuery->setFirstResult(null)->setMaxResults(null);
         $parser = new Query\Parser($countQuery);
-        $parameterMappings = $parser->parse($parser)->getParameterMappings();
+        $parameterMappings = $parser->parse()->getParameterMappings();
         $parameters = $countQuery->getParameters();
-        foreach($parameters as $k=>$param){
-            if(!array_key_exists($param->getName(), $parameterMappings)){
+        foreach ($parameters as $k => $param){
+            if( ! array_key_exists($param->getName(), $parameterMappings)) {
                 $parameters->remove($k);
             }
         }
