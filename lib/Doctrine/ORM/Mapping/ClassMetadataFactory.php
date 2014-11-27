@@ -171,37 +171,43 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        if ($parent && $parent->isInheritanceTypeSingleTable()) {
-            $class->setPrimaryTable($parent->table);
-        }
+        if ($parent) {
+            if ($parent->isInheritanceTypeSingleTable()) {
+                $class->setPrimaryTable($parent->table);
+            }
 
-        if ($parent && $parent->cache) {
-            $class->cache = $parent->cache;
-        }
+            if ($parent) {
+                $this->addInheritedIndexes($class, $parent);
+            }
 
-        if ($parent && $parent->containsForeignIdentifier) {
-            $class->containsForeignIdentifier = true;
-        }
+            if ($parent->cache) {
+                $class->cache = $parent->cache;
+            }
 
-        if ($parent && !empty($parent->namedQueries)) {
-            $this->addInheritedNamedQueries($class, $parent);
-        }
+            if ($parent->containsForeignIdentifier) {
+                $class->containsForeignIdentifier = true;
+            }
 
-        if ($parent && !empty($parent->namedNativeQueries)) {
-            $this->addInheritedNamedNativeQueries($class, $parent);
-        }
+            if ( ! empty($parent->namedQueries)) {
+                $this->addInheritedNamedQueries($class, $parent);
+            }
 
-        if ($parent && !empty($parent->sqlResultSetMappings)) {
-            $this->addInheritedSqlResultSetMappings($class, $parent);
-        }
+            if ( ! empty($parent->namedNativeQueries)) {
+                $this->addInheritedNamedNativeQueries($class, $parent);
+            }
 
-        if ($parent && !empty($parent->entityListeners) && empty($class->entityListeners)) {
-            $class->entityListeners = $parent->entityListeners;
+            if ( ! empty($parent->sqlResultSetMappings)) {
+                $this->addInheritedSqlResultSetMappings($class, $parent);
+            }
+
+            if ( ! empty($parent->entityListeners) && empty($class->entityListeners)) {
+                $class->entityListeners = $parent->entityListeners;
+            }
         }
 
         $class->setParentClasses($nonSuperclassParents);
 
-        if ( $class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
+        if ($class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
             $this->addDefaultDiscriminatorMap($class);
         }
 
@@ -412,6 +418,33 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         : $prefix,
                 'originalField' => $embeddableClass['originalField'] ?: $property,
             ));
+        }
+    }
+
+    /**
+     * Copy the table indices from the parent class superclass to the child class
+     *
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
+     *
+     * @return void
+     */
+    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        if (! $parentClass->isMappedSuperclass) {
+            return;
+        }
+
+        foreach (array('uniqueConstraints', 'indexes') as $indexType) {
+            if (isset($parentClass->table[$indexType])) {
+                foreach ($parentClass->table[$indexType] as $indexName => $index) {
+                    if (isset($subClass->table[$indexType][$indexName])) {
+                        continue; // Let the inheriting table override indices
+                    }
+
+                    $subClass->table[$indexType][$indexName] = $index;
+                }
+            }
         }
     }
 
