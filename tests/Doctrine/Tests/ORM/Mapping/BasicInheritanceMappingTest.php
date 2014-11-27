@@ -2,9 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\Models\DDC869\DDC869Payment;
 
 class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -22,11 +23,10 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->cmf->setEntityManager($this->_getTestEntityManager());
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Mapping\MappingException
-     */
     public function testGetMetadataForTransientClassThrowsException()
     {
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+
         $this->cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TransientBaseClass');
     }
 
@@ -77,7 +77,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('value', $class->fieldMappings);
         $this->assertArrayHasKey('serialNumber', $class->fieldMappings);
-        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertEquals($class->customRepositoryClassName, 'Doctrine\Tests\Models\DDC869\DDC869PaymentRepository');
 
 
         // override repositoryClass
@@ -85,7 +85,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('value', $class->fieldMappings);
-        $this->assertEquals($class->customRepositoryClassName, "Doctrine\ORM\EntityRepository");
+        $this->assertEquals($class->customRepositoryClassName, 'Doctrine\ORM\EntityRepository');
     }
 
     /**
@@ -97,7 +97,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\EntitySubClass2');
 
         $class2 = unserialize(serialize($class));
-        $class2->wakeupReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $class2->wakeupReflection(new RuntimeReflectionService);
 
         $this->assertArrayHasKey('mapped1', $class2->reflFields);
         $this->assertArrayHasKey('mapped2', $class2->reflFields);
@@ -121,7 +121,12 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnmappedEntityInHierarchy()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierarchyBase' to be properly mapped in the inheritance hierarchy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' an abstract class to avoid this exception from occurring.");
+        $this->setExpectedException(
+            'Doctrine\ORM\Mapping\MappingException',
+            'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
+            . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
+            . ' Alternatively you can make \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' an abstract class to'
+            . ' avoid this exception from occurring.');
 
         $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
     }
@@ -147,7 +152,10 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
-        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
+        $this->assertEquals(
+            array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
+            $class->sequenceGeneratorDefinition
+        );
     }
 
     /**
@@ -160,7 +168,10 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
-        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
+        $this->assertEquals(
+            array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
+            $class->sequenceGeneratorDefinition
+        );
     }
 
     /**
@@ -173,7 +184,10 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
-        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
+        $this->assertEquals(
+            array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
+            $class->sequenceGeneratorDefinition
+        );
     }
 
     /**
@@ -334,6 +348,6 @@ class MediumSuperclassEntity extends MediumSuperclassBase
 }
 
 /** @Entity(repositoryClass = "Doctrine\ORM\EntityRepository") */
-class SubclassWithRepository extends \Doctrine\Tests\Models\DDC869\DDC869Payment
+class SubclassWithRepository extends DDC869Payment
 {
 }
