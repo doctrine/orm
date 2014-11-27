@@ -27,29 +27,29 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass');
 
-        $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(empty($class->parentClasses));
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
+        $this->assertEmpty($class->subClasses);
+        $this->assertEmpty($class->parentClasses);
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('name', $class->fieldMappings);
     }
 
     public function testGetMetadataForSubclassWithMappedSuperclass()
     {
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass2');
 
-        $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(empty($class->parentClasses));
+        $this->assertEmpty($class->subClasses);
+        $this->assertEmpty($class->parentClasses);
 
-        $this->assertTrue(isset($class->fieldMappings['mapped1']));
-        $this->assertTrue(isset($class->fieldMappings['mapped2']));
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
+        $this->assertArrayHasKey('mapped1', $class->fieldMappings);
+        $this->assertArrayHasKey('mapped2', $class->fieldMappings);
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('name', $class->fieldMappings);
 
-        $this->assertFalse(isset($class->fieldMappings['mapped1']['inherited']));
-        $this->assertFalse(isset($class->fieldMappings['mapped2']['inherited']));
-        $this->assertFalse(isset($class->fieldMappings['transient']));
+        $this->assertArrayNotHasKey('inherited', $class->fieldMappings['mapped1']);
+        $this->assertArrayNotHasKey('inherited', $class->fieldMappings['mapped2']);
+        $this->assertArrayNotHasKey('transient', $class->fieldMappings);
 
-        $this->assertTrue(isset($class->associationMappings['mappedRelated1']));
+        $this->assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
     /**
@@ -59,25 +59,25 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
 
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['value']));
-        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
-        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('value', $class->fieldMappings);
+        $this->assertArrayHasKey('creditCardNumber', $class->fieldMappings);
+        $this->assertEquals($class->customRepositoryClassName, 'Doctrine\Tests\Models\DDC869\DDC869PaymentRepository');
 
 
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
 
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['value']));
-        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('value', $class->fieldMappings);
+        $this->assertArrayHasKey('serialNumber', $class->fieldMappings);
         $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
 
 
         // override repositoryClass
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
 
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('value', $class->fieldMappings);
         $this->assertEquals($class->customRepositoryClassName, "Doctrine\ORM\EntityRepository");
     }
 
@@ -92,9 +92,9 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class2 = unserialize(serialize($class));
         $class2->wakeupReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $this->assertTrue(isset($class2->reflFields['mapped1']));
-        $this->assertTrue(isset($class2->reflFields['mapped2']));
-        $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
+        $this->assertArrayHasKey('mapped1', $class2->reflFields);
+        $this->assertArrayHasKey('mapped2', $class2->reflFields);
+        $this->assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
     /**
@@ -104,9 +104,9 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
 
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['a']));
-        $this->assertTrue(isset($class->fieldMappings['d']));
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('a', $class->fieldMappings);
+        $this->assertArrayHasKey('d', $class->fieldMappings);
     }
 
     /**
@@ -116,7 +116,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierarchyBase' to be properly mapped in the inheritance hierarchy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' an abstract class to avoid this exception from occurring.");
 
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
+        $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
     }
 
     /**
@@ -127,7 +127,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
 
-        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertArrayHasKey('id', $class->fieldMappings);
     }
 
     /**
@@ -179,10 +179,10 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\EntityIndexSubClass');
         /* @var $class ClassMetadataInfo */
 
-        $this->assertTrue(isset($class->fieldMappings['mapped1']));
-        $this->assertTrue(isset($class->table['uniqueConstraints']['IDX_NAME_INDEX']));
-        $this->assertTrue(isset($class->table['uniqueConstraints']['IDX_MAPPED1_INDEX']));
-        $this->assertTrue(isset($class->table['indexes']['IDX_MAPPED2_INDEX']));
+        $this->assertArrayHasKey('mapped1', $class->fieldMappings);
+        $this->assertArrayHasKey('IDX_NAME_INDEX', $class->table['uniqueConstraints']);
+        $this->assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table['uniqueConstraints']);
+        $this->assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
     }
 }
 
