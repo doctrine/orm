@@ -175,22 +175,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setPrimaryTable($parent->table);
         }
 
-        if ($parent && $parent->isMappedSuperclass) {
-            //Copy the table indices from the parent
-
-            $indexTypes = array ('uniqueConstraints', 'indexes');
-
-            foreach ($indexTypes as $indexType) {
-                if (isset($parent->table[$indexType])) {
-                    foreach ($parent->table[$indexType] as $indexName => $index) {
-                        if (isset($class->table[$indexType][$indexName])) {
-                            continue; // Let the inheriting table override indices
-                        }
-
-                        $class->table[$indexType][$indexName] = $index;
-                    }
-                }
-            }
+        if ($parent) {
+            $this->addInheritedIndexes($class, $parent);
         }
 
         if ($parent && $parent->cache) {
@@ -430,6 +416,33 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         : $prefix,
                 'originalField' => $embeddableClass['originalField'] ?: $property,
             ));
+        }
+    }
+
+    /**
+     * Copy the table indices from the parent class superclass to the child class
+     *
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
+     *
+     * @return void
+     */
+    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        if (! $parentClass->isMappedSuperclass) {
+            return;
+        }
+
+        foreach (array('uniqueConstraints', 'indexes') as $indexType) {
+            if (isset($parentClass->table[$indexType])) {
+                foreach ($parentClass->table[$indexType] as $indexName => $index) {
+                    if (isset($subClass->table[$indexType][$indexName])) {
+                        continue; // Let the inheriting table override indices
+                    }
+
+                    $subClass->table[$indexType][$indexName] = $index;
+                }
+            }
         }
     }
 
