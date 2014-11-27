@@ -150,6 +150,29 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(1, $paginator->getIterator());
         $this->assertEquals(1, $paginator->count());
     }
+    
+    public function testCountQuery_ParametersInSelect()
+    {
+        /** @var $query Query */
+        $query = $this->_em->createQuery(
+            'SELECT u, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS hidden promotedFirst FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < :id or 1=1 ORDER BY promotedFirst'
+        );
+        $query->setParameter('vipMaxId', 10);
+        $query->setParameter('id', 100);
+        $query->setFirstResult(null)->setMaxResults(null);
+
+        $paginator = new Paginator($query);
+        $countQuery = $paginator->getCountQuery();
+        $this->assertEquals(2, count($countQuery->getParameters()));
+        $this->assertEquals(3, $paginator->count());
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $paginator = new Paginator($query);
+        $countQuery = $paginator->getCountQuery();
+        //if select part of query is replaced with count(...) paginator should remove parameters from query object not used in new query.
+        $this->assertEquals(1, count($countQuery->getParameters()));
+        $this->assertEquals(3, $paginator->count());
+    }
 
     public function populate()
     {
