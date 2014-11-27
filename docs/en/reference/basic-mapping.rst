@@ -460,7 +460,7 @@ Quoting Reserved Words
 
 Sometimes it is necessary to quote a column or table name because of reserved
 word conflicts. Doctrine does not quote identifiers automatically, because it
-leads to more problems then it would solve. Quoting tables and column names
+leads to more problems than it would solve. Quoting tables and column names
 needs to be done explicitly using ticks in the definition.
 
 .. code-block:: php
