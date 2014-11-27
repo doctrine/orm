@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use ReflectionMethod;
 
 /**
  * @group DDC-1613
@@ -149,6 +150,36 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator->setUseOutputWalkers(false);
         $this->assertCount(1, $paginator->getIterator());
         $this->assertEquals(1, $paginator->count());
+    }
+    
+    public function testCountQueryStripsParametersInSelect()
+    {
+        $query = $this->_em->createQuery(
+            'SELECT u, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS hidden promotedFirst
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
+            WHERE u.id < :id or 1=1'
+        );
+        $query->setParameter('vipMaxId', 10);
+        $query->setParameter('id', 100);
+        $query->setFirstResult(null)->setMaxResults(null);
+
+        $paginator = new Paginator($query);
+
+        $getCountQuery = new ReflectionMethod($paginator, 'getCountQuery');
+
+        $getCountQuery->setAccessible(true);
+
+        $this->assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
+        $this->assertCount(3, $paginator);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+
+        $paginator = new Paginator($query);
+
+        // if select part of query is replaced with count(...) paginator should remove
+        // parameters from query object not used in new query.
+        $this->assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
+        $this->assertCount(3, $paginator);
     }
 
     public function populate()
