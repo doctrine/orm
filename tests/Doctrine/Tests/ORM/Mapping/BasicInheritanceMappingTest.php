@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\SchemaTool;
 
 class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
@@ -167,6 +168,22 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
     }
+
+    /**
+     * Ensure indexes are inherited from the mapped superclass.
+     *
+     * @group DDC-3418
+     */
+    public function testMappedSuperclassIndex()
+    {
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\EntityIndexSubClass');
+        /* @var $class ClassMetadataInfo */
+
+        $this->assertTrue(isset($class->fieldMappings['mapped1']));
+        $this->assertTrue(isset($class->table['uniqueConstraints']['IDX_NAME_INDEX']));
+        $this->assertTrue(isset($class->table['uniqueConstraints']['IDX_MAPPED1_INDEX']));
+        $this->assertTrue(isset($class->table['indexes']['IDX_MAPPED2_INDEX']));
+    }
 }
 
 class TransientBaseClass {
@@ -200,6 +217,36 @@ class MappedSuperclassRelated1 {}
 
 /** @Entity */
 class EntitySubClass2 extends MappedSuperclassBase {
+    /** @Id @Column(type="integer") */
+    private $id;
+    /** @Column(type="string") */
+    private $name;
+}
+
+/**
+ * @MappedSuperclass
+ *
+ * @Table(
+ *  uniqueConstraints={@UniqueConstraint(name="IDX_MAPPED1_INDEX",columns={"mapped1"})},
+ *  indexes={@Index(name="IDX_MAPPED2_INDEX", columns={"mapped2"})}
+ * )
+ */
+class MappedSuperclassBaseIndex {
+    /** @Column(type="string") */
+    private $mapped1;
+    /** @Column(type="string") */
+    private $mapped2;
+}
+
+/**
+ * @Entity
+ *
+ * @Table(
+ *  uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}
+ * )
+ * */
+class EntityIndexSubClass extends MappedSuperclassBaseIndex
+{
     /** @Id @Column(type="integer") */
     private $id;
     /** @Column(type="string") */

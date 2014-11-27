@@ -175,6 +175,24 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setPrimaryTable($parent->table);
         }
 
+        if ($parent && $parent->isMappedSuperclass) {
+            //Copy the table indices from the parent
+
+            $indexTypes = array ('uniqueConstraints', 'indexes');
+
+            foreach ($indexTypes as $indexType) {
+                if (isset($parent->table[$indexType])) {
+                    foreach ($parent->table[$indexType] as $indexName => $index) {
+                        if (isset($class->table[$indexType][$indexName])) {
+                            continue; // Let the inheriting table override indices
+                        }
+
+                        $class->table[$indexType][$indexName] = $index;
+                    }
+                }
+            }
+        }
+
         if ($parent && $parent->cache) {
             $class->cache = $parent->cache;
         }
