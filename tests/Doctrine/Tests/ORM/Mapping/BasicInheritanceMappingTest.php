@@ -11,11 +11,15 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @var ClassMetadataFactory
      */
-    private $_factory;
+    private $cmf;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp() {
-        $this->_factory = new ClassMetadataFactory();
-        $this->_factory->setEntityManager($this->_getTestEntityManager());
+        $this->cmf = new ClassMetadataFactory();
+
+        $this->cmf->setEntityManager($this->_getTestEntityManager());
     }
 
     /**
@@ -23,12 +27,12 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testGetMetadataForTransientClassThrowsException()
     {
-        $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\TransientBaseClass');
+        $this->cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TransientBaseClass');
     }
 
     public function testGetMetadataForSubclassWithTransientBaseClass()
     {
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass');
+        $class = $this->cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass');
 
         $this->assertEmpty($class->subClasses);
         $this->assertEmpty($class->parentClasses);
@@ -38,7 +42,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetMetadataForSubclassWithMappedSuperclass()
     {
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass2');
+        $class = $this->cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\EntitySubClass2');
 
         $this->assertEmpty($class->subClasses);
         $this->assertEmpty($class->parentClasses);
@@ -60,7 +64,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testGetMetadataForSubclassWithMappedSuperclassWithRepository()
     {
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
+        $class = $this->cmf->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('value', $class->fieldMappings);
@@ -68,7 +72,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($class->customRepositoryClassName, 'Doctrine\Tests\Models\DDC869\DDC869PaymentRepository');
 
 
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        $class = $this->cmf->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('value', $class->fieldMappings);
@@ -77,7 +81,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
 
         // override repositoryClass
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
+        $class = $this->cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('value', $class->fieldMappings);
@@ -90,7 +94,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testSerializationWithPrivateFieldsFromMappedSuperclass()
     {
 
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\EntitySubClass2');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\EntitySubClass2');
 
         $class2 = unserialize(serialize($class));
         $class2->wakeupReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
@@ -105,7 +109,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnmappedSuperclassInHierarchy()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('a', $class->fieldMappings);
@@ -119,7 +123,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' has to be part of the discriminator map of 'Doctrine\Tests\ORM\Mapping\HierarchyBase' to be properly mapped in the inheritance hierarchy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierarchyBEntity' an abstract class to avoid this exception from occurring.");
 
-        $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
+        $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
     }
 
     /**
@@ -128,7 +132,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassWithId()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
     }
@@ -139,7 +143,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testGeneratedValueFromMappedSuperclass()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
@@ -152,7 +156,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
@@ -165,7 +169,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMultipleMappedSuperclasses()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\MediumSuperclassEntity');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\MediumSuperclassEntity');
         /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
@@ -179,7 +183,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassIndex()
     {
-        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\EntityIndexSubClass');
+        $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\EntityIndexSubClass');
         /* @var $class ClassMetadataInfo */
 
         $this->assertArrayHasKey('mapped1', $class->fieldMappings);
