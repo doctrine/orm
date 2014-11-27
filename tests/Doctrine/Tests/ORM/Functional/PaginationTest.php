@@ -154,7 +154,6 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     
     public function testCountQueryStripsParametersInSelect()
     {
-        /** @var $query Query */
         $query = $this->_em->createQuery(
             'SELECT u, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS hidden promotedFirst
             FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
@@ -170,20 +169,17 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $getCountQuery->setAccessible(true);
 
-        $countQuery = $getCountQuery->invoke($paginator);
-
-        $this->assertEquals(2, count($countQuery->getParameters()));
-        $this->assertEquals(3, $paginator->count());
+        $this->assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
+        $this->assertCount(3, $paginator);
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
 
         $paginator = new Paginator($query);
 
-        $countQuery = $getCountQuery->invoke($paginator);
-
-        //if select part of query is replaced with count(...) paginator should remove parameters from query object not used in new query.
-        $this->assertEquals(1, count($countQuery->getParameters()));
-        $this->assertEquals(3, $paginator->count());
+        // if select part of query is replaced with count(...) paginator should remove
+        // parameters from query object not used in new query.
+        $this->assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
+        $this->assertCount(3, $paginator);
     }
 
     public function populate()
