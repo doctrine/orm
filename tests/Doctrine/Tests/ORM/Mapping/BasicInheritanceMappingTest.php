@@ -8,6 +8,9 @@ use Doctrine\ORM\Tools\SchemaTool;
 
 class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 {
+    /**
+     * @var ClassMetadataFactory
+     */
     private $_factory;
 
     protected function setUp() {
