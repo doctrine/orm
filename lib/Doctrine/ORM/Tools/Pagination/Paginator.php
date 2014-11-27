@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -258,7 +259,7 @@ class Paginator implements \Countable, \IteratorAggregate
 
         $countQuery->setFirstResult(null)->setMaxResults(null);
 
-        $parser            = new Query\Parser($countQuery);
+        $parser            = new Parser($countQuery);
         $parameterMappings = $parser->parse()->getParameterMappings();
         $parameters = $countQuery->getParameters();
         foreach ($parameters as $k => $param){
