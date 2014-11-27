@@ -261,13 +261,19 @@ class Paginator implements \Countable, \IteratorAggregate
 
         $parser            = new Parser($countQuery);
         $parameterMappings = $parser->parse()->getParameterMappings();
-        $parameters = $countQuery->getParameters();
-        foreach ($parameters as $k => $param){
-            if( ! array_key_exists($param->getName(), $parameterMappings)) {
-                $parameters->remove($k);
+        /* @var $parameters \Doctrine\Common\Collections\Collection|\Doctrine\ORM\Query\Parameter[] */
+        $parameters        = $countQuery->getParameters();
+
+        foreach ($parameters as $key => $parameter) {
+            $parameterName = $parameter->getName();
+
+            if( ! (isset($parameterMappings[$parameterName]) || array_key_exists($parameterName, $parameterMappings))) {
+                unset($parameters[$key]);
             }
         }
+
         $countQuery->setParameters($parameters);
+
         return $countQuery;
     }
 }
