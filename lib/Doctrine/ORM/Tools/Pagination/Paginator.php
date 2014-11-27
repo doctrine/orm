@@ -118,12 +118,8 @@ class Paginator implements \Countable, \IteratorAggregate
     public function count()
     {
         if ($this->count === null) {
-            $countQuery = $this->getCountQuery();
-
             try {
-                $data =  $countQuery->getScalarResult();
-                $data = array_map('current', $data);
-                $this->count = array_sum($data);
+                $this->count = array_sum(array_map('current', $this->getCountQuery()->getScalarResult()));
             } catch(NoResultException $e) {
                 $this->count = 0;
             }
