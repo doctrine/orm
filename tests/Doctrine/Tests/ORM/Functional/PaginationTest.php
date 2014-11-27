@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use ReflectionMethod;
 
 /**
  * @group DDC-1613
@@ -151,7 +152,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, $paginator->count());
     }
     
-    public function testCountQuery_ParametersInSelect()
+    public function testCountQueryStripsParametersInSelect()
     {
         /** @var $query Query */
         $query = $this->_em->createQuery(
@@ -162,13 +163,23 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setFirstResult(null)->setMaxResults(null);
 
         $paginator = new Paginator($query);
-        $countQuery = $paginator->getCountQuery();
+
+        //
+        $getCountQuery = new ReflectionMethod($paginator, 'getCountQuery');
+
+        $getCountQuery->setAccessible(true);
+
+        $countQuery = $getCountQuery->invoke($paginator);
+
         $this->assertEquals(2, count($countQuery->getParameters()));
         $this->assertEquals(3, $paginator->count());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+
         $paginator = new Paginator($query);
-        $countQuery = $paginator->getCountQuery();
+
+        $countQuery = $getCountQuery->invoke($paginator);
+
         //if select part of query is replaced with count(...) paginator should remove parameters from query object not used in new query.
         $this->assertEquals(1, count($countQuery->getParameters()));
         $this->assertEquals(3, $paginator->count());
