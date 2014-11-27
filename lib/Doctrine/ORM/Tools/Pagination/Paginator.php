@@ -127,44 +127,6 @@ class Paginator implements \Countable, \IteratorAggregate
 
         return $this->count;
     }
-    /**
-     * Returns Query prepared to count.
-     *
-     * @return Query
-     */
-    public function getCountQuery()
-    {
-        /* @var $countQuery Query */
-        $countQuery = $this->cloneQuery($this->query);
-
-        if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
-            $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
-        }
-
-        if ($this->useOutputWalker($countQuery)) {
-            $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
-
-            $rsm = new ResultSetMapping();
-            $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count');
-
-            $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
-            $countQuery->setResultSetMapping($rsm);
-        } else {
-            $this->appendTreeWalker($countQuery, 'Doctrine\ORM\Tools\Pagination\CountWalker');
-        }
-
-        $countQuery->setFirstResult(null)->setMaxResults(null);
-        $parser = new Query\Parser($countQuery);
-        $parameterMappings = $parser->parse()->getParameterMappings();
-        $parameters = $countQuery->getParameters();
-        foreach ($parameters as $k => $param){
-            if( ! array_key_exists($param->getName(), $parameterMappings)) {
-                $parameters->remove($k);
-            }
-        }
-        $countQuery->setParameters($parameters);
-        return $countQuery;
-    }
 
     /**
      * {@inheritdoc}
@@ -263,5 +225,45 @@ class Paginator implements \Countable, \IteratorAggregate
 
         $hints[] = $walkerClass;
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $hints);
+    }
+
+    /**
+     * Returns Query prepared to count.
+     *
+     * @return Query
+     */
+    private function getCountQuery()
+    {
+        /* @var $countQuery Query */
+        $countQuery = $this->cloneQuery($this->query);
+
+        if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
+            $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
+        }
+
+        if ($this->useOutputWalker($countQuery)) {
+            $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
+
+            $rsm = new ResultSetMapping();
+            $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count');
+
+            $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+            $countQuery->setResultSetMapping($rsm);
+        } else {
+            $this->appendTreeWalker($countQuery, 'Doctrine\ORM\Tools\Pagination\CountWalker');
+        }
+
+        $countQuery->setFirstResult(null)->setMaxResults(null);
+
+        $parser            = new Query\Parser($countQuery);
+        $parameterMappings = $parser->parse()->getParameterMappings();
+        $parameters = $countQuery->getParameters();
+        foreach ($parameters as $k => $param){
+            if( ! array_key_exists($param->getName(), $parameterMappings)) {
+                $parameters->remove($k);
+            }
+        }
+        $countQuery->setParameters($parameters);
+        return $countQuery;
     }
 }
