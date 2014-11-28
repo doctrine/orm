@@ -216,6 +216,16 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-3414
+     */
+    public function testJoiningTableWithInheritance() {
+        $this->assertSqlGeneration(
+            'SELECT org FROM Doctrine\Tests\Models\Company\CompanyOrganization org JOIN Doctrine\Tests\Models\Company\CompanyAuction auction WITH auction.id = org.mainevent ORDER BY auction.id',
+            'SELECT c0_.id AS id_0 FROM company_organizations c0_ INNER JOIN company_auctions c1_ ON c2_.id = c0_.main_event_id INNER JOIN company_events c2_ ON c1_.id = c2_.id ORDER BY c2_.id ASC'
+        );
+    }
+
     public function testSupportsOrderByWithAscAsDefault()
     {
         $this->assertSqlGeneration(
