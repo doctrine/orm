@@ -1,12 +1,7 @@
-# Doctrine 2 ORM
-
-Master: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=master)](http://travis-ci.org/doctrine/doctrine2)
-2.4: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.4)](http://travis-ci.org/doctrine/doctrine2)
-2.3: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.3)](http://travis-ci.org/doctrine/doctrine2)
-2.2: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.2)](http://travis-ci.org/doctrine/doctrine2)
-2.1: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x)](http://travis-ci.org/doctrine/doctrine2)
-
-Master: [![Coverage Status](https://coveralls.io/repos/doctrine/doctrine2/badge.png?branch=master)](https://coveralls.io/r/doctrine/doctrine2?branch=master)
+| [Master][Master] | [2.4][2.4] | [2.3][2.3] | [2.2][2.2] | [2.1][2.1] |
+|:----------------:|:----------:|:----------:|:----------:|:----------:|
+| [![Build status][Master image]][Master] | [![Build status][2.4 image]][2.4] | [![Build status][2.3 image]][2.3] | [![Build status][2.2 image]][2.2] | [![Build status][2.1 image]][2.1] |
+| [![Coverage Status][Master coverage image]][Master coverage] |
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.2+ that provides transparent persistence
 for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features
@@ -21,3 +16,15 @@ without requiring unnecessary code duplication.
 * [Issue Tracker](http://www.doctrine-project.org/jira/browse/DDC)
 * [Downloads](http://github.com/doctrine/doctrine2/downloads)
 
+  [Master image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=master
+  [Master]: http://travis-ci.org/doctrine/doctrine2
+  [Master coverage image]: https://coveralls.io/repos/doctrine/doctrine2/badge.png?branch=master
+  [Master coverage]: https://coveralls.io/r/doctrine/doctrine2?branch=master
+  [2.4 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.4
+  [2.4]: https://github.com/doctrine/doctrine2/tree/2.4
+  [2.3 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.3
+  [2.3]: https://github.com/doctrine/doctrine2/tree/2.3
+  [2.2 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.2
+  [2.2]: https://github.com/doctrine/doctrine2/tree/2.2
+  [2.1 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x
+  [2.1]: https://github.com/doctrine/doctrine2/tree/2.1.x
