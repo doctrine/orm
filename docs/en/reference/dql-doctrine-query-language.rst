@@ -278,7 +278,7 @@ With Nested Conditions in WHERE Clause:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u from ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
+    $query = $em->createQuery('SELECT u FROM ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
     $query->setParameters(array(
         'name' => 'Bob',
         'name2' => 'Alice',
