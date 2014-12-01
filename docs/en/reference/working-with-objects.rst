@@ -103,7 +103,8 @@ from newly opened EntityManager.
         /** @OneToMany(targetEntity="Comment", mappedBy="article") */
         private $comments;
     
-        public function __construct {
+        public function __construct()
+        {
             $this->comments = new ArrayCollection();
         }
     
