@@ -171,6 +171,12 @@ class XmlExporter extends AbstractExporter
                 if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
                     $generatorXml = $idXml->addChild('generator');
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
+                    if($metadata->generatorType === ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE && $metadata->sequenceGeneratorDefinition) {
+                        $sequenceGeneratorXml = $idXml->addChild('sequence-generator');
+                        $sequenceGeneratorXml->addAttribute('sequence-name', $metadata->sequenceGeneratorDefinition['sequenceName']);
+                        $sequenceGeneratorXml->addAttribute('allocation-size', $metadata->sequenceGeneratorDefinition['allocationSize']);
+                        $sequenceGeneratorXml->addAttribute('initial-value', $metadata->sequenceGeneratorDefinition['initialValue']);
+                    }
                 }
             }
         }
