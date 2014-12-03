@@ -430,7 +430,7 @@ class SchemaTool
             $knownOptions = array('comment', 'unsigned', 'fixed', 'default');
 
             foreach ($knownOptions as $knownOption) {
-                if ( isset($mapping['options'][$knownOption])) {
+                if (array_key_exists($knownOption, $mapping['options'])) {
                     $options[$knownOption] = $mapping['options'][$knownOption];
 
                     unset($mapping['options'][$knownOption]);
