@@ -99,6 +99,23 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(count($classes), $listener->tableCalls);
         $this->assertTrue($listener->schemaCalled);
     }
+
+    public function testNullDefaultNotAddedToCustomSchemaOptions()
+    {
+        $em = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $classes = array(
+            $em->getClassMetadata('Doctrine\Tests\Models\NullDefault\NullDefaultColumn'),
+        );
+
+        $customSchemaOptions = $schemaTool->getSchemaFromMetadata($classes)
+            ->getTable('null-default')
+            ->getColumn('null-default')
+            ->getCustomSchemaOptions();
+
+        $this->assertSame(array(), $customSchemaOptions);
+    }
 }
 
 /**
