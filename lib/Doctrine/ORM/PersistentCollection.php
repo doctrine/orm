@@ -878,6 +878,7 @@ final class PersistentCollection implements Collection, Selectable
         $expression      = $criteria->getWhereExpression();
         $expression      = $expression ? $builder->andX($expression, $ownerExpression) : $ownerExpression;
 
+        $criteria = clone $critera;
         $criteria->where($expression);
 
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
