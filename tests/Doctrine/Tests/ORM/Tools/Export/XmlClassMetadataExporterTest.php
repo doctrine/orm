@@ -20,6 +20,9 @@
  */
 
 namespace Doctrine\Tests\ORM\Tools\Export;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
 /**
  * Test case for XmlClassMetadataExporterTest
@@ -38,10 +41,13 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         return 'xml';
     }
 
-
+    /**
+     * @group DDC-3428
+     */
     public function testSequenceGenerator() {
-        $exporter = new \Doctrine\ORM\Tools\Export\Driver\XmlExporter();
-        $metadata = new \Doctrine\ORM\Mapping\ClassMetadata('entityTest');
+        $exporter = new XmlExporter();
+        $metadata = new ClassMetadata('entityTest');
+
         $metadata->mapField(array(
             "fieldName" => 'id',
             "type" => 'integer',
@@ -49,24 +55,29 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
             "id" => true,
         ));
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
         $metadata->setSequenceGeneratorDefinition(array(
             'sequenceName' => 'seq_entity_test_id',
             'allocationSize' => 5,
             'initialValue' => 1
         ));
 
+        $expectedFileContent = <<<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+  <entity name="entityTest">
+    <id name="id" type="integer" column="id">
+      <generator strategy="SEQUENCE"/>
+      <sequence-generator sequence-name="seq_entity_test_id" allocation-size="5" initial-value="1"/>
+    </id>
+  </entity>
+</doctrine-mapping>
+XML;
 
-        $fileContent = '<?xml version="1.0" encoding="utf-8"?>'."\n".
-'<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">'."\n".
-'  <entity name="entityTest">'."\n".
-'    <id name="id" type="integer" column="id">'."\n".
-'      <generator strategy="SEQUENCE"/>'."\n".
-'      <sequence-generator sequence-name="seq_entity_test_id" allocation-size="5" initial-value="1"/>'."\n".
-'    </id>'."\n".
-'  </entity>'."\n".
-'</doctrine-mapping>'."\n";
-        $exportClassMetadata = $exporter->exportClassMetadata($metadata);
-        $this->assertEquals($fileContent, $exportClassMetadata);
+        $this->assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
     }
 }
