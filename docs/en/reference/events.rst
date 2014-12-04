@@ -942,8 +942,9 @@ Implementing your own resolver :
         }
     }
 
-    // configure the listener resolver.
-    $em->getConfiguration()->setEntityListenerResolver($container->get('my_resolver'));
+    // Configure the listener resolver only before instantiating the EntityManager
+    $configurations->setEntityListenerResolver(new MyEntityListenerResolver);
+    EntityManager::create(.., $configurations, ..);
 
 Load ClassMetadata Event
 ------------------------
