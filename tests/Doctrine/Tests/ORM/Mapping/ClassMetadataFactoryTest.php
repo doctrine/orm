@@ -321,6 +321,22 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
     }
+
+    /**
+     * @group DDC-3427
+     */
+    public function testAcceptsEntityManagerInterfaceInstances()
+    {
+        $classMetadataFactory = new ClassMetadataFactory();
+
+        /* @var $entityManager \Doctrine\ORM\EntityManager */
+        $entityManager        = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
+
+        $classMetadataFactory->setEntityManager($entityManager);
+
+        // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
+        $this->assertAttributeSame($entityManager, 'em', $classMetadataFactory);
+    }
 }
 
 /* Test subject class with overridden factory method for mocking purposes */
