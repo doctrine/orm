@@ -19,17 +19,17 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use ReflectionException;
-use Doctrine\ORM\ORMException;
-use Doctrine\ORM\EntityManager;
-use Doctrine\DBAL\Platforms;
-use Doctrine\ORM\Events;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\ORM\Id\IdentityGenerator;
-use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\DBAL\Platforms;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
+use Doctrine\ORM\Id\IdentityGenerator;
+use Doctrine\ORM\ORMException;
+use ReflectionException;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -45,7 +45,7 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface|null
      */
     private $em;
 
@@ -70,9 +70,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $embeddablesActiveNesting = array();
 
     /**
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
