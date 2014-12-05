@@ -18,6 +18,8 @@
  */
 
 namespace Doctrine\ORM\Mapping;
+
+use Doctrine\Instantiator\Instantiator;
 use ReflectionProperty;
 
 /**
@@ -45,6 +47,11 @@ class ReflectionEmbeddedProperty
      * @var string
      */
     private $class;
+
+    /**
+     * @var Instantiator|null
+     */
+    private $instantiator;
 
     /**
      * @param ReflectionProperty $parentProperty
@@ -83,7 +90,10 @@ class ReflectionEmbeddedProperty
         $embeddedObject = $this->parentProperty->getValue($object);
 
         if (null === $embeddedObject) {
-            $embeddedObject = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->class), $this->class));
+            $this->instantiator = $this->instantiator ?: new Instantiator();
+
+            $embeddedObject = $this->instantiator->instantiate($this->class);
+
             $this->parentProperty->setValue($object, $embeddedObject);
         }
 
