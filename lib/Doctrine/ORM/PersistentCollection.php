@@ -71,7 +71,7 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * The EntityManager that manages the persistence of the collection.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -115,11 +115,11 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * Creates a new persistent collection.
      *
-     * @param EntityManager $em    The EntityManager the collection will be associated with.
-     * @param ClassMetadata $class The class descriptor of the entity type of this collection.
-     * @param Collection    $coll  The collection elements.
+     * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
+     * @param ClassMetadata          $class The class descriptor of the entity type of this collection.
+     * @param Collection             $coll  The collection elements.
      */
-    public function __construct(EntityManager $em, $class, $coll)
+    public function __construct(EntityManagerInterface $em, $class, $coll)
     {
         $this->coll      = $coll;
         $this->em        = $em;

@@ -21,12 +21,12 @@ namespace Doctrine\ORM\Proxy;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\Common\Proxy\ProxyDefinition;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
+use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Proxy\ProxyGenerator;
+use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
@@ -41,7 +41,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 class ProxyFactory extends AbstractProxyFactory
 {
     /**
-     * @var \Doctrine\ORM\EntityManager The EntityManager this factory is bound to.
+     * @var EntityManagerInterface The EntityManager this factory is bound to.
      */
     private $em;
 
@@ -66,13 +66,13 @@ class ProxyFactory extends AbstractProxyFactory
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
-     * @param \Doctrine\ORM\EntityManager $em           The EntityManager the new factory works for.
-     * @param string                      $proxyDir     The directory to use for the proxy classes. It must exist.
-     * @param string                      $proxyNs      The namespace to use for the proxy classes.
-     * @param boolean|int                 $autoGenerate The strategy for automatically generating proxy classes. Possible
-     *                                                  values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @param EntityManagerInterface $em           The EntityManager the new factory works for.
+     * @param string                 $proxyDir     The directory to use for the proxy classes. It must exist.
+     * @param string                 $proxyNs      The namespace to use for the proxy classes.
+     * @param boolean|int            $autoGenerate The strategy for automatically generating proxy classes. Possible
+     *                                             values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      */
-    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
+    public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 

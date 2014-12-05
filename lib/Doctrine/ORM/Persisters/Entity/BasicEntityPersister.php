@@ -19,25 +19,23 @@
 
 namespace Doctrine\ORM\Persisters\Entity;
 
-use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Connection;
-
-use Doctrine\ORM\ORMException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Persisters\SqlExpressionVisitor;
-use Doctrine\ORM\Persisters\SqlValueVisitor;
-use Doctrine\ORM\Utility\IdentifierFlattener;
-
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Common\Util\ClassUtils;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\SqlExpressionVisitor;
+use Doctrine\ORM\Persisters\SqlValueVisitor;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -124,7 +122,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * The EntityManager instance.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
 
@@ -221,10 +219,10 @@ class BasicEntityPersister implements EntityPersister
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
-     * @param \Doctrine\ORM\EntityManager         $em
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param EntityManagerInterface $em
+     * @param ClassMetadata          $class
      */
-    public function __construct(EntityManager $em, ClassMetadata $class)
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
         $this->em                  = $em;
         $this->class               = $class;
