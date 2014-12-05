@@ -52,6 +52,17 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
         return array(
             array(
                 $this->getReflectionProperty(
+                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
+                    'id'
+                ),
+                $this->getReflectionProperty(
+                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
+                    'id'
+                ),
+            ),
+            // reflection on classes extending internal PHP classes:
+            array(
+                $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'publicProperty'
                 ),
