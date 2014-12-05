@@ -200,7 +200,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testCountQueryWithArithmeticOrderByCondition()
     {
         $query = $this->entityManager->createQuery(
-            'SELECT a FROM Doctrine\\Tests\\ORM\\Tools\\Pagination\\Author a ORDER BY (1 - 1000) * 1 DESC'
+            'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY (1 - 1000) * 1 DESC'
         );
         $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
@@ -209,6 +209,23 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $this->assertSame(
             'SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1 FROM Author a0_ ORDER BY (1 - 1000) * 1 DESC) dctrn_result',
             $query->getSQL()
+        );
+    }
+
+    /**
+     * @group DDC-3434
+     */
+    public function testLimitSubqueryWithHiddenSelectionInOrderBy()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT a, a.name AS HIDDEN ord FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY ord DESC'
+        );
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id0, name2 FROM (SELECT a0_.id AS id0, a0_.name AS name1, a0_.name AS name2 FROM Author a0_ ORDER BY name2 DESC) dctrn_result ORDER BY name2 DESC',
+            $query->getSql()
         );
     }
 }
