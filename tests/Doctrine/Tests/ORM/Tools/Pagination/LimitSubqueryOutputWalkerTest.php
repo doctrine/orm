@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\Query;
@@ -190,6 +191,24 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT id_0 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1, sum(a0_.name) AS sclr_2 FROM Author a0_) dctrn_result", $limitQuery->getSql()
+        );
+    }
+
+    /**
+     * @group DDC-3336
+     */
+    public function testCountQueryWithComplexOrderByCondition()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT a FROM Doctrine\\Tests\\ORM\\Tools\\Pagination\\Author a ORDER BY (1 - 1000) * 1 DESC'
+        );
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertSame(
+            'SELECT DISTINCT id_0 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1 FROM Author a0_ ORDER BY (1 - 1000) * 1 DESC) dctrn_result',
+            $query->getSQL()
         );
     }
 }
