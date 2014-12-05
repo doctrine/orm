@@ -197,7 +197,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     /**
      * @group DDC-3336
      */
-    public function testCountQueryWithComplexOrderByCondition()
+    public function testCountQueryWithArithmeticOrderByCondition()
     {
         $query = $this->entityManager->createQuery(
             'SELECT a FROM Doctrine\\Tests\\ORM\\Tools\\Pagination\\Author a ORDER BY (1 - 1000) * 1 DESC'
