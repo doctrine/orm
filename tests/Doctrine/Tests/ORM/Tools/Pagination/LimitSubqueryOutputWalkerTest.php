@@ -207,7 +207,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1 FROM Author a0_ ORDER BY (1 - 1000) * 1 DESC) dctrn_result',
+            'SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1 FROM Author a0_ ORDER BY (1 - 1000) * 1 DESC) dctrn_result',
             $query->getSQL()
         );
     }
