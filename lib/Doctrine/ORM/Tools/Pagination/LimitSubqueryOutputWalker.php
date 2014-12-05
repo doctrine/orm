@@ -13,6 +13,7 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
@@ -196,12 +197,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $orderBy         = array();
         if (isset($AST->orderByClause)) {
             foreach ($AST->orderByClause->orderByItems as $item) {
-                $possibleAliases = (is_object($item->expression))
-                    ? array_keys($this->rsm->fieldMappings, $item->expression->field)
-                    : array_keys($this->rsm->scalarMappings, $item->expression);
+                $expression = $item->expression;
+
+                $possibleAliases = $expression instanceof PathExpression
+                    ? array_keys($this->rsm->fieldMappings, $expression->field)
+                    : array_keys($this->rsm->scalarMappings, $expression);
 
                 foreach ($possibleAliases as $alias) {
-                    if (!is_object($item->expression) || $this->rsm->columnOwnerMap[$alias] == $item->expression->identificationVariable) {
+                    if (!is_object($expression) || $this->rsm->columnOwnerMap[$alias] == $expression->identificationVariable) {
                         $sqlOrderColumns[] = $alias;
                         $orderBy[]         = $alias . ' ' . $item->type;
                         break;

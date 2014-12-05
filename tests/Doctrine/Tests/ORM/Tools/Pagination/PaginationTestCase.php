@@ -6,6 +6,9 @@ use Doctrine\Tests\OrmTestCase;
 
 abstract class PaginationTestCase extends OrmTestCase
 {
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     public $entityManager;
 
     public function setUp()
