@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM\Mapping;
+use ReflectionProperty;
 
 /**
  * Acts as a proxy to a nested Property structure, making it look like
@@ -30,17 +31,38 @@ namespace Doctrine\ORM\Mapping;
  */
 class ReflectionEmbeddedProperty
 {
+    /**
+     * @var ReflectionProperty
+     */
     private $parentProperty;
+
+    /**
+     * @var ReflectionProperty
+     */
     private $childProperty;
+
+    /**
+     * @var string
+     */
     private $class;
 
-    public function __construct($parentProperty, $childProperty, $class)
+    /**
+     * @param ReflectionProperty $parentProperty
+     * @param ReflectionProperty $childProperty
+     * @param string             $class
+     */
+    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $class)
     {
         $this->parentProperty = $parentProperty;
-        $this->childProperty = $childProperty;
-        $this->class = $class;
+        $this->childProperty  = $childProperty;
+        $this->class          = (string) $class;
     }
 
+    /**
+     * @param $object
+     *
+     * @return object|null
+     */
     public function getValue($object)
     {
         $embeddedObject = $this->parentProperty->getValue($object);
@@ -52,6 +74,10 @@ class ReflectionEmbeddedProperty
         return $this->childProperty->getValue($embeddedObject);
     }
 
+    /**
+     * @param object $object
+     * @param mixed  $value
+     */
     public function setValue($object, $value)
     {
         $embeddedObject = $this->parentProperty->getValue($object);
