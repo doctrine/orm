@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\Tests\Models\Mapping;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -106,9 +106,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToMany(
             array(
-            'fieldName' => 'groups',
-            'targetEntity' => 'CmsGroup'
-        ));
+                'fieldName' => 'groups',
+                'targetEntity' => 'CmsGroup'
+            )
+        );
 
         $assoc = $cm->associationMappings['groups'];
         //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $assoc);
@@ -126,9 +127,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToMany(
             array(
-            'fieldName' => 'groups',
-            'targetEntity' => 'CmsGroup'
-        ));
+                'fieldName' => 'groups',
+                'targetEntity' => 'CmsGroup'
+            )
+        );
 
         /* @var $assoc \Doctrine\ORM\Mapping\ManyToManyMapping */
         $assoc = $cm->associationMappings['groups'];
@@ -169,7 +171,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-268
      */
-    public function testSetInvalidVersionMapping_ThrowsException()
+    public function testSetInvalidVersionMappingThrowsException()
     {
         $field = array();
         $field['fieldName'] = 'foo';
@@ -182,7 +184,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->setVersionMapping($field);
     }
 
-    public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()
+    public function testGetSingleIdentifierFieldNameMultipleIdentifierEntityThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -205,7 +207,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->addInheritedAssociationMapping($a2);
     }
 
-    public function testDuplicateColumnName_ThrowsMappingException()
+    public function testDuplicateColumnNameThrowsMappingException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -216,7 +218,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapField(array('fieldName' => 'username', 'columnName' => 'name'));
     }
 
-    public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
+    public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -227,7 +229,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->setDiscriminatorColumn(array('name' => 'name'));
     }
 
-    public function testDuplicateColumnName_DiscriminatorColumn2_ThrowsMappingException()
+    public function testDuplicateColumnNameDiscriminatorColumn2ThrowsMappingException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -238,7 +240,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
     }
 
-    public function testDuplicateFieldAndAssociationMapping1_ThrowsException()
+    public function testDuplicateFieldAndAssociationMapping1ThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -249,7 +251,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapOneToOne(array('fieldName' => 'name', 'targetEntity' => 'CmsUser'));
     }
 
-    public function testDuplicateFieldAndAssociationMapping2_ThrowsException()
+    public function testDuplicateFieldAndAssociationMapping2ThrowsException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -487,8 +489,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testEmptyFieldNameThrowsException()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "The field or association mapping misses the 'fieldName' attribute in entity 'Doctrine\Tests\Models\CMS\CmsUser'.");
+        $this->setExpectedException(
+            'Doctrine\ORM\Mapping\MappingException',
+            "The field or association mapping misses the 'fieldName' attribute in entity 'Doctrine\Tests\Models\CMS\CmsUser'."
+        );
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -916,10 +920,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategy()
     {
-        $namingStrategy     = new MyNamespacedNamingStrategy();
+        $namingStrategy     = new Mapping\MyNamespacedNamingStrategy();
         $addressMetadata    = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
         $articleMetadata    = new ClassMetadata('DoctrineGlobal_Article', $namingStrategy);
-        $routingMetadata    = new ClassMetadata('Doctrine\Tests\Models\Routing\RoutingLeg',$namingStrategy);
+        $routingMetadata    = new ClassMetadata('Doctrine\Tests\Models\Routing\RoutingLeg', $namingStrategy);
 
         $addressMetadata->initializeReflection(new RuntimeReflectionService());
         $articleMetadata->initializeReflection(new RuntimeReflectionService());
@@ -946,7 +950,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategyPropertyToColumnName()
     {
-        $namingStrategy = new MyPrefixNamingStrategy();
+        $namingStrategy = new Mapping\MyPrefixNamingStrategy();
         $metadata       = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
 
         $metadata->initializeReflection(new RuntimeReflectionService());
@@ -972,7 +976,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
 
         $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => array('invalid')));
-     }
+    }
 
     /**
      * @group DDC-964
@@ -1098,7 +1102,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testIsIdentifierMappedSuperClass()
     {
-        $class = new ClassMetadata(__NAMESPACE__ . '\\DDC2700MappedSuperClass');
+        $class = new ClassMetadata('Doctrine\\Tests\\Models\\Mapping\\DDC2700MappedSuperClass');
 
         $this->assertFalse($class->isIdentifier('foo'));
     }
@@ -1108,9 +1112,9 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCanInstantiateInternalPhpClassSubclass()
     {
-        $classMetadata = new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity');
+        $classMetadata = new ClassMetadata('Doctrine\\Tests\\Models\\Mapping\\MyArrayObjectEntity');
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
+        $this->assertInstanceOf('Doctrine\\Tests\\Models\\Mapping\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
 
     /**
@@ -1119,49 +1123,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
     {
         /* @var $classMetadata ClassMetadata */
-        $classMetadata = unserialize(serialize(new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity')));
+        $classMetadata = unserialize(serialize(new ClassMetadata('Doctrine\\Tests\\Models\\Mapping\\MyArrayObjectEntity')));
 
         $classMetadata->wakeupReflection(new RuntimeReflectionService());
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
+        $this->assertInstanceOf('Doctrine\\Tests\\Models\\Mapping\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
-}
-
-/**
- * @MappedSuperclass
- */
-class DDC2700MappedSuperClass
-{
-    /** @Column */
-    private $foo;
-}
-
-class MyNamespacedNamingStrategy extends DefaultNamingStrategy
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function classToTableName($className)
-    {
-        if (strpos($className, '\\') !== false) {
-            $className = str_replace('\\', '_', str_replace('Doctrine\Tests\Models\\', '', $className));
-        }
-
-        return strtolower($className);
-    }
-}
-
-class MyPrefixNamingStrategy extends DefaultNamingStrategy
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function propertyToColumnName($propertyName, $className = null)
-    {
-        return strtolower($this->classToTableName($className)) . '_' . $propertyName;
-    }
-}
-
-class MyArrayObjectEntity extends \ArrayObject
-{
 }

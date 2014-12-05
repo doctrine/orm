@@ -3199,6 +3199,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
+        var_dump($embeddable->fieldMappings);
         foreach ($embeddable->fieldMappings as $fieldMapping) {
             $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
                 ? $fieldMapping['originalClass']

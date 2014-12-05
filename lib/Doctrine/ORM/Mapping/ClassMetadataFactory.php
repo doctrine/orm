@@ -148,26 +148,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         if (!$class->isMappedSuperclass) {
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
-
-                if (isset($embeddableClass['inherited'])) {
-                    continue;
-                }
-
-                if (isset($this->embeddablesActiveNesting[$embeddableClass['class']])) {
-                    throw MappingException::infiniteEmbeddableNesting($class->name, $property);
-                }
-
-                $this->embeddablesActiveNesting[$class->name] = true;
-
-                $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
-
-                if ($embeddableMetadata->isEmbeddedClass) {
-                    $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
-                }
-
-                $class->inlineEmbeddable($property, $embeddableMetadata);
-
-                unset($this->embeddablesActiveNesting[$class->name]);
+                $class->fieldMappings[$property] = $embeddableClass;
             }
         }
 
