@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\Models\StockExchange;
+namespace Doctrine\Tests\Models\Reflection;
 
 use ArrayObject;
 
