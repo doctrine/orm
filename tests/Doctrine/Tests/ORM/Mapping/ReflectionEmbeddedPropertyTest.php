@@ -43,6 +43,30 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param ReflectionProperty $parentProperty
+     * @param ReflectionProperty $childProperty
+     *
+     * @dataProvider getTestedReflectionProperties
+     */
+    public function testWillSkipReadingPropertiesFromNullEmbeddable(
+        ReflectionProperty $parentProperty,
+        ReflectionProperty $childProperty
+    )
+    {
+        $embeddedPropertyReflection = new ReflectionEmbeddedProperty(
+            $parentProperty,
+            $childProperty,
+            $childProperty->getDeclaringClass()->getName()
+        );
+
+        $instantiator = new Instantiator();
+
+        $this->assertNull($embeddedPropertyReflection->getValue(
+            $instantiator->instantiate($parentProperty->getDeclaringClass()->getName())
+        ));
+    }
+
+    /**
      * Data provider
      *
      * @return ReflectionProperty[][]
