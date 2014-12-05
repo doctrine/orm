@@ -31,7 +31,7 @@ use ReflectionProperty;
  *
  * TODO: Move this class into Common\Reflection
  */
-class ReflectionEmbeddedProperty
+class ReflectionEmbeddedProperty extends ReflectionProperty
 {
     /**
      * @var ReflectionProperty
@@ -42,11 +42,6 @@ class ReflectionEmbeddedProperty
      * @var ReflectionProperty
      */
     private $childProperty;
-
-    /**
-     * @var string
-     */
-    private $class;
 
     /**
      * @var Instantiator|null
@@ -62,15 +57,14 @@ class ReflectionEmbeddedProperty
     {
         $this->parentProperty = $parentProperty;
         $this->childProperty  = $childProperty;
-        $this->class          = (string) $class;
+
+        parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
 
     /**
-     * @param $object
-     *
-     * @return object|null
+     * {@inheritDoc}
      */
-    public function getValue($object)
+    public function getValue($object = null)
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
@@ -82,10 +76,9 @@ class ReflectionEmbeddedProperty
     }
 
     /**
-     * @param object $object
-     * @param mixed  $value
+     * {@inheritDoc}
      */
-    public function setValue($object, $value)
+    public function setValue($object, $value = null)
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
