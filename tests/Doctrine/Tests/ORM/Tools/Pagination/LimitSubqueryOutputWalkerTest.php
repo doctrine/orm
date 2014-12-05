@@ -211,5 +211,22 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             $query->getSQL()
         );
     }
+
+    /**
+     * @group DDC-3434
+     */
+    public function testLimitSubqueryWithHiddenSelectionInOrderBy()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT a, a.name AS HIDDEN ord FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY ord DESC'
+        );
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0, name_2 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1, a0_.name AS name_2 FROM Author a0_ ORDER BY name_2 DESC) dctrn_result ORDER BY name_2 DESC',
+            $query->getSql()
+        );
+    }
 }
 
