@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\Query;
 
 class LimitSubqueryOutputWalkerTest extends PaginationTestCase
@@ -22,7 +24,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithSortPg()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a ORDER BY p.title');
@@ -39,7 +41,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithScalarSortPg()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity'
@@ -58,7 +60,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithMixedSortPg()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
@@ -77,7 +79,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithHiddenScalarSortPg()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform);
 
         $query = $this->entityManager->createQuery(
            'SELECT u, g, COUNT(g.id) AS hidden g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
@@ -96,7 +98,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryPg()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform);
 
         $this->testLimitSubquery();
 
@@ -106,7 +108,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithSortOracle()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\OraclePlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a ORDER BY p.title');
@@ -124,7 +126,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithScalarSortOracle()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\OraclePlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity'
@@ -144,7 +146,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithMixedSortOracle()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\OraclePlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
@@ -164,7 +166,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryOracle()
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\OraclePlatform);
+        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform);
 
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a');
@@ -179,7 +181,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
-    public function testCountQuery_MixedResultsWithName()
+    public function testCountQueryMixedResultsWithName()
     {
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a');
