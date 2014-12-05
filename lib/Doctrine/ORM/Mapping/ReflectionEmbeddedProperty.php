@@ -67,7 +67,7 @@ class ReflectionEmbeddedProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if ($embeddedObject === null) {
+        if (null === $embeddedObject) {
             return null;
         }
 
@@ -82,7 +82,7 @@ class ReflectionEmbeddedProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if ($embeddedObject === null) {
+        if (null === $embeddedObject) {
             $embeddedObject = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->class), $this->class));
             $this->parentProperty->setValue($object, $embeddedObject);
         }
