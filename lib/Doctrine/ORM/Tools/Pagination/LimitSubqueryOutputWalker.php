@@ -93,7 +93,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     public function walkSelectStatement(SelectStatement $AST)
     {
         // Set every select expression as visible(hidden = false) to
-        // make $AST to have scalar mappings properly
+        // make $AST have scalar mappings properly - this is relevant for referencing selected
+        // fields from outside the subquery, for example in the ORDER BY segment
         $hiddens = array();
 
         foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
