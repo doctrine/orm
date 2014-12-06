@@ -460,6 +460,24 @@ class QueryBuilder
     }
 
     /**
+     * Gets all the aliases that have been used in the query.
+     * Including all select root aliases and join aliases
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->join('u.articles','a';
+     *
+     *     $qb->getAllAliases(); // array('u','a')
+     * </code>
+     * @return array
+     */
+    public function getAllAliases() {
+        return array_merge($this->getRootAliases(),array_keys($this->joinRootAliases));
+    }
+
+    /**
      * Gets the root entities of the query. This is the entity aliases involved
      * in the construction of the query.
      *
@@ -1221,8 +1239,12 @@ class QueryBuilder
      */
     public function addCriteria(Criteria $criteria)
     {
-        $rootAlias = $this->getRootAlias();
-        $visitor = new QueryExpressionVisitor($rootAlias);
+        $allAliases = $this->getAllAliases();
+        if ( ! isset($allAliases[0])) {
+            throw new \RuntimeException('No aliases are set before invoking addCriteria().');
+        }
+
+        $visitor = new QueryExpressionVisitor($this->getAllAliases());
 
         if ($whereExpression = $criteria->getWhereExpression()) {
             $this->andWhere($visitor->dispatch($whereExpression));
@@ -1233,7 +1255,20 @@ class QueryBuilder
 
         if ($criteria->getOrderings()) {
             foreach ($criteria->getOrderings() as $sort => $order) {
-                $this->addOrderBy($rootAlias . '.' . $sort, $order);
+
+                $hasValidAlias = false;
+                foreach($allAliases as $alias) {
+                    if(strpos($sort . '.', $alias . '.') === 0) {
+                        $hasValidAlias = true;
+                        break;
+                    }
+                }
+
+                if(!$hasValidAlias) {
+                    $sort = $allAliases[0] . '.' . $sort;
+                }
+
+                $this->addOrderBy($sort, $order);
             }
         }
 
