@@ -47,7 +47,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->visitor = new QueryExpressionVisitor(['o','p']);
+        $this->visitor = new QueryExpressionVisitor(array('o','p'));
     }
 
     /**
