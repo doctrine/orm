@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
+use Doctrine\Tests\Models\Mapping\Entity;
 use ReflectionProperty;
 
 /**
@@ -64,6 +65,24 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($embeddedPropertyReflection->getValue(
             $instantiator->instantiate($parentProperty->getDeclaringClass()->getName())
         ));
+    }
+
+    public function testSetValueCanInstantiateObject()
+    {
+        $entity = new Entity();
+        $parentProperty = new ReflectionProperty('Doctrine\Tests\Models\Mapping\Entity', 'embedded');
+        $parentProperty->setAccessible(true);
+        $childProperty = new ReflectionProperty('Doctrine\Tests\Models\Mapping\Embedded', 'foo');
+        $childProperty->setAccessible(true);
+        $embeddedPropertyReflection = new ReflectionEmbeddedProperty(
+            $parentProperty,
+            $childProperty,
+            'Doctrine\Tests\Models\Mapping\Embedded'
+        );
+
+        $embeddedPropertyReflection->setValue($entity, 4);
+
+        $this->assertEquals(4, $entity->getEmbedded()->getFoo());
     }
 
     /**

@@ -49,6 +49,11 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     private $instantiator;
 
     /**
+     * @var string
+     */
+    private $reflectionClass;
+
+    /**
      * @param ReflectionProperty $parentProperty
      * @param ReflectionProperty $childProperty
      * @param string             $class
@@ -57,6 +62,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $this->parentProperty = $parentProperty;
         $this->childProperty  = $childProperty;
+        $this->reflectionClass = $class;
 
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
@@ -85,7 +91,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
         if (null === $embeddedObject) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
 
-            $embeddedObject = $this->instantiator->instantiate($this->class);
+            $embeddedObject = $this->instantiator->instantiate($this->reflectionClass);
 
             $this->parentProperty->setValue($object, $embeddedObject);
         }
