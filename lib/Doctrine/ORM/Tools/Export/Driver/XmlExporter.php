@@ -206,7 +206,8 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['options'])) {
                     $optionsXml = $fieldXml->addChild('options');
                     foreach ($field['options'] as $key => $value) {
-                        $optionsXml->addAttribute($key, $value);
+                        $optionXml = $optionsXml->addChild('option', $value);
+                        $optionXml->addAttribute('name', $key);
                     }
                 }
 
