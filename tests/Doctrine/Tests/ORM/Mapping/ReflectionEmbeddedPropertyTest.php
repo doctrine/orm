@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
+use Doctrine\Tests\Models\Mapping\Entity;
 use ReflectionProperty;
 
 /**
@@ -14,20 +15,18 @@ use ReflectionProperty;
 class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param ReflectionProperty $parentProperty
-     * @param ReflectionProperty $childProperty
+     * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
+     * @param ReflectionProperty $childProperty   property of the embeddable class where to write values to
+     * @param string             $embeddableClass name of the embeddable class to be instantiated
      *
      * @dataProvider getTestedReflectionProperties
      */
     public function testCanSetAndGetEmbeddedProperty(
         ReflectionProperty $parentProperty,
-        ReflectionProperty $childProperty
+        ReflectionProperty $childProperty,
+        $embeddableClass
     ) {
-        $embeddedPropertyReflection = new ReflectionEmbeddedProperty(
-            $parentProperty,
-            $childProperty,
-            $childProperty->getDeclaringClass()->getName()
-        );
+        $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
         $instantiator = new Instantiator();
 
@@ -43,21 +42,18 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param ReflectionProperty $parentProperty
-     * @param ReflectionProperty $childProperty
+     * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
+     * @param ReflectionProperty $childProperty   property of the embeddable class where to write values to
+     * @param string             $embeddableClass name of the embeddable class to be instantiated
      *
      * @dataProvider getTestedReflectionProperties
      */
     public function testWillSkipReadingPropertiesFromNullEmbeddable(
         ReflectionProperty $parentProperty,
-        ReflectionProperty $childProperty
-    )
-    {
-        $embeddedPropertyReflection = new ReflectionEmbeddedProperty(
-            $parentProperty,
-            $childProperty,
-            $childProperty->getDeclaringClass()->getName()
-        );
+        ReflectionProperty $childProperty,
+        $embeddableClass
+    ) {
+        $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
         $instantiator = new Instantiator();
 
@@ -69,7 +65,7 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
     /**
      * Data provider
      *
-     * @return ReflectionProperty[][]
+     * @return ReflectionProperty[][]|string[][]
      */
     public function getTestedReflectionProperties()
     {
@@ -83,6 +79,30 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
                     'id'
                 ),
+                'Doctrine\\Tests\\Models\\Generic\\BooleanModel'
+            ),
+            // reflection on embeddables that have properties defined in abstract ancestors:
+            array(
+                $this->getReflectionProperty(
+                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
+                    'id'
+                ),
+                $this->getReflectionProperty(
+                    'Doctrine\\Tests\\Models\\Reflection\\AbstractEmbeddable',
+                    'propertyInAbstractClass'
+                ),
+                'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
+            ),
+            array(
+                $this->getReflectionProperty(
+                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
+                    'id'
+                ),
+                $this->getReflectionProperty(
+                    'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable',
+                    'propertyInConcreteClass'
+                ),
+                'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
             ),
             // reflection on classes extending internal PHP classes:
             array(
@@ -94,6 +114,7 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'privateProperty'
                 ),
+                'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
             ),
             array(
                 $this->getReflectionProperty(
@@ -104,6 +125,7 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'protectedProperty'
                 ),
+                'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
             ),
             array(
                 $this->getReflectionProperty(
@@ -114,6 +136,7 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'publicProperty'
                 ),
+                'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
             ),
         );
     }
