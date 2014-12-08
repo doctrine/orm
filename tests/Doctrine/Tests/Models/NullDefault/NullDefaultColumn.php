@@ -2,22 +2,12 @@
 
 namespace Doctrine\Tests\Models\NullDefault;
 
-/**
- * @Entity
- * @Table(name="null-default")
- */
+/** @Entity */
 class NullDefaultColumn
 {
-
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
 
-    /**
-     * @Column(name="`null-default`",nullable=true,options={"default":NULL})
-     */
+    /** @Column(options={"default":NULL}) */
     public $nullDefault;
 }
