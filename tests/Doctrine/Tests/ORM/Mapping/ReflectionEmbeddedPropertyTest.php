@@ -62,24 +62,6 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
-    public function testSetValueCanInstantiateObject()
-    {
-        $entity = new Entity();
-        $parentProperty = new ReflectionProperty('Doctrine\Tests\Models\Mapping\Entity', 'embedded');
-        $parentProperty->setAccessible(true);
-        $childProperty = new ReflectionProperty('Doctrine\Tests\Models\Mapping\Embedded', 'foo');
-        $childProperty->setAccessible(true);
-        $embeddedPropertyReflection = new ReflectionEmbeddedProperty(
-            $parentProperty,
-            $childProperty,
-            'Doctrine\Tests\Models\Mapping\Embedded'
-        );
-
-        $embeddedPropertyReflection->setValue($entity, 4);
-
-        $this->assertEquals(4, $entity->getEmbedded()->getFoo());
-    }
-
     /**
      * Data provider
      *
