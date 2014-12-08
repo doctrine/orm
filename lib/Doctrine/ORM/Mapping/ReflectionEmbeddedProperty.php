@@ -34,14 +34,19 @@ use ReflectionProperty;
 class ReflectionEmbeddedProperty extends ReflectionProperty
 {
     /**
-     * @var ReflectionProperty
+     * @var ReflectionProperty reflection property of the class where the embedded object has to be put
      */
     private $parentProperty;
 
     /**
-     * @var ReflectionProperty
+     * @var ReflectionProperty reflection property of the embedded object
      */
     private $childProperty;
+
+    /**
+     * @var string name of the embedded class to be eventually instantiated
+     */
+    private $embeddedClass;
 
     /**
      * @var Instantiator|null
@@ -49,20 +54,15 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     private $instantiator;
 
     /**
-     * @var string
-     */
-    private $reflectionClass;
-
-    /**
      * @param ReflectionProperty $parentProperty
      * @param ReflectionProperty $childProperty
-     * @param string             $class
+     * @param string             $embeddedClass
      */
-    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $class)
+    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
     {
-        $this->parentProperty = $parentProperty;
-        $this->childProperty  = $childProperty;
-        $this->reflectionClass = $class;
+        $this->parentProperty  = $parentProperty;
+        $this->childProperty   = $childProperty;
+        $this->embeddedClass   = (string) $embeddedClass;
 
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
@@ -91,7 +91,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
         if (null === $embeddedObject) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
 
-            $embeddedObject = $this->instantiator->instantiate($this->reflectionClass);
+            $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);
 
             $this->parentProperty->setValue($object, $embeddedObject);
         }
