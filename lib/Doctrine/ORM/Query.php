@@ -35,7 +35,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-final class Query extends AbstractQuery
+class Query extends AbstractQuery
 {
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
