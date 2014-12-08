@@ -112,8 +112,8 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         );
 
         $customSchemaOptions = $schemaTool->getSchemaFromMetadata($classes)
-            ->getTable('null-default')
-            ->getColumn('null-default')
+            ->getTable('NullDefaultColumn')
+            ->getColumn('nullDefault')
             ->getCustomSchemaOptions();
 
         $this->assertSame(array(), $customSchemaOptions);
