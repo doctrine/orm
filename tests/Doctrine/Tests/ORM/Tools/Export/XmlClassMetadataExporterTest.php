@@ -80,4 +80,40 @@ XML;
 
         $this->assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
     }
+
+    /**
+     * @group 1214
+     * @group 1216
+     * @group DDC-3439
+     */
+    public function testFieldOptionsExport() {
+        $exporter = new XmlExporter();
+        $metadata = new ClassMetadata('entityTest');
+
+        $metadata->mapField(array(
+            "fieldName" => 'myField',
+            "type" => 'string',
+            "columnName" => 'my_field',
+            "options" => array(
+                "default" => "default_string",
+                "comment" => "The comment for the field",
+            ),
+        ));
+
+        $expectedFileContent = <<<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="entityTest">
+    <field name="myField" type="string" column="my_field">
+      <options>
+        <option name="default">default_string</option>
+        <option name="comment">The comment for the field</option>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
+XML;
+
+        $this->assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
+    }
 }
