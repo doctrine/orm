@@ -82,7 +82,9 @@ XML;
     }
 
     /**
-     * @url https://github.com/doctrine/doctrine2/pull/1214
+     * @group 1214
+     * @group 1216
+     * @group DDC-3439
      */
     public function testFieldOptionsExport() {
         $exporter = new XmlExporter();
