@@ -13,6 +13,9 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\SqlWalker;
@@ -214,27 +217,23 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
     {
-        // Get order by clause as a string
-        $orderBy = null;
-        if ($orderByClause instanceof OrderByClause) {
-            $orderBy = $this->walkOrderByClause($orderByClause);
-        }
-
         // If the sql statement has an order by clause, we need to wrap it in a new select distinct
         // statement
-        if ($orderBy) {
+        if ($orderByClause instanceof OrderByClause) {
             // Rebuild the order by clause to work in the scope of the new select statement
-            list($sqlOrderColumns, $orderBy) = $this->rebuildOrderByClauseForOuterScope($orderBy);
+            /** @var array $sqlOrderColumns an array of items that need to be included in the select list */
+            /** @var array $orderBy an array of rebuilt order by items */
+            list($sqlOrderColumns, $orderBy) = $this->rebuildOrderByClauseForOuterScope($orderByClause);
 
             // Identifiers are always included in the select list, so there's no need to include them twice
             $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
 
             // Build the select distinct statement
             $sql = sprintf(
-                'SELECT DISTINCT %s FROM (%s) dctrn_result%s',
+                'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
                 implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
                 $innerSql,
-                $orderBy
+                implode(', ', $orderBy)
             );
         }
 
@@ -244,15 +243,16 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Generates a new order by clause that works in the scope of a select query wrapping the original
      *
-     * @param string $orderByClause
+     * @param OrderByClause $orderByClause
      * @return array
      */
-    protected function rebuildOrderByClauseForOuterScope($orderByClause) {
+    protected function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause) {
         $dqlAliasToSqlTableAliasMap
             = $searchPatterns
             = $replacements
             = $dqlAliasToClassMap
-            = $replacedAliases
+            = $selectListAdditions
+            = $orderByItems
             = array();
 
         // Generate DQL alias -> SQL table alias mapping
@@ -279,24 +279,20 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $replacements[] = $fieldAlias;
         }
 
-        // Scalar expression aliases will not be modified in the order by clause, but will
-        // be included in the select list of the wrapping query
-        $scalarSearchPattern = "/(?<![a-z0-9_])%s(?![a-z0-9_])/i";
-        foreach(array_keys($this->rsm->scalarMappings) as $scalarField) {
-            if(preg_match(sprintf($scalarSearchPattern, $scalarField), $orderByClause)) {
-                $replacedAliases[] = $scalarField;
-            }
+        foreach($orderByClause->orderByItems as $orderByItem) {
+            // Walk order by item to get string representation of it
+            $orderByItem = $this->walkOrderByItem($orderByItem);
+
+            // Replace path expressions in the order by clause with their column alias
+            $orderByItem = preg_replace($searchPatterns, $replacements, $orderByItem);
+
+            // The order by items are not required to be in the select list on Oracle and PostgreSQL, but
+            // for the sake of simplicity, order by items will be included in the select list on all platforms.
+            // This doesn't impact functionality.
+            $selectListAdditions[] = trim(str_ireplace(array("asc", "desc"), "", $orderByItem));
+            $orderByItems[] = $orderByItem;
         }
 
-        // Replace path expressions in the order by clause with their column alias
-        foreach($searchPatterns as $index => $pattern) {
-            $newOrderByClause = preg_replace($pattern, $replacements[$index], $orderByClause);
-            if ($newOrderByClause !== $orderByClause) {
-                $orderByClause = $newOrderByClause;
-                $replacedAliases[] = $replacements[$index];
-            }
-        }
-
-        return array($replacedAliases, $orderByClause);
+        return array($selectListAdditions, $orderByItems);
     }
 }
