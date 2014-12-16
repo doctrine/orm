@@ -58,6 +58,18 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private $maxResults;
 
     /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $em;
+
+    /**
+     * The quote strategy.
+     *
+     * @var \Doctrine\ORM\Mapping\QuoteStrategy
+     */
+    private $quoteStrategy;
+
+    /**
      * Constructor.
      *
      * Stores various parameters that are otherwise unavailable
@@ -78,6 +90,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $this->firstResult = $query->getFirstResult();
         $this->maxResults = $query->getMaxResults();
         $query->setFirstResult(null)->setMaxResults(null);
+
+        $this->em               = $query->getEntityManager();
+        $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();
 
         parent::__construct($query, $parserResult, $queryComponents);
     }
@@ -188,7 +203,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * Generates new SQL for Postgresql or Oracle if necessary.
+     * Generates new SQL for SQL Server, Postgresql, or Oracle if necessary.
      *
      * @param array           $sqlIdentifier
      * @param string          $innerSql
@@ -199,43 +214,89 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
     {
-        // For every order by, find out the SQL alias by inspecting the ResultSetMapping.
-        $sqlOrderColumns = array();
-        $orderBy         = array();
+        // Get order by clause as a string
+        $orderBy = null;
         if ($orderByClause instanceof OrderByClause) {
-            foreach ($orderByClause->orderByItems as $item) {
-                $expression = $item->expression;
-
-                $possibleAliases = $expression instanceof PathExpression
-                    ? array_keys($this->rsm->fieldMappings, $expression->field)
-                    : array_keys($this->rsm->scalarMappings, $expression);
-
-                foreach ($possibleAliases as $alias) {
-                    if (!is_object($expression) || $this->rsm->columnOwnerMap[$alias] == $expression->identificationVariable) {
-                        $sqlOrderColumns[] = $alias;
-                        $orderBy[]         = $alias . ' ' . $item->type;
-                        break;
-                    }
-                }
-                if(empty($possibleAliases)) {
-                    $orderBy[] = $this->walkOrderByItem($item);
-                }
-
-            }
-            // remove identifier aliases
-            $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
+            $orderBy = $this->walkOrderByClause($orderByClause);
         }
 
-        if (count($orderBy)) {
+        // If the sql statement has an order by clause, we need to wrap it in a new select distinct
+        // statement
+        if ($orderBy) {
+            // Rebuild the order by clause to work in the scope of the new select statement
+            list($sqlOrderColumns, $orderBy) = $this->rebuildOrderByClauseForOuterScope($orderBy);
 
+            // Identifiers are always included in the select list, so there's no need to include them twice
+            $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
+
+            // Build the select distinct statement
             $sql = sprintf(
-                'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+                'SELECT DISTINCT %s FROM (%s) dctrn_result%s',
                 implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
                 $innerSql,
-                implode(', ', $orderBy)
+                $orderBy
             );
         }
 
         return $sql;
+    }
+
+    /**
+     * Generates a new order by clause that works in the scope of a select query wrapping the original
+     *
+     * @param string $orderByClause
+     * @return array
+     */
+    protected function rebuildOrderByClauseForOuterScope($orderByClause) {
+        $dqlAliasToSqlTableAliasMap
+            = $searchPatterns
+            = $replacements
+            = $dqlAliasToClassMap
+            = $replacedAliases
+            = array();
+
+        // Generate DQL alias -> SQL table alias mapping
+        foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
+            $dqlAliasToClassMap[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
+            $dqlAliasToSqlTableAliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+        }
+
+        // Pattern to find table path expressions in the order by clause
+        $fieldSearchPattern = "/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i";
+
+        // Generate search patterns for each field's path expression in the order by clause
+        foreach($this->rsm->fieldMappings as $fieldAlias => $columnName) {
+            $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
+            $columnName = $this->quoteStrategy->getColumnName(
+                $columnName,
+                $dqlAliasToClassMap[$dqlAliasForFieldAlias],
+                $this->em->getConnection()->getDatabasePlatform()
+            );
+
+            $sqlTableAliasForFieldAlias = $dqlAliasToSqlTableAliasMap[$dqlAliasForFieldAlias];
+
+            $searchPatterns[] = sprintf($fieldSearchPattern, $sqlTableAliasForFieldAlias, $columnName);
+            $replacements[] = $fieldAlias;
+        }
+
+        // Scalar expression aliases will not be modified in the order by clause, but will
+        // be included in the select list of the wrapping query
+        $scalarSearchPattern = "/(?<![a-z0-9_])%s(?![a-z0-9_])/i";
+        foreach(array_keys($this->rsm->scalarMappings) as $scalarField) {
+            if(preg_match(sprintf($scalarSearchPattern, $scalarField), $orderByClause)) {
+                $replacedAliases[] = $scalarField;
+            }
+        }
+
+        // Replace path expressions in the order by clause with their column alias
+        foreach($searchPatterns as $index => $pattern) {
+            $newOrderByClause = preg_replace($pattern, $replacements[$index], $orderByClause);
+            if ($newOrderByClause !== $orderByClause) {
+                $orderByClause = $newOrderByClause;
+                $replacedAliases[] = $replacements[$index];
+            }
+        }
+
+        return array($replacedAliases, $orderByClause);
     }
 }
