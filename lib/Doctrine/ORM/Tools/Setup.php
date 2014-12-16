@@ -42,7 +42,7 @@ class Setup
      *
      * @return void
      */
-    public static function registerAutoloadDirectory($directory)
+    public function doRegisterAutoloadDirectory($directory)
     {
         if (!class_exists('Doctrine\Common\ClassLoader', false)) {
             require_once $directory . "/Doctrine/Common/ClassLoader.php";
@@ -51,7 +51,7 @@ class Setup
         $loader = new ClassLoader("Doctrine", $directory);
         $loader->register();
 
-        $loader = new ClassLoader("Symfony\Component", $directory . "/Doctrine");
+        $loader = new ClassLoader("Symfony\\Component", $directory . "/Doctrine");
         $loader->register();
     }
 
@@ -66,9 +66,9 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
+    public function doCreateAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
     {
-        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
+        $config = $this->doCreateConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader));
 
         return $config;
@@ -84,9 +84,9 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public function doCreateXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
-        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
+        $config = $this->doCreateConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
 
         return $config;
@@ -102,9 +102,9 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public function doCreateYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
-        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
+        $config = $this->doCreateConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new YamlDriver($paths));
 
         return $config;
@@ -119,7 +119,7 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public function doCreateConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
 
@@ -158,5 +158,12 @@ class Setup
         $config->setAutoGenerateProxyClasses($isDevMode);
 
         return $config;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        $name = 'do' . ucfirst($name);
+
+        return call_user_func_array([new static, $name], $arguments);
     }
 }

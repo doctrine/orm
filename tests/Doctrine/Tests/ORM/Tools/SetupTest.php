@@ -93,12 +93,89 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-3190
      */
-    public function testConfigureCacheCustomInstance()
+    public function testConfigureCacheCustom()
     {
         $cache = $this->getMock('Doctrine\Common\Cache\Cache');
         $cache->expects($this->never())->method('setNamespace');
 
         $config = Setup::createConfiguration(array(), true, $cache);
+
+        $this->assertSame($cache, $config->getResultCacheImpl());
+        $this->assertSame($cache, $config->getMetadataCacheImpl());
+        $this->assertSame($cache, $config->getQueryCacheImpl());
+    }
+
+    public function testDirectoryAutoloadInstance()
+    {
+        $setup = new Setup;
+        $setup->doRegisterAutoloadDirectory(__DIR__ . "/../../../../../vendor/doctrine/common/lib");
+
+        $this->assertEquals($this->originalAutoloaderCount + 2, count(spl_autoload_functions()));
+    }
+
+    public function testAnnotationConfigurationInstance()
+    {
+        $setup = new Setup;
+        $config = $setup->doCreateAnnotationMetadataConfiguration(array(), true);
+
+        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        $this->assertEquals(sys_get_temp_dir(), $config->getProxyDir());
+        $this->assertEquals('DoctrineProxies', $config->getProxyNamespace());
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\AnnotationDriver', $config->getMetadataDriverImpl());
+    }
+
+    public function testXMLConfigurationInstance()
+    {
+        $setup = new Setup;
+        $config = $setup->doCreateXMLMetadataConfiguration(array(), true);
+
+        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\XmlDriver', $config->getMetadataDriverImpl());
+    }
+
+    public function testYAMLConfigurationInstance()
+    {
+        $setup = new Setup;
+        $config = $setup->doCreateYAMLMetadataConfiguration(array(), true);
+
+        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
+    }
+
+    /**
+     * @group DDC-1350
+     */
+    public function testConfigureProxyDirInstance()
+    {
+        $setup = new Setup;
+        $config = $setup->doCreateAnnotationMetadataConfiguration(array(), true, "/foo");
+        $this->assertEquals('/foo', $config->getProxyDir());
+    }
+
+    /**
+     * @group DDC-1350
+     */
+    public function testConfigureCacheInstance()
+    {
+        $cache = new ArrayCache();
+        $setup = new Setup;
+        $config = $setup->doCreateAnnotationMetadataConfiguration(array(), true, null, $cache);
+
+        $this->assertSame($cache, $config->getResultCacheImpl());
+        $this->assertSame($cache, $config->getMetadataCacheImpl());
+        $this->assertSame($cache, $config->getQueryCacheImpl());
+    }
+
+    /**
+     * @group DDC-3190
+     */
+    public function testConfigureCacheCustomInstance()
+    {
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+        $cache->expects($this->never())->method('setNamespace');
+
+        $setup = new Setup;
+        $config = $setup->doCreateConfiguration(array(), true, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());
