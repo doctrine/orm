@@ -164,6 +164,6 @@ class Setup
     {
         $name = 'do' . ucfirst($name);
 
-        return call_user_func_array([new static, $name], $arguments);
+        return call_user_func_array(array(new static, $name), $arguments);
     }
 }
