@@ -206,7 +206,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * Generates new SQL for SQL Server, Postgresql, or Oracle if necessary.
+     * Generates new SQL for statements with an order by clause
      *
      * @param array           $sqlIdentifier
      * @param string          $innerSql
