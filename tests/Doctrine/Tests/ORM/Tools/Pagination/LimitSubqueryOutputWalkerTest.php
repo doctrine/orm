@@ -208,7 +208,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1 FROM Author a0_) dctrn_result ORDER BY (1 - 1000) * 1 DESC',
+            'SELECT DISTINCT id_0, (1 - 1000) * 1 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1 FROM Author a0_) dctrn_result ORDER BY (1 - 1000) * 1 DESC',
             $query->getSQL()
         );
     }
@@ -223,7 +223,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertSame(
-            'SELECT DISTINCT id_0, image_height_2, image_width_3 FROM (SELECT a0_.id AS id_0, a0_.image AS image_1, a0_.image_height AS image_height_2, a0_.image_width AS image_width_3, a0_.user_id AS user_id_4 FROM Avatar a0_) dctrn_result ORDER BY image_height_2 * image_width_3 DESC',
+            'SELECT DISTINCT id_0, image_height_2 * image_width_3 FROM (SELECT a0_.id AS id_0, a0_.image AS image_1, a0_.image_height AS image_height_2, a0_.image_width AS image_width_3, a0_.user_id AS user_id_4 FROM Avatar a0_) dctrn_result ORDER BY image_height_2 * image_width_3 DESC',
             $query->getSQL()
         );
     }
@@ -238,7 +238,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertSame(
-            'SELECT DISTINCT ID_0, IMAGE_HEIGHT_2, IMAGE_WIDTH_3 FROM (SELECT a0_.id AS ID_0, a0_.image AS IMAGE_1, a0_.image_height AS IMAGE_HEIGHT_2, a0_.image_width AS IMAGE_WIDTH_3, a0_.user_id AS USER_ID_4 FROM Avatar a0_) dctrn_result ORDER BY IMAGE_HEIGHT_2 * IMAGE_WIDTH_3 DESC',
+            'SELECT DISTINCT ID_0, IMAGE_HEIGHT_2 * IMAGE_WIDTH_3 FROM (SELECT a0_.id AS ID_0, a0_.image AS IMAGE_1, a0_.image_height AS IMAGE_HEIGHT_2, a0_.image_width AS IMAGE_WIDTH_3, a0_.user_id AS USER_ID_4 FROM Avatar a0_) dctrn_result ORDER BY IMAGE_HEIGHT_2 * IMAGE_WIDTH_3 DESC',
             $query->getSQL()
         );
     }
