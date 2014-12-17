@@ -12,7 +12,7 @@ class EntityManagerFactoryTest extends OrmTestCase
         $emf = new EntityManagerFactory();
 
         $config = $this->getMockConfiguration();
-        $conn = $this->getMockConnection(null, $config, null);
+        $conn = $this->getMockDBALConnection(null, $config, null);
 
         $this->assertInstanceOf('Doctrine\ORM\EntityManagerInterface', $emf->create(
             $conn,

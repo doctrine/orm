@@ -111,7 +111,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
     {
         $config = $this->getMockConfiguration($withSharedMetadata);
-        $conn   = $this->getMockConnection($conn, $config, $eventManager);
+        $conn   = $this->getMockDBALConnection($conn, $config, $eventManager);
 
         return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
@@ -179,7 +179,7 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @return \Doctrine\DBAL\Connection
      * @throws \Doctrine\DBAL\DBALException
      */
-    protected function getMockConnection($conn, $config, $eventManager)
+    protected function getMockDBALConnection($conn, $config, $eventManager)
     {
         if ($conn === null) {
             $conn = $this->getMockConnectionData();
