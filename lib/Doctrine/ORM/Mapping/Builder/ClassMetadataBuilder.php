@@ -80,6 +80,15 @@ class ClassMetadataBuilder
         return $this;
     }
 
+    /**
+     * Adds and embedded class
+     *
+     * @param string      $fieldName
+     * @param string      $class
+     * @param string|null $columnPrefix
+     *
+     * @return $this
+     */
     public function addEmbedded($fieldName, $class, $columnPrefix = null)
     {
         $this->cm->mapEmbedded(array(

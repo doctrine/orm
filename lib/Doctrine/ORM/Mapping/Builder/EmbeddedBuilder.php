@@ -49,6 +49,12 @@ class EmbeddedBuilder
         $this->mapping = $mapping;
     }
 
+    /**
+     * Sets the column prefix for all of the embedded columns.
+     *
+     * @param string $columnPrefix
+     * @return $this
+     */
     public function setColumnPrefix($columnPrefix)
     {
         $this->mapping['columnPrefix'] = $columnPrefix;
