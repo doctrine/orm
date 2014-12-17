@@ -144,7 +144,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @param \Doctrine\ORM\Configuration   $config
      * @param \Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    public function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
         $this->conn              = $conn;
         $this->config            = $config;
@@ -826,28 +826,9 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        if ( ! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
-        }
+        $emf = new EntityManagerFactory;
 
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
-
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
-        }
-
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        return $emf->create($conn, $config, $eventManager);
     }
 
     /**

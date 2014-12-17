@@ -110,46 +110,8 @@ abstract class OrmTestCase extends DoctrineTestCase
      */
     protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
     {
-        $metadataCache = $withSharedMetadata
-            ? self::getSharedMetadataCacheImpl()
-            : new \Doctrine\Common\Cache\ArrayCache;
-
-        $config = new \Doctrine\ORM\Configuration();
-
-        $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
-        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
-        $config->setProxyDir(__DIR__ . '/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
-            realpath(__DIR__ . '/Models/Cache')
-        ), true));
-
-        if ($this->isSecondLevelCacheEnabled) {
-
-            $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
-            $cache          = $this->getSharedSecondLevelCacheDriverImpl();
-            $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
-
-            $this->secondLevelCacheFactory = $factory;
-
-            $cacheConfig->setCacheFactory($factory);
-            $config->setSecondLevelCacheEnabled(true);
-            $config->setSecondLevelCacheConfiguration($cacheConfig);
-        }
-
-        if ($conn === null) {
-            $conn = array(
-                'driverClass'  => 'Doctrine\Tests\Mocks\DriverMock',
-                'wrapperClass' => 'Doctrine\Tests\Mocks\ConnectionMock',
-                'user'         => 'john',
-                'password'     => 'wayne'
-            );
-        }
-
-        if (is_array($conn)) {
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
-        }
+        $config = $this->getMockConfiguration($withSharedMetadata);
+        $conn = $this->getMockConnection($conn, $config, $eventManager);
 
         return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
@@ -194,5 +156,79 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         return $this->secondLevelCacheDriverImpl;
+    }/**
+ * @return array
+ */
+    protected function getMockConnectionData()
+    {
+        return array(
+            'driverClass'  => 'Doctrine\Tests\Mocks\DriverMock',
+            'wrapperClass' => 'Doctrine\Tests\Mocks\ConnectionMock',
+            'user'         => 'john',
+            'password'     => 'wayne'
+        );
+    }
+
+    /**
+     * @param $conn
+     * @param $config
+     * @param $eventManager
+     *
+     * @return \Doctrine\DBAL\Connection
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    protected function getMockConnection($conn, $config, $eventManager)
+    {
+        if ($conn === null) {
+            $conn = $this->getMockConnectionData();
+        }
+
+        if (is_array($conn)) {
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
+        }
+
+        return $conn;
+    }
+
+    /**
+     * @param $withSharedMetadata
+     *
+     * @return \Doctrine\ORM\Configuration
+     */
+    protected function getMockConfiguration($withSharedMetadata = true)
+    {
+        $metadataCache =
+            $withSharedMetadata? self::getSharedMetadataCacheImpl() : new \Doctrine\Common\Cache\ArrayCache;
+
+        $config = new \Doctrine\ORM\Configuration();
+
+        $config->setMetadataCacheImpl($metadataCache);
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
+        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
+        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver(
+                array(
+                    realpath(__DIR__ . '/Models/Cache')
+                ),
+                true
+            )
+        );
+
+        if ($this->isSecondLevelCacheEnabled)
+        {
+            $cacheConfig = new \Doctrine\ORM\Cache\CacheConfiguration();
+            $cache       = $this->getSharedSecondLevelCacheDriverImpl();
+            $factory     = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
+
+            $this->secondLevelCacheFactory = $factory;
+
+            $cacheConfig->setCacheFactory($factory);
+            $config->setSecondLevelCacheEnabled(true);
+            $config->setSecondLevelCacheConfiguration($cacheConfig);
+        }
+
+        return $config;
     }
 }
