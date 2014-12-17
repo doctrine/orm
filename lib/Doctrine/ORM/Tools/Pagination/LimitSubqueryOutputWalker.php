@@ -289,7 +289,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             // The order by items are not required to be in the select list on Oracle and PostgreSQL, but
             // for the sake of simplicity, order by items will be included in the select list on all platforms.
             // This doesn't impact functionality.
-            $selectListAdditions[] = trim(str_ireplace(array("asc", "desc"), "", $orderByItem));
+            $selectListAdditions[] = trim(preg_replace('/([^ ]+) (?:asc|desc)/i', '$1', $orderByItem));
             $orderByItems[] = $orderByItem;
         }
 
