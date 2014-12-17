@@ -111,7 +111,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
     {
         $config = $this->getMockConfiguration($withSharedMetadata);
-        $conn = $this->getMockConnection($conn, $config, $eventManager);
+        $conn   = $this->getMockConnection($conn, $config, $eventManager);
 
         return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
@@ -156,9 +156,11 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         return $this->secondLevelCacheDriverImpl;
-    }/**
- * @return array
- */
+    }
+
+    /**
+     * @return array
+     */
     protected function getMockConnectionData()
     {
         return array(
@@ -216,8 +218,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             )
         );
 
-        if ($this->isSecondLevelCacheEnabled)
-        {
+        if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new \Doctrine\ORM\Cache\CacheConfiguration();
             $cache       = $this->getSharedSecondLevelCacheDriverImpl();
             $factory     = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);

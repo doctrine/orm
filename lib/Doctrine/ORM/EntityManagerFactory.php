@@ -31,31 +31,33 @@ use Doctrine\Common\EventManager;
  *
  * @todo Dependency Injection of the DriverManager
  */
-class EntityManagerFactory 
+class EntityManagerFactory
 {
-	public function create($conn, Configuration $config, EventManager $eventManager = null)
-	{
-		if ( ! $config->getMetadataDriverImpl()) {
-			throw ORMException::missingMappingDriverImpl();
-		}
+    public function create($conn, Configuration $config, EventManager $eventManager = null)
+    {
+        if (! $config->getMetadataDriverImpl()) {
+            throw ORMException::missingMappingDriverImpl();
+        }
 
-		switch (true) {
-			case (is_array($conn)):
-				$conn = \Doctrine\DBAL\DriverManager::getConnection(
-					$conn, $config, ($eventManager ?: new EventManager())
-				);
-				break;
+        switch (true) {
+            case (is_array($conn)):
+                $conn = \Doctrine\DBAL\DriverManager::getConnection(
+                    $conn,
+                    $config,
+                    ($eventManager?: new EventManager())
+                );
+                break;
 
-			case ($conn instanceof Connection):
-				if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-					throw ORMException::mismatchedEventManager();
-				}
-				break;
+            case ($conn instanceof Connection):
+                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
+                    throw ORMException::mismatchedEventManager();
+                }
+                break;
 
-			default:
-				throw new \InvalidArgumentException("Invalid argument: " . $conn);
-		}
+            default:
+                throw new \InvalidArgumentException("Invalid argument: " . $conn);
+        }
 
-		return new EntityManager($conn, $config, $conn->getEventManager());
-	}
+        return new EntityManager($conn, $config, $conn->getEventManager());
+    }
 }
