@@ -172,14 +172,14 @@ abstract class OrmTestCase extends DoctrineTestCase
     }
 
     /**
-     * @param $conn
-     * @param $config
-     * @param $eventManager
+     * @param array|\Doctrine\DBAL\Connection $conn
+     * @param \Doctrine\ORM\Configuration $config
+     * @param \Doctrine\Common\EventManager|null $eventManager
      *
      * @return \Doctrine\DBAL\Connection
      * @throws \Doctrine\DBAL\DBALException
      */
-    protected function getMockDBALConnection($conn, $config, $eventManager)
+    protected function getMockDBALConnection($conn, \Doctrine\ORM\Configuration $config, \Doctrine\Common\EventManager $eventManager = null)
     {
         if ($conn === null) {
             $conn = $this->getMockConnectionData();
@@ -193,7 +193,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     }
 
     /**
-     * @param $withSharedMetadata
+     * @param bool $withSharedMetadata
      *
      * @return \Doctrine\ORM\Configuration
      */
