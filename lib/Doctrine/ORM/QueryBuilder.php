@@ -555,7 +555,7 @@ class QueryBuilder
     {
         // BC compatibility with 2.3-
         if (is_array($parameters)) {
-            $parameterCollection = new ArrayCollection();
+            $parameterCollection = $this->parameters;
 
             foreach ($parameters as $key => $value) {
                 $parameter = new Query\Parameter($key, $value);
