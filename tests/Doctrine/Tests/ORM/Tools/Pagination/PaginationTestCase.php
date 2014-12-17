@@ -162,4 +162,6 @@ class Avatar
     public $image_height;
     /** @column(type="integer") */
     public $image_width;
+    /** @column(type="string", length=255) */
+    public $image_alt_desc;
 }
