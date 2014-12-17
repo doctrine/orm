@@ -62,6 +62,31 @@ class ClassMetadataBuilder
     public function setMappedSuperClass()
     {
         $this->cm->isMappedSuperclass = true;
+        $this->cm->isEmbeddedClass = false;
+
+        return $this;
+    }
+
+    /**
+     * Marks the class as embeddable.
+     *
+     * @return ClassMetadataBuilder
+     */
+    public function setEmbeddable()
+    {
+        $this->cm->isEmbeddedClass = true;
+        $this->cm->isMappedSuperclass = false;
+
+        return $this;
+    }
+
+    public function addEmbedded($fieldName, $class, $columnPrefix = null)
+    {
+        $this->cm->mapEmbedded(array(
+            'fieldName'    => $fieldName,
+            'class'        => $class,
+            'columnPrefix' => $columnPrefix
+        ));
 
         return $this;
     }
@@ -294,6 +319,26 @@ class ClassMetadataBuilder
             array(
                 'fieldName' => $name,
                 'type'      => $type
+            )
+        );
+    }
+
+    /**
+     * Creates an embedded builder.
+     *
+     * @param string $fieldName
+     * @param string $class
+     *
+     * @return EmbeddedBuilder
+     */
+    public function createEmbedded($fieldName, $class)
+    {
+        return new EmbeddedBuilder(
+            $this,
+            array(
+                'fieldName'    => $fieldName,
+                'class'        => $class,
+                'columnPrefix' => null
             )
         );
     }
