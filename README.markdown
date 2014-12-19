@@ -16,15 +16,15 @@ without requiring unnecessary code duplication.
 * [Issue Tracker](http://www.doctrine-project.org/jira/browse/DDC)
 * [Downloads](http://github.com/doctrine/doctrine2/downloads)
 
-  [Master image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=master
-  [Master]: http://travis-ci.org/doctrine/doctrine2
+  [Master image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=master
+  [Master]: https://travis-ci.org/doctrine/doctrine2
   [Master coverage image]: https://coveralls.io/repos/doctrine/doctrine2/badge.png?branch=master
   [Master coverage]: https://coveralls.io/r/doctrine/doctrine2?branch=master
-  [2.4 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.4
+  [2.4 image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=2.4
   [2.4]: https://github.com/doctrine/doctrine2/tree/2.4
-  [2.3 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.3
+  [2.3 image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=2.3
   [2.3]: https://github.com/doctrine/doctrine2/tree/2.3
-  [2.2 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.2
+  [2.2 image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=2.2
   [2.2]: https://github.com/doctrine/doctrine2/tree/2.2
-  [2.1 image]: https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x
+  [2.1 image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=2.1.x
   [2.1]: https://github.com/doctrine/doctrine2/tree/2.1.x
