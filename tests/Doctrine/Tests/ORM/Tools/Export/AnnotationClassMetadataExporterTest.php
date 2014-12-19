@@ -21,6 +21,8 @@
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\ORM\Tools\Export\Driver\AnnotationExporter;
+
 /**
  * Test case for AnnotationClassMetadataExporterTest
  *
@@ -36,5 +38,19 @@ class AnnotationClassMetadataExporterTest extends AbstractClassMetadataExporterT
     protected function _getType()
     {
         return 'annotation';
+    }
+
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.
+     */
+    public function testExportClassMetadataException()
+    {
+        $metadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadataInfo')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $annotationExporter = new AnnotationExporter();
+        $annotationExporter->exportClassMetadata($metadata);
     }
 }
