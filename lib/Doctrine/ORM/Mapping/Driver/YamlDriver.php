@@ -175,10 +175,10 @@ class YamlDriver extends FileDriver
                 if (isset($element['discriminatorColumn'])) {
                     $discrColumn = $element['discriminatorColumn'];
                     $metadata->setDiscriminatorColumn(array(
-                        'name' => isset($discrColumn['name']) ? (string)$discrColumn['name'] : null,
-                        'type' => isset($discrColumn['type']) ? (string)$discrColumn['type'] : null,
-                        'length' => isset($discrColumn['length']) ? (string)$discrColumn['length'] : null,
-                        'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string)$discrColumn['columnDefinition'] : null
+                        'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
+                        'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : null,
+                        'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : null,
+                        'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
@@ -195,7 +195,7 @@ class YamlDriver extends FileDriver
         // Evaluate changeTrackingPolicy
         if (isset($element['changeTrackingPolicy'])) {
             $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_'
-                    . strtoupper($element['changeTrackingPolicy'])));
+                . strtoupper($element['changeTrackingPolicy'])));
         }
 
         // Evaluate indexes
@@ -290,7 +290,7 @@ class YamlDriver extends FileDriver
 
                 if (isset($idElement['generator'])) {
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                            . strtoupper($idElement['generator']['strategy'])));
+                        . strtoupper($idElement['generator']['strategy'])));
                 }
                 // Check for SequenceGenerator/TableGenerator definition
                 if (isset($idElement['sequenceGenerator'])) {
@@ -316,7 +316,7 @@ class YamlDriver extends FileDriver
                     $mapping['id'] = true;
                     if (isset($fieldMapping['generator']['strategy'])) {
                         $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                                . strtoupper($fieldMapping['generator']['strategy'])));
+                            . strtoupper($fieldMapping['generator']['strategy'])));
                     }
                 }
 
@@ -385,7 +385,7 @@ class YamlDriver extends FileDriver
                 }
 
                 if (isset($oneToOneElement['orphanRemoval'])) {
-                    $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphanRemoval'];
+                    $mapping['orphanRemoval'] = (bool) $oneToOneElement['orphanRemoval'];
                 }
 
                 // Evaluate second level cache
@@ -415,7 +415,7 @@ class YamlDriver extends FileDriver
                 }
 
                 if (isset($oneToManyElement['orphanRemoval'])) {
-                    $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphanRemoval'];
+                    $mapping['orphanRemoval'] = (bool) $oneToManyElement['orphanRemoval'];
                 }
 
                 if (isset($oneToManyElement['orderBy'])) {
@@ -548,7 +548,7 @@ class YamlDriver extends FileDriver
                 }
 
                 if (isset($manyToManyElement['orphanRemoval'])) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphanRemoval'];
+                    $mapping['orphanRemoval'] = (bool) $manyToManyElement['orphanRemoval'];
                 }
 
                 // Evaluate second level cache
@@ -646,7 +646,7 @@ class YamlDriver extends FileDriver
                     continue;
                 }
 
-                foreach ($entityListener as $eventName => $callbackElement){
+                foreach ($entityListener as $eventName => $callbackElement) {
                     foreach ($callbackElement as $methodName) {
                         $metadata->addEntityListener($eventName, $className, $methodName);
                     }
@@ -739,7 +739,7 @@ class YamlDriver extends FileDriver
         }
 
         if (isset($column['unique'])) {
-            $mapping['unique'] = (bool)$column['unique'];
+            $mapping['unique'] = (bool) $column['unique'];
         }
 
         if (isset($column['options'])) {

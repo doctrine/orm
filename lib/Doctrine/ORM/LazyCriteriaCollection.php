@@ -99,7 +99,8 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * Do an optimized search of an element
      *
-     * @param  object $element
+     * @param object $element
+     *
      * @return bool
      */
     public function contains($element)

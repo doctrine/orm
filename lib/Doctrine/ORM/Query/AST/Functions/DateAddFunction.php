@@ -27,7 +27,7 @@ use Doctrine\ORM\Query\QueryException;
 /**
  * "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>

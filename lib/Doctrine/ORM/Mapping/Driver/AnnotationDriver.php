@@ -526,8 +526,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     private function getFetchMode($className, $fetchMode)
     {
-        if( ! defined('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode)) {
-            throw MappingException::invalidFetchMode($className,  $fetchMode);
+        if ( ! defined('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode)) {
+            throw MappingException::invalidFetchMode($className, $fetchMode);
         }
 
         return constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode);

@@ -47,6 +47,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     public function setJoinTable($name)
     {
         $this->joinTableName = $name;
+
         return $this;
     }
 
@@ -72,6 +73,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
             'onDelete' => $onDelete,
             'columnDefinition' => $columnDef,
         );
+
         return $this;
     }
 
@@ -93,6 +95,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
         }
         $cm = $this->builder->getClassMetadata();
         $cm->mapManyToMany($mapping);
+
         return $this->builder;
     }
 }

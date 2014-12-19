@@ -98,7 +98,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setAutoGenerateProxyClasses($autoGenerate)
     {
-        $this->_attributes['autoGenerateProxyClasses'] = (int)$autoGenerate;
+        $this->_attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
     }
 
     /**
