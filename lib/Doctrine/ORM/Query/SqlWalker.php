@@ -1353,8 +1353,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\NewObjectExpression):
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: null;
-                $sql .= $this->walkNewObject($expr,$resultAlias);
+                $sql .= $this->walkNewObject($expr,$selectExpression->fieldIdentificationVariable);
                 break;
 
             default:
