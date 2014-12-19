@@ -46,7 +46,7 @@ The <info>%command.name%</info> shows basic information about which
 entities exist and possibly if their mapping information contains errors or
 not.
 EOT
-        );
+            );
     }
 
     /**

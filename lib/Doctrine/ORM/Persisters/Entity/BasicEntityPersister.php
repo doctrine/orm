@@ -1322,7 +1322,7 @@ class BasicEntityPersister implements EntityPersister
             $isIdentifier     = isset($assoc['id']) && $assoc['id'] === true;
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
-            $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
+            $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias))
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
             $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
@@ -2042,6 +2042,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $sql = implode(' AND ', $filterClauses);
+
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 

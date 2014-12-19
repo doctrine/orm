@@ -47,7 +47,7 @@ class CollectionRegionCommand extends Command
         ->addArgument('association', InputArgument::OPTIONAL, 'The association collection name.')
         ->addArgument('owner-id', InputArgument::OPTIONAL, 'The owner identifier.')
         ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
-        ->addOption('flush', null, InputOption::VALUE_NONE,'If defined, all cache entries will be flushed.');
+        ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.');
 
 
         $this->setHelp(<<<EOT

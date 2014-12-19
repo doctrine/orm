@@ -354,7 +354,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the entity result mapping of the results of native SQL queries to the result set.
-     * 
+     *
      * @param ClassMetadataInfo $classMetadata
      * @param array             $entityMapping
      * @param string            $alias
@@ -376,23 +376,23 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $fieldName = $field['name'];
                 $relation  = null;
 
-                if(strpos($fieldName, '.')){
+                if (strpos($fieldName, '.')) {
                     list($relation, $fieldName) = explode('.', $fieldName);
                 }
 
                 if (isset($classMetadata->associationMappings[$relation])) {
-                    if($relation) {
+                    if ($relation) {
                         $associationMapping = $classMetadata->associationMappings[$relation];
                         $joinAlias          = $alias.$relation;
                         $parentAlias        = $alias;
 
                         $this->addJoinedEntityResult($associationMapping['targetEntity'], $joinAlias, $parentAlias, $relation);
                         $this->addFieldResult($joinAlias, $field['column'], $fieldName);
-                    }else {
+                    } else {
                         $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
                     }
                 } else {
-                    if(!isset($classMetadata->fieldMappings[$fieldName])) {
+                    if (!isset($classMetadata->fieldMappings[$fieldName])) {
                         throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
                     }
                     $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);

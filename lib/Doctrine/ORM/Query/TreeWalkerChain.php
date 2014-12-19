@@ -429,7 +429,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    function walkInstanceOfExpression($instanceOfExpr)
+    public function walkInstanceOfExpression($instanceOfExpr)
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkInstanceOfExpression($instanceOfExpr);

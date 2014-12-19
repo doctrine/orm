@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\Lexer;
 /**
  * "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -50,8 +50,8 @@ class ModFunction extends FunctionNode
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getModExpression(
-               $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression),
-               $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression)
+            $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression),
+            $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression)
         );
     }
 

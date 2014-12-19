@@ -77,7 +77,8 @@ interface EntityPersister
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
      *
-     * @param  array|\Doctrine\Common\Collections\Criteria $criteria
+     * @param array|\Doctrine\Common\Collections\Criteria $criteria
+     *
      * @return string
      */
     public function getCountSQL($criteria = array());
@@ -201,8 +202,8 @@ interface EntityPersister
     /**
      * Loads an entity by identifier.
      *
-     * @param array       $identifier   The entity identifier.
-     * @param object|null $entity       The entity to load the data into. If not specified, a new entity is created.
+     * @param array       $identifier The entity identifier.
+     * @param object|null $entity     The entity to load the data into. If not specified, a new entity is created.
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      *
@@ -289,7 +290,7 @@ interface EntityPersister
      *
      * @param array                $assoc
      * @param object               $sourceEntity
-     * @param PersistentCollection $collection         The collection to load/fill.
+     * @param PersistentCollection $collection   The collection to load/fill.
      *
      * @return array
      */

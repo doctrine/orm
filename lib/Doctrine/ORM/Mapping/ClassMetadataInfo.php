@@ -699,6 +699,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isIdentifierComposite) {
             throw new BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
+
         return $this->reflFields[$this->identifier[0]];
     }
 
@@ -1180,6 +1181,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($mapping !== false) {
             return isset($mapping['unique']) && $mapping['unique'] == true;
         }
+
         return false;
     }
 
@@ -1196,6 +1198,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($mapping !== false) {
             return isset($mapping['nullable']) && $mapping['nullable'] == true;
         }
+
         return false;
     }
 
@@ -1229,6 +1232,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
+
         return $this->fieldMappings[$fieldName];
     }
 
@@ -1249,6 +1253,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->associationMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
+
         return $this->associationMappings[$fieldName];
     }
 
@@ -1292,6 +1297,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->namedQueries[$queryName])) {
             throw MappingException::queryNotFound($this->name, $queryName);
         }
+
         return $this->namedQueries[$queryName]['dql'];
     }
 
@@ -1539,11 +1545,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['cascade'] = $cascades;
-        $mapping['isCascadeRemove'] = in_array('remove',  $cascades);
-        $mapping['isCascadePersist'] = in_array('persist',  $cascades);
-        $mapping['isCascadeRefresh'] = in_array('refresh',  $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge',  $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach',  $cascades);
+        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadePersist'] = in_array('persist', $cascades);
+        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
+        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
+        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
         return $mapping;
     }
@@ -1790,6 +1796,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
+
         return $this->identifier[0];
     }
 
@@ -1853,6 +1860,7 @@ class ClassMetadataInfo implements ClassMetadata
             foreach ($fieldNames as $fieldName) {
                 $columnNames[] = $this->getColumnName($fieldName);
             }
+
             return $columnNames;
         }
     }
@@ -2869,6 +2877,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
+
         return $this->associationMappings[$fieldName]['joinColumns'][0]['name'];
     }
 
@@ -2886,6 +2895,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
+
         return $this->associationMappings[$fieldName]['joinColumns'][0]['referencedColumnName'];
     }
 
@@ -2956,7 +2966,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $definition
      *
-     * @return void
+     * @throws MappingException
      */
     public function setSequenceGeneratorDefinition(array $definition)
     {
@@ -3185,11 +3195,13 @@ class ClassMetadataInfo implements ClassMetadata
                 $relations[$mapping['fieldName']] = $mapping;
             }
         }
+
         return $relations;
     }
 
     /**
      * @param  string|null $className
+     * 
      * @return string|null null if the input value is null
      */
     public function fullyQualifiedClassName($className)
@@ -3210,7 +3222,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return mixed
      */
-    public function getMetadataValue($name) {
+    public function getMetadataValue($name)
+    {
 
         if (isset($this->$name)) {
             return $this->$name;
@@ -3223,6 +3236,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Map Embedded Class
      *
      * @param array $mapping
+     *
      * @throws MappingException
      * @return void
      */
@@ -3241,7 +3255,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Inline the embeddable class
      *
-     * @param string $property
+     * @param string            $property
      * @param ClassMetadataInfo $embeddable
      */
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
