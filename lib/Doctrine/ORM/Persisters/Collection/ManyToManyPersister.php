@@ -26,7 +26,7 @@ use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Utility\PersisterHelper as Helper;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for many-to-many collections.
@@ -386,7 +386,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 : $sourceClass->getFieldForColumn($columnName);
 
             $params[] = $identifier[$field];
-            $types[]  = Helper::getTypeOfField($field, $sourceClass, $this->em);
+            $types[]  = PersisterHelper::getTypeOfField($field, $sourceClass, $this->em);
         }
 
         return array($params, $types);
@@ -569,7 +569,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             $whereClauses[] = 'tr.' . $columnName . ' = ?';
             $params[] = $key;
-            $types[] = Helper::getTypeOfColumn($columnName, $targetClass, $this->em);
+            $types[] = PersisterHelper::getTypeOfColumn($columnName, $targetClass, $this->em);
         }
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
@@ -581,7 +581,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             } elseif (!$joinNeeded) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $key;
-                $types[] = Helper::getTypeOfColumn($column, $targetClass, $this->em);
+                $types[] = PersisterHelper::getTypeOfColumn($column, $targetClass, $this->em);
             }
         }
 
@@ -637,7 +637,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $params[] = $targetClass->containsForeignIdentifier
                     ? $targetId[$targetClass->getFieldForColumn($column)]
                     : $targetId[$targetClass->fieldNames[$column]];
-                $types[] = Helper::getTypeOfColumn($column, $targetClass, $this->em);
+                $types[] = PersisterHelper::getTypeOfColumn($column, $targetClass, $this->em);
 
                 continue;
             }

@@ -863,7 +863,7 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = Helper::getValue($param, $this->em);
+            $sqlParams[] = PersisterHelper::getValue($param, $this->em);
         }
 
         foreach ($types as $type) {
@@ -1312,7 +1312,7 @@ class BasicEntityPersister implements EntityPersister
             $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
 
-            $type = Helper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+            $type = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
             $this->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
         }
@@ -1764,7 +1764,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $types[]  = $this->getType($field, $value, $this->class);
-            $params[] = Helper::getValue($value, $this->em);
+            $params[] = PersisterHelper::getValue($value, $this->em);
         }
 
         return array($params, $types);
@@ -1789,7 +1789,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $types[]  = $this->getType($criterion['field'], $criterion['value'], $criterion['class']);
-            $params[] = Helper::getValue($criterion['value'], $this->em);
+            $params[] = PersisterHelper::getValue($criterion['value'], $this->em);
         }
 
         return array($params, $types);
