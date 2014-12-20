@@ -20,9 +20,9 @@
 
 namespace Doctrine\ORM\Utility;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\QueryException;
 
 /**
@@ -49,8 +49,8 @@ class PersisterHelper
 
         $newValue = array();
 
-        foreach ($value as $itemValue) {
-            $newValue[] = self::getIndividualValue($itemValue, $em);
+        foreach ($value as $fieldName => $fieldValue) {
+            $newValue[$fieldName] = self::getIndividualValue($fieldValue, $em);
         }
 
         return $newValue;
@@ -82,8 +82,6 @@ class PersisterHelper
      */
     public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
     {
-        /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $class */
-
         if (isset($class->fieldMappings[$fieldName])) {
             return $class->fieldMappings[$fieldName]['type'];
         }
@@ -113,8 +111,6 @@ class PersisterHelper
      */
     public static function getTypeOfColumn($columnName, ClassMetadata $class, EntityManagerInterface $em)
     {
-        /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $class */
-
         if (isset($class->fieldNames[$columnName])) {
             $fieldName = $class->fieldNames[$columnName];
 
@@ -126,7 +122,7 @@ class PersisterHelper
         }
 
         foreach ($class->associationMappings as $assoc) {
-            if (!isset($assoc['joinColumns'])) {
+            if ( ! isset($assoc['joinColumns'])) {
                 continue;
             }
 

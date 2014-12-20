@@ -21,9 +21,7 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Query\QueryException;
 
 /**
  * Base class for all collection persisters.
