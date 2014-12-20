@@ -51,12 +51,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * Generates the SQL UPDATE that updates a particular row's foreign
-     * key to null.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
+     * {@inheritdoc}
      *
      * @override
      */
@@ -72,13 +67,9 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete the given
-     * element from the given collection.
+     * {@inheritdoc}
      *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param mixed                              $element
-     *
-     * @return array
+     * @override
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {
@@ -99,6 +90,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * @override
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
     protected function getInsertRowSQL(PersistentCollection $coll)
@@ -108,6 +101,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
@@ -119,6 +114,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * @override
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
     protected function getUpdateRowSQL(PersistentCollection $coll)
@@ -129,6 +126,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * @override
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
     protected function getDeleteSQL(PersistentCollection $coll)
@@ -138,6 +137,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
@@ -190,6 +191,14 @@ class OneToManyPersister extends AbstractCollectionPersister
         return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
+    /**
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param boolean                            $addFilters
+     *
+     * @return array
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
     private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
     {
         $mapping     = $coll->getMapping();

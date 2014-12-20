@@ -75,6 +75,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * @override
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister
      */
     protected function getUpdateRowSQL(PersistentCollection $coll)
