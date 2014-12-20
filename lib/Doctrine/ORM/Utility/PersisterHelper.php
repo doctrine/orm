@@ -76,8 +76,9 @@ class PersisterHelper
      * @param ClassMetadata          $class
      * @param EntityManagerInterface $em
      *
-     * @throws QueryException
      * @return string|null
+     *
+     * @throws QueryException
      */
     public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
     {
