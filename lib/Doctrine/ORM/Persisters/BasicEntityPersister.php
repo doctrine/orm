@@ -35,7 +35,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\ORM\Utility\PersisterHelper as Helper;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -667,7 +667,11 @@ class BasicEntityPersister implements EntityPersister
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
                 $this->quotedColumns[$sourceColumn] = $quotedColumn;
-                $this->columnTypes[$sourceColumn]   = Helper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+                $this->columnTypes[$sourceColumn]   = PersisterHelper::getTypeOfColumn(
+                    $targetColumn,
+                    $targetClass,
+                    $this->em
+                );
 
                 switch (true) {
                     case $newVal === null:
@@ -875,7 +879,7 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = Helper::getValue($param, $this->em);
+            $sqlParams[] = PersisterHelper::getValue($param, $this->em);
         }
 
         foreach ($types as $type) {
@@ -1324,7 +1328,7 @@ class BasicEntityPersister implements EntityPersister
             $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
 
-            $type = Helper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+            $type = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
             $this->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
         }
@@ -1761,7 +1765,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $types[]  = $this->getType($field, $value, $this->class);
-            $params[] = Helper::getValue($value, $this->em);
+            $params[] = PersisterHelper::getValue($value, $this->em);
         }
 
         return array($params, $types);
@@ -1786,7 +1790,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $types[]  = $this->getType($criterion['field'], $criterion['value'], $criterion['class']);
-            $params[] = Helper::getValue($criterion['value'], $this->em);
+            $params[] = PersisterHelper::getValue($criterion['value'], $this->em);
         }
 
         return array($params, $types);
@@ -1805,7 +1809,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getType($fieldName, $value, ClassMetadata $class)
     {
-        $type = Helper::getTypeOfField($fieldName, $class, $this->em);
+        $type = PersisterHelper::getTypeOfField($fieldName, $class, $this->em);
 
         if (is_array($value)) {
             $type = Type::getType($type)->getBindingType();

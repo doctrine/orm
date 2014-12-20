@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Utility\PersisterHelper as Helper;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for many-to-many collections.
@@ -147,7 +147,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $field  = $class1->getFieldForColumn($column);
 
                 $params[] = $identifier1[$field];
-                $types[]  = Helper::getTypeOfField($field, $class1, $this->em);
+                $types[]  = PersisterHelper::getTypeOfField($field, $class1, $this->em);
 
                 continue;
             }
@@ -156,7 +156,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $field  = $class2->getFieldForColumn($column);
 
             $params[] = $identifier2[$field];
-            $types[]  = Helper::getTypeOfField($field, $class2, $this->em);
+            $types[]  = PersisterHelper::getTypeOfField($field, $class2, $this->em);
         }
 
         return array($params, $types);
@@ -204,7 +204,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 : $sourceClass->getFieldForColumn($columnName);
 
             $params[] = $identifier[$field];
-            $types[]  = Helper::getTypeOfField($field, $sourceClass, $this->em);
+            $types[]  = PersisterHelper::getTypeOfField($field, $sourceClass, $this->em);
         }
 
         return array($params, $types);
@@ -237,7 +237,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $referencedName = $joinColumn['referencedColumnName'];
             $conditions[]   = 't.' . $columnName . ' = ?';
             $params[]       = $id[$class->getFieldForColumn($referencedName)];
-            $types[]        = Helper::getTypeOfColumn($referencedName, $class, $this->em);
+            $types[]        = PersisterHelper::getTypeOfColumn($referencedName, $class, $this->em);
         }
 
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
@@ -377,7 +377,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             $whereClauses[] = 'tr.' . $columnName . ' = ?';
             $params[] = $key;
-            $types[] = Helper::getTypeOfColumn($columnName, $targetClass, $this->em);
+            $types[] = PersisterHelper::getTypeOfColumn($columnName, $targetClass, $this->em);
         }
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
@@ -388,13 +388,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $params[] = $sourceClass->containsForeignIdentifier
                     ? $id[$sourceClass->getFieldForColumn($column)]
                     : $id[$sourceClass->fieldNames[$column]];
-                $types[] = Helper::getTypeOfColumn($column, $sourceClass, $this->em);
+                $types[] = PersisterHelper::getTypeOfColumn($column, $sourceClass, $this->em);
             } elseif ( ! $joinNeeded) {
                 $column = $mapping[$targetRelationMode][$joinTableColumn];
 
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $key;
-                $types[] = Helper::getTypeOfColumn($column, $targetClass, $this->em);
+                $types[] = PersisterHelper::getTypeOfColumn($column, $targetClass, $this->em);
             }
         }
 
@@ -451,7 +451,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $params[] = $targetClass->containsForeignIdentifier
                     ? $targetId[$targetClass->getFieldForColumn($column)]
                     : $targetId[$targetClass->fieldNames[$column]];
-                $types[] = Helper::getTypeOfColumn($column, $targetClass, $this->em);
+                $types[] = PersisterHelper::getTypeOfColumn($column, $targetClass, $this->em);
 
                 continue;
             }
@@ -462,7 +462,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $params[] = $sourceClass->containsForeignIdentifier
                 ? $sourceId[$sourceClass->getFieldForColumn($column)]
                 : $sourceId[$sourceClass->fieldNames[$column]];
-            $types[] = Helper::getTypeOfColumn($column, $sourceClass, $this->em);
+            $types[] = PersisterHelper::getTypeOfColumn($column, $sourceClass, $this->em);
         }
 
         if ($addFilters) {

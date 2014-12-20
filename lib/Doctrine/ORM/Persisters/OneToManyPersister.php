@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Utility\PersisterHelper as Helper;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for one-to-many collections.
@@ -90,7 +90,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         foreach ($identifier as $field => $value) {
             $params[] = $value;
-            $types[]  = Helper::getTypeOfField($field, $class, $this->em);
+            $types[]  = PersisterHelper::getTypeOfField($field, $class, $this->em);
         }
 
         return array($params, $types);
@@ -183,7 +183,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $whereClauses[] = $sourceColumn . ' = ?';
         $params[]       = $key;
-        $types[]        = Helper::getTypeOfColumn($sourceColumn, $sourceClass, $this->em);
+        $types[]        = PersisterHelper::getTypeOfColumn($sourceColumn, $sourceClass, $this->em);
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
@@ -206,7 +206,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             $whereClauses[] = $joinColumn['name'] . ' = ?';
 
             $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
-            $types[]  = Helper::getTypeOfColumn($joinColumn['referencedColumnName'], $sourceClass, $this->em);
+            $types[]  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $sourceClass, $this->em);
         }
 
         if ($addFilters) {
