@@ -184,6 +184,17 @@ class AssociationBuilder
     }
 
     /**
+     * Sets field as primary key.
+     *
+     * @return AssociationBuilder
+     */
+    public function isPrimaryKey()
+    {
+        $this->mapping['id'] = true;
+        return $this;
+    }
+
+    /**
      * @return ClassMetadataBuilder
      *
      * @throws \InvalidArgumentException
