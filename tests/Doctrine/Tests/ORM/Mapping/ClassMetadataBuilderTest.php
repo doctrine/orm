@@ -247,7 +247,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
             ), $this->cm->associationMappings);
     }
 
-    public function testIdentityOnCreateManyToOne()
+    public function testCreateManyToOneWithIdentity()
     {
         $this->assertIsFluent(
             $this->builder->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
@@ -428,7 +428,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
             ), $this->cm->associationMappings);
     }
 
-    public function testDisallowCreateOneToOneWithIdentityOnInverseSide()
+    public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide()
     {
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
@@ -522,7 +522,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 ), $this->cm->associationMappings);
     }
 
-    public function testDisallowIdentityOnCreateManyToMany()
+    public function testThrowsExceptionOnCreateManyToManyWithIdentity()
     {
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
@@ -575,7 +575,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 ), $this->cm->associationMappings);
     }
 
-    public function testDisallowIdentityOnCreateOneToMany()
+    public function testThrowsExceptionOnCreateOneToManyWithIdentity()
     {
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
