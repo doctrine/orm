@@ -64,6 +64,10 @@ class RunDqlCommand extends Command
             new InputOption(
                 'depth', null, InputOption::VALUE_REQUIRED,
                 'Dumping depth of Entity graph.', 7
+            ),
+            new InputOption(
+                'show-sql', null, InputOption::VALUE_NONE,
+                'Dump generated SQL instead of executing query'
             )
         ))
         ->setHelp(<<<EOT
@@ -114,6 +118,11 @@ EOT
             }
 
             $query->setMaxResults((int) $maxResult);
+        }
+
+        if ($input->hasOption('show-sql')) {
+            Debug::dump($query->getSQL());
+            return;
         }
 
         $resultSet = $query->execute(array(), constant($hydrationMode));
