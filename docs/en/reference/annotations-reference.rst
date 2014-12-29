@@ -428,7 +428,7 @@ Optional attributes:
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will
       only have effect on supported platforms.
 
-Example:
+Basic example:
 
 .. code-block:: php
 
@@ -436,6 +436,19 @@ Example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Example with partial indexes:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", columns={"name", "email"}, options={"where": "(((id IS NOT NULL) AND (name IS NULL)) AND (email IS NULL))"})})
      */
     class ECommerceProduct
     {
@@ -1168,7 +1181,7 @@ Optional attributes:
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will
       only have effect on supported platforms.
 
-Example:
+Basic example:
 
 .. code-block:: php
 
@@ -1176,6 +1189,19 @@ Example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Example with partial indexes:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"}, options={"where": "(((id IS NOT NULL) AND (name IS NULL)) AND (email IS NULL))"})})
      */
     class ECommerceProduct
     {
