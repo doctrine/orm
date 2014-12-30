@@ -31,22 +31,34 @@ use Doctrine\ORM\Cache\EntityCacheKey;
  */
 class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
-
-    /**
-     * @var bool
-     */
-    private $isChanged = false;
-
     /**
      * {@inheritdoc}
      */
     public function afterTransactionComplete()
     {
-        foreach (array('insert', 'update', 'delete') as $type) {
-            $this->handleCache($type);
+        $isChanged = false;
+
+        if (isset($this->queuedCache['insert'])) {
+            foreach ($this->queuedCache['insert'] as $entity) {
+                $isChanged = $this->putCache($entity, $isChanged);
+            }
         }
 
-        if ($this->isChanged) {
+        if (isset($this->queuedCache['update'])) {
+            foreach ($this->queuedCache['update'] as $entity) {
+                $isChanged = $this->putCache($entity, $isChanged);
+            }
+        }
+
+        if (isset($this->queuedCache['delete'])) {
+            foreach ($this->queuedCache['delete'] as $key) {
+                $this->region->evict($key);
+
+                $isChanged = true;
+            }
+        }
+
+        if ($isChanged) {
             $this->timestampRegion->update($this->timestampKey);
         }
 
@@ -68,10 +80,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
     {
         $this->persister->delete($entity);
 
-        $this->queuedCache['delete'][] = new EntityCacheKey(
-            $this->class->rootEntityName,
-            $this->uow->getEntityIdentifier($entity)
-        );
+        $this->queuedCache['delete'][] = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
     }
 
     /**
@@ -84,39 +93,24 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $this->queuedCache['update'][] = $entity;
     }
 
-    private function handleCache($type)
+    private function putCache($entity, $isChanged)
     {
-        if (!isset($this->queuedCache[$type])) {
-            return;
+        $class      = $this->class;
+        $className  = ClassUtils::getClass($entity);
+
+        if ($className !== $this->class->name) {
+            $class = $this->metadataFactory->getMetadataFor($className);
         }
 
-        if (in_array($type, array('insert', 'update'))) {
-            foreach ($this->queuedCache[$type] as $entity) {
-                $class     = $this->class;
-                $className = ClassUtils::getClass($entity);
+        $key        = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $entry      = $this->hydrator->buildCacheEntry($class, $key, $entity);
+        $cached     = $this->region->put($key, $entry);
+        $isChanged  = $isChanged ?: $cached;
 
-                if ($className !== $this->class->name) {
-                    $class = $this->metadataFactory->getMetadataFor($className);
-                }
-
-                $key             = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry           = $this->hydrator->buildCacheEntry($class, $key, $entity);
-                $cached          = $this->region->put($key, $entry);
-                $this->isChanged = $this->isChanged ?: $cached;
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->regionName, $key);
-                }
-            }
-
-            return;
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->entityCachePut($this->regionName, $key);
         }
 
-        if ('delete' === $type) {
-            foreach ($this->queuedCache['delete'] as $key) {
-                $this->region->evict($key);
-
-                $this->isChanged = true;
-            }
-        }
+        return $isChanged;
     }
 }
