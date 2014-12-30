@@ -40,13 +40,13 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         if (isset($this->queuedCache['insert'])) {
             foreach ($this->queuedCache['insert'] as $entity) {
-                $isChanged = $this->putCache($entity, $isChanged);
+                $isChanged = $this->handleCache($entity, $isChanged);
             }
         }
 
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $entity) {
-                $isChanged = $this->putCache($entity, $isChanged);
+                $isChanged = $this->handleCache($entity, $isChanged);
             }
         }
 
@@ -93,7 +93,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $this->queuedCache['update'][] = $entity;
     }
 
-    private function putCache($entity, $isChanged)
+    private function handleCache($entity, $isChanged)
     {
         $class      = $this->class;
         $className  = ClassUtils::getClass($entity);
