@@ -337,6 +337,19 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
         $this->assertAttributeSame($entityManager, 'em', $classMetadataFactory);
     }
+
+    /**
+     * @group DDC-3467
+     */
+    public function testEmbeddableInSuperClass()
+    {
+        $em = $this->_getTestEntityManager();
+        $metadataFactory = $em->getMetadataFactory();
+        /** @var ClassMetadata $classMetadata */
+        $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\Models\DDC3467\DDC3467Sun');
+
+        // TODO somehow test that this did not fail?
+    }
 }
 
 /* Test subject class with overridden factory method for mocking purposes */
