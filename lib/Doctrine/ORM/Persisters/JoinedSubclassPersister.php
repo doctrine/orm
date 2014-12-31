@@ -127,7 +127,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function executeInserts()
     {
         if ( ! $this->queuedInserts) {
-            return;
+            return array();
         }
 
         $postInsertIds  = array();
