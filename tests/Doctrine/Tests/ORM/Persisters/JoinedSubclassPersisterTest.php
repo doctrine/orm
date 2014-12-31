@@ -22,6 +22,11 @@ namespace Doctrine\Tests\ORM\Persisters;
 use Doctrine\ORM\Persisters\JoinedSubclassPersister;
 use Doctrine\Tests\OrmTestCase;
 
+/**
+ * Tests for {@see \Doctrine\ORM\Persisters\JoinedSubclassPersister}
+ *
+ * @covers \Doctrine\ORM\Persisters\JoinedSubclassPersister
+ */
 class JoinedSubClassPersisterTest extends OrmTestCase
 {
     /**
