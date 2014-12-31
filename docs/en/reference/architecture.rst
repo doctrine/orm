@@ -12,7 +12,7 @@ As the term ORM already hints at, Doctrine 2 aims to simplify the
 translation between database rows and the PHP object model. The
 primary use case for Doctrine are therefore applications that
 utilize the Object-Oriented Programming Paradigm. For applications
-that not primarily work with objects Doctrine 2 is not suited very
+that do not primarily work with objects Doctrine 2 is not suited very
 well.
 
 Requirements
