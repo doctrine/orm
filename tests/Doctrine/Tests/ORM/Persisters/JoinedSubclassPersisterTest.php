@@ -32,6 +32,9 @@ class JoinedSubClassPersisterTest extends OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-3470
+     */
     public function testExecuteInsertsWillReturnEmptySetWithNoQueuedInserts()
     {
         $this->assertSame(array(), $this->persister->executeInserts());
