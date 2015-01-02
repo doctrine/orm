@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\SchemaValidator;
 
 /**
@@ -46,5 +47,12 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
             $this->assertEquals(0, count($ce), "Invalid Modelset: " . $modelSet . " class " . $class->name . ": ". implode("\n", $ce));
         }
+    }
+
+    public function testSkipsPublicPropertyValidationIfReflectionClassAbsent()
+    {
+        $validator = new SchemaValidator($this->_em);
+
+        $this->assertEmpty($validator->validateClass(new ClassMetadataInfo('Foo\Bar')));
     }
 }

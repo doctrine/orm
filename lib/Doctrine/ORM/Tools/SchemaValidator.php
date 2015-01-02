@@ -236,18 +236,21 @@ class SchemaValidator
             }
         }
 
-        foreach ($class->reflClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $publicAttr) {
-            if ($publicAttr->isStatic()) {
-                continue;
-            }
+        // Only validate if there is a reflection class instance.
+        if ($class->reflClass instanceof \ReflectionClass) {
+            foreach ($class->reflClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $publicAttr) {
+                if ($publicAttr->isStatic()) {
+                    continue;
+                }
 
-            if ( ! isset($class->fieldMappings[$publicAttr->getName()]) &&
-                ! isset($class->associationMappings[$publicAttr->getName()])) {
-                continue;
-            }
+                if ( ! isset($class->fieldMappings[$publicAttr->getName()]) &&
+                    ! isset($class->associationMappings[$publicAttr->getName()])) {
+                    continue;
+                }
 
-            $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private ".
-                    "or protected. Public fields may break lazy-loading.";
+                $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private ".
+                        "or protected. Public fields may break lazy-loading.";
+            }
         }
 
         foreach ($class->subClasses as $subClass) {
