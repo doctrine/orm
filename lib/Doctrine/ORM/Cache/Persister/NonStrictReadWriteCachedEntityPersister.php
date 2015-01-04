@@ -20,15 +20,14 @@
 
 namespace Doctrine\ORM\Cache\Persister;
 
-use Doctrine\ORM\Cache\EntityCacheKey;
-
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Cache\EntityCacheKey;
 
 /**
  * Specific non-strict read/write cached entity persister
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since 2.5
+ * @since  2.5
  */
 class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
@@ -41,41 +40,13 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         if (isset($this->queuedCache['insert'])) {
             foreach ($this->queuedCache['insert'] as $entity) {
-                $class      = $this->class;
-                $className  = ClassUtils::getClass($entity);
-
-                if ($className !== $this->class->name) {
-                    $class = $this->metadataFactory->getMetadataFor($className);
-                }
-
-                $key        = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry      = $this->hydrator->buildCacheEntry($class, $key, $entity);
-                $cached     = $this->region->put($key, $entry);
-                $isChanged  = $isChanged ?: $cached;
-
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->regionName, $key);
-                }
+                $isChanged = $this->updateCache($entity, $isChanged);
             }
         }
 
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $entity) {
-                $class      = $this->class;
-                $className  = ClassUtils::getClass($entity);
-
-                if ($className !== $this->class->name) {
-                    $class = $this->metadataFactory->getMetadataFor($className);
-                }
-
-                $key        = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
-                $entry      = $this->hydrator->buildCacheEntry($class, $key, $entity);
-                $cached     = $this->region->put($key, $entry);
-                $isChanged  = $isChanged ?: $cached;
-
-                if ($this->cacheLogger && $cached) {
-                    $this->cacheLogger->entityCachePut($this->regionName, $key);
-                }
+                $isChanged = $this->updateCache($entity, $isChanged);
             }
         }
 
@@ -120,5 +91,20 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $this->persister->update($entity);
 
         $this->queuedCache['update'][] = $entity;
+    }
+
+    private function updateCache($entity, $isChanged)
+    {
+        $class      = $this->metadataFactory->getMetadataFor(get_class($entity));
+        $key        = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $entry      = $this->hydrator->buildCacheEntry($class, $key, $entity);
+        $cached     = $this->region->put($key, $entry);
+        $isChanged  = $isChanged ?: $cached;
+
+        if ($this->cacheLogger && $cached) {
+            $this->cacheLogger->entityCachePut($this->regionName, $key);
+        }
+
+        return $isChanged;
     }
 }
