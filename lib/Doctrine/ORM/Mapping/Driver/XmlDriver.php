@@ -842,6 +842,6 @@ class XmlDriver extends FileDriver
     {
         $flag = (string)$element;
 
-        return ($flag === true || $flag == "true" || $flag == "1");
+        return ($flag == "true" || $flag == "1");
     }
 }
