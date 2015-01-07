@@ -255,11 +255,20 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot->embedded)) {
             foreach ($xmlRoot->embedded as $embeddedMapping) {
+                $columnPrefix = isset($embeddedMapping['column-prefix'])
+                    ? (string) $embeddedMapping['column-prefix']
+                    : null;
+
+                $preventPrefixing = (
+                    $columnPrefix === '0' || $columnPrefix === 'false'
+                );
+
                 $mapping = array(
                     'fieldName' => (string) $embeddedMapping['name'],
                     'class' => (string) $embeddedMapping['class'],
-                    'columnPrefix' => isset($embeddedMapping['column-prefix']) ? (string) $embeddedMapping['column-prefix'] : null,
+                    'columnPrefix' => $preventPrefixing ? false : $columnPrefix
                 );
+
                 $metadata->mapEmbedded($mapping);
             }
         }
