@@ -1800,11 +1800,6 @@ class UnitOfWork implements PropertyChangedListener
         $managedCopy = $entity;
 
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
-            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                $this->em->getProxyFactory()->resetUninitializedProxy($entity);
-                $entity->__load();
-            }
-
             // Try to look the entity up in the identity map.
             $id = $class->getIdentifierValues($entity);
 
@@ -1841,10 +1836,6 @@ class UnitOfWork implements PropertyChangedListener
                     $class->setIdentifierValues($managedCopy, $id);
 
                     $this->persistNew($class, $managedCopy);
-                } else {
-                    if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized__) {
-                        $managedCopy->__load();
-                    }
                 }
             }
 
@@ -1861,76 +1852,8 @@ class UnitOfWork implements PropertyChangedListener
 
             $visited[$oid] = $managedCopy; // mark visited
 
-            // Merge state of $entity into existing (managed) entity
-            foreach ($class->reflClass->getProperties() as $prop) {
-                $name = $prop->name;
-                $prop->setAccessible(true);
-                if ( ! isset($class->associationMappings[$name])) {
-                    if ( ! $class->isIdentifier($name)) {
-                        $prop->setValue($managedCopy, $prop->getValue($entity));
-                    }
-                } else {
-                    $assoc2 = $class->associationMappings[$name];
-                    if ($assoc2['type'] & ClassMetadata::TO_ONE) {
-                        $other = $prop->getValue($entity);
-                        if ($other === null) {
-                            $prop->setValue($managedCopy, null);
-                        } else if ($other instanceof Proxy && !$other->__isInitialized__) {
-                            // do not merge fields marked lazy that have not been fetched.
-                            continue;
-                        } else if ( ! $assoc2['isCascadeMerge']) {
-                            if ($this->getEntityState($other) === self::STATE_DETACHED) {
-                                $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
-                                $relatedId = $targetClass->getIdentifierValues($other);
-
-                                if ($targetClass->subClasses) {
-                                    $other = $this->em->find($targetClass->name, $relatedId);
-                                } else {
-                                    $other = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $relatedId);
-                                    $this->registerManaged($other, $relatedId, array());
-                                }
-                            }
-
-                            $prop->setValue($managedCopy, $other);
-                        }
-                    } else {
-                        $mergeCol = $prop->getValue($entity);
-                        if ($mergeCol instanceof PersistentCollection && !$mergeCol->isInitialized()) {
-                            // do not merge fields marked lazy that have not been fetched.
-                            // keep the lazy persistent collection of the managed copy.
-                            continue;
-                        }
-
-                        $managedCol = $prop->getValue($managedCopy);
-                        if (!$managedCol) {
-                            $managedCol = new PersistentCollection($this->em,
-                                $this->em->getClassMetadata($assoc2['targetEntity']),
-                                new ArrayCollection
-                            );
-                            $managedCol->setOwner($managedCopy, $assoc2);
-                            $prop->setValue($managedCopy, $managedCol);
-                            $this->originalEntityData[$oid][$name] = $managedCol;
-                        }
-                        if ($assoc2['isCascadeMerge']) {
-                            $managedCol->initialize();
-
-                            // clear and set dirty a managed collection if its not also the same collection to merge from.
-                            if (!$managedCol->isEmpty() && $managedCol !== $mergeCol) {
-                                $managedCol->unwrap()->clear();
-                                $managedCol->setDirty(true);
-
-                                if ($assoc2['isOwningSide'] && $assoc2['type'] == ClassMetadata::MANY_TO_MANY && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForDirtyCheck($managedCopy);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if ($class->isChangeTrackingNotify()) {
-                    // Just treat all properties as changed, there is no other choice.
-                    $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
-                }
+            if (!($entity instanceof Proxy && ! $entity->__isInitialized())) {
+                $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
             }
 
             if ($class->isChangeTrackingDeferredExplicit()) {
@@ -3378,5 +3301,99 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+    }
+
+    /**
+     * @param object $entity
+     * @param object $managedCopy
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
+     * @internal param ClassMetadata $class
+     */
+    private function mergeEntityStateIntoManagedCopy($entity, $managedCopy)
+    {
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        foreach ($class->reflClass->getProperties() as $prop) {
+            $name = $prop->name;
+            $prop->setAccessible(true);
+            if (!isset($class->associationMappings[$name])) {
+                if (!$class->isIdentifier($name)) {
+                    $prop->setValue($managedCopy, $prop->getValue($entity));
+                }
+            } else {
+                $assoc2 = $class->associationMappings[$name];
+                if ($assoc2['type'] & ClassMetadata::TO_ONE) {
+                    $other = $prop->getValue($entity);
+                    if ($other === null) {
+                        $prop->setValue($managedCopy, null);
+                    } else {
+                        if ($other instanceof Proxy && !$other->__isInitialized()) {
+                            // do not merge fields marked lazy that have not been fetched.
+                            return;
+                        }
+                        if (!$assoc2['isCascadeMerge']) {
+                            if ($this->getEntityState($other) === self::STATE_DETACHED) {
+                                $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
+                                $relatedId = $targetClass->getIdentifierValues($other);
+
+                                if ($targetClass->subClasses) {
+                                    $other = $this->em->find($targetClass->name, $relatedId);
+                                } else {
+                                    $other = $this->em->getProxyFactory()->getProxy(
+                                        $assoc2['targetEntity'],
+                                        $relatedId
+                                    );
+                                    $this->registerManaged($other, $relatedId, array());
+                                }
+                            }
+
+                            $prop->setValue($managedCopy, $other);
+                        }
+                    }
+                } else {
+                    $mergeCol = $prop->getValue($entity);
+                    if ($mergeCol instanceof PersistentCollection && !$mergeCol->isInitialized()) {
+                        // do not merge fields marked lazy that have not been fetched.
+                        // keep the lazy persistent collection of the managed copy.
+                        return;
+                    }
+
+                    $managedCol = $prop->getValue($managedCopy);
+                    if (!$managedCol) {
+                        $managedCol = new PersistentCollection(
+                            $this->em,
+                            $this->em->getClassMetadata($assoc2['targetEntity']),
+                            new ArrayCollection
+                        );
+                        $managedCol->setOwner($managedCopy, $assoc2);
+                        $prop->setValue($managedCopy, $managedCol);
+                        $oid = spl_object_hash($entity);
+                        $this->originalEntityData[$oid][$name] = $managedCol;
+                    }
+                    if ($assoc2['isCascadeMerge']) {
+                        $managedCol->initialize();
+
+                        // clear and set dirty a managed collection if its not also the same collection to merge from.
+                        if (!$managedCol->isEmpty() && $managedCol !== $mergeCol) {
+                            $managedCol->unwrap()->clear();
+                            $managedCol->setDirty(true);
+
+                            if ($assoc2['isOwningSide'] && $assoc2['type'] == ClassMetadata::MANY_TO_MANY && $class->isChangeTrackingNotify(
+                                )
+                            ) {
+                                $this->scheduleForDirtyCheck($managedCopy);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($class->isChangeTrackingNotify()) {
+                // Just treat all properties as changed, there is no other choice.
+                $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
+            }
+        }
     }
 }
