@@ -790,7 +790,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The list of cascade options.
      */
-    private function _getCascadeMappings($cascadeElement)
+    private function _getCascadeMappings(SimpleXMLElement $cascadeElement)
     {
         $cascades = array();
         /* @var $action SimpleXmlElement */
