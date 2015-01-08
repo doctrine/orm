@@ -57,6 +57,25 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals(true, $class->isEmbeddedClass);
     }
 
+    public function testEmbeddedUseColumnPrefix()
+    {
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+
+        $factory = new ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3293\DDC3293User');
+        $this->assertFalse($class->embeddedClasses['address']['columnPrefix']);
+
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed');
+
+        $this->assertEquals(
+            '__prefix__',
+            $class->embeddedClasses['address']['columnPrefix']
+        );
+    }
+
     public function testEmbeddedMapping()
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\ValueObjects\Person');
