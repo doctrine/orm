@@ -141,6 +141,12 @@ directly, set ``columnPrefix=false`` (not yet supported with XML configuration):
               class: Address
               columnPrefix: false
 
+    .. code-block:: xml
+
+        <entity name="User">
+            <embedded name="address" class="Address" use-column-prefix="false" />
+        </entity>
+
 
 DQL
 ---
