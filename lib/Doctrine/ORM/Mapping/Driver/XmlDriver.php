@@ -255,11 +255,20 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot->embedded)) {
             foreach ($xmlRoot->embedded as $embeddedMapping) {
+                $columnPrefix = isset($embeddedMapping['column-prefix'])
+                    ? (string) $embeddedMapping['column-prefix']
+                    : null;
+
+                $useColumnPrefix = isset($embeddedMapping['use-column-prefix'])
+                    ? $this->evaluateBoolean($embeddedMapping['use-column-prefix'])
+                    : true;
+
                 $mapping = array(
                     'fieldName' => (string) $embeddedMapping['name'],
                     'class' => (string) $embeddedMapping['class'],
-                    'columnPrefix' => isset($embeddedMapping['column-prefix']) ? (string) $embeddedMapping['column-prefix'] : null,
+                    'columnPrefix' => $useColumnPrefix ? $columnPrefix : false
                 );
+
                 $metadata->mapEmbedded($mapping);
             }
         }
@@ -781,7 +790,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The list of cascade options.
      */
-    private function _getCascadeMappings($cascadeElement)
+    private function _getCascadeMappings(SimpleXMLElement $cascadeElement)
     {
         $cascades = array();
         /* @var $action SimpleXmlElement */
@@ -833,6 +842,6 @@ class XmlDriver extends FileDriver
     {
         $flag = (string)$element;
 
-        return ($flag === true || $flag == "true" || $flag == "1");
+        return ($flag == "true" || $flag == "1");
     }
 }

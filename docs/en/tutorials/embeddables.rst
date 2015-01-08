@@ -117,7 +117,7 @@ The following example shows you how to set your prefix to ``myPrefix_``:
               columnPrefix: myPrefix_
 
 To have Doctrine drop the prefix and use the value object's property name
-directly, set ``columnPrefix=false`` (not yet supported with XML configuration):
+directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
 
 .. configuration-block::
 
@@ -140,6 +140,12 @@ directly, set ``columnPrefix=false`` (not yet supported with XML configuration):
             address:
               class: Address
               columnPrefix: false
+
+    .. code-block:: xml
+
+        <entity name="User">
+            <embedded name="address" class="Address" use-column-prefix="false" />
+        </entity>
 
 
 DQL

@@ -304,6 +304,7 @@
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="class" type="xs:string" use="required" />
     <xs:attribute name="column-prefix" type="xs:string" use="optional" />
+    <xs:attribute name="use-column-prefix" type="xs:boolean" default="true" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="discriminator-column">
