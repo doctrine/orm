@@ -57,6 +57,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals(true, $class->isEmbeddedClass);
     }
 
+    /**
+     * @group DDC-3293
+     * @group DDC-3477
+     * @group 1238
+     */
     public function testEmbeddedUseColumnPrefix()
     {
         $em = $this->_getTestEntityManager();
