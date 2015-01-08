@@ -62,22 +62,39 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @group DDC-3477
      * @group 1238
      */
-    public function testEmbeddedUseColumnPrefix()
+    public function testEmbeddedMappingsWithUseColumnPrefix()
     {
-        $em = $this->_getTestEntityManager();
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
-
         $factory = new ClassMetadataFactory();
+        $em      = $this->_getTestEntityManager();
+
+        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
         $factory->setEntityManager($em);
-
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3293\DDC3293User');
-        $this->assertFalse($class->embeddedClasses['address']['columnPrefix']);
-
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed');
 
         $this->assertEquals(
             '__prefix__',
-            $class->embeddedClasses['address']['columnPrefix']
+            $factory
+                ->getMetadataFor('Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed')
+                ->embeddedClasses['address']['columnPrefix']
+        );
+    }
+
+    /**
+     * @group DDC-3293
+     * @group DDC-3477
+     * @group 1238
+     */
+    public function testEmbeddedMappingsWithFalseUseColumnPrefix()
+    {
+        $factory = new ClassMetadataFactory();
+        $em      = $this->_getTestEntityManager();
+
+        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $factory->setEntityManager($em);
+
+        $this->assertFalse(
+            $factory
+                ->getMetadataFor('Doctrine\Tests\Models\DDC3293\DDC3293User')
+                ->embeddedClasses['address']['columnPrefix']
         );
     }
 
