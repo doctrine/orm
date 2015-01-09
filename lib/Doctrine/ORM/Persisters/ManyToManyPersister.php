@@ -215,15 +215,18 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param \Doctrine\Common\Collections\Criteria|null $criteria
+     * @return int|mixed|void
      */
-    public function count(PersistentCollection $coll)
+    public function count(PersistentCollection $collection, Criteria $criteria = null)
     {
         $conditions     = array();
         $params         = array();
-        $mapping        = $coll->getMapping();
+        $mapping        = $collection->getMapping();
         $association    = $mapping;
         $class          = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $id             = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+        $id             = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
 
         if ( ! $mapping['isOwningSide']) {
             $targetEntity   = $this->em->getClassMetadata($mapping['targetEntity']);
@@ -244,6 +247,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
+
         list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
 
         if ($filterSql) {
@@ -254,6 +258,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . ' FROM ' . $joinTableName . ' t'
             . $joinTargetEntitySQL
             . ' WHERE ' . implode(' AND ', $conditions);
+var_dump($joinTargetEntitySQL);
+        if ($criteria) {
+            $criteriaConstraints = $this->getSelectConditionCriteriaSQL($collection, $criteria);
+            //$sql                 .= $criteriaConstraints ? ' AND ' . $criteriaConstraints : '';
+        }
 
         return $this->conn->fetchColumn($sql, $params);
     }

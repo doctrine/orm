@@ -212,9 +212,16 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     /**
      * {@inheritdoc}
+     * @param \Doctrine\ORM\PersistentCollection         $collection
+     * @param \Doctrine\Common\Collections\Criteria|null $criteria
+     * @return int
      */
-    public function count(PersistentCollection $collection)
+    public function count(PersistentCollection $collection, Criteria $criteria = null)
     {
+        if (null !== $criteria) {
+            return $this->persister->count($collection, $criteria);
+        }
+
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
         $entry   = $this->region->get($key);
@@ -223,7 +230,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             return count($entry->identifiers);
         }
 
-        return $this->persister->count($collection);
+        return $this->persister->count($collection, $criteria);
     }
 
     /**

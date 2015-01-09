@@ -568,7 +568,7 @@ final class PersistentCollection implements Collection, Selectable
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
-            return $persister->count($this) + ($this->isDirty ? $this->coll->count() : 0);
+            return $persister->count($this, null) + ($this->isDirty ? $this->coll->count() : 0);
         }
 
         $this->initialize();
@@ -871,7 +871,9 @@ final class PersistentCollection implements Collection, Selectable
         if ($this->association['type'] === ClassMetadata::MANY_TO_MANY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
-            return new ArrayCollection($persister->loadCriteria($this, $criteria));
+            return ($this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY)
+                ? new LazyManyToManyCriteriaCollection($this, $persister, $criteria)
+                : new ArrayCollection($persister->loadCriteria($this, $criteria));
         }
 
         $builder         = Criteria::expr();
