@@ -65,7 +65,7 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNotNull($userId);
 
-        $user->__load();
+        $user->isProxyInitialized();
 
         $this->assertEquals(
             $userId,

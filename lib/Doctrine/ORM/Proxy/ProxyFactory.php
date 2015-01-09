@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Proxy;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use Doctrine\Common\Proxy\Exception\OutOfBoundsException;
 use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Util\ClassUtils;
@@ -35,6 +36,9 @@ use ProxyManager\Generator\ClassGenerator;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ProxyManager\ProxyGenerator\LazyLoadingGhostGenerator;
+use ProxyManager\ProxyGenerator\Util\Properties;
+use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -101,8 +105,23 @@ class ProxyFactory extends AbstractProxyFactory
         $fqcn       = $definition->proxyClassName;
 
         if (! class_exists($fqcn, false)) {
-            $generatorStrategy = new EvaluatingGeneratorStrategy();
-            $proxyGenerator = new ClassGenerator();
+            $generatorStrategy    = new EvaluatingGeneratorStrategy();
+            $proxyGenerator       = new ClassGenerator();
+            $skippedProperties    = array_filter(
+                Properties::fromReflectionClass(new ReflectionClass($className))->getInstanceProperties(),
+                function (ReflectionProperty $property) use ($definition) {
+                    return ! in_array(
+                            $property->getName(),
+                            array_map(
+                                function (ReflectionProperty $property) {
+                                    return $property->getName();
+                                },
+                                $definition->reflectionFields
+                            )
+                        )
+                        || in_array($property->getName(), $definition->identifierFields);
+                }
+            );
 
             $proxyGenerator->setName($fqcn);
 
@@ -110,21 +129,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $this->em->getClassMetadata($className)->getReflectionClass(),
                 $proxyGenerator,
                 [
-                    'skippedProperties' => array_map(
-                        function (\ReflectionProperty $reflectionProperty) {
-                            if ($reflectionProperty->isProtected()) {
-                                return "\0*\0" . $reflectionProperty->getName();
-                            }
-
-                            if ($reflectionProperty->isPrivate()) {
-                                return "\0" . $reflectionProperty->getDeclaringClass()->getName()
-                                    . "\0" . $reflectionProperty->getName();
-                            }
-
-                            return $reflectionProperty->getName();
-                        },
-                        $definition->reflectionFields
-                    )
+                    'skippedProperties' => array_map([$this, 'getInternalReflectionPropertyName'], $skippedProperties)
                 ]
             );
 
@@ -140,6 +145,29 @@ class ProxyFactory extends AbstractProxyFactory
 
             $definition->reflectionFields[$idField]->setValue($proxy, $identifier[$idField]);
         }
+
+        return $proxy;
+    }
+
+    /**
+     * Reset initialization/cloning logic for an un-initialized proxy
+     *
+     * @param GhostObjectInterface $proxy
+     *
+     * @return GhostObjectInterface
+     *
+     * @throws \Doctrine\Common\Proxy\Exception\InvalidArgumentException
+     */
+    public function resetUninitializedProxy(GhostObjectInterface $proxy)
+    {
+        if ($proxy->isProxyInitialized()) {
+            throw InvalidArgumentException::unitializedProxyExpected($proxy);
+        }
+
+        $className  = ClassUtils::getClass($proxy);
+        $definition = $this->createProxyDefinition($className);
+
+        $proxy->setProxyInitializer($definition->initializer);
 
         return $proxy;
     }
@@ -258,5 +286,24 @@ class ProxyFactory extends AbstractProxyFactory
                 $property->setValue($proxy, $property->getValue($original));
             }
         };*/
+    }
+
+    /**
+     * @param ReflectionProperty $reflectionProperty
+     *
+     * @return string
+     */
+    private function getInternalReflectionPropertyName(ReflectionProperty $reflectionProperty)
+    {
+        if ($reflectionProperty->isProtected()) {
+            return "\0*\0" . $reflectionProperty->getName();
+        }
+
+        if ($reflectionProperty->isPrivate()) {
+            return "\0" . $reflectionProperty->getDeclaringClass()->getName()
+            . "\0" . $reflectionProperty->getName();
+        }
+
+        return $reflectionProperty->getName();
     }
 }

@@ -50,20 +50,20 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
 
         $this->assertInstanceOf(GhostObjectInterface::class, $item->getCurrency());
-        $this->assertFalse($item->getCurrency()->__isInitialized());
+        $this->assertFalse($item->getCurrency()->isProxyInitialized());
 
         $this->assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
         $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
         $this->assertInternalType('integer', $item->getCurrency()->getId());
         $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        $this->assertFalse($item->getCurrency()->__isInitialized());
+        $this->assertFalse($item->getCurrency()->isProxyInitialized());
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
         $this->assertInternalType('integer', $item->getCurrency()->getTemp());
         $this->assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        $this->assertTrue($item->getCurrency()->__isInitialized());
+        $this->assertTrue($item->getCurrency()->isProxyInitialized());
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }

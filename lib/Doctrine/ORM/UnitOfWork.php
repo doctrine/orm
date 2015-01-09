@@ -34,7 +34,6 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Proxy\Proxy;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -1820,6 +1819,11 @@ class UnitOfWork implements PropertyChangedListener
         $managedCopy = $entity;
 
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
+            if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
+                $this->em->getProxyFactory()->resetUninitializedProxy($entity);
+                $entity->initializeProxy();
+            }
+
             // Try to look the entity up in the identity map.
             $id = $class->getIdentifierValues($entity);
 
@@ -2524,7 +2528,7 @@ class UnitOfWork implements PropertyChangedListener
                 isset($hints[Query::HINT_REFRESH])
                 && isset($hints[Query::HINT_REFRESH_ENTITY])
                 && ($unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY]) !== $entity
-                && $unmanagedProxy instanceof Proxy
+                && $unmanagedProxy instanceof GhostObjectInterface
                 && $this->isIdentifierEquals($unmanagedProxy, $entity)
             ) {
                 // DDC-1238 - we have a managed instance, but it isn't the provided one.
@@ -2731,7 +2735,7 @@ class UnitOfWork implements PropertyChangedListener
 
                             if (
                                 $newValue instanceof NotifyPropertyChanged &&
-                                ( ! $newValue instanceof Proxy || $newValue->__isInitialized())
+                                ( ! $newValue instanceof GhostObjectInterface || $newValue->isProxyInitialized())
                             ) {
                                 $newValue->addPropertyChangedListener($this);
                             }
@@ -3101,7 +3105,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->addToIdentityMap($entity);
 
-        if ($entity instanceof NotifyPropertyChanged && ( ! $entity instanceof Proxy || $entity->__isInitialized())) {
+        if ($entity instanceof NotifyPropertyChanged && ( ! $entity instanceof GhostObjectInterface || $entity->isProxyInitialized())) {
             $entity->addPropertyChangedListener($this);
         }
     }
@@ -3209,8 +3213,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject($obj)
     {
-        if ($obj instanceof Proxy) {
-            $obj->__load();
+        if ($obj instanceof GhostObjectInterface) {
+            $obj->initializeProxy();
 
             return;
         }

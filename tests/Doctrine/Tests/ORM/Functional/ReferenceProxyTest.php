@@ -7,6 +7,7 @@ use Doctrine\ORM\Proxy\ProxyClassGenerator;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\Models\Company\CompanyAuction;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Tests the generation of a proxy object for lazy loading.
@@ -230,12 +231,12 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        /* @var $entity \ProxyManager\Proxy\GhostObjectInterface|\Doctrine\Tests\Models\ECommerce\ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
         $className = \Doctrine\Common\Util\ClassUtils::getClass($entity);
 
-        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $entity);
-        $this->assertFalse($entity->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entity);
+        $this->assertFalse($entity->isProxyInitialized());
         $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $className);
 
         $restName = str_replace($this->_em->getConfiguration()->getProxyNamespace(), "", get_class($entity));
@@ -243,7 +244,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace("\\", "", $restName) . ".php";
         $this->assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
 
-        $entity->__load();
-        $this->assertTrue($entity->__isInitialized());
+        $entity->initializeProxy();
+        $this->assertTrue($entity->isProxyInitialized());
     }
 }

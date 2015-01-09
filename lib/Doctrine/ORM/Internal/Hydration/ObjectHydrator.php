@@ -28,7 +28,6 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostLoadEventDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**

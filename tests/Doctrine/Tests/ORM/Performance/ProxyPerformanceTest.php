@@ -20,7 +20,6 @@
 namespace Doctrine\Tests\ORM\Performance;
 
 use Doctrine\Tests\OrmPerformanceTestCase;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Proxy\ProxyFactory;
