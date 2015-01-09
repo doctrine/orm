@@ -19,9 +19,9 @@
         "doctrine/collections": "~1.2",
         "doctrine/dbal": ">=2.5-dev,<2.7-dev",
         "doctrine/instantiator": "~1.0.1",
-        "doctrine/common": ">=2.5-dev,<2.7-dev",
         "doctrine/cache": "~1.4",
         "symfony/console": "~2.5|~3.0"
+        "ocramius/proxy-manager": "~2.0"
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0",
