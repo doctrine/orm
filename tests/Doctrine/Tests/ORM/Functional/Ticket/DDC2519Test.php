@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2519
@@ -37,15 +38,15 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->source());
         $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->target());
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->source());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->target());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->source());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->target());
+        $this->assertInstanceOf(GhostObjectInterface::class, $result[0]->source());
+        $this->assertInstanceOf(GhostObjectInterface::class, $result[0]->target());
+        $this->assertInstanceOf(GhostObjectInterface::class, $result[1]->source());
+        $this->assertInstanceOf(GhostObjectInterface::class, $result[1]->target());
 
-        $this->assertFalse($result[0]->target()->__isInitialized());
-        $this->assertFalse($result[0]->source()->__isInitialized());
-        $this->assertFalse($result[1]->target()->__isInitialized());
-        $this->assertFalse($result[1]->source()->__isInitialized());
+        $this->assertFalse($result[0]->target()->isProxyInitialized());
+        $this->assertFalse($result[0]->source()->isProxyInitialized());
+        $this->assertFalse($result[1]->target()->isProxyInitialized());
+        $this->assertFalse($result[1]->source()->isProxyInitialized());
 
         $this->assertNotNull($result[0]->source()->getId());
         $this->assertNotNull($result[0]->target()->getId());

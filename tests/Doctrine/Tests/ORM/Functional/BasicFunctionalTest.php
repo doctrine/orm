@@ -10,6 +10,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -688,9 +689,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $address2->getUser());
+        $this->assertInstanceOf(GhostObjectInterface::class, $address2->getUser());
         $this->assertTrue($userRef === $address2->getUser());
-        $this->assertFalse($userRef->__isInitialized__);
+        $this->assertFalse($userRef->isProxyInitialized());
         $this->assertEquals('Germany', $address2->country);
         $this->assertEquals('Berlin', $address2->city);
         $this->assertEquals('12345', $address2->zip);
@@ -999,8 +1000,8 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                              ->setParameter(1, $article->id)
                              ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER)
                              ->getSingleResult();
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $article->user, "It IS a proxy, ...");
-        $this->assertTrue($article->user->__isInitialized__, "...but its initialized!");
+        $this->assertInstanceOf(GhostObjectInterface::class, $article->user, "It IS a proxy, ...");
+        $this->assertTrue($article->user->isProxyInitialized(), "...but its initialized!");
         $this->assertEquals($qc+2, $this->getCurrentQueryCount());
     }
 

@@ -38,9 +38,9 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
 
-        $this->assertFalse($user->getProfile()->__isInitialized__, "Proxy is not initialized");
+        $this->assertFalse($user->getProfile()->isProxyInitialized(), "Proxy is not initialized");
         $user->getProfile()->setName("Bar");
-        $this->assertTrue($user->getProfile()->__isInitialized__, "Proxy is not initialized");
+        $this->assertTrue($user->getProfile()->isProxyInitialized(), "Proxy is not initialized");
 
         $this->assertEquals("Bar", $user->getProfile()->getName());
         $this->assertEquals(array("id" => 1, "name" => "Foo"), $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));

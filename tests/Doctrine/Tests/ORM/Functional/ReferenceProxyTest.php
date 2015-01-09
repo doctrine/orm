@@ -118,12 +118,12 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        /* @var $entity \ProxyManager\Proxy\GhostObjectInterface|\Doctrine\Tests\Models\ECommerce\ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Pre-Condition: Object is unitialized proxy.");
         $this->_em->getUnitOfWork()->initializeObject($entity);
-        $this->assertTrue($entity->__isInitialized__, "Should be initialized after called UnitOfWork::initializeObject()");
+        $this->assertTrue($entity->isProxyInitialized(), "Should be initialized after called UnitOfWork::initializeObject()");
     }
 
     /**
@@ -165,12 +165,12 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        /* @var $entity \ProxyManager\Proxy\GhostObjectInterface|\Doctrine\Tests\Models\ECommerce\ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
-        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Getting the identifier doesn't initialize the proxy.");
     }
 
     /**
@@ -180,12 +180,12 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createAuction();
 
-        /* @var $entity Doctrine\Tests\Models\Company\CompanyAuction */
+        /* @var $entity \ProxyManager\Proxy\GhostObjectInterface|\Doctrine\Tests\Models\Company\CompanyAuction */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyAuction' , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
-        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
+        $this->assertFalse($entity->isProxyInitialized(), "Getting the identifier doesn't initialize the proxy when extending.");
     }
     
     public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
@@ -201,26 +201,26 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $id = $shipping->getId();
-
+        /* @var $entity \ProxyManager\Proxy\GhostObjectInterface|ECommerceProduct */
         $product = $this->_em->getRepository('Doctrine\Tests\Models\ECommerce\ECommerceProduct')->find($product->getId());
 
         $entity = $product->getShipping();
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
         $this->assertSame($id, $entity->getId(), "Check that the id's are the same value, and type.");
-        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Getting the identifier doesn't initialize the proxy.");
     }
 
     public function testInitializeProxyOnGettingSomethingOtherThanTheIdentifier()
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        /* @var $entity \ProxyManager\Proxy\GhostObjectInterface|ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertFalse($entity->isProxyInitialized(), "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals('Doctrine Cookbook', $entity->getName());
-        $this->assertTrue($entity->__isInitialized__, "Getting something other than the identifier initializes the proxy.");
+        $this->assertTrue($entity->isProxyInitialized(), "Getting something other than the identifier initializes the proxy.");
     }
 
     /**

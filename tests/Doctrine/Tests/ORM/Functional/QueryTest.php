@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsUser,
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional Query tests.
@@ -426,8 +427,8 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0]);
         $this->assertEquals("dr. dolittle", $result[0]->topic);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->user);
-        $this->assertFalse($result[0]->user->__isInitialized__);
+        $this->assertInstanceOf(GhostObjectInterface::class, $result[0]->user);
+        $this->assertFalse($result[0]->user->isProxyInitialized());
     }
 
     /**

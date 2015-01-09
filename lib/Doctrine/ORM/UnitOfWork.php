@@ -25,6 +25,7 @@ use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Exception;
 use InvalidArgumentException;
+use ProxyManager\Proxy\GhostObjectInterface;
 use UnexpectedValueException;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -481,7 +482,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Ignore uninitialized proxy objects
-        if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+        if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
             return;
         }
 
@@ -783,7 +784,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
                     continue;
                 }
 
@@ -810,7 +811,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($assoc, $value)
     {
-        if ($value instanceof Proxy && ! $value->__isInitialized__) {
+        if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
             return;
         }
 
@@ -1858,6 +1859,10 @@ class UnitOfWork implements PropertyChangedListener
                     $class->setIdentifierValues($managedCopy, $id);
 
                     $this->persistNew($class, $managedCopy);
+                } else {
+                    if ($managedCopy instanceof GhostObjectInterface && ! $managedCopy->isProxyInitialized()) {
+                        $managedCopy->isProxyInitialized();
+                    }
                 }
             }
 
@@ -2258,8 +2263,8 @@ class UnitOfWork implements PropertyChangedListener
         $entitiesToCascade = array();
 
         foreach ($associationMappings as $assoc) {
-            if ($entity instanceof Proxy && !$entity->__isInitialized__) {
-                $entity->__load();
+            if ($entity instanceof GhostObjectInterface && !$entity->isProxyInitialized()) {
+                $entity->initializeProxy();
             }
 
             $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
@@ -2533,8 +2538,8 @@ class UnitOfWork implements PropertyChangedListener
                 return $unmanagedProxy;
             }
 
-            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                $entity->__setInitialized(true);
+            if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
+                $entity->setProxyInitializer(null);
 
                 $overrideLocalValues = true;
 
@@ -2683,8 +2688,8 @@ class UnitOfWork implements PropertyChangedListener
                             if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 !$targetClass->isIdentifierComposite &&
-                                $newValue instanceof Proxy &&
-                                $newValue->__isInitialized__ === false) {
+                                $newValue instanceof GhostObjectInterface &&
+                                $newValue->isProxyInitialized() === false) {
 
                                 $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
                             }

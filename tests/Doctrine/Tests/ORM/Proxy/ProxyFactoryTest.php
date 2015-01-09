@@ -91,7 +91,7 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
         $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        /* @var $proxy \ProxyManager\Proxy\GhostObjectInterface|\Doctrine\Tests\Models\ECommerce\ECommerceFeature */
         $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', array('id' => 42));
 
         $persister
@@ -105,9 +105,9 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         } catch (EntityNotFoundException $exception) {
         }
 
-        $this->assertFalse($proxy->__isInitialized());
-        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        $this->assertFalse($proxy->isProxyInitialized());
+        $this->assertInstanceOf('Closure', $proxy->getProxyInitializer(), 'The initializer wasn\'t removed');
+        //$this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     /**
@@ -118,7 +118,7 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
         $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        /* @var $proxy \ProxyManager\Proxy\GhostObjectInterface */
         $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', array('id' => 42));
 
         $persister
@@ -132,9 +132,9 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         } catch (EntityNotFoundException $exception) {
         }
 
-        $this->assertFalse($proxy->__isInitialized());
-        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        $this->assertFalse($proxy->isProxyInitialized());
+        $this->assertInstanceOf('Closure', $proxy->getProxyInitializer(), 'The initializer wasn\'t removed');
+        //$this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 }
 

@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyCar;
 
 use Doctrine\Common\Collections\Criteria;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -421,7 +422,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+        $this->assertInstanceOf(GhostObjectInterface::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
     }
 
     /**

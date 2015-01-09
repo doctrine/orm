@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
@@ -60,8 +61,8 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
         $this->assertEquals($fkt->cart->id, $fkt2->cartId);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $fkt2->cart);
-        $this->assertFalse($fkt2->cart->__isInitialized__);
+        $this->assertInstanceOf(GhostObjectInterface::class, $fkt2->cart);
+        $this->assertFalse($fkt2->cart->isProxyInitialized());
     }
 
     /**
