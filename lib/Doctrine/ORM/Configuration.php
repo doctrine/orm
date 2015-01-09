@@ -381,8 +381,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function ensureProductionSettings()
     {
-        if ( ! $this->getQueryCacheImpl()) {
+        $queryCacheImpl = $this->getQueryCacheImpl();
+
+        if ( ! $queryCacheImpl) {
             throw ORMException::queryCacheNotConfigured();
+        }
+
+        if ($queryCacheImpl instanceof ArrayCache) {
+            throw ORMException::queryCacheUsesNonPersistentCache($queryCacheImpl);
         }
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();

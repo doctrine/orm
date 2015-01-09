@@ -147,7 +147,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     /**
      * Configures $this->configuration to use production settings.
      *
-     * @param boolean $skipCache Do not configure a cache of this type, either "query" or "metadata".
+     * @param string $skipCache Do not configure a cache of this type, either "query" or "metadata".
      */
     protected function setProductionSettings($skipCache = false)
     {
@@ -181,6 +181,16 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $this->setProductionSettings('metadata');
         $this->setExpectedException('Doctrine\ORM\ORMException', 'Metadata Cache is not configured.');
+        $this->configuration->ensureProductionSettings();
+    }
+
+    public function testEnsureProductionSettingsQueryArrayCache()
+    {
+        $this->setProductionSettings();
+        $this->configuration->setQueryCacheImpl(new ArrayCache());
+        $this->setExpectedException(
+            'Doctrine\ORM\ORMException',
+            'Query Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
         $this->configuration->ensureProductionSettings();
     }
 
