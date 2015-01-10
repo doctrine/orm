@@ -2353,6 +2353,10 @@ class UnitOfWork implements PropertyChangedListener
                     return;
                 }
 
+                if ($entity instanceof Proxy && !$entity->__isInitialized__) {
+                    $entity->__load();
+                }
+
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
 
                 if ($entityVersion != $lockVersion) {
