@@ -31,6 +31,9 @@
     "autoload": {
         "psr-0": { "Doctrine\\ORM\\": "lib/" }
     },
+    "autoload-dev": {
+        "psr-0": { "Doctrine\\Tests\\": "tests/" }
+    },
     "bin": ["bin/doctrine", "bin/doctrine.php"],
     "extra": {
         "branch-alias": {
