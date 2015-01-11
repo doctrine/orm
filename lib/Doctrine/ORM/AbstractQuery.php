@@ -183,7 +183,7 @@ abstract class AbstractQuery
      *
      * @param boolean $cacheable
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setCacheable($cacheable)
     {
@@ -203,7 +203,7 @@ abstract class AbstractQuery
     /**
      * @param string $cacheRegion
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setCacheRegion($cacheRegion)
     {
@@ -242,7 +242,8 @@ abstract class AbstractQuery
      * Sets the life-time for this query into second level cache.
      *
      * @param integer $lifetime
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     *
+     * @return static This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -261,7 +262,8 @@ abstract class AbstractQuery
 
     /**
      * @param integer $cacheMode
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     *
+     * @return static This query instance.
      */
     public function setCacheMode($cacheMode)
     {
@@ -338,7 +340,7 @@ abstract class AbstractQuery
      *
      * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setParameters($parameters)
     {
@@ -367,7 +369,7 @@ abstract class AbstractQuery
      *                           the type conversion of this type. This is usually not needed for
      *                           strings and numeric types.
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setParameter($key, $value, $type = null)
     {
@@ -439,7 +441,7 @@ abstract class AbstractQuery
      *
      * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return static This query instance.
      */
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
     {
@@ -498,7 +500,7 @@ abstract class AbstractQuery
      *
      * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return static This query instance.
      */
     public function setHydrationCacheProfile(QueryCacheProfile $profile = null)
     {
@@ -528,7 +530,7 @@ abstract class AbstractQuery
      *
      * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return static This query instance.
      */
     public function setResultCacheProfile(QueryCacheProfile $profile = null)
     {
@@ -547,7 +549,7 @@ abstract class AbstractQuery
      *
      * @param \Doctrine\Common\Cache\Cache|null $resultCacheDriver Cache driver
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return static This query instance.
      *
      * @throws ORMException
      */
@@ -588,7 +590,7 @@ abstract class AbstractQuery
      * @param integer $lifetime
      * @param string  $resultCacheId
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function useResultCache($bool, $lifetime = null, $resultCacheId = null)
     {
@@ -609,7 +611,7 @@ abstract class AbstractQuery
      *
      * @param integer $lifetime How long the cache entry is valid.
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setResultCacheLifetime($lifetime)
     {
@@ -639,7 +641,7 @@ abstract class AbstractQuery
      *
      * @param boolean $expire Whether or not to force resultset cache expiration.
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function expireResultCache($expire = true)
     {
@@ -675,7 +677,7 @@ abstract class AbstractQuery
      * @param string $assocName
      * @param int    $fetchMode
      *
-     * @return AbstractQuery
+     * @return static This query instance.
      */
     public function setFetchMode($class, $assocName, $fetchMode)
     {
@@ -694,7 +696,7 @@ abstract class AbstractQuery
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Query::HYDRATE_* constants.
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setHydrationMode($hydrationMode)
     {
@@ -838,7 +840,7 @@ abstract class AbstractQuery
      * @param string $name  The name of the hint.
      * @param mixed  $value The value of the hint.
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return static This query instance.
      */
     public function setHint($name, $value)
     {
@@ -1050,7 +1052,7 @@ abstract class AbstractQuery
      *
      * @param string $id
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setResultCacheId($id)
     {
