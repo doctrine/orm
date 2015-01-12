@@ -90,4 +90,24 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
 
         $this->handler->hydrationComplete();
     }
+
+    public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $entity        = new stdClass();
+
+        $this
+            ->listenersInvoker
+            ->expects($this->any())
+            ->method('getSubscribedSystems')
+            ->with($metadata)
+            ->will($this->returnValue(ListenersInvoker::INVOKE_NONE));
+
+        $this->handler->deferPostLoadInvoking($metadata, $entity);
+
+        $this->listenersInvoker->expects($this->never())->method('invoke');
+
+        $this->handler->hydrationComplete();
+    }
 }
