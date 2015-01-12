@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\Models\DDC2504\DDC2504ChildClass;
 
 /**
  * Description of ExtraLazyCollectionTest
@@ -296,25 +297,52 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testContainsOneToManyJoinedInheritance()
+    public function testLazyOneToManyJoinedInheritanceIsLazilyInitialized()
     {
         $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddc2504OtherClassId);
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Pre-Condition: Collection is not initialized.");
+
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWhenMatchingItemIsFound()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddc2504OtherClassId);
 
         // Test One to Many existence retrieved from DB
         $childClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504ChildClass', $this->ddc2504ChildClassId);
         $queryCount = $this->getCurrentQueryCount();
 
         $this->assertTrue($otherClass->childClasses->contains($childClass));
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), 'Search operation was performed via SQL');
+    }
 
-        // Test One to Many existence with state new
-        $childClass = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
-
+    /**
+     * @group DDC-2504
+     */
+    public function testContainsOnOneToManyJoinedInheritanceWillNotCauseQueriesWhenNonPersistentItemIsMatched()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddc2504OtherClassId);
         $queryCount = $this->getCurrentQueryCount();
-        $this->assertFalse($otherClass->childClasses->contains($childClass));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+
+        $this->assertFalse($otherClass->childClasses->contains(new DDC2504ChildClass()));
+        $this->assertEquals(
+            $queryCount,
+            $this->getCurrentQueryCount(),
+            'Checking for contains of new entity should cause no query to be executed.'
+        );
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithClearStateMatchingItem()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddc2504OtherClassId);
+        $childClass = new DDC2504ChildClass();
 
         // Test One to Many existence with state clear
         $this->_em->persist($childClass);
@@ -322,11 +350,17 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
         $this->assertFalse($otherClass->childClasses->contains($childClass));
-        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
         $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
+    }
 
-        // Test One to Many existence with state managed
-        $childClass = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+    /**
+     * @group DDC-2504
+     */
+    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithNewStateNotMatchingItem()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddc2504OtherClassId);
+        $childClass = new DDC2504ChildClass();
 
         $this->_em->persist($childClass);
 
@@ -484,7 +518,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
-        $childClass = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+        $childClass = new DDC2504ChildClass();
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -504,7 +538,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity state as managed
-        $childClass = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+        $childClass = new DDC2504ChildClass();
 
         $this->_em->persist($childClass);
 
@@ -875,8 +909,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // DDC-2504
         $otherClass = new \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass();
-        $childClass1 = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
-        $childClass2 = new \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass();
+        $childClass1 = new DDC2504ChildClass();
+        $childClass2 = new DDC2504ChildClass();
 
         $childClass1->other = $otherClass;
         $childClass2->other = $otherClass;
