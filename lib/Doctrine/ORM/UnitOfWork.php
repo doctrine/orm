@@ -296,7 +296,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->listenersInvoker         = new ListenersInvoker($em);
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
-        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this, $this->listenersInvoker, $em);
+        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
     }
 
     /**

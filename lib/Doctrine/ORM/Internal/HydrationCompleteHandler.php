@@ -20,12 +20,10 @@
 namespace Doctrine\ORM\Internal;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * Class, which can handle completion of hydration cycle and produce some of tasks.
@@ -38,9 +36,6 @@ use Doctrine\ORM\UnitOfWork;
  */
 final class HydrationCompleteHandler
 {
-    /** @var \Doctrine\ORM\UnitOfWork */
-    private $uow;
-
     /** @var \Doctrine\ORM\Event\ListenersInvoker */
     private $listenersInvoker;
 
@@ -53,11 +48,10 @@ final class HydrationCompleteHandler
     /**
      * Constructor for this object
      *
-     * @param UnitOfWork $uow
      * @param \Doctrine\ORM\Event\ListenersInvoker $listenersInvoker
      * @param \Doctrine\ORM\EntityManagerInterface $em
      */
-    public function __construct(UnitOfWork $uow, ListenersInvoker $listenersInvoker, EntityManagerInterface $em)
+    public function __construct(ListenersInvoker $listenersInvoker, EntityManagerInterface $em)
     {
         $this->uow = $uow;
         $this->listenersInvoker = $listenersInvoker;

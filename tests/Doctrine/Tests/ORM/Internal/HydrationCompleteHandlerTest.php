@@ -34,11 +34,6 @@ use stdClass;
 class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Doctrine\ORM\UnitOfWork|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $unitOfWork;
-
-    /**
      * @var \Doctrine\ORM\Event\ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject
      */
     private $listenersInvoker;
@@ -58,14 +53,9 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->unitOfWork       = $this->getMock('Doctrine\ORM\UnitOfWork', array(), array(), '', false);
         $this->listenersInvoker = $this->getMock('Doctrine\ORM\Event\ListenersInvoker', array(), array(), '', false);
         $this->entityManager    = $this->getMock('Doctrine\ORM\EntityManagerInterface');
-        $this->handler          = new HydrationCompleteHandler(
-            $this->unitOfWork,
-            $this->listenersInvoker,
-            $this->entityManager
-        );
+        $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
     public function testDefersPostLoadOfEntity()
