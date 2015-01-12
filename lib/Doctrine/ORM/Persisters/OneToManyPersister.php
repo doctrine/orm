@@ -115,7 +115,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteSQL(PersistentCollection $coll)
     {
-        throw new \BadMethodCallException("Update Row SQL is not used for OneToManyPersister");
+        throw new \BadMethodCallException("Delete Row SQL is not used for OneToManyPersister");
     }
 
     /**
@@ -125,7 +125,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteSQLParameters(PersistentCollection $coll)
     {
-        throw new \BadMethodCallException("Update Row SQL is not used for OneToManyPersister");
+        throw new \BadMethodCallException("Delete Row SQL is not used for OneToManyPersister");
     }
 
     /**
@@ -133,11 +133,16 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $coll)
     {
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+        $mapping   = $coll->getMapping();
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
 
-        $sql = 'SELECT count(*) FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+        // only works with single id identifier entities. Will throw an
+        // exception in Entity Persisters if that is not the case for the
+        // 'mappedBy' field.
+        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $coll->getOwner()));
 
-        return $this->conn->fetchColumn($sql, $params);
+        return $persister->count($criteria);
     }
 
     /**
@@ -157,50 +162,19 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+        $mapping   = $coll->getMapping();
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
 
-        $mapping     = $coll->getMapping();
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        // only works with single id identifier entities. Will throw an
+        // exception in Entity Persisters if that is not the case for the
+        // 'mappedBy' field.
+        $criteria = new Criteria();
 
-        $whereClauses[] = $sourceClass->getColumnName($mapping['indexBy']) . ' = ?';
-        $params[] = $key;
+        $criteria->andWhere(Criteria::expr()->eq($mapping['mappedBy'], $coll->getOwner()));
+        $criteria->andWhere(Criteria::expr()->eq($mapping['indexBy'], $key));
 
-        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
-
-        return (bool) $this->conn->fetchColumn($sql, $params);
-    }
-
-    private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
-    {
-        $mapping     = $coll->getMapping();
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $id          = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
-
-        $whereClauses = array();
-        $params       = array();
-
-        $joinColumns = $targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'];
-        foreach ($joinColumns as $joinColumn) {
-            $whereClauses[] = $joinColumn['name'] . ' = ?';
-
-            $params[] = ($targetClass->containsForeignIdentifier)
-                ? $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])]
-                : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
-        }
-
-        if ($addFilters) {
-            $filterTargetClass = $this->em->getClassMetadata($targetClass->rootEntityName);
-            foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-                if ($filterExpr = $filter->addFilterConstraint($filterTargetClass, 't')) {
-                    $whereClauses[] = '(' . $filterExpr . ')';
-                }
-            }
-        }
-
-        $quotedJoinTable = $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' t';
-
-        return array($quotedJoinTable, $whereClauses, $params);
+        return (bool) $persister->count($criteria);
     }
 
      /**
@@ -253,11 +227,9 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $mapping = $coll->getMapping();
-        $class   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sql     = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-                 . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        $mapping   = $coll->getMapping();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
 
-        return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+        return $persister->delete($element);
     }
 }

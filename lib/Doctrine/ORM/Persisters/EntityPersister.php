@@ -153,7 +153,7 @@ interface EntityPersister
      *
      * @param object $entity The entity to delete.
      *
-     * @return void
+     * @return bool
      */
     public function delete($entity);
 
@@ -161,6 +161,7 @@ interface EntityPersister
      * Count entities (optionally filtered by a criteria)
      *
      * @param  array|\Doctrine\Common\Collections\Criteria $criteria
+     *
      * @return int
      */
     public function count($criteria = array());

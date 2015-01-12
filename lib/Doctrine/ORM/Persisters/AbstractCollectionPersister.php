@@ -85,7 +85,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
             return; // ignore inverse side
         }
 
-        $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
+        return $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
     }
 
     /**
