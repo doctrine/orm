@@ -152,6 +152,7 @@ class DefaultEntityHydrator implements EntityHydrator
         }
 
         $result = $this->uow->createEntity($entry->class, $data, $hints);
+
         $this->uow->hydrationComplete();
 
         return $result;

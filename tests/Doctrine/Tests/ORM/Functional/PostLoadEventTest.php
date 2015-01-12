@@ -204,6 +204,9 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $phonenumbersCol->first();
     }
 
+    /**
+     * @group DDC-3005
+     */
     public function testAssociationsArePopulatedWhenEventIsFired()
     {
         $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
@@ -218,6 +221,9 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
     }
 
+    /**
+     * @group DDC-3005
+     */
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler()
     {
         $eventManager = $this->_em->getEventManager();
