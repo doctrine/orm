@@ -58,7 +58,10 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
-    public function testDefersPostLoadOfEntity()
+    /**
+     * @dataProvider testGetValidListenerInvocationFlags
+     */
+    public function testDefersPostLoadOfEntity($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
@@ -70,7 +73,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will($this->returnValue(ListenersInvoker::INVOKE_LISTENERS));
+            ->will($this->returnValue($listenersFlag));
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
@@ -85,7 +88,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
                 $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity) {
                     return $entity === $args->getEntity() && $entityManager === $args->getObjectManager();
                 }),
-                ListenersInvoker::INVOKE_LISTENERS
+                $listenersFlag
             );
 
         $this->handler->hydrationComplete();
@@ -109,5 +112,17 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
         $this->listenersInvoker->expects($this->never())->method('invoke');
 
         $this->handler->hydrationComplete();
+    }
+
+    public function testGetValidListenerInvocationFlags()
+    {
+        return array(
+            array(ListenersInvoker::INVOKE_LISTENERS),
+            array(ListenersInvoker::INVOKE_CALLBACKS),
+            array(ListenersInvoker::INVOKE_MANAGER),
+            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS),
+            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER),
+            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER),
+        );
     }
 }
