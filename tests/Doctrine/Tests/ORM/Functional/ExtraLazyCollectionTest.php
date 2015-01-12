@@ -594,55 +594,6 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group DDC-2504
-     */
-    public function testRemoveElementOneToManyJoinedInheritance()
-    {
-        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Pre-Condition: Collection is not initialized.");
-
-        // Test One to Many removal with Entity retrieved from DB
-        $childClass = $this->_em->find(DDC2504ChildClass::CLASSNAME, $this->ddc2504ChildClassId);
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement($childClass);
-
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
-
-        // Test One to Many removal with Entity state as new
-        $childClass = new DDC2504ChildClass();
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement($childClass);
-
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a new entity should cause no query to be executed.");
-
-        // Test One to Many removal with Entity state as clean
-        $this->_em->persist($childClass);
-        $this->_em->flush();
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement($childClass);
-
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Removing a persisted entity should cause two queries to be executed.");
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
-
-        // Test One to Many removal with Entity state as managed
-        $childClass = new DDC2504ChildClass();
-
-        $this->_em->persist($childClass);
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement($childClass);
-
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
-    }
-
-    /**
      *
      */
     public function testRemoveElementManyToMany()
