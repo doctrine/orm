@@ -36,20 +36,26 @@ use Doctrine\ORM\Events;
  */
 final class HydrationCompleteHandler
 {
-    /** @var \Doctrine\ORM\Event\ListenersInvoker */
+    /**
+     * @var ListenersInvoker
+     */
     private $listenersInvoker;
 
-    /** @var \Doctrine\ORM\EntityManagerInterface */
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
-    /** @var array */
+    /**
+     * @var array[]
+     */
     private $deferredPostLoadInvocations = array();
 
     /**
      * Constructor for this object
      *
-     * @param \Doctrine\ORM\Event\ListenersInvoker $listenersInvoker
-     * @param \Doctrine\ORM\EntityManagerInterface $em
+     * @param ListenersInvoker $listenersInvoker
+     * @param EntityManagerInterface $em
      */
     public function __construct(ListenersInvoker $listenersInvoker, EntityManagerInterface $em)
     {
@@ -61,7 +67,7 @@ final class HydrationCompleteHandler
      * Method schedules invoking of postLoad entity to the very end of current hydration cycle.
      *
      * @param ClassMetadata $class
-     * @param object $entity
+     * @param object        $entity
      */
     public function deferPostLoadInvoking(ClassMetadata $class, $entity)
     {
