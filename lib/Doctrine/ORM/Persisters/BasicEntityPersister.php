@@ -585,7 +585,8 @@ class BasicEntityPersister implements EntityPersister
         }, $class->identifier);
 
         $this->deleteJoinTableRecords($identifier);
-        $this->conn->delete($tableName, $id, $types);
+
+        return (bool) $this->conn->delete($tableName, $id, $types);
     }
 
     /**

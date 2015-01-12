@@ -275,15 +275,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
             $rootTable  = $this->quoteStrategy->getTableName($rootClass, $this->platform);
 
-            $this->conn->delete($rootTable, $id);
-
-            return;
+            return (bool) $this->conn->delete($rootTable, $id);
         }
 
         // Delete from all tables individually, starting from this class' table up to the root table.
         $rootTable = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
-        $this->conn->delete($rootTable, $id);
+        $affectedRows = $this->conn->delete($rootTable, $id);
 
         foreach ($this->class->parentClasses as $parentClass) {
             $parentMetadata = $this->em->getClassMetadata($parentClass);
@@ -291,6 +289,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             $this->conn->delete($parentTable, $id);
         }
+
+        return (bool) $affectedRows;
     }
 
     /**
