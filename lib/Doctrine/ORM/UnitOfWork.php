@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -277,17 +278,25 @@ class UnitOfWork implements PropertyChangedListener
     protected $hasCache = false;
 
     /**
+     * Helper for handling completion of hydration
+     *
+     * @var HydrationCompleteHandler
+     */
+    private $hydrationCompleteHandler;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
-        $this->em                  = $em;
-        $this->evm                 = $em->getEventManager();
-        $this->listenersInvoker    = new ListenersInvoker($em);
-        $this->hasCache            = $em->getConfiguration()->isSecondLevelCacheEnabled();
-        $this->identifierFlattener = new IdentifierFlattener($this, $em->getMetadataFactory());
+        $this->em                       = $em;
+        $this->evm                      = $em->getEventManager();
+        $this->listenersInvoker         = new ListenersInvoker($em);
+        $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
+        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
     }
 
     /**
@@ -2801,11 +2810,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($overrideLocalValues) {
-            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
-
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
-            }
+            // defer invoking of postLoad event to hydration complete step
+            $this->hydrationCompleteHandler->deferPostLoadInvoking($class, $entity);
         }
 
         return $entity;
@@ -3378,5 +3384,16 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+    }
+
+    /**
+     * This method called by hydrators, and indicates that hydrator totally completed current hydration cycle.
+     * Unit of work able to fire deferred events, related to loading events here.
+     *
+     * @internal should be called internally from object hydrators
+     */
+    public function hydrationComplete()
+    {
+        $this->hydrationCompleteHandler->hydrationComplete();
     }
 }
