@@ -85,7 +85,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
             return; // ignore inverse side
         }
 
-        $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
+        list($params, $types) = $this->getDeleteSQLParameters($coll);
+        $this->conn->executeUpdate($this->getDeleteSQL($coll), $params, $types);
     }
 
     /**
@@ -98,8 +99,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     abstract protected function getDeleteSQL(PersistentCollection $coll);
 
     /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete
-     * the given collection.
+     * Gets the SQL parameters and binding types for the corresponding SQL
+     * statement to delete the given collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
      *
@@ -131,7 +132,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $sql    = $this->getDeleteRowSQL($coll);
 
         foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+            list($params, $types) = $this->getDeleteRowSQLParameters($coll, $element);
+            $this->conn->executeUpdate($sql, $params, $types);
         }
     }
 
@@ -144,7 +146,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $sql    = $this->getInsertRowSQL($coll);
 
         foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
+            list($params, $types) = $this->getInsertRowSQLParameters($coll, $element);
+            $this->conn->executeUpdate($sql, $params, $types);
         }
     }
 

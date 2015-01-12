@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Tools\SchemaValidator;
 
 /**
@@ -18,6 +19,16 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
             if ($modelSet == "customtype") {
                 continue;
             }
+
+            // DDC-3380: Register DBAL type for these modelsets
+            if (substr($modelSet, 0, 4) == 'vct_') {
+                if (DBALType::hasType('rot13')) {
+                    DBALType::overrideType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+                } else {
+                    DBALType::addType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+                }
+            }
+
             $modelSets[] = array($modelSet);
         }
         return $modelSets;

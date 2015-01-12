@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for one-to-many collections.
@@ -50,12 +51,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * Generates the SQL UPDATE that updates a particular row's foreign
-     * key to null.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
+     * {@inheritdoc}
      *
      * @override
      */
@@ -72,14 +68,29 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {
-        return array_values($this->uow->getEntityIdentifier($element));
+        $params  = array();
+        $types   = array();
+
+        $identifier = $this->uow->getEntityIdentifier($element);
+        $class      = $coll->getTypeClass();
+
+        foreach ($identifier as $field => $value) {
+            $params[] = $value;
+            $types[]  = PersisterHelper::getTypeOfField($field, $class, $this->em);
+        }
+
+        return array($params, $types);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
@@ -91,6 +102,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * @override
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
     protected function getInsertRowSQLParameters(PersistentCollection $coll, $element)
@@ -100,6 +113,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
@@ -111,6 +126,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * @override
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
     protected function getDeleteSQL(PersistentCollection $coll)
@@ -120,6 +137,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
+     *
+     * @override
      *
      * @throws \BadMethodCallException Not used for OneToManyPersister.
      */
@@ -133,11 +152,11 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $coll)
     {
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictions($coll, true);
 
         $sql = 'SELECT count(*) FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        return $this->conn->fetchColumn($sql, $params);
+        return $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
     /**
@@ -157,19 +176,29 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, true);
+        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictions($coll, true);
 
-        $mapping     = $coll->getMapping();
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $mapping      = $coll->getMapping();
+        $sourceClass  = $this->em->getClassMetadata($mapping['targetEntity']);
+        $sourceColumn = $sourceClass->getColumnName($mapping['indexBy']);
 
-        $whereClauses[] = $sourceClass->getColumnName($mapping['indexBy']) . ' = ?';
-        $params[] = $key;
+        $whereClauses[] = $sourceColumn . ' = ?';
+        $params[]       = $key;
+        $types[]        = PersisterHelper::getTypeOfColumn($sourceColumn, $sourceClass, $this->em);
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        return (bool) $this->conn->fetchColumn($sql, $params);
+        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
+    /**
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param boolean                            $addFilters
+     *
+     * @return array
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
     private function getJoinTableRestrictions(PersistentCollection $coll, $addFilters)
     {
         $mapping     = $coll->getMapping();
@@ -179,14 +208,14 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $whereClauses = array();
         $params       = array();
+        $types        = array();
 
         $joinColumns = $targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'];
         foreach ($joinColumns as $joinColumn) {
             $whereClauses[] = $joinColumn['name'] . ' = ?';
 
-            $params[] = ($targetClass->containsForeignIdentifier)
-                ? $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])]
-                : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
+            $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+            $types[]  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $sourceClass, $this->em);
         }
 
         if ($addFilters) {
@@ -200,7 +229,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $quotedJoinTable = $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' t';
 
-        return array($quotedJoinTable, $whereClauses, $params);
+        return array($quotedJoinTable, $whereClauses, $params, $types);
     }
 
      /**
@@ -255,9 +284,11 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $mapping = $coll->getMapping();
         $class   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sql     = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-                 . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
 
-        return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+        $sql = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
+            . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        list($params, $types) = $this->getDeleteRowSQLParameters($coll, $element);
+
+        return (bool) $this->conn->executeUpdate($sql, $params, $types);
     }
 }
