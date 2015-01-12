@@ -135,21 +135,17 @@ class QueryExpressionVisitor extends ExpressionVisitor
         if ( ! isset($this->queryAliases[0])) {
             throw new QueryException('No aliases are set before invoking walkComparison().');
         }
-        $field = $comparison->getField();
 
-        $hasValidAlias = false;
+        $field = $this->queryAliases[0] . '.' . $comparison->getField();
+
         foreach($this->queryAliases as $alias) {
-            if(strpos($field . '.', $alias . '.') === 0) {
-                $hasValidAlias = true;
+            if(strpos($comparison->getField() . '.', $alias . '.') === 0) {
+                $field = $comparison->getField();
                 break;
             }
         }
 
-        $parameterName = str_replace('.', '_', $field);
-
-        if(!$hasValidAlias) {
-            $field = $this->queryAliases[0] . '.' . $field;
-        }
+        $parameterName = str_replace('.', '_', $comparison->getField());
 
         foreach($this->parameters as $parameter) {
             if($parameter->getName() === $parameterName) {
