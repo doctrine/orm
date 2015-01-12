@@ -2,11 +2,15 @@
 
 namespace Doctrine\Tests\Models\DDC2504;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * @Entity
  */
 class DDC2504OtherClass
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Column(type="integer")
      * @Id @GeneratedValue
@@ -14,14 +18,16 @@ class DDC2504OtherClass
     public $id;
 
     /**
-     * @var Doctrine\Tests\Models\DDC2504\DDC2504ChildClass
+     * @var \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass
      *
      * @OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
+     *
+     * @var ArrayCollection|\Doctrine\ORM\PersistentCollection
      */
     public $childClasses;
 
     public function __construct()
     {
-        $this->childClasses = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->childClasses = new ArrayCollection();
     }
 }
