@@ -53,9 +53,8 @@ final class HydrationCompleteHandler
      */
     public function __construct(ListenersInvoker $listenersInvoker, EntityManagerInterface $em)
     {
-        $this->uow = $uow;
         $this->listenersInvoker = $listenersInvoker;
-        $this->em = $em;
+        $this->em               = $em;
     }
 
     /**
