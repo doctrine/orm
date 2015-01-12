@@ -535,6 +535,67 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
+    public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement(new DDC2504ChildClass());
+
+        $this->assertEquals(
+            $queryCount,
+            $this->getCurrentQueryCount(),
+            'Removing an unmanaged entity should cause no query to be executed.'
+        );
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $childClass = new DDC2504ChildClass();
+
+        $this->_em->persist($childClass);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement($childClass);
+
+        $this->assertEquals(
+            $queryCount,
+            $this->getCurrentQueryCount(),
+            'Removing a new entity should cause no query to be executed.'
+        );
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testRemovalOfNewManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $childClass = new DDC2504ChildClass();
+
+        $this->_em->persist($childClass);
+        $this->_em->flush();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement($childClass);
+
+        $this->assertEquals(
+            $queryCount + 2,
+            $this->getCurrentQueryCount(),
+            'Removing a persisted entity should cause two queries to be executed.'
+        );
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+    }
+
+    /**
+     * @group DDC-2504
+     */
     public function testRemoveElementOneToManyJoinedInheritance()
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
