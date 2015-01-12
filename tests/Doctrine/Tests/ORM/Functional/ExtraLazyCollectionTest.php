@@ -511,7 +511,29 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     *
+     * @group DDC-2504
+     */
+    public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $childClass = $this->_em->find(DDC2504ChildClass::CLASSNAME, $this->ddc2504ChildClassId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement($childClass);
+
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        $this->assertEquals(
+            $queryCount + 2,
+            $this->getCurrentQueryCount(),
+            'One removal per table in the JTI has been executed'
+        );
+
+        $this->assertFalse($otherClass->childClasses->contains($childClass));
+    }
+
+    /**
+     * @group DDC-2504
      */
     public function testRemoveElementOneToManyJoinedInheritance()
     {
