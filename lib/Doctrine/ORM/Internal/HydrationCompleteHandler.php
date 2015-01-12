@@ -80,16 +80,10 @@ final class HydrationCompleteHandler
 
     /**
      * This method should me called after any hydration cycle completed.
-     */
-    public function hydrationComplete()
-    {
-        $this->invokeAllDeferredPostLoadEvents();
-    }
-
-    /**
+     *
      * Method fires all deferred invocations of postLoad events
      */
-    private function invokeAllDeferredPostLoadEvents()
+    public function hydrationComplete()
     {
         $toInvoke                          = $this->deferredPostLoadInvocations;
         $this->deferredPostLoadInvocations = array();
