@@ -62,7 +62,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /**
      * Constructor
      *
-     * @param string $queryAliases
+     * @param array $queryAliases
      */
     public function __construct($queryAliases)
     {
@@ -133,7 +133,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     {
 
         if ( ! isset($this->queryAliases[0])) {
-            throw new \RuntimeException('No aliases are set before invoking walkComparison().');
+            throw new QueryException('No aliases are set before invoking walkComparison().');
         }
         $field = $comparison->getField();
 

@@ -473,7 +473,7 @@ class QueryBuilder
      * </code>
      * @return array
      */
-    public function getAllAliases() {
+    private function getAllAliases() {
         return array_merge($this->getRootAliases(),array_keys($this->joinRootAliases));
     }
 
@@ -1234,14 +1234,14 @@ class QueryBuilder
      * Overrides firstResult and maxResults if they're set.
      *
      * @param Criteria $criteria
-     *
      * @return QueryBuilder
+     * @throws Query\QueryException
      */
     public function addCriteria(Criteria $criteria)
     {
         $allAliases = $this->getAllAliases();
         if ( ! isset($allAliases[0])) {
-            throw new \RuntimeException('No aliases are set before invoking addCriteria().');
+            throw new Query\QueryException('No aliases are set before invoking addCriteria().');
         }
 
         $visitor = new QueryExpressionVisitor($this->getAllAliases());
