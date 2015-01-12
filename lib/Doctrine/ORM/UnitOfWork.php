@@ -2514,7 +2514,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @todo Rename: getOrCreateEntity
      */
-    public function createEntity($className, array $data, &$hints = array())
+    public function createEntity($className, array $data, &$hints = array(), &$created = null)
     {
         $class = $this->em->getClassMetadata($className);
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
@@ -2800,12 +2800,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if ($overrideLocalValues) {
-            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
-
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
-            }
+        if (isset($created)) {
+            $created = $overrideLocalValues;
         }
 
         return $entity;
@@ -2872,6 +2868,16 @@ class UnitOfWork implements PropertyChangedListener
     public function getIdentityMap()
     {
         return $this->identityMap;
+    }
+
+    /**
+     * Gets the listeners invoker.
+     *
+     * @return \Doctrine\ORM\Event\ListenersInvoker
+     */
+    public function getListenersInvoker()
+    {
+        return $this->listenersInvoker;
     }
 
     /**
