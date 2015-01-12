@@ -60,6 +60,8 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider testGetValidListenerInvocationFlags
+     *
+     * @param int $listenersFlag
      */
     public function testDefersPostLoadOfEntity($listenersFlag)
     {
@@ -87,6 +89,48 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
                 $entity,
                 $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity) {
                     return $entity === $args->getEntity() && $entityManager === $args->getObjectManager();
+                }),
+                $listenersFlag
+            );
+
+        $this->handler->hydrationComplete();
+    }
+    /**
+     * @dataProvider testGetValidListenerInvocationFlags
+     *
+     * @param int $listenersFlag
+     */
+    public function testDefersMultiplePostLoadOfEntity($listenersFlag)
+    {
+        /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
+        /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata1      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata2      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $entity1        = new stdClass();
+        $entity2        = new stdClass();
+        $entityManager  = $this->entityManager;
+
+        $this
+            ->listenersInvoker
+            ->expects($this->any())
+            ->method('getSubscribedSystems')
+            ->with($this->logicalOr($metadata1, $metadata2))
+            ->will($this->returnValue($listenersFlag));
+
+        $this->handler->deferPostLoadInvoking($metadata1, $entity1);
+        $this->handler->deferPostLoadInvoking($metadata2, $entity2);
+
+        $this
+            ->listenersInvoker
+            ->expects($this->exactly(2))
+            ->method('invoke')
+            ->with(
+                $this->logicalOr($metadata1, $metadata2),
+                Events::postLoad,
+                $this->logicalOr($entity1, $entity2),
+                $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
+                    return in_array($args->getEntity(), array($entity1, $entity2), true)
+                        && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
             );
