@@ -91,7 +91,13 @@ final class HydrationCompleteHandler
         foreach ($toInvoke as $classAndEntity) {
             list($class, $invoke, $entity) = $classAndEntity;
 
-            $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
+            $this->listenersInvoker->invoke(
+                $class,
+                Events::postLoad,
+                $entity,
+                new LifecycleEventArgs($entity, $this->em),
+                $invoke
+            );
         }
     }
 }
