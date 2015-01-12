@@ -51,24 +51,6 @@ interface CollectionPersister
     public function update(PersistentCollection $collection);
 
     /**
-     * Deletes rows.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     *
-     * @return void
-     */
-    public function deleteRows(PersistentCollection $collection);
-
-    /**
-     * Inserts rows.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     *
-     * @return void
-     */
-    public function insertRows(PersistentCollection $collection);
-
-    /**
      * Counts the size of this persistent collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection

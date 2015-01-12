@@ -36,6 +36,28 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
+    public function delete(PersistentCollection $coll)
+    {
+        // This can never happen. One to many can only be inverse side.
+        // For owning side one to many, it is required to have a join table,
+        // then classifying it as a ManyToManyPersister.
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(PersistentCollection $coll)
+    {
+        // This can never happen. One to many can only be inverse side.
+        // For owning side one to many, it is required to have a join table,
+        // then classifying it as a ManyToManyPersister.
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function get(PersistentCollection $coll, $index)
     {
         $mapping   = $coll->getMapping();
@@ -95,36 +117,6 @@ class OneToManyPersister extends AbstractCollectionPersister
     protected function getInsertRowSQLParameters(PersistentCollection $coll, $element)
     {
         throw new \BadMethodCallException("Insert Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getUpdateRowSQL(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Update Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getDeleteSQL(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Delete Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getDeleteSQLParameters(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Delete Row SQL is not used for OneToManyPersister");
     }
 
     /**

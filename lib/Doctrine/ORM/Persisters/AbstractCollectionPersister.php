@@ -79,73 +79,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      */
     public function delete(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
-
-        if ( ! $mapping['isOwningSide']) {
-            return; // ignore inverse side
-        }
-
-        $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
-    }
-
-    /**
-     * Gets the SQL statement for deleting the given collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
-     */
-    abstract protected function getDeleteSQL(PersistentCollection $coll);
-
-    /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete
-     * the given collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return array
-     */
-    abstract protected function getDeleteSQLParameters(PersistentCollection $coll);
-
-    /**
-     * {@inheritdoc}
-     */
-    public function update(PersistentCollection $coll)
-    {
-        $mapping = $coll->getMapping();
-
-        if ( ! $mapping['isOwningSide']) {
-            return; // ignore inverse side
-        }
-
-        $this->deleteRows($coll);
-        $this->insertRows($coll);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteRows(PersistentCollection $coll)
-    {
-        $diff   = $coll->getDeleteDiff();
-        $sql    = $this->getDeleteRowSQL($coll);
-
-        foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function insertRows(PersistentCollection $coll)
-    {
-        $diff   = $coll->getInsertDiff();
-        $sql    = $this->getInsertRowSQL($coll);
-
-        foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
-        }
+        throw new \BadMethodCallException("Deleting elements is not supported by this CollectionPersister.");
     }
 
     /**
@@ -211,53 +145,4 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     {
         throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
     }
-
-    /**
-     * Gets the SQL statement used for deleting a row from the collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
-     */
-    abstract protected function getDeleteRowSQL(PersistentCollection $coll);
-
-    /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete the given
-     * element from the given collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param mixed                              $element
-     *
-     * @return array
-     */
-    abstract protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element);
-
-    /**
-     * Gets the SQL statement used for updating a row in the collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
-     */
-    abstract protected function getUpdateRowSQL(PersistentCollection $coll);
-
-    /**
-     * Gets the SQL statement used for inserting a row in the collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
-     */
-    abstract protected function getInsertRowSQL(PersistentCollection $coll);
-
-    /**
-     * Gets the SQL parameters for the corresponding SQL statement to insert the given
-     * element of the given collection into the database.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param mixed                              $element
-     *
-     * @return array
-     */
-    abstract protected function getInsertRowSQLParameters(PersistentCollection $coll, $element);
 }
