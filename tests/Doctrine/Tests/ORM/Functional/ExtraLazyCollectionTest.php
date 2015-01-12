@@ -369,9 +369,18 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($otherClass->childClasses->contains($childClass));
         $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
         $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
+    }
 
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Pre-Condition");
+    /**
+     * @group DDC-2504
+     */
+    public function testCountingOnOneToManyJoinedInheritanceWillNotInitializeCollection()
+    {
+        $otherClass = $this->_em->find('Doctrine\Tests\Models\DDC2504\DDC2504OtherClass', $this->ddc2504OtherClassId);
+
         $this->assertEquals(2, count($otherClass->childClasses));
+
+        $this->assertFalse($otherClass->childClasses->isInitialized());
     }
 
     /**
