@@ -1,5 +1,7 @@
 <?php
+
 namespace Doctrine\Tests\Models\DDC2504;
+
 /**
  * @Entity
  */

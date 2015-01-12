@@ -39,8 +39,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function get(PersistentCollection $coll, $index)
     {
         $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         if (!isset($mapping['indexBy'])) {
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
@@ -134,8 +133,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function count(PersistentCollection $coll)
     {
         $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -151,8 +149,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
         $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
@@ -163,8 +160,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function containsKey(PersistentCollection $coll, $key)
     {
         $mapping   = $coll->getMapping();
-        $uow       = $this->em->getUnitOfWork();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -182,22 +178,19 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function contains(PersistentCollection $coll, $element)
     {
-        $mapping = $coll->getMapping();
-        $uow     = $this->em->getUnitOfWork();
-
-        // shortcut for new entities
-        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+        $entityState = $this->uow->getEntityState($element, UnitOfWork::STATE_NEW);
 
         if ($entityState === UnitOfWork::STATE_NEW) {
             return false;
         }
 
         // Entity is scheduled for inclusion
-        if ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element)) {
+        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($element)) {
             return false;
         }
 
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $mapping   = $coll->getMapping();
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -212,10 +205,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
-        $uow = $this->em->getUnitOfWork();
-
-        // shortcut for new entities
-        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+        $entityState = $this->uow->getEntityState($element, UnitOfWork::STATE_NEW);
 
         if ($entityState === UnitOfWork::STATE_NEW) {
             return false;
@@ -223,12 +213,12 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         // If Entity is scheduled for inclusion, it is not in this collection.
         // We can assure that because it would have return true before on array check
-        if ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element)) {
+        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($element)) {
             return false;
         }
 
         $mapping   = $coll->getMapping();
-        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->delete($element);
     }

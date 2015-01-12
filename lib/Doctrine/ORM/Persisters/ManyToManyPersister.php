@@ -223,7 +223,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping        = $coll->getMapping();
         $association    = $mapping;
         $class          = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $id             = $this->em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+        $id             = $this->uow->getEntityIdentifier($coll->getOwner());
 
         if ( ! $mapping['isOwningSide']) {
             $targetEntity   = $this->em->getClassMetadata($mapping['targetEntity']);
@@ -263,9 +263,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
-        $mapping = $coll->getMapping();
+        $mapping   = $coll->getMapping();
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
-        return $this->em->getUnitOfWork()->getEntityPersister($mapping['targetEntity'])->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+        return $persister->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
     /**
      * {@inheritdoc}
@@ -273,7 +274,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function containsKey(PersistentCollection $coll, $key)
     {
         list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictionsWithKey($coll, $key, true);
+
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+
         return (bool) $this->conn->fetchColumn($sql, $params);
     }
 
@@ -282,17 +285,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function contains(PersistentCollection $coll, $element)
     {
-        $uow = $this->em->getUnitOfWork();
-
-        // Shortcut for new entities
-        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+        $entityState = $this->uow->getEntityState($element, UnitOfWork::STATE_NEW);
 
         if ($entityState === UnitOfWork::STATE_NEW) {
             return false;
         }
 
         // Entity is scheduled for inclusion
-        if ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element)) {
+        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($element)) {
             return false;
         }
 
@@ -308,10 +308,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
-        $uow = $this->em->getUnitOfWork();
-
-        // shortcut for new entities
-        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+        $entityState = $this->uow->getEntityState($element, UnitOfWork::STATE_NEW);
 
         if ($entityState === UnitOfWork::STATE_NEW) {
             return false;
@@ -319,7 +316,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         // If Entity is scheduled for inclusion, it is not in this collection.
         // We can assure that because it would have return true before on array check
-        if ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element)) {
+        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($element)) {
             return false;
         }
 
@@ -339,11 +336,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictionsWithKey(PersistentCollection $coll, $key, $addFilters)
     {
-        $uow            = $this->em->getUnitOfWork();
         $filterMapping  = $coll->getMapping();
         $mapping        = $filterMapping;
         $indexBy        = $mapping['indexBy'];
-        $id             = $uow->getEntityIdentifier($coll->getOwner());
+        $id             = $this->uow->getEntityIdentifier($coll->getOwner());
 
         $targetEntity   = $this->em->getClassMetadata($mapping['targetEntity']);
 
@@ -411,22 +407,21 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictions(PersistentCollection $coll, $element, $addFilters)
     {
-        $uow            = $this->em->getUnitOfWork();
         $filterMapping  = $coll->getMapping();
         $mapping        = $filterMapping;
 
         if ( ! $mapping['isOwningSide']) {
             $sourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
             $targetClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-            $sourceId = $uow->getEntityIdentifier($element);
-            $targetId = $uow->getEntityIdentifier($coll->getOwner());
+            $sourceId = $this->uow->getEntityIdentifier($element);
+            $targetId = $this->uow->getEntityIdentifier($coll->getOwner());
 
             $mapping = $sourceClass->associationMappings[$mapping['mappedBy']];
         } else {
             $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
             $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-            $sourceId = $uow->getEntityIdentifier($coll->getOwner());
-            $targetId = $uow->getEntityIdentifier($element);
+            $sourceId = $this->uow->getEntityIdentifier($coll->getOwner());
+            $targetId = $this->uow->getEntityIdentifier($element);
         }
 
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $sourceClass, $this->platform);

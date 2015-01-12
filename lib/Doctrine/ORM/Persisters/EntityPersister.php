@@ -153,7 +153,7 @@ interface EntityPersister
      *
      * @param object $entity The entity to delete.
      *
-     * @return bool
+     * @return bool TRUE if the entity got deleted in the database, FALSE otherwise.
      */
     public function delete($entity);
 
