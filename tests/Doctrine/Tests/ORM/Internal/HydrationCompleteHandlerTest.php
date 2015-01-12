@@ -95,6 +95,33 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
 
         $this->handler->hydrationComplete();
     }
+
+    /**
+     * @dataProvider testGetValidListenerInvocationFlags
+     *
+     * @param int $listenersFlag
+     */
+    public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag)
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $entity   = new stdClass();
+
+        $this
+            ->listenersInvoker
+            ->expects($this->any())
+            ->method('getSubscribedSystems')
+            ->with($metadata)
+            ->will($this->returnValue($listenersFlag));
+
+        $this->handler->deferPostLoadInvoking($metadata, $entity);
+
+        $this->listenersInvoker->expects($this->once())->method('invoke');
+
+        $this->handler->hydrationComplete();
+        $this->handler->hydrationComplete();
+    }
+
     /**
      * @dataProvider testGetValidListenerInvocationFlags
      *
@@ -141,8 +168,8 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners()
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
-        $entity        = new stdClass();
+        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $entity   = new stdClass();
 
         $this
             ->listenersInvoker
