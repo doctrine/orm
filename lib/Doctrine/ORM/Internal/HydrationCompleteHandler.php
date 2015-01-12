@@ -19,11 +19,11 @@
 
 namespace Doctrine\ORM\Internal;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Class, which can handle completion of hydration cycle and produce some of tasks.
