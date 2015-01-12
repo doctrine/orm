@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Internal;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
@@ -28,8 +28,6 @@ use Doctrine\ORM\Events;
 /**
  * Class, which can handle completion of hydration cycle and produce some of tasks.
  * In current implementation triggers deferred postLoad event.
- *
- * TODO Move deferred eager loading here
  *
  * @author Artur Eshenbrener <strate@yandex.ru>
  * @since 2.5
@@ -71,7 +69,13 @@ final class HydrationCompleteHandler
      */
     public function deferPostLoadInvoking(ClassMetadata $class, $entity)
     {
-        $this->deferredPostLoadInvocations[] = array($class, $entity);
+        $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
+
+        if ($invoke === ListenersInvoker::INVOKE_NONE) {
+            return;
+        }
+
+        $this->deferredPostLoadInvocations[] = array($class, $invoke, $entity);
     }
 
     /**
@@ -87,16 +91,13 @@ final class HydrationCompleteHandler
      */
     private function invokeAllDeferredPostLoadEvents()
     {
-        $toInvoke = $this->deferredPostLoadInvocations;
+        $toInvoke                          = $this->deferredPostLoadInvocations;
         $this->deferredPostLoadInvocations = array();
+
         foreach ($toInvoke as $classAndEntity) {
-            list($class, $entity) = $classAndEntity;
+            list($class, $invoke, $entity) = $classAndEntity;
 
-            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
-
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
-            }
+            $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
     }
 }
