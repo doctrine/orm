@@ -522,6 +522,9 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
+    /**
+     * @group DDC-3108
+     */
     public function testAddCriteriaOrderOnJoinAlias()
     {
         $qb = $this->_em->createQueryBuilder();
@@ -978,17 +981,6 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u2');
 
         $this->assertEquals(array('u', 'u2'), $qb->getRootAliases());
-        $this->assertEquals('u', $qb->getRootAlias());
-    }
-
-    public function testGetAliasesAddedWithJoins()
-    {
-        $qb = $this->_em->createQueryBuilder()
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->join('u.articles','a');
-
-        $this->assertEquals(array('u', 'a'), $qb->getAllAliases());
         $this->assertEquals('u', $qb->getRootAlias());
     }
 
