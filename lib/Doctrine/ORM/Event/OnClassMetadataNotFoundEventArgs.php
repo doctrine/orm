@@ -20,7 +20,9 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\Common\Persistence\Event\ManagerEventArgs;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -33,17 +35,12 @@ use Doctrine\ORM\EntityManagerInterface;
  * @author Marco Pivetta <ocramius@gmail.com>
  * @since  2.5
  */
-class OnClassMetadataNotFoundEventArgs extends EventArgs
+class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
     /**
      * @var string
      */
     private $className;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
 
     /**
      * @var ClassMetadata|null
@@ -53,13 +50,14 @@ class OnClassMetadataNotFoundEventArgs extends EventArgs
     /**
      * Constructor.
      *
-     * @param string                 $className
-     * @param EntityManagerInterface $em
+     * @param string        $className
+     * @param ObjectManager $objectManager
      */
-    public function __construct($className, EntityManagerInterface $em)
+    public function __construct($className, ObjectManager $objectManager)
     {
         $this->className = (string) $className;
-        $this->em        = $em;
+
+        parent::__construct($objectManager);
     }
 
     /**
@@ -81,21 +79,11 @@ class OnClassMetadataNotFoundEventArgs extends EventArgs
     /**
      * Retrieve associated ClassMetadata.
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
+     * @return string
      */
     public function getClassName()
     {
         return $this->className;
-    }
-
-    /**
-     * Retrieve associated EntityManager.
-     *
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->em;
     }
 }
 
