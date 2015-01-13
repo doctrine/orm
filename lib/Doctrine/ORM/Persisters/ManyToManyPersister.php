@@ -224,7 +224,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $rsm = new Query\ResultSetMappingBuilder($this->em);
         $rsm->addRootEntityFromClassMetadata($mapping['targetEntity'], 'te');
 
-        $sql  = 'SELECT ' . $rsm->generateSelectClause() . ' FROM ' . $tableName . ' te'
+        $sql = 'SELECT ' . $rsm->generateSelectClause()
+            . ' FROM ' . $tableName . ' te'
             . ' JOIN ' . $joinTable  . ' t ON'
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
