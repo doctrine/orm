@@ -150,6 +150,10 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($e2->prePersistCallbackInvoked);
     }
 
+    /**
+     * @group DDC-54
+     * @group DDC-3005
+     */
     public function testCascadedEntitiesLoadedInPostLoad()
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -166,12 +170,21 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('
-SELECT e, c
-FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e
-    LEFT JOIN e.cascader AS c
-WHERE e.id IN ('.$e1->getId().', '.$e2->getId().')');
-        $entities = $query->execute(null, \Doctrine\ORM\Query::HYDRATE_OBJECT);
+        $dql = <<<'DQL'
+SELECT
+    e, c
+FROM
+    Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e
+LEFT JOIN
+    e.cascader AS c
+WHERE
+    e.id IN (%s, %s)
+DQL;
+
+        $entities = $this
+            ->_em
+            ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
+            ->getResult();
 
         $this->assertTrue(current($entities)->postLoadCallbackInvoked);
         $this->assertTrue(current($entities)->postLoadCascaderNotNull);
@@ -179,6 +192,10 @@ WHERE e.id IN ('.$e1->getId().', '.$e2->getId().')');
         $this->assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
     }
 
+    /**
+     * @group DDC-54
+     * @group DDC-3005
+     */
     public function testCascadedEntitiesNotLoadedInPostLoadDuringIteration()
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -195,16 +212,29 @@ WHERE e.id IN ('.$e1->getId().', '.$e2->getId().')');
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('
-SELECT e, c
-FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e
-LEFT JOIN e.cascader AS c
-WHERE e.id IN ('.$e1->getId().', '.$e2->getId().')');
-        $result = $query->iterate();
+        $dql = <<<'DQL'
+SELECT
+    e, c
+FROM
+    Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e
+LEFT JOIN
+    e.cascader AS c
+WHERE
+    e.id IN (%s, %s)
+DQL;
+
+        $result = $this
+            ->_em
+            ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
+            ->iterate();
 
         foreach ($result as $entity) {
-            $this->assertTrue($entity[0]->postLoadCallbackInvoked);
+            $this->assertFalse(
+                $entity[0]->postLoadCallbackInvoked,
+                'During iteration, postLoad callbacks are not triggered until the end of the resultset is reached'
+            );
             $this->assertFalse($entity[0]->postLoadCascaderNotNull);
+
             break;
         }
     }
