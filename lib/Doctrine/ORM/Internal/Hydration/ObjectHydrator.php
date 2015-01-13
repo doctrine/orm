@@ -554,14 +554,15 @@ class ObjectHydrator extends AbstractHydrator
                 $resultKey = $this->resultCounter - 1;
             }
 
-            $count = count($rowData['newObjects']);
+
+            $scalarCount = (isset($rowData['scalars'])? count($rowData['scalars']): 0);
 
             foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class  = $newObject['class'];
                 $args   = $newObject['args'];
                 $obj    = $class->newInstanceArgs($args);
 
-                if ($count === 1) {
+                if ($scalarCount == 0 && count($rowData['newObjects']) == 1 ) {
                     $result[$resultKey] = $obj;
 
                     continue;

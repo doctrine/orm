@@ -1353,7 +1353,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\NewObjectExpression):
-                $sql .= $this->walkNewObject($expr);
+                $sql .= $this->walkNewObject($expr,$selectExpression->fieldIdentificationVariable);
                 break;
 
             default:
@@ -1519,10 +1519,10 @@ class SqlWalker implements TreeWalker
      *
      * @return string The SQL.
      */
-    public function walkNewObject($newObjectExpression)
+    public function walkNewObject($newObjectExpression, $newObjectResultAlias=null)
     {
         $sqlSelectExpressions = array();
-        $objIndex             = $this->newObjectCounter++;
+        $objIndex             = $newObjectResultAlias?:$this->newObjectCounter++;
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;

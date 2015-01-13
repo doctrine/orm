@@ -138,6 +138,49 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
+    /**
+     * @dataProvider provideDataForHydrationMode
+     */
+    public function testShouldIgnoreAliasesForSingleObject($hydrationMode)
+    {
+        $dql = "
+            SELECT
+                new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    u.name,
+                    e.email,
+                    a.city
+                ) as cmsUser
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult($hydrationMode);
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+    }
+
     public function testShouldAssumeFromEntityNamespaceWhenNotGiven()
     {
         $dql = "
@@ -538,6 +581,467 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
         $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
         $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsWithAliases()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ) as cmsUser,
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ) as cmsAddress
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0]['cmsAddress']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1]['cmsAddress']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2]['cmsAddress']);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsWithAndWithoutAliases()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ) as cmsUser,
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][0]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalar()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ),
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ),
+                u.status
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2][0]);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][1]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2][0]->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
+
+        $this->assertEquals($this->fixtures[0]->status,$result[0]['status']);
+        $this->assertEquals($this->fixtures[1]->status,$result[1]['status']);
+        $this->assertEquals($this->fixtures[2]->status,$result[2]['status']);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAliases()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ) as cmsUser,
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ) as cmsAddress,
+                u.status as cmsUserStatus
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0]['cmsAddress']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1]['cmsAddress']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2]['cmsAddress']);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
+
+        $this->assertEquals($this->fixtures[0]->status,$result[0]['cmsUserStatus']);
+        $this->assertEquals($this->fixtures[1]->status,$result[1]['cmsUserStatus']);
+        $this->assertEquals($this->fixtures[2]->status,$result[2]['cmsUserStatus']);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAndWithoutAliases()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ) as cmsUser,
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ),
+                u.status
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][0]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
+
+        $this->assertEquals($this->fixtures[0]->status,$result[0]['status']);
+        $this->assertEquals($this->fixtures[1]->status,$result[1]['status']);
+        $this->assertEquals($this->fixtures[2]->status,$result[2]['status']);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalars()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ),
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ),
+                u.status,
+                u.username
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2][0]);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][1]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2][0]->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
+
+        $this->assertEquals($this->fixtures[0]->status,$result[0]['status']);
+        $this->assertEquals($this->fixtures[1]->status,$result[1]['status']);
+        $this->assertEquals($this->fixtures[2]->status,$result[2]['status']);
+
+        $this->assertEquals($this->fixtures[0]->username,$result[0]['username']);
+        $this->assertEquals($this->fixtures[1]->username,$result[1]['username']);
+        $this->assertEquals($this->fixtures[2]->username,$result[2]['username']);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAliases()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ) as cmsUser,
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ) as cmsAddress,
+                u.status as cmsUserStatus,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0]['cmsAddress']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1]['cmsAddress']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2]['cmsAddress']);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
+
+        $this->assertEquals($this->fixtures[0]->status,$result[0]['cmsUserStatus']);
+        $this->assertEquals($this->fixtures[1]->status,$result[1]['cmsUserStatus']);
+        $this->assertEquals($this->fixtures[2]->status,$result[2]['cmsUserStatus']);
+
+        $this->assertEquals($this->fixtures[0]->username,$result[0]['cmsUserUsername']);
+        $this->assertEquals($this->fixtures[1]->username,$result[1]['cmsUserUsername']);
+        $this->assertEquals($this->fixtures[2]->username,$result[2]['cmsUserUsername']);
+    }
+
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAndWithoutAliases()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email
+                ) as cmsUser,
+                new CmsAddressDTO(
+                    a.country,
+                    a.city
+                ),
+                u.status,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][0]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
+
+        $this->assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
+        $this->assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
+        $this->assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
+
+        $this->assertEquals($this->fixtures[0]->status,$result[0]['status']);
+        $this->assertEquals($this->fixtures[1]->status,$result[1]['status']);
+        $this->assertEquals($this->fixtures[2]->status,$result[2]['status']);
+
+        $this->assertEquals($this->fixtures[0]->username,$result[0]['cmsUserUsername']);
+        $this->assertEquals($this->fixtures[1]->username,$result[1]['cmsUserUsername']);
+        $this->assertEquals($this->fixtures[2]->username,$result[2]['cmsUserUsername']);
     }
 
     /**

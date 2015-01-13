@@ -272,8 +272,6 @@ abstract class AbstractHydrator
 
                     $rowData['newObjects'][$objIndex]['class']           = $cacheKeyInfo['class'];
                     $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
-
-                    $rowData['scalars'][$fieldName] = $value;
                     break;
 
                 case (isset($cacheKeyInfo['isScalar'])):
