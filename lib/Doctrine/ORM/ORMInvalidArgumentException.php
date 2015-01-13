@@ -193,7 +193,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      * @param mixed $value
      * @return self
      */
-    public static function invalidAssociation($relation, $fieldname, $value)
+    public static function computeAssociationChangesError($relation, $fieldname, $value)
     {
         return new self(sprintf('Expected an Object for relation %s::%s got %s instead.', get_class($relation), $fieldname, gettype($value)));
     }
