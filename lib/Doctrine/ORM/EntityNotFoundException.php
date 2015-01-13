@@ -29,15 +29,21 @@ class EntityNotFoundException extends ORMException
 {
     /**
      * Constructor.
+     *
+     * @param string   $className
+     * @param string[] $id
      */
-    public function __construct($class, array $id = array())
+    public function __construct($className, array $id = array())
     {
         $ids = array();
+
         foreach ($id as $key => $value) {
-            $ids[] = "{$key}({$value})";
+            $ids[] = $key . '(' . $value . ')';
         }
-        $idsFormatted = implode(', ', $ids);
-        $message = "Entity of type '" . $class . "'" . ($idsFormatted ? ' for IDs ' . $idsFormatted : '') . ' was not found';
-        parent::__construct($message);
+
+
+        parent::__construct(
+            'Entity of type \'' . $className . '\'' . ($ids ? ' for IDs ' . implode(', ', $ids) : '') . ' was not found'
+        );
     }
 }
