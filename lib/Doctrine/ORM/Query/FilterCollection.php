@@ -57,7 +57,7 @@ class FilterCollection
     /**
      * Instances of enabled filters.
      *
-     * @var array
+     * @var \Doctrine\ORM\Query\Filter\SQLFilter[]
      */
     private $enabledFilters = array();
 
@@ -85,7 +85,7 @@ class FilterCollection
     /**
      * Gets all the enabled filters.
      *
-     * @return array The enabled filters.
+     * @return \Doctrine\ORM\Query\Filter\SQLFilter[] The enabled filters.
      */
     public function getEnabledFilters()
     {
