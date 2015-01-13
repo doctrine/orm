@@ -19,9 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\PersistentCollection;
 
 /**
  * Base class for all collection persisters.
@@ -72,77 +70,5 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $this->conn             = $em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Deleting elements is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Counting the size of this persistent collection is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function slice(PersistentCollection $coll, $offset, $length = null)
-    {
-        throw new \BadMethodCallException("Slicing elements is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function contains(PersistentCollection $coll, $element)
-    {
-        throw new \BadMethodCallException("Checking for existence of an element is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function containsKey(PersistentCollection $coll, $key)
-    {
-        throw new \BadMethodCallException("Checking for existence of a key is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeElement(PersistentCollection $coll, $element)
-    {
-        throw new \BadMethodCallException("Removing an element is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeKey(PersistentCollection $coll, $key)
-    {
-        throw new \BadMethodCallException("Removing a key is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get(PersistentCollection $coll, $index)
-    {
-        throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function loadCriteria(PersistentCollection $coll, Criteria $criteria)
-    {
-        throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
     }
 }

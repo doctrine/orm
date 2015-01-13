@@ -214,4 +214,12 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         return $persister->delete($element);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
+    {
+        throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
+    }
 }

@@ -101,16 +101,6 @@ interface CollectionPersister
     public function removeElement(PersistentCollection $collection, $element);
 
     /**
-     * Removes an element by key.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param mixed                              $key
-     *
-     * @return void
-     */
-    public function removeKey(PersistentCollection $collection, $key);
-
-    /**
      * Gets an element by key.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection

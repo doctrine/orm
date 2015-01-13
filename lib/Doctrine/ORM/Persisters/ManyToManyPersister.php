@@ -60,19 +60,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return; // ignore inverse side
         }
 
-        $diff   = $coll->getDeleteDiff();
-        $sql    = $this->getDeleteRowSQL($coll);
+        $insertSql = $this->getInsertRowSQL($coll);
+        $deleteSql = $this->getDeleteRowSQL($coll);
 
-        foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+        foreach ($coll->getDeleteDiff() as $element) {
+            $this->conn->executeUpdate($deleteSql, $this->getDeleteRowSQLParameters($coll, $element));
         }
 
-        $diff   = $coll->getInsertDiff();
-        $sql    = $this->getInsertRowSQL($coll);
-
-        foreach ($diff as $element) {
-            $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
+        foreach ($coll->getInsertDiff() as $element) {
+            $this->conn->executeUpdate($insertSql, $this->getInsertRowSQLParameters($coll, $element));
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get(PersistentCollection $coll, $index)
+    {
+        throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
     }
 
     /**
