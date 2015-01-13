@@ -134,6 +134,16 @@ abstract class SQLFilter
     }
 
     /**
+     * Returns the database connection used by the entity manager
+     *
+     * @return \Doctrine\DBAL\Connection
+     */
+    final protected function getConnection()
+    {
+        return $this->em->getConnection();
+    }
+
+    /**
      * Gets the SQL query part to add to a query.
      *
      * @param ClassMetaData $targetEntity
