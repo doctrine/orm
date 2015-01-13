@@ -173,6 +173,10 @@ the life-time of their registered entities.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml). This event is not a lifecycle callback.
+-  onClassMetadataNotFound - Loading class metadata for a particular
+   requested class name failed. Manipulating the given event args instance
+   allows providing fallback metadata even when no actual metadata exists
+   or could be found. This event is not a lifecycle callback.
 -  preFlush - The preFlush event occurs at the very beginning of a flush
    operation. This event is not a lifecycle callback.
 -  onFlush - The onFlush event occurs after the change-sets of all
