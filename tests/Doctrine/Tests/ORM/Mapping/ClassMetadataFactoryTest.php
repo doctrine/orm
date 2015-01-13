@@ -324,6 +324,11 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
     }
 
+    /**
+     * @group DDC-3385
+     * @group 1181
+     * @group 385
+     */
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata()
     {
         $test          = $this;
