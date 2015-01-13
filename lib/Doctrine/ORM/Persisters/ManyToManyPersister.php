@@ -229,10 +229,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        $stmt     = $this->conn->executeQuery($sql, $params);
-        $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
+        $stmt = $this->conn->executeQuery($sql, $params);
 
-        return $hydrator->hydrateAll($stmt, $rsm);
+        return $this
+            ->em
+            ->newHydrator(Query::HYDRATE_OBJECT)
+            ->hydrateAll($stmt, $rsm);
     }
 
     /**
