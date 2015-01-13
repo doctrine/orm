@@ -198,4 +198,20 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     {
         return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);
     }
+
+    /**
+     * @return ORMInvalidArgumentException
+     */
+    public static function invalidAssociation($relation, $fieldname, $value) {
+        return new self('Expected an Object for relation '.get_class($relation).'::'.$fieldname.' got '.gettype($value).' instead.');
+    }
+
+    /**
+     * @return ORMInvalidArgumentException
+     */
+    public static function invalidAssociation($entry) {
+        $ex = new self(gettype($entry) . ' is not an Object.');
+        $ex->value = $entry;
+        return $ex;
+    }
 }
