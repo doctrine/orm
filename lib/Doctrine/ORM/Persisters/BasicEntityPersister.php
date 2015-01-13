@@ -655,6 +655,8 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
+            $newValId = null;
+
             if ($newVal !== null) {
                 $newValId = $uow->getEntityIdentifier($newVal);
             }
@@ -667,14 +669,11 @@ class BasicEntityPersister implements EntityPersister
                 $targetColumn = $joinColumn['referencedColumnName'];
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
-                $this->quotedColumns[$sourceColumn] = $quotedColumn;
-                $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
-
-                $value = ($newVal !== null)
+                $this->quotedColumns[$sourceColumn]  = $quotedColumn;
+                $this->columnTypes[$sourceColumn]    = $targetClass->getTypeOfColumn($targetColumn);
+                $result[$owningTable][$sourceColumn] = $newValId
                     ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
                     : null;
-
-                $result[$owningTable][$sourceColumn] = $value;
             }
         }
 
