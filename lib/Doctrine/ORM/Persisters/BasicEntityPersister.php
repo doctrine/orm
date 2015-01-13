@@ -670,19 +670,9 @@ class BasicEntityPersister implements EntityPersister
                 $this->quotedColumns[$sourceColumn] = $quotedColumn;
                 $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
 
-                switch (true) {
-                    case $newVal === null:
-                        $value = null;
-                        break;
-
-                    case $targetClass->containsForeignIdentifier:
-                        $value = $newValId[$targetClass->getFieldForColumn($targetColumn)];
-                        break;
-
-                    default:
-                        $value = $newValId[$targetClass->fieldNames[$targetColumn]];
-                        break;
-                }
+                $value = ($newVal !== null)
+                    ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
+                    : null;
 
                 $result[$owningTable][$sourceColumn] = $value;
             }

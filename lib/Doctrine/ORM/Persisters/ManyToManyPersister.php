@@ -105,9 +105,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columnName     = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
             $referencedName = $joinColumn['referencedColumnName'];
             $conditions[]   = 't.' . $columnName . ' = ?';
-            $params[]       = ($class->containsForeignIdentifier)
-                ? $id[$class->getFieldForColumn($referencedName)]
-                : $id[$class->fieldNames[$referencedName]];
+            $params[]       = $id[$class->getFieldForColumn($referencedName)];
         }
 
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
@@ -554,9 +552,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             if (isset($mapping[$relationMode][$joinTableColumn])) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
-                $params[] = $targetEntity->containsForeignIdentifier
-                    ? $id[$targetEntity->getFieldForColumn($mapping[$relationMode][$joinTableColumn])]
-                    : $id[$targetEntity->fieldNames[$mapping[$relationMode][$joinTableColumn]]];
+                $params[] = $id[$targetEntity->getFieldForColumn($mapping[$relationMode][$joinTableColumn])];
             } elseif (!$joinNeeded) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $key;
@@ -609,17 +605,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
-                $params[] = ($targetClass->containsForeignIdentifier)
-                    ? $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])]
-                    : $targetId[$targetClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                $params[] = $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
 
                 continue;
             }
 
             // relationToSourceKeyColumns
-            $params[] = ($sourceClass->containsForeignIdentifier)
-                ? $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])]
-                : $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+            $params[] = $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
         }
 
         if ($addFilters) {
