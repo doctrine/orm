@@ -289,8 +289,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
         }
 
-        $sql = implode(' AND ', $filterClauses);
-        return $sql ? '(' . $sql . ')' : '';
+        return $filterClauses
+            ? '(' . implode(' AND ', $filterClauses) . ')'
+            : '';
     }
 
     /**
