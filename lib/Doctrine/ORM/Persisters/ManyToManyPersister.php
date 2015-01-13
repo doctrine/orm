@@ -40,6 +40,28 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @override
      */
+    public function get(PersistentCollection $coll, $index)
+    {
+        $mapping   = $coll->getMapping();
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+
+        if (!isset($mapping['indexBy'])) {
+            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+        }
+
+        if ($mapping['isOwningSide']) {
+            throw new \BadMethodCallException("Selecting from a collection by index is only supported on the inverse side.");
+        }
+
+        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, null, array(), 0, 1);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
     protected function getDeleteRowSQL(PersistentCollection $coll)
     {
         $columns    = array();
