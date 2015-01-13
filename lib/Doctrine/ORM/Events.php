@@ -119,6 +119,7 @@ final class Events
      * @var string
      */
     const loadClassMetadata = 'loadClassMetadata';
+
     /**
      * The preLoadClassMetadata event occurs before the mapping metadata for a
      * class is loaded from a mapping source (annotations/xml/yaml).
