@@ -79,7 +79,7 @@ class ResolveTargetEntityListener implements EventSubscriber
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $args->setFoundMetadata(
                 $args
-                    ->getEntityManager()
+                    ->getObjectManager()
                     ->getClassMetadata($this->resolveTargetEntities[$args->getClassname()]['targetEntity'])
             );
         }
@@ -96,6 +96,7 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
+        /* @var $cm \Doctrine\ORM\Mapping\ClassMetadata */
         $cm = $args->getClassMetadata();
 
         foreach ($cm->associationMappings as $mapping) {
