@@ -249,7 +249,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param array $mapping Array containing mapping information.
      *
-     * @return string The SQL query part to add to a query.
+     * @return string[] ordered tuple:
+     *                   - JOIN condition to add to the SQL
+     *                   - WHERE condition to add to the SQL
      */
     public function getFilterSql($mapping)
     {
@@ -262,11 +264,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         // A join is needed if there is filtering on the target entity
-        $tableName    = $this->quoteStrategy->getTableName($rootClass, $this->platform);
-        $joinSql      = ' JOIN ' . $tableName . ' te' . ' ON';
-        $onConditions = $this->getOnConditionSQL($mapping);
-
-        $joinSql .= implode(' AND ', $onConditions);
+        $tableName = $this->quoteStrategy->getTableName($rootClass, $this->platform);
+        $joinSql   = ' JOIN ' . $tableName . ' te'
+            . ' ON' . implode(' AND ', $this->getOnConditionSQL($mapping));
 
         return array($joinSql, $filterSql);
     }
