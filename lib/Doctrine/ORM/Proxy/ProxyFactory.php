@@ -28,6 +28,7 @@ use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\ORM\Persisters\EntityPersister;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -55,6 +56,13 @@ class ProxyFactory extends AbstractProxyFactory
     private $proxyNs;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
@@ -71,10 +79,10 @@ class ProxyFactory extends AbstractProxyFactory
         $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
-        $this->em      = $em;
-        $this->uow     = $em->getUnitOfWork();
-        $this->proxyNs = $proxyNs;
-
+        $this->em                  = $em;
+        $this->uow                 = $em->getUnitOfWork();
+        $this->proxyNs             = $proxyNs;
+        $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
     }
 
     /**
@@ -115,8 +123,9 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
+        $identifierFlattener = $this->identifierFlattener;
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener) {
                 $initializer = $proxy->__getInitializer();
                 $cloner      = $proxy->__getCloner();
 
@@ -138,17 +147,22 @@ class ProxyFactory extends AbstractProxyFactory
                 $proxy->__setInitialized(true);
                 $proxy->__wakeup();
 
-                if (null === $entityPersister->loadById($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                $identifier = $classMetadata->getIdentifierValues($proxy);
+
+                if (null === $entityPersister->loadById($identifier, $proxy)) {
                     $proxy->__setInitializer($initializer);
                     $proxy->__setCloner($cloner);
                     $proxy->__setInitialized(false);
 
-                    throw new EntityNotFoundException($classMetadata->getName());
+                    throw EntityNotFoundException::fromClassNameAndIdentifier(
+                        $classMetadata->getName(),
+                        $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                    );
                 }
             };
         }
 
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener) {
             $initializer = $proxy->__getInitializer();
             $cloner      = $proxy->__getCloner();
 
@@ -169,12 +183,17 @@ class ProxyFactory extends AbstractProxyFactory
 
             $proxy->__setInitialized(true);
 
-            if (null === $entityPersister->loadById($classMetadata->getIdentifierValues($proxy), $proxy)) {
+            $identifier = $classMetadata->getIdentifierValues($proxy);
+
+            if (null === $entityPersister->loadById($identifier, $proxy)) {
                 $proxy->__setInitializer($initializer);
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
 
-                throw new EntityNotFoundException($classMetadata->getName());
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $classMetadata->getName(),
+                    $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                );
             }
         };
     }
@@ -191,19 +210,25 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+        $identifierFlattener = $this->identifierFlattener;
+
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener) {
             if ($proxy->__isInitialized()) {
                 return;
             }
 
             $proxy->__setInitialized(true);
             $proxy->__setInitializer(null);
- 
-            $class    = $entityPersister->getClassMetadata();
-            $original = $entityPersister->loadById($classMetadata->getIdentifierValues($proxy));
+
+            $class      = $entityPersister->getClassMetadata();
+            $identifier = $classMetadata->getIdentifierValues($proxy);
+            $original   = $entityPersister->loadById($identifier);
 
             if (null === $original) {
-                throw new EntityNotFoundException($classMetadata->getName());
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $classMetadata->getName(),
+                    $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                );
             }
 
             foreach ($class->getReflectionClass()->getProperties() as $property) {
