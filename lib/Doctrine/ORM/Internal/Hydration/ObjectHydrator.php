@@ -78,17 +78,10 @@ class ObjectHydrator extends AbstractHydrator
     private $existingCollections = array();
 
     /**
-     * @var \Doctrine\ORM\Event\PostLoadEventDispatcher
-     */
-    private $postLoadEventDispatcher;
-
-    /**
      * {@inheritdoc}
      */
     protected function prepare()
     {
-        $this->postLoadEventDispatcher = new PostLoadEventDispatcher($this->_em, $this->_hints);
-
         if ( ! isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) {
             $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] = true;
         }
@@ -154,8 +147,6 @@ class ObjectHydrator extends AbstractHydrator
         $this->existingCollections =
         $this->resultPointers = array();
 
-        unset($this->postLoadEventDispatcher);
-
         if ($eagerLoad) {
             $this->_uow->triggerEagerLoads();
         }
@@ -178,8 +169,6 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->initializedCollections as $coll) {
             $coll->takeSnapshot();
         }
-
-        $this->postLoadEventDispatcher->dispatchEnqueuedPostLoadEvents();
 
         return $result;
     }
@@ -281,13 +270,7 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        $created = false;
-        $entity = $this->_uow->createEntity($className, $data, $this->_hints, $created);
-        if ($created) {
-            $this->postLoadEventDispatcher->dispatchPostLoad($entity);
-        }
-
-        return $entity;
+        return $this->_uow->createEntity($className, $data, $this->_hints);
     }
 
     /**
