@@ -186,6 +186,14 @@ the life-time of their registered entities.
 
 .. warning::
 
+    Note that, when using ``Doctrine\ORM\AbstractQuery#iterate()``, ``postLoad``
+    events will be executed immediately after objects are being hydrated, and therefore
+    associations are not guaranteed to be initialized. It is not safe to combine
+    usage of ``Doctrine\ORM\AbstractQuery#iterate()`` and ``postLoad`` event
+    handlers.
+
+.. warning::
+
     Note that the postRemove event or any events triggered after an entity removal
     can receive an uninitializable proxy in case you have configured an entity to
     cascade remove relations. In this case, you should load yourself the proxy in
