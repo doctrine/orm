@@ -383,10 +383,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteRowSQL(PersistentCollection $coll)
     {
-        $columns    = array();
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
-        $tableName  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
+        $mapping = $coll->getMapping();
+        $class   = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $columns = array();
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
@@ -396,8 +395,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
         }
 
-        return 'DELETE FROM ' . $tableName
-        . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
