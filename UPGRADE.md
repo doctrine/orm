@@ -76,6 +76,38 @@ or any public API on instantiated objects.
 Please implement the `Doctrine\ORM\Repository\RepositoryFactory` interface instead of extending
 the `Doctrine\ORM\Repository\DefaultRepositoryFactory`.
 
+## BC BREAK: New object expression DQL queries now respects user provided aliasing and not return consumed fields
+
+When executing DQL queries with new object expressions, instead of returning DTOs numerically indexes, it will now respect user provided aliases. Consider the following query:
+
+    SELECT new UserDTO(u.id,u.name) as user,new AddressDTO(a.street,a.postalCode) as address, a.id as addressId FROM User u INNER JOIN u.addresses a WITH a.isPrimary = true
+    
+Previously, your result would be similar to this:
+
+    array(
+        0=>array(
+            0=>{UserDTO object},
+            1=>{AddressDTO object},
+            2=>{u.id scalar},
+            3=>{u.name scalar},
+            4=>{a.street scalar},
+            5=>{a.postalCode scalar},
+            'addressId'=>{a.id scalar},
+        ),
+        ...
+    )
+
+From now on, the resultset will look like this:
+
+    array(
+        0=>array(
+            'user'=>{UserDTO object},
+            'address'=>{AddressDTO object},
+            'addressId'=>{a.id scalar}
+        ),
+        ...
+    )
+
 # Upgrade to 2.4
 
 ## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
