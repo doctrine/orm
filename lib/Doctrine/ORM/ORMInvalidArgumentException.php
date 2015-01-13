@@ -199,10 +199,12 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $targetClass
+     * @param array $assoc
      * @param mixed $entry
      * @return self
      */
-    public static function invalidAssociation($entry)
+    public static function invalidAssociation($targetClass, $assoc, $entry)
     {
         $ex = new self(gettype($entry) . (is_scalar($entry) ? ' "'.$entry.'"': '') . ' is not an Object.');
         $ex->value = $entry;
