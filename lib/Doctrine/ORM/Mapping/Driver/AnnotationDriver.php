@@ -358,6 +358,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
+                $mapping['indexName'] = $manyToOneAnnot->indexName;
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
@@ -385,6 +386,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
+                $mapping['indexName'] = $manyToManyAnnot->indexName;
 
                 if ($orderByAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;

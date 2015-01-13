@@ -672,6 +672,10 @@ class SchemaTool
             if (isset($joinColumn['onDelete'])) {
                 $fkOptions['onDelete'] = $joinColumn['onDelete'];
             }
+
+            $fkName = isset($mapping['indexName'])
+                ? $mapping['indexName']
+                : null;
         }
 
         // Prefer unique constraints over implicit simple indexes created for foreign keys.
@@ -697,11 +701,12 @@ class SchemaTool
             $blacklistedFks[$compositeName] = true;
         } elseif (!isset($blacklistedFks[$compositeName])) {
             $addedFks[$compositeName] = array('foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns);
-            $theJoinTable->addUnnamedForeignKeyConstraint(
+            $theJoinTable->addForeignKeyConstraint(
                 $foreignTableName,
                 $localColumns,
                 $foreignColumns,
-                $fkOptions
+                $fkOptions,
+                $fkName
             );
         }
     }
