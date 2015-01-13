@@ -143,7 +143,11 @@ class ProxyFactory extends AbstractProxyFactory
                     $proxy->__setCloner($cloner);
                     $proxy->__setInitialized(false);
 
-                    throw new EntityNotFoundException($classMetadata->getName());
+                    $json = json_encode($classMetadata->getIdentifierValues($proxy));
+                    $message = "Entity of type '{$classMetadata->getName()}'"
+                        . " was not found with identifier(s) '{$json}'";
+
+                    throw new EntityNotFoundException($message);
                 }
             };
         }
@@ -174,7 +178,11 @@ class ProxyFactory extends AbstractProxyFactory
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
 
-                throw new EntityNotFoundException($classMetadata->getName());
+                $json = json_encode($classMetadata->getIdentifierValues($proxy));
+                $message = "Entity of type '{$classMetadata->getName()}'"
+                    . " was not found with identifier(s) '{$json}'";
+
+                throw new EntityNotFoundException($message);
             }
         };
     }
@@ -198,12 +206,16 @@ class ProxyFactory extends AbstractProxyFactory
 
             $proxy->__setInitialized(true);
             $proxy->__setInitializer(null);
- 
+
             $class    = $entityPersister->getClassMetadata();
             $original = $entityPersister->loadById($classMetadata->getIdentifierValues($proxy));
 
             if (null === $original) {
-                throw new EntityNotFoundException($classMetadata->getName());
+                $json = json_encode($classMetadata->getIdentifierValues($proxy));
+                $message = "Entity of type '{$classMetadata->getName()}'"
+                    . " was not found with identifier(s) '{$json}'";
+
+                throw new EntityNotFoundException($message);
             }
 
             foreach ($class->getReflectionClass()->getProperties() as $property) {
