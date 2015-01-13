@@ -144,5 +144,9 @@ class SimpleObjectHydrator extends AbstractHydrator
         $entity = $uow->createEntity($entityName, $data, $this->_hints);
 
         $result[] = $entity;
+
+        if (isset($this->_hints[Query::HINT_INTERNAL_ITERATION]) && $this->_hints[Query::HINT_INTERNAL_ITERATION]) {
+            $this->_uow->hydrationComplete();
+        }
     }
 }
