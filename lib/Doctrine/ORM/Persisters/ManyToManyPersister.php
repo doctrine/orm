@@ -306,8 +306,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $association = $mapping;
 
         if ( ! $mapping['isOwningSide']) {
-            $class       = $this->em->getClassMetadata($mapping['targetEntity']);
-            $association = $class->associationMappings[$mapping['mappedBy']];
+            $association = $this
+                ->em
+                ->getClassMetadata($mapping['targetEntity'])
+                ->associationMappings[$mapping['mappedBy']];
         }
 
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
