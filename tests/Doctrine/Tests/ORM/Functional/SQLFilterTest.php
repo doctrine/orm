@@ -243,6 +243,10 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("'en'", $filter->getParameter('locale'));
     }
 
+    /**
+     * @group DDC-3161
+     * @group 1054
+     */
     public function testSQLFilterGetConnection()
     {
         // Setup mock connection
