@@ -731,7 +731,7 @@ class UnitOfWork implements PropertyChangedListener
             try {
                 $this->computeAssociationChanges($assoc, $val);
             } catch (\Exception $ex) {
-                throw new Exception('Expected an Object for relation '.get_class($entity).'::'.$assoc['fieldName'].' got '.gettype($ex->value).' '.var_export($ex->value, true).' instead.');
+                throw ORMInvalidArgumentException::invalidAssociation($entity, $assoc['fieldName'], $ex->value);
             }
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
@@ -834,10 +834,8 @@ class UnitOfWork implements PropertyChangedListener
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($unwrappedValue as $key => $entry) {
-            if (! is_object($entry)) {
-                $ex = new \Exception(gettype($entry) . ' ' . var_export($entry, true).' is not an Object.');
-                $ex->value = $entry;
-                throw $ex;
+            if (! ($entry instanceof $assoc['targetEntity']))) {
+                throw ORMInvalidArgumentException::invalidAssociation($entry);
             }
 
             $state = $this->getEntityState($entry, self::STATE_NEW);
