@@ -96,6 +96,8 @@ class BasicEntityPersister implements EntityPersister
         Comparison::IN       => 'IN (%s)',
         Comparison::NIN      => 'NOT IN (%s)',
         Comparison::CONTAINS => 'LIKE %s',
+        Comparison::LIKE     => 'LIKE %s',
+        Comparison::NOTLIKE  => 'NOT LIKE %s',
     );
 
     /**
