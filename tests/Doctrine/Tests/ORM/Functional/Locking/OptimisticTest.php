@@ -152,6 +152,19 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    public function testLockWorksWithProxy()
+    {
+        $test = new OptimisticStandard();
+        $test->name = 'test';
+        $this->_em->persist($test);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $proxy = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard', $test->id);
+
+        $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
+    }
+
     public function testOptimisticTimestampSetsDefaultValue()
     {
         $test = new OptimisticTimestamp();
