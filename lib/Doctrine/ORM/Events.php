@@ -121,8 +121,8 @@ final class Events
     const loadClassMetadata = 'loadClassMetadata';
 
     /**
-     * The preLoadClassMetadata event occurs before the mapping metadata for a
-     * class is loaded from a mapping source (annotations/xml/yaml).
+     * The onClassMetadataNotFound event occurs whenever loading metadata for a class
+     * failed.
      *
      * @var string
      */
