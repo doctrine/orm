@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Query;
 
 class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -227,6 +228,30 @@ DQL;
             ->_em
             ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
             ->iterate();
+
+        foreach ($result as $entity) {
+            $this->assertTrue($entity[0]->postLoadCallbackInvoked);
+            $this->assertFalse($entity[0]->postLoadCascaderNotNull);
+
+            break;
+        }
+    }
+    /**
+     * @group DDC-54
+     * @group DDC-3005
+     */
+    public function testCascadedEntitiesNotLoadedInPostLoadDuringIterationWithSimpleObjectHydrator()
+    {
+        $this->_em->persist(new LifecycleCallbackTestEntity());
+        $this->_em->persist(new LifecycleCallbackTestEntity());
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this
+            ->_em
+            ->createQuery('SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e')
+            ->iterate(null, Query::HYDRATE_SIMPLEOBJECT);
 
         foreach ($result as $entity) {
             $this->assertTrue($entity[0]->postLoadCallbackInvoked);
