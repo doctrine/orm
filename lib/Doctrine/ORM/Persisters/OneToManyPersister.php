@@ -172,7 +172,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * Check if entity is in a valid state for operations.
      *
-     * @param $entity
+     * @param object $entity
      *
      * @return bool
      */
