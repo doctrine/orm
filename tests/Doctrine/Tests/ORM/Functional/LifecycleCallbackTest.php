@@ -229,10 +229,7 @@ DQL;
             ->iterate();
 
         foreach ($result as $entity) {
-            $this->assertFalse(
-                $entity[0]->postLoadCallbackInvoked,
-                'During iteration, postLoad callbacks are not triggered until the end of the resultset is reached'
-            );
+            $this->assertTrue($entity[0]->postLoadCallbackInvoked);
             $this->assertFalse($entity[0]->postLoadCascaderNotNull);
 
             break;
