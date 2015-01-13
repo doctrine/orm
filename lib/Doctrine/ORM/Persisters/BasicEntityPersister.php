@@ -80,7 +80,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
  * @author Rob Caiger <rob@clocal.co.uk>
  * @since 2.0
  */
-class BasicEntityPersister implements EntityPersister
+class BasicEntityPersister implements EntityPersister, SelectConditionGeneratorInterface
 {
     /**
      * @var array

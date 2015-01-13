@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsGroup,
     Doctrine\Common\Collections\ArrayCollection;
@@ -396,5 +397,39 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals('Developers_0', $firstGroup->name);
 
         $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
+    }
+
+    public function testMatchingWithOtherOperator()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+
+        // TEST NEQ OPERATOR
+
+        $criteria = Criteria::create()->where(Criteria::expr()->neq('name', (string) 'Developers_0'));
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(1, $result);
+
+        $firstGroup = $result->first();
+
+        $this->assertEquals('Developers_1', $firstGroup->name);
+        $this->assertFalse($groups->isInitialized());
+
+        // TEST CONTAINS OPERATOR
+
+        $criteria = Criteria::create()->where(Criteria::expr()->contains('name', '_1'));
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(1, $result);
+
+        $firstGroup = $result->first();
+
+        $this->assertEquals('Developers_1', $firstGroup->name);
+        $this->assertFalse($groups->isInitialized());
     }
 }

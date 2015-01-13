@@ -101,18 +101,6 @@ interface EntityPersister
     public function expandCriteriaParameters(Criteria $criteria);
 
     /**
-     * Gets the SQL WHERE condition for matching a field with a given value.
-     *
-     * @param string      $field
-     * @param mixed       $value
-     * @param array|null  $assoc
-     * @param string|null $comparison
-     *
-     * @return string
-     */
-    public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null);
-
-    /**
      * Adds an entity to the queued insertions.
      * The entity remains queued until {@link executeInserts} is invoked.
      *
