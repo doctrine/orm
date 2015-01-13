@@ -728,7 +728,11 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $this->computeAssociationChanges($assoc, $val);
+            try {
+                $this->computeAssociationChanges($assoc, $val);
+            } catch (\Exception $ex) {
+                throw new Exception('Expected an Object for relation '.get_class($entity).'::'.$assoc['fieldName'].' got '.gettype($ex->value).' '.var_export($ex->value, true).' instead.');
+            }
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
                 $assoc['isOwningSide'] &&
@@ -830,6 +834,12 @@ class UnitOfWork implements PropertyChangedListener
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($unwrappedValue as $key => $entry) {
+            if (! is_object($entry)) {
+                $ex = new \Exception(gettype($entry) . ' ' . var_export($entry, true).' is not an Object.');
+                $ex->value = $entry;
+                throw $ex;
+            }
+
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
             if ( ! ($entry instanceof $assoc['targetEntity'])) {
