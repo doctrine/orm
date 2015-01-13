@@ -77,7 +77,7 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     }
 
     /**
-     * Retrieve associated ClassMetadata.
+     * Retrieve class name for which a failed metadata fetch attempt was executed
      *
      * @return string
      */
