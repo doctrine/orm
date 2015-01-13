@@ -30,8 +30,14 @@ class EntityNotFoundException extends ORMException
     /**
      * Constructor.
      */
-    public function __construct($class)
+    public function __construct($class, array $id = array())
     {
-        parent::__construct("Entity of type '{$class}' was not found.");
+        $ids = array();
+        foreach ($id as $key => $value) {
+            $ids[] = "{$key}({$value})";
+        }
+        $idsFormatted = implode(', ', $ids);
+        $message = "Entity of type '" . $class . "'" . ($idsFormatted ? ' for IDs ' . $idsFormatted : '') . ' was not found';
+        parent::__construct($message);
     }
 }
