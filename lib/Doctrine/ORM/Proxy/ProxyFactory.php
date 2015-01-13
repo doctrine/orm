@@ -154,7 +154,7 @@ class ProxyFactory extends AbstractProxyFactory
                     $proxy->__setCloner($cloner);
                     $proxy->__setInitialized(false);
 
-                    throw new EntityNotFoundException(
+                    throw EntityNotFoundException::fromClassNameAndIdentifier(
                         $classMetadata->getName(),
                         $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                     );
@@ -190,7 +190,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
 
-                throw new EntityNotFoundException(
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
                     $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                 );
@@ -225,7 +225,7 @@ class ProxyFactory extends AbstractProxyFactory
             $original   = $entityPersister->loadById($identifier);
 
             if (null === $original) {
-                throw new EntityNotFoundException(
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
                     $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                 );
