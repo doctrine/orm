@@ -347,7 +347,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return 'DELETE FROM ' . $joinTable
-        . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
@@ -430,10 +430,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getInsertRowSQL(PersistentCollection $coll)
     {
-        $columns    = array();
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
-        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
+        $columns = array();
+        $mapping = $coll->getMapping();
+        $class   = $this->em->getClassMetadata(get_class($coll->getOwner()));
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
@@ -443,8 +442,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
         }
 
-        return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
-        . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+        return 'INSERT INTO ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+            . ' (' . implode(', ', $columns) . ')'
+            . ' VALUES'
+            . ' (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
 
     /**
