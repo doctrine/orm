@@ -206,9 +206,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      */
     public static function invalidAssociation($targetClass, $assoc, $entry)
     {
-        $ex = new self(gettype($entry) . (is_scalar($entry) ? ' "'.$entry.'"': '') . ' is not an Object.');
-        $ex->value = $entry;
-        return $ex;
+        return new self(gettype($entry) . (is_scalar($entry) ? ' "'.$entry.'"': '') . ' is not an Object.');
     }
 
     /**
