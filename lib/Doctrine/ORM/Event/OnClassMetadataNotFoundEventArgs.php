@@ -25,10 +25,13 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Class that holds event arguments for a loadMetadata event.
+ * Class that holds event arguments for a `onClassMetadataNotFound` event.
  *
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since  2.3
+ * This object is mutable by design, allowing callbacks having access to it to set the
+ * found metadata in it, and therefore "cancelling" a `onClassMetadataNotFound` event
+ *
+ * @author Marco Pivetta <ocramius@gmail.com>
+ * @since  2.5
  */
 class OnClassMetadataNotFoundEventArgs extends EventArgs
 {
