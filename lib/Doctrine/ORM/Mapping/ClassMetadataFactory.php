@@ -102,7 +102,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
 
-        // @todo to be discussed: event is used as a mutable data vector here, which may be undesired.
         return $eventArgs->getFoundMetadata();
     }
 
