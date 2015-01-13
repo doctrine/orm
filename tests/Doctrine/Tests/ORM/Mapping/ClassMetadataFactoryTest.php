@@ -348,7 +348,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
             ->will($this->returnCallback(function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test) {
                 $test->assertNull($args->getFoundMetadata());
                 $test->assertSame('Foo', $args->getClassName());
-                $test->assertSame($em, $args->getEntityManager());
+                $test->assertSame($em, $args->getObjectManager());
 
                 $args->setFoundMetadata($metadata);
             }));
