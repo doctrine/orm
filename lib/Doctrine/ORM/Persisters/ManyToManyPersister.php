@@ -77,7 +77,19 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function get(PersistentCollection $coll, $index)
     {
-        throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
+        $mapping = $coll->getMapping();
+
+        if ( ! isset($mapping['indexBy'])) {
+            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+        }
+
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+
+        if ( ! $mapping['isOwningSide']) {
+            return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, $mapping, array(), 0, 1);
+        }
+
+        return $persister->load(array($mapping['inversedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, $mapping, array(), 0, 1);
     }
 
     /**
@@ -138,6 +150,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
+        $mapping = $coll->getMapping();
+
+        if ( ! isset($mapping['indexBy'])) {
+            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+        }
+
         list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictionsWithKey($coll, $key, true);
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);

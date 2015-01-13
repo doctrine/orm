@@ -60,24 +60,15 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function get(PersistentCollection $coll, $index)
     {
-        $mapping   = $coll->getMapping();
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $mapping = $coll->getMapping();
 
-        if (!isset($mapping['indexBy'])) {
+        if ( ! isset($mapping['indexBy'])) {
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
-        return $persister->load(
-            array(
-                $mapping['mappedBy'] => $coll->getOwner(),
-                $mapping['indexBy']  => $index
-            ),
-            null,
-            null,
-            array(),
-            null,
-            1
-        );
+        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+
+        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, $mapping, array(), null, 1);
     }
 
     /**
@@ -112,7 +103,12 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
-        $mapping   = $coll->getMapping();
+        $mapping = $coll->getMapping();
+
+        if ( ! isset($mapping['indexBy'])) {
+            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+        }
+
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
