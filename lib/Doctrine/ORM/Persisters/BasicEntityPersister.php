@@ -655,6 +655,8 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
+            $newValId = null;
+
             if ($newVal !== null) {
                 $newValId = $uow->getEntityIdentifier($newVal);
             }
@@ -667,24 +669,11 @@ class BasicEntityPersister implements EntityPersister
                 $targetColumn = $joinColumn['referencedColumnName'];
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
-                $this->quotedColumns[$sourceColumn] = $quotedColumn;
-                $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
-
-                switch (true) {
-                    case $newVal === null:
-                        $value = null;
-                        break;
-
-                    case $targetClass->containsForeignIdentifier:
-                        $value = $newValId[$targetClass->getFieldForColumn($targetColumn)];
-                        break;
-
-                    default:
-                        $value = $newValId[$targetClass->fieldNames[$targetColumn]];
-                        break;
-                }
-
-                $result[$owningTable][$sourceColumn] = $value;
+                $this->quotedColumns[$sourceColumn]  = $quotedColumn;
+                $this->columnTypes[$sourceColumn]    = $targetClass->getTypeOfColumn($targetColumn);
+                $result[$owningTable][$sourceColumn] = $newValId
+                    ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
+                    : null;
             }
         }
 

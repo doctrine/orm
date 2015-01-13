@@ -51,24 +51,6 @@ interface CollectionPersister
     public function update(PersistentCollection $collection);
 
     /**
-     * Deletes rows.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     *
-     * @return void
-     */
-    public function deleteRows(PersistentCollection $collection);
-
-    /**
-     * Inserts rows.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     *
-     * @return void
-     */
-    public function insertRows(PersistentCollection $collection);
-
-    /**
      * Counts the size of this persistent collection.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection
@@ -117,16 +99,6 @@ interface CollectionPersister
      * @return mixed
      */
     public function removeElement(PersistentCollection $collection, $element);
-
-    /**
-     * Removes an element by key.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param mixed                              $key
-     *
-     * @return void
-     */
-    public function removeKey(PersistentCollection $collection, $key);
 
     /**
      * Gets an element by key.

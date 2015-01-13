@@ -36,6 +36,28 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
+    public function delete(PersistentCollection $coll)
+    {
+        // This can never happen. One to many can only be inverse side.
+        // For owning side one to many, it is required to have a join table,
+        // then classifying it as a ManyToManyPersister.
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(PersistentCollection $coll)
+    {
+        // This can never happen. One to many can only be inverse side.
+        // For owning side one to many, it is required to have a join table,
+        // then classifying it as a ManyToManyPersister.
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function get(PersistentCollection $coll, $index)
     {
         $mapping   = $coll->getMapping();
@@ -45,86 +67,17 @@ class OneToManyPersister extends AbstractCollectionPersister
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
-        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, null, array(), null, 1);
-    }
-
-    /**
-     * Generates the SQL UPDATE that updates a particular row's foreign
-     * key to null.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     *
-     * @return string
-     *
-     * @override
-     */
-    protected function getDeleteRowSQL(PersistentCollection $coll)
-    {
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata($mapping['targetEntity']);
-        $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
-        $idColumns  = $class->getIdentifierColumnNames();
-
-        return 'DELETE FROM ' . $tableName
-             . ' WHERE ' . implode('= ? AND ', $idColumns) . ' = ?';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
-    {
-        return array_values($this->uow->getEntityIdentifier($element));
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getInsertRowSQL(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Insert Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getInsertRowSQLParameters(PersistentCollection $coll, $element)
-    {
-        throw new \BadMethodCallException("Insert Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getUpdateRowSQL(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Update Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getDeleteSQL(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Delete Row SQL is not used for OneToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister.
-     */
-    protected function getDeleteSQLParameters(PersistentCollection $coll)
-    {
-        throw new \BadMethodCallException("Delete Row SQL is not used for OneToManyPersister");
+        return $persister->load(
+            array(
+                $mapping['mappedBy'] => $coll->getOwner(),
+                $mapping['indexBy']  => $index
+            ),
+            null,
+            null,
+            array(),
+            null,
+            1
+        );
     }
 
     /**
@@ -178,14 +131,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function contains(PersistentCollection $coll, $element)
     {
-        $entityState = $this->uow->getEntityState($element, UnitOfWork::STATE_NEW);
-
-        if ($entityState === UnitOfWork::STATE_NEW) {
-            return false;
-        }
-
-        // Entity is scheduled for inclusion
-        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($element)) {
+        if ( ! $this->isValidEntityState($element)) {
             return false;
         }
 
@@ -205,15 +151,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
-        $entityState = $this->uow->getEntityState($element, UnitOfWork::STATE_NEW);
-
-        if ($entityState === UnitOfWork::STATE_NEW) {
-            return false;
-        }
-
-        // If Entity is scheduled for inclusion, it is not in this collection.
-        // We can assure that because it would have return true before on array check
-        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($element)) {
+        if ( ! $this->isValidEntityState($element)) {
             return false;
         }
 
@@ -221,5 +159,37 @@ class OneToManyPersister extends AbstractCollectionPersister
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->delete($element);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
+    {
+        throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
+    }
+
+    /**
+     * Check if entity is in a valid state for operations.
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    private function isValidEntityState($entity)
+    {
+        $entityState = $this->uow->getEntityState($entity, UnitOfWork::STATE_NEW);
+
+        if ($entityState === UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        // If Entity is scheduled for inclusion, it is not in this collection.
+        // We can assure that because it would have return true before on array check
+        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($entity)) {
+            return false;
+        }
+
+        return true;
     }
 }

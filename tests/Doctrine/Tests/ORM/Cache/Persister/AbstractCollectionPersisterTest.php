@@ -49,8 +49,6 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     protected $collectionPersisterMockMethods = array(
         'delete',
         'update',
-        'deleteRows',
-        'insertRows',
         'count',
         'slice',
         'contains',
@@ -152,36 +150,6 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection));
 
         $this->assertNull($persister->update($collection));
-    }
-
-    public function testInvokeDeleteRows()
-    {
-        $entity     = new State("Foo");
-        $persister  = $this->createPersisterDefault();
-        $collection = $this->createCollection($entity);
-
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
-
-        $this->collectionPersister->expects($this->once())
-            ->method('deleteRows')
-            ->with($this->equalTo($collection));
-
-        $this->assertNull($persister->deleteRows($collection));
-    }
-
-    public function testInvokeInsertRows()
-    {
-        $entity     = new State("Foo");
-        $persister  = $this->createPersisterDefault();
-        $collection = $this->createCollection($entity);
-
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
-
-        $this->collectionPersister->expects($this->once())
-            ->method('insertRows')
-            ->with($this->equalTo($collection));
-
-        $this->assertNull($persister->insertRows($collection));
     }
 
     public function testInvokeCount()

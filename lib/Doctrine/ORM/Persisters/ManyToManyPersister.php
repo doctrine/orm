@@ -37,180 +37,47 @@ class ManyToManyPersister extends AbstractCollectionPersister
 {
     /**
      * {@inheritdoc}
-     *
-     * @override
      */
-    protected function getDeleteRowSQL(PersistentCollection $coll)
+    public function delete(PersistentCollection $coll)
     {
-        $columns    = array();
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
-        $tableName  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
+        $mapping = $coll->getMapping();
 
-        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        if ( ! $mapping['isOwningSide']) {
+            return; // ignore inverse side
         }
 
-        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
-        }
-
-        return 'DELETE FROM ' . $tableName
-            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+        $this->conn->executeUpdate($this->getDeleteSQL($coll), $this->getDeleteSQLParameters($coll));
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @override
-     *
-     * @internal Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
      */
-    protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
+    public function update(PersistentCollection $coll)
     {
-        return $this->collectJoinTableColumnParameters($coll, $element);
+        $mapping = $coll->getMapping();
+
+        if ( ! $mapping['isOwningSide']) {
+            return; // ignore inverse side
+        }
+
+        $insertSql = $this->getInsertRowSQL($coll);
+        $deleteSql = $this->getDeleteRowSQL($coll);
+
+        foreach ($coll->getDeleteDiff() as $element) {
+            $this->conn->executeUpdate($deleteSql, $this->getDeleteRowSQLParameters($coll, $element));
+        }
+
+        foreach ($coll->getInsertDiff() as $element) {
+            $this->conn->executeUpdate($insertSql, $this->getInsertRowSQLParameters($coll, $element));
+        }
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @throws \BadMethodCallException Not used for OneToManyPersister
      */
-    protected function getUpdateRowSQL(PersistentCollection $coll)
+    public function get(PersistentCollection $coll, $index)
     {
-        throw new \BadMethodCallException("Insert Row SQL is not used for ManyToManyPersister");
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     *
-     * @internal Order of the parameters must be the same as the order of the columns in getInsertRowSql.
-     */
-    protected function getInsertRowSQL(PersistentCollection $coll)
-    {
-        $columns    = array();
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
-        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
-
-        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
-        }
-
-        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
-        }
-
-        return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
-            . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     *
-     * @internal Order of the parameters must be the same as the order of the columns in getInsertRowSql.
-     */
-    protected function getInsertRowSQLParameters(PersistentCollection $coll, $element)
-    {
-        return $this->collectJoinTableColumnParameters($coll, $element);
-    }
-
-    /**
-     * Collects the parameters for inserting/deleting on the join table in the order
-     * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object                             $element
-     *
-     * @return array
-     */
-    private function collectJoinTableColumnParameters(PersistentCollection $coll, $element)
-    {
-        $params      = array();
-        $mapping     = $coll->getMapping();
-        $isComposite = count($mapping['joinTableColumns']) > 2;
-
-        $identifier1 = $this->uow->getEntityIdentifier($coll->getOwner());
-        $identifier2 = $this->uow->getEntityIdentifier($element);
-
-        if ($isComposite) {
-            $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
-            $class2 = $coll->getTypeClass();
-        }
-
-        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
-
-            if ( ! $isComposite) {
-                $params[] = $isRelationToSource ? array_pop($identifier1) : array_pop($identifier2);
-
-                continue;
-            }
-
-            if ($isRelationToSource) {
-                $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
-
-                continue;
-            }
-
-            $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
-        }
-
-        return $params;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     */
-    protected function getDeleteSQL(PersistentCollection $coll)
-    {
-        $columns    = array();
-        $mapping    = $coll->getMapping();
-        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
-        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
-
-        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
-        }
-
-        return 'DELETE FROM ' . $joinTable
-            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     *
-     * @internal Order of the parameters must be the same as the order of the columns in getDeleteSql.
-     */
-    protected function getDeleteSQLParameters(PersistentCollection $coll)
-    {
-        $mapping    = $coll->getMapping();
-        $identifier = $this->uow->getEntityIdentifier($coll->getOwner());
-
-        // Optimization for single column identifier
-        if (count($mapping['relationToSourceKeyColumns']) === 1) {
-            return array(reset($identifier));
-        }
-
-        // Composite identifier
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $params      = array();
-
-        foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
-            $params[] = isset($sourceClass->fieldNames[$refColumnName])
-                ? $identifier[$sourceClass->fieldNames[$refColumnName]]
-                : $identifier[$sourceClass->getFieldForColumn($columnName)];
-        }
-
-        return $params;
+        throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
     }
 
     /**
@@ -238,9 +105,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columnName     = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
             $referencedName = $joinColumn['referencedColumnName'];
             $conditions[]   = 't.' . $columnName . ' = ?';
-            $params[]       = ($class->containsForeignIdentifier)
-                ? $id[$class->getFieldForColumn($referencedName)]
-                : $id[$class->fieldNames[$referencedName]];
+            $params[]       = $id[$class->getFieldForColumn($referencedName)];
         }
 
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
@@ -328,6 +193,322 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function loadCriteria(PersistentCollection $coll, Criteria $criteria)
+    {
+        $mapping       = $coll->getMapping();
+        $owner         = $coll->getOwner();
+        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
+        $whereClauses  = $params = array();
+
+        foreach ($mapping['relationToSourceKeyColumns'] as $key => $value) {
+            $whereClauses[] = sprintf('t.%s = ?', $key);
+            $params[]       = $ownerMetadata->getFieldValue($owner, $value);
+        }
+
+        $parameters = $this->expandCriteriaParameters($criteria);
+
+        foreach ($parameters as $parameter) {
+            list($name, $value) = $parameter;
+            $whereClauses[]     = sprintf('te.%s = ?', $name);
+            $params[]           = $value;
+        }
+
+        $mapping      = $coll->getMapping();
+        $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
+        $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+        $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $ownerMetadata, $this->platform);
+        $onConditions = $this->getOnConditionSQL($mapping);
+
+        $rsm = new Query\ResultSetMappingBuilder($this->em);
+        $rsm->addRootEntityFromClassMetadata($mapping['targetEntity'], 'te');
+
+        $sql = 'SELECT ' . $rsm->generateSelectClause()
+            . ' FROM ' . $tableName . ' te'
+            . ' JOIN ' . $joinTable  . ' t ON'
+            . implode(' AND ', $onConditions)
+            . ' WHERE ' . implode(' AND ', $whereClauses);
+
+        $stmt = $this->conn->executeQuery($sql, $params);
+
+        return $this
+            ->em
+            ->newHydrator(Query::HYDRATE_OBJECT)
+            ->hydrateAll($stmt, $rsm);
+    }
+
+    /**
+     * Generates the filter SQL for a given mapping.
+     *
+     * This method is not used for actually grabbing the related entities
+     * but when the extra-lazy collection methods are called on a filtered
+     * association. This is why besides the many to many table we also
+     * have to join in the actual entities table leading to additional
+     * JOIN.
+     *
+     * @param array $mapping Array containing mapping information.
+     *
+     * @return string[] ordered tuple:
+     *                   - JOIN condition to add to the SQL
+     *                   - WHERE condition to add to the SQL
+     */
+    public function getFilterSql($mapping)
+    {
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
+        $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
+
+        if ('' === $filterSql) {
+            return array('', '');
+        }
+
+        // A join is needed if there is filtering on the target entity
+        $tableName = $this->quoteStrategy->getTableName($rootClass, $this->platform);
+        $joinSql   = ' JOIN ' . $tableName . ' te'
+            . ' ON' . implode(' AND ', $this->getOnConditionSQL($mapping));
+
+        return array($joinSql, $filterSql);
+    }
+
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity     Metadata of the target entity.
+     * @param string        $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterClauses = array();
+
+        foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
+            if ($filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
+        return $filterClauses
+            ? '(' . implode(' AND ', $filterClauses) . ')'
+            : '';
+    }
+
+    /**
+     * Generate ON condition
+     *
+     * @param  array $mapping
+     *
+     * @return array
+     */
+    protected function getOnConditionSQL($mapping)
+    {
+        $association = $mapping;
+
+        if ( ! $mapping['isOwningSide']) {
+            $association = $this
+                ->em
+                ->getClassMetadata($mapping['targetEntity'])
+                ->associationMappings[$mapping['mappedBy']];
+        }
+
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+
+        $joinColumns = $mapping['isOwningSide']
+            ? $association['joinTable']['inverseJoinColumns']
+            : $association['joinTable']['joinColumns'];
+
+        $conditions = array();
+
+        foreach ($joinColumns as $joinColumn) {
+            $joinColumnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $refColumnName  = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
+
+            $conditions[] = ' t.' . $joinColumnName . ' = ' . 'te.' . $refColumnName;
+        }
+
+        return $conditions;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function getDeleteSQL(PersistentCollection $coll)
+    {
+        $columns    = array();
+        $mapping    = $coll->getMapping();
+        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
+        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
+
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        return 'DELETE FROM ' . $joinTable
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     *
+     * @internal Order of the parameters must be the same as the order of the columns in getDeleteSql.
+     */
+    protected function getDeleteSQLParameters(PersistentCollection $coll)
+    {
+        $mapping    = $coll->getMapping();
+        $identifier = $this->uow->getEntityIdentifier($coll->getOwner());
+
+        // Optimization for single column identifier
+        if (count($mapping['relationToSourceKeyColumns']) === 1) {
+            return array(reset($identifier));
+        }
+
+        // Composite identifier
+        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $params      = array();
+
+        foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
+            $params[] = isset($sourceClass->fieldNames[$refColumnName])
+                ? $identifier[$sourceClass->fieldNames[$refColumnName]]
+                : $identifier[$sourceClass->getFieldForColumn($columnName)];
+        }
+
+        return $params;
+    }
+
+    /**
+     * Gets the SQL statement used for deleting a row from the collection.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     *
+     * @return string
+     */
+    protected function getDeleteRowSQL(PersistentCollection $coll)
+    {
+        $mapping = $coll->getMapping();
+        $class   = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $columns = array();
+
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+    }
+
+    /**
+     * Gets the SQL parameters for the corresponding SQL statement to delete the given
+     * element from the given collection.
+     *
+     * @internal Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed                              $element
+     *
+     * @return array
+     */
+    protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
+    {
+        return $this->collectJoinTableColumnParameters($coll, $element);
+    }
+
+    /**
+     * Gets the SQL statement used for inserting a row in the collection.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     *
+     * @return string
+     */
+    protected function getInsertRowSQL(PersistentCollection $coll)
+    {
+        $columns = array();
+        $mapping = $coll->getMapping();
+        $class   = $this->em->getClassMetadata(get_class($coll->getOwner()));
+
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        return 'INSERT INTO ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+            . ' (' . implode(', ', $columns) . ')'
+            . ' VALUES'
+            . ' (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+    }
+
+    /**
+     * Gets the SQL parameters for the corresponding SQL statement to insert the given
+     * element of the given collection into the database.
+     *
+     * @internal Order of the parameters must be the same as the order of the columns in getInsertRowSql.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed                              $element
+     *
+     * @return array
+     */
+    protected function getInsertRowSQLParameters(PersistentCollection $coll, $element)
+    {
+        return $this->collectJoinTableColumnParameters($coll, $element);
+    }
+
+    /**
+     * Collects the parameters for inserting/deleting on the join table in the order
+     * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param object                             $element
+     *
+     * @return array
+     */
+    private function collectJoinTableColumnParameters(PersistentCollection $coll, $element)
+    {
+        $params      = array();
+        $mapping     = $coll->getMapping();
+        $isComposite = count($mapping['joinTableColumns']) > 2;
+
+        $identifier1 = $this->uow->getEntityIdentifier($coll->getOwner());
+        $identifier2 = $this->uow->getEntityIdentifier($element);
+
+        if ($isComposite) {
+            $class1 = $this->em->getClassMetadata(get_class($coll->getOwner()));
+            $class2 = $coll->getTypeClass();
+        }
+
+        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+            $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
+
+            if ( ! $isComposite) {
+                $params[] = $isRelationToSource ? array_pop($identifier1) : array_pop($identifier2);
+
+                continue;
+            }
+
+            if ($isRelationToSource) {
+                $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+
+                continue;
+            }
+
+            $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+        }
+
+        return $params;
+    }
+
+    /**
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param string                             $key
      * @param boolean                            $addFilters Whether the filter SQL should be included or not.
@@ -377,9 +558,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             if (isset($mapping[$relationMode][$joinTableColumn])) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
-                $params[] = $targetEntity->containsForeignIdentifier
-                 ? $id[$targetEntity->getFieldForColumn($mapping[$relationMode][$joinTableColumn])]
-                 : $id[$targetEntity->fieldNames[$mapping[$relationMode][$joinTableColumn]]];
+                $params[] = $id[$targetEntity->getFieldForColumn($mapping[$relationMode][$joinTableColumn])];
             } elseif (!$joinNeeded) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[] = $key;
@@ -432,17 +611,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
-                $params[] = ($targetClass->containsForeignIdentifier)
-                    ? $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])]
-                    : $targetId[$targetClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                $params[] = $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
 
                 continue;
             }
 
             // relationToSourceKeyColumns
-            $params[] = ($sourceClass->containsForeignIdentifier)
-                ? $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])]
-                : $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+            $params[] = $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
         }
 
         if ($addFilters) {
@@ -457,138 +632,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return array($quotedJoinTable, $whereClauses, $params);
-    }
-
-    /**
-     * Generates the filter SQL for a given mapping.
-     *
-     * This method is not used for actually grabbing the related entities
-     * but when the extra-lazy collection methods are called on a filtered
-     * association. This is why besides the many to many table we also
-     * have to join in the actual entities table leading to additional
-     * JOIN.
-     *
-     * @param array $mapping Array containing mapping information.
-     *
-     * @return string The SQL query part to add to a query.
-     */
-    public function getFilterSql($mapping)
-    {
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-        $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
-        $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
-
-        if ('' === $filterSql) {
-            return array('', '');
-        }
-
-        // A join is needed if there is filtering on the target entity
-        $tableName    = $this->quoteStrategy->getTableName($rootClass, $this->platform);
-        $joinSql      = ' JOIN ' . $tableName . ' te' . ' ON';
-        $onConditions = $this->getOnConditionSQL($mapping);
-
-        $joinSql .= implode(' AND ', $onConditions);
-
-        return array($joinSql, $filterSql);
-    }
-
-    /**
-     * Generates the filter SQL for a given entity and table alias.
-     *
-     * @param ClassMetadata $targetEntity     Metadata of the target entity.
-     * @param string        $targetTableAlias The table alias of the joined/selected table.
-     *
-     * @return string The SQL query part to add to a query.
-     */
-    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
-    {
-        $filterClauses = array();
-
-        foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ($filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                $filterClauses[] = '(' . $filterExpr . ')';
-            }
-        }
-
-        $sql = implode(' AND ', $filterClauses);
-        return $sql ? '(' . $sql . ')' : '';
-    }
-
-    /**
-     * Generate ON condition
-     *
-     * @param  array $mapping
-     *
-     * @return array
-     */
-    protected function getOnConditionSQL($mapping)
-    {
-        $association = $mapping;
-
-        if ( ! $mapping['isOwningSide']) {
-            $class       = $this->em->getClassMetadata($mapping['targetEntity']);
-            $association = $class->associationMappings[$mapping['mappedBy']];
-        }
-
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-
-        $joinColumns = $mapping['isOwningSide']
-            ? $association['joinTable']['inverseJoinColumns']
-            : $association['joinTable']['joinColumns'];
-
-        $conditions = array();
-
-        foreach ($joinColumns as $joinColumn) {
-            $joinColumnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
-            $refColumnName  = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
-
-            $conditions[] = ' t.' . $joinColumnName . ' = ' . 'te.' . $refColumnName;
-        }
-
-        return $conditions;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function loadCriteria(PersistentCollection $coll, Criteria $criteria)
-    {
-        $mapping       = $coll->getMapping();
-        $owner         = $coll->getOwner();
-        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
-        $whereClauses  = $params = array();
-
-        foreach ($mapping['relationToSourceKeyColumns'] as $key => $value) {
-            $whereClauses[] = sprintf('t.%s = ?', $key);
-            $params[]       = $ownerMetadata->getFieldValue($owner, $value);
-        }
-
-        $parameters = $this->expandCriteriaParameters($criteria);
-
-        foreach ($parameters as $parameter) {
-            list($name, $value) = $parameter;
-            $whereClauses[]     = sprintf('te.%s = ?', $name);
-            $params[]           = $value;
-        }
-
-        $mapping      = $coll->getMapping();
-        $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
-        $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
-        $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $ownerMetadata, $this->platform);
-        $onConditions = $this->getOnConditionSQL($mapping);
-
-        $rsm = new Query\ResultSetMappingBuilder($this->em);
-        $rsm->addRootEntityFromClassMetadata($mapping['targetEntity'], 'te');
-
-        $sql  = 'SELECT ' . $rsm->generateSelectClause() . ' FROM ' . $tableName . ' te'
-            . ' JOIN ' . $joinTable  . ' t ON'
-            . implode(' AND ', $onConditions)
-            . ' WHERE ' . implode(' AND ', $whereClauses);
-
-        $stmt     = $this->conn->executeQuery($sql, $params);
-        $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
-
-        return $hydrator->hydrateAll($stmt, $rsm);
     }
 
     /**

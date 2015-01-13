@@ -229,22 +229,6 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function deleteRows(PersistentCollection $collection)
-    {
-        $this->persister->deleteRows($collection);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function insertRows(PersistentCollection $collection)
-    {
-        $this->persister->insertRows($collection);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function get(PersistentCollection $collection, $index)
     {
         return $this->persister->get($collection, $index);
