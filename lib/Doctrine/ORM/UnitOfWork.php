@@ -731,7 +731,7 @@ class UnitOfWork implements PropertyChangedListener
             try {
                 $this->computeAssociationChanges($assoc, $val);
             } catch (\Exception $ex) {
-                throw ORMInvalidArgumentException::invalidAssociation($entity, $assoc['fieldName'], $ex->value);
+                throw ORMInvalidArgumentException::computeAssociationChangesError($entity, $assoc['fieldName'], $ex->value);
             }
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
