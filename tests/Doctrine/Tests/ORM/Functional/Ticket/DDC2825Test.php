@@ -36,58 +36,57 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    public function testMappingsContainCorrectlyDefinedOrEmulatedSchema()
+    {
+        $this->checkClassMetadata(DDC2825MySchemaMyTable::CLASSNAME, 'myschema', 'mytable');
+        $this->checkClassMetadata(DDC2825MySchemaMyTable2::CLASSNAME, 'myschema', 'mytable2');
+        $this->checkClassMetadata(DDC2825MySchemaOrder::CLASSNAME, 'myschema', 'order');
+    }
+
+    /**
+     * Test with a table with a schema
+     */
     public function testFetchingFromEntityWithExplicitlyDefinedSchemaInMappings()
     {
-        // Test with a table with a schema
-        $myEntity = new DDC2825MySchemaMyTable();
-
-        $this->_em->persist($myEntity);
+        $this->_em->persist(new DDC2825MySchemaMyTable());
         $this->_em->flush();
         $this->_em->clear();
 
         $this->assertCount(
             1,
-            $this->_em->createQuery('SELECT mt FROM ' . DDC2825MySchemaMyTable::CLASSNAME . ' mt')->getResult()
+            $this->_em->createQuery('SELECT e FROM ' . DDC2825MySchemaMyTable::CLASSNAME . ' e')->getResult()
         );
     }
 
+    /**
+     * Test with schema defined directly as a table annotation property
+     */
     public function testFetchingFromEntityWithImplicitlyDefinedSchemaInMappings()
     {
-        $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable');
-
-        $this->checkClassMetadata($classMetadata, 'myschema', 'mytable');
-
-        // Test with schema defined directly as a table annotation property
-        $myEntity2 = new DDC2825MySchemaMyTable2();
-
-        $this->_em->persist($myEntity2);
+        $this->_em->persist(new DDC2825MySchemaMyTable2());
         $this->_em->flush();
         $this->_em->clear();
 
         $this->assertCount(
             1,
-            $this->_em->createQuery('SELECT mt2 FROM ' . DDC2825MySchemaMyTable2::CLASSNAME . ' mt2')->getResult()
+            $this->_em->createQuery('SELECT e FROM ' . DDC2825MySchemaMyTable2::CLASSNAME . ' e')->getResult()
         );
     }
 
+    /**
+     * Test with a table named "order" (which is a reserved keyword) to make sure the table name is not
+     * incorrectly escaped when a schema is used and that the platform doesn't support schemas
+     */
     public function testFetchingFromEntityWithImplicitlyDefinedSchemaAndQuotedTableNameInMappings()
     {
-        $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable2');
-        $this->checkClassMetadata($classMetadata, 'myschema', 'mytable2');
-
-        // Test with a table named "order" (which is a reserved keyword) to make sure the table name is not
-        // incorrectly escaped when a schema is used and that the platform doesn't support schemas
-        $order = new DDC2825MySchemaOrder();
-
-        $this->_em->persist($order);
+        $this->_em->persist(new DDC2825MySchemaOrder());
         $this->_em->flush();
         $this->_em->clear();
 
-        $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaOrder');
-        $this->checkClassMetadata($classMetadata, 'myschema', 'order');
-
-        $entities = $this->_em->createQuery('SELECT mso FROM ' . __NAMESPACE__ . '\\DDC2825MySchemaOrder mso')->execute();
-        $this->assertEquals(count($entities), 1);
+        $this->assertCount(
+            1,
+            $this->_em->createQuery('SELECT e FROM ' . DDC2825MySchemaOrder::CLASSNAME . ' e')->getResult()
+        );
     }
 
     /**
@@ -95,12 +94,13 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * checks that the table name is correctly converted whether the platform supports database
      * schemas or not
      *
-     * @param  ClassMetadata $classMetadata Class metadata
+     * @param  string $className Class metadata
      * @param  string $expectedSchemaName   Expected schema name
      * @param  string $expectedTableName    Expected table name
      */
-    protected function checkClassMetadata(ClassMetadata $classMetadata, $expectedSchemaName, $expectedTableName)
+    protected function checkClassMetadata($className, $expectedSchemaName, $expectedTableName)
     {
+        $classMetadata   = $this->_em->getClassMetadata($className);
         $quoteStrategy   = $this->_em->getConfiguration()->getQuoteStrategy();
         $platform        = $this->_em->getConnection()->getDatabasePlatform();
         $quotedTableName = $quoteStrategy->getTableName($classMetadata, $platform);
