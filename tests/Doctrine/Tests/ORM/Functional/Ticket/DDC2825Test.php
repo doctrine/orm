@@ -2,7 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\ToolsException;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
@@ -24,14 +25,18 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped("This test is only useful for databases that support schemas or can emulate them.");
         }
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable2'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaOrder'),
-        ));
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable2'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaOrder'),
+            ));
+        } catch (ToolsException $e) {
+            // tables already exist
+        }
     }
 
-    public function testIssue()
+    public function testFetchingFromEntityWithExplicitlyDefinedSchemaInMappings()
     {
         // Test with a table with a schema
         $myEntity = new DDC2825MySchemaMyTable();
@@ -40,9 +45,14 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $entities = $this->_em->createQuery('SELECT mt FROM ' . __NAMESPACE__ . '\\DDC2825MySchemaMyTable mt')->execute();
-        $this->assertEquals(count($entities), 1);
+        $this->assertCount(
+            1,
+            $this->_em->createQuery('SELECT mt FROM ' . DDC2825MySchemaMyTable::CLASSNAME . ' mt')->getResult()
+        );
+    }
 
+    public function testFetchingFromEntityWithImplicitlyDefinedSchemaInMappings()
+    {
         $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable');
         $this->checkClassMetadata($classMetadata, 'myschema', 'mytable');
 
@@ -83,7 +93,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * @param  string $expectedSchemaName   Expected schema name
      * @param  string $expectedTableName    Expected table name
      */
-    protected function checkClassMetadata($classMetadata, $expectedSchemaName, $expectedTableName)
+    protected function checkClassMetadata(ClassMetadata $classMetadata, $expectedSchemaName, $expectedTableName)
     {
         $quoteStrategy   = $this->_em->getConfiguration()->getQuoteStrategy();
         $platform        = $this->_em->getConnection()->getDatabasePlatform();
@@ -113,6 +123,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2825MySchemaMyTable
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * Test with a quoted column name to check that sequence names are
      * correctly handled
@@ -131,6 +143,8 @@ class DDC2825MySchemaMyTable
  */
 class DDC2825MySchemaMyTable2
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
@@ -147,6 +161,8 @@ class DDC2825MySchemaMyTable2
  */
 class DDC2825MySchemaOrder
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
