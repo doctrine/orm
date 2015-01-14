@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\DDC2825;
 
 /**
  * @Entity
- * @Table(name="mytable2", schema="myschema")
+ * @Table(name="mytable", schema="myschema")
  */
 class ExplicitSchemaAndTable
 {
