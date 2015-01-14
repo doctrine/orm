@@ -5,8 +5,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 /* @var $metadata ClassMetadata */
 
 $metadata->setPrimaryTable(array(
-    'name'   => 'mytable',
-    'schema' => 'myschema',
+    'name'   => 'explicit_table',
+    'schema' => 'explicit_schema',
 ));
 
 $metadata->mapField(array(

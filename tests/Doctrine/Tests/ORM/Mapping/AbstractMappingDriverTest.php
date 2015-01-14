@@ -944,8 +944,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
 
-        $this->assertSame('myschema', $metadata->getSchemaName());
-        $this->assertSame('mytable', $metadata->getTableName());
+        $this->assertSame('explicit_schema', $metadata->getSchemaName());
+        $this->assertSame('explicit_table', $metadata->getTableName());
     }
 
     /**
@@ -957,8 +957,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::CLASSNAME);
 
-        $this->assertSame('myschema', $metadata->getSchemaName());
-        $this->assertSame('mytable', $metadata->getTableName());
+        $this->assertSame('implicit_schema', $metadata->getSchemaName());
+        $this->assertSame('implicit_table', $metadata->getTableName());
     }
 }
 
