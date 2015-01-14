@@ -213,15 +213,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $this->setExpectedException('Doctrine\Common\Annotations\AnnotationException',
             '[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
-        $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
+        $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
 
     public function testAttributeOverridesMappingWithTrait()
     {
-        if (!version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $this->markTestSkipped('This test is only for 5.4+.');
-        }
-
         $factory       = $this->createClassMetadataFactory();
 
         $metadataWithoutOverride = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride');

@@ -704,10 +704,6 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
-
         $cmf = new ClassMetadataFactory();
         $em = $this->_getTestEntityManager();
         $cmf->setEntityManager($em);
@@ -734,10 +730,6 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
-
         $cmf = new ClassMetadataFactory();
         $em = $this->_getTestEntityManager();
         $cmf->setEntityManager($em);
