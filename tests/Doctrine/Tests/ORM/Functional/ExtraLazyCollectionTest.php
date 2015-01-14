@@ -523,8 +523,16 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $otherClass->childClasses->removeElement($childClass);
 
         $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+
+        $expectedQueryCount = $queryCount + 1;
+
+        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            // the ORM emulates cascades in a JTI if the underlying platform does not support them
+            $expectedQueryCount = $queryCount + 2;
+        };
+
         $this->assertEquals(
-            $queryCount + 2,
+            $expectedQueryCount,
             $this->getCurrentQueryCount(),
             'One removal per table in the JTI has been executed'
         );
@@ -585,8 +593,15 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $otherClass->childClasses->removeElement($childClass);
 
+        $expectedQueryCount = $queryCount + 1;
+
+        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            // the ORM emulates cascades in a JTI if the underlying platform does not support them
+            $expectedQueryCount = $queryCount + 2;
+        };
+
         $this->assertEquals(
-            $queryCount + 2,
+            $expectedQueryCount,
             $this->getCurrentQueryCount(),
             'Removing a persisted entity should cause two queries to be executed.'
         );
