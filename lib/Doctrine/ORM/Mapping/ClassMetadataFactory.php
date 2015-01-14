@@ -576,12 +576,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
                 if ($this->targetPlatform->usesSequenceEmulatedIdentityColumns()) {
-                    $columnName       = $class->getSingleIdentifierColumnName();
-                    $quoted           = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-                    $sequencePrefix   = $class->getSequencePrefix($this->targetPlatform);
-
-                    $sequenceName = $this->targetPlatform->getIdentitySequenceName($sequencePrefix, $columnName);
-                    $definition   = array(
+                    $columnName     = $class->getSingleIdentifierColumnName();
+                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
+                    $sequencePrefix = $class->getSequencePrefix($this->targetPlatform);
+                    $sequenceName   = $this->targetPlatform->getIdentitySequenceName($sequencePrefix, $columnName);
+                    $definition     = array(
                         'sequenceName' => $this->targetPlatform->fixSchemaElementName($sequenceName)
                     );
 
