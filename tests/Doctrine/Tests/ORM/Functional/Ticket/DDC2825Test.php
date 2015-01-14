@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
+use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
@@ -85,50 +87,12 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function getTestedClasses()
     {
         return array(
-            array(DDC2825ClassWithExplicitlyDefinedSchema::CLASSNAME, 'myschema', 'mytable'),
-            array(DDC2825ClassWithImplicitlyDefinedSchema::CLASSNAME, 'myschema', 'mytable2'),
+            array(ExplicitSchemaAndTable::CLASSNAME, 'explicit_schema', 'explicit_table'),
+            array(SchemaAndTableInTableName::CLASSNAME, 'implicit_schema', 'implicit_table'),
             array(DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME, 'myschema', 'order'),
         );
     }
 }
-
-/**
- * @Entity
- * @Table(name="myschema.mytable")
- */
-class DDC2825ClassWithExplicitlyDefinedSchema
-{
-    const CLASSNAME = __CLASS__;
-
-    /**
-     * Test with a quoted column name to check that sequence names are
-     * correctly handled
-     *
-     * @Id @GeneratedValue
-     * @Column(name="`number`", type="integer")
-     *
-     * @var integer
-     */
-    public $id;
-}
-
-/**
- * @Entity
- * @Table(name="mytable2",schema="myschema")
- */
-class DDC2825ClassWithImplicitlyDefinedSchema
-{
-    const CLASSNAME = __CLASS__;
-
-    /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
-     *
-     * @var integer
-     */
-    public $id;
-}
-
 
 /**
  * @Entity
