@@ -38,9 +38,9 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testMappingsContainCorrectlyDefinedOrEmulatedSchema()
     {
-        $this->checkClassMetadata(DDC2825MySchemaMyTable::CLASSNAME, 'myschema', 'mytable');
-        $this->checkClassMetadata(DDC2825MySchemaMyTable2::CLASSNAME, 'myschema', 'mytable2');
-        $this->checkClassMetadata(DDC2825MySchemaOrder::CLASSNAME, 'myschema', 'order');
+        $this->checkClassMetadata(DDC2825ClassWithExplicitlyDefinedSchema::CLASSNAME, 'myschema', 'mytable');
+        $this->checkClassMetadata(DDC2825ClassWithImplicitlyDefinedSchema::CLASSNAME, 'myschema', 'mytable2');
+        $this->checkClassMetadata(DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME, 'myschema', 'order');
     }
 
     /**
@@ -48,13 +48,13 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testFetchingFromEntityWithExplicitlyDefinedSchemaInMappings()
     {
-        $this->_em->persist(new DDC2825MySchemaMyTable());
+        $this->_em->persist(new DDC2825ClassWithExplicitlyDefinedSchema());
         $this->_em->flush();
         $this->_em->clear();
 
         $this->assertCount(
             1,
-            $this->_em->createQuery('SELECT e FROM ' . DDC2825MySchemaMyTable::CLASSNAME . ' e')->getResult()
+            $this->_em->getRepository(DDC2825ClassWithExplicitlyDefinedSchema::CLASSNAME)->findAll()
         );
     }
 
@@ -63,13 +63,13 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testFetchingFromEntityWithImplicitlyDefinedSchemaInMappings()
     {
-        $this->_em->persist(new DDC2825MySchemaMyTable2());
+        $this->_em->persist(new DDC2825ClassWithImplicitlyDefinedSchema());
         $this->_em->flush();
         $this->_em->clear();
 
         $this->assertCount(
             1,
-            $this->_em->createQuery('SELECT e FROM ' . DDC2825MySchemaMyTable2::CLASSNAME . ' e')->getResult()
+            $this->_em->getRepository(DDC2825ClassWithImplicitlyDefinedSchema::CLASSNAME)->findAll()
         );
     }
 
@@ -79,13 +79,13 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testFetchingFromEntityWithImplicitlyDefinedSchemaAndQuotedTableNameInMappings()
     {
-        $this->_em->persist(new DDC2825MySchemaOrder());
+        $this->_em->persist(new DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName());
         $this->_em->flush();
         $this->_em->clear();
 
         $this->assertCount(
             1,
-            $this->_em->createQuery('SELECT e FROM ' . DDC2825MySchemaOrder::CLASSNAME . ' e')->getResult()
+            $this->_em->getRepository(DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME)->findAll()
         );
     }
 
@@ -128,7 +128,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @Entity
  * @Table(name="myschema.mytable")
  */
-class DDC2825MySchemaMyTable
+class DDC2825ClassWithExplicitlyDefinedSchema
 {
     const CLASSNAME = __CLASS__;
 
@@ -148,7 +148,7 @@ class DDC2825MySchemaMyTable
  * @Entity
  * @Table(name="mytable2",schema="myschema")
  */
-class DDC2825MySchemaMyTable2
+class DDC2825ClassWithImplicitlyDefinedSchema
 {
     const CLASSNAME = __CLASS__;
 
@@ -166,7 +166,7 @@ class DDC2825MySchemaMyTable2
  * @Entity
  * @Table(name="myschema.order")
  */
-class DDC2825MySchemaOrder
+class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
     const CLASSNAME = __CLASS__;
 
