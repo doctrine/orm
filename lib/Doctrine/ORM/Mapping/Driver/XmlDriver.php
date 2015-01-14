@@ -86,12 +86,12 @@ class XmlDriver extends FileDriver
 
             // Split schema and table name from a table name like "myschema.mytable"
             if (strpos($tableName, '.') !== false) {
-                list($schemaName, $tableName) = explode('.', $tableName);
+                list($metadata->table['schema'], $tableName) = explode('.', $tableName);
             }
         }
 
         if (isset($xmlRoot['schema'])) {
-            $schemaName = (string)$xmlRoot['schema'];
+            $metadata->table['schema'] = (string) $xmlRoot['schema'];
         }
 
         if (null !== $tableName) {
