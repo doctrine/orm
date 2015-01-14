@@ -74,6 +74,7 @@ of several common elements:
       type: entity
       repositoryClass: Doctrine\Tests\ORM\Mapping\UserRepository
       table: cms_users
+      schema: schema_name # The schema the table lies in, for platforms that support schemas (Optional, >= 2.5)
       readOnly: true
       indexes:
         name_index:
