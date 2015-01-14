@@ -54,6 +54,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFetchingFromEntityWithImplicitlyDefinedSchemaInMappings()
     {
         $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable');
+
         $this->checkClassMetadata($classMetadata, 'myschema', 'mytable');
 
         // Test with schema defined directly as a table annotation property
@@ -63,9 +64,14 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $entities = $this->_em->createQuery('SELECT mt2 FROM ' . __NAMESPACE__ . '\\DDC2825MySchemaMyTable2 mt2')->execute();
-        $this->assertEquals(count($entities), 1);
+        $this->assertCount(
+            1,
+            $this->_em->createQuery('SELECT mt2 FROM ' . DDC2825MySchemaMyTable2::CLASSNAME . ' mt2')->getResult()
+        );
+    }
 
+    public function testFetchingFromEntityWithImplicitlyDefinedSchemaAndQuotedTableNameInMappings()
+    {
         $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2825MySchemaMyTable2');
         $this->checkClassMetadata($classMetadata, 'myschema', 'mytable2');
 
