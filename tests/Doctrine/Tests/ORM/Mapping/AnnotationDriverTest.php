@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -229,6 +230,19 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertEquals('foo_overridden', $metadataWithOverride->fieldMappings['foo']['columnName']);
         $this->assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
         $this->assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
+    }
+
+    /**
+     * @group DDC-2825
+     * @group 881
+     */
+    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
+
+        $this->assertSame('myschema', $metadata->getSchemaName());
+        $this->assertSame('mytable', $metadata->getTableName());
     }
 }
 
