@@ -73,26 +73,14 @@ class YamlDriver extends FileDriver
         }
 
         // Evaluate root level properties
-        $table = array();
-
-        $tableName  = null;
-        $schemaName = null;
+        $primaryTable = array();
 
         if (isset($element['table'])) {
-            $tableName = $element['table'];
-
-            // Split schema and table name from a table name like "myschema.mytable"
-            if (strpos($tableName, '.') !== false) {
-                list($table['schema'], $tableName) = explode('.', $tableName, 2);
-            }
+            $primaryTable['name'] = $element['table'];
         }
 
         if (isset($element['schema'])) {
-            $table['schema'] = $element['schema'];
-        }
-
-        if (null !== $tableName) {
-            $table['name'] = $tableName;
+            $primaryTable['schema'] = $element['schema'];
         }
 
         // Evaluate second level cache
@@ -100,7 +88,7 @@ class YamlDriver extends FileDriver
             $metadata->enableCache($this->cacheToArray($element['cache']));
         }
 
-        $metadata->setPrimaryTable($table);
+        $metadata->setPrimaryTable($primaryTable);
 
         // Evaluate named queries
         if (isset($element['namedQueries'])) {

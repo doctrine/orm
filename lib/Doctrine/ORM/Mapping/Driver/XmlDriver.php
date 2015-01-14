@@ -76,29 +76,17 @@ class XmlDriver extends FileDriver
         }
 
         // Evaluate <entity...> attributes
-        $table = array();
-
-        $tableName  = null;
-        $schemaName = null;
+        $primaryTable = array();
 
         if (isset($xmlRoot['table'])) {
-            $tableName = (string)$xmlRoot['table'];
-
-            // Split schema and table name from a table name like "myschema.mytable"
-            if (strpos($tableName, '.') !== false) {
-                list($metadata->table['schema'], $tableName) = explode('.', $tableName);
-            }
+            $primaryTable['name'] = (string) $xmlRoot['table'];
         }
 
         if (isset($xmlRoot['schema'])) {
-            $metadata->table['schema'] = (string) $xmlRoot['schema'];
+            $primaryTable['schema'] = (string) $xmlRoot['schema'];
         }
 
-        if (null !== $tableName) {
-            $table['name'] = $tableName;
-        }
-
-        $metadata->setPrimaryTable($table);
+        $metadata->setPrimaryTable($primaryTable);
 
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {
