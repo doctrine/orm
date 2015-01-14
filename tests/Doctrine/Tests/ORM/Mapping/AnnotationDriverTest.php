@@ -232,32 +232,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
         $this->assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
     }
-
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
-    {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
-
-        $this->assertSame('myschema', $metadata->getSchemaName());
-        $this->assertSame('mytable', $metadata->getTableName());
-    }
-
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
-    {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::CLASSNAME);
-
-        $this->assertSame('myschema', $metadata->getSchemaName());
-        $this->assertSame('mytable', $metadata->getTableName());
-    }
 }
 
 /**

@@ -9,6 +9,8 @@ use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
+use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 
 abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -931,6 +933,32 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertArrayHasKey('region', $class->associationMappings['attractions']['cache']);
         $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['attractions']['cache']['usage']);
         $this->assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
+    }
+
+    /**
+     * @group DDC-2825
+     * @group 881
+     */
+    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
+
+        $this->assertSame('myschema', $metadata->getSchemaName());
+        $this->assertSame('mytable', $metadata->getTableName());
+    }
+
+    /**
+     * @group DDC-2825
+     * @group 881
+     */
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::CLASSNAME);
+
+        $this->assertSame('myschema', $metadata->getSchemaName());
+        $this->assertSame('mytable', $metadata->getTableName());
     }
 }
 
