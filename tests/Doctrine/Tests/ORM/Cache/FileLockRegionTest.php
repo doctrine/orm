@@ -27,17 +27,12 @@ class FileLockRegionTest extends AbstractRegionTest
      */
     protected $directory;
 
+    /**
+     * {@inheritDoc}
+     */
     public function tearDown()
     {
-        if ( ! is_dir($this->directory)) {
-            return;
-        }
-
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->directory), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
-            $file->isFile() 
-                ? @unlink($file->getRealPath())
-                : @rmdir($file->getRealPath());
-        }
+        $this->cleanTestDirectory($this->directory);
     }
 
     /**
@@ -246,5 +241,47 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->contains($key));
         $this->assertNotNull($this->region->get($key));
         $this->assertFileNotExists($file);
+    }
+
+    /**
+     * @group 1072
+     * @group DDC-3191
+     */
+    public function testHandlesScanErrorsGracefullyOnEvictAll()
+    {
+        $region              = $this->createRegion();
+        $reflectionDirectory = new \ReflectionProperty($region, 'directory');
+
+        $reflectionDirectory->setAccessible(true);
+        $reflectionDirectory->setValue($region, str_repeat('a', 10000));
+
+        set_error_handler(function () {}, E_WARNING);
+        $this->assertTrue($region->evictAll());
+        restore_error_handler();
+    }
+
+    /**
+     * @param string|null $path directory to clean
+     */
+    private function cleanTestDirectory($path)
+    {
+        $path = $path ?: $this->directory;
+
+        if ( ! is_dir($path)) {
+            return;
+        }
+
+        $directoryIterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($directoryIterator as $file) {
+            if ($file->isFile()) {
+                @unlink($file->getRealPath());
+            } else {
+                @rmdir($file->getRealPath());
+            }
+        }
     }
 }

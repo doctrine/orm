@@ -393,8 +393,10 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             return unlink($path);
         } else if (is_dir($path)) {
             $files = glob(rtrim($path,'/').'/*');
-            foreach ($files as $file){
-                $this->_deleteDirectory($file);
+            if (is_array($files)) {
+                foreach ($files as $file){
+                    $this->_deleteDirectory($file);
+                }
             }
             return rmdir($path);
         }

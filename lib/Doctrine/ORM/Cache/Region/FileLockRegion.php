@@ -201,8 +201,14 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function evictAll()
     {
-        foreach (glob(sprintf("%s/*.%s" , $this->directory, self::LOCK_EXTENSION)) as $filename) {
-            @unlink($filename);
+        // The check below is necessary because on some platforms glob returns false
+        // when nothing matched (even though no errors occurred)
+        $filenames = glob(sprintf("%s/*.%s" , $this->directory, self::LOCK_EXTENSION));
+
+        if ($filenames) {
+            foreach ($filenames as $filename) {
+                @unlink($filename);
+            }
         }
 
         return $this->region->evictAll();
