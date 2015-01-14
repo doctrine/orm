@@ -1,0 +1,7 @@
+Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName:
+  type: entity
+  table: myschema.mytable
+  id:
+    id:
+      generator:
+        strategy: AUTO
