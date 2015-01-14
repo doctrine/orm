@@ -558,19 +558,17 @@ class BasicEntityPersister implements EntityPersister
     public function delete($entity)
     {
         $class      = $this->class;
-        $em         = $this->em;
-
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
-        $types      = array_map(function ($identifier) use ($class, $em) {
+        $types      = array_map(function ($identifier) use ($class) {
 
             if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
 
-            $targetMapping = $em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+            $targetMapping = $this->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
 
             if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
                 return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];

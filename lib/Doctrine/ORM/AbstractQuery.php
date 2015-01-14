@@ -470,10 +470,8 @@ abstract class AbstractQuery
      */
     private function translateNamespaces(Query\ResultSetMapping $rsm)
     {
-        $entityManager = $this->_em;
-
-        $translate = function ($alias) use ($entityManager) {
-            return $entityManager->getClassMetadata($alias)->getName();
+        $translate = function ($alias) {
+            return $this->_em->getClassMetadata($alias)->getName();
         };
 
         $rsm->aliasMap = array_map($translate, $rsm->aliasMap);
@@ -1102,17 +1100,16 @@ abstract class AbstractQuery
      */
     protected function getHash()
     {
-        $self   = $this;
         $query  = $this->getSQL();
         $hints  = $this->getHints();
-        $params = array_map(function(Parameter $parameter) use ($self) {
+        $params = array_map(function(Parameter $parameter) {
             // Small optimization
             // Does not invoke processParameterValue for scalar values
             if (is_scalar($value = $parameter->getValue())) {
                 return $value;
             }
 
-            return $self->processParameterValue($value);
+            return $this->processParameterValue($value);
         }, $this->parameters->getValues());
 
         ksort($hints);
