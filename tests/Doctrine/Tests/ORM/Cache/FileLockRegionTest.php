@@ -246,23 +246,18 @@ class FileLockRegionTest extends AbstractRegionTest
     /**
      * @group 1072
      * @group DDC-3191
-     *
-     * Note that this test will only fail on some OSs. Attempts to write this test using `open_basedir` failed
-     * due to the inability to restore `open_basedir` on cleanup
      */
     public function testHandlesScanErrorsGracefullyOnEvictAll()
     {
-        $baseDir = sys_get_temp_dir() . '/doctrine_lock_'. uniqid();
-        $subDir  = $baseDir . '/foo/bar';
-        $region  = new FileLockRegion(new DefaultRegion('concurren_region_test', $this->cache), $subDir, 60);
+        $region              = $this->createRegion();
+        $reflectionDirectory = new \ReflectionProperty($region, 'directory');
 
-        $this->cleanTestDirectory($baseDir);
+        $reflectionDirectory->setAccessible(true);
+        $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
-        rmdir($baseDir);
-
-        $region->evictAll();
-
-        $this->assertFalse(is_dir($baseDir));
+        set_error_handler(function () {}, E_WARNING);
+        $this->assertTrue($region->evictAll());
+        restore_error_handler();
     }
 
     /**
