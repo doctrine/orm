@@ -2246,6 +2246,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function setPrimaryTable(array $table)
     {
         if (isset($table['name'])) {
+            // Split schema and table name from a table name like "myschema.mytable"
+            if (strpos($table['name'], '.') !== false) {
+                list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
+            }
+
             if ($table['name'][0] === '`') {
                 $table['name']          = trim($table['name'], '`');
                 $this->table['quoted']  = true;
