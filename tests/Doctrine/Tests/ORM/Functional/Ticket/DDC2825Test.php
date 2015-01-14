@@ -30,12 +30,32 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * @dataProvider getTestedClasses
      *
      * @param string $className
-     * @param string $schema
-     * @param string $table
+     * @param string $expectedSchemaName
+     * @param string $expectedTableName
      */
-    public function testClassSchemaMappingsValidity($className, $schema, $table)
+    public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName)
     {
-        $this->checkClassMetadata($className, $schema, $table);
+        $classMetadata   = $this->_em->getClassMetadata($className);
+        $platform        = $this->_em->getConnection()->getDatabasePlatform();
+        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
+
+        // Check if table name and schema properties are defined in the class metadata
+        $this->assertEquals($expectedTableName, $classMetadata->table['name']);
+        $this->assertEquals($expectedSchemaName, $classMetadata->table['schema']);
+
+        if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
+            $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
+        } else {
+            $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
+        }
+
+        $this->assertEquals($fullTableName, $quotedTableName);
+
+        // Checks sequence name validity
+        $this->assertEquals(
+            $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
+            $classMetadata->getSequenceName($platform)
+        );
     }
 
     /**
@@ -69,40 +89,6 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
             array(DDC2825ClassWithExplicitlyDefinedSchema::CLASSNAME, 'myschema', 'mytable'),
             array(DDC2825ClassWithImplicitlyDefinedSchema::CLASSNAME, 'myschema', 'mytable2'),
             array(DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME, 'myschema', 'order'),
-        );
-    }
-
-    /**
-     * Checks that class metadata is correctly stored when a database schema is used and
-     * checks that the table name is correctly converted whether the platform supports database
-     * schemas or not
-     *
-     * @param  string $className Class metadata
-     * @param  string $expectedSchemaName   Expected schema name
-     * @param  string $expectedTableName    Expected table name
-     */
-    private function checkClassMetadata($className, $expectedSchemaName, $expectedTableName)
-    {
-        $classMetadata   = $this->_em->getClassMetadata($className);
-        $platform        = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
-
-        // Check if table name and schema properties are defined in the class metadata
-        $this->assertEquals($expectedTableName, $classMetadata->table['name']);
-        $this->assertEquals($expectedSchemaName, $classMetadata->table['schema']);
-
-        if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
-            $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
-        } else {
-            $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
-        }
-
-        $this->assertEquals($fullTableName, $quotedTableName);
-
-        // Checks sequence name validity
-        $this->assertEquals(
-            $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
-            $classMetadata->getSequenceName($platform)
         );
     }
 }
