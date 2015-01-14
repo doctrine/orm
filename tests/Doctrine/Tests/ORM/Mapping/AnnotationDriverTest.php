@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
+use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -240,6 +241,19 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
+
+        $this->assertSame('myschema', $metadata->getSchemaName());
+        $this->assertSame('mytable', $metadata->getTableName());
+    }
+
+    /**
+     * @group DDC-2825
+     * @group 881
+     */
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::CLASSNAME);
 
         $this->assertSame('myschema', $metadata->getSchemaName());
         $this->assertSame('mytable', $metadata->getTableName());
