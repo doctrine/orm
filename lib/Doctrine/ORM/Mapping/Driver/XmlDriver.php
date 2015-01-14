@@ -76,12 +76,17 @@ class XmlDriver extends FileDriver
         }
 
         // Evaluate <entity...> attributes
-        $table = array();
+        $primaryTable = array();
+
         if (isset($xmlRoot['table'])) {
-            $table['name'] = (string)$xmlRoot['table'];
+            $primaryTable['name'] = (string) $xmlRoot['table'];
         }
 
-        $metadata->setPrimaryTable($table);
+        if (isset($xmlRoot['schema'])) {
+            $primaryTable['schema'] = (string) $xmlRoot['schema'];
+        }
+
+        $metadata->setPrimaryTable($primaryTable);
 
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {
@@ -149,11 +154,6 @@ class XmlDriver extends FileDriver
                 ));
             }
         }
-
-        /* not implemented specially anyway. use table = schema.table
-        if (isset($xmlRoot['schema'])) {
-            $metadata->table['schema'] = (string)$xmlRoot['schema'];
-        }*/
 
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string)$xmlRoot['inheritance-type'];

@@ -73,10 +73,14 @@ class YamlDriver extends FileDriver
         }
 
         // Evaluate root level properties
-        $table = array();
+        $primaryTable = array();
 
         if (isset($element['table'])) {
-            $table['name'] = $element['table'];
+            $primaryTable['name'] = $element['table'];
+        }
+
+        if (isset($element['schema'])) {
+            $primaryTable['schema'] = $element['schema'];
         }
 
         // Evaluate second level cache
@@ -84,7 +88,7 @@ class YamlDriver extends FileDriver
             $metadata->enableCache($this->cacheToArray($element['cache']));
         }
 
-        $metadata->setPrimaryTable($table);
+        $metadata->setPrimaryTable($primaryTable);
 
         // Evaluate named queries
         if (isset($element['namedQueries'])) {
@@ -162,11 +166,6 @@ class YamlDriver extends FileDriver
                 ));
             }
         }
-
-        /* not implemented specially anyway. use table = schema.table
-        if (isset($element['schema'])) {
-            $metadata->table['schema'] = $element['schema'];
-        }*/
 
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));

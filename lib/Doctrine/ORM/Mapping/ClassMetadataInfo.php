@@ -24,6 +24,7 @@ use Doctrine\Instantiator\Instantiator;
 use InvalidArgumentException;
 use RuntimeException;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
@@ -2015,6 +2016,16 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Gets primary table's schema name.
+     *
+     * @return string|null
+     */
+    public function getSchemaName()
+    {
+        return isset($this->table['schema']) ? $this->table['schema'] : null;
+    }
+
+    /**
      * Gets the table name to use for temporary identifier tables of this class.
      *
      * @return string
@@ -2235,12 +2246,21 @@ class ClassMetadataInfo implements ClassMetadata
     public function setPrimaryTable(array $table)
     {
         if (isset($table['name'])) {
+            // Split schema and table name from a table name like "myschema.mytable"
+            if (strpos($table['name'], '.') !== false) {
+                list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
+            }
+
             if ($table['name'][0] === '`') {
                 $table['name']          = trim($table['name'], '`');
                 $this->table['quoted']  = true;
             }
 
             $this->table['name'] = $table['name'];
+        }
+
+        if (isset($table['schema'])) {
+            $this->table['schema'] = $table['schema'];
         }
 
         if (isset($table['indexes'])) {
@@ -3239,5 +3259,48 @@ class ClassMetadataInfo implements ClassMetadata
 
             throw MappingException::duplicateFieldMapping($this->name, $fieldName);
         }
+    }
+
+    /**
+     * Gets the sequence name based on class metadata.
+     *
+     * @param AbstractPlatform $platform
+     * @return string
+     *
+     * @todo Sequence names should be computed in DBAL depending on the platform
+     */
+    public function getSequenceName(AbstractPlatform $platform)
+    {
+        $sequencePrefix = $this->getSequencePrefix($platform);
+
+        $columnName   = $this->getSingleIdentifierColumnName();
+        $sequenceName = $sequencePrefix . '_' . $columnName . '_seq';
+
+        return $sequenceName;
+    }
+
+    /**
+     * Gets the sequence name prefix based on class metadata.
+     *
+     * @param AbstractPlatform $platform
+     * @return string
+     *
+     * @todo Sequence names should be computed in DBAL depending on the platform
+     */
+    public function getSequencePrefix(AbstractPlatform $platform)
+    {
+        $tableName      = $this->getTableName();
+        $sequencePrefix = $tableName;
+
+        // Prepend the schema name to the table name if there is one
+        if ($schemaName = $this->getSchemaName()) {
+            $sequencePrefix = $schemaName . '.' . $tableName;
+
+            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
+                $sequencePrefix = $schemaName . '__' . $tableName;
+            }
+        }
+
+        return $sequencePrefix;
     }
 }

@@ -93,9 +93,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate Table annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Table'])) {
-            $tableAnnot = $classAnnotations['Doctrine\ORM\Mapping\Table'];
+            $tableAnnot   = $classAnnotations['Doctrine\ORM\Mapping\Table'];
             $primaryTable = array(
-                'name' => $tableAnnot->name,
+                'name'   => $tableAnnot->name,
                 'schema' => $tableAnnot->schema
             );
 

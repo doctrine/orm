@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
+use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {

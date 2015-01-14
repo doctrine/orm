@@ -1,0 +1,7 @@
+Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName:
+  type: entity
+  table: implicit_schema.implicit_table
+  id:
+    id:
+      generator:
+        strategy: AUTO
