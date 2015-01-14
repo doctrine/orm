@@ -101,13 +101,12 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function checkClassMetadata($className, $expectedSchemaName, $expectedTableName)
     {
         $classMetadata   = $this->_em->getClassMetadata($className);
-        $quoteStrategy   = $this->_em->getConfiguration()->getQuoteStrategy();
         $platform        = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName = $quoteStrategy->getTableName($classMetadata, $platform);
+        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
 
         // Check if table name and schema properties are defined in the class metadata
-        $this->assertEquals($classMetadata->table['name'], $expectedTableName);
-        $this->assertEquals($classMetadata->table['schema'], $expectedSchemaName);
+        $this->assertEquals($expectedTableName, $classMetadata->table['name']);
+        $this->assertEquals($expectedSchemaName, $classMetadata->table['schema']);
 
         if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
             $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
@@ -115,11 +114,13 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
         }
 
-        $this->assertEquals($quotedTableName, $fullTableName);
+        $this->assertEquals($fullTableName, $quotedTableName);
 
         // Checks sequence name validity
-        $expectedSchemaName = $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq';
-        $this->assertEquals($expectedSchemaName, $classMetadata->getSequenceName($platform));
+        $this->assertEquals(
+            $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
+            $classMetadata->getSequenceName($platform)
+        );
     }
 }
 
