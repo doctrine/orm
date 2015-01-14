@@ -83,12 +83,12 @@ class YamlDriver extends FileDriver
 
             // Split schema and table name from a table name like "myschema.mytable"
             if (strpos($tableName, '.') !== false) {
-                list($schemaName, $tableName) = explode('.', $tableName);
+                list($table['schema'], $tableName) = explode('.', $tableName, 2);
             }
         }
 
         if (isset($element['schema'])) {
-            $schemaName = $element['schema'];
+            $table['schema'] = $element['schema'];
         }
 
         if (null !== $tableName) {
