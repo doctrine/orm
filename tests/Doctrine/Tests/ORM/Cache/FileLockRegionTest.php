@@ -27,17 +27,12 @@ class FileLockRegionTest extends AbstractRegionTest
      */
     protected $directory;
 
+    /**
+     * {@inheritDoc}
+     */
     public function tearDown()
     {
-        if ( ! is_dir($this->directory)) {
-            return;
-        }
-
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->directory), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
-            $file->isFile() 
-                ? @unlink($file->getRealPath())
-                : @rmdir($file->getRealPath());
-        }
+        $this->cleanTestDirectory($this->directory);
     }
 
     /**
@@ -246,5 +241,52 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->contains($key));
         $this->assertNotNull($this->region->get($key));
         $this->assertFileNotExists($file);
+    }
+
+    /**
+     * @group 1072
+     * @group DDC-3191
+     *
+     * Note that this test will only fail on some OSs. Attempts to write this test using `open_basedir` failed
+     * due to the inability to restore `open_basedir` on cleanup
+     */
+    public function testHandlesScanErrorsGracefullyOnEvictAll()
+    {
+        $baseDir = sys_get_temp_dir() . '/doctrine_lock_'. uniqid();
+        $subDir  = $baseDir . '/foo/bar';
+        $region  = new FileLockRegion(new DefaultRegion('concurren_region_test', $this->cache), $subDir, 60);
+
+        $this->cleanTestDirectory($baseDir);
+
+        rmdir($baseDir);
+
+        $region->evictAll();
+
+        $this->assertFalse(is_dir($baseDir));
+    }
+
+    /**
+     * @param string|null $path directory to clean
+     */
+    private function cleanTestDirectory($path)
+    {
+        $path = $path ?: $this->directory;
+
+        if ( ! is_dir($path)) {
+            return;
+        }
+
+        $directoryIterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($directoryIterator as $file) {
+            if ($file->isFile()) {
+                @unlink($file->getRealPath());
+            } else {
+                @rmdir($file->getRealPath());
+            }
+        }
     }
 }
