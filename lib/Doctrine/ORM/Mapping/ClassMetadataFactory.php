@@ -25,6 +25,7 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Platforms;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
@@ -78,7 +79,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}.
+     * {@inheritDoc}
      */
     protected function initialize()
     {
@@ -86,6 +87,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
         $this->evm = $this->em->getEventManager();
         $this->initialized = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function onNotFoundMetadata($className)
+    {
+        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+            return;
+        }
+
+        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->em);
+
+        $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+
+        return $eventArgs->getFoundMetadata();
     }
 
     /**
