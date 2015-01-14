@@ -204,7 +204,8 @@ class FileLockRegion implements ConcurrentRegion
         // The check below is necessary because on some platforms glob returns false
         // when nothing matched (even though no errors occurred)
         $filenames = glob(sprintf("%s/*.%s" , $this->directory, self::LOCK_EXTENSION));
-        if (is_array($filenames)) {
+
+        if ($filenames) {
             foreach ($filenames as $filename) {
                 @unlink($filename);
             }
