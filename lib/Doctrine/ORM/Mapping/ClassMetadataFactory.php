@@ -304,21 +304,37 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @param ClassMetadata $metadata
      *
+     * @return void
+     *
      * @throws MappingException
      */
     private function populateDiscriminatorValue(ClassMetadata $metadata)
     {
-        if (! $metadata->discriminatorValue && $metadata->discriminatorMap) {
-            foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
-                if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
-                    $metadata->discriminatorValue = $discriminatorValue;
-
-                    break;
-                }
-            }
-
-            //throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
+        if ($metadata->discriminatorValue
+            || ! $metadata->discriminatorMap
+            || $metadata->isMappedSuperclass
+            || $metadata->reflClass->isAbstract()
+        ) {
+            return;
         }
+
+        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+            if ($discriminatorClass === $metadata->name) {
+                $metadata->discriminatorValue = $discriminatorValue;
+
+                return;
+            }
+        }
+
+        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+            if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
+                $metadata->discriminatorValue = $discriminatorValue;
+
+                return;
+            }
+        }
+
+        throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
     }
 
     /**
