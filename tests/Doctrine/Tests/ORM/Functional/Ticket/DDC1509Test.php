@@ -115,7 +115,7 @@ class DDC1509Picture
  * @Entity
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"file" = "DDC1509File"})
+ * @DiscriminatorMap({"abstractFile" = "DDC1509AbstractFile", "file" = "DDC1509File"})
  */
 class DDC1509AbstractFile
 {
