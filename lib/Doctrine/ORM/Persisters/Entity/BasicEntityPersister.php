@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
@@ -31,6 +31,8 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\SqlExpressionVisitor;
+use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
 use Doctrine\Common\Util\ClassUtils;

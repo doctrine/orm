@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;

@@ -1,12 +1,13 @@
 <?php
 
 namespace Doctrine\Tests\Mocks;
+
 use Doctrine\Common\Collections\Criteria;
 
 /**
  * EntityPersister implementation used for mocking during tests.
  */
-class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
+class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPersister
 {
     /**
      * @var array
