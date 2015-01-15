@@ -79,18 +79,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         /* @var $loaded string[] */
         $loaded = parent::loadMetadata($name);
 
-        foreach ($loaded as $className) {
-            /* @var $metadata ClassMetadata */
-            $metadata = $this->getMetadataFor($className);
-
-            if (! $metadata->discriminatorValue) {
-                foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
-                    if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
-                        $metadata->discriminatorValue = $discriminatorValue;
-                    }
-                }
-            }
-        }
+        array_map([$this, 'populateDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
 
         return $loaded;
     }
@@ -311,6 +300,29 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+    }
+
+    /**
+     * Populates the discriminator value of the given metadata (if not set) by iterating over discriminator
+     * map classes and looking for a fitting one.
+     *
+     * @param ClassMetadata $metadata
+     *
+     * @throws MappingException
+     */
+    private function populateDiscriminatorValue(ClassMetadata $metadata)
+    {
+        if (! $metadata->discriminatorValue && $metadata->discriminatorMap) {
+            foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+                if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
+                    $metadata->discriminatorValue = $discriminatorValue;
+
+                    break;
+                }
+            }
+
+            //throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
+        }
     }
 
     /**
