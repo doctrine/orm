@@ -1,14 +1,14 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Cache\Persister;
+namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Persisters\CollectionPersister;
-use Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
 
 /**
  * @group DDC-2183
@@ -132,7 +132,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -163,7 +163,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -194,7 +194,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -225,7 +225,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -255,7 +255,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -280,7 +280,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id'=>1));
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
 
         $property->setAccessible(true);
 

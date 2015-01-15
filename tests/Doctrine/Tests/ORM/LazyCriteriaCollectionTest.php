@@ -16,7 +16,7 @@ use PHPUnit_Framework_TestCase;
 class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Doctrine\ORM\Persisters\EntityPersister|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister|\PHPUnit_Framework_MockObject_MockObject
      */
     private $persister;
 
@@ -35,7 +35,7 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->persister              = $this->getMock('Doctrine\ORM\Persisters\EntityPersister');
+        $this->persister              = $this->getMock('Doctrine\ORM\Persisters\Entity\EntityPersister');
         $this->criteria               = new Criteria();
         $this->lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
     }

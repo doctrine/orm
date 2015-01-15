@@ -18,24 +18,27 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\Common\Util\ClassUtils;
 
 /**
- * Specific read-only region entity persister
- *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
  */
-class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersister
+class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
 {
-    /**
+     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update(PersistentCollection $collection)
     {
-        throw CacheException::updateReadOnlyEntity(ClassUtils::getClass($entity));
+        if ($collection->isDirty() && count($collection->getSnapshot()) > 0) {
+            throw CacheException::updateReadOnlyCollection(ClassUtils::getClass($collection->getOwner()), $this->association['fieldName']);
+        }
+
+        parent::update($collection);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Cache\Persister;
+namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
 use Doctrine\Tests\OrmTestCase;
 
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Persisters\CollectionPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,7 +22,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     protected $region;
 
     /**
-     * @var \Doctrine\ORM\Persisters\CollectionPersister
+     * @var \Doctrine\ORM\Persisters\Collection\CollectionPersister
      */
     protected $collectionPersister;
 
@@ -60,12 +60,12 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     );
 
     /**
-     * @param \Doctrine\ORM\EntityManager                   $em
-     * @param \Doctrine\ORM\Persisters\CollectionPersister  $persister
-     * @param \Doctrine\ORM\Cache\Region                    $region
-     * @param array                                         $mapping
+     * @param \Doctrine\ORM\EntityManager                             $em
+     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister
+     * @param \Doctrine\ORM\Cache\Region                              $region
+     * @param array                                                   $mapping
      *
-     * @return Doctrine\ORM\Cache\Persister\AbstractCollectionPersister
+     * @return Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister
      */
     abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping);
 
@@ -77,7 +77,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em                   = $this->_getTestEntityManager();
         $this->region               = $this->createRegion();
-        $this->collectionPersister  = $this->getMock('Doctrine\ORM\Persisters\CollectionPersister', $this->collectionPersisterMockMethods);
+        $this->collectionPersister  = $this->getMock('Doctrine\ORM\Persisters\Collection\CollectionPersister', $this->collectionPersisterMockMethods);
     }
 
     /**
@@ -115,9 +115,9 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf('Doctrine\ORM\Persisters\CollectionPersister', $persister);
+        $this->assertInstanceOf('Doctrine\ORM\Persisters\Collection\CollectionPersister', $persister);
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedPersister', $persister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedCollectionPersister', $persister);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $persister);
     }
 
     public function testInvokeDelete()

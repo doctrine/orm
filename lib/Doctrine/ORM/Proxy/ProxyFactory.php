@@ -25,7 +25,7 @@ use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyGenerator;
-use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
@@ -115,7 +115,7 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of initializing a proxy
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\EntityPersister           $entityPersister
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
      *
      * @return \Closure
      *
@@ -201,7 +201,7 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of finalizing state a cloned proxy
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\EntityPersister           $entityPersister
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
      *
      * @return \Closure
      *
