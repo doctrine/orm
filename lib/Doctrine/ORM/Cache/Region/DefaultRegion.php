@@ -59,8 +59,6 @@ class DefaultRegion implements Region
         $this->cache    = $cache;
         $this->name     = (string) $name;
         $this->lifetime = (integer) $lifetime;
-
-        $this->cache->setNamespace($this->name);
     }
 
     /**
