@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Tools\ResolveDiscriminatorMapListener;
+use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
 /**
  * @group DDC-3300
@@ -12,20 +13,27 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this
-            ->_em
-            ->getEventManager()
-            ->addEventListener(
-                Events::loadClassMetadata,
-                new ResolveDiscriminatorMapListener(array(
-                    'Doctrine\Tests\ORM\Functional\Ticket\DDC3300BossInterface'     => 'Doctrine\Tests\ORM\Functional\Ticket\DDC3300Boss',
-                    'Doctrine\Tests\ORM\Functional\Ticket\DDC3300EmployeeInterface' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC3300Employee',
-                ))
-            );
+        $resolveTargetEntity = new ResolveTargetEntityListener();
+
+        $resolveTargetEntity->addResolveTargetEntity(
+            DDC3300BossInterface::INTERFACENAME,
+            DDC3300Boss::CLASSNAME,
+            array()
+        );
+
+        $resolveTargetEntity->addResolveTargetEntity(
+            DDC3300EmployeeInterface::INTERFACENAME,
+            DDC3300Employee::CLASSNAME,
+            array()
+        );
+
+        $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
 
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3300Person'),
+            $this->_em->getClassMetadata(DDC3300Person::CLASSNAME),
         ));
+
+        //die(var_dump($this->_em->getClassMetadata(DDC3300Person::CLASSNAME)->discriminatorMap));
 
         $boss = new DDC3300Boss();
         $this->_em->persist($boss);
@@ -48,6 +56,8 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 abstract class DDC3300Person
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @Column(type="integer")
@@ -58,7 +68,7 @@ abstract class DDC3300Person
 
 interface DDC3300BossInterface
 {
-
+    const INTERFACENAME = __CLASS__;
 }
 
 /**
@@ -66,11 +76,12 @@ interface DDC3300BossInterface
  */
 class DDC3300Boss extends DDC3300Person implements DDC3300BossInterface
 {
+    const CLASSNAME = __CLASS__;
 }
 
 interface DDC3300EmployeeInterface
 {
-
+    const INTERFACENAME = __CLASS__;
 }
 
 /**
@@ -78,5 +89,6 @@ interface DDC3300EmployeeInterface
  */
 class DDC3300Employee extends DDC3300Person implements DDC3300EmployeeInterface
 {
+    const CLASSNAME = __CLASS__;
 }
  

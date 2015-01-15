@@ -88,7 +88,7 @@ class DDC2346Foo
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"baz" = "DDC2346Baz"})
+ * @DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
  */
 class DDC2346Bar
 {
