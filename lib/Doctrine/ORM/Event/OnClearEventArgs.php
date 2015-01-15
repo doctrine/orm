@@ -30,7 +30,7 @@ use Doctrine\ORM\EntityManager;
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class OnClearEventArgs extends \Doctrine\Common\EventArgs
+class OnClearEventArgs extends \Doctrine\Common\Persistence\Event\OnClearEventArgs
 {
     /**
      * @var \Doctrine\ORM\EntityManager
