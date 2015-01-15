@@ -218,7 +218,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function tearDown()
     {
-        $conn = static::$_sharedConn;
+        $conn     = static::$_sharedConn;
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
 
         $this->_sqlLoggerStack->enabled = false;
 
@@ -285,7 +286,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM navigation_countries');
         }
         if (isset($this->_usedModelSets['directorytree'])) {
-            $conn->executeUpdate('DELETE FROM ' . $this->_em->getConnection()->getDatabasePlatform()->quoteIdentifier("file"));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("file"));
             // MySQL doesn't know deferred deletions therefore only executing the second query gives errors.
             $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeUpdate('DELETE FROM Directory');
@@ -351,10 +352,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['quote'])) {
-            $conn->executeUpdate('DELETE FROM "quote-address"');
-            $conn->executeUpdate('DELETE FROM "quote-group"');
-            $conn->executeUpdate('DELETE FROM "quote-phone"');
-            $conn->executeUpdate('DELETE FROM "quote-user"');
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-address"));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-group"));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-phone"));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-user"));
         }
 
         $this->_em->clear();
