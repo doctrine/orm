@@ -219,7 +219,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function tearDown()
     {
         $conn     = static::$_sharedConn;
-        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        $platform = $conn->getDatabasePlatform();
 
         $this->_sqlLoggerStack->enabled = false;
 
