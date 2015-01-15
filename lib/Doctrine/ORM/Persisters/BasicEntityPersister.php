@@ -1619,14 +1619,29 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (isset($this->class->associationMappings[$field])) {
+            $association = $this->class->associationMappings[$field];
 
-            if ( ! $this->class->associationMappings[$field]['isOwningSide']) {
+            // Many-To-Many requires join table check for joinColumn
+            if ($association['type'] === ClassMetadata::MANY_TO_MANY) {
+                if ( ! $association['isOwningSide']) {
+                    $association = $assoc;
+                }
+
+                $joinTableName  = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
+                $joinColumn     = $assoc['isOwningSide']
+                    ? $association['joinTable']['joinColumns'][0]
+                    : $association['joinTable']['inverseJoinColumns'][0];
+
+                return $joinTableName . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+            }
+
+            if ( ! $association['isOwningSide']) {
                 throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
             }
 
-            $joinColumn = $this->class->associationMappings[$field]['joinColumns'][0];
-            $className  = (isset($this->class->associationMappings[$field]['inherited']))
-                ? $this->class->associationMappings[$field]['inherited']
+            $joinColumn = $association['joinColumns'][0];
+            $className  = (isset($association['inherited']))
+                ? $association['inherited']
                 : $this->class->name;
 
             return $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1763,6 +1778,28 @@ class BasicEntityPersister implements EntityPersister
         switch (true) {
             case (isset($this->class->fieldMappings[$field])):
                 $type = $this->class->fieldMappings[$field]['type'];
+                break;
+
+            case (isset($this->class->associationMappings[$field]) && $this->class->associationMappings[$field]['type'] === ClassMetadata::MANY_TO_MANY):
+                $assoc       = $this->class->associationMappings[$field];
+                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                if ( ! $assoc['isOwningSide']) {
+                    $assoc = $targetClass->associationMappings[$assoc['mappedBy']];
+                }
+
+                if (count($assoc['relationToTargetKeyColumns']) > 1) {
+                    throw Query\QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetColumn = $assoc['joinTable']['inverseJoinColumns'][0]['referencedColumnName'];
+                $type         = null;
+
+                if (isset($targetClass->fieldNames[$targetColumn])) {
+                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
+                }
+
                 break;
 
             case (isset($this->class->associationMappings[$field])):

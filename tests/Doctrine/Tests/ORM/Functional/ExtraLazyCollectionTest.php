@@ -20,6 +20,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $ddc2504OtherClassId;
     private $ddc2504ChildClassId;
 
+    private $username;
+    private $groupname;
     private $topic;
     private $phonenumber;
 
@@ -59,6 +61,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+
+        unset($class->associationMappings['users']['indexBy']);
     }
 
     /**
@@ -772,10 +776,45 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
+    public function testGetIndexByManyToManyInverseSide()
+    {
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+        /* @var $group CmsGroup */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $user = $group->users->get($this->username);
+
+        $this->assertFalse($group->users->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($user, $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId));
+    }
+
+    /**
+     * @group DDC-1398
+     */
+    public function testGetIndexByManyToManyOwningSide()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $group = $user->groups->get($this->groupname);
+
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertSame($group, $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId));
+    }
+
+    /**
+     * @group DDC-1398
+     */
     public function testGetNonExistentIndexBy()
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
         $this->assertNull($user->articles->get(-1));
+        $this->assertNull($user->groups->get(-1));
     }
 
     public function testContainsKeyIndexByOneToMany()
@@ -988,11 +1027,13 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->userId = $user1->getId();
         $this->userId2 = $user2->getId();
         $this->groupId = $group1->id;
-
-        $this->topic = $article1->topic;
-        $this->phonenumber = $phonenumber1->phonenumber;
         $this->ddc2504OtherClassId = $otherClass->id;
         $this->ddc2504ChildClassId = $childClass1->id;
+
+        $this->username = $user1->username;
+        $this->groupname = $group1->name;
+        $this->topic = $article1->topic;
+        $this->phonenumber = $phonenumber1->phonenumber;
 
     }
 }
