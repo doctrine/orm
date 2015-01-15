@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Tools\ResolveDiscriminatorMapListener;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
 /**
@@ -33,13 +31,8 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata(DDC3300Person::CLASSNAME),
         ));
 
-        //die(var_dump($this->_em->getClassMetadata(DDC3300Person::CLASSNAME)->discriminatorMap));
-
-        $boss = new DDC3300Boss();
-        $this->_em->persist($boss);
-
-        $employee = new DDC3300Employee();
-        $this->_em->persist($employee);
+        $this->_em->persist(new DDC3300Boss());
+        $this->_em->persist(new DDC3300Employee());
 
         $this->_em->flush();
     }
@@ -50,7 +43,7 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @InheritanceType("SINGLE_TABLE")
  * @DdiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *      "boss" = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300BossInterface",
+ *      "boss"     = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300BossInterface",
  *      "employee" = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300EmployeeInterface"
  * })
  */
@@ -58,11 +51,7 @@ abstract class DDC3300Person
 {
     const CLASSNAME = __CLASS__;
 
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
@@ -71,9 +60,7 @@ interface DDC3300BossInterface
     const INTERFACENAME = __CLASS__;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3300Boss extends DDC3300Person implements DDC3300BossInterface
 {
     const CLASSNAME = __CLASS__;
@@ -84,9 +71,7 @@ interface DDC3300EmployeeInterface
     const INTERFACENAME = __CLASS__;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3300Employee extends DDC3300Person implements DDC3300EmployeeInterface
 {
     const CLASSNAME = __CLASS__;
