@@ -552,6 +552,16 @@ class
      ',
                 array('Foo\Bar\Baz'),
             ),
+            array(
+                '
+<?php namespace Foo\Bar; class Baz {
+    public static function someMethod(){
+        return self::class;
+    }
+}
+',
+                array('Foo\Bar\Baz'),
+            ),
         );
     }
 
