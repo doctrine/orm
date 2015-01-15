@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\UnitOfWork;

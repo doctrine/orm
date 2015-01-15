@@ -4,8 +4,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;

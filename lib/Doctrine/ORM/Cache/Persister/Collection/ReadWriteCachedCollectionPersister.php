@@ -18,11 +18,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\Persisters\CollectionPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\EntityManagerInterface;
-
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\PersistentCollection;
@@ -34,10 +33,10 @@ use Doctrine\ORM\PersistentCollection;
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
     /**
-     * @param \Doctrine\ORM\Persisters\CollectionPersister $persister   The collection persister that will be cached.
-     * @param \Doctrine\ORM\Cache\ConcurrentRegion         $region      The collection region.
-     * @param \Doctrine\ORM\EntityManagerInterface         $em          The entity manager.
-     * @param array                                        $association The association mapping.
+     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister   The collection persister that will be cached.
+     * @param \Doctrine\ORM\Cache\ConcurrentRegion                    $region      The collection region.
+     * @param \Doctrine\ORM\EntityManagerInterface                    $em          The entity manager.
+     * @param array                                                   $association The association mapping.
      */
     public function __construct(CollectionPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, array $association)
     {

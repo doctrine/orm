@@ -41,11 +41,11 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
 use Doctrine\ORM\Cache\Persister\CachedPersister;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
-use Doctrine\ORM\Persisters\SingleTablePersister;
-use Doctrine\ORM\Persisters\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\OneToManyPersister;
-use Doctrine\ORM\Persisters\ManyToManyPersister;
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
+use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
+use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
@@ -3040,7 +3040,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string $entityName The name of the Entity.
      *
-     * @return \Doctrine\ORM\Persisters\EntityPersister
+     * @return \Doctrine\ORM\Persisters\Entity\EntityPersister
      */
     public function getEntityPersister($entityName)
     {
@@ -3084,7 +3084,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param array $association
      *
-     * @return \Doctrine\ORM\Persisters\CollectionPersister
+     * @return \Doctrine\ORM\Persisters\Collection\CollectionPersister
      */
     public function getCollectionPersister(array $association)
     {

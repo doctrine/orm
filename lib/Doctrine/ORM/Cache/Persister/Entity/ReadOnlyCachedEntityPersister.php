@@ -18,28 +18,24 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Cache\CacheException;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
- * Interface for second level cache entity persisters.
+ * Specific read-only region entity persister
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
  */
-interface CachedEntityPersister extends CachedPersister, EntityPersister
+class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersister
 {
     /**
-     * @return \Doctrine\ORM\Cache\EntityHydrator
+     * {@inheritdoc}
      */
-    public function getEntityHydrator();
-
-    /**
-     * @param  object                             $entity
-     * @param  \Doctrine\ORM\Cache\EntityCacheKey $key
-     * @return boolean
-     */
-    public function storeEntityCache($entity, EntityCacheKey $key);
+    public function update($entity)
+    {
+        throw CacheException::updateReadOnlyEntity(ClassUtils::getClass($entity));
+    }
 }

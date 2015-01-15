@@ -18,7 +18,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache\EntityCacheKey;

@@ -1,13 +1,13 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Cache\Persister;
+namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\Tests\OrmTestCase;
 
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Common\Collections\Criteria;
@@ -25,7 +25,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     protected $region;
 
     /**
-     * @var \Doctrine\ORM\Persisters\EntityPersister
+     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister
      */
     protected $entityPersister;
 
@@ -80,12 +80,12 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     );
 
     /**
-     * @param \Doctrine\ORM\EntityManager               $em
-     * @param \Doctrine\ORM\Persisters\EntityPersister  $persister
-     * @param \Doctrine\ORM\Cache\Region                $region
-     * @param \Doctrine\ORM\Mapping\ClassMetadata       $metadata
+     * @param \Doctrine\ORM\EntityManager                     $em
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister
+     * @param \Doctrine\ORM\Cache\Region                      $region
+     * @param \Doctrine\ORM\Mapping\ClassMetadata             $metadata
      *
-     * @return Doctrine\ORM\Cache\Persister\AbstractEntityPersister
+     * @return Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister
      */
     abstract protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
 
@@ -97,7 +97,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->em               = $this->_getTestEntityManager();
         $this->region           = $this->createRegion();
-        $this->entityPersister  = $this->getMock('Doctrine\ORM\Persisters\EntityPersister', $this->entityPersisterMockMethods);
+        $this->entityPersister  = $this->getMock('Doctrine\ORM\Persisters\Entity\EntityPersister', $this->entityPersisterMockMethods);
     }
 
     /**
@@ -120,9 +120,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf('Doctrine\ORM\Persisters\EntityPersister', $persister);
+        $this->assertInstanceOf('Doctrine\ORM\Persisters\Entity\EntityPersister', $persister);
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedPersister', $persister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedEntityPersister', $persister);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $persister);
     }
 
     public function testInvokeAddInsert()
