@@ -30,6 +30,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\ORMException;
+use Exception;
 use ReflectionException;
 
 /**
@@ -69,6 +70,30 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @var array
      */
     private $embeddablesActiveNesting = array();
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function loadMetadata($name)
+    {
+        /* @var $loaded string[] */
+        $loaded = parent::loadMetadata($name);
+
+        foreach ($loaded as $className) {
+            /* @var $metadata ClassMetadata */
+            $metadata = $this->getMetadataFor($className);
+
+            if (! $metadata->discriminatorValue) {
+                foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+                    if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
+                        $metadata->discriminatorValue = $discriminatorValue;
+                    }
+                }
+            }
+        }
+
+        return $loaded;
+    }
 
     /**
      * @param EntityManagerInterface $em
@@ -270,9 +295,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
-            } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
+            } else if (! $class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
                 // enforce discriminator map for all entities of an inheritance hierarchy, otherwise problems will occur.
-                throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
+                //throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
