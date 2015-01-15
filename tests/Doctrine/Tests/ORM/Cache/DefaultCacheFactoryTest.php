@@ -274,7 +274,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
             'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
         ));
         $barRegion = $factory->getRegion(array(
-            'region' => 'foo',
+            'region' => 'bar',
             'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
         ));
 
