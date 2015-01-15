@@ -907,23 +907,23 @@ public function __construct(<params>)
      */
     protected function getTraits(ClassMetadataInfo $metadata)
     {
-        if (PHP_VERSION_ID >= 50400 && ($metadata->reflClass !== null || class_exists($metadata->name))) {
-            $reflClass = $metadata->reflClass === null
-                ? new \ReflectionClass($metadata->name)
-                : $metadata->reflClass;
-
-            $traits = array();
-
-            while ($reflClass !== false) {
-                $traits = array_merge($traits, $reflClass->getTraits());
-
-                $reflClass = $reflClass->getParentClass();
-            }
-
-            return $traits;
+        if (! ($metadata->reflClass !== null || class_exists($metadata->name))) {
+            return [];
         }
 
-        return array();
+        $reflClass = $metadata->reflClass === null
+            ? new \ReflectionClass($metadata->name)
+            : $metadata->reflClass;
+
+        $traits = array();
+
+        while ($reflClass !== false) {
+            $traits = array_merge($traits, $reflClass->getTraits());
+
+            $reflClass = $reflClass->getParentClass();
+        }
+
+        return $traits;
     }
 
     /**

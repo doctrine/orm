@@ -123,9 +123,8 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
-        $identifierFlattener = $this->identifierFlattener;
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener) {
+            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
                 $initializer = $proxy->__getInitializer();
                 $cloner      = $proxy->__getCloner();
 
@@ -156,13 +155,13 @@ class ProxyFactory extends AbstractProxyFactory
 
                     throw EntityNotFoundException::fromClassNameAndIdentifier(
                         $classMetadata->getName(),
-                        $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                        $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                     );
                 }
             };
         }
 
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             $initializer = $proxy->__getInitializer();
             $cloner      = $proxy->__getCloner();
 
@@ -192,7 +191,7 @@ class ProxyFactory extends AbstractProxyFactory
 
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
-                    $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                 );
             }
         };
@@ -210,9 +209,7 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
-        $identifierFlattener = $this->identifierFlattener;
-
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             if ($proxy->__isInitialized()) {
                 return;
             }
@@ -227,7 +224,7 @@ class ProxyFactory extends AbstractProxyFactory
             if (null === $original) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
-                    $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                 );
             }
 

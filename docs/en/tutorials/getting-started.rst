@@ -17,7 +17,7 @@ This guide is designed for beginners that haven't worked with Doctrine ORM
 before. There are some prerequesites for the tutorial that have to be
 installed:
 
-- PHP 5.3.3 or above
+- PHP 5.4 or above
 - Composer Package Manager (`Install Composer
   <http://getcomposer.org/doc/00-intro.md>`_)
 
@@ -32,7 +32,7 @@ What is Doctrine?
 -----------------
 
 Doctrine 2 is an `object-relational mapper (ORM)
-<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.3.3+ that
+<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.4+ that
 provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
@@ -717,8 +717,8 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        protected $reportedBugs = null;
-        protected $assignedBugs = null;
+        private $reportedBugs = null;
+        private $assignedBugs = null;
 
         public function addReportedBug($bug)
         {
@@ -745,10 +745,7 @@ calling Doctrine for persistence would not update the collections
 representation in the database.
 
 Only using ``Bug#setEngineer()`` or ``Bug#setReporter()``
-correctly saves the relation information. We also set both
-collection instance variables to protected, however with PHP 5.3's
-new features Doctrine is still able to use Reflection to set and
-get values from protected and private properties.
+correctly saves the relation information.
 
 The ``Bug#reporter`` and ``Bug#engineer`` properties are
 Many-To-One relations, which point to a User. In a normalized
