@@ -1,11 +1,11 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Cache\Persister;
+namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Persisters\CollectionPersister;
-use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedCollectionPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister;
 
 /**
  * @group DDC-2183

@@ -22,9 +22,8 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-
-use Doctrine\ORM\Persisters\CollectionPersister;
-use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Contract for building second level cache regions components.
@@ -37,22 +36,22 @@ interface CacheFactory
     /**
      * Build an entity persister for the given entity metadata.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
-     * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister that will be cached.
-     * @param \Doctrine\ORM\Mapping\ClassMetadata      $metadata  The entity metadata.
+     * @param \Doctrine\ORM\EntityManagerInterface            $em        The entity manager.
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister The entity persister that will be cached.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata             $metadata  The entity metadata.
      *
-     * @return \Doctrine\ORM\Cache\Persister\CachedEntityPersister
+     * @return \Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata);
 
     /**
      * Build a collection persister for the given relation mapping.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface         $em        The entity manager.
-     * @param \Doctrine\ORM\Persisters\CollectionPersister $persister The collection persister that will be cached.
-     * @param array                                        $mapping   The association mapping.
+     * @param \Doctrine\ORM\EntityManagerInterface                    $em        The entity manager.
+     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister The collection persister that will be cached.
+     * @param array                                                   $mapping   The association mapping.
      *
-     * @return \Doctrine\ORM\Cache\Persister\CachedCollectionPersister
+     * @return \Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister
      */
     public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping);
 

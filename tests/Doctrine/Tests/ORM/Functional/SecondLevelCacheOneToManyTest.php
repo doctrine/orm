@@ -124,7 +124,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testLoadOnoToManyCollectionFromDatabaseWhenEntityMissing()
+    public function testLoadOneToManyCollectionFromDatabaseWhenEntityMissing()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -325,9 +325,9 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->cache->evictCollectionRegion(State::CLASSNAME, 'cities');
         $this->_em->clear();
 
-        $entitiId   = $this->states[0]->getId();
+        $entityId   = $this->states[0]->getId();
         $queryCount = $this->getCurrentQueryCount();
-        $entity     = $this->_em->find(State::CLASSNAME, $entitiId);
+        $entity     = $this->_em->find(State::CLASSNAME, $entityId);
 
         $this->assertEquals(2, $entity->getCities()->count());
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
@@ -335,7 +335,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity     = $this->_em->find(State::CLASSNAME, $entitiId);
+        $entity     = $this->_em->find(State::CLASSNAME, $entityId);
 
         $this->assertEquals(2, $entity->getCities()->count());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());

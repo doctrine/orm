@@ -17,11 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * Persister for one-to-many collections.

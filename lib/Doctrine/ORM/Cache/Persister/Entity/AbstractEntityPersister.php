@@ -18,7 +18,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
@@ -26,10 +26,11 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Persisters\EntityPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Criteria;
@@ -51,7 +52,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $metadataFactory;
 
     /**
-     * @var \Doctrine\ORM\Persisters\EntityPersister
+     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister
      */
     protected $persister;
 
@@ -108,10 +109,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $joinedAssociations;
 
     /**
-     * @param \Doctrine\ORM\Persisters\EntityPersister $persister The entity persister to cache.
-     * @param \Doctrine\ORM\Cache\Region               $region    The entity cache region.
-     * @param \Doctrine\ORM\EntityManagerInterface     $em        The entity manager.
-     * @param \Doctrine\ORM\Mapping\ClassMetadata      $class     The entity metadata.
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister The entity persister to cache.
+     * @param \Doctrine\ORM\Cache\Region                      $region    The entity cache region.
+     * @param \Doctrine\ORM\EntityManagerInterface            $em        The entity manager.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata             $class     The entity metadata.
      */
     public function __construct(EntityPersister $persister, Region $region, EntityManagerInterface $em, ClassMetadata $class)
     {

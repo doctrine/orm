@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
  * Visit Expressions and generate SQL WHERE conditions from them.
@@ -35,7 +36,7 @@ use Doctrine\Common\Collections\Expr\CompositeExpression;
 class SqlExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * @var \Doctrine\ORM\Persisters\BasicEntityPersister
+     * @var \Doctrine\ORM\Persisters\Entity\BasicEntityPersister
      */
     private $persister;
 
@@ -45,7 +46,8 @@ class SqlExpressionVisitor extends ExpressionVisitor
     private $classMetadata;
 
     /**
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister $persister
+     * @param \Doctrine\ORM\Persisters\Entity\BasicEntityPersister $persister
+     * @param \Doctrine\ORM\Mapping\ClassMetadata                  $classMetadata
      */
     public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)
     {

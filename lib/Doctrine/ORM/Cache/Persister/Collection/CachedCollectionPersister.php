@@ -18,10 +18,11 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Persisters\CollectionPersister;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\PersistentCollection;
 
 /**

@@ -18,27 +18,29 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache\Persister;
+namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Cache\CacheException;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
+ * Interface for second level cache entity persisters.
+ *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since 2.5
  */
-class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
+interface CachedEntityPersister extends CachedPersister, EntityPersister
 {
-     /**
-     * {@inheritdoc}
+    /**
+     * @return \Doctrine\ORM\Cache\EntityHydrator
      */
-    public function update(PersistentCollection $collection)
-    {
-        if ($collection->isDirty() && count($collection->getSnapshot()) > 0) {
-            throw CacheException::updateReadOnlyCollection(ClassUtils::getClass($collection->getOwner()), $this->association['fieldName']);
-        }
+    public function getEntityHydrator();
 
-        parent::update($collection);
-    }
+    /**
+     * @param  object                             $entity
+     * @param  \Doctrine\ORM\Cache\EntityCacheKey $key
+     * @return boolean
+     */
+    public function storeEntityCache($entity, EntityCacheKey $key);
 }

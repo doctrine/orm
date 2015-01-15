@@ -1,13 +1,13 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Cache\Persister;
+namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Persisters\EntityPersister;
-use Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
 
 /**
  * @group DDC-2183

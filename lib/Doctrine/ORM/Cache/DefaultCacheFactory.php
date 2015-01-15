@@ -29,14 +29,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
-use Doctrine\ORM\Persisters\EntityPersister;
-use Doctrine\ORM\Persisters\CollectionPersister;
-use Doctrine\ORM\Cache\Persister\ReadOnlyCachedEntityPersister;
-use Doctrine\ORM\Cache\Persister\ReadWriteCachedEntityPersister;
-use Doctrine\ORM\Cache\Persister\ReadOnlyCachedCollectionPersister;
-use Doctrine\ORM\Cache\Persister\ReadWriteCachedCollectionPersister;
-use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedEntityPersister;
-use Doctrine\ORM\Cache\Persister\NonStrictReadWriteCachedCollectionPersister;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
+use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
+use Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister;
+use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
+use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
+use Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister;
 
 /**
  * @since   2.5
