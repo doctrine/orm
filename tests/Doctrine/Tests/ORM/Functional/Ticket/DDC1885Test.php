@@ -164,7 +164,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('FabioBatSilva', $user->name);
         $this->assertEquals($u1Id, $user->id);
 
-        $this->assertCount(0, $user->extraLazyGroups);
+        $this->assertCount(2, $user->groups);
         $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
         $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
     }

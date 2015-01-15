@@ -19,8 +19,10 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\Models\Quote\Group;
+use Doctrine\Tests\Models\Quote\User as QuoteUser;
 use Doctrine\Tests\Models\Tweet\Tweet;
-use Doctrine\Tests\Models\Tweet\User;
+use Doctrine\Tests\Models\Tweet\User as TweetUser;
 
 /**
  * @author Michaël Gallego <mic.gallego@gmail.com>
@@ -30,6 +32,7 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
     protected function setUp()
     {
         $this->useModelSet('tweet');
+        $this->useModelSet('quote');
         parent::setUp();
     }
 
@@ -41,9 +44,9 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
         parent::tearDown();
     }
 
-    public function loadFixture()
+    public function loadTweetFixture()
     {
-        $author = new User();
+        $author = new TweetUser();
         $author->name = 'ngal';
         $this->_em->persist($author);
 
@@ -64,9 +67,27 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
         $this->_em->clear();
     }
 
+    public function loadQuoteFixture()
+    {
+        $user = new QuoteUser();
+        $user->name = 'mgal';
+        $this->_em->persist($user);
+
+        $quote1 = new Group('quote1');
+        $user->groups->add($quote1);
+
+        $quote2 = new Group('quote2');
+        $user->groups->add($quote2);
+
+        $this->_em->flush();
+
+        $this->_em->clear();
+    }
+
     public function testCanCountWithoutLoadingPersistentCollection()
     {
-        $this->loadFixture();
+        $this->loadTweetFixture();
+
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\Tweet\User');
 
         $user   = $repository->findOneBy(array('name' => 'ngal'));
@@ -87,4 +108,28 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
         $this->assertCount(1, $tweets);
         $this->assertFalse($tweets->isInitialized());
     }
+
+    /*public function testCanCountWithoutLoadingManyToManyPersistentCollection()
+    {
+        $this->loadQuoteFixture();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Quote\User');
+
+        $user   = $repository->findOneBy(array('name' => 'mgal'));
+        $groups = $user->groups->matching(new Criteria());
+
+        $this->assertInstanceOf('Doctrine\ORM\LazyManyToManyCriteriaCollection', $groups);
+        $this->assertFalse($groups->isInitialized());
+        $this->assertCount(2, $groups);
+        $this->assertFalse($groups->isInitialized());
+
+        // Make sure it works with constraints
+        $criteria = new Criteria(Criteria::expr()->eq('name', 'quote1'));
+        $groups   = $user->groups->matching($criteria);
+
+        $this->assertInstanceOf('Doctrine\ORM\LazyManyToManyCriteriaCollection', $groups);
+        $this->assertFalse($groups->isInitialized());
+        $this->assertCount(1, $groups);
+        $this->assertFalse($groups->isInitialized());
+    }*/
 }

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Base class for all collection persisters.
@@ -70,5 +71,29 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $this->conn             = $em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+    }
+
+    /**
+     * Check if entity is in a valid state for operations.
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    protected function isValidEntityState($entity)
+    {
+        $entityState = $this->uow->getEntityState($entity, UnitOfWork::STATE_NEW);
+
+        if ($entityState === UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        // If Entity is scheduled for inclusion, it is not in this collection.
+        // We can assure that because it would have return true before on array check
+        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($entity)) {
+            return false;
+        }
+
+        return true;
     }
 }

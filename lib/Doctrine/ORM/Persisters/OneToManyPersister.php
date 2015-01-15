@@ -36,7 +36,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function delete(PersistentCollection $coll)
+    public function delete(PersistentCollection $collection)
     {
         // This can never happen. One to many can only be inverse side.
         // For owning side one to many, it is required to have a join table,
@@ -47,7 +47,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function update(PersistentCollection $coll)
+    public function update(PersistentCollection $collection)
     {
         // This can never happen. One to many can only be inverse side.
         // For owning side one to many, it is required to have a join table,
@@ -58,9 +58,9 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function get(PersistentCollection $coll, $index)
+    public function get(PersistentCollection $collection, $index)
     {
-        $mapping = $coll->getMapping();
+        $mapping = $collection->getMapping();
 
         if ( ! isset($mapping['indexBy'])) {
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
@@ -68,21 +68,21 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
-        return $persister->load(array($mapping['mappedBy'] => $coll->getOwner(), $mapping['indexBy'] => $index), null, $mapping, array(), null, 1);
+        return $persister->load(array($mapping['mappedBy'] => $collection->getOwner(), $mapping['indexBy'] => $index), null, $mapping, array(), null, 1);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function count(PersistentCollection $coll)
+    public function count(PersistentCollection $collection)
     {
-        $mapping   = $coll->getMapping();
+        $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $coll->getOwner()));
+        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
 
         return $persister->count($criteria);
     }
@@ -90,20 +90,20 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function slice(PersistentCollection $coll, $offset, $length = null)
+    public function slice(PersistentCollection $collection, $offset, $length = null)
     {
-        $mapping   = $coll->getMapping();
+        $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
-        return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+        return $persister->getOneToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function containsKey(PersistentCollection $coll, $key)
+    public function containsKey(PersistentCollection $collection, $key)
     {
-        $mapping = $coll->getMapping();
+        $mapping = $collection->getMapping();
 
         if ( ! isset($mapping['indexBy'])) {
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
@@ -116,7 +116,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 'mappedBy' field.
         $criteria = new Criteria();
 
-        $criteria->andWhere(Criteria::expr()->eq($mapping['mappedBy'], $coll->getOwner()));
+        $criteria->andWhere(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
         $criteria->andWhere(Criteria::expr()->eq($mapping['indexBy'], $key));
 
         return (bool) $persister->count($criteria);
@@ -125,19 +125,19 @@ class OneToManyPersister extends AbstractCollectionPersister
      /**
      * {@inheritdoc}
      */
-    public function contains(PersistentCollection $coll, $element)
+    public function contains(PersistentCollection $collection, $element)
     {
         if ( ! $this->isValidEntityState($element)) {
             return false;
         }
 
-        $mapping   = $coll->getMapping();
+        $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $coll->getOwner()));
+        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
 
         return $persister->exists($element, $criteria);
     }
@@ -145,13 +145,13 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function removeElement(PersistentCollection $coll, $element)
+    public function removeElement(PersistentCollection $collection, $element)
     {
         if ( ! $this->isValidEntityState($element)) {
             return false;
         }
 
-        $mapping   = $coll->getMapping();
+        $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->delete($element);
@@ -163,29 +163,5 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
-    }
-
-    /**
-     * Check if entity is in a valid state for operations.
-     *
-     * @param object $entity
-     *
-     * @return bool
-     */
-    private function isValidEntityState($entity)
-    {
-        $entityState = $this->uow->getEntityState($entity, UnitOfWork::STATE_NEW);
-
-        if ($entityState === UnitOfWork::STATE_NEW) {
-            return false;
-        }
-
-        // If Entity is scheduled for inclusion, it is not in this collection.
-        // We can assure that because it would have return true before on array check
-        if ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($entity)) {
-            return false;
-        }
-
-        return true;
     }
 }
