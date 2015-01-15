@@ -257,11 +257,28 @@ class DefaultCacheFactoryTest extends OrmTestCase
      */
     public function testInvalidFileLockRegionDirectoryException()
     {
-        $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
         $factory->getRegion(array(
             'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
             'region'  => 'foo'
         ));
+    }
+
+    public function testBuildsNewNamespacedCacheInstancePerRegionInstance()
+    {
+        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+
+        $fooRegion = $factory->getRegion(array(
+            'region' => 'foo',
+            'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+        ));
+        $barRegion = $factory->getRegion(array(
+            'region' => 'bar',
+            'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+        ));
+
+        $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
+        $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 }

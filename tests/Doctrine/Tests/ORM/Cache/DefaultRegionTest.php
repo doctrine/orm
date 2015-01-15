@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
@@ -46,5 +47,17 @@ class DefaultRegionTest extends AbstractRegionTest
 
         $this->assertFalse($region1->contains($key));
         $this->assertTrue($region2->contains($key));
+    }
+
+    public function testDoesNotModifyCacheNamespace()
+    {
+        $cache = new ArrayCache();
+
+        $cache->setNamespace('foo');
+
+        new DefaultRegion('bar', $cache);
+        new DefaultRegion('baz', $cache);
+
+        $this->assertSame('foo', $cache->getNamespace());
     }
 }
