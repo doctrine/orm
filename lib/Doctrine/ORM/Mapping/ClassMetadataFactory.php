@@ -170,7 +170,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     continue;
                 }
 
-                if (!isset($embeddableClass['class'])) {
+                if (! (isset($embeddableClass['class']) && $embeddableClass['class'])) {
                     throw MappingException::missingEmbeddedClass($property);
                 }
 

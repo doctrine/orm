@@ -29,7 +29,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1 = $this->_createValidClassMetadata();
 
         // SUT
-        $cmf = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $cmf = new ClassMetadataFactory();
         $cmf->setEntityManager($entityManager);
         $cmf->setMetadataFor($cm1->name, $cm1);
 
@@ -375,10 +375,35 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
         $this->assertAttributeSame($entityManager, 'em', $classMetadataFactory);
     }
+
+    /**
+     * @group DDC-3305
+     */
+    public function testRejectsEmbeddableWithoutValidClassName()
+    {
+        $metadata = $this->_createValidClassMetadata();
+
+        $metadata->mapEmbedded(array(
+            'fieldName'    => 'embedded',
+            'class'        => '',
+            'columnPrefix' => false,
+        ));
+
+        $cmf = $this->_createTestFactory();
+
+        $cmf->setMetadataForClass($metadata->name, $metadata);
+
+        $this->setExpectedException(
+            'Doctrine\ORM\Mapping\MappingException',
+            'The embed mapping \'embedded\' misses the \'class\' attribute.'
+        );
+
+        $cmf->getMetadataFor($metadata->name);
+    }
 }
 
 /* Test subject class with overridden factory method for mocking purposes */
-class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadataFactory
+class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
     private $mockMetadata = array();
     private $requestedClasses = array();
@@ -388,7 +413,7 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadat
     {
         $this->requestedClasses[] = $className;
         if ( ! isset($this->mockMetadata[$className])) {
-            throw new InvalidArgumentException("No mock metadata found for class $className.");
+            throw new \InvalidArgumentException("No mock metadata found for class $className.");
         }
         return $this->mockMetadata[$className];
     }
@@ -410,6 +435,7 @@ class TestEntity1
     private $name;
     private $other;
     private $association;
+    private $embedded;
 }
 
 class CustomIdGenerator extends AbstractIdGenerator
