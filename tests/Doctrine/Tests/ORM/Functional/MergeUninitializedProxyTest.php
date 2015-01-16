@@ -22,16 +22,35 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         }
     }
 
+    public function testMergeDetachedUnInitializedProxy()
+    {
+        $detachedUninitialized = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+
+        $this->_em->clear();
+
+        $managed = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+
+        $this->assertSame($managed, $this->_em->merge($detachedUninitialized));
+
+        $this->assertFalse($managed->__isInitialized());
+        $this->assertFalse($detachedUninitialized->__isInitialized());
+    }
+
     public function testMergeUnserializedUnInitializedProxy()
     {
         $detachedUninitialized = $this->_em->getReference(MUPFile::CLASSNAME, 123);
 
         $this->_em->clear();
 
+        $managed = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+
         $this->assertSame(
-            $this->_em->getReference(MUPFile::CLASSNAME, 123),
-            $this->_em->merge(unserialize(serialize($detachedUninitialized)))
+            $managed,
+            $this->_em->merge(unserialize(serialize($this->_em->merge($detachedUninitialized))))
         );
+
+        $this->assertFalse($managed->__isInitialized());
+        $this->assertFalse($detachedUninitialized->__isInitialized());
     }
 
     public function testMergeUnserializedIntoEntity() {
