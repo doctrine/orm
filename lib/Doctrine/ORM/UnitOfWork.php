@@ -3319,10 +3319,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * @param object $entity
      * @param object $managedCopy
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
-     * @internal param ClassMetadata $class
      */
     private function mergeEntityStateIntoManagedCopy($entity, $managedCopy)
     {
@@ -3330,13 +3330,16 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($class->reflClass->getProperties() as $prop) {
             $name = $prop->name;
+
             $prop->setAccessible(true);
-            if (!isset($class->associationMappings[$name])) {
-                if (!$class->isIdentifier($name)) {
+
+            if ( ! isset($class->associationMappings[$name])) {
+                if ( ! $class->isIdentifier($name)) {
                     $prop->setValue($managedCopy, $prop->getValue($entity));
                 }
             } else {
                 $assoc2 = $class->associationMappings[$name];
+
                 if ($assoc2['type'] & ClassMetadata::TO_ONE) {
                     $other = $prop->getValue($entity);
                     if ($other === null) {
@@ -3346,10 +3349,11 @@ class UnitOfWork implements PropertyChangedListener
                             // do not merge fields marked lazy that have not been fetched.
                             return;
                         }
-                        if (!$assoc2['isCascadeMerge']) {
+
+                        if ( ! $assoc2['isCascadeMerge']) {
                             if ($this->getEntityState($other) === self::STATE_DETACHED) {
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
-                                $relatedId = $targetClass->getIdentifierValues($other);
+                                $relatedId   = $targetClass->getIdentifierValues($other);
 
                                 if ($targetClass->subClasses) {
                                     $other = $this->em->find($targetClass->name, $relatedId);
@@ -3367,14 +3371,16 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else {
                     $mergeCol = $prop->getValue($entity);
-                    if ($mergeCol instanceof PersistentCollection && !$mergeCol->isInitialized()) {
+
+                    if ($mergeCol instanceof PersistentCollection && ! $mergeCol->isInitialized()) {
                         // do not merge fields marked lazy that have not been fetched.
                         // keep the lazy persistent collection of the managed copy.
                         return;
                     }
 
                     $managedCol = $prop->getValue($managedCopy);
-                    if (!$managedCol) {
+
+                    if ( ! $managedCol) {
                         $managedCol = new PersistentCollection(
                             $this->em,
                             $this->em->getClassMetadata($assoc2['targetEntity']),
@@ -3382,19 +3388,21 @@ class UnitOfWork implements PropertyChangedListener
                         );
                         $managedCol->setOwner($managedCopy, $assoc2);
                         $prop->setValue($managedCopy, $managedCol);
-                        $oid = spl_object_hash($entity);
-                        $this->originalEntityData[$oid][$name] = $managedCol;
+
+                        $this->originalEntityData[spl_object_hash($entity)][$name] = $managedCol;
                     }
+
                     if ($assoc2['isCascadeMerge']) {
                         $managedCol->initialize();
 
                         // clear and set dirty a managed collection if its not also the same collection to merge from.
-                        if (!$managedCol->isEmpty() && $managedCol !== $mergeCol) {
+                        if ( ! $managedCol->isEmpty() && $managedCol !== $mergeCol) {
                             $managedCol->unwrap()->clear();
                             $managedCol->setDirty(true);
 
-                            if ($assoc2['isOwningSide'] && $assoc2['type'] == ClassMetadata::MANY_TO_MANY && $class->isChangeTrackingNotify(
-                                )
+                            if ($assoc2['isOwningSide']
+                                && $assoc2['type'] == ClassMetadata::MANY_TO_MANY
+                                && $class->isChangeTrackingNotify()
                             ) {
                                 $this->scheduleForDirtyCheck($managedCopy);
                             }
