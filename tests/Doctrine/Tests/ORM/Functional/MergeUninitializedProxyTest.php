@@ -68,23 +68,27 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $this->assertFalse($managed->__isInitialized());
     }
 
-    public function testMergingProxyFromDifferentEntityManagerDoesNotReplaceInitializer()
+    public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer()
     {
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
         $em2 = $this->createEntityManager($logger2 = new DebugStack());
 
         $file1 = new MUPFile();
+        $file2 = new MUPFile();
 
         $em1->persist($file1);
+        $em2->persist($file2);
         $em1->flush();
+        $em2->flush();
         $em1->clear();
+        $em2->clear();
 
         $queryCount1 = count($logger1->queries);
-        $queryCount2 = count($logger1->queries);
+        $queryCount2 = count($logger2->queries);
 
-        $proxy1 = $em1->getReference(MUPFile::CLASSNAME, $file1->fileId);
-        $proxy2 = $em2->getReference(MUPFile::CLASSNAME, $file1->fileId);
-        $merged2  = $em2->merge($proxy1);
+        $proxy1  = $em1->getReference(MUPFile::CLASSNAME, $file1->fileId);
+        $proxy2  = $em2->getReference(MUPFile::CLASSNAME, $file1->fileId);
+        $merged2 = $em2->merge($proxy1);
 
         $this->assertNotSame($proxy1, $merged2);
         $this->assertSame($proxy2, $merged2);
