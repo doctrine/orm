@@ -74,7 +74,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * {@inheritDoc}
      */
     protected function loadMetadata($name)
-``    {
+    {
         $loaded = parent::loadMetadata($name);
 
         array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
