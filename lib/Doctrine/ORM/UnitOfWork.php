@@ -41,11 +41,6 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
 use Doctrine\ORM\Cache\Persister\CachedPersister;
-use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
-use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
-use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
@@ -215,20 +210,6 @@ class UnitOfWork implements PropertyChangedListener
      * @var \Doctrine\ORM\Internal\CommitOrderCalculator
      */
     private $commitOrderCalculator;
-
-    /**
-     * The entity persister instances used to persist entity instances.
-     *
-     * @var array
-     */
-    private $persisters = array();
-
-    /**
-     * The collection persister instances used to persist collections.
-     *
-     * @var array
-     */
-    private $collectionPersisters = array();
 
     /**
      * The EventManager used for dispatching events.
@@ -496,6 +477,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeExtraUpdates()
     {
+        $persisterFactory = $this->em->getPersisterFactory();
+
         foreach ($this->extraUpdates as $oid => $update) {
             list ($entity, $changeset) = $update;
 
@@ -3036,83 +3019,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the EntityPersister for an Entity.
-     *
-     * @param string $entityName The name of the Entity.
-     *
-     * @return \Doctrine\ORM\Persisters\Entity\EntityPersister
-     */
-    public function getEntityPersister($entityName)
-    {
-        if (isset($this->persisters[$entityName])) {
-            return $this->persisters[$entityName];
-        }
-
-        $class = $this->em->getClassMetadata($entityName);
-
-        switch (true) {
-            case ($class->isInheritanceTypeNone()):
-                $persister = new BasicEntityPersister($this->em, $class);
-                break;
-
-            case ($class->isInheritanceTypeSingleTable()):
-                $persister = new SingleTablePersister($this->em, $class);
-                break;
-
-            case ($class->isInheritanceTypeJoined()):
-                $persister = new JoinedSubclassPersister($this->em, $class);
-                break;
-
-            default:
-                throw new \RuntimeException('No persister found for entity.');
-        }
-
-        if ($this->hasCache && $class->cache !== null) {
-            $persister = $this->em->getConfiguration()
-                ->getSecondLevelCacheConfiguration()
-                ->getCacheFactory()
-                ->buildCachedEntityPersister($this->em, $persister, $class);
-        }
-
-        $this->persisters[$entityName] = $persister;
-
-        return $this->persisters[$entityName];
-    }
-
-    /**
-     * Gets a collection persister for a collection-valued association.
-     *
-     * @param array $association
-     *
-     * @return \Doctrine\ORM\Persisters\Collection\CollectionPersister
-     */
-    public function getCollectionPersister(array $association)
-    {
-        $role = isset($association['cache'])
-            ? $association['sourceEntity'] . '::' . $association['fieldName']
-            : $association['type'];
-
-        if (isset($this->collectionPersisters[$role])) {
-            return $this->collectionPersisters[$role];
-        }
-
-        $persister = ClassMetadata::ONE_TO_MANY === $association['type']
-            ? new OneToManyPersister($this->em)
-            : new ManyToManyPersister($this->em);
-
-        if ($this->hasCache && isset($association['cache'])) {
-            $persister = $this->em->getConfiguration()
-                ->getSecondLevelCacheConfiguration()
-                ->getCacheFactory()
-                ->buildCachedCollectionPersister($this->em, $persister, $association);
-        }
-
-        $this->collectionPersisters[$role] = $persister;
-
-        return $this->collectionPersisters[$role];
-    }
-
-    /**
      * INTERNAL:
      * Registers an entity as managed.
      *
@@ -3303,6 +3209,41 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * This method called by hydrators, and indicates that hydrator totally completed current hydration cycle.
+     * Unit of work able to fire deferred events, related to loading events here.
+     *
+     * @internal should be called internally from object hydrators
+     */
+    public function hydrationComplete()
+    {
+        $this->hydrationCompleteHandler->hydrationComplete();
+    }
+
+    /**
+     * Gets the EntityPersister for an Entity.
+     *
+     * @param string $entityName The name of the Entity.
+     *
+     * @return \Doctrine\ORM\Persisters\Entity\EntityPersister
+     */
+    protected function getEntityPersister($entityName)
+    {
+        return $this->em->getPersisterFactory()->getOrCreateEntityPersister($entityName);
+    }
+
+    /**
+     * Gets a collection persister for a collection-valued association.
+     *
+     * @param array $association
+     *
+     * @return \Doctrine\ORM\Persisters\Collection\CollectionPersister
+     */
+    protected function getCollectionPersister(array $association)
+    {
+        return $this->em->getPersisterFactory()->getOrCreateCollectionPersister($association);
+    }
+
+    /**
      * Perform whatever processing is encapsulated here after completion of the transaction.
      */
     private function afterTransactionComplete()
@@ -3311,13 +3252,15 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        foreach ($this->persisters as $persister) {
+        $persisterFactory = $this->em->getPersisterFactory();
+
+        foreach ($persisterFactory->getEntityPersisters() as $persister) {
             if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionComplete();
             }
         }
 
-        foreach ($this->collectionPersisters as $persister) {
+        foreach ($persisterFactory->getCollectionPersisters() as $persister) {
             if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionComplete();
             }
@@ -3333,13 +3276,15 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        foreach ($this->persisters as $persister) {
+        $persisterFactory = $this->em->getPersisterFactory();
+
+        foreach ($persisterFactory->getEntityPersisters() as $persister) {
             if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionRolledBack();
             }
         }
 
-        foreach ($this->collectionPersisters as $persister) {
+        foreach ($persisterFactory->getCollectionPersisters() as $persister) {
             if ($persister instanceof CachedPersister) {
                 $persister->afterTransactionRolledBack();
             }
@@ -3391,16 +3336,5 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
-    }
-
-    /**
-     * This method called by hydrators, and indicates that hydrator totally completed current hydration cycle.
-     * Unit of work able to fire deferred events, related to loading events here.
-     *
-     * @internal should be called internally from object hydrators
-     */
-    public function hydrationComplete()
-    {
-        $this->hydrationCompleteHandler->hydrationComplete();
     }
 }

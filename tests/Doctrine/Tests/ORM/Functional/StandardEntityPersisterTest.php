@@ -36,7 +36,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
 
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $persister = $this->_em->getPersisterFactory()->getOrCreateEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         $newCart = new ECommerceCart();
         $this->_em->getUnitOfWork()->registerManaged($newCart, array('id' => $cardId), array());
         $persister->load(array('customer_id' => $customer->getId()), $newCart, $class->associationMappings['customer']);

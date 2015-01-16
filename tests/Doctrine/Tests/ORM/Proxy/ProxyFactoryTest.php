@@ -8,6 +8,7 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\PersisterFactoryMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
@@ -34,6 +35,11 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     private $emMock;
 
     /**
+     * @var PersisterFactoryMock
+     */
+    private $persisterFactoryMock;
+
+    /**
      * @var \Doctrine\ORM\Proxy\ProxyFactory
      */
     private $proxyFactory;
@@ -44,10 +50,16 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp()
     {
         parent::setUp();
+
         $this->connectionMock = new ConnectionMock(array(), new DriverMock());
         $this->emMock = EntityManagerMock::create($this->connectionMock);
+
         $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
+
+        $this->persisterFactoryMock = new PersisterFactoryMock($this->emMock);
+        $this->emMock->setPersisterFactory($this->persisterFactoryMock);
+
         $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);
     }
 
@@ -55,8 +67,9 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $identifier = array('id' => 42);
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
-        $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
+        $persister  = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
+
+        $this->persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
         $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
 
@@ -89,7 +102,8 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized()
     {
         $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
-        $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
+
+        $this->persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
         /* @var $proxy \Doctrine\Common\Proxy\Proxy */
         $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', array('id' => 42));
@@ -116,7 +130,8 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized()
     {
         $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
-        $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
+
+        $this->persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
         /* @var $proxy \Doctrine\Common\Proxy\Proxy */
         $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', array('id' => 42));

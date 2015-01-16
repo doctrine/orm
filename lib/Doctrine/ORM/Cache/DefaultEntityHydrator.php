@@ -136,7 +136,7 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
-            $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+            $assocPersister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($assoc['targetEntity']);
             $assocRegion    = $assocPersister->getCacheRegion();
             $assocEntry     = $assocRegion->get($assocKey);
 

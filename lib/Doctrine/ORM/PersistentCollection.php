@@ -436,7 +436,7 @@ final class PersistentCollection implements Collection, Selectable
                 return $this->coll->removeElement($element);
             }
 
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+            $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association);
 
             if ($persister->removeElement($this, $element)) {
                 return $element;
@@ -473,7 +473,7 @@ final class PersistentCollection implements Collection, Selectable
 
         if (! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+            $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association);
 
             return $this->coll->containsKey($key) || $persister->containsKey($this, $key);
         }
@@ -488,7 +488,7 @@ final class PersistentCollection implements Collection, Selectable
     public function contains($element)
     {
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+            $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association);
 
             return $this->coll->contains($element) || $persister->contains($this, $element);
         }
@@ -531,7 +531,7 @@ final class PersistentCollection implements Collection, Selectable
                 return $this->em->find($this->typeClass->name, $key);
             }
 
-            return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
+            return $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association)->get($this, $key);
         }
 
         $this->initialize();
@@ -565,7 +565,7 @@ final class PersistentCollection implements Collection, Selectable
     public function count()
     {
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+            $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association);
 
             return $persister->count($this) + ($this->isDirty ? $this->coll->count() : 0);
         }
@@ -810,7 +810,7 @@ final class PersistentCollection implements Collection, Selectable
     public function slice($offset, $length = null)
     {
         if ( ! $this->initialized && ! $this->isDirty && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+            $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association);
 
             return $persister->slice($this, $offset, $length);
         }
@@ -868,7 +868,7 @@ final class PersistentCollection implements Collection, Selectable
         }
 
         if ($this->association['type'] === ClassMetadata::MANY_TO_MANY) {
-            $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
+            $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($this->association);
 
             return new ArrayCollection($persister->loadCriteria($this, $criteria));
         }
@@ -880,7 +880,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $criteria->where($expression);
 
-        $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
+        $persister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($this->association['targetEntity']);
 
         return ($this->association['fetch'] === ClassMetadataInfo::FETCH_EXTRA_LAZY)
             ? new LazyCriteriaCollection($persister, $criteria)

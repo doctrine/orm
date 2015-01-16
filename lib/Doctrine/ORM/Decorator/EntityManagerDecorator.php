@@ -247,6 +247,14 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
+    public function getPersisterFactory()
+    {
+        return $this->wrapped->getPersisterFactory();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getFilters()
     {
         return $this->wrapped->getFilters();

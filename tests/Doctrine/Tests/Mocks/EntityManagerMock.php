@@ -39,6 +39,11 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     private $_proxyFactoryMock;
 
     /**
+     * @var \Doctrine\ORM\Persisters\PersisterFactory|null
+     */
+    private $_persisterFactoryMock;
+
+    /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
@@ -76,6 +81,24 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     public function getProxyFactory()
     {
         return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
+    }
+
+    /**
+     * @param \Doctrine\ORM\Persisters\PersisterFactory $persisterFactory
+     *
+     * @return void
+     */
+    public function setPersisterFactory($persisterFactory)
+    {
+        $this->_persisterFactoryMock = $persisterFactory;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Persisters\PersisterFactory
+     */
+    public function getPersisterFactory()
+    {
+        return isset($this->_persisterFactoryMock) ? $this->_persisterFactoryMock : parent::getPersisterFactory();
     }
 
     /**

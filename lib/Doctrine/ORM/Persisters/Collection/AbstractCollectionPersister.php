@@ -19,19 +19,20 @@
 
 namespace Doctrine\ORM\Persisters\Collection;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 
 /**
  * Base class for all collection persisters.
  *
  * @since 2.0
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
     /**
-     * @var EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $em;
 
@@ -62,9 +63,9 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em               = $em;
         $this->uow              = $em->getUnitOfWork();

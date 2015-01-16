@@ -100,7 +100,7 @@ class ProxyFactory extends AbstractProxyFactory
     protected function createProxyDefinition($className)
     {
         $classMetadata   = $this->em->getClassMetadata($className);
-        $entityPersister = $this->uow->getEntityPersister($className);
+        $entityPersister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($className);
 
         return new ProxyDefinition(
             ClassUtils::generateProxyClassName($className, $this->proxyNs),

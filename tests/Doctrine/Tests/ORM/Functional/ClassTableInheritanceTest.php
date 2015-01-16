@@ -460,12 +460,15 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setTitle('Awesome!');
         $manager->setDepartment('IT');
 
-        $this->assertFalse($this->_em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+        $persisterFactory = $this->_em->getPersisterFactory();
+        $persister        = $persisterFactory->getOrCreateEntityPersister(get_class($manager));
+
+        $this->assertFalse($persister->exists($manager));
 
         $this->_em->persist($manager);
         $this->_em->flush();
 
-        $this->assertTrue($this->_em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+        $this->assertTrue($persister->exists($manager));
     }
 
     /**

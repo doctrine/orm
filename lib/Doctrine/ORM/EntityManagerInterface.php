@@ -272,6 +272,13 @@ interface EntityManagerInterface extends ObjectManager
     public function getProxyFactory();
 
     /**
+     * Gets the persister factory used to manipulate collection and entity classes.
+     *
+     * @return \Doctrine\ORM\Persisters\PersisterFactory
+     */
+    public function getPersisterFactory();
+
+    /**
      * Gets the enabled filters.
      *
      * @return \Doctrine\ORM\Query\FilterCollection The active filter collection.

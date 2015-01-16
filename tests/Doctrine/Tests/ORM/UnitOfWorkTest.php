@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\PersisterFactoryMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Models\Forum\ForumUser;
@@ -15,6 +16,8 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
  */
 class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 {
+    // Provides a persister factory mock to the EntityManager
+    private $_persisterFactoryMock;
     // SUT
     private $_unitOfWork;
     // Provides a sequence mock to the UnitOfWork
@@ -24,11 +27,16 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     protected function setUp() {
         parent::setUp();
+
         $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connectionMock);
+
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        $this->_persisterFactoryMock = new PersisterFactoryMock($this->_emMock);
+        $this->_emMock->setPersisterFactory($this->_persisterFactoryMock);
     }
 
     protected function tearDown() {
@@ -49,8 +57,11 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+        $userMetadata  = $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser");
+        $userPersister = new EntityPersisterMock($this->_emMock, $userMetadata);
+
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
         $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
@@ -90,11 +101,11 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // Setup fake persister and id generator for identity generation
         //ForumUser
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
         $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
         // ForumAvatar
         $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumAvatar"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarPersister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarPersister);
         $avatarPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
@@ -121,9 +132,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testChangeTrackingNotify()
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
         $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedRelatedItem"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
 
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
@@ -165,7 +176,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
 
         $e = new VersionedAssignedIdentifierEntity();
         $e->id = 42;
@@ -176,7 +187,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testGetEntityStateWithAssignedIdentity()
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\CMS\CmsPhonenumber"));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
 
         $ph = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
         $ph->phonenumber = '12345';
@@ -204,7 +215,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
         $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+        $this->_persisterFactoryMock->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
 
         // Create a test user
         $user = new ForumUser();

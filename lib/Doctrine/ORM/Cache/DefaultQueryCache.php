@@ -38,7 +38,7 @@ use Doctrine\ORM\Query;
  */
 class DefaultQueryCache implements QueryCache
 {
-     /**
+    /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
@@ -107,7 +107,7 @@ class DefaultQueryCache implements QueryCache
         $result      = array();
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
-        $persister   = $this->uow->getEntityPersister($entityName);
+        $persister   = $this->em->getPersisterFactory()->getOrCreateEntityPersister($entityName);
         $region      = $persister->getCacheRegion();
         $regionName  = $region->getName();
 
@@ -138,7 +138,7 @@ class DefaultQueryCache implements QueryCache
 
             foreach ($entry['associations'] as $name => $assoc) {
 
-                $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
+                $assocPersister  = $this->em->getPersisterFactory()->getOrCreateEntityPersister($assoc['targetEntity']);
                 $assocRegion     = $assocPersister->getCacheRegion();
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
@@ -230,11 +230,12 @@ class DefaultQueryCache implements QueryCache
             return false;
         }
 
-        $data        = array();
-        $entityName  = reset($rsm->aliasMap);
-        $hasRelation = ( ! empty($rsm->relationMap));
-        $metadata    = $this->em->getClassMetadata($entityName);
-        $persister   = $this->uow->getEntityPersister($entityName);
+        $data             = array();
+        $entityName       = reset($rsm->aliasMap);
+        $hasRelation      = ( ! empty($rsm->relationMap));
+        $metadata         = $this->em->getClassMetadata($entityName);
+        $persisterFactory = $this->em->getPersisterFactory();
+        $persister        = $persisterFactory->getOrCreateEntityPersister($entityName);
 
         if ( ! ($persister instanceof CachedPersister)) {
             throw CacheException::nonCacheableEntity($entityName);
@@ -270,7 +271,7 @@ class DefaultQueryCache implements QueryCache
                     throw CacheException::nonCacheableEntityAssociation($entityName, $name);
                 }
 
-                $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
+                $assocPersister  = $persisterFactory->getOrCreateEntityPersister($assoc['targetEntity']);
                 $assocRegion     = $assocPersister->getCacheRegion();
                 $assocMetadata   = $assocPersister->getClassMetadata();
 
