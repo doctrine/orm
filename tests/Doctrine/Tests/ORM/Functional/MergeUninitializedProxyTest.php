@@ -28,6 +28,12 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         }
     }
 
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
     public function testMergeDetachedUnInitializedProxy()
     {
         $detachedUninitialized = $this->_em->getReference(MUPFile::CLASSNAME, 123);
@@ -42,6 +48,12 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $this->assertFalse($detachedUninitialized->__isInitialized());
     }
 
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
     public function testMergeUnserializedUnInitializedProxy()
     {
         $detachedUninitialized = $this->_em->getReference(MUPFile::CLASSNAME, 123);
@@ -59,6 +71,12 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $this->assertFalse($detachedUninitialized->__isInitialized());
     }
 
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
     public function testMergeManagedProxy()
     {
         $managed = $this->_em->getReference(MUPFile::CLASSNAME, 123);
@@ -68,6 +86,12 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $this->assertFalse($managed->__isInitialized());
     }
 
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
     public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer()
     {
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
@@ -123,6 +147,12 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         );
     }
 
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
     public function testMergingUnInitializedProxyDoesNotInitializeIt()
     {
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
