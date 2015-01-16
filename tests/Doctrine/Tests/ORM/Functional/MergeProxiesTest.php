@@ -14,7 +14,7 @@ use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
 
-class MergeUninitializedProxyTest extends OrmFunctionalTestCase
+class MergeProxiesTest extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
