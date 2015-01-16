@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\MultiGetCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region;
@@ -29,6 +30,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
+use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
@@ -178,6 +181,19 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping)
     {
+        if ($mapping['cache']) {
+            $targetPersister = $em->getUnitOfWork()->getEntityPersister($mapping['targetEntity']);
+
+            if ($targetPersister instanceof CachedPersister) {
+
+                $targetRegion = $targetPersister->getCacheRegion();
+
+                if ($targetRegion instanceof MultiGetRegion) {
+                    return new MultiGetCollectionHydrator($em);
+                }
+            }
+        }
+
         return new DefaultCollectionHydrator($em);
     }
 
@@ -202,7 +218,11 @@ class DefaultCacheFactory implements CacheFactory
 
         $cacheAdapter->setNamespace($cache['region']);
 
-        $region = new DefaultRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']));
+        if ($cacheAdapter instanceof MultiGetCache) {
+            $region = new DefaultMultiGetRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']));
+        } else {
+            $region = new DefaultRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']));
+        }
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 
