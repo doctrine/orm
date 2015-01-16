@@ -62,6 +62,27 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $this->assertFalse($managed->__isInitialized());
     }
 
+    public function testMergeInitializedProxy()
+    {
+        $file = new MUPFile();
+
+        $this->_em->persist($file);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $initialized = $this->_em->getReference(MUPFile::CLASSNAME, $file->fileId);
+
+        $initialized->__load();
+
+        $this->_em->clear();
+
+        $managed = $this->_em->getReference(MUPFile::CLASSNAME, $file->fileId);
+
+        $this->assertSame($managed, $this->_em->merge($initialized));
+
+        $this->assertTrue($managed->__isInitialized());
+    }
+
     public function testMergeUnserializedIntoEntity() {
 
         $file = new MUPFile;
@@ -212,18 +233,14 @@ class MUPPicture
 
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MUPFile
 {
     const CLASSNAME = __CLASS__;
 
-    /**
-     * @Column(name="file_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @Column(name="file_id", type="integer") @Id @GeneratedValue(strategy="AUTO") */
     public $fileId;
 
+    /** @Column(type="string", nullable=true) */
+    private $contents;
 }
