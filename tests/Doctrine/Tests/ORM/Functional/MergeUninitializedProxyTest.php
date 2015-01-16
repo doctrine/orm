@@ -62,55 +62,6 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $this->assertFalse($managed->__isInitialized());
     }
 
-    public function testMergeInitializedProxy()
-    {
-        $file = new MUPFile();
-
-        $this->_em->persist($file);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $initialized = $this->_em->getReference(MUPFile::CLASSNAME, $file->fileId);
-
-        $initialized->__load();
-
-        $this->_em->clear();
-
-        $managed = $this->_em->getReference(MUPFile::CLASSNAME, $file->fileId);
-
-        $this->assertSame($managed, $this->_em->merge($initialized));
-
-        $this->assertTrue($managed->__isInitialized());
-    }
-
-    public function testMergeUnserializedIntoEntity() {
-
-        $file = new MUPFile;
-
-        $picture = new MUPPicture;
-        $picture->file = $file;
-
-        $em = $this->_em;
-        $em->persist($picture);
-        $em->flush();
-        $em->clear();
-
-        $fileId = $file->fileId;
-        $pictureId = $picture->pictureId;
-
-        $picture = $em->find(__NAMESPACE__ . '\MUPPicture', $pictureId);
-        $serializedPicture = serialize($picture);
-
-        $em->clear();
-
-        $file = $em->find(__NAMESPACE__ . '\MUPFile', $fileId);
-        $picture = unserialize($serializedPicture);
-
-        $picture = $em->merge($picture);
-
-        $this->assertEquals($file, $picture->file, "Unserialized proxy was not merged into managed entity");
-    }
-
     public function testMergeDetachedIntoEntity() {
 
         $file = new MUPFile;
