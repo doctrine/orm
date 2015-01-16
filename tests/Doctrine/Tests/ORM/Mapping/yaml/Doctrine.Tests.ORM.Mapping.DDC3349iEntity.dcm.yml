@@ -1,0 +1,16 @@
+Doctrine\Tests\ORM\Mapping\DDC3349iEntity:
+  type: entity
+  id:
+    associationField:
+      associationKey: true
+  idOrderOverride: [dateField, associationField, unknownField]
+  fields:
+    dateField:
+      id: true
+      type: date
+    stringField:
+      id: true
+      type: string
+  manyToOne:
+    associationField:
+      targetEntity: Field2

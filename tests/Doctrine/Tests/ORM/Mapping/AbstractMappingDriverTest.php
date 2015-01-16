@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -148,7 +149,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             "Custom Generator Definition");
     }
 
-
     /**
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
@@ -237,6 +237,37 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
         return $class;
+    }
+
+    /**
+     * @group DDC-3349
+     */
+    public function testIdOrderOverride()
+    {
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC3349Entity');
+
+        $this->assertEquals(array('dateField', 'associationField', 'stringField'), $class->identifier);
+    }
+
+    /**
+     * @group DDC-3349
+     */
+    public function testIdOrderOverrideThrowsExceptionIfDivergent()
+    {
+        $driver = $this->_loadDriver();
+        if ($driver instanceof PHPDriver) {
+            if ($driver->getLocator()->getFileExtension() === '.php') {
+                $this->markTestSkipped('PHP Mappings Driver has no validation for identifier order override.');
+            }
+        }
+
+        $factory = $this->createClassMetadataFactory();
+
+        $this->setExpectedException(
+            'Doctrine\ORM\Mapping\MappingException',
+            'The fields of id order override for class \'Doctrine\Tests\ORM\Mapping\DDC3349iEntity\' are divergent from declared. The id fields are: dateField, stringField, associationField'
+        );
+        $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\DDC3349iEntity');
     }
 
     /**
@@ -1339,4 +1370,102 @@ class Comment
             'columnName' => 'content',
         ));
     }
+}
+
+/**
+ * @Entity
+ * @IdOrderOverride({"dateField", "associationField", "stringField"})
+ */
+class DDC3349Entity
+{
+    /**
+     * @Id
+     * @Column(type="date")
+     **/
+    public $dateField;
+
+    /**
+     * @Id
+     * @Column(type="string")
+     **/
+    public $stringField;
+
+    /**
+     * @Id
+     * @ManyToOne(targetEntity="Field2")
+     */
+    public $associationField;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+     {
+         $metadata->mapField(array(
+             'id'        => true,
+             'fieldName' => 'dateField',
+             'type'      => 'date'
+         ));
+
+         $metadata->mapField(array(
+             'id'        => true,
+             'fieldName' => 'stringField',
+             'type'      => 'string'
+         ));
+
+         $metadata->mapManyToOne(array(
+             'id'           => true,
+             'fieldName'    => 'associationField',
+             'targetEntity' => 'Field2',
+             'joinColumns'  => array()
+         ));
+
+         $metadata->identifier = array('dateField', 'associationField', 'stringField');
+     }
+}
+
+/**
+ * @Entity
+ * @IdOrderOverride({"dateField", "associationField", "unknownField"})
+ */
+class DDC3349iEntity
+{
+    /**
+     * @Id
+     * @Column(type="date")
+     **/
+    public $dateField;
+
+    /**
+     * @Id
+     * @Column(type="string")
+     **/
+    public $stringField;
+
+    /**
+     * @Id
+     * @ManyToOne(targetEntity="Field2")
+     */
+    public $associationField;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+     {
+         $metadata->mapField(array(
+             'id'        => true,
+             'fieldName' => 'dateField',
+             'type'      => 'date'
+         ));
+
+         $metadata->mapField(array(
+             'id'        => true,
+             'fieldName' => 'stringField',
+             'type'      => 'string'
+         ));
+
+         $metadata->mapManyToOne(array(
+             'id'           => true,
+             'fieldName'    => 'associationField',
+             'targetEntity' => 'Field2',
+             'joinColumns'  => array()
+         ));
+
+         $metadata->identifier = array('dateField', 'associationField', 'unknownField');
+     }
 }

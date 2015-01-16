@@ -455,6 +455,18 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
+        // Evaluate IdOrderOverride annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\IdOrderOverride'])) {
+            $idOrderOverrideAnnot = $classAnnotations['Doctrine\ORM\Mapping\IdOrderOverride'];
+
+            $diff = array_diff($idOrderOverrideAnnot->value, $metadata->identifier);
+            if (!empty($diff)) {
+                throw MappingException::invalidIdOrderOverride($className, $metadata->identifier);
+            }
+
+            $metadata->identifier = $idOrderOverrideAnnot->value;
+        }
+
         // Evaluate EntityListeners annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\EntityListeners'])) {
             $entityListenersAnnot = $classAnnotations['Doctrine\ORM\Mapping\EntityListeners'];

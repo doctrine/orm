@@ -623,6 +623,23 @@ class YamlDriver extends FileDriver
             }
         }
 
+        // Evaluate idOrderOverride
+        if (isset($element['idOrderOverride'])) {
+            if (is_string($element['idOrderOverride'])) {
+                $fields = explode(',', $element['idOrderOverride']);
+                $fields = array_map('trim', $fields);
+            } else {
+                $fields = $element['idOrderOverride'];
+            }
+
+            $diff = array_diff($fields, $metadata->identifier);
+            if (!empty($diff)) {
+                throw MappingException::invalidIdOrderOverride($className, $metadata->identifier);
+            }
+
+            $metadata->identifier = $fields;
+        }
+
         // Evaluate lifeCycleCallbacks
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {

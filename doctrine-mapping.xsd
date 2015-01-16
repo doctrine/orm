@@ -188,6 +188,7 @@
       <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="association-overrides" type="orm:association-overrides" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="attribute-overrides" type="orm:attribute-overrides" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="id-order-override" type="orm:id-order-override" minOccurs="0" maxOccurs="1" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
@@ -597,6 +598,17 @@
     <xs:attribute name="column-definition" type="xs:string" />
     <xs:attribute name="precision" type="xs:integer" use="optional" />
     <xs:attribute name="scale" type="xs:integer" use="optional" />
+    <xs:anyAttribute namespace="##other"/>
+  </xs:complexType>
+
+  <xs:complexType name="id-order-override">
+    <xs:sequence>
+      <xs:element name="id" type="orm:id-order-override-field" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="id-order-override-field">
+    <xs:attribute name="name" type="xs:string" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 

@@ -608,6 +608,21 @@ class XmlDriver extends FileDriver
             }
         }
 
+        // Evaluate id-order-override
+        if (isset($xmlRoot->{'id-order-override'})) {
+            $fields = array();
+            foreach ($xmlRoot->{'id-order-override'}->{'id'} as $idElement) {
+                $fields[] = (string) $idElement['name'];
+            }
+
+            $diff = array_diff($fields, $metadata->identifier);
+            if (!empty($diff)) {
+                throw MappingException::invalidIdOrderOverride($className, $metadata->identifier);
+            }
+
+            $metadata->identifier = $fields;
+        }
+
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
