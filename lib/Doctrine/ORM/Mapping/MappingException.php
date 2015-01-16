@@ -106,6 +106,16 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
+    public static function missingEmbeddedClass($fieldName)
+    {
+        return new self("The embed mapping '$fieldName' misses the 'class' attribute.");
+    }
+
+    /**
      * @param string $entityName
      * @param string $fileName
      *
