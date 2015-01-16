@@ -8,22 +8,23 @@ use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Tests\Models\Generic\DateTimeModel;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
 
-class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase {
-
+class MergeUninitializedProxyTest extends OrmFunctionalTestCase
+{
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\MUPFile'),
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\MUPPicture'),
-                ));
+            $this->_schemaTool->createSchema(array($this->_em->getClassMetadata(DateTimeModel::CLASSNAME)));
         } catch (ToolsException $ignored) {
         }
     }
@@ -36,11 +37,11 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
      */
     public function testMergeDetachedUnInitializedProxy()
     {
-        $detachedUninitialized = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+        $detachedUninitialized = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
 
         $this->_em->clear();
 
-        $managed = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
 
         $this->assertSame($managed, $this->_em->merge($detachedUninitialized));
 
@@ -56,11 +57,11 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
      */
     public function testMergeUnserializedUnInitializedProxy()
     {
-        $detachedUninitialized = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+        $detachedUninitialized = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
 
         $this->_em->clear();
 
-        $managed = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
 
         $this->assertSame(
             $managed,
@@ -79,7 +80,7 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
      */
     public function testMergeManagedProxy()
     {
-        $managed = $this->_em->getReference(MUPFile::CLASSNAME, 123);
+        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
 
         $this->assertSame($managed, $this->_em->merge($managed));
 
@@ -97,8 +98,8 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
         $em2 = $this->createEntityManager($logger2 = new DebugStack());
 
-        $file1 = new MUPFile();
-        $file2 = new MUPFile();
+        $file1 = new DateTimeModel();
+        $file2 = new DateTimeModel();
 
         $em1->persist($file1);
         $em2->persist($file2);
@@ -110,8 +111,8 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $queryCount1 = count($logger1->queries);
         $queryCount2 = count($logger2->queries);
 
-        $proxy1  = $em1->getReference(MUPFile::CLASSNAME, $file1->fileId);
-        $proxy2  = $em2->getReference(MUPFile::CLASSNAME, $file1->fileId);
+        $proxy1  = $em1->getReference(DateTimeModel::CLASSNAME, $file1->id);
+        $proxy2  = $em2->getReference(DateTimeModel::CLASSNAME, $file1->id);
         $merged2 = $em2->merge($proxy1);
 
         $this->assertNotSame($proxy1, $merged2);
@@ -158,8 +159,8 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
         $em2 = $this->createEntityManager($logger2 = new DebugStack());
 
-        $file1 = new MUPFile();
-        $file2 = new MUPFile();
+        $file1 = new DateTimeModel();
+        $file2 = new DateTimeModel();
 
         $em1->persist($file1);
         $em2->persist($file2);
@@ -171,7 +172,7 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         $queryCount1 = count($logger1->queries);
         $queryCount2 = count($logger1->queries);
 
-        $unManagedProxy = $em1->getReference(MUPFile::CLASSNAME, $file1->fileId);
+        $unManagedProxy = $em1->getReference(DateTimeModel::CLASSNAME, $file1->id);
         $mergedInstance = $em2->merge($unManagedProxy);
 
         $this->assertNotInstanceOf('Doctrine\Common\Proxy\Proxy', $mergedInstance);
@@ -212,7 +213,7 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
     {
         $config = new Configuration();
 
-        $config->setProxyDir(realpath(__DIR__ . '/../../Proxies/../..'));
+        $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
             array(realpath(__DIR__ . '/../../Models/Cache')),
@@ -227,42 +228,11 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
 
         try {
             (new SchemaTool($entityManager))
-                ->createSchema([$this->_em->getClassMetadata(MUPFile::CLASSNAME)]);
+                ->createSchema([$this->_em->getClassMetadata(DateTimeModel::CLASSNAME)]);
         } catch (ToolsException $ignored) {
             // tables were already created
         }
 
         return $entityManager;
     }
-}
-
-/**
- * @Entity
- */
-class MUPPicture
-{
-    /**
-     * @Column(name="picture_id", type="integer")
-     * @Id @GeneratedValue
-     */
-    public $pictureId;
-
-    /**
-     * @ManyToOne(targetEntity="MUPFile", cascade={"persist", "merge"})
-     * @JoinColumn(name="file_id", referencedColumnName="file_id")
-     */
-    public $file;
-
-}
-
-/** @Entity */
-class MUPFile
-{
-    const CLASSNAME = __CLASS__;
-
-    /** @Column(name="file_id", type="integer") @Id @GeneratedValue(strategy="AUTO") */
-    public $fileId;
-
-    /** @Column(type="string", nullable=true) */
-    private $contents;
 }
