@@ -3166,11 +3166,15 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param   string $className
-     * @return  string
+     * @param  string|null $className
+     * @return string|null null if the input value is null
      */
     public function fullyQualifiedClassName($className)
     {
+        if (empty($className)) {
+            return $className;
+        }
+
         if ($className !== null && strpos($className, '\\') === false && strlen($this->namespace) > 0) {
             return $this->namespace . '\\' . $className;
         }
