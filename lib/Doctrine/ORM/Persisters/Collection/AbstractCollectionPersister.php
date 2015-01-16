@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Persisters\Collection;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 
 /**
@@ -31,7 +31,7 @@ use Doctrine\ORM\UnitOfWork;
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
 
@@ -41,7 +41,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     protected $conn;
 
     /**
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     protected $uow;
 
@@ -62,9 +62,9 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em               = $em;
         $this->uow              = $em->getUnitOfWork();

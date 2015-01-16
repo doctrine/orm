@@ -18,8 +18,8 @@
  */
 namespace Doctrine\ORM\Event;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventArgs;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides event arguments for the postFlush event.
@@ -39,9 +39,9 @@ class PostFlushEventArgs extends EventArgs
     /**
      * Constructor.
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

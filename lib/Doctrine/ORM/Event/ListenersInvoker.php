@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventArgs;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * A method invoker based on entity lifecycle.
@@ -51,9 +51,9 @@ class ListenersInvoker
     /**
      * Initializes a new ListenersInvoker instance.
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->eventManager = $em->getEventManager();
         $this->resolver     = $em->getConfiguration()->getEntityListenerResolver();

@@ -10,6 +10,8 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
 class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
@@ -410,9 +412,9 @@ class TestEntity1
     private $association;
 }
 
-class CustomIdGenerator extends \Doctrine\ORM\Id\AbstractIdGenerator
+class CustomIdGenerator extends AbstractIdGenerator
 {
-    public function generate(\Doctrine\ORM\EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
     }
 }

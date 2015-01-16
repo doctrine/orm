@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Serializable;
-use Doctrine\ORM\EntityManager;
 
 /**
  * Represents an ID generator that uses a database sequence.
@@ -67,16 +67,9 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     }
 
     /**
-     * Generates an ID for the given entity.
-     *
-     * @param EntityManager $em
-     * @param object        $entity
-     *
-     * @return integer The generated value.
-     *
-     * @override
+     * {@inheritDoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
         if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
             // Allocate new values

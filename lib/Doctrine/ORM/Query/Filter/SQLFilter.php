@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 
@@ -37,7 +37,7 @@ abstract class SQLFilter
     /**
      * The entity manager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -51,9 +51,9 @@ abstract class SQLFilter
     /**
      * Constructs the SQLFilter object.
      *
-     * @param EntityManager $em The entity manager.
+     * @param EntityManagerInterface $em The entity manager.
      */
-    final public function __construct(EntityManager $em)
+    final public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

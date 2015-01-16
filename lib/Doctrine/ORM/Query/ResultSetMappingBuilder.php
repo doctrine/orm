@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -64,7 +64,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private $sqlCounter = 0;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -76,10 +76,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private $defaultRenameMode;
 
     /**
-     * @param EntityManager $em
-     * @param integer       $defaultRenameMode
+     * @param EntityManagerInterface $em
+     * @param integer                $defaultRenameMode
      */
-    public function __construct(EntityManager $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
+    public function __construct(EntityManagerInterface $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
     {
         $this->em                = $em;
         $this->defaultRenameMode = $defaultRenameMode;

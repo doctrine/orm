@@ -19,11 +19,11 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use PDO;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use PDO;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -46,7 +46,7 @@ abstract class AbstractHydrator
     /**
      * The EntityManager instance.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $_em;
 
@@ -95,9 +95,9 @@ abstract class AbstractHydrator
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
      *
-     * @param \Doctrine\ORM\EntityManager $em The EntityManager to use.
+     * @param EntityManagerInterface $em The EntityManager to use.
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->_em       = $em;
         $this->_platform = $em->getConnection()->getDatabasePlatform();

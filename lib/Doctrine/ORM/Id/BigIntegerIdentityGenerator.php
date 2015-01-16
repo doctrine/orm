@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Id generator that obtains IDs from special "identity" columns. These are columns
@@ -48,15 +48,15 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
-        return (string)$em->getConnection()->lastInsertId($this->sequenceName);
+        return (string) $em->getConnection()->lastInsertId($this->sequenceName);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isPostInsertGenerator()
     {

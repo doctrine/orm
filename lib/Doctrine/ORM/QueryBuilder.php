@@ -48,7 +48,7 @@ class QueryBuilder
     /**
      * The EntityManager used by this QueryBuilder.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $_em;
 
@@ -147,9 +147,9 @@ class QueryBuilder
     /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
-     * @param EntityManager $em The EntityManager to use.
+     * @param EntityManagerInterface $em The EntityManager to use.
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->_em = $em;
         $this->parameters = new ArrayCollection();

@@ -1,5 +1,16 @@
 # Upgrade to 2.5
 
+## Minor BC BREAK: ``EntityManagerInterface`` instead of ``EntityManager`` in type-hints
+ 
+As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require 
+an ``EntityManagerInterface`` instead.
+If you are extending any of the following classes, then you need to check following
+signatures:
+
+- ``Doctrine\ORM\Id\AbstractIdGenerator#generate(EntityManagerInterface $em, $entity)``
+- ``Doctrine\ORM\Tools\DebugUnitOfWorkListener#dumpIdentityMap(EntityManagerInterface $em)``
+- ``Doctrine\ORM\Mapping\ClassMetadataFactory#setEntityManager(EntityManagerInterface $em)``
+
 ## Minor BC BREAK: Custom Hydrators API change
 
 As of 2.5, `AbstractHydrator` does not enforce the usage of cache as part of
