@@ -123,6 +123,57 @@ class MergeUninitializedProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase 
         );
     }
 
+    public function testMergingUnInitializedProxyDoesNotInitializeIt()
+    {
+        $em1 = $this->createEntityManager($logger1 = new DebugStack());
+        $em2 = $this->createEntityManager($logger2 = new DebugStack());
+
+        $file1 = new MUPFile();
+        $file2 = new MUPFile();
+
+        $em1->persist($file1);
+        $em2->persist($file2);
+        $em1->flush();
+        $em2->flush();
+        $em1->clear();
+        $em2->clear();
+
+        $queryCount1 = count($logger1->queries);
+        $queryCount2 = count($logger1->queries);
+
+        $unManagedProxy = $em1->getReference(MUPFile::CLASSNAME, $file1->fileId);
+        $mergedInstance = $em2->merge($unManagedProxy);
+
+        $this->assertNotInstanceOf('Doctrine\Common\Proxy\Proxy', $mergedInstance);
+        $this->assertNotSame($unManagedProxy, $mergedInstance);
+        $this->assertFalse($unManagedProxy->__isInitialized());
+
+        $this->assertCount(
+            $queryCount1,
+            $logger1->queries,
+            'Loading the merged instance affected only the first entity manager'
+        );
+        $this->assertCount(
+            $queryCount1 + 1,
+            $logger2->queries,
+            'Loading the merged instance was done via the second entity manager'
+        );
+
+        $unManagedProxy->__load();
+
+        $this->assertCount(
+            $queryCount1 + 1,
+            $logger1->queries,
+            'Loading the first proxy was done through the first entity manager'
+        );
+        $this->assertCount(
+            $queryCount2 + 1,
+            $logger2->queries,
+            'No queries were executed on the second entity manager, as it is unrelated with the first proxy'
+        );
+
+    }
+
     public function testMergeDetachedIntoEntity() {
 
         $file = new MUPFile;
