@@ -26,7 +26,9 @@ use Doctrine\ORM\Query\ResultSetMapping;
  * EntityManager interface
  *
  * @since   2.4
- * @author  Lars Strojny <lars@strojny.net
+ * @author  Lars Strojny <lars@strojny.net>
+ *
+ * @method Mapping\ClassMetadata getClassMetadata($className)
  */
 interface EntityManagerInterface extends ObjectManager
 {
