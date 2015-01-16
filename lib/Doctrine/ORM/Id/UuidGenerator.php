@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Represents an ID generator that uses the database UUID expression
@@ -32,7 +32,7 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * {@inheritDoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManager $em, $entity)
     {
         $conn = $em->getConnection();
         $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();

@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Mock class for SequenceGenerator.
@@ -17,7 +17,7 @@ class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManager $em, $entity)
     {
         return $this->_sequenceNumber++;
     }
