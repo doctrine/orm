@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -504,6 +505,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function setUp()
     {
+        $this->setUpDBALTypes();
+
         $forceCreateTables = false;
 
         if ( ! isset(static::$_sharedConn)) {
@@ -690,5 +693,17 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function getCurrentQueryCount()
     {
         return count($this->_sqlLoggerStack->queries);
+    }
+
+    /**
+     * Configures DBAL types required in tests
+     */
+    protected function setUpDBALTypes()
+    {
+        if (Type::hasType('rot13')) {
+            Type::overrideType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+        } else {
+            Type::addType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+        }
     }
 }
