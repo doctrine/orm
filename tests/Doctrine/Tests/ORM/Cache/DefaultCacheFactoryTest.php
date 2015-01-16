@@ -281,4 +281,18 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
+
+    public function testBuildCachedCollectioHydrator()
+    {
+        $em         = $this->em;
+        $entityName = 'Doctrine\Tests\Models\Cache\State';
+        $metadata   = $em->getClassMetadata($entityName);
+        $mapping    = $metadata->associationMappings['cities'];
+
+        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
+
+        $hydrator = $this->factory->buildCollectionHydrator($em, $mapping);
+
+        $this->assertInstanceOf('Doctrine\ORM\Cache\MultiGetCollectionHydrator', $hydrator);
+    }
 }
