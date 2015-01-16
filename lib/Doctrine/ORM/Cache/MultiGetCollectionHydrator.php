@@ -26,12 +26,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Default hydrator cache for collections
+ * Collection hydrator that expects a target region to be instance of {Doctrine\ORM\Cache\MultiGetRegion},
+ * to enable loading the entire collection with one cache request.
  *
  * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author  Asmir Mustafic <goetas@gmail.com>
  */
-class DefaultCollectionHydrator implements CollectionHydrator
+class MultiGetCollectionHydrator implements CollectionHydrator
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -86,36 +87,19 @@ class DefaultCollectionHydrator implements CollectionHydrator
             $keys[$index] = new EntityCacheKey($assoc['targetEntity'], $identifier);
         }
 
+        $entityEntries = $targetRegion->getMulti($keys);
 
-        if ($targetRegion instanceof MultiGetRegion) {
-            $entityEntries = $targetRegion->getMulti($keys);
-
-            if ($entityEntries === null) {
-                return null;
-            }
-
-            foreach ($entityEntries as $index => $entityEntry) {
-                $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
-            }
-
-        } else {
-            foreach ($entry->identifiers as $index => $identifier) {
-
-                $entityEntry = $targetRegion->get(new EntityCacheKey($assoc['targetEntity'], $identifier));
-
-                if ($entityEntry === null) {
-                    return null;
-                }
-
-                $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
-            }
+        if ($entityEntries === null) {
+            return null;
         }
 
-        array_walk($list, function($entity, $index) use ($collection) {
+        foreach ($entityEntries as $index => $entityEntry) {
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
+        }
+
+        array_walk($list, function ($entity, $index) use ($collection) {
             $collection->hydrateSet($index, $entity);
         });
-
-        $this->uow->hydrationComplete();
 
         return $list;
     }
