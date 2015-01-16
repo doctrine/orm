@@ -30,7 +30,6 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\ORMException;
-use Exception;
 use ReflectionException;
 
 /**
@@ -75,11 +74,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * {@inheritDoc}
      */
     protected function loadMetadata($name)
-    {
-        /* @var $loaded string[] */
+``    {
         $loaded = parent::loadMetadata($name);
 
-        array_map([$this, 'populateDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
+        array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
 
         return $loaded;
     }
@@ -284,9 +282,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
-            } else if (! $class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
-                // enforce discriminator map for all entities of an inheritance hierarchy, otherwise problems will occur.
-                //throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
@@ -312,7 +307,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    private function populateDiscriminatorValue(ClassMetadata $metadata)
+    private function resolveDiscriminatorValue(ClassMetadata $metadata)
     {
         if ($metadata->discriminatorValue
             || ! $metadata->discriminatorMap
@@ -322,6 +317,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             return;
         }
 
+        // minor optimization: avoid loading related metadata when not needed
         foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
             if ($discriminatorClass === $metadata->name) {
                 $metadata->discriminatorValue = $discriminatorValue;
@@ -330,6 +326,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
+        // iterate over discriminator mappings and resolve actual referenced classes according to existing metadata
         foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
             if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
                 $metadata->discriminatorValue = $discriminatorValue;
