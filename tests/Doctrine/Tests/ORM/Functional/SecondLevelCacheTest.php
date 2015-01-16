@@ -306,7 +306,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
     {
         $this->loadFixturesCountries();
 
-        $persister  = $this->_em->getUnitOfWork()->getEntityPersister(Country::CLASSNAME);
+        $persister  = $this->_em->getPersisterFactory()->getOrCreateEntityPersister(Country::CLASSNAME);
         $queryCount = $this->getCurrentQueryCount();
 
         $this->assertTrue($persister->exists($this->countries[0]));

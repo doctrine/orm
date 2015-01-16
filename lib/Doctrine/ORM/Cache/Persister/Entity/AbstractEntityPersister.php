@@ -41,7 +41,12 @@ use Doctrine\Common\Collections\Criteria;
  */
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
-     /**
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * @var \Doctrine\ORM\UnitOfWork
      */
     protected $uow;
@@ -125,6 +130,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->persister        = $persister;
         $this->cache            = $em->getCache();
         $this->regionName       = $region->getName();
+        $this->em               = $em;
         $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
@@ -273,7 +279,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
             $assocId        = $this->uow->getEntityIdentifier($assocEntity);
             $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
-            $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+            $assocPersister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($assoc['targetEntity']);
 
             $assocPersister->storeEntityCache($assocEntity, $assocKey);
         }
@@ -544,7 +550,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
-        $persister = $this->uow->getCollectionPersister($assoc);
+        $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
         $key       = null;
 
@@ -580,7 +586,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
-        $persister = $this->uow->getCollectionPersister($assoc);
+        $persister = $this->em->getPersisterFactory()->getOrCreateCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
         if ($hasCache) {

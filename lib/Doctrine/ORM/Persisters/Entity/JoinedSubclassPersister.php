@@ -130,15 +130,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return array();
         }
 
-        $postInsertIds  = array();
-        $idGenerator    = $this->class->idGenerator;
-        $isPostInsertId = $idGenerator->isPostInsertGenerator();
-        $rootClass      = ($this->class->name !== $this->class->rootEntityName)
+        $postInsertIds    = array();
+        $persisterFactory = $this->em->getPersisterFactory();
+        $idGenerator      = $this->class->idGenerator;
+        $isPostInsertId   = $idGenerator->isPostInsertGenerator();
+        $rootClass        = ($this->class->name !== $this->class->rootEntityName)
             ? $this->em->getClassMetadata($this->class->rootEntityName)
             : $this->class;
 
         // Prepare statement for the root table
-        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->name);
+        $rootPersister = $persisterFactory->getOrCreateEntityPersister($rootClass->name);
         $rootTableName = $rootClass->getTableName();
         $rootTableStmt = $this->conn->prepare($rootPersister->getInsertSQL());
 
@@ -154,7 +155,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $parentTableName = $parentClass->getTableName();
 
             if ($parentClass !== $rootClass) {
-                $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClassName);
+                $parentPersister = $persisterFactory->getOrCreateEntityPersister($parentClassName);
                 $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
             }
         }

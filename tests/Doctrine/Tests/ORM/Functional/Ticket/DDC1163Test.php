@@ -76,7 +76,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // this screams violation of law of demeter ;)
         $this->assertEquals(
             __NAMESPACE__.'\\DDC1163SpecialProduct',
-            $this->_em->getUnitOfWork()->getEntityPersister(get_class($specialProduct))->getClassMetadata()->name
+            $this->_em->getPersisterFactory()->getOrCreateEntityPersister(get_class($specialProduct))->getClassMetadata()->name
         );
 
         $tag = new DDC1163Tag('Foo');

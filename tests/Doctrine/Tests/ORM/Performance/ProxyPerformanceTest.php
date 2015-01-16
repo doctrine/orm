@@ -19,6 +19,8 @@
 
 namespace Doctrine\Tests\ORM\Performance;
 
+use Doctrine\Tests\Mocks\PersisterFactoryMock;
+use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\OrmPerformanceTestCase;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
@@ -126,30 +128,14 @@ class MockEntityManager extends EntityManager
     }
 
     /** {@inheritDoc} */
-    public function getUnitOfWork()
+    public function getPersisterFactory()
     {
-        return new MockUnitOfWork();
-    }
-}
+        $persisterFactory = new PersisterFactoryMock($this->em);
 
-/**
- * Mock UnitOfWork manager to fake `getPersister()`
- */
-class MockUnitOfWork extends UnitOfWork
-{
-    /** @var PersisterMock */
-    private $entityPersister;
+        $persisterFactory->setEntityPersister('Doctrine\Tests\Models\CMS\CmsEmployee', new PersisterMock());
+        $persisterFactory->setEntityPersister('Doctrine\Tests\Models\CMS\CmsUser', new PersisterMock());
 
-    /** */
-    public function __construct()
-    {
-        $this->entityPersister = new PersisterMock();
-    }
-
-    /** {@inheritDoc} */
-    public function getEntityPersister($entityName)
-    {
-        return $this->entityPersister;
+        return $persisterFactory;
     }
 }
 

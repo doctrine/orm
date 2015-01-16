@@ -84,7 +84,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($mapping['targetEntity']);
         $mappedKey = $mapping['isOwningSide']
             ? $mapping['inversedBy']
             : $mapping['mappedBy'];
@@ -135,7 +135,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 . ' ON' . implode(' AND ', $this->getOnConditionSQL($association));
 
             // And criteria conditions needs to be added
-            $persister    = $this->uow->getEntityPersister($targetClass->name);
+            $persister    = $this->em->getPersisterFactory()->getOrCreateEntityPersister($targetClass->name);
             $visitor      = new SqlExpressionVisitor($persister, $targetClass);
             $conditions[] = $visitor->dispatch($expression);
 
@@ -156,7 +156,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {
         $mapping   = $collection->getMapping();
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($mapping['targetEntity']);
 
         return $persister->getManyToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }

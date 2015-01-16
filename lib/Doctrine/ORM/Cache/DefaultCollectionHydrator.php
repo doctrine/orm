@@ -77,7 +77,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
         $assoc           = $metadata->associationMappings[$key->association];
-        $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+        $targetPersister = $this->em->getPersisterFactory()->getOrCreateEntityPersister($assoc['targetEntity']);
         $targetRegion    = $targetPersister->getCacheRegion();
         $list            = array();
 

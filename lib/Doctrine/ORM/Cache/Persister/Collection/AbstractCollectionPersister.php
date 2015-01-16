@@ -35,7 +35,12 @@ use Doctrine\Common\Util\ClassUtils;
  */
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
-     /**
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * @var \Doctrine\ORM\UnitOfWork
      */
     protected $uow;
@@ -106,6 +111,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->persister        = $persister;
         $this->association      = $association;
         $this->regionName       = $region->getName();
+        $this->em               = $em;
         $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
@@ -162,7 +168,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
-        $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
+        $targetPersister    = $this->em->getPersisterFactory()->getOrCreateEntityPersister($this->targetEntity->rootEntityName);
         $targetRegion       = $targetPersister->getCacheRegion();
         $targetHydrator     = $targetPersister->getEntityHydrator();
         $entry              = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);

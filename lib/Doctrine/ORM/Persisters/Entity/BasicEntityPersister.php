@@ -25,7 +25,7 @@ use Doctrine\DBAL\Connection;
 
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
@@ -124,7 +124,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * The EntityManager instance.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $em;
 
@@ -221,10 +221,10 @@ class BasicEntityPersister implements EntityPersister
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
-     * @param \Doctrine\ORM\EntityManager         $em
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\EntityManagerInterface $em
+     * @param \Doctrine\ORM\Mapping\ClassMetadata  $class
      */
-    public function __construct(EntityManager $em, ClassMetadata $class)
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
         $this->em                  = $em;
         $this->class               = $class;

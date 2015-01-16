@@ -47,7 +47,7 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * @var \Doctrine\Common\Cache\CacheProvider
      */
-    private $cache;
+    protected $cache;
 
     /**
      * @var \Doctrine\ORM\Cache\RegionsConfiguration

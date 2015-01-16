@@ -176,7 +176,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->_em->getPersisterFactory()->getOrCreateEntityPersister($this->_entityName);
 
         return $persister->loadAll($criteria, $orderBy, $limit, $offset);
     }
@@ -191,7 +191,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findOneBy(array $criteria, array $orderBy = null)
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->_em->getPersisterFactory()->getOrCreateEntityPersister($this->_entityName);
 
         return $persister->load($criteria, null, null, array(), null, 1, $orderBy);
     }
@@ -299,7 +299,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function matching(Criteria $criteria)
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->_em->getPersisterFactory()->getOrCreateEntityPersister($this->_entityName);
 
         return new LazyCriteriaCollection($persister, $criteria);
     }

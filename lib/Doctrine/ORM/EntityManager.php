@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Persisters\PersisterFactory;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -81,6 +82,13 @@ use Doctrine\Common\Util\ClassUtils;
      * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
      */
     private $metadataFactory;
+
+    /**
+     * The persister factory, used to retrieve the ORM persister of collections and entity classes.
+     *
+     * @var \Doctrine\ORM\Persisters\PersisterFactory
+     */
+    private $persisterFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
@@ -156,6 +164,7 @@ use Doctrine\Common\Util\ClassUtils;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
+        $this->persisterFactory  = new PersisterFactory($this);
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
         $this->proxyFactory      = new ProxyFactory(
@@ -188,6 +197,16 @@ use Doctrine\Common\Util\ClassUtils;
     public function getMetadataFactory()
     {
         return $this->metadataFactory;
+    }
+
+    /**
+     * Gets the persister factory used to manipulate collection and entity classes.
+     *
+     * @return \Doctrine\ORM\Persisters\PersisterFactory
+     */
+    public function getPersisterFactory()
+    {
+        return $this->persisterFactory;
     }
 
     /**
@@ -411,6 +430,7 @@ use Doctrine\Common\Util\ClassUtils;
             throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
 
+        $persister  = $this->persisterFactory->getOrCreateEntityPersister($class->name);
         $unitOfWork = $this->getUnitOfWork();
 
         // Check identity map first
@@ -427,15 +447,12 @@ use Doctrine\Common\Util\ClassUtils;
                 case LockMode::NONE === $lockMode:
                 case LockMode::PESSIMISTIC_READ === $lockMode:
                 case LockMode::PESSIMISTIC_WRITE === $lockMode:
-                    $persister = $unitOfWork->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
             }
 
             return $entity; // Hit!
         }
-
-        $persister = $unitOfWork->getEntityPersister($class->name);
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
@@ -540,6 +557,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function clear($entityName = null)
     {
+        $this->persisterFactory->clear();
         $this->unitOfWork->clear($entityName);
     }
 
