@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManager;
 use Serializable;
 
 /**
@@ -69,7 +69,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * {@inheritDoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManager $em, $entity)
     {
         if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
             // Allocate new values

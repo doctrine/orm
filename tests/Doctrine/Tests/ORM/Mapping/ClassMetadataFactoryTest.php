@@ -2,17 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\EventManager;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\Tests\Mocks\MetadataDriverMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Common\EventManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Id\AbstractIdGenerator;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\MetadataDriverMock;
 
 class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -367,7 +367,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
-        /* @var $entityManager \Doctrine\ORM\EntityManager */
+        /* @var $entityManager EntityManager */
         $entityManager        = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
 
         $classMetadataFactory->setEntityManager($entityManager);
@@ -414,7 +414,7 @@ class TestEntity1
 
 class CustomIdGenerator extends AbstractIdGenerator
 {
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManager $em, $entity)
     {
     }
 }

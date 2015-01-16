@@ -7,7 +7,6 @@ an ``EntityManagerInterface`` instead.
 If you are extending any of the following classes, then you need to check following
 signatures:
 
-- ``Doctrine\ORM\Id\AbstractIdGenerator#generate(EntityManagerInterface $em, $entity)``
 - ``Doctrine\ORM\Tools\DebugUnitOfWorkListener#dumpIdentityMap(EntityManagerInterface $em)``
 - ``Doctrine\ORM\Mapping\ClassMetadataFactory#setEntityManager(EntityManagerInterface $em)``
 
