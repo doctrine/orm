@@ -205,6 +205,12 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         return 'callback';
     }
 
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
     public function testMergeDetachedUnInitializedProxy()
     {
         $em = $this->createEntityManager();
