@@ -76,4 +76,3 @@ class DDC3300Employee extends DDC3300Person implements DDC3300EmployeeInterface
 {
     const CLASSNAME = __CLASS__;
 }
- 
