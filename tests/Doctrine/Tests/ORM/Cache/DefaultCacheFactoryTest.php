@@ -64,7 +64,6 @@ class DefaultCacheFactoryTest extends OrmTestCase
             ->with($this->equalTo($metadata->cache))
             ->will($this->returnValue($region));
 
-        
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
@@ -282,17 +281,4 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 
-    public function testBuildCachedCollectioHydrator()
-    {
-        $em         = $this->em;
-        $entityName = 'Doctrine\Tests\Models\Cache\State';
-        $metadata   = $em->getClassMetadata($entityName);
-        $mapping    = $metadata->associationMappings['cities'];
-
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
-
-        $hydrator = $this->factory->buildCollectionHydrator($em, $mapping);
-
-        $this->assertInstanceOf('Doctrine\ORM\Cache\MultiGetCollectionHydrator', $hydrator);
-    }
 }

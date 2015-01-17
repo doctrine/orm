@@ -181,20 +181,8 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping)
     {
-        if ($mapping['cache']) {
-            $targetPersister = $em->getUnitOfWork()->getEntityPersister($mapping['targetEntity']);
-
-            if (! ($targetPersister instanceof CachedPersister)) {
-                throw CacheException::nonCacheableEntity($mapping['targetEntity']);
-            }
-            $targetRegion = $targetPersister->getCacheRegion();
-
-            if ($targetRegion instanceof MultiGetRegion) {
-                return new MultiGetCollectionHydrator($em, $targetRegion);
-            }
-        }
-
-        return new DefaultCollectionHydrator($em);
+        $targetPersister = $em->getUnitOfWork()->getEntityPersister($mapping['targetEntity']);
+        return new DefaultCollectionHydrator($em, $targetPersister->getCacheRegion());
     }
 
     /**
@@ -218,11 +206,9 @@ class DefaultCacheFactory implements CacheFactory
 
         $cacheAdapter->setNamespace($cache['region']);
 
-        if ($cacheAdapter instanceof MultiGetCache) {
-            $region = new DefaultMultiGetRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']));
-        } else {
-            $region = new DefaultRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']));
-        }
+        $region = ($cacheAdapter instanceof MultiGetCache)
+            ? new DefaultMultiGetRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']))
+            : new DefaultRegion($cache['region'], $cacheAdapter, $this->regionsConfig->getLifetime($cache['region']));
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 

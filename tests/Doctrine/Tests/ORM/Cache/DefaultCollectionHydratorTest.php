@@ -29,7 +29,8 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->structure = new DefaultCollectionHydrator($this->_em);
+        $targetPersister = $this->_em->getUnitOfWork()->getEntityPersister(City::CLASSNAME);
+        $this->structure = new DefaultCollectionHydrator($this->_em, $targetPersister);
     }
 
     public function testImplementsCollectionEntryStructure()
@@ -41,8 +42,8 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
     {
         $targetRegion   = $this->_em->getCache()->getEntityCacheRegion(City::CLASSNAME);
         $entry          = new CollectionCacheEntry(array(
-            array('id'=>31),
-            array('id'=>32),
+            new EntityCacheKey(City::CLASSNAME, array('id'=>31)),
+            new EntityCacheKey(City::CLASSNAME, array('id'=>32)),
         ));
 
         $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>31)), new EntityCacheEntry(City::CLASSNAME, array('id'=>31, 'name'=>'Foo')));
