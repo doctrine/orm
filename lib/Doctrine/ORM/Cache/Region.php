@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Cache;
  * @since   2.5
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface Region
+interface Region extends MultiGetRegion
 {
     /**
      * Retrieve the name of this region.

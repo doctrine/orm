@@ -185,7 +185,7 @@ To enable the second-level-cache, you should provide a cache factory
     <?php
 
     /* var $config \Doctrine\ORM\Cache\RegionsConfiguration */
-    /* var $cache \Doctrine\Common\Cache\CacheProvider */
+    /* var $cache \Doctrine\Common\Cache\Cache */
 
     $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
 

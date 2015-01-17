@@ -65,9 +65,8 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $data = array();
 
         foreach ($collection as $index => $entity) {
-            $data[$index] = $this->uow->getEntityIdentifier($entity);
+            $data[$index] = new EntityCacheKey($metadata->name, $this->uow->getEntityIdentifier($entity));
         }
-
         return new CollectionCacheEntry($data);
     }
 
@@ -77,19 +76,20 @@ class DefaultCollectionHydrator implements CollectionHydrator
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
         $assoc           = $metadata->associationMappings[$key->association];
+        /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
         $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
         $targetRegion    = $targetPersister->getCacheRegion();
         $list            = array();
 
-        foreach ($entry->identifiers as $index => $identifier) {
+        $entityEntries = $targetRegion->getMultiple($entry);
 
-            $entityEntry = $targetRegion->get(new EntityCacheKey($assoc['targetEntity'], $identifier));
+        if ($entityEntries === null) {
+            return null;
+        }
 
-            if ($entityEntry === null) {
-                return null;
-            }
-
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+        /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
+        foreach ($entityEntries as $index => $entityEntry) {
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
         }
 
         array_walk($list, function($entity, $index) use ($collection) {

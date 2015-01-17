@@ -20,6 +20,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         'getName',
         'contains',
         'get',
+        'getMultiple',
         'put',
         'evict',
         'evictAll',

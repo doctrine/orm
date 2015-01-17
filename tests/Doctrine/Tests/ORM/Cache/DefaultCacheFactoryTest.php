@@ -64,7 +64,6 @@ class DefaultCacheFactoryTest extends OrmTestCase
             ->with($this->equalTo($metadata->cache))
             ->will($this->returnValue($region));
 
-        
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
@@ -281,4 +280,37 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
+
+    public function testBuildsDefaultCacheRegionFromGenericCacheRegion()
+    {
+        /* @var $cache \Doctrine\Common\Cache\Cache */
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+
+        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Cache\Region\DefaultRegion',
+            $factory->getRegion(array(
+                'region' => 'bar',
+                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+            ))
+        );
+    }
+
+    public function testBuildsMultiGetCacheRegionFromGenericCacheRegion()
+    {
+        /* @var $cache \Doctrine\Common\Cache\CacheProvider */
+        $cache = $this->getMockForAbstractClass('Doctrine\Common\Cache\CacheProvider');
+
+        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Cache\Region\DefaultMultiGetRegion',
+            $factory->getRegion(array(
+                'region' => 'bar',
+                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+            ))
+        );
+    }
+
 }

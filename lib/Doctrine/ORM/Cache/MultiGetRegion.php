@@ -21,39 +21,22 @@
 namespace Doctrine\ORM\Cache;
 
 /**
- * Collection cache entry
+ * Defines a region that supports multi-get reading.
+ *
+ * With one method call we can get multipe items.
  *
  * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author  Asmir Mustafic
  */
-class CollectionCacheEntry implements CacheEntry
+interface MultiGetRegion
 {
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     * Get all items from the cache indentifed by $keys.
+     * It returns NULL if some elements can not be found.
      *
-     * @var CacheKey[] The list of entity identifiers hold by the collection
+     * @param CollectionCacheEntry $collection The collection of the items to be retrieved.
+     *
+     * @return CacheEntry[]|null The cached entries or NULL if one or more entries can not be found
      */
-    public $identifiers;
-
-    /**
-     * @param CacheKey[] $identifiers List of entity identifiers hold by the collection
-     */
-    public function __construct(array $identifiers)
-    {
-        $this->identifiers = $identifiers;
-    }
-
-    /**
-     * Creates a new CollectionCacheEntry
-     *
-     * This method allows for Doctrine\Common\Cache\PhpFileCache compatibility
-     *
-     * @param array $values array containing property values
-     *
-     * @return self
-     */
-    public static function __set_state(array $values)
-    {
-        return new self($values['identifiers']);
-    }
+    public function getMultiple(CollectionCacheEntry $collection);
 }

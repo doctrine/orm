@@ -41,6 +41,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'getName',
         'contains',
         'get',
+        'getMultiple',
         'put',
         'evict',
         'evictAll'
@@ -85,7 +86,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
      * @param \Doctrine\ORM\Cache\Region                      $region
      * @param \Doctrine\ORM\Mapping\ClassMetadata             $metadata
      *
-     * @return Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister
+     * @return \Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister
      */
     abstract protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
 
@@ -97,7 +98,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->em               = $this->_getTestEntityManager();
         $this->region           = $this->createRegion();
-        $this->entityPersister  = $this->getMock('Doctrine\ORM\Persisters\Entity\EntityPersister', $this->entityPersisterMockMethods);
+        $this->entityPersister  = $this->getMock(
+            'Doctrine\ORM\Persisters\Entity\EntityPersister',
+            $this->entityPersisterMockMethods
+        );
     }
 
     /**
@@ -109,7 +113,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     }
 
     /**
-     * @return Doctrine\ORM\Cache\Persister\AbstractEntityPersister
+     * @return \Doctrine\ORM\Cache\Persister\AbstractEntityPersister
      */
     protected function createPersisterDefault()
     {

@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache\Region;
 
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\CacheKey;
@@ -170,6 +171,18 @@ class FileLockRegion implements ConcurrentRegion
         }
 
         return $this->region->get($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple(CollectionCacheEntry $collection)
+    {
+        if (array_filter(array_map([$this, 'isLocked'], $collection->identifiers))) {
+            return null;
+        }
+
+        return $this->region->getMultiple($collection);
     }
 
     /**

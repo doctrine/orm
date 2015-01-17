@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Mocks;
 
 
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\LockException;
 use Doctrine\ORM\Cache\CacheEntry;
@@ -129,6 +130,18 @@ class ConcurrentRegionMock implements ConcurrentRegion
         }
 
         return $this->region->get($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple(CollectionCacheEntry $collection)
+    {
+        $this->calls[__FUNCTION__][] = array('collection' => $collection);
+
+        $this->throwException(__FUNCTION__);
+
+        return $this->region->getMultiple($collection);
     }
 
     /**
