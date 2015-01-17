@@ -4,15 +4,14 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\TestUtil;
 
 class MergeProxiesTest extends OrmFunctionalTestCase
 {
@@ -21,12 +20,9 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      */
     protected function setUp()
     {
-        parent::setUp();
+        $this->useModelSet('generic');
 
-        try {
-            $this->_schemaTool->createSchema(array($this->_em->getClassMetadata(DateTimeModel::CLASSNAME)));
-        } catch (ToolsException $ignored) {
-        }
+        parent::setUp();
     }
 
     /**
@@ -220,18 +216,20 @@ class MergeProxiesTest extends OrmFunctionalTestCase
             true
         ));
 
-        $connection = TestUtil::getConnection();
+        // always runs on sqlite to prevent multi-connection race-conditions with the test suite
+        // multi-connection is not relevant for the purpose of checking locking here, but merely
+        // to stub out DB-level access and intercept it
+        $connection = DriverManager::getConnection(array(
+            'driver' => 'pdo_sqlite',
+            'memory' => true
+        ));
 
         $connection->getConfiguration()->setSQLLogger($logger);
 
         $entityManager = EntityManager::create($connection, $config);
 
-        try {
-            (new SchemaTool($entityManager))
-                ->createSchema([$this->_em->getClassMetadata(DateTimeModel::CLASSNAME)]);
-        } catch (ToolsException $ignored) {
-            // tables were already created
-        }
+        (new SchemaTool($entityManager))
+            ->createSchema([$this->_em->getClassMetadata(DateTimeModel::CLASSNAME)]);
 
         return $entityManager;
     }
