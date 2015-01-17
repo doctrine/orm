@@ -64,10 +64,27 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             0,
             $this->tester->execute(array(
                 'command' => $this->command->getName(),
-                'dql'     => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e'
+                'dql'     => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
             ))
         );
 
         $this->assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
+    }
+
+    public function testWillShowQuery()
+    {
+        $this->_em->persist(new DateTimeModel());
+        $this->_em->flush();
+
+        $this->assertSame(
+            0,
+            $this->tester->execute(array(
+                'command'    => $this->command->getName(),
+                'dql'        => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
+                '--show-sql' => 'true'
+            ))
+        );
+
+        $this->assertStringMatchesFormat('string \'SELECT %a', $this->tester->getDisplay());
     }
 }
