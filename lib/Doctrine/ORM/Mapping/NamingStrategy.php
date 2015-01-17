@@ -71,10 +71,11 @@ interface NamingStrategy
      *
      * @param string $propertyName A property name.
      * @param string|null $className    The fully-qualified class name.
+     *                                  This parameter is omitted from the signature due to BC
      *
      * @return string A join column name.
      */
-    function joinColumnName($propertyName, $className = null);
+    function joinColumnName($propertyName/*, $className = null*/);
 
     /**
      * Returns a join table name.
