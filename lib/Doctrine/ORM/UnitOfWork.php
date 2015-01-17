@@ -731,7 +731,7 @@ class UnitOfWork implements PropertyChangedListener
             try {
                 $this->computeAssociationChanges($assoc, $val);
             } catch (\Exception $ex) {
-                throw ORMInvalidArgumentException::computeAssociationChangesError($entity, $assoc['fieldName'], $ex->value);
+                throw ORMInvalidArgumentException::computeAssociationChangesError($entity, $assoc['fieldName'], $val);
             }
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
@@ -2188,12 +2188,31 @@ class UnitOfWork implements PropertyChangedListener
 
                 case ($relatedEntities instanceof Collection):
                 case (is_array($relatedEntities)):
+                    if (($assoc['type'] & ClassMetadata::TO_MANY) <= 0) {
+                        throw ORMInvalidArgumentException::invalidAssociation(
+                            $this->em->getClassMetadata($assoc['targetEntity']),
+                            $assoc,
+                            $relatedEntities
+                        );
+                    }
+
                     foreach ($relatedEntities as $relatedEntity) {
                         $this->doPersist($relatedEntity, $visited);
                     }
+
                     break;
 
                 case ($relatedEntities !== null):
+                    $targetClass = $this->em->getClassMetadata($assoc['targetEntity'])->name;
+
+                    if (! $relatedEntities instanceof $targetClass) {
+                        throw ORMInvalidArgumentException::invalidAssociation(
+                            $this->em->getClassMetadata($assoc['targetEntity']),
+                            $assoc,
+                            $relatedEntities
+                        );
+                    }
+
                     $this->doPersist($relatedEntities, $visited);
                     break;
 
