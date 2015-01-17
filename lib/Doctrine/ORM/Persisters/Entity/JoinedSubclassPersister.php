@@ -26,6 +26,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -463,7 +464,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     $tableAlias,
                     $srcColumn,
                     $className,
-                    $targetClass->getTypeOfColumn($mapping['sourceToTargetKeyColumns'][$srcColumn])
+                    PersisterHelper::getTypeOfColumn(
+                        $mapping['sourceToTargetKeyColumns'][$srcColumn],
+                        $targetClass,
+                        $this->em
+                    )
                 );
             }
         }
@@ -508,7 +513,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $tableAlias,
                         $srcColumn,
                         $className,
-                        $targetClass->getTypeOfColumn($mapping['sourceToTargetKeyColumns'][$srcColumn])
+                        PersisterHelper::getTypeOfColumn(
+                            $mapping['sourceToTargetKeyColumns'][$srcColumn],
+                            $targetClass,
+                            $this->em
+                        )
                     );
                 }
             }

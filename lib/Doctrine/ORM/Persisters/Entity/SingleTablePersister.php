@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for entities that participate in a hierarchy mapped with the
@@ -95,7 +96,11 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                         $tableAlias,
                         $srcColumn,
                         $className,
-                        $targetClass->getTypeOfColumn($mapping['sourceToTargetKeyColumns'][$srcColumn])
+                        PersisterHelper::getTypeOfColumn(
+                            $mapping['sourceToTargetKeyColumns'][$srcColumn],
+                            $targetClass,
+                            $this->em
+                        )
                     );
                 }
             }
