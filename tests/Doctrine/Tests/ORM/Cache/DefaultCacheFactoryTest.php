@@ -64,7 +64,6 @@ class DefaultCacheFactoryTest extends OrmTestCase
             ->with($this->equalTo($metadata->cache))
             ->will($this->returnValue($region));
 
-        
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
         $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
@@ -281,4 +280,5 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
+
 }

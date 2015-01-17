@@ -65,9 +65,8 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $data = array();
 
         foreach ($collection as $index => $entity) {
-            $data[$index] = $this->uow->getEntityIdentifier($entity);
+            $data[$index] = new EntityCacheKey($metadata->name, $this->uow->getEntityIdentifier($entity));
         }
-
         return new CollectionCacheEntry($data);
     }
 
@@ -81,15 +80,23 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $targetRegion    = $targetPersister->getCacheRegion();
         $list            = array();
 
-        foreach ($entry->identifiers as $index => $identifier) {
+        if ($targetRegion instanceof MultiGetRegion) {
+            $entityEntries = $targetRegion->getMulti($entry);
 
-            $entityEntry = $targetRegion->get(new EntityCacheKey($assoc['targetEntity'], $identifier));
-
-            if ($entityEntry === null) {
+            if ($entityEntries === null) {
                 return null;
             }
+        } else {
+            $entityEntries = array();
+            foreach ($entry->identifiers as $index => $identifier) {
+                if (null === ($entityEntries[$index] = $targetRegion->get($identifier))) {
+                    return null;
+                }
+            }
+        }
 
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+        foreach ($entityEntries as $index => $entityEntry) {
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
         }
 
         array_walk($list, function($entity, $index) use ($collection) {

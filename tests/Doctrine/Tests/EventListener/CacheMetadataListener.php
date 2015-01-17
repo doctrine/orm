@@ -7,12 +7,20 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 class CacheMetadataListener
 {
+    private $loaded = array();
     /**
      * @param \Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs $event
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
         $metadata = $event->getClassMetadata();
+
+        if (isset($this->loaded[$metadata->name])) {
+            return;
+        }
+
+        $this->loaded[$metadata->name] = true;
+
         $cache    = array(
             'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
         );
@@ -26,10 +34,16 @@ class CacheMetadataListener
             return;
         }
 
-        $metadata->enableCache($cache);
+        $factory = $event->getObjectManager()->getMetadataFactory();
 
+        $metadata->enableCache($cache);
         foreach ($metadata->associationMappings as $mapping) {
-            $metadata->enableAssociationCache($mapping['fieldName'], $cache);
+
+            $targetMetadata = $factory->getMetadataFor($mapping['targetEntity']);
+
+            if (!$targetMetadata->isVersioned) {
+                $metadata->enableAssociationCache($mapping['fieldName'], $cache);
+            }
         }
     }
 }
