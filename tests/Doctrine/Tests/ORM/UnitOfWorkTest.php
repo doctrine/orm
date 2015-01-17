@@ -269,10 +269,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
-        $this->_unitOfWork->persist($user);
-
         $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException');
 
+        $this->_unitOfWork->persist($user);
         $this->_unitOfWork->computeChangeSet($metadata, $user);
     }
 
