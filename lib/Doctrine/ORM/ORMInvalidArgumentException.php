@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
@@ -195,18 +196,36 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      */
     public static function computeAssociationChangesError($relation, $fieldname, $value)
     {
-        return new self(sprintf('Expected an Object for relation %s::%s got %s instead.', get_class($relation), $fieldname, gettype($value)));
+        return new self(sprintf(
+            'Expected an Object for relation %s::%s got %s instead.',
+            get_class($relation),
+            $fieldname,
+            is_object($value) ? get_class($value) : gettype($value)
+        ));
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $targetClass
-     * @param array $assoc
-     * @param mixed $entry
+     * @param ClassMetadata $targetClass
+     * @param array         $assoc
+     * @param mixed         $actualValue
+     *
      * @return self
      */
-    public static function invalidAssociation($targetClass, $assoc, $entry)
+    public static function invalidAssociation(ClassMetadata $targetClass, $assoc, $actualValue)
     {
-        return new self(gettype($entry) . (is_scalar($entry) ? ' "'.$entry.'"': '') . ' is not an Object.');
+        $expectedType = 'Doctrine\Common\Collections\Collection|array';
+
+        if (($assoc['type'] & ClassMetadata::TO_ONE) > 0) {
+            $expectedType = $targetClass->getName();
+        }
+
+        return new self(sprintf(
+            'Expected value of type "%s" for association field "%s#$%s", got "%s" instead.',
+            $expectedType,
+            $assoc['sourceEntity'],
+            $assoc['fieldName'],
+            is_object($actualValue) ? get_class($actualValue) : gettype($actualValue)
+        ));
     }
 
     /**
