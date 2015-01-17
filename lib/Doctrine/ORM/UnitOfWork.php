@@ -2002,7 +2002,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
      */
-    private function doRefresh($entity, array &$visited)
+    protected function doRefresh($entity, array &$visited)
     {
         $oid = spl_object_hash($entity);
 

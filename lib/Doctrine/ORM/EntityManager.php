@@ -66,35 +66,35 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @var \Doctrine\ORM\Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * The database connection used by the EntityManager.
      *
      * @var \Doctrine\DBAL\Connection
      */
-    private $conn;
+    protected $conn;
 
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
      *
      * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
      */
-    private $metadataFactory;
+    protected $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
      * @var \Doctrine\ORM\UnitOfWork
      */
-    private $unitOfWork;
+    protected $unitOfWork;
 
     /**
      * The event manager that is the central point of the event system.
      *
      * @var \Doctrine\Common\EventManager
      */
-    private $eventManager;
+    protected $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.

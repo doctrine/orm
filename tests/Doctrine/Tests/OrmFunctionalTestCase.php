@@ -19,14 +19,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var \Doctrine\Common\Cache\Cache|null
      */
-    private static $_metadataCacheImpl = null;
+    protected static $_metadataCacheImpl = null;
 
     /**
      * The query cache shared between all functional tests.
      *
      * @var \Doctrine\Common\Cache\Cache|null
      */
-    private static $_queryCacheImpl = null;
+    protected static $_queryCacheImpl = null;
 
     /**
      * Shared connection when a TestCase is run alone (outside of its functional suite).
