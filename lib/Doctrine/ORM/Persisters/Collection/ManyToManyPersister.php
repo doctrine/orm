@@ -602,10 +602,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             if (isset($mapping[$relationMode][$joinTableColumn])) {
-                $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
-                $column         = $mapping[$relationMode][$joinTableColumn];
-                $params[]       = $id[$targetEntity->getFieldForColumn($column)];
-                $types[]        = PersisterHelper::getTypeOfColumn($column, $targetEntity, $this->em);
+                $whereClauses[]    = 't.' . $joinTableColumn . ' = ?';
+                $column            = $mapping[$relationMode][$joinTableColumn];
+                $columnOwningClass = $this->em->getClassMetadata($mapping['targetEntity']);
+                $params[]          = $id[$columnOwningClass->getFieldForColumn($column)];
+                $types[]           = PersisterHelper::getTypeOfColumn($column, $columnOwningClass, $this->em);
             } elseif ( ! $joinNeeded) {
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[]       = $key;
