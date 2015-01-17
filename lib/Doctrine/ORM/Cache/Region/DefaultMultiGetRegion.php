@@ -20,12 +20,8 @@
 
 namespace Doctrine\ORM\Cache\Region;
 
-use Doctrine\ORM\Cache\Lock;
+use Doctrine\Common\Cache\MultiGetCache;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\ORM\Cache\MultiGetRegion;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
@@ -36,6 +32,25 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
  */
 class DefaultMultiGetRegion extends DefaultRegion
 {
+    /**
+     * Note that the multiple type is due to doctrine/cache not integrating the MultiGetCache interface
+     * in its signature due to BC in 1.x
+     *
+     * @var MultiGetCache|\Doctrine\Common\Cache\Cache
+     */
+    protected $cache;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param MultiGetCache $cache
+     */
+    public function __construct($name, MultiGetCache $cache, $lifetime = 0)
+    {
+        /* @var $cache \Doctrine\Common\Cache\Cache */
+        parent::__construct($name, $cache, $lifetime);
+    }
+
     /**
      * {@inheritdoc}
      */
