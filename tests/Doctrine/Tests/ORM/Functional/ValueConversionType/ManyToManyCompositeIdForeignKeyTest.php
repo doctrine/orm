@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -19,7 +18,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('vct_manytomany_compositeid_foreignkey');
+        $this->useModelSet('vct');
 
         parent::setUp();
 
@@ -42,16 +41,6 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
-    }
-
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$_sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_auxiliary');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
