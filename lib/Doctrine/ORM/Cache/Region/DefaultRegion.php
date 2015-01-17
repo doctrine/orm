@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache\Region;
 
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\CacheKey;
@@ -91,6 +92,37 @@ class DefaultRegion implements Region
     public function get(CacheKey $key)
     {
         return $this->cache->fetch($this->name . '_' . $key->hash) ?: null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple(CollectionCacheEntry $collection)
+    {
+        $keysToRetrieve = array();
+
+        foreach ($collection->identifiers as $index => $key) {
+            $keysToRetrieve[$index] = $this->name . '_' . $key->hash;
+        }
+
+        $items = array_filter(
+            array_map([$this->cache, 'fetch'], $keysToRetrieve),
+            function ($retrieved) {
+                return false !== $retrieved;
+            }
+        );
+
+        if (count($items) !== count($keysToRetrieve)) {
+            return null;
+        }
+
+        $returnableItems = array();
+
+        foreach ($keysToRetrieve as $index => $key) {
+            $returnableItems[$index] = $items[$key];
+        }
+
+        return $returnableItems;
     }
 
     /**

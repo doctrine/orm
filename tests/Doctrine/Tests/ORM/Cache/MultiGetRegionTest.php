@@ -33,7 +33,7 @@ class MultiGetRegionTest extends AbstractRegionTest
         $this->region->put($key1, $value1);
         $this->region->put($key2, $value2);
 
-        $actual = $this->region->getMulti(new CollectionCacheEntry(array($key1, $key2)));
+        $actual = $this->region->getMultiple(new CollectionCacheEntry(array($key1, $key2)));
 
         $this->assertEquals($value1, $actual[0]);
         $this->assertEquals($value2, $actual[1]);

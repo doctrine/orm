@@ -19,6 +19,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         'getName',
         'contains',
         'get',
+        'getMultiple',
         'put',
         'evict',
         'evictAll',

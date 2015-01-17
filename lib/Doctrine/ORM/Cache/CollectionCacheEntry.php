@@ -31,12 +31,12 @@ class CollectionCacheEntry implements CacheEntry
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var array The list of entity identifiers hold by the collection
+     * @var CacheKey[] The list of entity identifiers hold by the collection
      */
     public $identifiers;
 
     /**
-     * @param array $identifiers List of entity identifiers hold by the collection
+     * @param CacheKey[] $identifiers List of entity identifiers hold by the collection
      */
     public function __construct(array $identifiers)
     {
@@ -46,9 +46,11 @@ class CollectionCacheEntry implements CacheEntry
     /**
      * Creates a new CollectionCacheEntry
      *
-     * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
+     * This method allows for Doctrine\Common\Cache\PhpFileCache compatibility
      *
      * @param array $values array containing property values
+     *
+     * @return self
      */
     public static function __set_state(array $values)
     {

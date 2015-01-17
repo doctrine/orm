@@ -34,12 +34,12 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
  * @since   2.5
  * @author  Asmir Mustafic <goetas@gmail.com>
  */
-class DefaultMultiGetRegion extends DefaultRegion implements MultiGetRegion
+class DefaultMultiGetRegion extends DefaultRegion
 {
     /**
      * {@inheritdoc}
      */
-    public function getMulti(CollectionCacheEntry $collection)
+    public function getMultiple(CollectionCacheEntry $collection)
     {
         $keysToRetrieve = array();
         foreach ($collection->identifiers as $index => $key) {

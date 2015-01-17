@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 
@@ -90,6 +91,16 @@ class CacheRegionMock implements Region
     public function get(CacheKey $key)
     {
         $this->calls[__FUNCTION__][] = array('key' => $key);
+
+        return $this->getReturn(__FUNCTION__, null);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMultiple(CollectionCacheEntry $collection)
+    {
+        $this->calls[__FUNCTION__][] = array('collection' => $collection);
 
         return $this->getReturn(__FUNCTION__, null);
     }

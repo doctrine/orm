@@ -38,6 +38,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'getName',
         'contains',
         'get',
+        'getMultiple',
         'put',
         'evict',
         'evictAll'
@@ -56,6 +57,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'removeElement',
         'removeKey',
         'get',
+        'getMultiple',
         'loadCriteria'
     );
 
@@ -65,7 +67,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
      * @param \Doctrine\ORM\Cache\Region                              $region
      * @param array                                                   $mapping
      *
-     * @return Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister
+     * @return \Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister
      */
     abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping);
 
@@ -77,7 +79,10 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em                   = $this->_getTestEntityManager();
         $this->region               = $this->createRegion();
-        $this->collectionPersister  = $this->getMock('Doctrine\ORM\Persisters\Collection\CollectionPersister', $this->collectionPersisterMockMethods);
+        $this->collectionPersister  = $this->getMock(
+            'Doctrine\ORM\Persisters\Collection\CollectionPersister',
+            $this->collectionPersisterMockMethods
+        );
     }
 
     /**
