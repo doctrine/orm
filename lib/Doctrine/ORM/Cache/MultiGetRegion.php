@@ -30,7 +30,7 @@ use Doctrine\ORM\Cache\CacheKey;
  * @since   2.5
  * @author  Asmir Mustafic
  */
-interface MultiGetRegion extends Region
+interface MultiGetRegion
 {
     /**
      * Get all items from the cache indentifed by $keys.
