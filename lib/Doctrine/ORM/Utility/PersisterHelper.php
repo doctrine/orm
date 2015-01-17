@@ -36,42 +36,6 @@ use Doctrine\ORM\Query\QueryException;
 class PersisterHelper
 {
     /**
-     * @param mixed                  $value
-     * @param EntityManagerInterface $em
-     *
-     * @return mixed
-     */
-    public static function getValue($value, EntityManagerInterface $em)
-    {
-        if ( ! is_array($value)) {
-            return self::getIndividualValue($value, $em);
-        }
-
-        $newValue = array();
-
-        foreach ($value as $fieldName => $fieldValue) {
-            $newValue[$fieldName] = self::getIndividualValue($fieldValue, $em);
-        }
-
-        return $newValue;
-    }
-
-    /**
-     * @param mixed                  $value
-     * @param EntityManagerInterface $em
-     *
-     * @return mixed
-     */
-    private static function getIndividualValue($value, EntityManagerInterface $em)
-    {
-        if ( ! is_object($value) || ! $em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            return $value;
-        }
-
-        return $em->getUnitOfWork()->getSingleIdentifierValue($value);
-    }
-
-    /**
      * @param string                 $fieldName
      * @param ClassMetadata          $class
      * @param EntityManagerInterface $em
@@ -168,5 +132,41 @@ class PersisterHelper
             $columnName,
             $class->getName()
         ));
+    }
+
+    /**
+     * @param mixed                  $value
+     * @param EntityManagerInterface $em
+     *
+     * @return mixed
+     */
+    public static function getValue($value, EntityManagerInterface $em)
+    {
+        if ( ! is_array($value)) {
+            return self::getIndividualValue($value, $em);
+        }
+
+        $newValue = array();
+
+        foreach ($value as $fieldName => $fieldValue) {
+            $newValue[$fieldName] = self::getIndividualValue($fieldValue, $em);
+        }
+
+        return $newValue;
+    }
+
+    /**
+     * @param mixed                  $value
+     * @param EntityManagerInterface $em
+     *
+     * @return mixed
+     */
+    private static function getIndividualValue($value, EntityManagerInterface $em)
+    {
+        if ( ! is_object($value) || ! $em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+            return $value;
+        }
+
+        return $em->getUnitOfWork()->getSingleIdentifierValue($value);
     }
 }
