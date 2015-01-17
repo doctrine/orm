@@ -25,6 +25,7 @@ use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for many-to-many collections.
@@ -61,15 +62,23 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return; // ignore inverse side
         }
 
-        $insertSql = $this->getInsertRowSQL($collection);
-        $deleteSql = $this->getDeleteRowSQL($collection);
+        list($deleteSql, $deleteTypes) = $this->getDeleteRowSQL($collection);
+        list($insertSql, $insertTypes) = $this->getInsertRowSQL($collection);
 
         foreach ($collection->getDeleteDiff() as $element) {
-            $this->conn->executeUpdate($deleteSql, $this->getDeleteRowSQLParameters($collection, $element));
+            $this->conn->executeUpdate(
+                $deleteSql,
+                $this->getDeleteRowSQLParameters($collection, $element),
+                $deleteTypes
+            );
         }
 
         foreach ($collection->getInsertDiff() as $element) {
-            $this->conn->executeUpdate($insertSql, $this->getInsertRowSQLParameters($collection, $element));
+            $this->conn->executeUpdate(
+                $insertSql,
+                $this->getInsertRowSQLParameters($collection, $element),
+                $insertTypes
+            );
         }
     }
 
@@ -397,24 +406,32 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param \Doctrine\ORM\PersistentCollection $collection
      *
-     * @return string
+     * @return string[]|string[][] ordered tuple containing the SQL to be executed and an array
+     *                             of types for bound parameters
      */
     protected function getDeleteRowSQL(PersistentCollection $collection)
     {
-        $mapping = $collection->getMapping();
-        $class   = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $columns = array();
+        $mapping     = $collection->getMapping();
+        $class       = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $columns     = array();
+        $types       = array();
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $class, $this->em);
         }
 
         foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
         }
 
-        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
-            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+        return array(
+            'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?',
+            $types,
+        );
     }
 
     /**
@@ -438,26 +455,34 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param \Doctrine\ORM\PersistentCollection $collection
      *
-     * @return string
+     * @return string[]|string[][] ordered tuple containing the SQL to be executed and an array
+     *                             of types for bound parameters
      */
     protected function getInsertRowSQL(PersistentCollection $collection)
     {
-        $columns = array();
-        $mapping = $collection->getMapping();
-        $class   = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $columns     = array();
+        $types       = array();
+        $mapping     = $collection->getMapping();
+        $class       = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $class, $this->em);
         }
 
         foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
         }
 
-        return 'INSERT INTO ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+        return array(
+            'INSERT INTO ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
             . ' (' . implode(', ', $columns) . ')'
             . ' VALUES'
-            . ' (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+            . ' (' . implode(', ', array_fill(0, count($columns), '?')) . ')',
+            $types,
+        );
     }
 
     /**
