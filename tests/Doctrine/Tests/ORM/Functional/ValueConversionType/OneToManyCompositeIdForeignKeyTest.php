@@ -154,6 +154,8 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversedProxy = $owning->associatedEntity;
 
+        $this->assertSame('def', $inversedProxy->id1, 'Proxy identifier is converted');
+
         $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
