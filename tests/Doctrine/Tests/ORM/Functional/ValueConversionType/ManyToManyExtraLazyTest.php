@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -18,7 +19,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('vct');
+        $this->useModelSet('vct_manytomany_extralazy');
         parent::setUp();
 
         $inversed1 = new Entity\InversedManyToManyExtraLazyEntity();
@@ -50,6 +51,15 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
+    }
+
+    public static function tearDownAfterClass()
+    {
+        $conn = static::$_sharedConn;
+
+        $conn->executeUpdate('DROP TABLE vct_xref_manytomany_extralazy');
+        $conn->executeUpdate('DROP TABLE vct_owning_manytomany_extralazy');
+        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany_extralazy');
     }
 
     public function testThatTheExtraLazyCollectionFromOwningToInversedIsCounted()

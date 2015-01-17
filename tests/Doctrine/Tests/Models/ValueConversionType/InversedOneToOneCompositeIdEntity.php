@@ -26,7 +26,7 @@ class InversedOneToOneCompositeIdEntity
     public $someProperty;
 
     /**
-     * @OneToOne(targetEntity="OwningOneToOneCompositeIdEntity", mappedBy="associatedComposite")
+     * @OneToOne(targetEntity="OwningOneToOneCompositeIdEntity", mappedBy="associatedEntity")
      */
     public $associatedEntity;
 }

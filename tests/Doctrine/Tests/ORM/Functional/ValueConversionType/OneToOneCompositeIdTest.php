@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -17,8 +18,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('vct');
-
+        $this->useModelSet('vct_onetoone_compositeid');
         parent::setUp();
 
         $inversed = new Entity\InversedOneToOneCompositeIdEntity();
@@ -30,13 +30,21 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         $owning->id3 = 'ghi';
 
         $inversed->associatedEntity = $owning;
-        $owning->associatedComposite = $inversed;
+        $owning->associatedEntity = $inversed;
 
         $this->_em->persist($inversed);
         $this->_em->persist($owning);
 
         $this->_em->flush();
         $this->_em->clear();
+    }
+
+    public static function tearDownAfterClass()
+    {
+        $conn = static::$_sharedConn;
+
+        $conn->executeUpdate('DROP TABLE vct_owning_onetoone_compositeid');
+        $conn->executeUpdate('DROP TABLE vct_inversed_onetoone_compositeid');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
@@ -100,7 +108,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $inversedProxy = $owning->associatedComposite;
+        $inversedProxy = $owning->associatedEntity;
 
         $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
@@ -115,9 +123,6 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
             array('id1' => 'abc', 'id2' => 'def')
         );
 
-        $this->assertInstanceOf(
-            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity',
-            $inversed->associatedEntity
-        );
+        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity', $inversed->associatedEntity);
     }
 }

@@ -21,5 +21,5 @@ class OwningOneToOneCompositeIdEntity
      *     @JoinColumn(name="associated_id2", referencedColumnName="id2")
      * })
      */
-    public $associatedComposite;
+    public $associatedEntity;
 }
