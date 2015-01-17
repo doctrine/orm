@@ -19,6 +19,7 @@
         "doctrine/dbal": ">=2.5-dev,<2.6-dev",
         "doctrine/instantiator": "~1.0.1",
         "doctrine/common": ">=2.5-dev,<2.6-dev",
+        "doctrine/cache": "~1.4",
         "symfony/console": "~2.5"
     },
     "require-dev": {
