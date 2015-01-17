@@ -60,4 +60,16 @@ class DefaultRegionTest extends AbstractRegionTest
 
         $this->assertSame('foo', $cache->getNamespace());
     }
+
+    public function testEvictAllWithGenericCacheThrowsUnsupportedException()
+    {
+        /* @var $cache \Doctrine\Common\Cache\Cache */
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+
+        $region = new DefaultRegion('foo', $cache);
+
+        $this->setExpectedException('BadMethodCallException');
+
+        $region->evictAll();
+    }
 }
