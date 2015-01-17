@@ -678,7 +678,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             // relationToSourceKeyColumns
             $targetColumn = $mapping['relationToSourceKeyColumns'][$joinTableColumn];
             $params[]     = $sourceId[$sourceClass->getFieldForColumn($targetColumn)];
-            $types[]      = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+            $types[]      = PersisterHelper::getTypeOfColumn($targetColumn, $sourceClass, $this->em);
         }
 
         if ($addFilters) {
