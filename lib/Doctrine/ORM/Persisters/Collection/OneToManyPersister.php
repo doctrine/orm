@@ -67,7 +67,17 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
-        return $persister->load(array($mapping['mappedBy'] => $collection->getOwner(), $mapping['indexBy'] => $index), null, $mapping, array(), null, 1);
+        return $persister->load(
+            array(
+                $mapping['mappedBy'] => $collection->getOwner(),
+                $mapping['indexBy']  => $index
+            ),
+            null,
+            $mapping,
+            array(),
+            null,
+            1
+        );
     }
 
     /**

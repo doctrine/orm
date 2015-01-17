@@ -864,7 +864,7 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = $this->getValue($param);
+            $sqlParams[] = PersisterHelper::getValue($param, $this->em);
         }
 
         foreach ($types as $type) {
@@ -1717,7 +1717,8 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $criteria = array();
+        $criteria    = array();
+        $parameters  = array();
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
 
@@ -1734,15 +1735,29 @@ class BasicEntityPersister implements EntityPersister
                 }
 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+                $parameters[]                                   = array(
+                    'value' => $value,
+                    'field' => $field,
+                    'class' => $sourceClass,
+                );
 
                 continue;
             }
 
-            $criteria[$tableAlias . "." . $targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            $field = $sourceClass->fieldNames[$sourceKeyColumn];
+            $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+
+            $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+            $parameters[] = array(
+                'value' => $value,
+                'field' => $field,
+                'class' => $sourceClass,
+            );
+
         }
 
-        $sql = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
-        list($params, $types) = $this->expandParameters($criteria);
+        $sql                  = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
+        list($params, $types) = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1874,11 +1889,11 @@ class BasicEntityPersister implements EntityPersister
              . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
-        list($params) = $this->expandParameters($criteria);
+        list($params, $types) = $this->expandParameters($criteria);
 
         if (null !== $extraConditions) {
-            $sql                           .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
-            list($criteriaParams, $values) = $this->expandCriteriaParameters($extraConditions);
+            $sql                         .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
+            list($criteriaParams, $types) = $this->expandCriteriaParameters($extraConditions);
 
             $params = array_merge($params, $criteriaParams);
         }
@@ -1887,7 +1902,7 @@ class BasicEntityPersister implements EntityPersister
             $sql .= ' AND ' . $filterSql;
         }
 
-        return (bool) $this->conn->fetchColumn($sql, $params);
+        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
     /**
