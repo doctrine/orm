@@ -118,7 +118,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
         $this->assertTrue($inversed->associatedEntities->contains($owning));
     }
 
-    public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnIndexbyKey()
+    public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnIndexByKey()
     {
         $owning = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity',
@@ -128,7 +128,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
         $this->assertTrue($owning->associatedEntities->containsKey('abc'));
     }
 
-    public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnIndexbyKey()
+    public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnIndexByKey()
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
