@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
 
 /**
@@ -68,6 +69,29 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($collection->isEmpty());
         $this->assertFalse($collection->isInitialized());
+    }
+
+    /**
+     * @group #1206
+     * @group DDC-3430
+     */
+    public function testMatchingDoesNotModifyTheGivenCriteria()
+    {
+        $collectionHolder = new PersistentCollectionHolder();
+
+        $this->_em->persist($collectionHolder);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $criteria = new Criteria();
+
+        $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
+        $collectionHolder->getCollection()->matching($criteria);
+
+        $this->assertEmpty($criteria->getWhereExpression());
+        $this->assertEmpty($criteria->getFirstResult());
+        $this->assertEmpty($criteria->getMaxResults());
+        $this->assertEmpty($criteria->getOrderings());
     }
 }
 
