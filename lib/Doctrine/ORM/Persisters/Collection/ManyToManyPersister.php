@@ -198,11 +198,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($collection, $element, true);
+        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictions($collection, $element, true);
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        return (bool) $this->conn->fetchColumn($sql, $params);
+        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
     /**
@@ -214,11 +214,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($collection, $element, false);
+        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictions($collection, $element, false);
 
         $sql = 'DELETE FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        return (bool) $this->conn->executeUpdate($sql, $params);
+        return (bool) $this->conn->executeUpdate($sql, $params, $types);
     }
 
     /**
@@ -634,7 +634,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @param object                             $element
      * @param boolean                            $addFilters Whether the filter SQL should be included or not.
      *
-     * @return array
+     * @return array ordered vector:
+     *                - quoted join table name
+     *                - where clauses to be added for filtering
+     *                - parameters to be bound for filtering
+     *                - types of the parameters to be bound for filtering
      */
     private function getJoinTableRestrictions(PersistentCollection $collection, $element, $addFilters)
     {
@@ -658,18 +662,23 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $sourceClass, $this->platform);
         $whereClauses    = array();
         $params          = array();
+        $types           = array();
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
-                $params[] = $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+                $targetColumn = $mapping['relationToTargetKeyColumns'][$joinTableColumn];
+                $params[]     = $targetId[$targetClass->getFieldForColumn($targetColumn)];
+                $types[]      = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
 
                 continue;
             }
 
             // relationToSourceKeyColumns
-            $params[] = $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+            $targetColumn = $mapping['relationToSourceKeyColumns'][$joinTableColumn];
+            $params[]     = $sourceId[$sourceClass->getFieldForColumn($targetColumn)];
+            $types[]      = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
         }
 
         if ($addFilters) {
@@ -683,7 +692,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
         }
 
-        return array($quotedJoinTable, $whereClauses, $params);
+        return array($quotedJoinTable, $whereClauses, $params, $types);
     }
 
     /**
