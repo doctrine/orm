@@ -728,7 +728,11 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $this->computeAssociationChanges($assoc, $val);
+            try {
+                $this->computeAssociationChanges($assoc, $val);
+            } catch (\Exception $ex) {
+                throw ORMInvalidArgumentException::computeAssociationChangesError($entity, $assoc['fieldName'], $ex->value);
+            }
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
                 $assoc['isOwningSide'] &&
@@ -830,6 +834,10 @@ class UnitOfWork implements PropertyChangedListener
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($unwrappedValue as $key => $entry) {
+            if (! ($entry instanceof $targetClass->name)) {
+                throw ORMInvalidArgumentException::invalidAssociation($targetClass, $assoc, $entry);
+            }
+
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
             if ( ! ($entry instanceof $assoc['targetEntity'])) {
