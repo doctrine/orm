@@ -120,7 +120,7 @@ EOT
             $query->setMaxResults((int) $maxResult);
         }
 
-        if ($input->hasOption('show-sql')) {
+        if ($input->hasOption('show-sql') && $input->getOption('show-sql')) {
             Debug::dump($query->getSQL());
             return;
         }
