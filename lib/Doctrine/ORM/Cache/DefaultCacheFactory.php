@@ -184,13 +184,13 @@ class DefaultCacheFactory implements CacheFactory
         if ($mapping['cache']) {
             $targetPersister = $em->getUnitOfWork()->getEntityPersister($mapping['targetEntity']);
 
-            if ($targetPersister instanceof CachedPersister) {
+            if (! ($targetPersister instanceof CachedPersister)) {
+                throw CacheException::nonCacheableEntity($mapping['targetEntity']);
+            }
+            $targetRegion = $targetPersister->getCacheRegion();
 
-                $targetRegion = $targetPersister->getCacheRegion();
-
-                if ($targetRegion instanceof MultiGetRegion) {
-                    return new MultiGetCollectionHydrator($em, $targetRegion);
-                }
+            if ($targetRegion instanceof MultiGetRegion) {
+                return new MultiGetCollectionHydrator($em, $targetRegion);
             }
         }
 
