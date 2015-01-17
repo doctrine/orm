@@ -20,12 +20,13 @@
 
 namespace Doctrine\ORM\Cache\Region;
 
+use Doctrine\Common\Cache\Cache as CacheAdapter;
+use Doctrine\Common\Cache\ClearableCache;
+use Doctrine\ORM\Cache\CacheEntry;
+use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\CacheEntry;
-use Doctrine\Common\Cache\CacheProvider;
 
 /**
  * The simplest cache region compatible with all doctrine-cache drivers.
@@ -36,7 +37,7 @@ use Doctrine\Common\Cache\CacheProvider;
 class DefaultRegion implements Region
 {
     /**
-     * @var \Doctrine\Common\Cache\CacheProvider
+     * @var CacheAdapter
      */
     protected $cache;
 
@@ -51,11 +52,11 @@ class DefaultRegion implements Region
     protected $lifetime = 0;
 
     /**
-     * @param string                                $name
-     * @param \Doctrine\Common\Cache\CacheProvider  $cache
-     * @param integer                               $lifetime
+     * @param string       $name
+     * @param CacheAdapter $cache
+     * @param integer      $lifetime
      */
-    public function __construct($name, CacheProvider $cache, $lifetime = 0)
+    public function __construct($name, CacheAdapter $cache, $lifetime = 0)
     {
         $this->cache    = $cache;
         $this->name     = (string) $name;
@@ -146,6 +147,13 @@ class DefaultRegion implements Region
      */
     public function evictAll()
     {
+        if (! $this->cache instanceof ClearableCache) {
+            throw new \BadMethodCallException(sprintf(
+                'Clearing all cache entries is not supported by the supplied cache adapter of type %s',
+                get_class($this->cache)
+            ));
+        }
+
         return $this->cache->deleteAll();
     }
 }
