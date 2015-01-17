@@ -76,25 +76,18 @@ class DefaultCollectionHydrator implements CollectionHydrator
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
         $assoc           = $metadata->associationMappings[$key->association];
+        /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
         $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
         $targetRegion    = $targetPersister->getCacheRegion();
         $list            = array();
 
-        if ($targetRegion instanceof MultiGetRegion) {
-            $entityEntries = $targetRegion->getMulti($entry);
+        $entityEntries = $targetRegion->getMultiple($entry);
 
-            if ($entityEntries === null) {
-                return null;
-            }
-        } else {
-            $entityEntries = array();
-            foreach ($entry->identifiers as $index => $identifier) {
-                if (null === ($entityEntries[$index] = $targetRegion->get($identifier))) {
-                    return null;
-                }
-            }
+        if ($entityEntries === null) {
+            return null;
         }
 
+        /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
         foreach ($entityEntries as $index => $entityEntry) {
             $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
         }
