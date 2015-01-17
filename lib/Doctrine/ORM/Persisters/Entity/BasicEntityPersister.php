@@ -36,6 +36,7 @@ use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -610,15 +611,16 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function prepareUpdateData($entity)
     {
-        $result = array();
-        $uow    = $this->em->getUnitOfWork();
+        $versionField = null;
+        $result       = array();
+        $uow          = $this->em->getUnitOfWork();
 
         if (($versioned = $this->class->isVersioned) != false) {
             $versionField = $this->class->versionField;
         }
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if ($versioned && $versionField == $field) {
+            if (isset($versionField) && $versionField == $field) {
                 continue;
             }
 
@@ -668,7 +670,7 @@ class BasicEntityPersister implements EntityPersister
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
                 $this->quotedColumns[$sourceColumn]  = $quotedColumn;
-                $this->columnTypes[$sourceColumn]    = $targetClass->getTypeOfColumn($targetColumn);
+                $this->columnTypes[$sourceColumn]    = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
                 $result[$owningTable][$sourceColumn] = $newValId
                     ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
                     : null;
@@ -862,12 +864,12 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = $this->getValue($param);
+            $sqlParams[] = PersisterHelper::getIdentifierValues($param, $this->em);
         }
 
         foreach ($types as $type) {
             list($field, $value) = $type;
-            $sqlTypes[]          = $this->getType($field, $value);
+            $sqlTypes[]          = $this->getType($field, $value, $this->class);
         }
 
         return array($sqlParams, $sqlTypes);
@@ -969,7 +971,7 @@ class BasicEntityPersister implements EntityPersister
         $class          = $sourceClass;
         $association    = $assoc;
         $criteria       = array();
-
+        $parameters     = array();
 
         if ( ! $assoc['isOwningSide']) {
             $class       = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -1012,10 +1014,15 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $criteria[$quotedJoinTable . '.' . $quotedKeyColumn] = $value;
+            $parameters[] = array(
+                'value' => $value,
+                'field' => $field,
+                'class' => $sourceClass,
+            );
         }
 
         $sql = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
-        list($params, $types) = $this->expandParameters($criteria);
+        list($params, $types) = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1309,10 +1316,7 @@ class BasicEntityPersister implements EntityPersister
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
             $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
-
-            if (isset($targetClass->fieldNames[$joinColumn['referencedColumnName']])) {
-                $type  = $targetClass->fieldMappings[$targetClass->fieldNames[$joinColumn['referencedColumnName']]]['type'];
-            }
+            $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
             $this->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
         }
@@ -1426,7 +1430,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if ($this->class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->class->identifier[0] != $name) {
-                $columns[] = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
+                $columns[]                = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
                 $this->columnTypes[$name] = $this->class->fieldMappings[$name]['type'];
             }
         }
@@ -1713,7 +1717,8 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $criteria = array();
+        $criteria    = array();
+        $parameters  = array();
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
 
@@ -1730,15 +1735,29 @@ class BasicEntityPersister implements EntityPersister
                 }
 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+                $parameters[]                                   = array(
+                    'value' => $value,
+                    'field' => $field,
+                    'class' => $sourceClass,
+                );
 
                 continue;
             }
 
-            $criteria[$tableAlias . "." . $targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            $field = $sourceClass->fieldNames[$sourceKeyColumn];
+            $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+
+            $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+            $parameters[] = array(
+                'value' => $value,
+                'field' => $field,
+                'class' => $sourceClass,
+            );
+
         }
 
-        $sql = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
-        list($params, $types) = $this->expandParameters($criteria);
+        $sql                  = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
+        list($params, $types) = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1756,8 +1775,37 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types[]  = $this->getType($field, $value);
+            $types[]  = $this->getType($field, $value, $this->class);
             $params[] = $this->getValue($value);
+        }
+
+        return array($params, $types);
+    }
+
+    /**
+     * Expands the parameters from the given criteria and use the correct binding types if found,
+     * specialized for OneToMany or ManyToMany associations.
+     *
+     * @param mixed[][] $criteria an array of arrays containing following:
+     *                             - field to which each criterion will be bound
+     *                             - value to be bound
+     *                             - class to which the field belongs to
+     *
+     *
+     * @return array
+     */
+    private function expandToManyParameters($criteria)
+    {
+        $params = array();
+        $types  = array();
+
+        foreach ($criteria as $criterion) {
+            if ($criterion['value'] === null) {
+                continue; // skip null values.
+            }
+
+            $types[]  = $this->getType($criterion['field'], $criterion['value'], $criterion['class']);
+            $params[] = PersisterHelper::getIdentifierValues($criterion['value'], $this->em);
         }
 
         return array($params, $types);
@@ -1766,62 +1814,17 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field type to be used by parameter type casting.
      *
-     * @param string $field
-     * @param mixed  $value
+     * @param string        $fieldName
+     * @param mixed         $value
+     * @param ClassMetadata $class
      *
      * @return integer
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function getType($field, $value)
+    private function getType($fieldName, $value, ClassMetadata $class)
     {
-        switch (true) {
-            case (isset($this->class->fieldMappings[$field])):
-                $type = $this->class->fieldMappings[$field]['type'];
-                break;
-
-            case (isset($this->class->associationMappings[$field]) && $this->class->associationMappings[$field]['type'] === ClassMetadata::MANY_TO_MANY):
-                $assoc       = $this->class->associationMappings[$field];
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-
-                if ( ! $assoc['isOwningSide']) {
-                    $assoc = $targetClass->associationMappings[$assoc['mappedBy']];
-                }
-
-                if (count($assoc['relationToTargetKeyColumns']) > 1) {
-                    throw Query\QueryException::associationPathCompositeKeyNotSupported();
-                }
-
-                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
-                $targetColumn = $assoc['joinTable']['inverseJoinColumns'][0]['referencedColumnName'];
-                $type         = null;
-
-                if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
-                }
-
-                break;
-
-            case (isset($this->class->associationMappings[$field])):
-                $assoc = $this->class->associationMappings[$field];
-
-                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
-                    throw Query\QueryException::associationPathCompositeKeyNotSupported();
-                }
-
-                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
-                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
-                $type         = null;
-
-                if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
-                }
-
-                break;
-
-            default:
-                $type = null;
-        }
+        $type = PersisterHelper::getTypeOfField($fieldName, $class, $this->em);
 
         if (is_array($value)) {
             $type = Type::getType($type)->getBindingType();
@@ -1886,20 +1889,21 @@ class BasicEntityPersister implements EntityPersister
              . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
-        list($params) = $this->expandParameters($criteria);
+        list($params, $types) = $this->expandParameters($criteria);
 
         if (null !== $extraConditions) {
-            $sql                           .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
-            list($criteriaParams, $values) = $this->expandCriteriaParameters($extraConditions);
+            $sql                                 .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
+            list($criteriaParams, $criteriaTypes) = $this->expandCriteriaParameters($extraConditions);
 
             $params = array_merge($params, $criteriaParams);
+            $types  = array_merge($types, $criteriaTypes);
         }
 
         if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
 
-        return (bool) $this->conn->fetchColumn($sql, $params);
+        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
     /**

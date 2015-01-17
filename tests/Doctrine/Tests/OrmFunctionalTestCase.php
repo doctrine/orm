@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -199,6 +200,53 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Quote\Phone',
             'Doctrine\Tests\Models\Quote\User'
         ),
+        'vct_onetoone' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity'
+        ),
+        'vct_onetoone_compositeid' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity'
+        ),
+        'vct_onetoone_compositeid_foreignkey' => array(
+            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity'
+        ),
+        'vct_onetomany' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneEntity'
+        ),
+        'vct_onetomany_compositeid' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdEntity'
+        ),
+        'vct_onetomany_compositeid_foreignkey' => array(
+            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity'
+        ),
+        'vct_onetomany_extralazy' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity'
+        ),
+        'vct_manytomany' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity'
+        ),
+        'vct_manytomany_compositeid' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdEntity'
+        ),
+        'vct_manytomany_compositeid_foreignkey' => array(
+            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
+            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity'
+        ),
+        'vct_manytomany_extralazy' => array(
+            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
+            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity'
+        ),
     );
 
     /**
@@ -358,6 +406,68 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-user"));
         }
 
+        if (isset($this->_usedModelSets['vct_onetoone'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_onetoone');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetoone');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetoone_compositeid'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_onetoone_compositeid');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetoone_compositeid');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetoone_compositeid_foreignkey'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_onetoone_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetoone_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_auxiliary');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetomany'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_manytoone');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetomany_compositeid'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_compositeid');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_compositeid');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetomany_compositeid_foreignkey'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_auxiliary');
+        }
+
+        if (isset($this->_usedModelSets['vct_onetomany_extralazy'])) {
+            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_extralazy');
+            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_extralazy');
+        }
+
+        if (isset($this->_usedModelSets['vct_manytomany'])) {
+            $conn->executeUpdate('DELETE FROM vct_xref_manytomany');
+            $conn->executeUpdate('DELETE FROM vct_owning_manytomany');
+            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany');
+        }
+
+        if (isset($this->_usedModelSets['vct_manytomany_compositeid'])) {
+            $conn->executeUpdate('DELETE FROM vct_xref_manytomany_compositeid');
+            $conn->executeUpdate('DELETE FROM vct_owning_manytomany_compositeid');
+            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_compositeid');
+        }
+
+        if (isset($this->_usedModelSets['vct_manytomany_compositeid_foreignkey'])) {
+            $conn->executeUpdate('DELETE FROM vct_xref_manytomany_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_owning_manytomany_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_compositeid_foreignkey');
+            $conn->executeUpdate('DELETE FROM vct_auxiliary');
+        }
+
+        if (isset($this->_usedModelSets['vct_manytomany_extralazy'])) {
+            $conn->executeUpdate('DELETE FROM vct_xref_manytomany_extralazy');
+            $conn->executeUpdate('DELETE FROM vct_owning_manytomany_extralazy');
+            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_extralazy');
+        }
+
         $this->_em->clear();
     }
 
@@ -395,6 +505,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function setUp()
     {
+        $this->setUpDBALTypes();
+
         $forceCreateTables = false;
 
         if ( ! isset(static::$_sharedConn)) {
@@ -581,5 +693,17 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function getCurrentQueryCount()
     {
         return count($this->_sqlLoggerStack->queries);
+    }
+
+    /**
+     * Configures DBAL types required in tests
+     */
+    protected function setUpDBALTypes()
+    {
+        if (Type::hasType('rot13')) {
+            Type::overrideType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+        } else {
+            Type::addType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+        }
     }
 }
