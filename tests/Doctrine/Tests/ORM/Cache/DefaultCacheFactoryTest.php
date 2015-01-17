@@ -281,4 +281,36 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 
+    public function testBuildsDefaultCacheRegionFromGenericCacheRegion()
+    {
+        /* @var $cache \Doctrine\Common\Cache\Cache */
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+
+        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Cache\Region\DefaultRegion',
+            $factory->getRegion(array(
+                'region' => 'bar',
+                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+            ))
+        );
+    }
+
+    public function testBuildsMultiGetCacheRegionFromGenericCacheRegion()
+    {
+        /* @var $cache \Doctrine\Common\Cache\CacheProvider */
+        $cache = $this->getMockForAbstractClass('Doctrine\Common\Cache\CacheProvider');
+
+        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Cache\Region\DefaultMultiGetRegion',
+            $factory->getRegion(array(
+                'region' => 'bar',
+                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+            ))
+        );
+    }
+
 }
