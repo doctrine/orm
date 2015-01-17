@@ -19,13 +19,8 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
-        if (DBALType::hasType('rot13')) {
-            DBALType::overrideType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
-        } else {
-            DBALType::addType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
-        }
-
         $this->useModelSet('vct_onetomany_compositeid_foreignkey');
+
         parent::setUp();
 
         $auxiliary = new Entity\AuxiliaryEntity();

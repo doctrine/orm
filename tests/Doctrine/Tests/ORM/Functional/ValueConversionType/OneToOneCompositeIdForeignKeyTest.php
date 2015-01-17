@@ -19,12 +19,6 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
-        if (DBALType::hasType('rot13')) {
-            DBALType::overrideType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
-        } else {
-            DBALType::addType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
-        }
-
         $this->useModelSet('vct_onetoone_compositeid_foreignkey');
         parent::setUp();
 
