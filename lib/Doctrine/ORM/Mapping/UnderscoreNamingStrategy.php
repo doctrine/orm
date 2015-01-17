@@ -106,7 +106,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function joinColumnName($propertyName)
+    public function joinColumnName($propertyName, $className = null)
     {
         return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
     }

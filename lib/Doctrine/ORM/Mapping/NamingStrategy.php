@@ -70,10 +70,11 @@ interface NamingStrategy
      * Returns a join column name for a property.
      *
      * @param string $propertyName A property name.
+     * @param string|null $className    The fully-qualified class name.
      *
      * @return string A join column name.
      */
-    function joinColumnName($propertyName);
+    function joinColumnName($propertyName, $className = null);
 
     /**
      * Returns a join table name.

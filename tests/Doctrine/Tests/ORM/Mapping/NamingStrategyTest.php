@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\JoinColumnClassNamingStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
 
 /**
@@ -17,6 +18,14 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static private function defaultNaming()
     {
         return new DefaultNamingStrategy();
+    }
+
+    /**
+     * @return JoinColumnClassNamingStrategy
+     */
+    static private function joinColumnClassNaming()
+    {
+        return new JoinColumnClassNamingStrategy();
     }
 
     /**
@@ -176,6 +185,14 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
             array(self::underscoreNamingUpper(), 'SOME_COLUMN_ID',
                 'someColumn', null,
             ),
+
+            // JoinColumnClassNamingStrategy
+            array(self::joinColumnClassNaming(), 'classname_someColumn_id',
+                'someColumn', 'Some\ClassName',
+            ),
+            array(self::joinColumnClassNaming(), 'classname_some_column_id',
+                'some_column', 'ClassName',
+            ),
         );
     }
 
@@ -186,9 +203,9 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
      * @param string $expected
      * @param string $propertyName
      */
-    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName)
+    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className = null)
     {
-        $this->assertEquals($expected, $strategy->joinColumnName($propertyName));
+        $this->assertEquals($expected, $strategy->joinColumnName($propertyName, $className));
     }
 
     /**
