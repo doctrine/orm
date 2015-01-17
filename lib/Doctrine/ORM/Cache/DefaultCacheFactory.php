@@ -189,7 +189,7 @@ class DefaultCacheFactory implements CacheFactory
                 $targetRegion = $targetPersister->getCacheRegion();
 
                 if ($targetRegion instanceof MultiGetRegion) {
-                    return new MultiGetCollectionHydrator($em);
+                    return new MultiGetCollectionHydrator($em, $targetRegion);
                 }
             }
         }
