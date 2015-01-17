@@ -1892,10 +1892,11 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $this->expandParameters($criteria);
 
         if (null !== $extraConditions) {
-            $sql                         .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
-            list($criteriaParams, $types) = $this->expandCriteriaParameters($extraConditions);
+            $sql                                 .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
+            list($criteriaParams, $criteriaTypes) = $this->expandCriteriaParameters($extraConditions);
 
             $params = array_merge($params, $criteriaParams);
+            $types  = array_merge($types, $criteriaTypes);
         }
 
         if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {
