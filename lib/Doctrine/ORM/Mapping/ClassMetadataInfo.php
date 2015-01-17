@@ -1998,7 +1998,10 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $columnName
      *
-     * @return \Doctrine\DBAL\Types\Type
+     * @return \Doctrine\DBAL\Types\Type|string|null
+     *
+     * @deprecated this method is bogous and unreliable, since it cannot resolve the type of a column that is
+     *             derived by a referenced field on a different entity.
      */
     public function getTypeOfColumn($columnName)
     {
