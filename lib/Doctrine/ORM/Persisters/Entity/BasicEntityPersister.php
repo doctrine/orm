@@ -36,6 +36,7 @@ use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -610,15 +611,16 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function prepareUpdateData($entity)
     {
-        $result = array();
-        $uow    = $this->em->getUnitOfWork();
+        $versionField = null;
+        $result       = array();
+        $uow          = $this->em->getUnitOfWork();
 
         if (($versioned = $this->class->isVersioned) != false) {
             $versionField = $this->class->versionField;
         }
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if ($versioned && $versionField == $field) {
+            if (isset($versionField) && $versionField == $field) {
                 continue;
             }
 
@@ -668,7 +670,7 @@ class BasicEntityPersister implements EntityPersister
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
                 $this->quotedColumns[$sourceColumn]  = $quotedColumn;
-                $this->columnTypes[$sourceColumn]    = $targetClass->getTypeOfColumn($targetColumn);
+                $this->columnTypes[$sourceColumn]    = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
                 $result[$owningTable][$sourceColumn] = $newValId
                     ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
                     : null;
@@ -1426,7 +1428,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if ($this->class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->class->identifier[0] != $name) {
-                $columns[] = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
+                $columns[]                = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
                 $this->columnTypes[$name] = $this->class->fieldMappings[$name]['type'];
             }
         }
