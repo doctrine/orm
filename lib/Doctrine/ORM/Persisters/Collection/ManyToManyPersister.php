@@ -108,6 +108,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $conditions     = array();
         $params         = array();
+        $types          = array();
         $mapping        = $collection->getMapping();
         $id             = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass    = $this->em->getClassMetadata($mapping['sourceEntity']);
@@ -126,6 +127,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $referencedName = $joinColumn['referencedColumnName'];
             $conditions[]   = 't.' . $columnName . ' = ?';
             $params[]       = $id[$sourceClass->getFieldForColumn($referencedName)];
+            $types[]        = PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em);
         }
 
         list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
@@ -156,7 +158,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . $joinTargetEntitySQL
             . ' WHERE ' . implode(' AND ', $conditions);
 
-        return $this->conn->fetchColumn($sql, $params);
+        return $this->conn->fetchColumn($sql, $params, 0, $types);
     }
 
     /**
