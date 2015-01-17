@@ -107,7 +107,9 @@ class PersisterHelper
      * @param ClassMetadata          $class
      * @param EntityManagerInterface $em
      *
-     * @return string|null
+     * @return string
+     *
+     * @throws \RuntimeException
      */
     public static function getTypeOfColumn($columnName, ClassMetadata $class, EntityManagerInterface $em)
     {
@@ -117,10 +119,9 @@ class PersisterHelper
             if (isset($class->fieldMappings[$fieldName])) {
                 return $class->fieldMappings[$fieldName]['type'];
             }
-
-            return null;
         }
 
+        // iterate over to-one association mappings
         foreach ($class->associationMappings as $assoc) {
             if ( ! isset($assoc['joinColumns'])) {
                 continue;
@@ -136,6 +137,26 @@ class PersisterHelper
             }
         }
 
-        return null;
+        // iterate over to-many association mappings
+        foreach ($class->associationMappings as $assoc) {
+            if ( ! (isset($assoc['joinTable']) && isset($assoc['joinTable']['joinColumns']))) {
+                continue;
+            }
+
+            foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
+                if ($joinColumn['name'] == $columnName) {
+                    $targetColumnName = $joinColumn['referencedColumnName'];
+                    $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
+
+                    return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
+                }
+            }
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Could not resolve type of column "%s" of class "%s"',
+            $columnName,
+            $class->getName()
+        ));
     }
 }
