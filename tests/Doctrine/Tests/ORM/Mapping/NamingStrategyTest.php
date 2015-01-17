@@ -4,8 +4,8 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\JoinColumnClassNamingStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
 
 /**
  * @group DDC-559

@@ -18,15 +18,12 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\Tests\ORM\Mapping\NamingStrategy;
+
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 
 /**
- * The default NamingStrategy
- *
- * 
- * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * Stub naming strategy to verify `joinColumnName` proper behavior
  */
 class JoinColumnClassNamingStrategy extends DefaultNamingStrategy
 {
@@ -35,6 +32,8 @@ class JoinColumnClassNamingStrategy extends DefaultNamingStrategy
      */
     public function joinColumnName($propertyName, $className = null)
     {
-        return strtolower($this->classToTableName($className)) . '_' . $propertyName . '_' . $this->referenceColumnName();
+        return strtolower($this->classToTableName($className))
+            . '_' . $propertyName
+            . '_' . $this->referenceColumnName();
     }
 }
