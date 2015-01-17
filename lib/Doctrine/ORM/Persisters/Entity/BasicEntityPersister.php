@@ -864,7 +864,7 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
-            $sqlParams[] = PersisterHelper::getValue($param, $this->em);
+            $sqlParams[] = PersisterHelper::getIdentifierValues($param, $this->em);
         }
 
         foreach ($types as $type) {
@@ -1805,7 +1805,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $types[]  = $this->getType($criterion['field'], $criterion['value'], $criterion['class']);
-            $params[] = PersisterHelper::getValue($criterion['value'], $this->em);
+            $params[] = PersisterHelper::getIdentifierValues($criterion['value'], $this->em);
         }
 
         return array($params, $types);

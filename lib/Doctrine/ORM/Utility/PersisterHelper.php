@@ -140,7 +140,7 @@ class PersisterHelper
      *
      * @return mixed
      */
-    public static function getValue($value, EntityManagerInterface $em)
+    public static function getIdentifierValues($value, EntityManagerInterface $em)
     {
         if ( ! is_array($value)) {
             return self::getIndividualValue($value, $em);
