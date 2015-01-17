@@ -45,6 +45,11 @@ class MultiGetCollectionHydrator implements CollectionHydrator
     private $uow;
 
     /**
+     * @var MultiGetRegion
+     */
+    private $targetRegion;
+
+    /**
      * @var array
      */
     private static $hints = array(Query::HINT_CACHE_ENABLED => true);
@@ -52,10 +57,11 @@ class MultiGetCollectionHydrator implements CollectionHydrator
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, MultiGetRegion $targetRegion)
     {
         $this->em  = $em;
         $this->uow = $em->getUnitOfWork();
+        $this->targetRegion = $targetRegion;
     }
 
     /**
@@ -78,8 +84,6 @@ class MultiGetCollectionHydrator implements CollectionHydrator
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
         $assoc           = $metadata->associationMappings[$key->association];
-        $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
-        $targetRegion    = $targetPersister->getCacheRegion();
         $list            = array();
 
         $keys = array();
@@ -87,7 +91,7 @@ class MultiGetCollectionHydrator implements CollectionHydrator
             $keys[$index] = new EntityCacheKey($assoc['targetEntity'], $identifier);
         }
 
-        $entityEntries = $targetRegion->getMulti($keys);
+        $entityEntries = $this->targetRegion->getMulti($keys);
 
         if ($entityEntries === null) {
             return null;
