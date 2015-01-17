@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for entities that participate in a hierarchy mapped with the
@@ -88,7 +89,19 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
                 foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                     $className      = isset($assoc['inherited']) ? $assoc['inherited'] : $this->class->name;
-                    $columnList[]   = $this->getSelectJoinColumnSQL($tableAlias, $srcColumn, $className);
+
+                    $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+
+                    $columnList[] = $this->getSelectJoinColumnSQL(
+                        $tableAlias,
+                        $srcColumn,
+                        $className,
+                        PersisterHelper::getTypeOfColumn(
+                            $mapping['sourceToTargetKeyColumns'][$srcColumn],
+                            $targetClass,
+                            $this->em
+                        )
+                    );
                 }
             }
         }
