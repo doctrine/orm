@@ -21,14 +21,6 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @return JoinColumnClassNamingStrategy
-     */
-    static private function joinColumnClassNaming()
-    {
-        return new JoinColumnClassNamingStrategy();
-    }
-
-    /**
      * @return UnderscoreNamingStrategy
      */
     static private function underscoreNamingLower()
@@ -171,28 +163,15 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     {
         return array(
             // DefaultNamingStrategy
-            array(self::defaultNaming(), 'someColumn_id',
-                'someColumn', null,
-            ),
-            array(self::defaultNaming(), 'some_column_id',
-                'some_column', null,
-            ),
+            array(self::defaultNaming(), 'someColumn_id', 'someColumn', null),
+            array(self::defaultNaming(), 'some_column_id', 'some_column', null),
 
             // UnderscoreNamingStrategy
-            array(self::underscoreNamingLower(), 'some_column_id',
-                'someColumn', null,
-            ),
-            array(self::underscoreNamingUpper(), 'SOME_COLUMN_ID',
-                'someColumn', null,
-            ),
-
+            array(self::underscoreNamingLower(), 'some_column_id', 'someColumn', null),
+            array(self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null),
             // JoinColumnClassNamingStrategy
-            array(self::joinColumnClassNaming(), 'classname_someColumn_id',
-                'someColumn', 'Some\ClassName',
-            ),
-            array(self::joinColumnClassNaming(), 'classname_some_column_id',
-                'some_column', 'ClassName',
-            ),
+            array(new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'),
+            array(new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'),
         );
     }
 
