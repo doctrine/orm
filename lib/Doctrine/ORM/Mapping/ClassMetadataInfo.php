@@ -1553,7 +1553,7 @@ class ClassMetadataInfo implements ClassMetadata
             if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
                 // Apply default join column
                 $mapping['joinColumns'] = array(array(
-                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName']),
+                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
                     'referencedColumnName' => $this->namingStrategy->referenceColumnName()
                 ));
             }
@@ -1571,7 +1571,7 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 if (empty($joinColumn['name'])) {
-                    $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName']);
+                    $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name);
                 }
 
                 if (empty($joinColumn['referencedColumnName'])) {
