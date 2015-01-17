@@ -255,7 +255,33 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
      *
      * @param mixed $invalidValue
      */
-    public function testRejectsInvalidAssociationValue($invalidValue)
+    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue)
+    {
+        $this->_unitOfWork->setEntityPersister(
+            'Doctrine\Tests\Models\Forum\ForumUser',
+            new EntityPersisterMock(
+                $this->_emMock,
+                $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser')
+            )
+        );
+
+        $user           = new ForumUser();
+        $user->username = 'John';
+        $user->avatar   = $invalidValue;
+
+        $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException');
+
+        $this->_unitOfWork->persist($user);
+    }
+
+    /**
+     * @group DDC-3490
+     *
+     * @dataProvider invalidAssociationValuesDataProvider
+     *
+     * @param mixed $invalidValue
+     */
+    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue)
     {
         $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser');
 
@@ -264,14 +290,15 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
             new EntityPersisterMock($this->_emMock, $metadata)
         );
 
-        // Create a test user
-        $user           = new ForumUser();
+        $user = new ForumUser();
+
+        $this->_unitOfWork->persist($user);
+
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
         $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException');
 
-        $this->_unitOfWork->persist($user);
         $this->_unitOfWork->computeChangeSet($metadata, $user);
     }
 
