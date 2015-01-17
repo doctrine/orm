@@ -92,11 +92,21 @@ class PersisterHelper
 
         $assoc = $class->associationMappings[$fieldName];
 
-        if (count($assoc['sourceToTargetKeyColumns']) > 1) {
+        if (! $assoc['isOwningSide']) {
+            return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
+        }
+
+        if (($assoc['type'] & ClassMetadata::MANY_TO_MANY) > 0) {
+            $joinData = $assoc['joinTable'];
+        } else {
+            $joinData = $assoc;
+        }
+
+        if (count($joinData['joinColumns']) > 1) {
             throw QueryException::associationPathCompositeKeyNotSupported();
         }
 
-        $targetColumnName = $assoc['joinColumns'][0]['referencedColumnName'];
+        $targetColumnName = $joinData['joinColumns'][0]['referencedColumnName'];
         $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
 
         return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
