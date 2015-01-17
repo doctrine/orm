@@ -26,7 +26,7 @@ use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Cache\MultiGetRegion;
-use Doctrine\Common\Cache\CacheMultiGet;
+use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
  * A cache region that enables the retrieval of multiple elements with one call
@@ -39,10 +39,10 @@ class DefaultMultiGetRegion extends DefaultRegion implements MultiGetRegion
     /**
      * {@inheritdoc}
      */
-    public function getMulti(array $keys)
+    public function getMulti(CollectionCacheEntry $collection)
     {
         $keysToRetrieve = array();
-        foreach ($keys as $index => $key) {
+        foreach ($collection->identifiers as $index => $key) {
             $keysToRetrieve[$index] = $this->name . '_' . $key->hash;
         }
 
@@ -55,7 +55,6 @@ class DefaultMultiGetRegion extends DefaultRegion implements MultiGetRegion
         foreach ($keysToRetrieve as $index => $key) {
             $returnableItems[$index] = $items[$key];
         }
-
         return $returnableItems;
     }
 }
