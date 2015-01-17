@@ -701,9 +701,9 @@ public function __construct()
      */
     protected function hasProperty($property, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass()) {
+        if ($this->extendsClass() || class_exists($metadata->name)) {
             // don't generate property if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend());
+            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
             if ($reflClass->hasProperty($property)) {
                 return true;
             }
@@ -723,9 +723,9 @@ public function __construct()
      */
     protected function hasMethod($method, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass()) {
+        if ($this->extendsClass() || class_exists($metadata->name)) {
             // don't generate method if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend());
+            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
 
             if ($reflClass->hasMethod($method)) {
                 return true;

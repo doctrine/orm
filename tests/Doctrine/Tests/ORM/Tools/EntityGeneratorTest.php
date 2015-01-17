@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\SchemaTool,
     Doctrine\ORM\Tools\EntityGenerator,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter,
@@ -454,6 +455,79 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($value, $entity->{$getter}());
     }
 
+    /**
+     * @group DDC-1590
+     */
+    public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses()
+    {
+        $cmf    = new ClassMetadataFactory();
+        $em     = $this->_getTestEntityManager();
+
+        $cmf->setEntityManager($em);
+
+        $ns     = $this->_namespace;
+        $nsdir  = $this->_tmpDir . '/' . $ns;
+
+        $content = str_replace(
+            'namespace Doctrine\Tests\Models\DDC1590',
+            'namespace ' . $ns,
+            file_get_contents(__DIR__ . '/../../Models/DDC1590/DDC1590User.php')
+        );
+
+        $fname = $nsdir . "/DDC1590User.php";
+        file_put_contents($fname, $content);
+        require $fname;
+
+
+        $metadata = $cmf->getMetadataFor($ns . '\DDC1590User');
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        // class DDC1590User extends DDC1590Entity { ... }
+        $source = file_get_contents($fname);
+
+        // class _DDC1590User extends DDC1590Entity { ... }
+        $source2    = str_replace('class DDC1590User', 'class _DDC1590User', $source);
+        $fname2     = $nsdir . "/_DDC1590User.php";
+        file_put_contents($fname2, $source2);
+        require $fname2;
+
+        // class __DDC1590User { ... }
+        $source3    = str_replace('class DDC1590User extends DDC1590Entity', 'class __DDC1590User', $source);
+        $fname3     = $nsdir . "/__DDC1590User.php";
+        file_put_contents($fname3, $source3);
+        require $fname3;
+
+
+        // class _DDC1590User extends DDC1590Entity { ... }
+        $rc2 = new \ReflectionClass($ns.'\_DDC1590User');
+
+        $this->assertTrue($rc2->hasProperty('name'));
+        $this->assertTrue($rc2->hasProperty('id'));
+        $this->assertTrue($rc2->hasProperty('created_at'));
+
+        $this->assertTrue($rc2->hasMethod('getName'));
+        $this->assertTrue($rc2->hasMethod('setName'));
+        $this->assertTrue($rc2->hasMethod('getId'));
+        $this->assertFalse($rc2->hasMethod('setId'));
+        $this->assertTrue($rc2->hasMethod('getCreatedAt'));
+        $this->assertTrue($rc2->hasMethod('setCreatedAt'));
+
+
+        // class __DDC1590User { ... }
+        $rc3 = new \ReflectionClass($ns.'\__DDC1590User');
+
+        $this->assertTrue($rc3->hasProperty('name'));
+        $this->assertFalse($rc3->hasProperty('id'));
+        $this->assertFalse($rc3->hasProperty('created_at'));
+
+        $this->assertTrue($rc3->hasMethod('getName'));
+        $this->assertTrue($rc3->hasMethod('setName'));
+        $this->assertFalse($rc3->hasMethod('getId'));
+        $this->assertFalse($rc3->hasMethod('setId'));
+        $this->assertFalse($rc3->hasMethod('getCreatedAt'));
+        $this->assertFalse($rc3->hasMethod('setCreatedAt'));
+    }
+    
     /**
      * @return array
      */
