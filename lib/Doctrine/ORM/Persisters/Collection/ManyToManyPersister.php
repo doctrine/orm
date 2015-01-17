@@ -560,23 +560,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictionsWithKey(PersistentCollection $collection, $key, $addFilters)
     {
-        $filterMapping  = $collection->getMapping();
-        $mapping        = $filterMapping;
-        $indexBy        = $mapping['indexBy'];
-        $id             = $this->uow->getEntityIdentifier($collection->getOwner());
-        $targetEntity   = $this->em->getClassMetadata($mapping['targetEntity']);
+        $filterMapping = $collection->getMapping();
+        $mapping       = $filterMapping;
+        $indexBy       = $mapping['indexBy'];
+        $id            = $this->uow->getEntityIdentifier($collection->getOwner());
+        $sourceClass   = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
 
         if (! $mapping['isOwningSide']) {
             $associationSourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
-            $mapping  = $associationSourceClass->associationMappings[$mapping['mappedBy']];
-            $joinColumns = $mapping['joinTable']['joinColumns'];
-            $relationMode = 'relationToTargetKeyColumns';
-            $inverseRelationMode = 'relationToSourceKeyColumns';
+            $mapping                = $associationSourceClass->associationMappings[$mapping['mappedBy']];
+            $joinColumns            = $mapping['joinTable']['joinColumns'];
+            $sourceRelationMode     = 'relationToTargetKeyColumns';
+            $targetRelationMode     = 'relationToSourceKeyColumns';
         } else {
-            $joinColumns = $mapping['joinTable']['inverseJoinColumns'];
             $associationSourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-            $relationMode = 'relationToSourceKeyColumns';
-            $inverseRelationMode = 'relationToTargetKeyColumns';
+            $joinColumns            = $mapping['joinTable']['inverseJoinColumns'];
+            $sourceRelationMode     = 'relationToSourceKeyColumns';
+            $targetRelationMode     = 'relationToTargetKeyColumns';
         }
 
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform). ' t';
@@ -584,7 +585,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params          = array();
         $types           = array();
 
-        $joinNeeded = ! in_array($indexBy, $targetEntity->identifier);
+        $joinNeeded = ! in_array($indexBy, $targetClass->identifier);
 
         if ($joinNeeded) { // extra join needed if indexBy is not a @id
             $joinConditions = array();
@@ -592,29 +593,30 @@ class ManyToManyPersister extends AbstractCollectionPersister
             foreach ($joinColumns as $joinTableColumn) {
                 $joinConditions[] = 't.' . $joinTableColumn['name'] . ' = tr.' . $joinTableColumn['referencedColumnName'];
             }
-            $tableName = $this->quoteStrategy->getTableName($targetEntity, $this->platform);
-            $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
 
-            $whereClauses[] = 'tr.' . $targetEntity->getColumnName($indexBy) . ' = ?';
-            $params[] = $key;
-            $types[]  = PersisterHelper::getTypeOfField($indexBy, $targetEntity, $this->em);
+            $tableName        = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+            $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
+            $columnName       = $targetClass->getColumnName($indexBy);
+
+            $whereClauses[] = 'tr.' . $columnName . ' = ?';
+            $params[]       = $key;
+            $types[]        = PersisterHelper::getTypeOfColumn($columnName, $targetClass, $this->em);
         }
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            if (isset($mapping[$relationMode][$joinTableColumn])) {
-                $whereClauses[]    = 't.' . $joinTableColumn . ' = ?';
-                $column            = $mapping[$relationMode][$joinTableColumn];
-                $columnOwningClass = $this->em->getClassMetadata($mapping['targetEntity']);
-                $params[]          = $id[$columnOwningClass->getFieldForColumn($column)];
-                $types[]           = PersisterHelper::getTypeOfColumn($column, $columnOwningClass, $this->em);
+            if (isset($mapping[$sourceRelationMode][$joinTableColumn])) {
+                $column         = $mapping[$sourceRelationMode][$joinTableColumn];
+                $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
+                $params[]       = $sourceClass->containsForeignIdentifier
+                    ? $id[$sourceClass->getFieldForColumn($column)]
+                    : $id[$sourceClass->fieldNames[$column]];
+                $types[]        = PersisterHelper::getTypeOfColumn($column, $sourceClass, $this->em);
             } elseif ( ! $joinNeeded) {
+                $column = $mapping[$targetRelationMode][$joinTableColumn];
+
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
                 $params[]       = $key;
-                $types[]        = PersisterHelper::getTypeOfColumn(
-                    $mapping[$inverseRelationMode][$joinTableColumn],
-                    $targetEntity,
-                    $this->em
-                );
+                $types[]        = PersisterHelper::getTypeOfColumn($column, $targetClass, $this->em);
             }
         }
 
