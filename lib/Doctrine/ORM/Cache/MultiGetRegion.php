@@ -20,8 +20,6 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Cache\CacheKey;
-
 /**
  * Defines a region that supports multi-get reading.
  *
@@ -36,8 +34,8 @@ interface MultiGetRegion
      * Get all items from the cache indentifed by $keys.
      * It returns NULL if some elements can not be found.
      *
-     * @param CacheKey[] $key The keys of the items to be retrieved.
+     * @param CollectionCacheEntry[] $collection The collection of the items to be retrieved.
      * @return array The cached entries or NULL if one or more entries can not be found
      */
-    public function getMulti(array $keys);
+    public function getMulti(CollectionCacheEntry $collection);
 }

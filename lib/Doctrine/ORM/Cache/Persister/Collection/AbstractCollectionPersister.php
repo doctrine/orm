@@ -167,8 +167,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $targetHydrator     = $targetPersister->getEntityHydrator();
         $entry              = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);
 
-        foreach ($entry->identifiers as $index => $identifier) {
-            $entityKey = new EntityCacheKey($this->targetEntity->rootEntityName, $identifier);
+        foreach ($entry->identifiers as $index => $entityKey) {
 
             if ($targetRegion->contains($entityKey)) {
                 continue;
