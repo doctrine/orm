@@ -144,7 +144,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @param \Doctrine\ORM\Configuration   $config
      * @param \Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    public function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
         $this->conn              = $conn;
         $this->config            = $config;
