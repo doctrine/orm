@@ -92,6 +92,11 @@ Tutorials
 * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
 * :doc:`Embeddables <tutorials/embeddables>`
 
+Changelogs
+----------
+
+* :doc:`Migration to 2.5 <changelog/migration_2_5>`
+
 Cookbook
 --------
 
