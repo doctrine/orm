@@ -215,21 +215,23 @@ class MergeProxiesTest extends OrmFunctionalTestCase
             array(realpath(__DIR__ . '/../../Models/Cache')),
             true
         ));
+        $config->setSQLLogger($logger);
 
         // always runs on sqlite to prevent multi-connection race-conditions with the test suite
         // multi-connection is not relevant for the purpose of checking locking here, but merely
         // to stub out DB-level access and intercept it
-        $connection = DriverManager::getConnection(array(
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ));
+        $connection = DriverManager::getConnection(
+            array(
+                'driver' => 'pdo_sqlite',
+                'memory' => true
+            ),
+            $config
+        );
 
-        $connection->getConfiguration()->setSQLLogger($logger);
 
         $entityManager = EntityManager::create($connection, $config);
 
-        (new SchemaTool($entityManager))
-            ->createSchema([$this->_em->getClassMetadata(DateTimeModel::CLASSNAME)]);
+        (new SchemaTool($entityManager))->createSchema([$entityManager->getClassMetadata(DateTimeModel::CLASSNAME)]);
 
         return $entityManager;
     }
