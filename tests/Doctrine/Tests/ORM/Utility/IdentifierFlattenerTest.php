@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+
 /**
  * Test the IdentifierFlattener utility class
  *
@@ -87,7 +88,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 
         $this->assertArrayHasKey('secondEntity', $flatIds, 'It should be called secondEntity');
 
-        $this->assertSame($id['secondEntity']->id, $flatIds['secondEntity']);
+        $this->assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
     }
 
     /**
@@ -115,8 +116,8 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->assertArrayHasKey('leavingFrom', $id);
         $this->assertArrayHasKey('goingTo', $id);
 
-        $this->assertSame($leeds, $id['leavingFrom']);
-        $this->assertSame($london, $id['goingTo']);
+        $this->assertEquals($leeds, $id['leavingFrom']);
+        $this->assertEquals($london, $id['goingTo']);
 
         $flatIds = $this->identifierFlattener->flattenIdentifier($class, $id);
 
@@ -125,7 +126,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->assertArrayHasKey('leavingFrom', $flatIds);
         $this->assertArrayHasKey('goingTo', $flatIds);
 
-        $this->assertSame($id['leavingFrom']->getId(), $flatIds['leavingFrom']);
-        $this->assertSame($id['goingTo']->getId(), $flatIds['goingTo']);
+        $this->assertEquals($id['leavingFrom']->getId(), $flatIds['leavingFrom']);
+        $this->assertEquals($id['goingTo']->getId(), $flatIds['goingTo']);
     }
 }

@@ -49,6 +49,7 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Cache\AssociationCacheEntry;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -2490,22 +2491,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata($className);
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
-        if ($class->isIdentifierComposite) {
-            $id = array();
-
-            foreach ($class->identifier as $fieldName) {
-                $id[$fieldName] = isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName];
-            }
-        } else {
-            $id = isset($class->associationMappings[$class->identifier[0]])
-                ? $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]
-                : $data[$class->identifier[0]];
-
-            $id = array($class->identifier[0] => $id);
-        }
-
+        $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
@@ -2639,10 +2625,18 @@ class UnitOfWork implements PropertyChangedListener
 
                         if ($joinColumnValue !== null) {
                             if ($targetClass->containsForeignIdentifier) {
+                                if ($joinColumnValue instanceof AssociationCacheEntry) {
+                                    $joinColumnValue = implode(' ', $joinColumnValue->identifier);
+                                }
+
                                 $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
                             } else {
                                 $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
                             }
+                        } elseif ($targetClass->containsForeignIdentifier && in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)) {
+                            // the missing key is part of target's entity primary key
+                            $associatedId = array();
+                            break;
                         }
                     }
 
