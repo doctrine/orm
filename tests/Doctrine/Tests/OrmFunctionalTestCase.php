@@ -252,6 +252,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity'
         ),
+        'geonames' => array(
+            'Doctrine\Tests\Models\GeoNames\Country',
+            'Doctrine\Tests\Models\GeoNames\Admin1',
+            'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
+            'Doctrine\Tests\Models\GeoNames\City'
+        )
     );
 
     /**
@@ -483,6 +489,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM vct_owning_manytomany_extralazy');
             $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_extralazy');
         }
+        if (isset($this->_usedModelSets['geonames'])) {
+            $conn->executeUpdate('DELETE FROM geonames_admin1_alternate_name');
+            $conn->executeUpdate('DELETE FROM geonames_admin1');
+            $conn->executeUpdate('DELETE FROM geonames_city');
+            $conn->executeUpdate('DELETE FROM geonames_country');
+        }
 
         $this->_em->clear();
     }
@@ -623,7 +635,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
-            realpath(__DIR__ . '/Models/Cache')
+            realpath(__DIR__ . '/Models/Cache'),
+            realpath(__DIR__ . '/Models/GeoNames')
         ), true));
 
         $conn = static::$_sharedConn;
