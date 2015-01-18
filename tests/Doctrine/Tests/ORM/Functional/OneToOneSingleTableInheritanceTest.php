@@ -9,16 +9,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * Tests a unidirectional one-to-one association mapping (without inheritance).
- * Inverse side is not present.
- */
 class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
-        //$this->useModelSet('ecommerce');
-
         parent::setUp();
 
         $this->_schemaTool->createSchema([
@@ -28,6 +22,12 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         ]);
     }
 
+    /**
+     * Tests a unidirectional one-to-one association mapping from an inheritance child class
+     *
+     * @group DDC-3517
+     * @group #1265
+     */
     public function testFindFromOneToOneOwningSideJoinedTableInheritance()
     {
         $cat            = new Cat();
@@ -45,7 +45,6 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertSame($cat->id, $foundCat->id);
         $this->assertInstanceOf(LitterBox::CLASSNAME, $foundCat->litterBox);
         $this->assertSame($cat->litterBox->id, $foundCat->litterBox->id);
-
     }
 }
 
