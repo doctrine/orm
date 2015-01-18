@@ -189,22 +189,6 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param object $relation
-     * @param string $fieldname
-     * @param mixed $value
-     * @return self
-     */
-    public static function computeAssociationChangesError($relation, $fieldname, $value)
-    {
-        return new self(sprintf(
-            'Expected an Object for relation %s::%s got %s instead.',
-            get_class($relation),
-            $fieldname,
-            is_object($value) ? get_class($value) : gettype($value)
-        ));
-    }
-
-    /**
      * @param ClassMetadata $targetClass
      * @param array         $assoc
      * @param mixed         $actualValue
