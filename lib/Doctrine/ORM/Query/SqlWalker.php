@@ -991,26 +991,22 @@ class SqlWalker implements TreeWalker
         }
 
         // Handle WITH clause
-        $withCondition = (null !== $condExpr) ? ('(' . $this->walkConditionalExpression($condExpr) . ')') : '';
+        $withCondition = (null === $condExpr) ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
 
         if ($targetClass->isInheritanceTypeJoined()) {
             $ctiJoins = $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
             // If we have WITH condition, we need to build nested joins for target class table and cti joins
             if ($withCondition) {
-                $sql .= '(' . $targetTableJoin['table'] . $ctiJoins . ') ON ' . $targetTableJoin['condition'] . ' AND ' . $withCondition;
+                $sql .= '(' . $targetTableJoin['table'] . $ctiJoins . ') ON ' . $targetTableJoin['condition'];
             } else {
                 $sql .= $targetTableJoin['table'] . ' ON ' . $targetTableJoin['condition'] . $ctiJoins;
             }
         } else {
             $sql .= $targetTableJoin['table'] . ' ON ' . $targetTableJoin['condition'];
-            if ($withCondition) {
-                $sql .= ' AND ' . $withCondition;
-            }
         }
 
-        // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
-        if ($targetClass->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+        if ($withCondition) {
+            $sql .= ' AND ' . $withCondition;
         }
 
         // Apply the indexes
