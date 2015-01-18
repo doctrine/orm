@@ -1288,9 +1288,14 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->status = 'developer';
         $user->address = $user;
 
+        $this->setExpectedException(
+            'Doctrine\ORM\ORMInvalidArgumentException',
+            'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field '
+            . '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'
+        );
+
         $this->_em->persist($user);
 
-        $this->setExpectedException("Doctrine\ORM\ORMException", "Found entity of type Doctrine\Tests\Models\CMS\CmsUser on association Doctrine\Tests\Models\CMS\CmsUser#address, but expecting Doctrine\Tests\Models\CMS\CmsAddress");
         $this->_em->flush();
     }
 }
