@@ -86,7 +86,7 @@ Example of defining and using embeddables classes:
     }
 
     /** @Embeddable */
-    class Price
+    class Money
     {
         /** @Column(type = "decimal") */
         private $value;
@@ -314,13 +314,14 @@ When marking a one-to-many association with ``fetch="EAGER"`` it will now
 execute one query less than before and work correctly in combination with
 ``indexBy``.
 
-Full support for EntityManagerInterface
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Better support for EntityManagerInterface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Most of the locations where previously only the ``Doctrine\ORM\EntityManager``
+Many of the locations where previously only the ``Doctrine\ORM\EntityManager``
 was allowed are now changed to accept the ``EntityManagerInterface`` that was
 introduced in 2.4. This allows you to more easily use the decorator pattern
-to extend the EntityManager if you need.
+to extend the EntityManager if you need. Its still not replaced everywhere,
+so you still have to be careful.
 
 DQL Improvements
 ~~~~~~~~~~~~~~~~
@@ -371,7 +372,7 @@ DQL Improvements
 Custom DQL Functions: Add support for factories
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Previoiusly custom DQL functions could only be provided with their
+Previously custom DQL functions could only be provided with their
 full-qualified class-name, preventing runtime configuration through
 dependency injection.
 
