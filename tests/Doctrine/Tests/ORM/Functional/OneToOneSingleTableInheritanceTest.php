@@ -7,6 +7,9 @@ use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
+use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;
+use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Pet;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
@@ -46,35 +49,4 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(LitterBox::CLASSNAME, $foundCat->litterBox);
         $this->assertSame($cat->litterBox->id, $foundCat->litterBox->id);
     }
-}
-
-/** @Entity @InheritanceType("SINGLE_TABLE") @DiscriminatorMap({"cat" = "Cat"}) */
-abstract class Pet
-{
-    const CLASSNAME = __CLASS__;
-
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
-    public $id;
-}
-
-/** @Entity */
-class Cat extends Pet
-{
-    const CLASSNAME = __CLASS__;
-
-    /**
-     * @OneToOne(targetEntity="LitterBox")
-     *
-     * @var LitterBox
-     */
-    public $litterBox;
-}
-
-/** @Entity */
-class LitterBox
-{
-    const CLASSNAME = __CLASS__;
-
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
-    public $id;
 }
