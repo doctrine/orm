@@ -85,6 +85,6 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             ))
         );
 
-        $this->assertStringMatchesFormat('string \'SELECT %a', $this->tester->getDisplay());
+        $this->assertStringMatchesFormat('string%sSELECT %a', $this->tester->getDisplay());
     }
 }
