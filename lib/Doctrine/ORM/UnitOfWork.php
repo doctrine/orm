@@ -728,11 +728,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            try {
-                $this->computeAssociationChanges($assoc, $val);
-            } catch (\Exception $ex) {
-                throw ORMInvalidArgumentException::computeAssociationChangesError($entity, $assoc['fieldName'], $val);
-            }
+            $this->computeAssociationChanges($assoc, $val);
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
                 $assoc['isOwningSide'] &&
@@ -2203,9 +2199,7 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case ($relatedEntities !== null):
-                    $targetClass = $this->em->getClassMetadata($assoc['targetEntity'])->name;
-
-                    if (! $relatedEntities instanceof $targetClass) {
+                    if (! $relatedEntities instanceof $assoc['targetEntity']) {
                         throw ORMInvalidArgumentException::invalidAssociation(
                             $this->em->getClassMetadata($assoc['targetEntity']),
                             $assoc,
