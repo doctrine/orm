@@ -274,5 +274,19 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             $query->getSQL()
         );
     }
+
+    public function testLimitSubqueryWithOrderByInnerJoined()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b JOIN b.author a ORDER BY a.name ASC'
+        );
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0 FROM (SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ INNER JOIN Author a1_ ON b0_.author_id = a1_.id ORDER BY a1_.name ASC) dctrn_result',
+            $query->getSQL()
+        );
+    }
 }
 
