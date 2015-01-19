@@ -492,6 +492,7 @@
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="index-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
+    <xs:attribute name="collection-class" type="xs:string"/>
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:anyAttribute namespace="##other"/>
@@ -508,6 +509,7 @@
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="index-by" type="xs:NMTOKEN" />
+    <xs:attribute name="collection-class" type="xs:string"/>
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
     <xs:anyAttribute namespace="##other"/>

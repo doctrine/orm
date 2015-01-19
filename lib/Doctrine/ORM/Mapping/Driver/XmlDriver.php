@@ -406,6 +406,10 @@ class XmlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['collectionClass'])) {
+                    $mapping['collectionClass'] = (string)$oneToManyElement['collectionClass'];
+                }
+
                 if (isset($oneToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
@@ -523,6 +527,10 @@ class XmlDriver extends FileDriver
                     }
 
                     $mapping['joinTable'] = $joinTable;
+                }
+
+                if (isset($manyToManyElement['collectionClass'])) {
+                    $mapping['collectionClass'] = (string)$manyToManyElement['collectionClass'];
                 }
 
                 if (isset($manyToManyElement->cascade)) {

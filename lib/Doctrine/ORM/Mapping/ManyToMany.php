@@ -41,6 +41,11 @@ final class ManyToMany implements Annotation
     public $inversedBy;
 
     /**
+     * @var string
+     */
+    public $collectionClass;
+
+    /**
      * @var array<string>
      */
     public $cascade;
