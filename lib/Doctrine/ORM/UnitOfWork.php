@@ -146,9 +146,8 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash).
      *
      * @var array
-     * @todo rename: scheduledForSynchronization
      */
-    private $scheduledForDirtyCheck = array();
+    private $scheduledForSynchronization = array();
 
     /**
      * A list of all pending entity insertions.
@@ -425,7 +424,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionUpdates =
         $this->collectionDeletions =
         $this->visitedCollections =
-        $this->scheduledForDirtyCheck =
+        $this->scheduledForSynchronization =
         $this->orphanRemovals = array();
     }
 
@@ -771,8 +770,8 @@ class UnitOfWork implements PropertyChangedListener
                     $entitiesToProcess = $entities;
                     break;
 
-                case (isset($this->scheduledForDirtyCheck[$className])):
-                    $entitiesToProcess = $this->scheduledForDirtyCheck[$className];
+                case (isset($this->scheduledForSynchronization[$className])):
+                    $entitiesToProcess = $this->scheduledForSynchronization[$className];
                     break;
 
                 default:
@@ -1310,7 +1309,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $rootEntityName = $this->em->getClassMetadata(get_class($entity))->rootEntityName;
 
-        return isset($this->scheduledForDirtyCheck[$rootEntityName][spl_object_hash($entity)]);
+        return isset($this->scheduledForSynchronization[$rootEntityName][spl_object_hash($entity)]);
     }
 
     /**
@@ -2361,7 +2360,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->originalEntityData =
             $this->entityChangeSets =
             $this->entityStates =
-            $this->scheduledForDirtyCheck =
+            $this->scheduledForSynchronization =
             $this->entityInsertions =
             $this->entityUpdates =
             $this->entityDeletions =
@@ -2953,7 +2952,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $rootClassName = $this->em->getClassMetadata(get_class($entity))->rootEntityName;
 
-        $this->scheduledForDirtyCheck[$rootClassName][spl_object_hash($entity)] = $entity;
+        $this->scheduledForSynchronization[$rootClassName][spl_object_hash($entity)] = $entity;
     }
 
     /**
@@ -3120,7 +3119,7 @@ class UnitOfWork implements PropertyChangedListener
         // Update changeset and mark entity for synchronization
         $this->entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
-        if ( ! isset($this->scheduledForDirtyCheck[$class->rootEntityName][$oid])) {
+        if ( ! isset($this->scheduledForSynchronization[$class->rootEntityName][$oid])) {
             $this->scheduleForDirtyCheck($entity);
         }
     }
