@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Closure;
+use Doctrine\Common\Collections\AbstractWrappedCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
@@ -41,9 +42,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
- * @todo      Design for inheritance to allow custom implementations?
  */
-final class PersistentCollection implements Collection, Selectable
+final class PersistentCollection extends AbstractWrappedCollection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -106,13 +106,6 @@ final class PersistentCollection implements Collection, Selectable
     private $initialized = true;
 
     /**
-     * The wrapped Collection instance.
-     *
-     * @var Collection
-     */
-    private $coll;
-
-    /**
      * Creates a new persistent collection.
      *
      * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
@@ -121,7 +114,8 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function __construct(EntityManagerInterface $em, $class, $coll)
     {
-        $this->coll      = $coll;
+        parent::__construct($coll);
+
         $this->em        = $em;
         $this->typeClass = $class;
     }
@@ -173,7 +167,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function hydrateAdd($element)
     {
-        $this->coll->add($element);
+        $this->collection->add($element);
 
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
@@ -200,7 +194,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function hydrateSet($key, $element)
     {
-        $this->coll->set($key, $element);
+        $this->collection->set($key, $element);
 
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
@@ -228,17 +222,17 @@ final class PersistentCollection implements Collection, Selectable
         $newObjects = array();
 
         if ($this->isDirty) {
-            $newObjects = $this->coll->toArray();
+            $newObjects = $this->collection->toArray();
         }
 
-        $this->coll->clear();
+        $this->collection->clear();
         $this->em->getUnitOfWork()->loadCollection($this);
         $this->takeSnapshot();
 
         // Reattach NEW objects added through add(), if any.
         if ($newObjects) {
             foreach ($newObjects as $obj) {
-                $this->coll->add($obj);
+                $this->collection->add($obj);
             }
 
             $this->isDirty = true;
@@ -255,7 +249,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function takeSnapshot()
     {
-        $this->snapshot = $this->coll->toArray();
+        $this->snapshot = $this->collection->toArray();
         $this->isDirty  = false;
     }
 
@@ -280,7 +274,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         return array_udiff_assoc(
             $this->snapshot,
-            $this->coll->toArray(),
+            $this->collection->toArray(),
             function($a, $b) { return $a === $b ? 0 : 1; }
         );
     }
@@ -294,7 +288,7 @@ final class PersistentCollection implements Collection, Selectable
     public function getInsertDiff()
     {
         return array_udiff_assoc(
-            $this->coll->toArray(),
+            $this->collection->toArray(),
             $this->snapshot,
             function($a, $b) { return $a === $b ? 0 : 1; }
         );
@@ -384,7 +378,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->first();
+        return $this->collection->first();
     }
 
     /**
@@ -394,7 +388,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->last();
+        return $this->collection->last();
     }
 
     /**
@@ -408,7 +402,7 @@ final class PersistentCollection implements Collection, Selectable
         //       association (table). Without initializing the collection.
         $this->initialize();
 
-        $removed = $this->coll->remove($key);
+        $removed = $this->collection->remove($key);
 
         if ( ! $removed) {
             return $removed;
@@ -432,8 +426,8 @@ final class PersistentCollection implements Collection, Selectable
     public function removeElement($element)
     {
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
-            if ($this->coll->contains($element)) {
-                return $this->coll->removeElement($element);
+            if ($this->collection->contains($element)) {
+                return $this->collection->removeElement($element);
             }
 
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
@@ -447,7 +441,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $this->initialize();
 
-        $removed = $this->coll->removeElement($element);
+        $removed = $this->collection->removeElement($element);
 
         if ( ! $removed) {
             return $removed;
@@ -470,16 +464,16 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function containsKey($key)
     {
-
         if (! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY
             && isset($this->association['indexBy'])) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
-            return $this->coll->containsKey($key) || $persister->containsKey($this, $key);
+            return $this->collection->containsKey($key) || $persister->containsKey($this, $key);
         }
+
         $this->initialize();
 
-        return $this->coll->containsKey($key);
+        return $this->collection->containsKey($key);
     }
 
     /**
@@ -490,12 +484,12 @@ final class PersistentCollection implements Collection, Selectable
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
-            return $this->coll->contains($element) || $persister->contains($this, $element);
+            return $this->collection->contains($element) || $persister->contains($this, $element);
         }
 
         $this->initialize();
 
-        return $this->coll->contains($element);
+        return $this->collection->contains($element);
     }
 
     /**
@@ -505,7 +499,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->exists($p);
+        return $this->collection->exists($p);
     }
 
     /**
@@ -515,7 +509,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->indexOf($element);
+        return $this->collection->indexOf($element);
     }
 
     /**
@@ -536,7 +530,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $this->initialize();
 
-        return $this->coll->get($key);
+        return $this->collection->get($key);
     }
 
     /**
@@ -546,7 +540,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->getKeys();
+        return $this->collection->getKeys();
     }
 
     /**
@@ -556,7 +550,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->getValues();
+        return $this->collection->getValues();
     }
 
     /**
@@ -567,12 +561,12 @@ final class PersistentCollection implements Collection, Selectable
         if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
-            return $persister->count($this) + ($this->isDirty ? $this->coll->count() : 0);
+            return $persister->count($this) + ($this->isDirty ? $this->collection->count() : 0);
         }
 
         $this->initialize();
 
-        return $this->coll->count();
+        return $this->collection->count();
     }
 
     /**
@@ -582,7 +576,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        $this->coll->set($key, $value);
+        $this->collection->set($key, $value);
 
         $this->changed();
     }
@@ -592,7 +586,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function add($value)
     {
-        $this->coll->add($value);
+        $this->collection->add($value);
 
         $this->changed();
 
@@ -604,7 +598,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function isEmpty()
     {
-        return $this->coll->isEmpty() && $this->count() === 0;
+        return $this->collection->isEmpty() && $this->count() === 0;
     }
 
     /**
@@ -614,7 +608,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->getIterator();
+        return $this->collection->getIterator();
     }
 
     /**
@@ -624,7 +618,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->map($func);
+        return $this->collection->map($func);
     }
 
     /**
@@ -634,7 +628,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->filter($p);
+        return $this->collection->filter($p);
     }
 
     /**
@@ -644,7 +638,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->forAll($p);
+        return $this->collection->forAll($p);
     }
 
     /**
@@ -654,7 +648,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->partition($p);
+        return $this->collection->partition($p);
     }
 
     /**
@@ -664,7 +658,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->toArray();
+        return $this->collection->toArray();
     }
 
     /**
@@ -685,12 +679,12 @@ final class PersistentCollection implements Collection, Selectable
             // hence for event listeners we need the objects in memory.
             $this->initialize();
 
-            foreach ($this->coll as $element) {
+            foreach ($this->collection as $element) {
                 $uow->scheduleOrphanRemoval($element);
             }
         }
 
-        $this->coll->clear();
+        $this->collection->clear();
 
         $this->initialized = true; // direct call, {@link initialize()} is too expensive
 
@@ -714,45 +708,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function __sleep()
     {
-        return array('coll', 'initialized');
-    }
-
-    /* ArrayAccess implementation */
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset)
-    {
-        return $this->containsKey($offset);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value)
-    {
-        if ( ! isset($offset)) {
-            return $this->add($value);
-        }
-
-        return $this->set($offset, $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset)
-    {
-        return $this->remove($offset);
+        return array('collection', 'initialized');
     }
 
     /**
@@ -762,7 +718,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->key();
+        return $this->collection->key();
     }
 
     /**
@@ -772,7 +728,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->current();
+        return $this->collection->current();
     }
 
     /**
@@ -782,17 +738,7 @@ final class PersistentCollection implements Collection, Selectable
     {
         $this->initialize();
 
-        return $this->coll->next();
-    }
-
-    /**
-     * Retrieves the wrapped Collection instance.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function unwrap()
-    {
-        return $this->coll;
+        return $this->collection->next();
     }
 
     /**
@@ -817,7 +763,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $this->initialize();
 
-        return $this->coll->slice($offset, $length);
+        return $this->collection->slice($offset, $length);
     }
 
     /**
@@ -835,8 +781,8 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function __clone()
     {
-        if (is_object($this->coll)) {
-            $this->coll = clone $this->coll;
+        if (is_object($this->collection)) {
+            $this->collection = clone $this->collection;
         }
 
         $this->initialize();
@@ -864,7 +810,7 @@ final class PersistentCollection implements Collection, Selectable
         }
 
         if ($this->initialized) {
-            return $this->coll->matching($criteria);
+            return $this->collection->matching($criteria);
         }
 
         if ($this->association['type'] === ClassMetadata::MANY_TO_MANY) {
