@@ -94,7 +94,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2704
      */
-    public function testMergeInheritedTransientProperties()
+    public function testMergeInheritedTransientPrivateProperties()
     {
         $admin1 = new MSEAdmin();
         $admin2 = new MSEAdmin();
