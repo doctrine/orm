@@ -88,6 +88,35 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     *
+     * Bug discovered while working on DDC-2704 - merging towards un-initialized proxies does not initialize them,
+     * causing merged data to be lost when they are actually initialized
+     */
+    public function testMergeWithExistingUninitializedManagedProxy()
+    {
+        $date = new DateTimeModel();
+
+        $this->_em->persist($date);
+        $this->_em->flush($date);
+        $this->_em->clear();
+
+        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, $date->id);
+
+        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $managed);
+        $this->assertFalse($managed->__isInitialized());
+
+        $date->date = $dateTime = new \DateTime();
+
+        $this->assertSame($managed, $this->_em->merge($date));
+        $this->assertTrue($managed->__isInitialized());
+        $this->assertSame($dateTime, $managed->date, 'Data was merged into the proxy after initialization');
+    }
+
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
      */
     public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer()
     {
