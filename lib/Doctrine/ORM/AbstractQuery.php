@@ -825,7 +825,8 @@ abstract class AbstractQuery
      *
      * @return mixed
      *
-     * @throws QueryException If the query result is not unique.
+     * @throws NonUniqueResultException If the query result is not unique.
+     * @throws NoResultException        If the query returned no result.
      */
     public function getSingleScalarResult()
     {
