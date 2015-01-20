@@ -20,7 +20,7 @@
 namespace Doctrine\ORM;
 
 use Closure;
-use Doctrine\Common\Collections\AbstractWrappedCollection;
+use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
@@ -43,7 +43,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
  */
-final class PersistentCollection extends AbstractWrappedCollection
+final class PersistentCollection extends AbstractLazyCollection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -99,13 +99,6 @@ final class PersistentCollection extends AbstractWrappedCollection
     private $isDirty = false;
 
     /**
-     * Whether the collection has already been initialized.
-     *
-     * @var boolean
-     */
-    private $initialized = true;
-
-    /**
      * Creates a new persistent collection.
      *
      * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
@@ -114,10 +107,9 @@ final class PersistentCollection extends AbstractWrappedCollection
      */
     public function __construct(EntityManagerInterface $em, $class, $coll)
     {
-        parent::__construct($coll);
-
-        $this->em        = $em;
-        $this->typeClass = $class;
+        $this->collection = $coll;
+        $this->em         = $em;
+        $this->typeClass  = $class;
     }
 
     /**
@@ -218,25 +210,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return;
         }
 
-        // Has NEW objects added through add(). Remember them.
-        $newObjects = array();
-
-        if ($this->isDirty) {
-            $newObjects = $this->collection->toArray();
-        }
-
-        $this->collection->clear();
-        $this->em->getUnitOfWork()->loadCollection($this);
-        $this->takeSnapshot();
-
-        // Reattach NEW objects added through add(), if any.
-        if ($newObjects) {
-            foreach ($newObjects as $obj) {
-                $this->collection->add($obj);
-            }
-
-            $this->isDirty = true;
-        }
+        $this->doInitialize();
 
         $this->initialized = true;
     }
@@ -362,36 +336,6 @@ final class PersistentCollection extends AbstractWrappedCollection
     }
 
     /**
-     * Checks whether this collection has been initialized.
-     *
-     * @return boolean
-     */
-    public function isInitialized()
-    {
-        return $this->initialized;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function first()
-    {
-        $this->initialize();
-
-        return $this->collection->first();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function last()
-    {
-        $this->initialize();
-
-        return $this->collection->last();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function remove($key)
@@ -400,9 +344,7 @@ final class PersistentCollection extends AbstractWrappedCollection
         //       and the collection is not initialized and orphanRemoval is
         //       not used we can issue a straight SQL delete/update on the
         //       association (table). Without initializing the collection.
-        $this->initialize();
-
-        $removed = $this->collection->remove($key);
+        $removed = parent::remove($key);
 
         if ( ! $removed) {
             return $removed;
@@ -439,9 +381,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return null;
         }
 
-        $this->initialize();
-
-        $removed = $this->collection->removeElement($element);
+        $removed = parent::removeElement($element);
 
         if ( ! $removed) {
             return $removed;
@@ -471,9 +411,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return $this->collection->containsKey($key) || $persister->containsKey($this, $key);
         }
 
-        $this->initialize();
-
-        return $this->collection->containsKey($key);
+        return parent::containsKey($key);
     }
 
     /**
@@ -487,29 +425,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return $this->collection->contains($element) || $persister->contains($this, $element);
         }
 
-        $this->initialize();
-
-        return $this->collection->contains($element);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function exists(Closure $p)
-    {
-        $this->initialize();
-
-        return $this->collection->exists($p);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function indexOf($element)
-    {
-        $this->initialize();
-
-        return $this->collection->indexOf($element);
+        return parent::contains($element);
     }
 
     /**
@@ -528,29 +444,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
         }
 
-        $this->initialize();
-
-        return $this->collection->get($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getKeys()
-    {
-        $this->initialize();
-
-        return $this->collection->getKeys();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getValues()
-    {
-        $this->initialize();
-
-        return $this->collection->getValues();
+        return parent::get($key);
     }
 
     /**
@@ -564,9 +458,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return $persister->count($this) + ($this->isDirty ? $this->collection->count() : 0);
         }
 
-        $this->initialize();
-
-        return $this->collection->count();
+        return parent::count();
     }
 
     /**
@@ -574,9 +466,7 @@ final class PersistentCollection extends AbstractWrappedCollection
      */
     public function set($key, $value)
     {
-        $this->initialize();
-
-        $this->collection->set($key, $value);
+        parent::set($key, $value);
 
         $this->changed();
     }
@@ -599,66 +489,6 @@ final class PersistentCollection extends AbstractWrappedCollection
     public function isEmpty()
     {
         return $this->collection->isEmpty() && $this->count() === 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
-    {
-        $this->initialize();
-
-        return $this->collection->getIterator();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function map(Closure $func)
-    {
-        $this->initialize();
-
-        return $this->collection->map($func);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function filter(Closure $p)
-    {
-        $this->initialize();
-
-        return $this->collection->filter($p);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function forAll(Closure $p)
-    {
-        $this->initialize();
-
-        return $this->collection->forAll($p);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function partition(Closure $p)
-    {
-        $this->initialize();
-
-        return $this->collection->partition($p);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray()
-    {
-        $this->initialize();
-
-        return $this->collection->toArray();
     }
 
     /**
@@ -712,36 +542,6 @@ final class PersistentCollection extends AbstractWrappedCollection
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function key()
-    {
-        $this->initialize();
-
-        return $this->collection->key();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
-    {
-        $this->initialize();
-
-        return $this->collection->current();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
-    {
-        $this->initialize();
-
-        return $this->collection->next();
-    }
-
-    /**
      * Extracts a slice of $length elements starting at position $offset from the Collection.
      *
      * If $length is null it returns all elements from $offset to the end of the Collection.
@@ -761,9 +561,7 @@ final class PersistentCollection extends AbstractWrappedCollection
             return $persister->slice($this, $offset, $length);
         }
 
-        $this->initialize();
-
-        return $this->collection->slice($offset, $length);
+        return parent::slice($offset, $length);
     }
 
     /**
@@ -832,5 +630,41 @@ final class PersistentCollection extends AbstractWrappedCollection
         return ($this->association['fetch'] === ClassMetadataInfo::FETCH_EXTRA_LAZY)
             ? new LazyCriteriaCollection($persister, $criteria)
             : new ArrayCollection($persister->loadCriteria($criteria));
+    }
+
+    /**
+     * Retrieves the wrapped Collection instance.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function unwrap()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doInitialize()
+    {
+        // Has NEW objects added through add(). Remember them.
+        $newObjects = array();
+
+        if ($this->isDirty) {
+            $newObjects = $this->collection->toArray();
+        }
+
+        $this->collection->clear();
+        $this->em->getUnitOfWork()->loadCollection($this);
+        $this->takeSnapshot();
+
+        // Reattach NEW objects added through add(), if any.
+        if ($newObjects) {
+            foreach ($newObjects as $obj) {
+                $this->collection->add($obj);
+            }
+
+            $this->isDirty = true;
+        }
     }
 }
