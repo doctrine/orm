@@ -43,7 +43,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
  */
-final class PersistentCollection extends AbstractLazyCollection
+final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
