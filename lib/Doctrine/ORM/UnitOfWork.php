@@ -3348,7 +3348,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($class->reflClass->getProperties() as $prop) {
+        foreach ($class->getAllReflectionProperties() as $prop) {
             $name = $prop->name;
 
             $prop->setAccessible(true);

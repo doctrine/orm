@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Instantiator\Instantiator;
 use InvalidArgumentException;
 use RuntimeException;
@@ -650,6 +651,12 @@ class ClassMetadataInfo implements ClassMetadata
     private $instantiator;
 
     /**
+     * @var \ReflectionProperty[]|null (null if not yet initialized) - all instance properties of the class,
+     *                                 transient or not, in accessible form.
+     */
+    private $reflectionProperties;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -667,11 +674,28 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return array An array of ReflectionProperty instances.
+     * @return \ReflectionProperty[] An array of ReflectionProperty instances.
      */
     public function getReflectionProperties()
     {
         return $this->reflFields;
+    }
+
+    /**
+     * Retrieves all ReflectionProperties of this class, considering inherited and transient ones
+     *
+     * Note that this method should only be used after `wakeupReflection`
+     */
+    public function getAllReflectionProperties()
+    {
+        if (null === $this->reflectionProperties) {
+            throw new \RuntimeException(sprintf(
+                'You cannot read the reflection properties before calling %s#wakeupReflection() first',
+                get_class($this)
+            ));
+        }
+
+        return $this->reflectionProperties;
     }
 
     /**
@@ -963,6 +987,8 @@ class ClassMetadataInfo implements ClassMetadata
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
         }
+
+        $this->initializeAllReflectionProperties($reflService);
     }
 
     /**
@@ -3312,5 +3338,53 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return $sequencePrefix;
+    }
+
+    /**
+     * Initializes the internal `reflectionProperties` property
+     *
+     * @param ReflectionService $reflectionService
+     */
+    private function initializeAllReflectionProperties(ReflectionService $reflectionService)
+    {
+        $class      = $this->reflClass;
+        $properties = array();
+
+        do {
+            $className = $class->getName();
+
+            foreach ($class->getProperties() as $property) {
+                // static properties are not instance properties
+                if ($property->isStatic()) {
+                    continue;
+                }
+
+                // indexing by logical name to avoid duplicates
+                $logicalName   = $property->getDeclaringClass()->getName() . $property->getName();
+                $propertyName  = $property->getName();
+                $existingField = isset($this->reflFields[$propertyName]) ? $this->reflFields[$propertyName] : null;
+
+                if (! $existingField) {
+                    $properties[$logicalName] = $reflectionService->getAccessibleProperty($className, $propertyName);
+
+                    continue;
+                }
+
+                // private properties are not inherited: need to handle them separately and precisely
+                if ($property->isPrivate()
+                    && $existingField->getDeclaringClass()->getName() !== $property->getDeclaringClass()->getName()
+                ) {
+                    $properties[$logicalName] = $reflectionService->getAccessibleProperty($className, $propertyName);
+
+                    continue;
+                }
+
+                $properties[$logicalName] = $existingField;
+            }
+
+            $parentClass = $class->getParentClass();
+        } while ($parentClass && $class = $reflectionService->getClass($parentClass->getName()));
+
+        $this->reflectionProperties = array_values($properties);
     }
 }
