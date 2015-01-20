@@ -46,6 +46,13 @@ abstract class AbstractContentItem
      */
     private $nodeIsLoaded = false;
 
+    /**
+     * This field is transient on purpose
+     *
+     * @var mixed
+     */
+    public static $fileSystem;
+
     public function __construct(Directory $parentDir = null)
     {
         $this->parentDirectory = $parentDir;

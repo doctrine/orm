@@ -1188,6 +1188,12 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             ],
             $propertyNames
         );
+
+        $this->assertNotContains(
+            'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem::fileSystem',
+            $propertyNames,
+            'Abstract properties should not be part of class metadata information'
+        );
     }
 }
 
