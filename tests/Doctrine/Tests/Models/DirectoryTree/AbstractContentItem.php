@@ -24,6 +24,8 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 abstract class AbstractContentItem
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id @Column(type="integer") @GeneratedValue
      */
@@ -36,6 +38,13 @@ abstract class AbstractContentItem
 
     /** @column(type="string") */
     protected $name;
+
+    /**
+     * This field is transient and private on purpose
+     *
+     * @var bool
+     */
+    private $nodeIsLoaded = false;
 
     public function __construct(Directory $parentDir = null)
     {
@@ -60,5 +69,21 @@ abstract class AbstractContentItem
     public function getParent()
     {
         return $this->parentDirectory;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getNodeIsLoaded()
+    {
+        return $this->nodeIsLoaded;
+    }
+
+    /**
+     * @param bool $nodeIsLoaded
+     */
+    public function setNodeIsLoaded($nodeIsLoaded)
+    {
+        $this->nodeIsLoaded = (bool) $nodeIsLoaded;
     }
 }
