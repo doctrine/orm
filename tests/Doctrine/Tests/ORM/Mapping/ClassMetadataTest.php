@@ -1125,6 +1125,18 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
+
+    /**
+     * @group DDC-2704
+     */
+    public function testGetAllReflectionPropertiesFailsOnNonInitializedMetadata()
+    {
+        $classMetadata = new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity');
+
+        $this->setExpectedException('RuntimeException');
+
+        $classMetadata->getAllReflectionProperties();
+    }
 }
 
 /**
