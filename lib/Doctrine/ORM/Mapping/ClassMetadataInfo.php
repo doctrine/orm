@@ -1009,6 +1009,8 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
+
+        $this->initializeAllReflectionProperties($reflService);
     }
 
     /**
