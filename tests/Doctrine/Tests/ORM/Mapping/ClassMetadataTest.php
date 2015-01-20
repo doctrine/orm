@@ -7,6 +7,8 @@ use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\Tests\Models\DirectoryTree\AbstractContentItem;
+use Doctrine\Tests\Models\DirectoryTree\File;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -1151,6 +1153,41 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('RuntimeException');
 
         $classMetadata->getAllReflectionProperties();
+    }
+
+    /**
+     * @group DDC-2704
+     */
+    public function testGetAllReflectionPropertiesRetrievesCollidingPrivateProperties()
+    {
+        $classMetadata = new ClassMetadata(File::CLASSNAME);
+
+        $classMetadata->initializeReflection(new RuntimeReflectionService());
+
+        $properties = $classMetadata->getAllReflectionProperties();
+
+        $this->assertInternalType('array', $properties);
+        $this->assertCount(5, $properties);
+
+        $propertyNames = array_map(
+            function (\ReflectionProperty $property) {
+                return $property->getDeclaringClass()->getName() . '::' . $property->getName();
+            },
+            $properties
+        );
+
+        sort($propertyNames);
+
+        $this->assertEquals(
+            [
+                'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem::id',
+                'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem::name',
+                'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem::nodeIsLoaded',
+                'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem::parentDirectory',
+                'Doctrine\Tests\Models\DirectoryTree\File::extension',
+            ],
+            $propertyNames
+        );
     }
 }
 
