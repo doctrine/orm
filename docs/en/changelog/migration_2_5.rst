@@ -115,7 +115,7 @@ The newly introduced second-level-cache works a bit differently. Instead
 of saving objects in memory, it saves them in a fast in-memory cache such
 as Memcache, Redis, Riak or MongoDB. Additionally it allows saving the result
 of more complex queries than by primary key. Summarized this feature works
-like the existing Query result cache, but it much more powerful.
+like the existing Query result cache, but it is much more powerful.
 
 As an example lets cache an entity Country that is a relation to the User
 entity. We always want to display the country, but avoid the additional
@@ -243,8 +243,8 @@ This feature was contributed by `Adrian Olek <https://github.com/adrianolek>`_.
 
 - `Pull Request <https://github.com/doctrine/doctrine2/pull/973>`_
 
-SQLFilter API: Check if parameter isset
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SQLFilter API: Check if a parameter is set
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can now check in your SQLFilter if a parameter was set. This allows
 to more easily control which features of a filter to enable or disable.
@@ -320,27 +320,27 @@ Better support for EntityManagerInterface
 Many of the locations where previously only the ``Doctrine\ORM\EntityManager``
 was allowed are now changed to accept the ``EntityManagerInterface`` that was
 introduced in 2.4. This allows you to more easily use the decorator pattern
-to extend the EntityManager if you need. Its still not replaced everywhere,
+to extend the EntityManager if you need. It`s still not replaced everywhere,
 so you still have to be careful.
 
 DQL Improvements
 ~~~~~~~~~~~~~~~~
 
-1. It is now possible to add functions to the ORDER BY clause in DQL statements:
+1. It is now possible to add functions to the ``ORDER BY`` clause in DQL statements:
 
 .. code-block:: php
 
     <?php
     $dql = "SELECT u FROM User u ORDER BY CONCAT(u.username, u.name)";
 
-2. Support for functions in IS NULL expressions:
+2. Support for functions in ``IS NULL`` expressions:
 
 .. code-block:: php
 
     <?php
     $dql = "SELECT u.name FROM User u WHERE MAX(u.name) IS NULL";
 
-3. A LIKE expression is now suported in HAVING clause.
+3. A ``LIKE`` expression is now suported in ``HAVING`` clause.
 
 4. Subselects are now supported inside a ``NEW()`` expression:
 
@@ -349,7 +349,7 @@ DQL Improvements
     <?php
     $dql = "SELECT new UserDTO(u.name, SELECT count(g.id) FROM Group g WHERE g.id = u.id) FROM User u";
 
-5. MEMBER OF expression now allows to filter for more than one result
+5. ``MEMBER OF`` expression now allows to filter for more than one result:
 
 .. code-block:: php
 
@@ -360,14 +360,14 @@ DQL Improvements
 
    $users = $query->getResult();
 
-6. Expressions inside COUNT() now allowed
+6. Expressions inside ``COUNT()`` now allowed
 
 .. code-block:: php
 
     <?php
     $dql = SELECT COUNT(DISTINCT CONCAT(u.name, u.lastname)) FROM User u";
 
-7. Add support for HOUR in DATE_ADD()/DATE_SUB() functions
+7. Add support for ``HOUR`` in ``DATE_ADD()``/``DATE_SUB()`` functions
 
 Custom DQL Functions: Add support for factories
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -395,7 +395,7 @@ the function:
 Query API: WHERE IN Query using a Collection as parameter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When performing a WHERE IN query for a collection of entities you can
+When performing a ``WHERE IN`` query for a collection of entities you can
 now pass the array collection of entities as a parameter value to the query
 object:
 
@@ -571,9 +571,9 @@ signatures:
 Minor BC BREAK: Custom Hydrators API change
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As of 2.5, `AbstractHydrator` does not enforce the usage of cache as part of
+As of 2.5, ``AbstractHydrator`` does not enforce the usage of cache as part of
 API, and now provides you a clean API for column information through the method
-`hydrateColumnInfo($column)`.
+``hydrateColumnInfo($column)``.
 Cache variable being passed around by reference is no longer needed since
 Hydrators are per query instantiated since Doctrine 2.4.
 
@@ -592,7 +592,7 @@ Updates on entities scheduled for deletion are no longer processed
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In Doctrine 2.4, if you modified properties of an entity scheduled for deletion, UnitOfWork would
-produce an UPDATE statement to be executed right before the DELETE statement. The entity in question
+produce an ``UPDATE`` statement to be executed right before the ``DELETE`` statement. The entity in question
 was therefore present in ``UnitOfWork#entityUpdates``, which means that ``preUpdate`` and ``postUpdate``
 listeners were (quite pointlessly) called. In ``preFlush`` listeners, it used to be possible to undo
 the scheduled deletion for updated entities (by calling ``persist()`` if the entity was found in both
