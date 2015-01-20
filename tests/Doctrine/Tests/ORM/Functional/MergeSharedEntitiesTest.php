@@ -90,6 +90,28 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
+
+    /**
+     * @group DDC-2704
+     */
+    public function testMergeInheritedTransientProperties()
+    {
+        $admin1 = new MSEAdmin();
+        $admin2 = new MSEAdmin();
+
+        $admin1->id = 123;
+        $admin2->id = 123;
+
+        $this->_em->persist($admin1);
+
+        $admin2->setSession('zeh current session data');
+
+
+        $merged = $this->_em->merge($admin2);
+
+        $this->assertSame($admin1, $merged);
+        $this->assertSame($admin2->getSession(), $admin1->getSession());
+    }
 }
 
 /** @Entity */
@@ -109,5 +131,28 @@ class MSEPicture
 class MSEFile
 {
     /** @Column(type="integer") @Id @GeneratedValue(strategy="AUTO") */
+    public $id;
+}
+
+/** @MappedSuperclass */
+abstract class MSEUser
+{
+    private $session; // intentionally transient property
+
+    public function getSession()
+    {
+        return $this->session;
+    }
+
+    public function setSession($session)
+    {
+        $this->session = $session;
+    }
+}
+
+/** @Entity */
+class MSEAdmin extends MSEUser
+{
+    /** @Column(type="integer") @Id @GeneratedValue(strategy="NONE") */
     public $id;
 }
