@@ -1868,6 +1868,10 @@ class UnitOfWork implements PropertyChangedListener
             $visited[$oid] = $managedCopy; // mark visited
 
             if (!($entity instanceof Proxy && ! $entity->__isInitialized())) {
+                if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized()) {
+                    $managedCopy->__load();
+                }
+
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
             }
 
