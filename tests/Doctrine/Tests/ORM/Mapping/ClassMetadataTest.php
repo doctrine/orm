@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -1132,6 +1133,20 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     public function testGetAllReflectionPropertiesFailsOnNonInitializedMetadata()
     {
         $classMetadata = new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity');
+
+        $this->setExpectedException('RuntimeException');
+
+        $classMetadata->getAllReflectionProperties();
+    }
+
+    /**
+     * @group DDC-2704
+     */
+    public function testGetAllReflectionPropertiesFailsOnPartiallyInitializedMetadata()
+    {
+        $classMetadata = new ClassMetadata(__NAMESPACE__ . '\\MyArrayObjectEntity');
+
+        $classMetadata->initializeReflection(new StaticReflectionService());
 
         $this->setExpectedException('RuntimeException');
 
