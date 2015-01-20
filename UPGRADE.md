@@ -26,10 +26,14 @@ As of 2.5, ``EntityManager`` will follow configured cascades, providing a better
 memory management since associations will be garbage collected, optimizing
 resources consumption on long running jobs.
 
-## BC BREAK: NamingStrategy has a new method ``embeddedFieldToColumnName($propertyName, $embeddedColumnName)``
+## BC BREAK: NamingStrategy interface changes
+
+1. A new method ``embeddedFieldToColumnName($propertyName, $embeddedColumnName)``
 
 This method generates the column name for fields of embedded objects. If you implement your custom NamingStrategy, you
 now also need to implement this new method.
+
+2. A change to method ``joinColumnName()`` to include the $className
 
 ## Updates on entities scheduled for deletion are no longer processed
 
