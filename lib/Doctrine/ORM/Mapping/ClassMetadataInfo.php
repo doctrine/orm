@@ -3347,20 +3347,24 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function initializeAllReflectionProperties(ReflectionService $reflectionService)
     {
-        $class      = $this->reflClass;
-        $properties = array();
+        if (! $this->reflClass) {
+            return;
+        }
+
+        $currentClass = $this->reflClass;
+        $properties   = array();
 
         do {
-            $className = $class->getName();
+            $className = $currentClass->getName();
 
-            foreach ($class->getProperties() as $property) {
+            foreach ($currentClass->getProperties() as $property) {
                 // static properties are not instance properties
                 if ($property->isStatic()) {
                     continue;
                 }
 
                 // indexing by logical name to avoid duplicates
-                $logicalName   = $property->getDeclaringClass()->getName() . $property->getName();
+                $logicalName   = $property->getDeclaringClass()->getName() . '::' . $property->getName();
                 $propertyName  = $property->getName();
                 $existingField = isset($this->reflFields[$propertyName]) ? $this->reflFields[$propertyName] : null;
 
@@ -3382,8 +3386,8 @@ class ClassMetadataInfo implements ClassMetadata
                 $properties[$logicalName] = $existingField;
             }
 
-            $parentClass = $class->getParentClass();
-        } while ($parentClass && $class = $reflectionService->getClass($parentClass->getName()));
+            $parentClass = $currentClass->getParentClass();
+        } while ($parentClass && $currentClass = $reflectionService->getClass($parentClass->getName()));
 
         $this->reflectionProperties = array_values($properties);
     }
