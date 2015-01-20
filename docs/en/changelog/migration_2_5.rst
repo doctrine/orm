@@ -320,7 +320,7 @@ Better support for EntityManagerInterface
 Many of the locations where previously only the ``Doctrine\ORM\EntityManager``
 was allowed are now changed to accept the ``EntityManagerInterface`` that was
 introduced in 2.4. This allows you to more easily use the decorator pattern
-to extend the EntityManager if you need. It`s still not replaced everywhere,
+to extend the EntityManager if you need. It's still not replaced everywhere,
 so you still have to be careful.
 
 DQL Improvements
