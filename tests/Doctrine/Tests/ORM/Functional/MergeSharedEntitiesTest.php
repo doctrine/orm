@@ -107,7 +107,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $admin2->setSession('zeh current session data');
 
         $this->assertSame($admin1, $this->_em->merge($admin2));
-        $this->assertSame($admin2->getSession(), $admin1->getSession());
+        $this->assertSame('zeh current session data', $admin1->getSession());
     }
 }
 
