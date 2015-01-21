@@ -186,7 +186,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
                 }
 
-                $class->inlineEmbeddable($property, $embeddableMetadata);
+                $class->inlineEmbeddable($property, $embeddableMetadata, $embeddableClass['nullable']);
 
                 unset($this->embeddablesActiveNesting[$class->name]);
             }
@@ -433,6 +433,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $parentClass->mapEmbedded(array(
                 'fieldName' => $prefix . '.' . $property,
                 'class' => $embeddableMetadata->name,
+                'nullable' => $embeddableClass['nullable'],
                 'columnPrefix' => $embeddableClass['columnPrefix'],
                 'declaredField' => $embeddableClass['declaredField']
                         ? $prefix . '.' . $embeddableClass['declaredField']

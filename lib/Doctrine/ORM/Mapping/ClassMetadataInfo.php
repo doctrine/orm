@@ -3213,6 +3213,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->embeddedClasses[$mapping['fieldName']] = array(
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
+            'nullable' => isset($mapping['nullable']) ? $mapping['nullable'] : null,
             'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
             'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
         );
@@ -3223,8 +3224,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $property
      * @param ClassMetadataInfo $embeddable
+     * @param boolean $nullable
      */
-    public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
+    public function inlineEmbeddable($property, ClassMetadataInfo $embeddable, $nullable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
             $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
@@ -3237,6 +3239,10 @@ class ClassMetadataInfo implements ClassMetadata
                 ? $fieldMapping['originalField']
                 : $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
+
+            if ($nullable !== null) {
+                $fieldMapping['nullable'] = $nullable;
+            }
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];

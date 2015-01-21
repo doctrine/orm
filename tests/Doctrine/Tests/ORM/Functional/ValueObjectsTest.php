@@ -19,6 +19,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Car'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Animal'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Event'),
             ));
         } catch(\Exception $e) {
         }
@@ -242,6 +243,48 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
+    public function testCRUDOfNullableEmbedded()
+    {
+        $event = new DDC93Event();
+        $event->name = 'PHP Conference';
+        $event->country = new DDC93Country('Brazil');
+        $event->period = new DDC93DateInterval(new \DateTime('2015-01-20 08:00:00'), new \DateTime('2015-01-23 19:00:00'));
+
+        // 1. check saving value objects works
+        $this->_em->persist($event);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        // 2. check loading value objects works
+        $event = $this->_em->find(DDC93Event::CLASSNAME, $event->id);
+
+        $this->assertEquals('PHP Conference', $event->name);
+        $this->assertEquals('Brazil', $event->country->name);
+        $this->assertEquals('2015-01-20 08:00:00', $event->period->begin->format('Y-m-d H:i:s'));
+        $this->assertEquals('2015-01-23 19:00:00', $event->period->end->format('Y-m-d H:i:s'));
+        $this->assertNull($event->submissions);
+
+        // 3. check changing value objects works
+        $event->submissions = new DDC93DateInterval(new \DateTime('2014-11-20 08:00:00'), new \DateTime('2014-12-23 19:00:00'));
+
+        $this->_em->persist($event);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $event = $this->_em->find(DDC93Event::CLASSNAME, $event->id);
+
+        $this->assertEquals('2014-11-20 08:00:00', $event->submissions->begin->format('Y-m-d H:i:s'));
+        $this->assertEquals('2014-12-23 19:00:00', $event->submissions->end->format('Y-m-d H:i:s'));
+
+        // 4. check deleting works
+        $eventId = $event->id;;
+        $this->_em->remove($event);
+        $this->_em->flush();
+
+        $this->assertNull($this->_em->find(DDC93Event::CLASSNAME, $eventId));
+    }
+
     public function getInfiniteEmbeddableNestingData()
     {
         return array(
@@ -277,6 +320,47 @@ class DDC93Person
         $this->address = $address;
         $this->timestamps = new DDC93Timestamps(new \DateTime);
     }
+}
+
+/**
+ * @Embeddable
+ */
+class DDC93DateInterval
+{
+    /** @Column(type = "datetime") */
+    public $begin;
+
+    /** @Column(type = "datetime") */
+    public $end;
+
+    public function __construct(\DateTime $begin, \DateTime $end)
+    {
+        $this->begin = $begin;
+        $this->end = $end;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DDC93Event
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Id @GeneratedValue @Column(type="integer") */
+    public $id;
+
+    /** @Column(type = "string") */
+    public $name;
+
+    /** @Embedded(class = "DDC93DateInterval") */
+    public $period;
+
+    /** @Embedded(class = "DDC93DateInterval", nullable = true) */
+    public $submissions;
+
+    /** @Embedded(class = "DDC93Country", nullable = false) */
+    public $country;
 }
 
 /**
