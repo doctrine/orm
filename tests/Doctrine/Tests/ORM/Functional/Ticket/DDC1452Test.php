@@ -92,7 +92,7 @@ class DDC1452EntityA
     public $id;
     /** @Column */
     public $title;
-    /** @ManyToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
+    /** @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
     public $entitiesB;
 
     public function __construct()
