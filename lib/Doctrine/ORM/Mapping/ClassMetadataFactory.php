@@ -71,6 +71,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $embeddablesActiveNesting = array();
 
     /**
+     * {@inheritDoc}
+     */
+    protected function loadMetadata($name)
+    {
+        $loaded = parent::loadMetadata($name);
+
+        array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
+
+        return $loaded;
+    }
+
+    /**
      * @param EntityManagerInterface $em
      */
     public function setEntityManager(EntityManagerInterface $em)
@@ -270,9 +282,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
-            } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
-                // enforce discriminator map for all entities of an inheritance hierarchy, otherwise problems will occur.
-                throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
@@ -286,6 +295,47 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+    }
+
+    /**
+     * Populates the discriminator value of the given metadata (if not set) by iterating over discriminator
+     * map classes and looking for a fitting one.
+     *
+     * @param ClassMetadata $metadata
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    private function resolveDiscriminatorValue(ClassMetadata $metadata)
+    {
+        if ($metadata->discriminatorValue
+            || ! $metadata->discriminatorMap
+            || $metadata->isMappedSuperclass
+            || $metadata->reflClass->isAbstract()
+        ) {
+            return;
+        }
+
+        // minor optimization: avoid loading related metadata when not needed
+        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+            if ($discriminatorClass === $metadata->name) {
+                $metadata->discriminatorValue = $discriminatorValue;
+
+                return;
+            }
+        }
+
+        // iterate over discriminator mappings and resolve actual referenced classes according to existing metadata
+        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+            if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
+                $metadata->discriminatorValue = $discriminatorValue;
+
+                return;
+            }
+        }
+
+        throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
     }
 
     /**

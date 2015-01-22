@@ -43,7 +43,7 @@ class DDC1454Picture extends DDC1454File
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"picture" = "DDC1454Picture"})
+ * @DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
  */
 class DDC1454File
 {
