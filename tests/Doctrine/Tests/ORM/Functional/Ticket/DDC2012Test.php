@@ -71,7 +71,8 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="type_id", type="smallint")
  * @DiscriminatorMap({
- *      1 = "DDC2012ItemPerson"
+ *      1 = "DDC2012ItemPerson",
+ *      2 = "DDC2012Item"
  * })
  */
 class DDC2012Item
