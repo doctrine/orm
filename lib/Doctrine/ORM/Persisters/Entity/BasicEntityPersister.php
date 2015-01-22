@@ -183,6 +183,11 @@ class BasicEntityPersister implements EntityPersister
     protected $cachedPersisterContexts = [];
 
     /**
+     * @var CachedPersisterContext
+     */
+    protected $currentPersisterContext;
+
+    /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
@@ -197,7 +202,11 @@ class BasicEntityPersister implements EntityPersister
         $this->platform            = $this->conn->getDatabasePlatform();
         $this->quoteStrategy       = $em->getConfiguration()->getQuoteStrategy();
         $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
-        $this->cachedPersisterContexts['noLimits'] = new CachedPersisterContext(
+        $this->cachedPersisterContexts['noLimits'] = $this->currentPersisterContext = new CachedPersisterContext(
+            $class,
+            new Query\ResultSetMapping()
+        );
+        $this->cachedPersisterContexts['withLimits'] = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping()
         );
@@ -1926,5 +1935,14 @@ class BasicEntityPersister implements EntityPersister
 
         $sql = implode(' AND ', $filterClauses);
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
+    }
+
+    private function loadPersisterContext($offset, $limit)
+    {
+        if (null === $offset && null === $limit) {
+            $this->currentPersisterContext = $this->cachedPersisterContexts['noLimits'];
+        }
+
+        $this->currentPersisterContext = $this->cachedPersisterContexts['withLimits'];
     }
 }
