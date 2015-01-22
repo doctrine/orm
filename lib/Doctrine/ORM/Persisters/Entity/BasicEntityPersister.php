@@ -164,14 +164,6 @@ class BasicEntityPersister implements EntityPersister
     private $insertSql;
 
     /**
-     * The SELECT column list SQL fragment used for querying entities by this persister.
-     * This SQL fragment is only generated once per request, if at all.
-     *
-     * @var string
-     */
-    protected $selectColumnListSql;
-
-    /**
      * The JOIN SQL fragment used to eagerly load all many-to-one and one-to-one
      * associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
      *
@@ -719,7 +711,7 @@ class BasicEntityPersister implements EntityPersister
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        $hydrator = $this->em->newHydrator($this->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hydrator = $this->em->newHydrator($this->cachedPersisterContexts['noLimits']->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
         $entities = $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, $hints);
 
         return $entities ? $entities[0] : null;
@@ -839,7 +831,7 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $this->expandCriteriaParameters($criteria);
 
         $stmt       = $this->conn->executeQuery($query, $params, $types);
-        $hydrator   = $this->em->newHydrator(($this->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hydrator   = $this->em->newHydrator(($this->cachedPersisterContexts['noLimits']->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
         return $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
@@ -884,7 +876,7 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
-        $hydrator = $this->em->newHydrator(($this->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hydrator = $this->em->newHydrator(($this->cachedPersisterContexts['noLimits']->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
         return $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
@@ -1075,7 +1067,7 @@ class BasicEntityPersister implements EntityPersister
 
         $select = 'SELECT ' . $columnList;
         $from   = ' FROM ' . $tableName . ' '. $tableAlias;
-        $join   = $this->selectJoinSql . $joinSql;
+        $join   = $this->cachedPersisterContexts['noLimits']->selectJoinSql . $joinSql;
         $where  = ($conditionSql ? ' WHERE ' . $conditionSql : '');
         $lock   = $this->platform->appendLockHint($from, $lockMode);
         $query  = $select
@@ -1199,7 +1191,7 @@ class BasicEntityPersister implements EntityPersister
             $columnList[] = $this->getSelectColumnSQL($field, $this->class);
         }
 
-        $this->selectJoinSql    = '';
+        $this->cachedPersisterContexts['noLimits']->selectJoinSql    = '';
         $eagerAliasCounter      = 0;
 
         foreach ($this->class->associationMappings as $assocField => $assoc) {
@@ -1257,7 +1249,7 @@ class BasicEntityPersister implements EntityPersister
 
             if ($assoc['isOwningSide']) {
                 $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
-                $this->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
+                $this->cachedPersisterContexts['noLimits']->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
 
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1273,7 +1265,7 @@ class BasicEntityPersister implements EntityPersister
 
             } else {
 
-                $this->selectJoinSql .= ' LEFT JOIN';
+                $this->cachedPersisterContexts['noLimits']->selectJoinSql .= ' LEFT JOIN';
 
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1284,8 +1276,8 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
-            $this->selectJoinSql .= ' ' . $joinTableName . ' ' . $joinTableAlias . ' ON ';
-            $this->selectJoinSql .= implode(' AND ', $joinCondition);
+            $this->cachedPersisterContexts['noLimits']->selectJoinSql .= ' ' . $joinTableName . ' ' . $joinTableAlias . ' ON ';
+            $this->cachedPersisterContexts['noLimits']->selectJoinSql .= implode(' AND ', $joinCondition);
         }
 
         $this->cachedPersisterContexts['noLimits']->selectColumnListSql = implode(', ', $columnList);
