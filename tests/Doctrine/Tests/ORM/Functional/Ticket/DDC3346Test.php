@@ -16,8 +16,8 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->setUpEntitySchema(
             array(
-                'Doctrine\Tests\Models\DDC3346\DDC3346Article',
-                'Doctrine\Tests\Models\DDC3346\DDC3346Author',
+                DDC3346Author::CLASSNAME,
+                DDC3346Article::CLASSNAME,
             )
         );
     }
@@ -25,16 +25,12 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFindOneByWithEagerFetch()
     {
         $user = new DDC3346Author();
-        $user->name = "Buggy Woogy";
         $user->username = "bwoogy";
-        $user->status = "active";
 
         $article1 = new DDC3346Article();
-        $article1->text = "First content";
         $article1->setAuthor($user);
 
         $article2 = new DDC3346Article();
-        $article2->text = "Second content";
         $article2->setAuthor($user);
 
         $this->_em->persist($user);
