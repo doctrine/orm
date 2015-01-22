@@ -49,39 +49,10 @@ class CachedPersisterContext
     public $rsm;
 
     /**
-     * The map of column names to DBAL mapping types of all prepared columns used
-     * when INSERTing or UPDATEing an entity.
-     *
-     * @var array
-     *
-     * @see \Doctrine\ORM\Persisters\Entity\BasicEntityPersister#prepareInsertData($entity)
-     * @see \Doctrine\ORM\Persisters\Entity\BasicEntityPersister#prepareUpdateData($entity)
-     */
-    public $columnTypes = array();
-
-    /**
-     * The map of quoted column names.
-     *
-     * @var array
-     *
-     * @see \Doctrine\ORM\Persisters\Entity\BasicEntityPersister#prepareInsertData($entity)
-     * @see \Doctrine\ORM\Persisters\Entity\BasicEntityPersister#prepareUpdateData($entity)
-     */
-    public $quotedColumns = array();
-
-    /**
-     * The INSERT SQL statement used for entities handled by this persister.
-     * This SQL is only generated once per request, if at all.
-     *
-     * @var string
-     */
-    public $insertSql = '';
-
-    /**
      * The SELECT column list SQL fragment used for querying entities by this persister.
      * This SQL fragment is only generated once per request, if at all.
      *
-     * @var string
+     * @var string|null
      */
     public $selectColumnListSql;
 

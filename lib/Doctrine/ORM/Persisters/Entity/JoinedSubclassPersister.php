@@ -420,8 +420,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getSelectColumnsSQL()
     {
         // Create the column list fragment only once
-        if ($this->selectColumnListSql !== null) {
-            return $this->selectColumnListSql;
+        if ($this->cachedPersisterContexts['noLimits']->selectColumnListSql !== null) {
+            return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
         }
 
         $columnList         = array();
@@ -523,9 +523,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->selectColumnListSql = implode(', ', $columnList);
+        $this->cachedPersisterContexts['noLimits']->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->selectColumnListSql;
+        return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
     }
 
     /**

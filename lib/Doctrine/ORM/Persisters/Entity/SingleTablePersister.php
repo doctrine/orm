@@ -48,8 +48,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
      */
     protected function getSelectColumnsSQL()
     {
-        if ($this->selectColumnListSql !== null) {
-            return $this->selectColumnListSql;
+        if ($this->cachedPersisterContexts['noLimits']->selectColumnListSql !== null) {
+            return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
         }
 
         $columnList[] = parent::getSelectColumnsSQL();
@@ -106,9 +106,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->selectColumnListSql = implode(', ', $columnList);
+        $this->cachedPersisterContexts['noLimits']->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->selectColumnListSql;
+        return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
     }
 
     /**

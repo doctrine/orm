@@ -1187,8 +1187,8 @@ class BasicEntityPersister implements EntityPersister
     protected function getSelectColumnsSQL(/*$hasLimitClause = false*/)
     {
         //if ( ! $hasLimitClause && $this->selectColumnListSql !== null) {
-        if ($this->selectColumnListSql !== null) {
-            return $this->selectColumnListSql;
+        if ($this->cachedPersisterContexts['noLimits']->selectColumnListSql !== null) {
+            return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
         }
 
         $columnList = array();
@@ -1288,9 +1288,9 @@ class BasicEntityPersister implements EntityPersister
             $this->selectJoinSql .= implode(' AND ', $joinCondition);
         }
 
-        $this->selectColumnListSql = implode(', ', $columnList);
+        $this->cachedPersisterContexts['noLimits']->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->selectColumnListSql;
+        return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
     }
 
     /**
