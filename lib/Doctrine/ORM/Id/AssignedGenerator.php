@@ -40,8 +40,7 @@ class AssignedGenerator extends AbstractIdGenerator
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    public function generate(
-        EntityManager $em, $entity)
+    public function generate(EntityManager $em, $entity)
     {
         $class      = $em->getClassMetadata(get_class($entity));
         $idFields   = $class->getIdentifierFieldNames();
