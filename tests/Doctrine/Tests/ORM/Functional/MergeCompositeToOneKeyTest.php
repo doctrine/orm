@@ -2,60 +2,43 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\Tests\Models\MixedToOneIdentity\CompositeToOneKeyState;
+use Doctrine\Tests\Models\MixedToOneIdentity\Country;
 
 class MergeCompositeToOneKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp()
     {
         parent::setUp();
+
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\MergeCompositeToOneKeyCountry'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\MergeCompositeToOneKeyState'),
+            $this->_em->getClassMetadata(Country::CLASSNAME),
+            $this->_em->getClassMetadata(CompositeToOneKeyState::CLASSNAME),
         ));
     }
 
-    public function testIssue()
+    /**
+     * @group DDC-3378
+     * @group 1176
+     */
+    public function testMergingOfEntityWithCompositeIdentifierContainingToOneAssociation()
     {
-        $country = new MergeCompositeToOneKeyCountry();
+        $country = new Country();
         $country->country = 'US';
-        $state = new MergeCompositeToOneKeyState();
-        $state->state = 'CA';
+
+        $state = new CompositeToOneKeyState();
+        $state->state   = 'CA';
         $state->country = $country;
 
-        $this->_em->merge($state);
+        /* @var $merged CompositeToOneKeyState */
+        $merged = $this->_em->merge($state);
+
+        $this->assertInstanceOf(CompositeToOneKeyState::CLASSNAME, $state);
+        $this->assertNotSame($state, $merged);
+        $this->assertInstanceOf(Country::CLASSNAME, $merged->country);
+        $this->assertNotSame($country, $merged->country);
     }
-}
-
-/**
- * @Entity
- */
-class MergeCompositeToOneKeyCountry
-{
-    /**
-     * @Id
-     * @Column(type="string", name="country")
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $country;
-}
-
-/**
- * @Entity
-  */
-class MergeCompositeToOneKeyState
-{
-    /**
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $state;
-
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="MergeCompositeToOneKeyCountry", cascade={"MERGE"})
-     * @JoinColumn(name="country", referencedColumnName="country")
-     */
-    public $country;
 }
