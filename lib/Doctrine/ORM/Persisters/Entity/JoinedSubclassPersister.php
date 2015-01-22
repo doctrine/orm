@@ -425,14 +425,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $columnList         = array();
-        $this->rsm          = new ResultSetMapping();
+        //$this->cachedPersisterContexts['noLimits']->rsm          = new ResultSetMapping();
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
 
-        $this->rsm->addEntityResult($this->class->name, 'r');
-        $this->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
+        $this->cachedPersisterContexts['noLimits']->rsm->addEntityResult($this->class->name, 'r');
+        $this->cachedPersisterContexts['noLimits']->rsm->setDiscriminatorColumn('r', $resultColumnName);
+        $this->cachedPersisterContexts['noLimits']->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Add regular columns
         foreach ($this->class->fieldMappings as $fieldName => $mapping) {

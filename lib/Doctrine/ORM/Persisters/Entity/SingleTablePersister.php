@@ -63,8 +63,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
 
-        $this->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
+        $this->cachedPersisterContexts['noLimits']->rsm->setDiscriminatorColumn('r', $resultColumnName);
+        $this->cachedPersisterContexts['noLimits']->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Append subclass columns
         foreach ($this->class->subClasses as $subClassName) {
