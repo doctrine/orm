@@ -9,7 +9,7 @@ use Doctrine\ORM\Tools\ResolveTargetEntityListener;
  */
 class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function testResolveTargetEntitiesChangesDiscriminatorMapValues()
     {
         $resolveTargetEntity = new ResolveTargetEntityListener();
 
@@ -31,10 +31,17 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata(DDC3300Person::CLASSNAME),
         ));
 
-        $this->_em->persist(new DDC3300Boss());
-        $this->_em->persist(new DDC3300Employee());
+        $boss     = new DDC3300Boss();
+        $employee = new DDC3300Employee();
+
+        $this->_em->persist($boss);
+        $this->_em->persist($employee);
 
         $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertEquals($boss, $this->_em->find(DDC3300BossInterface::INTERFACENAME, $boss->id));
+        $this->assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::INTERFACENAME, $employee->id));
     }
 }
 
