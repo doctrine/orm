@@ -422,19 +422,19 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getSelectColumnsSQL()
     {
         // Create the column list fragment only once
-        if ($this->cachedPersisterContexts['noLimits']->selectColumnListSql !== null) {
-            return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
+        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+            return $this->currentPersisterContext->selectColumnListSql;
         }
 
         $columnList         = array();
-        //$this->cachedPersisterContexts['noLimits']->rsm          = new ResultSetMapping();
+        //$this->currentPersisterContext->rsm          = new ResultSetMapping();
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
 
-        $this->cachedPersisterContexts['noLimits']->rsm->addEntityResult($this->class->name, 'r');
-        $this->cachedPersisterContexts['noLimits']->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->cachedPersisterContexts['noLimits']->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
+        $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
+        $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Add regular columns
         foreach ($this->class->fieldMappings as $fieldName => $mapping) {
@@ -525,9 +525,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->cachedPersisterContexts['noLimits']->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
+        return $this->currentPersisterContext->selectColumnListSql;
     }
 
     /**

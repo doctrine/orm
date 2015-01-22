@@ -225,7 +225,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getResultSetMapping()
     {
-        return $this->cachedPersisterContexts['noLimits']->rsm;
+        return $this->currentPersisterContext->rsm;
     }
 
     /**
@@ -700,8 +700,8 @@ class BasicEntityPersister implements EntityPersister
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        $hydrator = $this->em->newHydrator($this->cachedPersisterContexts['noLimits']->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
-        $entities = $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, $hints);
+        $hydrator = $this->em->newHydrator($this->currentPersisterContext->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $entities = $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, $hints);
 
         return $entities ? $entities[0] : null;
     }
@@ -790,7 +790,7 @@ class BasicEntityPersister implements EntityPersister
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
-        $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, array(Query::HINT_REFRESH => true));
+        $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(Query::HINT_REFRESH => true));
     }
 
     /**
@@ -820,9 +820,9 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $this->expandCriteriaParameters($criteria);
 
         $stmt       = $this->conn->executeQuery($query, $params, $types);
-        $hydrator   = $this->em->newHydrator(($this->cachedPersisterContexts['noLimits']->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hydrator   = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
+        return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**
@@ -867,9 +867,9 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
-        $hydrator = $this->em->newHydrator(($this->cachedPersisterContexts['noLimits']->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->cachedPersisterContexts['noLimits']->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
+        return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**
@@ -894,11 +894,11 @@ class BasicEntityPersister implements EntityPersister
      */
     private function loadArrayFromStatement($assoc, $stmt)
     {
-        $rsm    = $this->cachedPersisterContexts['noLimits']->rsm;
+        $rsm    = $this->currentPersisterContext->rsm;
         $hints  = array(UnitOfWork::HINT_DEFEREAGERLOAD => true);
 
         if (isset($assoc['indexBy'])) {
-            $rsm = clone ($this->cachedPersisterContexts['noLimits']->rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
             $rsm->addIndexBy('r', $assoc['indexBy']);
         }
 
@@ -916,14 +916,14 @@ class BasicEntityPersister implements EntityPersister
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {
-        $rsm   = $this->cachedPersisterContexts['noLimits']->rsm;
+        $rsm   = $this->currentPersisterContext->rsm;
         $hints = array(
             UnitOfWork::HINT_DEFEREAGERLOAD => true,
             'collection' => $coll
         );
 
         if (isset($assoc['indexBy'])) {
-            $rsm = clone ($this->cachedPersisterContexts['noLimits']->rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
             $rsm->addIndexBy('r', $assoc['indexBy']);
         }
 
@@ -1064,7 +1064,7 @@ class BasicEntityPersister implements EntityPersister
 
         $select = 'SELECT ' . $columnList;
         $from   = ' FROM ' . $tableName . ' '. $tableAlias;
-        $join   = $this->cachedPersisterContexts['noLimits']->selectJoinSql . $joinSql;
+        $join   = $this->currentPersisterContext->selectJoinSql . $joinSql;
         $where  = ($conditionSql ? ' WHERE ' . $conditionSql : '');
         $lock   = $this->platform->appendLockHint($from, $lockMode);
         $query  = $select
@@ -1176,19 +1176,19 @@ class BasicEntityPersister implements EntityPersister
     protected function getSelectColumnsSQL(/*$hasLimitClause = false*/)
     {
         //if ( ! $hasLimitClause && $this->selectColumnListSql !== null) {
-        if ($this->cachedPersisterContexts['noLimits']->selectColumnListSql !== null) {
-            return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
+        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+            return $this->currentPersisterContext->selectColumnListSql;
         }
 
         $columnList = array();
-        $this->cachedPersisterContexts['noLimits']->rsm->addEntityResult($this->class->name, 'r'); // r for root
+        $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r'); // r for root
 
         // Add regular columns to select list
         foreach ($this->class->fieldNames as $field) {
             $columnList[] = $this->getSelectColumnSQL($field, $this->class);
         }
 
-        $this->cachedPersisterContexts['noLimits']->selectJoinSql    = '';
+        $this->currentPersisterContext->selectJoinSql    = '';
         $eagerAliasCounter      = 0;
 
         foreach ($this->class->associationMappings as $assocField => $assoc) {
@@ -1213,7 +1213,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $assocAlias = 'e' . ($eagerAliasCounter++);
-            $this->cachedPersisterContexts['noLimits']->rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
+            $this->currentPersisterContext->rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
 
             foreach ($eagerEntity->fieldNames as $field) {
                 $columnList[] = $this->getSelectColumnSQL($field, $eagerEntity, $assocAlias);
@@ -1233,7 +1233,7 @@ class BasicEntityPersister implements EntityPersister
             $joinCondition  = array();
 
             if (isset($assoc['indexBy'])) {
-                $this->cachedPersisterContexts['noLimits']->rsm->addIndexBy($assocAlias, $assoc['indexBy']);
+                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $assoc['indexBy']);
             }
 
             if ( ! $assoc['isOwningSide']) {
@@ -1246,7 +1246,7 @@ class BasicEntityPersister implements EntityPersister
 
             if ($assoc['isOwningSide']) {
                 $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
-                $this->cachedPersisterContexts['noLimits']->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
+                $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
 
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1262,7 +1262,7 @@ class BasicEntityPersister implements EntityPersister
 
             } else {
 
-                $this->cachedPersisterContexts['noLimits']->selectJoinSql .= ' LEFT JOIN';
+                $this->currentPersisterContext->selectJoinSql .= ' LEFT JOIN';
 
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1273,13 +1273,13 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
-            $this->cachedPersisterContexts['noLimits']->selectJoinSql .= ' ' . $joinTableName . ' ' . $joinTableAlias . ' ON ';
-            $this->cachedPersisterContexts['noLimits']->selectJoinSql .= implode(' AND ', $joinCondition);
+            $this->currentPersisterContext->selectJoinSql .= ' ' . $joinTableName . ' ' . $joinTableAlias . ' ON ';
+            $this->currentPersisterContext->selectJoinSql .= implode(' AND ', $joinCondition);
         }
 
-        $this->cachedPersisterContexts['noLimits']->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->cachedPersisterContexts['noLimits']->selectColumnListSql;
+        return $this->currentPersisterContext->selectColumnListSql;
     }
 
     /**
@@ -1310,7 +1310,7 @@ class BasicEntityPersister implements EntityPersister
                                 . '.' . $quotedColumn . ' AS ' . $resultColumnName;
             $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-            $this->cachedPersisterContexts['noLimits']->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
+            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
         }
 
         return implode(', ', $columnList);
@@ -1448,7 +1448,7 @@ class BasicEntityPersister implements EntityPersister
         $sql            = $tableAlias . '.' . $columnName;
         $columnAlias    = $this->getSQLColumnAlias($class->columnNames[$field]);
 
-        $this->cachedPersisterContexts['noLimits']->rsm->addFieldResult($alias, $columnAlias, $field);
+        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
 
         if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
             $type   = Type::getType($class->getTypeOfField($field));
@@ -1474,13 +1474,13 @@ class BasicEntityPersister implements EntityPersister
             $className .= '#' . $assocName;
         }
 
-        if (isset($this->cachedPersisterContexts['noLimits']->sqlTableAliases[$className])) {
-            return $this->cachedPersisterContexts['noLimits']->sqlTableAliases[$className];
+        if (isset($this->currentPersisterContext->sqlTableAliases[$className])) {
+            return $this->currentPersisterContext->sqlTableAliases[$className];
         }
 
-        $tableAlias = 't' . $this->cachedPersisterContexts['noLimits']->sqlAliasCounter++;
+        $tableAlias = 't' . $this->currentPersisterContext->sqlAliasCounter++;
 
-        $this->cachedPersisterContexts['noLimits']->sqlTableAliases[$className] = $tableAlias;
+        $this->currentPersisterContext->sqlTableAliases[$className] = $tableAlias;
 
         return $tableAlias;
     }
@@ -1926,7 +1926,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getSQLColumnAlias($columnName)
     {
-        return $this->quoteStrategy->getColumnAlias($columnName, $this->cachedPersisterContexts['noLimits']->sqlAliasCounter++, $this->platform);
+        return $this->quoteStrategy->getColumnAlias($columnName, $this->currentPersisterContext->sqlAliasCounter++, $this->platform);
     }
 
     /**
