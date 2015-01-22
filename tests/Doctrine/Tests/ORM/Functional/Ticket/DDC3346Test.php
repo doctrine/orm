@@ -24,16 +24,24 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFindOneByWithEagerFetch()
     {
-        $user = new DDC3346Author();
-        $user->username = "bwoogy";
+        $user1 = new DDC3346Author();
+        $user1->username = "first";
+
+        $user2 = new DDC3346Author();
+        $user2->username = "second";
+
+        $user3 = new DDC3346Author();
+        $user3->username = "third";
 
         $article1 = new DDC3346Article();
-        $article1->setAuthor($user);
+        $article1->setAuthor($user1);
 
         $article2 = new DDC3346Article();
-        $article2->setAuthor($user);
+        $article2->setAuthor($user1);
 
-        $this->_em->persist($user);
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->persist($user3);
         $this->_em->persist($article1);
         $this->_em->persist($article2);
         $this->_em->flush();
@@ -41,7 +49,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /** @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository('Doctrine\Tests\Models\DDC3346\DDC3346Author')->findBy(
-            array('username' => "bwoogy")
+            array('username' => "first")
         );
 
         $this->assertCount(1, $authors);
@@ -52,9 +60,23 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /** @var DDC3346Author $author */
         $author = $this->_em->getRepository('Doctrine\Tests\Models\DDC3346\DDC3346Author')->findOneBy(
-            array('username' => "bwoogy")
+            array('username' => "first")
         );
 
         $this->assertCount(2, $author->articles);
+
+        $this->_em->close();
+        unset($authors);
+
+        /** @var DDC3346Author[] $authors */
+        $authors = $this->_em->getRepository('Doctrine\Tests\Models\DDC3346\DDC3346Author')->findBy(
+            array(), array(), 3
+        );
+
+        $this->assertCount(3, $authors);
+
+        $this->assertCount(2, $authors[0]->articles);
+        $this->assertCount(0, $authors[1]->articles);
+        $this->assertCount(0, $authors[2]->articles);
     }
 }
