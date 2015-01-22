@@ -8,6 +8,7 @@ namespace Doctrine\Tests\Models\DDC3346;
  */
 class DDC3346Article
 {
+    const CLASSNAME = 'Doctrine\Tests\Models\DDC3346\DDC3346Article';
     /**
      * @Id
      * @Column(type="integer")
@@ -19,10 +20,6 @@ class DDC3346Article
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-    /**
-     * @Column(type="text")
-     */
-    public $text;
 
     public function setAuthor(DDC3346Author $author)
     {
