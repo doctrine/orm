@@ -689,6 +689,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null)
     {
+        $this->loadPersisterContext(null, $limit);
+
         $sql = $this->getSelectSQL($criteria, $assoc, $lockMode, $limit, null, $orderBy);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
@@ -859,6 +861,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
@@ -873,6 +877,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
         return $this->loadArrayFromStatement($assoc, $stmt);
@@ -946,6 +952,8 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $sourceClass    = $this->em->getClassMetadata($assoc['sourceEntity']);
         $class          = $sourceClass;
         $association    = $assoc;
@@ -1011,6 +1019,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $lockSql    = '';
         $joinSql    = '';
         $orderBySql = '';
@@ -1041,7 +1051,7 @@ class BasicEntityPersister implements EntityPersister
                 break;
         }
 
-        $columnList = $this->getSelectColumnsSQL(null !== $limit);
+        $columnList = $this->getSelectColumnsSQL();
         $tableAlias = $this->getSQLTableAlias($this->class->name);
         $filterSql  = $this->generateFilterConditionSQL($this->class, $tableAlias);
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
@@ -1672,6 +1682,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
         return $this->loadArrayFromStatement($assoc, $stmt);
@@ -1699,6 +1711,8 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $criteria    = array();
         $parameters  = array();
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
@@ -1937,7 +1951,7 @@ class BasicEntityPersister implements EntityPersister
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 
-    private function loadPersisterContext($offset, $limit)
+    protected function loadPersisterContext($offset, $limit)
     {
         if (null === $offset && null === $limit) {
             $this->currentPersisterContext = $this->cachedPersisterContexts['noLimits'];

@@ -299,6 +299,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null)
     {
+        $this->loadPersisterContext($offset, $limit);
+
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
