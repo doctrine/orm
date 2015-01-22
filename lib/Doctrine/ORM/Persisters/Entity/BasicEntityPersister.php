@@ -164,13 +164,6 @@ class BasicEntityPersister implements EntityPersister
     private $insertSql;
 
     /**
-     * Map from class names (FQCN) to the corresponding generated SQL table aliases.
-     *
-     * @var array
-     */
-    protected $sqlTableAliases = array();
-
-    /**
      * The quote strategy.
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
@@ -1462,13 +1455,13 @@ class BasicEntityPersister implements EntityPersister
             $className .= '#' . $assocName;
         }
 
-        if (isset($this->sqlTableAliases[$className])) {
-            return $this->sqlTableAliases[$className];
+        if (isset($this->cachedPersisterContexts['noLimits']->sqlTableAliases[$className])) {
+            return $this->cachedPersisterContexts['noLimits']->sqlTableAliases[$className];
         }
 
         $tableAlias = 't' . $this->cachedPersisterContexts['noLimits']->sqlAliasCounter++;
 
-        $this->sqlTableAliases[$className] = $tableAlias;
+        $this->cachedPersisterContexts['noLimits']->sqlTableAliases[$className] = $tableAlias;
 
         return $tableAlias;
     }
