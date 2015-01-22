@@ -55,12 +55,8 @@ class AssignedGenerator extends AbstractIdGenerator
             }
 
             if (isset($class->associationMappings[$idField])) {
-                if ( ! $em->getUnitOfWork()->isInIdentityMap($value)) {
-                    throw ORMException::entityMissingForeignAssignedId($entity, $value);
-                }
-
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
-                $value = current($em->getUnitOfWork()->getEntityIdentifier($value));
+                $value = $em->getUnitOfWork()->getSingleIdentifierValue($value);
             }
 
             $identifier[$idField] = $value;
