@@ -12,14 +12,15 @@ env:
   - DB=sqlite
 
 before_script:
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests_tmp;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi"
+  - if [[ $TRAVIS_PHP_VERSION = '5.6' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
+  - if [ $DB = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests;' -U postgres; fi
+  - if [ $DB = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests_tmp;' -U postgres; fi
+  - if [ $DB = 'pgsql' ]; then psql -c 'create database doctrine_tests;' -U postgres; fi
+  - if [ $DB = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi
+  - if [ $DB = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi
   - composer install --prefer-dist --dev
 
-script: phpunit --configuration tests/travis/$DB.travis.xml
+script: phpunit $PHPUNIT_FLAGS --configuration tests/travis/$DB.travis.xml
 
 after_script:
   - php vendor/bin/coveralls -v
