@@ -164,21 +164,6 @@ class BasicEntityPersister implements EntityPersister
     private $insertSql;
 
     /**
-     * The JOIN SQL fragment used to eagerly load all many-to-one and one-to-one
-     * associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
-     *
-     * @var string
-     */
-    protected $selectJoinSql;
-
-    /**
-     * Counter for creating unique SQL table and column aliases.
-     *
-     * @var integer
-     */
-    protected $sqlAliasCounter = 0;
-
-    /**
      * Map from class names (FQCN) to the corresponding generated SQL table aliases.
      *
      * @var array
@@ -1481,7 +1466,7 @@ class BasicEntityPersister implements EntityPersister
             return $this->sqlTableAliases[$className];
         }
 
-        $tableAlias = 't' . $this->sqlAliasCounter++;
+        $tableAlias = 't' . $this->cachedPersisterContexts['noLimits']->sqlAliasCounter++;
 
         $this->sqlTableAliases[$className] = $tableAlias;
 
@@ -1925,7 +1910,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getSQLColumnAlias($columnName)
     {
-        return $this->quoteStrategy->getColumnAlias($columnName, $this->sqlAliasCounter++, $this->platform);
+        return $this->quoteStrategy->getColumnAlias($columnName, $this->cachedPersisterContexts['noLimits']->sqlAliasCounter++, $this->platform);
     }
 
     /**
