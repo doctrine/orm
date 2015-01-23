@@ -691,7 +691,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null)
     {
-        $this->loadPersisterContext(null, $limit);
+        $this->switchPersisterContext(null, $limit);
 
         $sql = $this->getSelectSQL($criteria, $assoc, $lockMode, $limit, null, $orderBy);
         list($params, $types) = $this->expandParameters($criteria);
@@ -863,7 +863,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
-        $this->loadPersisterContext($offset, $limit);
+        $this->switchPersisterContext($offset, $limit);
 
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
         list($params, $types) = $this->expandParameters($criteria);
@@ -879,7 +879,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $this->loadPersisterContext($offset, $limit);
+        $this->switchPersisterContext($offset, $limit);
 
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
@@ -954,7 +954,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $this->loadPersisterContext($offset, $limit);
+        $this->switchPersisterContext($offset, $limit);
 
         $sourceClass    = $this->em->getClassMetadata($assoc['sourceEntity']);
         $class          = $sourceClass;
@@ -1021,7 +1021,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null)
     {
-        $this->loadPersisterContext($offset, $limit);
+        $this->switchPersisterContext($offset, $limit);
 
         $lockSql    = '';
         $joinSql    = '';
@@ -1686,7 +1686,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $this->loadPersisterContext($offset, $limit);
+        $this->switchPersisterContext($offset, $limit);
 
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
@@ -1715,7 +1715,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
-        $this->loadPersisterContext($offset, $limit);
+        $this->switchPersisterContext($offset, $limit);
 
         $criteria    = array();
         $parameters  = array();
@@ -1955,7 +1955,15 @@ class BasicEntityPersister implements EntityPersister
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 
-    protected function loadPersisterContext($offset, $limit)
+    /**
+     * Switches persister context according to current query offset/limits
+     *
+     * This is due to the fact that to-many associations cannot be fetch-joined when a limit is involved
+     *
+     * @param null|int $offset
+     * @param null|int $limit
+     */
+    protected function switchPersisterContext($offset, $limit)
     {
         if (null === $offset && null === $limit) {
             $this->currentPersisterContext = $this->cachedPersisterContexts['noLimits'];
