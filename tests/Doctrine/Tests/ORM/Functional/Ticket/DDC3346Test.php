@@ -21,9 +21,9 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
     {
-        /** @var DDC3346Author $author */
+        /* @var DDC3346Author $author */
         $author = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findOneBy(
-            array('username' => "bwoogy")
+            array('username' => 'bwoogy')
         );
 
         $this->assertCount(2, $author->articles);
@@ -31,9 +31,9 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection()
     {
-        /** @var DDC3346Author[] $authors */
+        /* @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
-            array('username' => "bwoogy"),
+            array('username' => 'bwoogy'),
             null,
             1
         );
@@ -44,9 +44,9 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection()
     {
-        /** @var DDC3346Author[] $authors */
+        /* @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
-            array('username' => "bwoogy"),
+            array('username' => 'bwoogy'),
             null,
             null,
             1
@@ -58,14 +58,13 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function loadAuthorFixture()
     {
-        $user = new DDC3346Author();
-        $user->username = "bwoogy";
-
+        $user     = new DDC3346Author();
         $article1 = new DDC3346Article();
-        $article1->setAuthor($user);
-
         $article2 = new DDC3346Article();
-        $article2->setAuthor($user);
+
+        $user->username = 'bwoogy';
+        $article1->user = $user;
+        $article2->user = $user;
 
         $this->_em->persist($user);
         $this->_em->persist($article1);
