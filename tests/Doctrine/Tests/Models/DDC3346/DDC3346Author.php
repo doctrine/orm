@@ -8,18 +8,21 @@ namespace Doctrine\Tests\Models\DDC3346;
  */
 class DDC3346Author
 {
-    const CLASSNAME = 'Doctrine\Tests\Models\DDC3346\DDC3346Author';
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
+
     /**
      * @Column(type="string", length=255, unique=true)
      */
     public $username;
+
     /**
      * @OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"})
      */
-    public $articles;
+    public $articles = array();
 }

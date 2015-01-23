@@ -8,21 +8,20 @@ namespace Doctrine\Tests\Models\DDC3346;
  */
 class DDC3346Article
 {
-    const CLASSNAME = 'Doctrine\Tests\Models\DDC3346\DDC3346Article';
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
+
     /**
+     * @var DDC3346Author
+     *
      * @ManyToOne(targetEntity="DDC3346Author", inversedBy="articles")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-
-    public function setAuthor(DDC3346Author $author)
-    {
-        $this->user = $author;
-    }
 }
