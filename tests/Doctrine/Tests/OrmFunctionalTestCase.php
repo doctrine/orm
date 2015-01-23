@@ -193,6 +193,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC2504\DDC2504ChildClass',
             'Doctrine\Tests\Models\DDC2504\DDC2504OtherClass',
         ),
+        'ddc3346' => array(
+            'Doctrine\Tests\Models\DDC3346\DDC3346Author',
+            'Doctrine\Tests\Models\DDC3346\DDC3346Article',
+        ),
         'quote' => array(
             'Doctrine\Tests\Models\Quote\Address',
             'Doctrine\Tests\Models\Quote\Group',
@@ -397,6 +401,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
+        }
+
+        if (isset($this->_usedModelSets['ddc3346'])) {
+            $conn->executeUpdate('DELETE FROM ddc3346_articles');
+            $conn->executeUpdate('DELETE FROM ddc3346_users');
         }
 
         if (isset($this->_usedModelSets['quote'])) {

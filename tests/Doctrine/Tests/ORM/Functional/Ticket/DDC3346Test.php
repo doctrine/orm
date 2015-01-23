@@ -12,12 +12,9 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        parent::setUp();
+        $this->useModelSet('ddc3346');
 
-        $this->setUpEntitySchema(array(
-            DDC3346Author::CLASSNAME,
-            DDC3346Article::CLASSNAME,
-        ));
+        parent::setUp();
     }
 
     public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
