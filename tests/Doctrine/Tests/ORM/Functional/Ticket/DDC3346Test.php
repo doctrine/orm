@@ -62,9 +62,11 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article1 = new DDC3346Article();
         $article2 = new DDC3346Article();
 
-        $user->username = 'bwoogy';
-        $article1->user = $user;
-        $article2->user = $user;
+        $user->username   = 'bwoogy';
+        $article1->user   = $user;
+        $article2->user   = $user;
+        $user->articles[] = $article1;
+        $user->articles[] = $article2;
 
         $this->_em->persist($user);
         $this->_em->persist($article1);
