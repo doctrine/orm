@@ -14,12 +14,10 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(
-            array(
-                DDC3346Author::CLASSNAME,
-                DDC3346Article::CLASSNAME,
-            )
-        );
+        $this->setUpEntitySchema(array(
+            DDC3346Author::CLASSNAME,
+            DDC3346Article::CLASSNAME,
+        ));
     }
 
     public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
@@ -40,7 +38,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         /** @var DDC3346Author $author */
-        $author = $this->_em->getRepository('Doctrine\Tests\Models\DDC3346\DDC3346Author')->findOneBy(
+        $author = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findOneBy(
             array('username' => "bwoogy")
         );
 
@@ -65,7 +63,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         /** @var DDC3346Author[] $authors */
-        $authors = $this->_em->getRepository('Doctrine\Tests\Models\DDC3346\DDC3346Author')->findBy(
+        $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
             array('username' => "bwoogy"),
             null,
             1
@@ -93,7 +91,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         /** @var DDC3346Author[] $authors */
-        $authors = $this->_em->getRepository('Doctrine\Tests\Models\DDC3346\DDC3346Author')->findBy(
+        $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
             array('username' => "bwoogy"),
             null,
             null,
