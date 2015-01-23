@@ -49,7 +49,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
             array('username' => 'bwoogy'),
             null,
             null,
-            1
+            0 // using an explicitly defined offset
         );
 
         $this->assertCount(1, $authors);
