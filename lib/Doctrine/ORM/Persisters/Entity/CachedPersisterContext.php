@@ -79,14 +79,24 @@ class CachedPersisterContext
     public $sqlTableAliases = array();
 
     /**
+     * Whether this persistent context is considering limit operations applied to the selection queries
+     *
+     * @var bool
+     */
+    public $handlesLimits;
+
+    /**
      * @param ClassMetadata    $class
      * @param ResultSetMapping $rsm
+     * @param bool             $handlesLimits
      */
     public function __construct(
         ClassMetadata $class,
-        ResultSetMapping $rsm
+        ResultSetMapping $rsm,
+        $handlesLimits
     ) {
-        $this->class = $class;
-        $this->rsm   = $rsm;
+        $this->class         = $class;
+        $this->rsm           = $rsm;
+        $this->handlesLimits = (bool) $handlesLimits;
     }
 }

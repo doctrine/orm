@@ -204,11 +204,13 @@ class BasicEntityPersister implements EntityPersister
         $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
         $this->cachedPersisterContexts['noLimits'] = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
-            new Query\ResultSetMapping()
+            new Query\ResultSetMapping(),
+            false
         );
         $this->cachedPersisterContexts['withLimits'] = new CachedPersisterContext(
             $class,
-            new Query\ResultSetMapping()
+            new Query\ResultSetMapping(),
+            true
         );
     }
 
@@ -1169,11 +1171,9 @@ class BasicEntityPersister implements EntityPersister
      * the resulting SQL fragment is generated only once and cached in {@link selectColumnListSql}.
      * Subclasses may or may not do the same.
      *
-     * @param bool $hasLimitClause
-     *
      * @return string The SQL fragment.
      */
-    protected function getSelectColumnsSQL(/*$hasLimitClause = false*/)
+    protected function getSelectColumnsSQL()
     {
         //if ( ! $hasLimitClause && $this->selectColumnListSql !== null) {
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
@@ -1203,6 +1203,10 @@ class BasicEntityPersister implements EntityPersister
 
             //if ($hasLimitClause || ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
             if ( ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
+                continue;
+            }
+
+            if ((($assoc['type'] & ClassMetadata::TO_MANY) > 0) && $this->currentPersisterContext->handlesLimits) {
                 continue;
             }
 
@@ -1955,6 +1959,8 @@ class BasicEntityPersister implements EntityPersister
     {
         if (null === $offset && null === $limit) {
             $this->currentPersisterContext = $this->cachedPersisterContexts['noLimits'];
+
+            return;
         }
 
         $this->currentPersisterContext = $this->cachedPersisterContexts['withLimits'];
