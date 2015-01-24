@@ -2661,9 +2661,9 @@ class UnitOfWork implements PropertyChangedListener
                             // then we can append this entity for eager loading!
                             if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
-                                !$targetClass->isIdentifierComposite &&
+                                ! $targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
-                                $newValue->__isInitialized__ === false) {
+                                ! $newValue->__isInitialized()) {
 
                                 $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
                             }
@@ -2678,10 +2678,12 @@ class UnitOfWork implements PropertyChangedListener
                             break;
 
                         default:
+                            $resolvedAssociatedId = $this->resolveAssociatedId($targetClass, $associatedId);
+
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case ($hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER):
-                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $resolvedAssociatedId);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
@@ -2689,12 +2691,12 @@ class UnitOfWork implements PropertyChangedListener
                                     // TODO: Is there a faster approach?
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
 
-                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $resolvedAssociatedId);
                                     break;
 
                                 default:
                                     // TODO: This is very imperformant, ignore it?
-                                    $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
+                                    $newValue = $this->em->find($assoc['targetEntity'], $resolvedAssociatedId);
                                     break;
                             }
 
@@ -3436,6 +3438,37 @@ class UnitOfWork implements PropertyChangedListener
                 $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
             }
         }
+    }
+
+    /**
+     * @param ClassMetadata $targetClass
+     * @param array         $id
+     *
+     * @return array
+     */
+    private function resolveAssociatedId(ClassMetadata $targetClass, array $id)
+    {
+        foreach ($id as $field => $value) {
+            if (! isset($targetClass->associationMappings[$field])) {
+                continue;
+            }
+
+            $association = $targetClass->associationMappings[$field];
+
+            if ($value instanceof $association['targetEntity']) {
+                continue; // already hydrated
+            }
+
+            // note: may have more than one join column
+            $referencedClass = $this->em->getClassMetadata($association['targetEntity']);
+
+            $id[$field] = $this->em->getReference(
+                $referencedClass->name,
+                [reset($referencedClass->identifier) => $value] // @TODO handles only single identifier field?
+            );
+        }
+
+        return $id;
     }
 
     /**
