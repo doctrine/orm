@@ -363,7 +363,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->articles->removeElement($article);
 
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        // NOTE: +2 queries because CmsArticle is a versioned entity, and that needs to be handled accordingly
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
         $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
@@ -384,7 +385,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity will not cause queries when the owning side doesn't actually change.");
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity state as managed
@@ -399,6 +400,90 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->articles->removeElement($article);
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $childClass = $this->_em->find(DDC2504ChildClass::CLASSNAME, $this->ddc2504ChildClassId);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement($childClass);
+
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+
+        $this->assertEquals(
+            $queryCount + 1,
+            $this->getCurrentQueryCount(),
+            'The owning side of the association is updated'
+        );
+
+        $this->assertFalse($otherClass->childClasses->contains($childClass));
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement(new DDC2504ChildClass());
+
+        $this->assertEquals(
+            $queryCount,
+            $this->getCurrentQueryCount(),
+            'Removing an unmanaged entity should cause no query to be executed.'
+        );
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $childClass = new DDC2504ChildClass();
+
+        $this->_em->persist($childClass);
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement($childClass);
+
+        $this->assertEquals(
+            $queryCount,
+            $this->getCurrentQueryCount(),
+            'Removing a new entity should cause no query to be executed.'
+        );
+    }
+
+    /**
+     * @group DDC-2504
+     */
+    public function testRemovalOfNewManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    {
+        $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        $childClass = new DDC2504ChildClass();
+
+        $this->_em->persist($childClass);
+        $this->_em->flush();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $otherClass->childClasses->removeElement($childClass);
+
+        $this->assertEquals(
+            $queryCount,
+            $this->getCurrentQueryCount(),
+            'No queries are executed, as the owning side of the association is not actually updated.'
+        );
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
     /**
