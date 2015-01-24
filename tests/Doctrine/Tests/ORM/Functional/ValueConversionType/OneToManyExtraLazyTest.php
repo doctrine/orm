@@ -2,7 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\Models\Tweet\Tweet;
+use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -19,6 +20,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
+        $this->useModelSet('tweet');
         $this->useModelSet('vct_onetomany_extralazy');
 
         parent::setUp();
@@ -102,5 +104,44 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
         );
 
         $this->assertCount(2, $inversed->associatedEntities->slice(0, 2));
+    }
+
+    /**
+     * @group DDC-3343
+     */
+    public function testEntityNotDeletedWhenRemovedFromExtraLazyAssociation()
+    {
+        $user  = new User();
+        $tweet = new Tweet();
+
+        $user->name     = 'ocramius';
+        $tweet->content = 'The cat is on the table';
+
+        $user->addTweet($tweet);
+
+        $this->_em->persist($user);
+        $this->_em->persist($tweet);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        /* @var $user User */
+        $user  = $this->_em->find(User::CLASSNAME, $user->id);
+        $tweet = $this->_em->find(Tweet::CLASSNAME, $tweet->id);
+
+        $user->tweets->removeElement($tweet);
+
+        $this->assertCount(0, $user->tweets);
+
+        $this->_em->clear();
+
+        /* @var $tweet Tweet */
+        $tweet = $this->_em->find(Tweet::CLASSNAME, $tweet->id);
+        $this->assertInstanceOf(
+            Tweet::CLASSNAME,
+            $tweet,
+            'Even though the collection is extra lazy, the tweet should not have been deleted'
+        );
+
+        $this->assertNull($tweet->author);
     }
 }
