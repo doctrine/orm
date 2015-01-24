@@ -15,7 +15,6 @@
         <var name="tmpdb_host" value="localhost" />
         <var name="tmpdb_username" value="postgres" />
         <var name="tmpdb_password" value="" />
-        <var name="tmpdb_name" value="doctrine_tests_tmp" />
         <var name="tmpdb_port" value="5432"/>
     </php>
 
