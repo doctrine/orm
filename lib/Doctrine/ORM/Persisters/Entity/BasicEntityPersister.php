@@ -178,14 +178,19 @@ class BasicEntityPersister implements EntityPersister
     private $identifierFlattener;
 
     /**
-     * @var CachedPersisterContext[]
+     * @var CachedPersisterContext
      */
-    protected $cachedPersisterContexts = [];
+    protected $currentPersisterContext;
 
     /**
      * @var CachedPersisterContext
      */
-    protected $currentPersisterContext;
+    private $limitsHandlingContext;
+
+    /**
+     * @var CachedPersisterContext
+     */
+    private $noLimitsContext;
 
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
@@ -196,18 +201,18 @@ class BasicEntityPersister implements EntityPersister
      */
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
-        $this->em                  = $em;
-        $this->class               = $class;
-        $this->conn                = $em->getConnection();
-        $this->platform            = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy       = $em->getConfiguration()->getQuoteStrategy();
-        $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
-        $this->cachedPersisterContexts['noLimits'] = $this->currentPersisterContext = new CachedPersisterContext(
+        $this->em                    = $em;
+        $this->class                 = $class;
+        $this->conn                  = $em->getConnection();
+        $this->platform              = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy         = $em->getConfiguration()->getQuoteStrategy();
+        $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
+        $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             false
         );
-        $this->cachedPersisterContexts['withLimits'] = new CachedPersisterContext(
+        $this->limitsHandlingContext = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             true
@@ -1966,11 +1971,11 @@ class BasicEntityPersister implements EntityPersister
     protected function switchPersisterContext($offset, $limit)
     {
         if (null === $offset && null === $limit) {
-            $this->currentPersisterContext = $this->cachedPersisterContexts['noLimits'];
+            $this->currentPersisterContext = $this->noLimitsContext;
 
             return;
         }
 
-        $this->currentPersisterContext = $this->cachedPersisterContexts['withLimits'];
+        $this->currentPersisterContext = $this->limitsHandlingContext;
     }
 }
