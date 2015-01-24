@@ -17,8 +17,8 @@ class DDC3343Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testEntityNotDeletedWhenRemovedFromExtraLazyAssociation()
     {
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3343User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3343Group'),
+            $this->_em->getClassMetadata(DDC3343User::CLASSNAME),
+            $this->_em->getClassMetadata(DDC3343Group::CLASSNAME),
         ));
 
         // Save a group and an associated user (in an extra lazy association)
@@ -34,16 +34,19 @@ class DDC3343Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Fetch the group and the user again and remove the user from the collection.
         $this->_em->clear();
 
-        $group = $this->_em->find(__NAMESPACE__ . '\DDC3343Group', $group->id);
-        $user  = $this->_em->find(__NAMESPACE__ . '\DDC3343User', $user->id);
+        $group = $this->_em->find(DDC3343Group::CLASSNAME, $group->id);
+        $user  = $this->_em->find(DDC3343User::CLASSNAME, $user->id);
 
         $group->users->removeElement($user);
 
         // Even though the collection is extra lazy, the user should not have been deleted.
         $this->_em->clear();
 
-        $user = $this->_em->find(__NAMESPACE__ . '\DDC3343User', $user->id);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC3343User', $user);
+        /* @var $user DDC3343User */
+        $user = $this->_em->find(DDC3343User::CLASSNAME, $user->id);
+        $this->assertInstanceOf(DDC3343User::CLASSNAME, $user);
+
+        $this->assertNull($user->group);
     }
 }
 
@@ -52,6 +55,8 @@ class DDC3343Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC3343User
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue
@@ -62,7 +67,7 @@ class DDC3343User
     /**
      * @ManyToOne(targetEntity="DDC3343Group", inversedBy="users")
      */
-    protected $group;
+    public $group;
 }
 
 /**
@@ -70,6 +75,8 @@ class DDC3343User
  */
 class DDC3343Group
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue
