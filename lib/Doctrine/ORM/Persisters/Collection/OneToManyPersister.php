@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -164,6 +165,10 @@ class OneToManyPersister extends AbstractCollectionPersister
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         $targetMetadata = $this->em->getClassMetadata($mapping['targetEntity']);
+
+        if ($element instanceof Proxy && ! $element->__isInitialized()) {
+            $element->__load();
+        }
 
         // clearing owning side value
         $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);

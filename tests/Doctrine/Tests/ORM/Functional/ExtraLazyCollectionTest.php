@@ -480,7 +480,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->articles->removeElement($article);
 
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        // NOTE: +2 queries because CmsArticle is a versioned entity, and that needs to be handled accordingly
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
         $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
@@ -501,7 +502,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity will not cause queries when the owning side doesn't actually change.");
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity state as managed
@@ -532,17 +533,10 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
 
-        $expectedQueryCount = $queryCount + 1;
-
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            // the ORM emulates cascades in a JTI if the underlying platform does not support them
-            $expectedQueryCount = $queryCount + 2;
-        };
-
         $this->assertEquals(
-            $expectedQueryCount,
+            $queryCount + 1,
             $this->getCurrentQueryCount(),
-            'One removal per table in the JTI has been executed'
+            'The owning side of the association is updated'
         );
 
         $this->assertFalse($otherClass->childClasses->contains($childClass));
@@ -601,17 +595,10 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $otherClass->childClasses->removeElement($childClass);
 
-        $expectedQueryCount = $queryCount + 1;
-
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            // the ORM emulates cascades in a JTI if the underlying platform does not support them
-            $expectedQueryCount = $queryCount + 2;
-        };
-
         $this->assertEquals(
-            $expectedQueryCount,
+            $queryCount,
             $this->getCurrentQueryCount(),
-            'Removing a persisted entity should cause two queries to be executed.'
+            'No queries are executed, as the owning side of the association is not actually updated.'
         );
         $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
