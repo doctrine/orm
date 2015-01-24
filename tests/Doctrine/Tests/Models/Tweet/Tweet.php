@@ -8,6 +8,8 @@ namespace Doctrine\Tests\Models\Tweet;
  */
 class Tweet
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue

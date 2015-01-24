@@ -168,6 +168,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         // clearing owning side value
         $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);
 
+        $this->uow->computeChangeSet($targetMetadata, $element);
+
         $persister->update($element);
 
         return true;
