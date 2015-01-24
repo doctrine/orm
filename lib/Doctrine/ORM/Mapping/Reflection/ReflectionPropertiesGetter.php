@@ -27,6 +27,8 @@ use ReflectionProperty;
  * Utility class to retrieve all reflection instance properties of a given class, including
  * private inherited properties and transient properties.
  *
+ * @private This API is for internal use only
+ *
  * @author Marco Pivetta <ocramius@gmail.com>
  */
 final class ReflectionPropertiesGetter
