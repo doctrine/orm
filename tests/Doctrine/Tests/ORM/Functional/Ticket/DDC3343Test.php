@@ -4,11 +4,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Tweet\Tweet;
 use Doctrine\Tests\Models\Tweet\User;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3343
  */
-class DDC3343Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3343Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
