@@ -163,7 +163,14 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
-        return $persister->delete($element);
+        $targetMetadata = $this->em->getClassMetadata($mapping['targetEntity']);
+
+        // clearing owning side value
+        $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);
+
+        $persister->update($element);
+
+        return true;
     }
 
     /**
