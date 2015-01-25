@@ -3316,4 +3316,29 @@ class ClassMetadataInfo implements ClassMetadata
 
         return $sequencePrefix;
     }
+
+    public function applyData($entity, array $data)
+    {
+        foreach ($data as $field => $value) {
+            if ($this->shouldUseData($field, $value)) {
+                $this->reflFields[$field]->setValue($entity, $value);
+            }
+        }
+    }
+
+    private function shouldUseData($field, $value)
+    {
+        if ( ! isset($this->fieldMappings[$field])) {
+            return false;
+        }
+
+        if ($value !== null) {
+            return true;
+        }
+
+        return isset(
+            $this->fieldMappings[$field]['declaredField'],
+            $this->embeddedClasses[$name = $this->fieldMappings[$field]['declaredField']]
+        ) && $this->embeddedClasses[$name]['nullable'] !== true;
+    }
 }

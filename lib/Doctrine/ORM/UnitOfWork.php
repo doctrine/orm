@@ -2564,13 +2564,7 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        $this->removeNullableEmbeddedReferences($data, $class);
-
-        foreach ($data as $field => $value) {
-            if (isset($class->fieldMappings[$field])) {
-                $class->reflFields[$field]->setValue($entity, $value);
-            }
-        }
+        $class->applyData($entity, $data);
 
         // Loading the entity right here, if its in the eager loading map get rid of it there.
         unset($this->eagerLoadingEntities[$class->rootEntityName][$idHash]);
@@ -2767,34 +2761,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $entity;
-    }
-
-    /**
-     * @param array $data
-     * @param ClassMetadata $class
-     */
-    private function removeNullableEmbeddedReferences(array &$data, ClassMetadata $class)
-    {
-        $nullables = array_keys(
-            array_filter(
-                $class->embeddedClasses,
-                function (array $embedded) {
-                    return $embedded['nullable'] === true;
-                }
-            )
-        );
-
-        if (empty($nullables)) {
-            return;
-        }
-
-        foreach ($data as $field => $value) {
-            $property = substr($field, 0, strpos($field, '.'));
-
-            if (in_array($property, $nullables) && $value === null) {
-                unset($data[$field]);
-            }
-        }
     }
 
     /**
