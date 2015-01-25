@@ -299,6 +299,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null)
     {
+        $this->switchPersisterContext($offset, $limit);
+
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
@@ -420,19 +422,18 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getSelectColumnsSQL()
     {
         // Create the column list fragment only once
-        if ($this->selectColumnListSql !== null) {
-            return $this->selectColumnListSql;
+        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+            return $this->currentPersisterContext->selectColumnListSql;
         }
 
         $columnList         = array();
-        $this->rsm          = new ResultSetMapping();
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
 
-        $this->rsm->addEntityResult($this->class->name, 'r');
-        $this->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
+        $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
+        $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Add regular columns
         foreach ($this->class->fieldMappings as $fieldName => $mapping) {
@@ -523,9 +524,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->selectColumnListSql;
+        return $this->currentPersisterContext->selectColumnListSql;
     }
 
     /**
