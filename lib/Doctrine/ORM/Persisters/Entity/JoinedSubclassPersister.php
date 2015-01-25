@@ -427,7 +427,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $columnList         = array();
-        //$this->currentPersisterContext->rsm          = new ResultSetMapping();
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);

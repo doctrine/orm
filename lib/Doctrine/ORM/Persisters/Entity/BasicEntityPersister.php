@@ -1180,7 +1180,6 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnsSQL()
     {
-        //if ( ! $hasLimitClause && $this->selectColumnListSql !== null) {
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
             return $this->currentPersisterContext->selectColumnListSql;
         }
@@ -1206,7 +1205,6 @@ class BasicEntityPersister implements EntityPersister
             $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
             $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
 
-            //if ($hasLimitClause || ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
             if ( ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
             }
