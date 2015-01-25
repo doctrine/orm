@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 
@@ -237,11 +238,20 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $mapping = $coll->getMapping();
-        $class   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sql     = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-                 . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        $mapping        = $coll->getMapping();
+        $persister      = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $targetMetadata = $this->em->getClassMetadata($mapping['targetEntity']);
 
-        return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+        if ($element instanceof Proxy && ! $element->__isInitialized()) {
+            $element->__load();
+        }
+
+        // clearing owning side value
+        $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);
+
+        $this->uow->computeChangeSet($targetMetadata, $element);
+        $persister->update($element);
+
+        return true;
     }
 }

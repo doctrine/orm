@@ -139,6 +139,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\StockExchange\Stock',
             'Doctrine\Tests\Models\StockExchange\Market',
         ),
+        'tweet' => array(
+            'Doctrine\Tests\Models\Tweet\Tweet',
+            'Doctrine\Tests\Models\Tweet\User',
+        ),
         'legacy' => array(
             'Doctrine\Tests\Models\Legacy\LegacyUser',
             'Doctrine\Tests\Models\Legacy\LegacyUserReference',
@@ -268,6 +272,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM exchange_bonds');
             $conn->executeUpdate('DELETE FROM exchange_stocks');
             $conn->executeUpdate('DELETE FROM exchange_markets');
+        }
+        if (isset($this->_usedModelSets['tweet'])) {
+            $conn->executeUpdate('DELETE FROM tweet_tweet');
+            $conn->executeUpdate('DELETE FROM tweet_user');
         }
         if (isset($this->_usedModelSets['legacy'])) {
             $conn->executeUpdate('DELETE FROM legacy_users_cars');
