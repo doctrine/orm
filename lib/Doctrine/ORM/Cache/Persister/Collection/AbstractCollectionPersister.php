@@ -271,11 +271,17 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     protected function evictCollectionCache(PersistentCollection $collection)
     {
-        $this->region->evict(new CollectionCacheKey(
+        $key = new CollectionCacheKey(
             $this->sourceEntity->rootEntityName,
             $this->association['fieldName'],
             $this->uow->getEntityIdentifier($collection->getOwner())
-        ));
+        );
+
+        $this->region->evict($key);
+
+        if ($this->cacheLogger) {
+            $this->cacheLogger->collectionCachePut($this->regionName, $key);
+        }
     }
 
     /**
@@ -286,10 +292,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         /* @var $targetPersister CachedEntityPersister */
         $targetPersister = $this->uow->getEntityPersister($targetEntity);
+        $targetRegion    = $targetPersister->getCacheRegion();
+        $key             = new EntityCacheKey($targetEntity, $this->uow->getEntityIdentifier($element));
 
-        $targetPersister->getCacheRegion()->evict(new EntityCacheKey(
-            $targetEntity,
-            $this->uow->getEntityIdentifier($element)
-        ));
+        $targetRegion->evict($key);
+
+        if ($this->cacheLogger) {
+            $this->cacheLogger->entityCachePut($targetRegion->getName(), $key);
+        }
     }
 }
