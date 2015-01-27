@@ -78,9 +78,13 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function delete($entity)
     {
-        $this->persister->delete($entity);
+        $key = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
 
-        $this->queuedCache['delete'][] = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        if ($this->persister->delete($entity)) {
+            $this->region->evict($key);
+        }
+
+        $this->queuedCache['delete'][] = $key;
     }
 
     /**
