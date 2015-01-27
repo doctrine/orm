@@ -1141,7 +1141,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
 
-        $user->tweets->removeElement($this->_em->find(UserList::CLASSNAME, $userListId));
+        $user->userLists->removeElement($this->_em->find(UserList::CLASSNAME, $userListId));
 
         $this->_em->clear();
 
@@ -1194,7 +1194,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
 
-        $user->tweets->removeElement($this->_em->getReference(UserList::CLASSNAME, $userListId));
+        $user->userLists->removeElement($this->_em->getReference(UserList::CLASSNAME, $userListId));
 
         $this->_em->clear();
 
