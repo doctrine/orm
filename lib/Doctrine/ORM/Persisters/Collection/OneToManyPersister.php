@@ -168,22 +168,10 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
-
-        $targetMetadata = $this->em->getClassMetadata($mapping['targetEntity']);
-
-        if ($element instanceof Proxy && ! $element->__isInitialized()) {
-            $element->__load();
-        }
-
-        // clearing owning side value
-        $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);
-
-        $this->uow->computeChangeSet($targetMetadata, $element);
-
-        $persister->update($element);
-
-        return true;
+        return $this
+            ->uow
+            ->getEntityPersister($mapping['targetEntity'])
+            ->delete($element);
     }
 
     /**
