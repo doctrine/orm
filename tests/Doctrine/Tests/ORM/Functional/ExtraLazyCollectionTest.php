@@ -730,7 +730,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
             'Even though the collection is extra lazy, the tweet should not have been deleted'
         );
 
-        $this->assertNull($tweet->author);
+        $this->assertInstanceOf(User::CLASSNAME, $tweet->author);
 
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
