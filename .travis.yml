@@ -15,8 +15,6 @@ env:
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '5.6' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
   - if [[ $TRAVIS_PHP_VERSION != '5.6' && $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != 'hhvm-nightly' ]]; then phpenv config-rm xdebug.ini;  fi
-  - if [ $DB = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests;' -U postgres; fi
-  - if [ $DB = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests_tmp;' -U postgres; fi
   - if [ $DB = 'pgsql' ]; then psql -c 'create database doctrine_tests;' -U postgres; fi
   - if [ $DB = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi
   - if [ $DB = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi
