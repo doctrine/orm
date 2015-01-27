@@ -64,19 +64,19 @@ class TestUtil
     private static function hasRequiredConnectionParams()
     {
         return isset(
-        $GLOBALS['db_type'],
-        $GLOBALS['db_username'],
-        $GLOBALS['db_password'],
-        $GLOBALS['db_host'],
-        $GLOBALS['db_name'],
-        $GLOBALS['db_port']
+            $GLOBALS['db_type'],
+            $GLOBALS['db_username'],
+            $GLOBALS['db_password'],
+            $GLOBALS['db_host'],
+            $GLOBALS['db_name'],
+            $GLOBALS['db_port']
         )
         && isset(
-        $GLOBALS['tmpdb_type'],
-        $GLOBALS['tmpdb_username'],
-        $GLOBALS['tmpdb_password'],
-        $GLOBALS['tmpdb_host'],
-        $GLOBALS['tmpdb_port']
+            $GLOBALS['tmpdb_type'],
+            $GLOBALS['tmpdb_username'],
+            $GLOBALS['tmpdb_password'],
+            $GLOBALS['tmpdb_host'],
+            $GLOBALS['tmpdb_port']
         );
     }
 
