@@ -13,6 +13,11 @@ use Doctrine\DBAL\DriverManager;
 class TestUtil
 {
     /**
+     * @var boolean Whether the database schema is initialized.
+     */
+    private static $initialized = false;
+
+    /**
      * Gets a <b>real</b> database connection using the following parameters
      * of the $GLOBALS array:
      *
@@ -83,31 +88,36 @@ class TestUtil
     private static function getSpecifiedConnectionParams()
     {
         $realDbParams = self::getParamsForMainConnection();
-        $tmpDbParams = self::getParamsForTemporaryConnection();
 
-        $realConn = DriverManager::getConnection($realDbParams);
+        if (! self::$initialized) {
+            $tmpDbParams = self::getParamsForTemporaryConnection();
 
-        // Connect to tmpdb in order to drop and create the real test db.
-        $tmpConn = DriverManager::getConnection($tmpDbParams);
+            $realConn = DriverManager::getConnection($realDbParams);
 
-        $platform  = $tmpConn->getDatabasePlatform();
+            // Connect to tmpdb in order to drop and create the real test db.
+            $tmpConn = DriverManager::getConnection($tmpDbParams);
 
-        if ($platform->supportsCreateDropDatabase()) {
-            $dbname = $realConn->getDatabase();
-            $realConn->close();
+            $platform  = $tmpConn->getDatabasePlatform();
 
-            $tmpConn->getSchemaManager()->dropAndCreateDatabase($dbname);
+            if ($platform->supportsCreateDropDatabase()) {
+                $dbname = $realConn->getDatabase();
+                $realConn->close();
 
-            $tmpConn->close();
-        } else {
-            $sm = $realConn->getSchemaManager();
+                $tmpConn->getSchemaManager()->dropAndCreateDatabase($dbname);
 
-            $schema = $sm->createSchema();
-            $stmts = $schema->toDropSql($realConn->getDatabasePlatform());
+                $tmpConn->close();
+            } else {
+                $sm = $realConn->getSchemaManager();
 
-            foreach ($stmts as $stmt) {
-                $realConn->exec($stmt);
+                $schema = $sm->createSchema();
+                $stmts = $schema->toDropSql($realConn->getDatabasePlatform());
+
+                foreach ($stmts as $stmt) {
+                    $realConn->exec($stmt);
+                }
             }
+
+            self::$initialized = true;
         }
 
         return $realDbParams;
