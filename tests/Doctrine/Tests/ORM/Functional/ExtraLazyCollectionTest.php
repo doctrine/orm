@@ -528,22 +528,37 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      */
     public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
     {
+        /* @var $otherClass DDC2504OtherClass */
         $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
+        /* @var $childClass DDC2504ChildClass */
         $childClass = $this->_em->find(DDC2504ChildClass::CLASSNAME, $this->ddc2504ChildClassId);
 
         $queryCount = $this->getCurrentQueryCount();
 
         $otherClass->childClasses->removeElement($childClass);
+        $childClass->other = null; // updating owning side
 
         $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
 
         $this->assertEquals(
-            $queryCount + 1,
+            $queryCount,
             $this->getCurrentQueryCount(),
-            'The owning side of the association is updated'
+            'No queries have been executed'
         );
 
-        $this->assertFalse($otherClass->childClasses->contains($childClass));
+        $this->assertTrue(
+            $otherClass->childClasses->contains($childClass),
+            'Collection item still not updated (needs flushing)'
+        );
+
+        $this->_em->flush();
+
+        $this->assertFalse(
+            $otherClass->childClasses->contains($childClass),
+            'Referenced item was removed in the transaction'
+        );
+
+        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
     /**
@@ -551,6 +566,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      */
     public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
     {
+        /* @var $otherClass DDC2504OtherClass */
         $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -568,6 +584,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      */
     public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
     {
+        /* @var $otherClass DDC2504OtherClass */
         $otherClass = $this->_em->find(DDC2504OtherClass::CLASSNAME, $this->ddc2504OtherClassId);
         $childClass = new DDC2504ChildClass();
 
@@ -1035,7 +1052,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemovesManagedElementFromOneToManyExtraLazyCollection()
+    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionIsNoOp()
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
@@ -1049,13 +1066,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
 
-        $this->assertCount(0, $user->tweets);
+        $this->assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
     }
 
     /**
      * @group DDC-3343
      */
-    public function testRemovesManagedElementFromOneToManyExtraLazyCollectionWithoutDeletingTheTargetEntityEntry()
+    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionWithoutDeletingTheTargetEntityEntryIsNoOp()
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
@@ -1076,7 +1093,11 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
             'Even though the collection is extra lazy, the tweet should not have been deleted'
         );
 
-        $this->assertNull($tweet->author, 'Tweet author link has been removed');
+        $this->assertInstanceOf(
+            User::CLASSNAME,
+            $tweet->author,
+            'Tweet author link has not been removed - need to update the owning side first'
+        );
     }
 
     /**
@@ -1107,7 +1128,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
 
-        $this->assertCount(0, $user->tweets);
+        $this->assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
     }
 
     /**
