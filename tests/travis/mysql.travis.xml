@@ -12,7 +12,6 @@
         <var name="tmpdb_host" value="localhost" />
         <var name="tmpdb_username" value="travis" />
         <var name="tmpdb_password" value="" />
-        <var name="tmpdb_name" value="doctrine_tests_tmp" />
         <var name="tmpdb_port" value="3306"/>
     </php>
 
