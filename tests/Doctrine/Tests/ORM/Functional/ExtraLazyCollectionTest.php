@@ -653,6 +653,110 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->topic = $article1->topic;
         $this->phonenumber = $phonenumber1->phonenumber;
+
+    }
+
+    /**
+     * @group DDC-3343
+     */
+    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionIsNoOp()
+    {
+        list($userId, $tweetId) = $this->loadTweetFixture();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $user->tweets->removeElement($this->_em->find(Tweet::CLASSNAME, $tweetId));
+
+        $this->_em->clear();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $this->assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
+    }
+
+    /**
+     * @group DDC-3343
+     */
+    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionWithoutDeletingTheTargetEntityEntryIsNoOp()
+    {
+        list($userId, $tweetId) = $this->loadTweetFixture();
+
+        /* @var $user User */
+        $user  = $this->_em->find(User::CLASSNAME, $userId);
+
+        $e = $this->_em->find(Tweet::CLASSNAME, $tweetId);
+
+        $user->tweets->removeElement($e);
+
+        $this->_em->clear();
+
+        /* @var $tweet Tweet */
+        $tweet = $this->_em->find(Tweet::CLASSNAME, $tweetId);
+        $this->assertInstanceOf(
+            Tweet::CLASSNAME,
+            $tweet,
+            'Even though the collection is extra lazy, the tweet should not have been deleted'
+        );
+
+        $this->assertInstanceOf(
+            User::CLASSNAME,
+            $tweet->author,
+            'Tweet author link has not been removed - need to update the owning side first'
+        );
+    }
+
+    /**
+     * @group DDC-3343
+     */
+    public function testRemovingManagedLazyProxyFromExtraLazyOneToManyDoesRemoveTheAssociationButNotTheEntity()
+    {
+        list($userId, $tweetId) = $this->loadTweetFixture();
+
+        /* @var $user User */
+        $user  = $this->_em->find(User::CLASSNAME, $userId);
+        $tweet = $this->_em->getReference(Tweet::CLASSNAME, $tweetId);
+
+        $user->tweets->removeElement($this->_em->getReference(Tweet::CLASSNAME, $tweetId));
+
+        $this->_em->clear();
+
+        /* @var $tweet Tweet */
+        $tweet = $this->_em->find(Tweet::CLASSNAME, $tweet->id);
+        $this->assertInstanceOf(
+            Tweet::CLASSNAME,
+            $tweet,
+            'Even though the collection is extra lazy, the tweet should not have been deleted'
+        );
+
+        $this->assertNull($tweet->author);
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $this->assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
+    }
+
+    /**
+     * @return int[] ordered tuple: user id and tweet id
+     */
+    private function loadTweetFixture()
+    {
+        $user  = new User();
+        $tweet = new Tweet();
+
+        $user->name     = 'ocramius';
+        $tweet->content = 'The cat is on the table';
+
+        $user->addTweet($tweet);
+
+        $this->_em->persist($user);
+        $this->_em->persist($tweet);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        return array($user->id, $tweet->id);
     }
 
     /**
