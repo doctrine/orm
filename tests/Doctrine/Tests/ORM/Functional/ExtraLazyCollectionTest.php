@@ -7,6 +7,7 @@ use Doctrine\Tests\Models\DDC2504\DDC2504ChildClass;
 use Doctrine\Tests\Models\DDC2504\DDC2504OtherClass;
 use Doctrine\Tests\Models\Tweet\Tweet;
 use Doctrine\Tests\Models\Tweet\User;
+use Doctrine\Tests\Models\Tweet\UserList;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -1078,10 +1079,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         /* @var $user User */
         $user  = $this->_em->find(User::CLASSNAME, $userId);
+        $tweet = $this->_em->find(Tweet::CLASSNAME, $tweetId);
 
-        $e = $this->_em->find(Tweet::CLASSNAME, $tweetId);
-
-        $user->tweets->removeElement($e);
+        $user->tweets->removeElement($tweet);
 
         $this->_em->clear();
 
@@ -1132,6 +1132,83 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-3343
+     */
+    public function testRemoveOrphanedManagedElementFromOneToManyExtraLazyCollection()
+    {
+        list($userId, $userListId) = $this->loadUserListFixture();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $user->tweets->removeElement($this->_em->find(UserList::CLASSNAME, $userListId));
+
+        $this->_em->clear();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $this->assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
+        $this->assertNull(
+            $this->_em->find(UserList::CLASSNAME, $userListId),
+            'Element was deleted due to orphan removal'
+        );
+    }
+
+    /**
+     * @group DDC-3343
+     */
+    public function testRemoveOrphanedUnManagedElementFromOneToManyExtraLazyCollection()
+    {
+        list($userId, $userListId) = $this->loadUserListFixture();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $user->userLists->removeElement(new UserList());
+
+        $this->_em->clear();
+
+        /* @var $userList UserList */
+        $userList = $this->_em->find(UserList::CLASSNAME, $userListId);
+        $this->assertInstanceOf(
+            UserList::CLASSNAME,
+            $userList,
+            'Even though the collection is extra lazy + orphan removal, the user list should not have been deleted'
+        );
+
+        $this->assertInstanceOf(
+            User::CLASSNAME,
+            $userList->owner,
+            'User list to owner link has not been removed'
+        );
+    }
+
+    /**
+     * @group DDC-3343
+     */
+    public function testRemoveOrphanedManagedLazyProxyFromExtraLazyOneToMany()
+    {
+        list($userId, $userListId) = $this->loadUserListFixture();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $user->tweets->removeElement($this->_em->getReference(UserList::CLASSNAME, $userListId));
+
+        $this->_em->clear();
+
+        /* @var $user User */
+        $user = $this->_em->find(User::CLASSNAME, $userId);
+
+        $this->assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
+        $this->assertNull(
+            $this->_em->find(UserList::CLASSNAME, $userListId),
+            'Element was deleted due to orphan removal'
+        );
+    }
+
+    /**
      * @return int[] ordered tuple: user id and tweet id
      */
     private function loadTweetFixture()
@@ -1150,5 +1227,26 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         return array($user->id, $tweet->id);
+    }
+
+    /**
+     * @return int[] ordered tuple: user id and user list id
+     */
+    private function loadUserListFixture()
+    {
+        $user     = new User();
+        $userList = new UserList();
+
+        $user->name     = 'ocramius';
+        $userList->listName = 'PHP Developers to follow closely';
+
+        $user->addUserList($userList);
+
+        $this->_em->persist($user);
+        $this->_em->persist($userList);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        return array($user->id, $userList->id);
     }
 }
