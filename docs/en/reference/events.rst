@@ -478,7 +478,7 @@ EventManager that is passed to the EntityManager factory:
     $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
 
-    $entityManager = EntityManager::create($dbOpts, $config, $eventManager);
+    $entityManager = EntityManagerFactory::create($dbOpts, $config, $eventManager);
 
 You can also retrieve the event manager instance after the
 EntityManager was created:
@@ -949,7 +949,7 @@ Implementing your own resolver :
 
     // Configure the listener resolver only before instantiating the EntityManager
     $configurations->setEntityListenerResolver(new MyEntityListenerResolver);
-    EntityManager::create(.., $configurations, ..);
+    EntityManagerFactory::create(.., $configurations, ..);
 
 Load ClassMetadata Event
 ------------------------

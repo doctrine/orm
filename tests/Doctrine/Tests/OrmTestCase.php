@@ -151,7 +151,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
+        return \Doctrine\Tests\Mocks\EntityManagerFactoryMock::create($conn, $config, $eventManager);
     }
 
     protected function enableSecondLevelCache($log = true)

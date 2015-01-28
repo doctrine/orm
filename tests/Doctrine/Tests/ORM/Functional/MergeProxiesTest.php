@@ -8,7 +8,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerFactory;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -229,7 +229,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         );
 
 
-        $entityManager = EntityManager::create($connection, $config);
+        $entityManager = EntityManagerFactory::create($connection, $config);
 
         (new SchemaTool($entityManager))->createSchema([$entityManager->getClassMetadata(DateTimeModel::CLASSNAME)]);
 

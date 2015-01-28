@@ -130,7 +130,7 @@ step:
     <?php
     // bootstrap.php
     use Doctrine\ORM\Tools\Setup;
-    use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\EntityManagerFactory;
     
     require_once "vendor/autoload.php";
     
@@ -148,7 +148,7 @@ step:
     );
     
     // obtaining the entity manager
-    $entityManager = EntityManager::create($conn, $config);
+    $entityManager = EntityManagerFactory::create($conn, $config);
 
 The first require statement sets up the autoloading capabilities of Doctrine
 using the Composer autoload.

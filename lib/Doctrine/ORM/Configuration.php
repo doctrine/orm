@@ -923,4 +923,54 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['defaultQueryHints'][$name] = $value;
     }
+
+    /**
+     * Sets UnitOfWork class name.
+     *
+     * @since 2.5
+     *
+     * @param string $className
+     */
+    public function setUnitOfWorkClassName($className)
+    {
+        $this->_attributes['unitOfWorkClassName'] = (string) $className;
+    }
+
+    /**
+     * Returns UnitOfWork class name.
+     *
+     * @since 2.5
+     *
+     * @return string
+     */
+    public function getUnitOfWorkClassName()
+    {
+        return !empty($this->_attributes['unitOfWorkClassName']) ?
+            $this->_attributes['unitOfWorkClassName'] : 'Doctrine\\ORM\\UnitOfWork';
+    }
+
+    /**
+     * Sets Proxy Factory class name.
+     *
+     * @since 2.5
+     *
+     * @param string $className
+     */
+    public function setProxyFactoryClassName($className)
+    {
+        $this->_attributes['proxyFactory'] = (string) $className;
+    }
+
+    /**
+     * Returns Proxy Factory class name.
+     *
+     * @since 2.5
+     *
+     * @return string
+     */
+    public function getProxyFactoryClassName()
+    {
+        return !empty($this->_attributes['proxyFactory']) ?
+            $this->_attributes['proxyFactory'] : 'Doctrine\\ORM\\Proxy\\ProxyFactory';
+    }
 }

@@ -47,7 +47,7 @@ Customize it to your needs.
     <?php
     use Doctrine\Common\ClassLoader,
         Doctrine\ORM\Configuration,
-        Doctrine\ORM\EntityManager,
+        Doctrine\ORM\EntityManagerFactory,
         Doctrine\Common\Cache\ArrayCache,
         Doctrine\DBAL\Logging\EchoSQLLogger;
     
@@ -101,7 +101,7 @@ Customize it to your needs.
         );
     
         // Create EntityManager
-        $this->em = EntityManager::create($connectionOptions, $config);
+        $this->em = EntityManagerFactory::create($connectionOptions, $config);
       }
     }
 

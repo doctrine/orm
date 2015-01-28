@@ -346,6 +346,22 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
+
+    public function testSetGetUnitOfWorkClassName()
+    {
+        $this->assertEquals('Doctrine\\ORM\\UnitOfWork', $this->configuration->getUnitOfWorkClassName());
+        $customClassName = 'Doctrine\\ORM\\UnitOfWorkCustom';
+        $this->configuration->setUnitOfWorkClassName($customClassName);
+        $this->assertEquals($customClassName, $this->configuration->getUnitOfWorkClassName());
+    }
+
+    public function testSetGetProxyFactoryClassName()
+    {
+        $this->assertEquals('Doctrine\\ORM\\Proxy\\ProxyFactory', $this->configuration->getProxyFactoryClassName());
+        $customClassName = 'Doctrine\\ORM\\Proxy\\ProxyFactoryCustom';
+        $this->configuration->setProxyFactoryClassName($customClassName);
+        $this->assertEquals($customClassName, $this->configuration->getProxyFactoryClassName());
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker
