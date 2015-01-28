@@ -71,8 +71,10 @@ final class IdentifierFlattener
     {
         $flatId = array();
 
-       foreach ($class->identifier as $field) {
-            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_object($id[$field])) {
+        foreach ($class->identifier as $field) {
+            if (isset($class->associationMappings[$field]) && isset($id[$field]) && $id[$field] instanceof \Doctrine\ORM\Cache\AssociationCacheEntry) {
+                $flatId[$field] = implode(' ', $id[$field]->identifier);
+            } elseif (isset($class->associationMappings[$field]) && isset($id[$field]) && is_object($id[$field])) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
                     $class->associationMappings[$field]['targetEntity']
                 );
