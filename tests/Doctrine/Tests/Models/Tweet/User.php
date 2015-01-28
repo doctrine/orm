@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class User
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @GeneratedValue
@@ -27,14 +29,26 @@ class User
      */
     public $tweets;
 
+    /**
+     * @OneToMany(targetEntity="UserList", mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true)
+     */
+    public $userLists;
+
     public function __construct()
     {
-        $this->tweets = new ArrayCollection();
+        $this->tweets    = new ArrayCollection();
+        $this->userLists = new ArrayCollection();
     }
 
     public function addTweet(Tweet $tweet)
     {
         $tweet->setAuthor($this);
         $this->tweets->add($tweet);
+    }
+
+    public function addUserList(UserList $userList)
+    {
+        $userList->owner = $this;
+        $this->userLists->add($userList);
     }
 }

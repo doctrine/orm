@@ -174,8 +174,8 @@ Configuration
 Doctrine allows you to specify configurations and some points of extension for the second-level-cache
 
 
-Enable Second Level Cache Enabled
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Enable Second Level Cache
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable the second-level-cache, you should provide a cache factory
 ``\Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
@@ -261,10 +261,10 @@ By providing a cache logger you should be able to get information about all cach
     // Get the total number of put in all regions.
     $logger->getPutCount();
 
-    //  Get the total number of entries successfully retrieved from all regions.
+    // Get the total number of entries successfully retrieved from all regions.
     $logger->getHitCount();
 
-    //  Get the total number of cached entries *not* found in all regions.
+    // Get the total number of cached entries *not* found in all regions.
     $logger->getMissCount();
 
 If you want to get more information you should implement ``\Doctrine\ORM\Cache\Logging\CacheLogger``.
@@ -698,11 +698,11 @@ For performance reasons the cache API does not extract from composite primary ke
     }
 
     // Supported
-    /** @var $article Article */
+    /* @var $article Article */
     $article = $em->find('Article', 1);
 
     // Supported
-    /** @var $article Article */
+    /* @var $article Article */
     $article = $em->find('Article', $article);
 
     // Supported
@@ -713,10 +713,10 @@ For performance reasons the cache API does not extract from composite primary ke
     $id        = array('source' => new Article(1), 'target' => new Article(2));
     $reference = $em->find('Reference', $id);
 
-Distribute environments
-~~~~~~~~~~~~~~~~~~~~~~~
+Distributed environments
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Some cache driver are not meant to be used in a distribute environment
+Some cache driver are not meant to be used in a distributed environment.
 Load-balancer for distributing workloads across multiple computing resources
 should be used in conjunction with distributed caching system such as memcached, redis, riak ...
 

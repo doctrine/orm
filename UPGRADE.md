@@ -1,5 +1,21 @@
 # Upgrade to 2.5
 
+## Minor BC BREAK: discriminator map must now include all non-transient classes
+
+It is now required that you declare the root of an inheritance in the
+discriminator map.
+
+When declaring an inheritance map, it was previously possible to skip the root
+of the inheritance in the discriminator map. This was actually a validation
+mistake by Doctrine2 and led to problems when trying to persist instances of
+that class.
+
+If you don't plan to persist instances some classes in your inheritance, then
+either:
+
+ - make those classes `abstract`
+ - map those classes as `MappedSuperclass`
+
 ## Minor BC BREAK: ``EntityManagerInterface`` instead of ``EntityManager`` in type-hints
  
 As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require 
