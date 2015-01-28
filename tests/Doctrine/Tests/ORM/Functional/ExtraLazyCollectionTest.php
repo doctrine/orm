@@ -485,7 +485,6 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user->articles->removeElement($article);
 
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        // NOTE: +2 queries because CmsArticle is a versioned entity, and that needs to be handled accordingly
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
