@@ -48,6 +48,91 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertIsFluent($this->builder->setMappedSuperClass());
         $this->assertTrue($this->cm->isMappedSuperclass);
+        $this->assertFalse($this->cm->isEmbeddedClass);
+    }
+
+    public function testSetEmbedable()
+    {
+        $this->assertIsFluent($this->builder->setEmbeddable());
+        $this->assertTrue($this->cm->isEmbeddedClass);
+        $this->assertFalse($this->cm->isMappedSuperclass);
+    }
+
+    public function testAddEmbeddedWithOnlyRequiredParams()
+    {
+        $this->assertIsFluent(
+            $this->builder->addEmbedded(
+                'name',
+                'Doctrine\Tests\Models\ValueObjects\Name'
+            )
+        );
+
+        $this->assertEquals(array(
+            'name' => array(
+                'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
+                'columnPrefix' => null,
+                'declaredField' => null,
+                'originalField' => null,
+            )
+        ), $this->cm->embeddedClasses);
+    }
+
+    public function testAddEmbeddedWithPrefix()
+    {
+        $this->assertIsFluent(
+            $this->builder->addEmbedded(
+                'name',
+                'Doctrine\Tests\Models\ValueObjects\Name',
+                'nm_'
+            )
+        );
+
+        $this->assertEquals(array(
+            'name' => array(
+                'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
+                'columnPrefix' => 'nm_',
+                'declaredField' => null,
+                'originalField' => null,
+            )
+        ), $this->cm->embeddedClasses);
+    }
+
+    public function testCreateEmbeddedWithoutExtraParams()
+    {
+        $embeddedBuilder = ($this->builder->createEmbedded('name', 'Doctrine\Tests\Models\ValueObjects\Name'));
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Builder\EmbeddedBuilder', $embeddedBuilder);
+
+        $this->assertFalse(isset($this->cm->embeddedClasses['name']));
+
+        $this->assertIsFluent($embeddedBuilder->build());
+        $this->assertEquals(
+            array(
+                'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
+                'columnPrefix' => null,
+                'declaredField' => null,
+                'originalField' => null
+            ),
+            $this->cm->embeddedClasses['name']
+        );
+    }
+
+    public function testCreateEmbeddedWithColumnPrefix()
+    {
+        $embeddedBuilder = ($this->builder->createEmbedded('name', 'Doctrine\Tests\Models\ValueObjects\Name'));
+
+        $this->assertEquals($embeddedBuilder, $embeddedBuilder->setColumnPrefix('nm_'));
+
+        $this->assertIsFluent($embeddedBuilder->build());
+
+        $this->assertEquals(
+            array(
+                'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
+                'columnPrefix' => 'nm_',
+                'declaredField' => null,
+                'originalField' => null
+            ),
+            $this->cm->embeddedClasses['name']
+        );
     }
 
     public function testSetCustomRepositoryClass()
