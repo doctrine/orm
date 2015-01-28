@@ -28,10 +28,10 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
     
     public function provideDataForHydrationMode()
     {
-        return array(
-            array(Query::HYDRATE_ARRAY),
-            array(Query::HYDRATE_OBJECT),
-        );
+        return [
+            [Query::HYDRATE_ARRAY],
+            [Query::HYDRATE_OBJECT],
+        ];
     }
 
     private function loadFixtures()
@@ -92,7 +92,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->fixtures = array($u1, $u2, $u3);
+        $this->fixtures = [$u1, $u2, $u3];
     }
 
     /**

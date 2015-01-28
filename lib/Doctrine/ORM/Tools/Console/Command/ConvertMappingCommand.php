@@ -49,9 +49,9 @@ class ConvertMappingCommand extends Command
     {
         $this
         ->setName('orm:convert-mapping')
-        ->setAliases(array('orm:convert:mapping'))
+        ->setAliases(['orm:convert:mapping'])
         ->setDescription('Convert mapping information between supported formats.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match entities that should be processed.'
@@ -82,7 +82,7 @@ class ConvertMappingCommand extends Command
                 'namespace', null, InputOption::VALUE_OPTIONAL,
                 'Defines a namespace for the generated entity classes, if converted from database.'
             ),
-        ))
+        ])
         ->setHelp(<<<EOT
 Convert mapping information between supported formats.
 

@@ -42,7 +42,7 @@ class CommitOrderCalculatorTest extends \Doctrine\Tests\OrmTestCase
         $sorted = $this->_calc->getCommitOrder();
 
         // There is only 1 valid ordering for this constellation
-        $correctOrder = array($class5, $class1, $class2, $class3, $class4);
+        $correctOrder = [$class5, $class1, $class2, $class3, $class4];
         $this->assertSame($correctOrder, $sorted);
     }
 }

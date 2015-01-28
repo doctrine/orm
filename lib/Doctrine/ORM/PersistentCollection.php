@@ -51,7 +51,7 @@ final class PersistentCollection implements Collection, Selectable
      *
      * @var array
      */
-    private $snapshot = array();
+    private $snapshot = [];
 
     /**
      * The entity that owns this collection.
@@ -225,7 +225,7 @@ final class PersistentCollection implements Collection, Selectable
         }
 
         // Has NEW objects added through add(). Remember them.
-        $newObjects = array();
+        $newObjects = [];
 
         if ($this->isDirty) {
             $newObjects = $this->coll->toArray();
@@ -714,7 +714,7 @@ final class PersistentCollection implements Collection, Selectable
      */
     public function __sleep()
     {
-        return array('coll', 'initialized');
+        return ['coll', 'initialized'];
     }
 
     /* ArrayAccess implementation */
@@ -842,7 +842,7 @@ final class PersistentCollection implements Collection, Selectable
         $this->initialize();
 
         $this->owner    = null;
-        $this->snapshot = array();
+        $this->snapshot = [];
 
         $this->changed();
     }

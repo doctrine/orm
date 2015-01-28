@@ -48,19 +48,19 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->mapField(array(
+        $metadata->mapField([
             "fieldName" => 'id',
             "type" => 'integer',
             "columnName" => 'id',
             "id" => true,
-        ));
+        ]);
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
-        $metadata->setSequenceGeneratorDefinition(array(
+        $metadata->setSequenceGeneratorDefinition([
             'sequenceName' => 'seq_entity_test_id',
             'allocationSize' => 5,
             'initialValue' => 1
-        ));
+        ]);
 
         $expectedFileContent = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>
@@ -90,15 +90,15 @@ XML;
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->mapField(array(
+        $metadata->mapField([
             "fieldName" => 'myField',
             "type" => 'string',
             "columnName" => 'my_field',
-            "options" => array(
+            "options" => [
                 "default" => "default_string",
                 "comment" => "The comment for the field",
-            ),
-        ));
+            ],
+        ]);
 
         $expectedFileContent = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>

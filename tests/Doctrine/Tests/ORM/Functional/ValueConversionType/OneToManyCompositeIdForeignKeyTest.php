@@ -80,7 +80,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $owning = $this->_em->find(
@@ -105,7 +105,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $owning = $this->_em->find(
@@ -131,7 +131,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => $auxiliary)
+            ['id1' => 'def', 'foreignEntity' => $auxiliary]
         );
 
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity', $inversed);
@@ -161,7 +161,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $this->assertCount(1, $inversed->associatedEntities);

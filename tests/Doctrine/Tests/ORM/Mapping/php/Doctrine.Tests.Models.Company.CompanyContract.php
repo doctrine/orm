@@ -4,28 +4,28 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
 $metadata->setTableName( 'company_contracts');
-$metadata->setDiscriminatorColumn(array(
+$metadata->setDiscriminatorColumn([
     'name' => 'discr',
     'type' => 'string',
-));
+]);
 
-$metadata->mapField(array(
+$metadata->mapField([
     'id'        => true,
     'name'      => 'id',
     'fieldName' => 'id',
-));
+]);
 
-$metadata->mapField(array(
+$metadata->mapField([
     'type'      => 'boolean',
     'name'      => 'completed',
     'fieldName' => 'completed',
-));
+]);
 
-$metadata->setDiscriminatorMap(array(
+$metadata->setDiscriminatorMap([
     "fix"       => "CompanyFixContract",
     "flexible"  => "CompanyFlexContract",
     "flexultra" => "CompanyFlexUltraContract"
-));
+]);
 
 $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

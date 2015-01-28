@@ -13,9 +13,9 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1436Page'),
-            ));
+            ]);
         } catch (\Exception $ignored) {
         }
     }

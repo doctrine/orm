@@ -12,14 +12,14 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Vehicle'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Car'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Animal'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog'),
-            ));
+            ]);
         } catch(\Exception $e) {
         }
     }
@@ -237,17 +237,17 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
             )
         );
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
-        ));
+        ]);
     }
 
     public function getInfiniteEmbeddableNestingData()
     {
-        return array(
-            array('DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'),
-            array('DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'),
-        );
+        return [
+            ['DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'],
+            ['DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'],
+        ];
     }
 }
 

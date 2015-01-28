@@ -7,11 +7,11 @@ class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Hotel'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Booking'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Room'),
-        ));
+        ]);
     }
 
     /**

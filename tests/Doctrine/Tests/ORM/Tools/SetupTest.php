@@ -44,7 +44,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAnnotationConfiguration()
     {
-        $config = Setup::createAnnotationMetadataConfiguration(array(), true);
+        $config = Setup::createAnnotationMetadataConfiguration([], true);
 
         $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
         $this->assertEquals(sys_get_temp_dir(), $config->getProxyDir());
@@ -54,7 +54,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
 
     public function testXMLConfiguration()
     {
-        $config = Setup::createXMLMetadataConfiguration(array(), true);
+        $config = Setup::createXMLMetadataConfiguration([], true);
 
         $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
         $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\XmlDriver', $config->getMetadataDriverImpl());
@@ -62,7 +62,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
 
     public function testYAMLConfiguration()
     {
-        $config = Setup::createYAMLMetadataConfiguration(array(), true);
+        $config = Setup::createYAMLMetadataConfiguration([], true);
 
         $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
         $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
@@ -73,7 +73,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testConfigureProxyDir()
     {
-        $config = Setup::createAnnotationMetadataConfiguration(array(), true, "/foo");
+        $config = Setup::createAnnotationMetadataConfiguration([], true, "/foo");
         $this->assertEquals('/foo', $config->getProxyDir());
     }
 
@@ -83,7 +83,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
     public function testConfigureCache()
     {
         $cache = new ArrayCache();
-        $config = Setup::createAnnotationMetadataConfiguration(array(), true, null, $cache);
+        $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());
@@ -98,7 +98,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         $cache = $this->getMock('Doctrine\Common\Cache\Cache');
         $cache->expects($this->never())->method('setNamespace');
 
-        $config = Setup::createConfiguration(array(), true, $cache);
+        $config = Setup::createConfiguration([], true, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());

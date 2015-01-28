@@ -49,7 +49,7 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNotNull($pUser, "User not retrieved from database.");
 
-        $groups = array(2, 3);
+        $groups = [2, 3];
 
         try {
             $this->_em->beginTransaction();

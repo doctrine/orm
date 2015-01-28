@@ -57,11 +57,11 @@ class <className> extends <repositoryName>
      */
     public function generateEntityRepositoryClass($fullClassName)
     {
-        $variables = array(
+        $variables = [
             '<namespace>'       => $this->generateEntityRepositoryNamespace($fullClassName),
             '<repositoryName>'  => $this->generateEntityRepositoryName($fullClassName),
             '<className>'       => $this->generateClassName($fullClassName)
-        );
+        ];
 
         return str_replace(array_keys($variables), array_values($variables), self::$_template);
     }

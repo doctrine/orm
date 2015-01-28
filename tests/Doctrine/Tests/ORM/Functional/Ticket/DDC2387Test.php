@@ -14,15 +14,15 @@ class DDC2387Test extends DatabaseDriverTestCase
     {
         $product = new \Doctrine\DBAL\Schema\Table('ddc2387_product');
         $product->addColumn('id', 'integer');
-        $product->setPrimaryKey(array('id'));
+        $product->setPrimaryKey(['id']);
 
         $attributes = new \Doctrine\DBAL\Schema\Table('ddc2387_attributes');
         $attributes->addColumn('product_id', 'integer');
         $attributes->addColumn('attribute_name', 'string');
-        $attributes->setPrimaryKey(array('product_id', 'attribute_name'));
-        $attributes->addForeignKeyConstraint('ddc2387_product', array('product_id'), array('product_id'));
+        $attributes->setPrimaryKey(['product_id', 'attribute_name']);
+        $attributes->addForeignKeyConstraint('ddc2387_product', ['product_id'], ['product_id']);
 
-        $metadata = $this->convertToClassMetadata(array($product, $attributes), array());
+        $metadata = $this->convertToClassMetadata([$product, $attributes], []);
 
         $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $metadata['Ddc2387Attributes']->generatorType);
         $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_AUTO, $metadata['Ddc2387Product']->generatorType);

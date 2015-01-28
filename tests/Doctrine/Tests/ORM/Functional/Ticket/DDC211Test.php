@@ -7,10 +7,10 @@ class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC211User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC211Group')
-        ));
+        ]);
     }
 
     public function testIssue()
@@ -23,7 +23,7 @@ class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $groupNames = array('group 1', 'group 2', 'group 3', 'group 4');
+        $groupNames = ['group 1', 'group 2', 'group 3', 'group 4'];
         foreach ($groupNames as $name) {
 
             $group = new DDC211Group;

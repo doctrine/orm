@@ -14,7 +14,7 @@ class CountWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a');
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
@@ -27,7 +27,7 @@ class CountWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a');
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
@@ -40,7 +40,7 @@ class CountWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b GROUP BY b.id');
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
@@ -53,7 +53,7 @@ class CountWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a ORDER BY a.name');
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
@@ -66,7 +66,7 @@ class CountWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a');
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
@@ -80,7 +80,7 @@ class CountWalkerTest extends PaginationTestCase
         $query = $this->entityManager->createQuery(
             "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0"
         );
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->setExpectedException(
@@ -98,7 +98,7 @@ class CountWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p LEFT JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c');
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\CountWalker']);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 

@@ -15,14 +15,14 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        DDC2494TinyIntType::$calls = array();
+        DDC2494TinyIntType::$calls = [];
 
         Type::addType('ddc2494_tinyint', __NAMESPACE__ . '\DDC2494TinyIntType');
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(DDC2494Currency::CLASSNAME),
             $this->_em->getClassMetadata(DDC2494Campaign::CLASSNAME),
-        ));
+        ]);
     }
 
     public function testIssue()
@@ -160,7 +160,7 @@ class DDC2494Campaign
 
 class DDC2494TinyIntType extends Type
 {
-    public static $calls = array();
+    public static $calls = [];
 
     /**
      * {@inheritdoc}
@@ -177,11 +177,11 @@ class DDC2494TinyIntType extends Type
     {
         $return = (string) $value;
 
-        self::$calls[__FUNCTION__][] = array(
+        self::$calls[__FUNCTION__][] = [
             'value'     => $value,
             'return'    => $return,
             'platform'  => $platform,
-        );
+        ];
 
         return $return;
     }
@@ -193,11 +193,11 @@ class DDC2494TinyIntType extends Type
     {
         $return = (integer) $value;
 
-        self::$calls[__FUNCTION__][] = array(
+        self::$calls[__FUNCTION__][] = [
             'value'     => $value,
             'return'    => $return,
             'platform'  => $platform,
-        );
+        ];
 
         return $return;
     }

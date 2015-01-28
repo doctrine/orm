@@ -16,7 +16,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -30,7 +30,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -44,7 +44,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -58,7 +58,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1 AND 2 = 2'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -72,7 +72,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1 OR 2 = 2'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -86,7 +86,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE (1 = 1 OR 2 = 2) AND 3 = 3'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -100,7 +100,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1 AND 2 = 2 OR 3 = 3'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -114,7 +114,7 @@ class WhereInWalkerTest extends PaginationTestCase
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE NOT 1 = 2'
         );
         $whereInQuery = clone $query;
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -130,7 +130,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery  = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c'
         );
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
@@ -143,7 +143,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c WHERE 1 = 1'
         );
-        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\WhereInWalker']);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(

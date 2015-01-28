@@ -6,10 +6,10 @@ class DDC192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testSchemaCreation()
     {
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC192User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC192Phonenumber')
-        ));
+        ]);
     }
 }
 

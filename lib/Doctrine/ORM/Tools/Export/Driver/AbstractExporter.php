@@ -35,7 +35,7 @@ abstract class AbstractExporter
     /**
      * @var array
      */
-    protected $_metadata = array();
+    protected $_metadata = [];
 
     /**
      * @var string|null

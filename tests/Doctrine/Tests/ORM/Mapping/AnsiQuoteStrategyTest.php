@@ -47,8 +47,8 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $class->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
-        $class->mapField(array('fieldName' => 'id', 'columnName' => 'id', 'id' => true));
+        $class->mapField(['fieldName' => 'name', 'columnName' => 'name']);
+        $class->mapField(['fieldName' => 'id', 'columnName' => 'id', 'id' => true]);
 
         $this->assertEquals('id' ,$this->strategy->getColumnName('id', $class, $this->platform));
         $this->assertEquals('name' ,$this->strategy->getColumnName('name', $class, $this->platform));
@@ -58,7 +58,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $class->setPrimaryTable(array('name'=>'cms_user'));
+        $class->setPrimaryTable(['name'=>'cms_user']);
         $this->assertEquals('cms_user' ,$this->strategy->getTableName($class, $this->platform));
     }
 
@@ -66,14 +66,14 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         
-        $class->mapManyToMany(array(
+        $class->mapManyToMany([
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
             'inversedBy'    => 'users',
-            'joinTable'     => array(
+            'joinTable'     => [
                 'name'  => 'cmsaddress_cmsuser'
-            )
-        ));
+            ]
+        ]);
         
         $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($class->associationMappings['user'], $class, $this->platform));
        
@@ -83,13 +83,13 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
 
-        $class->mapField(array(
+        $class->mapField([
             'id'            => true,
             'fieldName'     => 'id',
             'columnName'    => 'id',
-        ));
+        ]);
 
-        $this->assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($class, $this->platform));
+        $this->assertEquals(['id'], $this->strategy->getIdentifierColumnNames($class, $this->platform));
     }
 
 
@@ -102,14 +102,14 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
 
-        $class->mapOneToOne(array(
+        $class->mapOneToOne([
             'id'            => true,
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
-            'joinColumns'    => array(array(
+            'joinColumns'    => [[
                 'name'  => 'article'
-            )),
-        ));
+            ]],
+        ]);
 
         $joinColumn = $class->associationMappings['article']['joinColumns'][0];
         $this->assertEquals('article',$this->strategy->getJoinColumnName($joinColumn, $class, $this->platform));
@@ -119,14 +119,14 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
 
-        $cm->mapOneToOne(array(
+        $cm->mapOneToOne([
             'id'            => true,
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
-            'joinColumns'    => array(array(
+            'joinColumns'    => [[
                 'name'  => 'article'
-            )),
-        ));
+            ]],
+        ]);
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
         $this->assertEquals('id',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
@@ -135,11 +135,11 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     public function testGetSequenceName()
     {
         $class      = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $definition = array(
+        $definition = [
             'sequenceName'      => 'user_id_seq',
             'allocationSize'    => 1,
             'initialValue'      => 2
-        );
+        ];
 
         $class->setSequenceGeneratorDefinition($definition);
 

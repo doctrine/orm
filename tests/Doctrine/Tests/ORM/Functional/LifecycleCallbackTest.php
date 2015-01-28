@@ -9,12 +9,12 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackEventArgEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestUser'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackCascader'),
-            ));
+            ]);
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -264,13 +264,13 @@ DQL;
     public function testLifecycleCallbacksGetInherited()
     {
         $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
-        $this->assertEquals(array('prePersist' => array(0 => 'doStuff')), $childMeta->lifecycleCallbacks);
+        $this->assertEquals(['prePersist' => [0 => 'doStuff']], $childMeta->lifecycleCallbacks);
     }
 
     public function testLifecycleListener_ChangeUpdateChangeSet()
     {
         $listener = new LifecycleListenerPreUpdate;
-        $this->_em->getEventManager()->addEventListener(array('preUpdate'), $listener);
+        $this->_em->getEventManager()->addEventListener(['preUpdate'], $listener);
 
         $user = new LifecycleCallbackTestUser;
         $user->setName('Bob');
@@ -286,7 +286,7 @@ DQL;
         $this->_em->flush(); // preUpdate reverts Alice to Bob
         $this->_em->clear();
 
-        $this->_em->getEventManager()->removeEventListener(array('preUpdate'), $listener);
+        $this->_em->getEventManager()->removeEventListener(['preUpdate'], $listener);
 
         $bob = $this->_em->createQuery($dql)->getSingleResult();
 
@@ -511,7 +511,7 @@ class LifecycleCallbackEventArgEntity
     /** @Column() */
     public $value;
 
-    public $calls = array();
+    public $calls = [];
 
     /**
      * @PostPersist

@@ -82,7 +82,7 @@ class AssociationBuilder
      */
     public function cascadeAll()
     {
-        $this->mapping['cascade'] = array("ALL");
+        $this->mapping['cascade'] = ["ALL"];
         return $this;
     }
 
@@ -172,14 +172,14 @@ class AssociationBuilder
      */
     public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
-        $this->joinColumns[] = array(
+        $this->joinColumns[] = [
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,
             'nullable' => $nullable,
             'unique' => $unique,
             'onDelete' => $onDelete,
             'columnDefinition' => $columnDef,
-        );
+        ];
         return $this;
     }
 

@@ -11,14 +11,14 @@ use Doctrine\Tests\Models\Routing\RoutingLeg;
  */
 class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected $locations = array();
+    protected $locations = [];
 
     public function setUp()
     {
         $this->useModelSet('routing');
         parent::setUp();
 
-        $locations = array("Berlin", "Bonn", "Brasilia", "Atlanta");
+        $locations = ["Berlin", "Bonn", "Brasilia", "Atlanta"];
 
         foreach ($locations AS $locationName) {
             $location = new RoutingLocation();

@@ -70,28 +70,28 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAddIndex()
     {
-        $this->assertIsFluent($this->builder->addIndex(array('username', 'name'), 'users_idx'));
-        $this->assertEquals(array('users_idx' => array('columns' => array('username', 'name'))), $this->cm->table['indexes']);
+        $this->assertIsFluent($this->builder->addIndex(['username', 'name'], 'users_idx'));
+        $this->assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['indexes']);
     }
 
     public function testAddUniqueConstraint()
     {
-        $this->assertIsFluent($this->builder->addUniqueConstraint(array('username', 'name'), 'users_idx'));
-        $this->assertEquals(array('users_idx' => array('columns' => array('username', 'name'))), $this->cm->table['uniqueConstraints']);
+        $this->assertIsFluent($this->builder->addUniqueConstraint(['username', 'name'], 'users_idx'));
+        $this->assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['uniqueConstraints']);
     }
 
     public function testSetPrimaryTableRelated()
     {
-        $this->builder->addUniqueConstraint(array('username', 'name'), 'users_idx');
-        $this->builder->addIndex(array('username', 'name'), 'users_idx');
+        $this->builder->addUniqueConstraint(['username', 'name'], 'users_idx');
+        $this->builder->addIndex(['username', 'name'], 'users_idx');
         $this->builder->setTable('users');
 
         $this->assertEquals(
-            array(
+            [
                 'name' => 'users',
-                'indexes' => array('users_idx' => array('columns' => array('username', 'name'))),
-                'uniqueConstraints' => array('users_idx' => array('columns' => array('username', 'name'))),
-            ),
+                'indexes' => ['users_idx' => ['columns' => ['username', 'name']]],
+                'uniqueConstraints' => ['users_idx' => ['columns' => ['username', 'name']]],
+            ],
             $this->cm->table
         );
     }
@@ -111,7 +111,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testSetDiscriminatorColumn()
     {
         $this->assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
-        $this->assertEquals(array('fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'), $this->cm->discriminatorColumn);
+        $this->assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'], $this->cm->discriminatorColumn);
     }
 
     public function testAddDiscriminatorMapClass()
@@ -119,7 +119,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertIsFluent($this->builder->addDiscriminatorMapClass('test', 'Doctrine\Tests\Models\CMS\CmsUser'));
         $this->assertIsFluent($this->builder->addDiscriminatorMapClass('test2', 'Doctrine\Tests\Models\CMS\CmsGroup'));
 
-        $this->assertEquals(array('test' => 'Doctrine\Tests\Models\CMS\CmsUser', 'test2' => 'Doctrine\Tests\Models\CMS\CmsGroup'), $this->cm->discriminatorMap);
+        $this->assertEquals(['test' => 'Doctrine\Tests\Models\CMS\CmsUser', 'test2' => 'Doctrine\Tests\Models\CMS\CmsGroup'], $this->cm->discriminatorMap);
         $this->assertEquals('test', $this->cm->discriminatorValue);
     }
 
@@ -138,7 +138,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testAddField()
     {
         $this->assertIsFluent($this->builder->addField('name', 'string'));
-        $this->assertEquals(array('columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'), $this->cm->fieldMappings['name']);
+        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
     }
 
     public function testCreateField()
@@ -148,13 +148,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertFalse(isset($this->cm->fieldMappings['name']));
         $this->assertIsFluent($fieldBuilder->build());
-        $this->assertEquals(array('columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'), $this->cm->fieldMappings['name']);
+        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
     }
 
     public function testCreateVersionedField()
     {
         $this->builder->createField('name', 'integer')->columnName('username')->length(124)->nullable()->columnDefinition('foobar')->unique()->isVersionField()->build();
-        $this->assertEquals(array(
+        $this->assertEquals([
             'columnDefinition' => 'foobar',
             'columnName' => 'username',
             'default' => 1,
@@ -163,29 +163,29 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
             'type' => 'integer',
             'nullable' => true,
             'unique' => true,
-        ), $this->cm->fieldMappings['name']);
+        ], $this->cm->fieldMappings['name']);
     }
 
     public function testCreatePrimaryField()
     {
         $this->builder->createField('id', 'integer')->isPrimaryKey()->generatedValue()->build();
 
-        $this->assertEquals(array('id'), $this->cm->identifier);
-        $this->assertEquals(array('columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'), $this->cm->fieldMappings['id']);
+        $this->assertEquals(['id'], $this->cm->identifier);
+        $this->assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
     }
 
     public function testCreateUnsignedOptionField()
     {
         $this->builder->createField('state', 'integer')->option('unsigned', true)->build();
 
-        $this->assertEquals(array('fieldName' => 'state', 'type' => 'integer', 'options' => array('unsigned' => true), 'columnName' => 'state'), $this->cm->fieldMappings['state']);
+        $this->assertEquals(['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'], $this->cm->fieldMappings['state']);
     }
 
     public function testAddLifecycleEvent()
     {
         $this->builder->addLifecycleEvent('getStatus', 'postLoad');
 
-        $this->assertEquals(array('postLoad' => array('getStatus')), $this->cm->lifecycleCallbacks);
+        $this->assertEquals(['postLoad' => ['getStatus']], $this->cm->lifecycleCallbacks);
     }
 
     public function testCreateManyToOne()
@@ -198,28 +198,28 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(array('groups' => array (
+        $this->assertEquals(['groups' =>  [
                 'fieldName' => 'groups',
                 'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
-                'cascade' => array (
+                'cascade' =>  [
                   0 => 'remove',
                   1 => 'persist',
                   2 => 'refresh',
                   3 => 'merge',
                   4 => 'detach',
-                ),
+                ],
                 'fetch' => 4,
-                'joinColumns' => array (
+                'joinColumns' =>  [
                   0 =>
-                  array (
+                   [
                     'name' => 'group_id',
                     'referencedColumnName' => 'id',
                     'nullable' => true,
                     'unique' => false,
                     'onDelete' => 'CASCADE',
                     'columnDefinition' => NULL,
-                  ),
-                ),
+                  ],
+                ],
                 'type' => 2,
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
@@ -231,20 +231,20 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'isCascadeMerge' => true,
                 'isCascadeDetach' => true,
                 'sourceToTargetKeyColumns' =>
-                array (
+                 [
                   'group_id' => 'id',
-                ),
+                ],
                 'joinColumnFieldNames' =>
-                array (
+                 [
                   'group_id' => 'group_id',
-                ),
+                ],
                 'targetToSourceKeyColumns' =>
-                array (
+                 [
                   'id' => 'group_id',
-                ),
+                ],
                 'orphanRemoval' => false,
-              ),
-            ), $this->cm->associationMappings);
+              ],
+            ], $this->cm->associationMappings);
     }
 
     public function testCreateOneToOne()
@@ -257,28 +257,28 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(array('groups' => array (
+        $this->assertEquals(['groups' =>  [
                 'fieldName' => 'groups',
                 'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
-                'cascade' => array (
+                'cascade' =>  [
                   0 => 'remove',
                   1 => 'persist',
                   2 => 'refresh',
                   3 => 'merge',
                   4 => 'detach',
-                ),
+                ],
                 'fetch' => 4,
-                'joinColumns' => array (
+                'joinColumns' =>  [
                   0 =>
-                  array (
+                   [
                     'name' => 'group_id',
                     'referencedColumnName' => 'id',
                     'nullable' => true,
                     'unique' => true,
                     'onDelete' => 'CASCADE',
                     'columnDefinition' => NULL,
-                  ),
-                ),
+                  ],
+                ],
                 'type' => 1,
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
@@ -290,20 +290,20 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'isCascadeMerge' => true,
                 'isCascadeDetach' => true,
                 'sourceToTargetKeyColumns' =>
-                array (
+                 [
                   'group_id' => 'id',
-                ),
+                ],
                 'joinColumnFieldNames' =>
-                array (
+                 [
                   'group_id' => 'group_id',
-                ),
+                ],
                 'targetToSourceKeyColumns' =>
-                array (
+                 [
                   'id' => 'group_id',
-                ),
+                ],
                 'orphanRemoval' => false,
-              ),
-            ), $this->cm->associationMappings);
+              ],
+            ], $this->cm->associationMappings);
     }
 
     public function testCreateManyToMany()
@@ -318,48 +318,48 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'groups' =>
-            array(
+            [
                 'fieldName' => 'groups',
                 'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
                 'cascade' =>
-                array(
+                [
                     0 => 'remove',
                     1 => 'persist',
                     2 => 'refresh',
                     3 => 'merge',
                     4 => 'detach',
-                ),
+                ],
                 'fetch' => 4,
                 'joinTable' =>
-                array(
+                [
                     'joinColumns' =>
-                    array(
+                    [
                         0 =>
-                        array(
+                        [
                             'name' => 'group_id',
                             'referencedColumnName' => 'id',
                             'nullable' => true,
                             'unique' => false,
                             'onDelete' => 'CASCADE',
                             'columnDefinition' => NULL,
-                        ),
-                    ),
+                        ],
+                    ],
                     'inverseJoinColumns' =>
-                    array(
+                    [
                         0 =>
-                        array(
+                        [
                             'name' => 'user_id',
                             'referencedColumnName' => 'id',
                             'nullable' => true,
                             'unique' => false,
                             'onDelete' => NULL,
                             'columnDefinition' => NULL,
-                        ),
-                    ),
+                        ],
+                    ],
                     'name' => 'groups_users',
-                ),
+                ],
                 'type' => 8,
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
@@ -372,21 +372,21 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'isCascadeDetach' => true,
                 'isOnDeleteCascade' => true,
                 'relationToSourceKeyColumns' =>
-                array(
+                [
                     'group_id' => 'id',
-                ),
+                ],
                 'joinTableColumns' =>
-                array(
+                [
                     0 => 'group_id',
                     1 => 'user_id',
-                ),
+                ],
                 'relationToTargetKeyColumns' =>
-                array(
+                [
                     'user_id' => 'id',
-                ),
+                ],
                 'orphanRemoval' => false,
-            ),
-                ), $this->cm->associationMappings);
+            ],
+                ], $this->cm->associationMappings);
     }
 
     public function testCreateOneToMany()
@@ -394,21 +394,21 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertIsFluent(
                 $this->builder->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                         ->mappedBy('test')
-                        ->setOrderBy(array('test'))
+                        ->setOrderBy(['test'])
                         ->setIndexBy('test')
                         ->build()
         );
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'groups' =>
-            array(
+            [
                 'fieldName' => 'groups',
                 'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
                 'mappedBy' => 'test',
                 'orderBy' =>
-                array(
+                [
                     0 => 'test',
-                ),
+                ],
                 'indexBy' => 'test',
                 'type' => 4,
                 'inversedBy' => NULL,
@@ -416,16 +416,16 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                 'fetch' => 2,
                 'cascade' =>
-                array(
-                ),
+                [
+                ],
                 'isCascadeRemove' => false,
                 'isCascadePersist' => false,
                 'isCascadeRefresh' => false,
                 'isCascadeMerge' => false,
                 'isCascadeDetach' => false,
                 'orphanRemoval' => false,
-            ),
-                ), $this->cm->associationMappings);
+            ],
+                ], $this->cm->associationMappings);
     }
 
     public function assertIsFluent($ret)

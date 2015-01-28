@@ -16,13 +16,13 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmail'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -44,9 +44,9 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql2()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\DecimalModel')
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -57,9 +57,9 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql3()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel')
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -73,9 +73,9 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testGetCreateSchemaSql4()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\MysqlSchemaNamespacedEntity')
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);

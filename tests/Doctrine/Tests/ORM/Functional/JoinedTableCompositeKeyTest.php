@@ -58,7 +58,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     {
         return $this->_em->find(
             'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass',
-            array('keyPart1' => 'part-1', 'keyPart2' => 'part-2')
+            ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']
         );
     }
 }

@@ -12,17 +12,17 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPer
     /**
      * @var array
      */
-    private $inserts = array();
+    private $inserts = [];
 
     /**
      * @var array
      */
-    private $updates = array();
+    private $updates = [];
 
     /**
      * @var array
      */
-    private $deletes = array();
+    private $deletes = [];
 
     /**
      * @var int
@@ -37,7 +37,7 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPer
     /**
      * @var array
      */
-    private $postInsertIds = array();
+    private $postInsertIds = [];
 
     /**
      * @var bool
@@ -134,9 +134,9 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPer
     {
         $this->existsCalled = false;
         $this->identityColumnValueCounter = 0;
-        $this->inserts = array();
-        $this->updates = array();
-        $this->deletes = array();
+        $this->inserts = [];
+        $this->updates = [];
+        $this->deletes = [];
     }
 
     /**

@@ -335,8 +335,8 @@ final class Query extends AbstractQuery
      */
     private function processParameterMappings($paramMappings)
     {
-        $sqlParams = array();
-        $types     = array();
+        $sqlParams = [];
+        $types     = [];
 
         foreach ($this->parameters as $parameter) {
             $key    = $parameter->getName();
@@ -364,7 +364,7 @@ final class Query extends AbstractQuery
 
             // optimized multi value sql positions away for now,
             // they are not allowed in DQL anyways.
-            $value = array($value);
+            $value = [$value];
             $countValue = count($value);
 
             for ($i = 0, $l = count($sqlPositions); $i < $l; $i++) {
@@ -384,7 +384,7 @@ final class Query extends AbstractQuery
             $types = array_values($types);
         }
 
-        return array($sqlParams, $types);
+        return [$sqlParams, $types];
     }
 
     /**
@@ -648,7 +648,7 @@ final class Query extends AbstractQuery
      */
     public function setLockMode($lockMode)
     {
-        if (in_array($lockMode, array(LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE), true)) {
+        if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if ( ! $this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }

@@ -13,10 +13,10 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1335User'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1335Phone'),
-            ));
+            ]);
             $this->loadFixture();
         } catch(\Exception $e) {
         }
@@ -130,9 +130,9 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function loadFixture()
     {
-        $p1 = array('11 xxxx-xxxx','11 yyyy-yyyy','11 zzzz-zzzz');
-        $p2 = array('22 xxxx-xxxx','22 yyyy-yyyy','22 zzzz-zzzz');
-        $p3 = array('33 xxxx-xxxx','33 yyyy-yyyy','33 zzzz-zzzz');
+        $p1 = ['11 xxxx-xxxx','11 yyyy-yyyy','11 zzzz-zzzz'];
+        $p2 = ['22 xxxx-xxxx','22 yyyy-yyyy','22 zzzz-zzzz'];
+        $p3 = ['33 xxxx-xxxx','33 yyyy-yyyy','33 zzzz-zzzz'];
 
         $u1 = new DDC1335User("foo@foo.com", "Foo",$p1);
         $u2 = new DDC1335User("bar@bar.com", "Bar",$p2);
@@ -173,7 +173,7 @@ class DDC1335User
      */
     public $phones;
 
-    public function __construct($email, $name, array $numbers = array())
+    public function __construct($email, $name, array $numbers = [])
     {
         $this->name   = $name;
         $this->email  = $email;

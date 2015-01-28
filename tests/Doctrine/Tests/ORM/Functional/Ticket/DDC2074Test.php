@@ -23,7 +23,7 @@ class DDC2074Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $product = new ECommerceProduct();
         $category = new ECommerceCategory();
-        $collection = new PersistentCollection($this->_em, $class, new ArrayCollection(array($category)));
+        $collection = new PersistentCollection($this->_em, $class, new ArrayCollection([$category]));
         $collection->setOwner($product, $class->associationMappings['categories']);
 
         $uow = $this->_em->getUnitOfWork();

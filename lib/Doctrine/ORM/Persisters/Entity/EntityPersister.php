@@ -80,7 +80,7 @@ interface EntityPersister
      * @param  array|\Doctrine\Common\Collections\Criteria $criteria
      * @return string
      */
-    public function getCountSQL($criteria = array());
+    public function getCountSQL($criteria = []);
 
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
@@ -164,7 +164,7 @@ interface EntityPersister
      *
      * @return int
      */
-    public function count($criteria = array());
+    public function count($criteria = []);
 
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
@@ -196,7 +196,7 @@ interface EntityPersister
      *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null);
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = [], $lockMode = null, $limit = null, array $orderBy = null);
 
     /**
      * Loads an entity by identifier.
@@ -224,7 +224,7 @@ interface EntityPersister
      *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = array());
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = []);
 
     /**
      * Refreshes a managed entity.
@@ -259,7 +259,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null);
+    public function loadAll(array $criteria = [], array $orderBy = null, $limit = null, $offset = null);
 
     /**
      * Gets (sliced or full) elements of the given collection.

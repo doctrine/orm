@@ -146,7 +146,7 @@ class PersisterHelper
             return self::getIndividualValue($value, $em);
         }
 
-        $newValue = array();
+        $newValue = [];
 
         foreach ($value as $fieldName => $fieldValue) {
             $newValue[$fieldName] = self::getIndividualValue($fieldValue, $em);

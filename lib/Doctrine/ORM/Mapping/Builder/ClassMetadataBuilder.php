@@ -101,7 +101,7 @@ class ClassMetadataBuilder
      */
     public function setTable($name)
     {
-        $this->cm->setPrimaryTable(array('name' => $name));
+        $this->cm->setPrimaryTable(['name' => $name]);
 
         return $this;
     }
@@ -117,10 +117,10 @@ class ClassMetadataBuilder
     public function addIndex(array $columns, $name)
     {
         if (!isset($this->cm->table['indexes'])) {
-            $this->cm->table['indexes'] = array();
+            $this->cm->table['indexes'] = [];
         }
 
-        $this->cm->table['indexes'][$name] = array('columns' => $columns);
+        $this->cm->table['indexes'][$name] = ['columns' => $columns];
 
         return $this;
     }
@@ -136,10 +136,10 @@ class ClassMetadataBuilder
     public function addUniqueConstraint(array $columns, $name)
     {
         if ( ! isset($this->cm->table['uniqueConstraints'])) {
-            $this->cm->table['uniqueConstraints'] = array();
+            $this->cm->table['uniqueConstraints'] = [];
         }
 
-        $this->cm->table['uniqueConstraints'][$name] = array('columns' => $columns);
+        $this->cm->table['uniqueConstraints'][$name] = ['columns' => $columns];
 
         return $this;
     }
@@ -154,10 +154,10 @@ class ClassMetadataBuilder
      */
     public function addNamedQuery($name, $dqlQuery)
     {
-        $this->cm->addNamedQuery(array(
+        $this->cm->addNamedQuery([
             'name' => $name,
             'query' => $dqlQuery,
-        ));
+        ]);
 
         return $this;
     }
@@ -197,11 +197,11 @@ class ClassMetadataBuilder
      */
     public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
     {
-        $this->cm->setDiscriminatorColumn(array(
+        $this->cm->setDiscriminatorColumn([
             'name' => $name,
             'type' => $type,
             'length' => $length,
-        ));
+        ]);
 
         return $this;
     }
@@ -269,7 +269,7 @@ class ClassMetadataBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function addField($name, $type, array $mapping = array())
+    public function addField($name, $type, array $mapping = [])
     {
         $mapping['fieldName'] = $name;
         $mapping['type'] = $type;
@@ -291,10 +291,10 @@ class ClassMetadataBuilder
     {
         return new FieldBuilder(
             $this,
-            array(
+            [
                 'fieldName' => $name,
                 'type'      => $type
-            )
+            ]
         );
     }
 
@@ -332,10 +332,10 @@ class ClassMetadataBuilder
     {
         return new AssociationBuilder(
             $this,
-            array(
+            [
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity
-            ),
+            ],
             ClassMetadata::MANY_TO_ONE
         );
     }
@@ -352,10 +352,10 @@ class ClassMetadataBuilder
     {
         return new AssociationBuilder(
             $this,
-            array(
+            [
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity
-            ),
+            ],
             ClassMetadata::ONE_TO_ONE
         );
     }
@@ -409,10 +409,10 @@ class ClassMetadataBuilder
     {
         return new ManyToManyAssociationBuilder(
             $this,
-            array(
+            [
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity
-            ),
+            ],
             ClassMetadata::MANY_TO_MANY
         );
     }
@@ -466,10 +466,10 @@ class ClassMetadataBuilder
     {
         return new OneToManyAssociationBuilder(
             $this,
-            array(
+            [
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity
-            ),
+            ],
             ClassMetadata::ONE_TO_MANY
         );
     }

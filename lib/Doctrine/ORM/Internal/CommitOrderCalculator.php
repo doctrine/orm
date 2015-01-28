@@ -36,24 +36,24 @@ class CommitOrderCalculator
     /**
      * @var array
      */
-    private $_nodeStates = array();
+    private $_nodeStates = [];
 
     /**
      * The nodes to sort.
      *
      * @var array
      */
-    private $_classes = array();
+    private $_classes = [];
 
     /**
      * @var array
      */
-    private $_relatedClasses = array();
+    private $_relatedClasses = [];
 
     /**
      * @var array
      */
-    private $_sorted = array();
+    private $_sorted = [];
 
     /**
      * Clears the current graph.
@@ -62,8 +62,8 @@ class CommitOrderCalculator
      */
     public function clear()
     {
-        $this->_classes = array();
-        $this->_relatedClasses = array();
+        $this->_classes = [];
+        $this->_relatedClasses = [];
     }
 
     /**
@@ -80,7 +80,7 @@ class CommitOrderCalculator
         $nodeCount = count($this->_classes);
 
         if ($nodeCount <= 1) {
-            return ($nodeCount == 1) ? array_values($this->_classes) : array();
+            return ($nodeCount == 1) ? array_values($this->_classes) : [];
         }
 
         // Init
@@ -97,7 +97,7 @@ class CommitOrderCalculator
 
         $sorted = array_reverse($this->_sorted);
 
-        $this->_sorted = $this->_nodeStates = array();
+        $this->_sorted = $this->_nodeStates = [];
 
         return $sorted;
     }

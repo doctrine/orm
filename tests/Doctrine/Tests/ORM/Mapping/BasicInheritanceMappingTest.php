@@ -153,7 +153,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(
-            array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
+            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
             $class->sequenceGeneratorDefinition
         );
     }
@@ -169,7 +169,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(
-            array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
+            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
             $class->sequenceGeneratorDefinition
         );
     }
@@ -185,7 +185,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(
-            array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
+            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
             $class->sequenceGeneratorDefinition
         );
     }

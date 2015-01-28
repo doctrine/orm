@@ -28,7 +28,7 @@ class PersistentCollectionTest extends OrmTestCase
     {
         parent::setUp();
         // SUT
-        $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
+        $this->_connectionMock = new ConnectionMock([], new \Doctrine\Tests\Mocks\DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connectionMock);
     }
 

@@ -20,7 +20,7 @@ class SequenceEmulatedIdentityStrategyTest extends \Doctrine\Tests\OrmFunctional
         } else {
             try {
                 $this->_schemaTool->createSchema(
-                    array($this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\SequenceEmulatedIdentityEntity'))
+                    [$this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\SequenceEmulatedIdentityEntity')]
                 );
             } catch (\Exception $e) {
                 // Swallow all exceptions. We do not test the schema tool here.

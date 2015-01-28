@@ -59,7 +59,7 @@ class FilterCollection
      *
      * @var \Doctrine\ORM\Query\Filter\SQLFilter[]
      */
-    private $enabledFilters = array();
+    private $enabledFilters = [];
 
     /**
      * @var string The filter hash from the last time the query was parsed.

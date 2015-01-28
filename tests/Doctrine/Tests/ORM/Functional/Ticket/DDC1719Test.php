@@ -15,18 +15,18 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(self::CLASS_NAME),
-        ));
+        ]);
     }
 
     protected function tearDown()
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(array(
+        $this->_schemaTool->dropSchema([
             $this->_em->getClassMetadata(self::CLASS_NAME),
-        ));
+        ]);
     }
 
     public function testCreateRetrieveUpdateDelete()

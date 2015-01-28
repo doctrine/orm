@@ -231,7 +231,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature) {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
-            array($feature->getId())
+            [$feature->getId()]
         )->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }

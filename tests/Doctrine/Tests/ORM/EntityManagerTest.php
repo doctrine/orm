@@ -126,13 +126,13 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     static public function dataMethodsAffectedByNoObjectArguments()
     {
-        return array(
-            array('persist'),
-            array('remove'),
-            array('merge'),
-            array('refresh'),
-            array('detach')
-        );
+        return [
+            ['persist'],
+            ['remove'],
+            ['merge'],
+            ['refresh'],
+            ['detach']
+        ];
     }
 
     /**
@@ -146,13 +146,13 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     static public function dataAffectedByErrorIfClosedException()
     {
-        return array(
-            array('flush'),
-            array('persist'),
-            array('remove'),
-            array('merge'),
-            array('refresh'),
-        );
+        return [
+            ['flush'],
+            ['persist'],
+            ['remove'],
+            ['merge'],
+            ['refresh'],
+        ];
     }
 
     /**
@@ -181,7 +181,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testTransactionalAcceptsVariousCallables()
     {
-        $this->assertSame('callback', $this->_em->transactional(array($this, 'transactionalCallback')));
+        $this->assertSame('callback', $this->_em->transactional([$this, 'transactionalCallback']));
     }
 
     public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed()

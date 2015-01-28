@@ -148,7 +148,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = true)
+    public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
     {
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
@@ -348,7 +348,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
-        $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
+        $this->_attributes['namedNativeQueries'][$name] = [$sql, $rsm];
     }
 
     /**
@@ -589,7 +589,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomHydrationModes($modes)
     {
-        $this->_attributes['customHydrationModes'] = array();
+        $this->_attributes['customHydrationModes'] = [];
 
         foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
@@ -880,7 +880,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getDefaultQueryHints()
     {
-        return isset($this->_attributes['defaultQueryHints']) ? $this->_attributes['defaultQueryHints'] : array();
+        return isset($this->_attributes['defaultQueryHints']) ? $this->_attributes['defaultQueryHints'] : [];
     }
 
     /**

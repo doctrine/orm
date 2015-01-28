@@ -10,11 +10,11 @@ class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1548E1'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1548E2'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1548Rel'),
-        ));
+        ]);
     }
 
     public function testIssue()

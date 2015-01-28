@@ -93,7 +93,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $em = $this->_getEntityManager();
 
         // No enabled filters
-        $this->assertEquals(array(), $em->getFilters()->getEnabledFilters());
+        $this->assertEquals([], $em->getFilters()->getEnabledFilters());
 
         $this->configureFilters($em);
         $filter = $em->getFilters()->enable("locale");
@@ -323,10 +323,10 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $filter2->setParameter('foo', 'bar', DBALType::STRING);
         $filter2->setParameter('locale', 'en', DBALType::STRING);
 
-        $parameters = array(
-            'foo' => array('value' => 'bar', 'type' => DBALType::STRING),
-            'locale' => array('value' => 'en', 'type' => DBALType::STRING),
-        );
+        $parameters = [
+            'foo' => ['value' => 'bar', 'type' => DBALType::STRING],
+            'locale' => ['value' => 'en', 'type' => DBALType::STRING],
+        ];
 
         $this->assertEquals(serialize($parameters), ''.$filter);
         $this->assertEquals(''.$filter, ''.$filter2);
@@ -400,12 +400,12 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->loadFixtureData();
 
-        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(array('id' => $this->groupId2)));
+        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(['id' => $this->groupId2]));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(array('id' => $this->groupId2)));
+        $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(['id' => $this->groupId2]));
     }
 
     public function testRepositoryFindByX()
@@ -424,12 +424,12 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->loadFixtureData();
 
-        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(array('id' => $this->groupId2)));
+        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(['id' => $this->groupId2]));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(array('id' => $this->groupId2)));
+        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(['id' => $this->groupId2]));
     }
 
     public function testRepositoryFindOneByX()

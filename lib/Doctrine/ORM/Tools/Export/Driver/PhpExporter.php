@@ -40,7 +40,7 @@ class PhpExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
-        $lines = array();
+        $lines = [];
         $lines[] = '<?php';
         $lines[] = null;
         $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadataInfo;';
@@ -91,7 +91,7 @@ class PhpExporter extends AbstractExporter
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
-            $cascade = array('remove', 'persist', 'refresh', 'merge', 'detach');
+            $cascade = ['remove', 'persist', 'refresh', 'merge', 'detach'];
             foreach ($cascade as $key => $value) {
                 if ( ! $associationMapping['isCascade'.ucfirst($value)]) {
                     unset($cascade[$key]);
@@ -99,14 +99,14 @@ class PhpExporter extends AbstractExporter
             }
 
             if (count($cascade) === 5) {
-                $cascade = array('all');
+                $cascade = ['all'];
             }
 
-            $associationMappingArray = array(
+            $associationMappingArray = [
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
                 'cascade'     => $cascade,
-            );
+            ];
 
             if (isset($associationMapping['fetch'])) {
                 $associationMappingArray['fetch'] = $associationMapping['fetch'];
@@ -114,21 +114,21 @@ class PhpExporter extends AbstractExporter
 
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $method = 'mapOneToOne';
-                $oneToOneMappingArray = array(
+                $oneToOneMappingArray = [
                     'mappedBy'      => $associationMapping['mappedBy'],
                     'inversedBy'    => $associationMapping['inversedBy'],
                     'joinColumns'   => $associationMapping['joinColumns'],
                     'orphanRemoval' => $associationMapping['orphanRemoval'],
-                );
+                ];
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
             } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
                 $method = 'mapOneToMany';
-                $potentialAssociationMappingIndexes = array(
+                $potentialAssociationMappingIndexes = [
                     'mappedBy',
                     'orphanRemoval',
                     'orderBy',
-                );
+                ];
                 foreach ($potentialAssociationMappingIndexes as $index) {
                     if (isset($associationMapping[$index])) {
                         $oneToManyMappingArray[$index] = $associationMapping[$index];
@@ -137,11 +137,11 @@ class PhpExporter extends AbstractExporter
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
             } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                 $method = 'mapManyToMany';
-                $potentialAssociationMappingIndexes = array(
+                $potentialAssociationMappingIndexes = [
                     'mappedBy',
                     'joinTable',
                     'orderBy',
-                );
+                ];
                 foreach ($potentialAssociationMappingIndexes as $index) {
                     if (isset($associationMapping[$index])) {
                         $manyToManyMappingArray[$index] = $associationMapping[$index];

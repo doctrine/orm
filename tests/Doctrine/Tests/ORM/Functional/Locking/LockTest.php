@@ -14,7 +14,7 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     protected function setUp() {
         $this->useModelSet('cms');
         parent::setUp();
-        $this->handles = array();
+        $this->handles = [];
     }
 
     /**

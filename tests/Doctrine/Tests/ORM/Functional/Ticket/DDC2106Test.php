@@ -13,9 +13,9 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2106Entity'),
-        ));
+        ]);
     }
 
     public function testDetachedEntityAsId()
@@ -25,7 +25,7 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entity);
         $this->_em->flush();
         $this->_em->detach($entity);
-        $entity = $this->_em->getRepository(__NAMESPACE__ . '\DDC2106Entity')->findOneBy(array());
+        $entity = $this->_em->getRepository(__NAMESPACE__ . '\DDC2106Entity')->findOneBy([]);
 
         // ... and a managed entity without id
         $entityWithoutId = new DDC2106Entity();

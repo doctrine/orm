@@ -16,10 +16,10 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(DDC2862User::CLASSNAME),
                 $this->_em->getClassMetadata(DDC2862Driver::CLASSNAME),
-            ));
+            ]);
         } catch (ToolsException $exc) {
         }
     }
@@ -34,8 +34,8 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, array('id' => $user1->getId())));
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, array('id' => $driver1->getId())));
+        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, ['id' => $user1->getId()]));
+        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, ['id' => $driver1->getId()]));
 
         $queryCount = $this->getCurrentQueryCount();
         $driver2    = $this->_em->find(DDC2862Driver::CLASSNAME, $driver1->getId());
@@ -49,8 +49,8 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, array('id' => $user1->getId())));
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, array('id' => $driver1->getId())));
+        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, ['id' => $user1->getId()]));
+        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, ['id' => $driver1->getId()]));
 
         $queryCount = $this->getCurrentQueryCount();
         $driver3    = $this->_em->find(DDC2862Driver::CLASSNAME, $driver1->getId());
@@ -75,8 +75,8 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getCache()->evictEntityRegion(DDC2862User::CLASSNAME);
         $this->_em->getCache()->evictEntityRegion(DDC2862Driver::CLASSNAME);
 
-        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, array('id' => $user1->getId())));
-        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, array('id' => $driver1->getId())));
+        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, ['id' => $user1->getId()]));
+        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, ['id' => $driver1->getId()]));
 
         $queryCount = $this->getCurrentQueryCount();
         $driver2    = $this->_em->find(DDC2862Driver::CLASSNAME, $driver1->getId());
@@ -87,8 +87,8 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, array('id' => $user1->getId())));
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, array('id' => $driver1->getId())));
+        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862User::CLASSNAME, ['id' => $user1->getId()]));
+        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::CLASSNAME, ['id' => $driver1->getId()]));
 
         $queryCount = $this->getCurrentQueryCount();
         $driver3    = $this->_em->find(DDC2862Driver::CLASSNAME, $driver1->getId());

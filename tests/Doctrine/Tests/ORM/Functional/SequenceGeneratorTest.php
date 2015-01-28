@@ -18,9 +18,9 @@ class SequenceGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\SequenceEntity'),
-            ));
+            ]);
         } catch(\Exception $e) {
 
         }

@@ -17,11 +17,11 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         Type::addType(DDC2579Type::NAME, DDC2579Type::CLASSNAME);
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(DDC2579Entity::CLASSNAME),
             $this->_em->getClassMetadata(DDC2579EntityAssoc::CLASSNAME),
             $this->_em->getClassMetadata(DDC2579AssocAssoc::CLASSNAME),
-        ));
+        ]);
     }
 
     public function testIssue()
@@ -45,7 +45,7 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $id       = $entity->id;
         $value    = $entity->value;
-        $criteria = array('assoc' => $assoc, 'id' => $id);
+        $criteria = ['assoc' => $assoc, 'id' => $id];
         $entity   = $repository->findOneBy($criteria);
 
         $this->assertInstanceOf(DDC2579Entity::CLASSNAME, $entity);

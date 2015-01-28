@@ -74,7 +74,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($merc);
         $this->_em->persist($volvo);
 
-        return array($bimmer, $crysler, $merc, $volvo);
+        return [$bimmer, $crysler, $merc, $volvo];
     }
 
     private function createDrivers($class)
@@ -88,7 +88,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($foo);
         $this->_em->persist($john);
 
-        return array($john, $foo);
+        return [$john, $foo];
     }
 
     /**

@@ -100,7 +100,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function assertForeignKeyIs($value) {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
-            array($this->product->getId())
+            [$this->product->getId()]
         )->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }

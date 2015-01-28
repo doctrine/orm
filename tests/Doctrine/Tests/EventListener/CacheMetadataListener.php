@@ -13,9 +13,9 @@ class CacheMetadataListener
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
         $metadata = $event->getClassMetadata();
-        $cache    = array(
+        $cache    = [
             'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
-        );
+        ];
 
         /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {

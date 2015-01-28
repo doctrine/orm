@@ -14,10 +14,10 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1225_TestEntity1'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1225_TestEntity2'),
-            ));
+            ]);
         } catch(\PDOException $e) {
 
         }

@@ -41,9 +41,9 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->application = new Application();
         $this->command     = new RunDqlCommand();
 
-        $this->application->setHelperSet(new HelperSet(array(
+        $this->application->setHelperSet(new HelperSet([
             'em' => new EntityManagerHelper($this->_em)
-        )));
+        ]));
 
         $this->application->add($this->command);
 
@@ -62,10 +62,10 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         $this->assertSame(
             0,
-            $this->tester->execute(array(
+            $this->tester->execute([
                 'command' => $this->command->getName(),
                 'dql'     => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
-            ))
+            ])
         );
 
         $this->assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
@@ -78,11 +78,11 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         $this->assertSame(
             0,
-            $this->tester->execute(array(
+            $this->tester->execute([
                 'command'    => $this->command->getName(),
                 'dql'        => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
                 '--show-sql' => 'true'
-            ))
+            ])
         );
 
         $this->assertStringMatchesFormat('string%sSELECT %a', $this->tester->getDisplay());

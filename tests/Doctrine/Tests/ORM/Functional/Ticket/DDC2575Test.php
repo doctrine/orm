@@ -7,19 +7,19 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    private $rootsEntities = array();
-    private $aEntities = array();
-    private $bEntities = array();
+    private $rootsEntities = [];
+    private $aEntities = [];
+    private $bEntities = [];
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2575Root'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2575A'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2575B'),
-        ));
+        ]);
 
         $entityRoot1 = new DDC2575Root(1);
         $entityB1 = new DDC2575B(2);

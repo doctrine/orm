@@ -79,7 +79,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $owning = $this->_em->find(
@@ -104,7 +104,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $owning = $this->_em->find(
@@ -130,7 +130,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => $auxiliary)
+            ['id1' => 'def', 'foreignEntity' => $auxiliary]
         );
 
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity', $inversed);
@@ -158,7 +158,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity', $inversed->associatedEntity);

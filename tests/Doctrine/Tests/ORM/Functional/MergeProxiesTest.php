@@ -241,7 +241,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            array(realpath(__DIR__ . '/../../Models/Cache')),
+            [realpath(__DIR__ . '/../../Models/Cache')],
             true
         ));
         $config->setSQLLogger($logger);
@@ -250,10 +250,10 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         // multi-connection is not relevant for the purpose of checking locking here, but merely
         // to stub out DB-level access and intercept it
         $connection = DriverManager::getConnection(
-            array(
+            [
                 'driver' => 'pdo_sqlite',
                 'memory' => true
-            ),
+            ],
             $config
         );
 

@@ -14,9 +14,9 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2931User'),
-            ));
+            ]);
         } catch (\Exception $e) {
             // no action needed - schema seems to be already in place
         }

@@ -3,13 +3,13 @@
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
-$metadata->setPrimaryTable(array(
-   'indexes' => array(
-       array('columns' => array('content'), 'flags' => array('fulltext'), 'options'=> array('where' => 'content IS NOT NULL'))
-   )
-  ));
+$metadata->setPrimaryTable([
+   'indexes' => [
+       ['columns' => ['content'], 'flags' => ['fulltext'], 'options'=> ['where' => 'content IS NOT NULL']]
+   ]
+  ]);
 
-$metadata->mapField(array(
+$metadata->mapField([
     'fieldName' => 'content',
     'type' => 'text',
     'scale' => 0,
@@ -18,4 +18,4 @@ $metadata->mapField(array(
     'nullable' => false,
     'precision' => 0,
     'columnName' => 'content',
-));
+]);

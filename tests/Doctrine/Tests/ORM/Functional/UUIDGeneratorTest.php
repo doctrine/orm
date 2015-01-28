@@ -14,9 +14,9 @@ class UUIDGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped('Currently restricted to MySQL platform.');
         }
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\UUIDEntity')
-        ));
+        ]);
     }
 
     public function testGenerateUUID()

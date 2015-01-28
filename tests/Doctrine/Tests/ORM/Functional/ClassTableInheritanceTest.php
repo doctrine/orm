@@ -72,7 +72,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $guilherme = $this->_em->getRepository(get_class($employee))->findOneBy(array('name' => 'Guilherme Blanco'));
+        $guilherme = $this->_em->getRepository(get_class($employee))->findOneBy(['name' => 'Guilherme Blanco']);
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $guilherme);
         $this->assertEquals('Guilherme Blanco', $guilherme->getName());
 
@@ -389,12 +389,12 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager');
-        $pmanager = $repos->findOneBy(array('spouse' => $person->getId()));
+        $pmanager = $repos->findOneBy(['spouse' => $person->getId()]);
 
         $this->assertEquals($manager->getId(), $pmanager->getId());
 
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson');
-        $pmanager = $repos->findOneBy(array('spouse' => $person->getId()));
+        $pmanager = $repos->findOneBy(['spouse' => $person->getId()]);
 
         $this->assertEquals($manager->getId(), $pmanager->getId());
     }

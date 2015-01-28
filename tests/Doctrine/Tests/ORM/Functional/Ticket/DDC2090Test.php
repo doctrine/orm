@@ -44,11 +44,11 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->set('e.startDate', ':date')
             ->set('e.salary', ':salary')
             ->where('e = :e')
-            ->setParameters(array(
+            ->setParameters([
                 'e'      => $employee1,
                 'date'   => $date1,
                 'salary' => 101,
-            ))
+            ])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
@@ -58,11 +58,11 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->set('e.startDate', ':date')
             ->set('e.salary', ':salary')
             ->where('e = :e')
-            ->setParameters(array(
+            ->setParameters([
                 'e'      => $employee2,
                 'date'   => $date2,
                 'salary' => 102,
-            ))
+            ])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
@@ -82,7 +82,7 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->set('e.startDate', '?1')
             ->set('e.salary', '?2')
             ->where('e = ?0')
-            ->setParameters(array($employee1, $date1, 101))
+            ->setParameters([$employee1, $date1, 101])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
@@ -92,7 +92,7 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->set('e.startDate', '?1')
             ->set('e.salary', '?2')
             ->where('e = ?0')
-            ->setParameters(array($employee2, $date2, 102))
+            ->setParameters([$employee2, $date2, 102])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();

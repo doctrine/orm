@@ -95,7 +95,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Set every select expression as visible(hidden = false) to
         // make $AST have scalar mappings properly - this is relevant for referencing selected
         // fields from outside the subquery, for example in the ORDER BY segment
-        $hiddens = array();
+        $hiddens = [];
 
         foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
             $hiddens[$idx] = $expr->hiddenAliasResultVariable;
@@ -126,7 +126,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $rootIdentifier = $rootClass->identifier;
 
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping
-        $sqlIdentifier = array();
+        $sqlIdentifier = [];
         foreach ($rootIdentifier as $property) {
             if (isset($rootClass->fieldMappings[$property])) {
                 foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
@@ -194,8 +194,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     public function preserveSqlOrdering(SelectStatement $AST, array $sqlIdentifier, $innerSql, $sql)
     {
         // For every order by, find out the SQL alias by inspecting the ResultSetMapping.
-        $sqlOrderColumns = array();
-        $orderBy         = array();
+        $sqlOrderColumns = [];
+        $orderBy         = [];
         if (isset($AST->orderByClause)) {
             foreach ($AST->orderByClause->orderByItems as $item) {
                 $expression = $item->expression;

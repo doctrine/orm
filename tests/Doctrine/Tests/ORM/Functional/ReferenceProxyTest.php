@@ -55,7 +55,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        $productProxy = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct', array('id' => $id));
+        $productProxy = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct', ['id' => $id]);
         $this->assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
 

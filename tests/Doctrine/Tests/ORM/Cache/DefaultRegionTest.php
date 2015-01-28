@@ -30,7 +30,7 @@ class DefaultRegionTest extends AbstractRegionTest
         }
 
         $key     = new CacheKeyMock('key');
-        $entry   = new CacheEntryMock(array('value' => 'foo'));
+        $entry   = new CacheEntryMock(['value' => 'foo']);
         $region1 = new DefaultRegion('region1', new \Doctrine\Common\Cache\ApcCache());
         $region2 = new DefaultRegion('region2', new \Doctrine\Common\Cache\ApcCache());
 

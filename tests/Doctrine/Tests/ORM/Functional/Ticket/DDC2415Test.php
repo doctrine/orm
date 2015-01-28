@@ -16,12 +16,12 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver(array()));
+        $this->_em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver([]));
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ParentEntity'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ChildEntity'),
-        ));
+        ]);
     }
 
     public function testTicket()
@@ -57,16 +57,16 @@ class DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array (
+        $metadata->mapField( [
             'id'        => true,
             'fieldName' => 'id',
             'type'      => 'string',
-        ));
+        ]);
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(array(
+        $metadata->setCustomGeneratorDefinition([
             'class' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC2415Generator'
-        ));
+        ]);
 
         $metadata->isMappedSuperclass = true;
     }
@@ -88,10 +88,10 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array (
+        $metadata->mapField( [
             'fieldName' => 'name',
             'type'      => 'string',
-        ));
+        ]);
     }
 }
 

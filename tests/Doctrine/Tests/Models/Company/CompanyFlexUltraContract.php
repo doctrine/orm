@@ -31,11 +31,11 @@ class CompanyFlexUltraContract extends CompanyFlexContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField([
             'type'      => 'integer',
             'name'      => 'maxPrice',
             'fieldName' => 'maxPrice',
-        ));
+        ]);
         $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
         $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
 

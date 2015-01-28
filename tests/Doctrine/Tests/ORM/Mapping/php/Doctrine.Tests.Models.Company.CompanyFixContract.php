@@ -1,7 +1,7 @@
 <?php
 
-$metadata->mapField(array(
+$metadata->mapField([
     'type'      => 'integer',
     'name'      => 'fixPrice',
     'fieldName' => 'fixPrice',
-));
+]);

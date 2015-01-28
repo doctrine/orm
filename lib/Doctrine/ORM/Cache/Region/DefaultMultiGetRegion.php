@@ -56,7 +56,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        $keysToRetrieve = array();
+        $keysToRetrieve = [];
         foreach ($collection->identifiers as $index => $key) {
             $keysToRetrieve[$index] = $this->name . '_' . $key->hash;
         }
@@ -66,7 +66,7 @@ class DefaultMultiGetRegion extends DefaultRegion
             return null;
         }
 
-        $returnableItems = array();
+        $returnableItems = [];
         foreach ($keysToRetrieve as $index => $key) {
             $returnableItems[$index] = $items[$key];
         }

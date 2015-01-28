@@ -12,10 +12,10 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\DefaultValueUser'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\DefaultValueAddress')
-            ));
+            ]);
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

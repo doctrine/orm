@@ -161,7 +161,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findAll()
     {
-        return $this->findBy(array());
+        return $this->findBy([]);
     }
 
     /**
@@ -193,7 +193,7 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
-        return $persister->load($criteria, null, null, array(), null, 1, $orderBy);
+        return $persister->load($criteria, null, null, [], null, 1, $orderBy);
     }
 
     /**
@@ -238,16 +238,16 @@ class EntityRepository implements ObjectRepository, Selectable
         if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
             switch (count($arguments)) {
                 case 1:
-                    return $this->$method(array($fieldName => $arguments[0]));
+                    return $this->$method([$fieldName => $arguments[0]]);
 
                 case 2:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
+                    return $this->$method([$fieldName => $arguments[0]], $arguments[1]);
 
                 case 3:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
+                    return $this->$method([$fieldName => $arguments[0]], $arguments[1], $arguments[2]);
 
                 case 4:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
+                    return $this->$method([$fieldName => $arguments[0]], $arguments[1], $arguments[2], $arguments[3]);
 
                 default:
                     // Do nothing

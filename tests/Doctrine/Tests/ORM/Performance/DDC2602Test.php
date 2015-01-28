@@ -16,12 +16,12 @@ class DDC2602Test extends \Doctrine\Tests\OrmPerformanceTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602Biography'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyField'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyFieldChoice'),
-        ));
+        ]);
 
         $this->loadFixture();
     }
@@ -30,18 +30,18 @@ class DDC2602Test extends \Doctrine\Tests\OrmPerformanceTestCase
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(array(
+        $this->_schemaTool->dropSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602Biography'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyField'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyFieldChoice'),
-        ));
+        ]);
     }
 
     public function testIssue()
     {
         $eventManager = $this->_em->getEventManager();
-        $eventManager->addEventListener(array(Events::postLoad), new DDC2602PostLoadListener());
+        $eventManager->addEventListener([Events::postLoad], new DDC2602PostLoadListener());
 
         // Set maximum seconds this can run
         $this->setMaxRunningTime(1);
@@ -231,7 +231,7 @@ class DDC2602Biography
     /**
      * @var array
      */
-    public $fieldList = array();
+    public $fieldList = [];
 }
 
 /**

@@ -13,10 +13,10 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1404ParentEntity'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1404ChildEntity'),
-            ));
+            ]);
 
             $this->loadFixtures();
 
