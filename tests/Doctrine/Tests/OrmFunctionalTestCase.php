@@ -186,7 +186,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ),
         'tweet' => array(
             'Doctrine\Tests\Models\Tweet\User',
-            'Doctrine\Tests\Models\Tweet\Tweet'
+            'Doctrine\Tests\Models\Tweet\Tweet',
+            'Doctrine\Tests\Models\Tweet\UserList',
         ),
         'ddc2504' => array(
             'Doctrine\Tests\Models\DDC2504\DDC2504RootClass',
@@ -385,6 +386,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM taxi_ride');
             $conn->executeUpdate('DELETE FROM taxi_car');
             $conn->executeUpdate('DELETE FROM taxi_driver');
+        }
+
+        if (isset($this->_usedModelSets['tweet'])) {
+            $conn->executeUpdate('DELETE FROM tweet_tweet');
+            $conn->executeUpdate('DELETE FROM tweet_user_list');
+            $conn->executeUpdate('DELETE FROM tweet_user');
         }
 
         if (isset($this->_usedModelSets['cache'])) {

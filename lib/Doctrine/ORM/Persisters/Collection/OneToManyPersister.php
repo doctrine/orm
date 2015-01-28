@@ -157,27 +157,21 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $collection, $element)
     {
+        $mapping = $collection->getMapping();
+
+        if ( ! $mapping['orphanRemoval']) {
+            // no-op: this is not the owning side, therefore no operations should be applied
+            return false;
+        }
+
         if ( ! $this->isValidEntityState($element)) {
             return false;
         }
 
-        $mapping   = $collection->getMapping();
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
-
-        $targetMetadata = $this->em->getClassMetadata($mapping['targetEntity']);
-
-        if ($element instanceof Proxy && ! $element->__isInitialized()) {
-            $element->__load();
-        }
-
-        // clearing owning side value
-        $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);
-
-        $this->uow->computeChangeSet($targetMetadata, $element);
-
-        $persister->update($element);
-
-        return true;
+        return $this
+            ->uow
+            ->getEntityPersister($mapping['targetEntity'])
+            ->delete($element);
     }
 
     /**

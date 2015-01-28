@@ -296,10 +296,12 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $countryId));
+        $this->assertFalse(
+            $this->cache->containsEntity(Country::CLASSNAME, $countryId),
+            'Removal attempts should clear the cache entry corresponding to the entity'
+        );
 
-        $country = $this->_em->find(Country::CLASSNAME, $countryId);
-        $this->assertInstanceOf(Country::CLASSNAME, $country);
+        $this->assertInstanceOf(Country::CLASSNAME, $this->_em->find(Country::CLASSNAME, $countryId));
     }
 
     public function testCachedNewEntityExists()
