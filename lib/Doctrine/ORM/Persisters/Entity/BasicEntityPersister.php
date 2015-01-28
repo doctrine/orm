@@ -1809,7 +1809,6 @@ class BasicEntityPersister implements EntityPersister
             $types = array_merge($types, $this->getTypes($field, $value, $this->class));
             $params = array_merge($params, $this->getValues($value));
         }
-
         return array($params, $types);
     }
 
@@ -1838,7 +1837,6 @@ class BasicEntityPersister implements EntityPersister
             $types  = array_merge($types, $this->getTypes($criterion['field'], $criterion['value'], $criterion['class']));
             $params = array_merge($params, $this->getValues($criterion['value']));
         }
-
         return array($params, $types);
     }
 
@@ -1855,27 +1853,32 @@ class BasicEntityPersister implements EntityPersister
     private function getTypes($field, $value, ClassMetadata $class)
     {
         $types = array();
+
         switch (true) {
-            case (isset($this->class->fieldMappings[$field])):
-                $types[] = $this->class->fieldMappings[$field]['type'];
+            case (isset($class->fieldMappings[$field])):
+                $types = array_merge($types, PersisterHelper::getTypeOfField($field, $class, $this->em));
                 break;
+            case (isset($class->associationMappings[$field])):
+                $assoc = $class->associationMappings[$field];
 
-            case (isset($this->class->associationMappings[$field])):
-                $assoc = $this->class->associationMappings[$field];
+                $class = $this->em->getClassMetadata($assoc['targetEntity']);
+                if (!$assoc['isOwningSide']) {
+                    $assoc = $class->associationMappings[$assoc['mappedBy']];
+                    $class = $this->em->getClassMetadata($assoc['targetEntity']);
+                }
 
-                $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($assoc['targetEntity']);
                 if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
 
-                    if(!$assoc['isOwningSide']){
-                        $class = $this->em->getClassMetadata($assoc['targetEntity']);
-                        $assoc = $class->associationMappings[$assoc['mappedBy']];
+                    foreach ($assoc['relationToSourceKeyColumns'] as $field => $val){
+                        $types = array_merge($types, PersisterHelper::getTypeOfField($val, $class, $this->em));
                     }
 
-                    $parameters      = $targetPersister->expandParameters($assoc['relationToSourceKeyColumns']);
                 } else {
-                    $parameters      = $targetPersister->expandParameters($assoc['isOwningSide']?$assoc['targetToSourceKeyColumns']:$assoc['sourceToTargetKeyColumns']);
+
+                    foreach ($assoc['targetToSourceKeyColumns'] as $field => $val){
+                        $types = array_merge($types, PersisterHelper::getTypeOfField($field, $class, $this->em));
+                    }
                 }
-                $types           = array_merge($types, $parameters[1]);
                 break;
 
             default:
@@ -1889,7 +1892,6 @@ class BasicEntityPersister implements EntityPersister
                 return $type + Connection::ARRAY_PARAM_OFFSET;
             }, $types);
         }
-
         return $types;
     }
 
@@ -1925,29 +1927,6 @@ class BasicEntityPersister implements EntityPersister
         }
 
         return array($this->getIndividualValue($value));
-    }
-
-    /**
-     * Infers field type to be used by parameter type casting.
-     *
-     * @param string        $fieldName
-     * @param mixed         $value
-     * @param ClassMetadata $class
-     *
-     * @return integer
-     *
-     * @throws \Doctrine\ORM\Query\QueryException
-     */
-    private function getType($fieldName, $value, ClassMetadata $class)
-    {
-        $type = PersisterHelper::getTypeOfField($fieldName, $class, $this->em);
-
-        if (is_array($value)) {
-            $type = Type::getType($type)->getBindingType();
-            $type += Connection::ARRAY_PARAM_OFFSET;
-        }
-
-        return $type;
     }
 
     /**

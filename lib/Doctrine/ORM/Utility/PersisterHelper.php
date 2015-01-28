@@ -40,18 +40,18 @@ class PersisterHelper
      * @param ClassMetadata          $class
      * @param EntityManagerInterface $em
      *
-     * @return string|null
+     * @return array
      *
      * @throws QueryException
      */
     public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
     {
         if (isset($class->fieldMappings[$fieldName])) {
-            return $class->fieldMappings[$fieldName]['type'];
+            return array($class->fieldMappings[$fieldName]['type']);
         }
 
         if ( ! isset($class->associationMappings[$fieldName])) {
-            return null;
+            return array();
         }
 
         $assoc = $class->associationMappings[$fieldName];
@@ -60,20 +60,18 @@ class PersisterHelper
             return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
         }
 
-        if (($assoc['type'] & ClassMetadata::MANY_TO_MANY) > 0) {
+        if ($assoc['type'] & ClassMetadata::MANY_TO_MANY) {
             $joinData = $assoc['joinTable'];
         } else {
             $joinData = $assoc;
         }
 
-        if (count($joinData['joinColumns']) > 1) {
-            throw QueryException::associationPathCompositeKeyNotSupported();
+        $types = array();
+        $targetClass = $em->getClassMetadata($assoc['targetEntity']);
+        foreach ($joinData['joinColumns'] as $joinColumn) {
+            $types[] = self::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $em);
         }
-
-        $targetColumnName = $joinData['joinColumns'][0]['referencedColumnName'];
-        $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
-
-        return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
+        return $types;
     }
 
     /**
