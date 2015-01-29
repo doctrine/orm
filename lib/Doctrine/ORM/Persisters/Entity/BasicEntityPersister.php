@@ -1650,14 +1650,18 @@ class BasicEntityPersister implements EntityPersister
             $association = $this->class->associationMappings[$field];
             // Many-To-Many requires join table check for joinColumn
             $columns = array();
+            $class = $this->class;
             if ($association['type'] === ClassMetadata::MANY_TO_MANY) {
                 if ( ! $association['isOwningSide']) {
                     $association = $assoc;
                 }
+                $joinColumns = $assoc['isOwningSide']
+                    ? $association['joinTable']['joinColumns']
+                    : $association['joinTable']['inverseJoinColumns'];
 
-                $joinTableName  = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
-                foreach ($association['joinTable']['joinColumns'] as $joinColumn) {
-                    $columns[] = $joinTableName . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                $joinTableName  = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
+                foreach ($joinColumns as $joinColumn) {
+                    $columns[] = $joinTableName . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                 }
 
             } else {
