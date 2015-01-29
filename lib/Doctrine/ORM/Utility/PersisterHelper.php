@@ -131,40 +131,4 @@ class PersisterHelper
             $class->getName()
         ));
     }
-
-    /**
-     * @param mixed                  $value
-     * @param EntityManagerInterface $em
-     *
-     * @return mixed
-     */
-    public static function getIdentifierValues($value, EntityManagerInterface $em)
-    {
-        if ( ! is_array($value)) {
-            return self::getIndividualValue($value, $em);
-        }
-
-        $newValue = array();
-
-        foreach ($value as $fieldName => $fieldValue) {
-            $newValue[$fieldName] = self::getIndividualValue($fieldValue, $em);
-        }
-
-        return $newValue;
-    }
-
-    /**
-     * @param mixed                  $value
-     * @param EntityManagerInterface $em
-     *
-     * @return mixed
-     */
-    private static function getIndividualValue($value, EntityManagerInterface $em)
-    {
-        if ( ! is_object($value) || ! $em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            return $value;
-        }
-
-        return $em->getUnitOfWork()->getSingleIdentifierValue($value);
-    }
 }
