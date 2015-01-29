@@ -2564,7 +2564,7 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        $class->applyData($entity, $data);
+        $class->populateEntity($entity, $data);
 
         // Loading the entity right here, if its in the eager loading map get rid of it there.
         unset($this->eagerLoadingEntities[$class->rootEntityName][$idHash]);

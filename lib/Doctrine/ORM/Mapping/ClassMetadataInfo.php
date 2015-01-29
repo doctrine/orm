@@ -3317,7 +3317,13 @@ class ClassMetadataInfo implements ClassMetadata
         return $sequencePrefix;
     }
 
-    public function applyData($entity, array $data)
+    /**
+     * Configures the entity with the data values according with the class configuration
+     *
+     * @param object $entity
+     * @param array $data
+     */
+    public function populateEntity($entity, array $data)
     {
         foreach ($data as $field => $value) {
             if ($this->shouldUseData($field, $value)) {
@@ -3326,6 +3332,13 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
+    /**
+     * Returns if the data should be used to populate the entity
+     *
+     * @param string $field
+     * @param string $value
+     * @return boolean
+     */
     private function shouldUseData($field, $value)
     {
         if ( ! isset($this->fieldMappings[$field])) {
