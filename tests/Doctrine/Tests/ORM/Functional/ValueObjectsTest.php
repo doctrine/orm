@@ -243,6 +243,20 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
+    public function testThrowsExceptionWhenPersistingWithNullOnNonNullableEmbedded()
+    {
+        $this->setExpectedException('Doctrine\DBAL\Exception\NotNullConstraintViolationException');
+
+        $event = new DDC3529Event();
+        $event->name = 'PHP Conference';
+        $event->period = new DDC3529DateInterval(new \DateTime('2015-01-20 08:00:00'), new \DateTime('2015-01-23 19:00:00'));
+
+        $this->_em->persist($event);
+        $this->_em->flush();
+
+        return $event;
+    }
+
     public function testNoErrorsShouldHappenWhenPersistingAnEntityWithNullableEmbedded()
     {
         $event = new DDC3529Event();
