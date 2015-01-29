@@ -2745,15 +2745,18 @@ class ClassMetadataInfo implements ClassMetadata
         $className = ltrim($className, '\\');
         $this->discriminatorMap[$name] = $className;
 
-        if ($this->name == $className) {
+        if ($this->name === $className) {
             $this->discriminatorValue = $name;
-        } else {
-            if ( ! class_exists($className)) {
-                throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
-            }
-            if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
-                $this->subClasses[] = $className;
-            }
+
+            return;
+        }
+
+        if ( ! (class_exists($className) || interface_exists($className))) {
+            throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
+        }
+
+        if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
+            $this->subClasses[] = $className;
         }
     }
 

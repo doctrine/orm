@@ -4,9 +4,9 @@ namespace Doctrine\Tests\Models\Tweet;
 
 /**
  * @Entity
- * @Table(name="tweet_tweet")
+ * @Table(name="tweet_user_list")
  */
-class Tweet
+class UserList
 {
     const CLASSNAME = __CLASS__;
 
@@ -20,15 +20,10 @@ class Tweet
     /**
      * @Column(type="string")
      */
-    public $content;
+    public $listName;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="tweets")
+     * @ManyToOne(targetEntity="User", inversedBy="userLists")
      */
-    public $author;
-
-    public function setAuthor(User $user)
-    {
-        $this->author = $user;
-    }
+    public $owner;
 }

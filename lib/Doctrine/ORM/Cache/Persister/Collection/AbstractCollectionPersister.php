@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -162,13 +163,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
+        /* @var $targetPersister CachedEntityPersister */
         $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
         $targetRegion       = $targetPersister->getCacheRegion();
         $targetHydrator     = $targetPersister->getEntityHydrator();
         $entry              = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);
 
         foreach ($entry->identifiers as $index => $entityKey) {
-
             if ($targetRegion->contains($entityKey)) {
                 continue;
             }
@@ -238,15 +239,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function removeElement(PersistentCollection $collection, $element)
     {
-        return $this->persister->removeElement($collection, $element);
-    }
+        if ($persisterResult = $this->persister->removeElement($collection, $element)) {
+            $this->evictCollectionCache($collection);
+            $this->evictElementCache($this->sourceEntity->rootEntityName, $collection->getOwner());
+            $this->evictElementCache($this->targetEntity->rootEntityName, $element);
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function removeKey(PersistentCollection $collection, $key)
-    {
-        return $this->persister->removeKey($collection, $key);
+        return $persisterResult;
     }
 
     /**
@@ -263,5 +262,43 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         return $this->persister->loadCriteria($collection, $criteria);
+    }
+
+    /**
+     * Clears cache entries related to the current collection
+     *
+     * @param PersistentCollection $collection
+     */
+    protected function evictCollectionCache(PersistentCollection $collection)
+    {
+        $key = new CollectionCacheKey(
+            $this->sourceEntity->rootEntityName,
+            $this->association['fieldName'],
+            $this->uow->getEntityIdentifier($collection->getOwner())
+        );
+
+        $this->region->evict($key);
+
+        if ($this->cacheLogger) {
+            $this->cacheLogger->collectionCachePut($this->regionName, $key);
+        }
+    }
+
+    /**
+     * @param string $targetEntity
+     * @param object $element
+     */
+    protected function evictElementCache($targetEntity, $element)
+    {
+        /* @var $targetPersister CachedEntityPersister */
+        $targetPersister = $this->uow->getEntityPersister($targetEntity);
+        $targetRegion    = $targetPersister->getCacheRegion();
+        $key             = new EntityCacheKey($targetEntity, $this->uow->getEntityIdentifier($element));
+
+        $targetRegion->evict($key);
+
+        if ($this->cacheLogger) {
+            $this->cacheLogger->entityCachePut($targetRegion->getName(), $key);
+        }
     }
 }

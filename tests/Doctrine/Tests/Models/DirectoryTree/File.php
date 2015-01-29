@@ -26,6 +26,8 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 class File extends AbstractContentItem
 {
+    const CLASSNAME = __CLASS__;
+
     /** @Column(type="string") */
     protected $extension = "html";
 

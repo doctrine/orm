@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -156,14 +157,21 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $collection, $element)
     {
+        $mapping = $collection->getMapping();
+
+        if ( ! $mapping['orphanRemoval']) {
+            // no-op: this is not the owning side, therefore no operations should be applied
+            return false;
+        }
+
         if ( ! $this->isValidEntityState($element)) {
             return false;
         }
 
-        $mapping   = $collection->getMapping();
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
-
-        return $persister->delete($element);
+        return $this
+            ->uow
+            ->getEntityPersister($mapping['targetEntity'])
+            ->delete($element);
     }
 
     /**

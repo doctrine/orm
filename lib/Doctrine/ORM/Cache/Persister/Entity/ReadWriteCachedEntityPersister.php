@@ -103,7 +103,9 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
         $key   = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
         $lock  = $this->region->lock($key);
 
-        $this->persister->delete($entity);
+        if ($this->persister->delete($entity)) {
+            $this->region->evict($key);
+        }
 
         if ($lock === null) {
             return;

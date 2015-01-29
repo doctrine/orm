@@ -19,8 +19,10 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -284,18 +286,24 @@ class UnitOfWork implements PropertyChangedListener
     private $hydrationCompleteHandler;
 
     /**
+     * @var ReflectionPropertiesGetter
+     */
+    private $reflectionPropertiesGetter;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em                       = $em;
-        $this->evm                      = $em->getEventManager();
-        $this->listenersInvoker         = new ListenersInvoker($em);
-        $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
-        $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
-        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
+        $this->em                         = $em;
+        $this->evm                        = $em->getEventManager();
+        $this->listenersInvoker           = new ListenersInvoker($em);
+        $this->hasCache                   = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
+        $this->hydrationCompleteHandler   = new HydrationCompleteHandler($this->listenersInvoker, $em);
+        $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
     }
 
     /**
@@ -1868,6 +1876,10 @@ class UnitOfWork implements PropertyChangedListener
             $visited[$oid] = $managedCopy; // mark visited
 
             if (!($entity instanceof Proxy && ! $entity->__isInitialized())) {
+                if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized()) {
+                    $managedCopy->__load();
+                }
+
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
             }
 
@@ -3344,7 +3356,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($class->reflClass->getProperties() as $prop) {
+        foreach ($this->reflectionPropertiesGetter->getProperties($class->name) as $prop) {
             $name = $prop->name;
 
             $prop->setAccessible(true);

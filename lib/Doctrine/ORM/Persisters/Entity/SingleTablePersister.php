@@ -48,8 +48,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
      */
     protected function getSelectColumnsSQL()
     {
-        if ($this->selectColumnListSql !== null) {
-            return $this->selectColumnListSql;
+        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+            return $this->currentPersisterContext->selectColumnListSql;
         }
 
         $columnList[] = parent::getSelectColumnsSQL();
@@ -63,8 +63,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
 
-        $this->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
+        $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Append subclass columns
         foreach ($this->class->subClasses as $subClassName) {
@@ -106,9 +106,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
 
-        return $this->selectColumnListSql;
+        return $this->currentPersisterContext->selectColumnListSql;
     }
 
     /**

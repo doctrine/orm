@@ -53,7 +53,8 @@ class Journalist extends Participant
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *     "journalist" = "Journalist",
+ *     "journalist"  = "Journalist",
+ *     "participant" = "Participant",
  * })
  */
 class Participant
@@ -71,6 +72,7 @@ class Participant
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
  *     "profile" = "ProfileStatus",
+ *     "status"  = "Status",
  * })
  */
 class Status

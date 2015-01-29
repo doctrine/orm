@@ -113,8 +113,8 @@ Defines contract for concurrently managed data region.
 
 `See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.ConcurrentRegion.html/>`_.
 
-Cache region
-~~~~~~~~~~~~
+Timestamp region
+~~~~~~~~~~~~~~~~
 
 ``Doctrine\ORM\Cache\TimestampRegion``
 
@@ -174,8 +174,8 @@ Configuration
 Doctrine allows you to specify configurations and some points of extension for the second-level-cache
 
 
-Enable Second Level Cache Enabled
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Enable Second Level Cache
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable the second-level-cache, you should provide a cache factory
 ``\Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
@@ -183,16 +183,15 @@ To enable the second-level-cache, you should provide a cache factory
 .. code-block:: php
 
     <?php
-
-    /* var $config \Doctrine\ORM\Cache\RegionsConfiguration */
-    /* var $cache \Doctrine\Common\Cache\Cache */
+    /* @var $config \Doctrine\ORM\Cache\RegionsConfiguration */
+    /* @var $cache \Doctrine\Common\Cache\Cache */
 
     $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
 
-    //Enable second-level-cache
+    // Enable second-level-cache
     $config->setSecondLevelCacheEnabled();
 
-    //Cache factory
+    // Cache factory
     $config->getSecondLevelCacheConfiguration()
         ->setCacheFactory($factory);
 
@@ -220,13 +219,12 @@ To specify a default lifetime for all regions or specify a different lifetime fo
 .. code-block:: php
 
     <?php
-
-    /* var $config \Doctrine\ORM\Configuration */
-    /* var $cacheConfig \Doctrine\ORM\Configuration */
+    /* @var $config \Doctrine\ORM\Configuration */
+    /* @var $cacheConfig \Doctrine\ORM\Configuration */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
-    //Cache Region lifetime
+    // Cache Region lifetime
     $regionConfig->setLifetime('my_entity_region', 3600);   // Time to live for a specific region; In seconds
     $regionConfig->setDefaultLifetime(7200);                // Default time to live; In seconds
 
@@ -240,11 +238,10 @@ By providing a cache logger you should be able to get information about all cach
  .. code-block:: php
 
     <?php
-    
-    /* var $config \Doctrine\ORM\Configuration */
+    /* @var $config \Doctrine\ORM\Configuration */
     $logger = \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
-    //Cache logger
+    // Cache logger
     $config->setSecondLevelCacheEnabled(true);
     $config->getSecondLevelCacheConfiguration()
         ->setCacheLogger($logger);
@@ -264,10 +261,10 @@ By providing a cache logger you should be able to get information about all cach
     // Get the total number of put in all regions.
     $logger->getPutCount();
 
-    //  Get the total number of entries successfully retrieved from all regions.
+    // Get the total number of entries successfully retrieved from all regions.
     $logger->getHitCount();
 
-    //  Get the total number of cached entries *not* found in all regions.
+    // Get the total number of cached entries *not* found in all regions.
     $logger->getMissCount();
 
 If you want to get more information you should implement ``\Doctrine\ORM\Cache\Logging\CacheLogger``.
@@ -457,7 +454,6 @@ Basic entity cache
 .. code-block:: php
 
     <?php
-
     $em->persist(new Country($name));
     $em->flush();                         // Hit database to insert the row and put into cache
 
@@ -480,7 +476,6 @@ Association cache
 .. code-block:: php
 
     <?php
-
     // Hit database to insert the row and put into cache
     $em->persist(new State($name, $country));
     $em->flush();
@@ -543,20 +538,19 @@ The query cache stores the results of the query but as identifiers, entity value
 .. code-block:: php
 
     <?php
+    /* @var $em \Doctrine\ORM\EntityManager */
 
-        /* var $em \Doctrine\ORM\EntityManager */
+    // Execute database query, store query cache and entity cache
+    $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
+        ->setCacheable(true)
+        ->getResult();
 
-        // Execute database query, store query cache and entity cache
-        $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
-            ->setCacheable(true)
-            ->getResult();
+    $em->clear()
 
-        $em->clear()
-
-        // Check if query result is valid and load entities from cache
-        $result2 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
-            ->setCacheable(true)
-            ->getResult();
+    // Check if query result is valid and load entities from cache
+    $result2 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
+        ->setCacheable(true)
+        ->getResult();
 
 Cache mode
 ~~~~~~~~~~
@@ -571,13 +565,12 @@ The Cache Mode controls how a particular query interacts with the second-level c
 .. code-block:: php
 
     <?php
-
-        /** var $em \Doctrine\ORM\EntityManager */
-        // Will refresh the query cache and all entities the cache as it reads from the database.
-        $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
-            ->setCacheMode(Cache::MODE_GET)
-            ->setCacheable(true)
-            ->getResult();
+    /* @var $em \Doctrine\ORM\EntityManager */
+    // Will refresh the query cache and all entities the cache as it reads from the database.
+    $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
+        ->setCacheMode(Cache::MODE_GET)
+        ->setCacheable(true)
+        ->getResult();
 
 .. note::
 
@@ -636,7 +629,6 @@ Using the last update timestamps as part of the query key invalidate the cache k
 .. code-block:: php
 
     <?php
-
     // load from database and store cache query key hashing the query + parameters + last timestamp cache region..
     $entities   = $em->getRepository('Entity\Country')->findAll();
 
@@ -661,8 +653,7 @@ However, you can use the cache API to check / invalidate cache entries.
 .. code-block:: php
 
     <?php
-
-    /* var $cache \Doctrine\ORM\Cache */
+    /* @var $cache \Doctrine\ORM\Cache */
     $cache = $em->getCache();
 
     $cache->containsEntity('Entity\State', 1)      // Check if the cache exists
@@ -707,11 +698,11 @@ For performance reasons the cache API does not extract from composite primary ke
     }
 
     // Supported
-    /** @var $article Article */
+    /* @var $article Article */
     $article = $em->find('Article', 1);
 
     // Supported
-    /** @var $article Article */
+    /* @var $article Article */
     $article = $em->find('Article', $article);
 
     // Supported
@@ -722,10 +713,10 @@ For performance reasons the cache API does not extract from composite primary ke
     $id        = array('source' => new Article(1), 'target' => new Article(2));
     $reference = $em->find('Reference', $id);
 
-Distribute environments
-~~~~~~~~~~~~~~~~~~~~~~~
+Distributed environments
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Some cache driver are not meant to be used in a distribute environment
+Some cache driver are not meant to be used in a distributed environment.
 Load-balancer for distributing workloads across multiple computing resources
 should be used in conjunction with distributed caching system such as memcached, redis, riak ...
 

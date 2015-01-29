@@ -579,6 +579,25 @@ Hydrators are per query instantiated since Doctrine 2.4.
 
 - `DDC-3060 <http://doctrine-project.org/jira/browse/DDC-3060>`_
 
+Minor BC BREAK: All non-transient classes in an inheritance must be part of the inheritance map
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of 2.5, classes, if you define an inheritance map for an inheritance tree, you are required
+to map all non-transient classes in that inheritance, including the root of the inheritance.
+
+So far, the root of the inheritance was allowed to be skipped in the inheritance map: this is
+not possible anymore, and if you don't plan to persist instances of that class, then you should
+either:
+
+- make that class as ``abstract``
+- add that class to your inheritance map
+
+If you fail to do so, then a ``Doctrine\ORM\Mapping\MappingException`` will be thrown.
+
+
+- `DDC-3300 <http://doctrine-project.org/jira/browse/DDC-3300>`_
+- `DDC-3503 <http://doctrine-project.org/jira/browse/DDC-3503>`_
+
 Minor BC BREAK: Entity based EntityManager#clear() calls follow cascade detach
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
