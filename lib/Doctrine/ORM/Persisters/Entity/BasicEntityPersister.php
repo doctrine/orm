@@ -1806,7 +1806,7 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types = array_merge($types, $this->getTypes($field, $value, $this->class));
+            $types  = array_merge($types, $this->getTypes($field, $value, $this->class));
             $params = array_merge($params, $this->getValues($value));
         }
         return array($params, $types);
@@ -1860,24 +1860,17 @@ class BasicEntityPersister implements EntityPersister
                 break;
             case (isset($class->associationMappings[$field])):
                 $assoc = $class->associationMappings[$field];
-
                 $class = $this->em->getClassMetadata($assoc['targetEntity']);
                 if (!$assoc['isOwningSide']) {
                     $assoc = $class->associationMappings[$assoc['mappedBy']];
                     $class = $this->em->getClassMetadata($assoc['targetEntity']);
                 }
 
-                if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
-
-                    foreach ($assoc['relationToSourceKeyColumns'] as $field => $val){
-                        $types = array_merge($types, PersisterHelper::getTypeOfField($val, $class, $this->em));
-                    }
-
-                } else {
-
-                    foreach ($assoc['targetToSourceKeyColumns'] as $field => $val){
-                        $types = array_merge($types, PersisterHelper::getTypeOfField($field, $class, $this->em));
-                    }
+                $columns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
+                    ? $assoc['relationToTargetKeyColumns']
+                    : $assoc['sourceToTargetKeyColumns'];
+                foreach ($columns as $column){
+                    $types[] = PersisterHelper::getTypeOfColumn($column, $class, $this->em);
                 }
                 break;
 
