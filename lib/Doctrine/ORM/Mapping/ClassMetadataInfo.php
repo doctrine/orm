@@ -3227,9 +3227,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $property
      * @param ClassMetadataInfo $embeddable
-     * @param boolean $nullable
      */
-    public function inlineEmbeddable($property, ClassMetadataInfo $embeddable, $nullable)
+    public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
             $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
@@ -3243,8 +3242,8 @@ class ClassMetadataInfo implements ClassMetadata
                 : $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
-            if ($nullable !== null) {
-                $fieldMapping['nullable'] = $nullable;
+            if ($this->embeddedClasses[$property]['nullable'] !== null) {
+                $fieldMapping['nullable'] = $this->embeddedClasses[$property]['nullable'];
             }
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {

@@ -198,7 +198,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
                 }
 
-                $class->inlineEmbeddable($property, $embeddableMetadata, $embeddableClass['nullable']);
+                $class->inlineEmbeddable($property, $embeddableMetadata);
 
                 unset($this->embeddablesActiveNesting[$class->name]);
             }
