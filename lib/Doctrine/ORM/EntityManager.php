@@ -816,6 +816,25 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
+     * Factory method to create EntityManager instances.
+     *
+     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
+     * @param Configuration $config       The Configuration instance to use.
+     * @param EventManager  $eventManager The EventManager instance to use.
+     *
+     * @return EntityManager The created EntityManager.
+     *
+     * @deprecated since version 2.5. Use \Doctrine\ORM\EntityManagerFactory::create() instead
+     *
+     * @throws \InvalidArgumentException
+     * @throws ORMException
+     */
+    public static function create($conn, Configuration $config, EventManager $eventManager = null)
+    {
+        return EntityManagerFactory::create($conn, $config, $eventManager);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getFilters()
