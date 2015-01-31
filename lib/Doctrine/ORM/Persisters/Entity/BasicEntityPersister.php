@@ -1611,7 +1611,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    protected function getSelectConditionStatementColumnSQL($field, $assoc = null)
+    private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
         if (isset($this->class->columnNames[$field])) {
             $className = (isset($this->class->fieldMappings[$field]['inherited']))
