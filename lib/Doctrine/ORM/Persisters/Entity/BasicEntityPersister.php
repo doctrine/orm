@@ -1632,7 +1632,7 @@ class BasicEntityPersister implements EntityPersister
      * @param string     $field
      * @param array|null $assoc
      *
-     * @return array
+     * @return string[]
      *
      * @throws \Doctrine\ORM\ORMException
      */
