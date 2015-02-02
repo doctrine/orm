@@ -2625,10 +2625,6 @@ class UnitOfWork implements PropertyChangedListener
 
                         if ($joinColumnValue !== null) {
                             if ($targetClass->containsForeignIdentifier) {
-                                if ($joinColumnValue instanceof AssociationCacheEntry) {
-                                    $joinColumnValue = implode(' ', $joinColumnValue->identifier);
-                                }
-
                                 $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
                             } else {
                                 $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
