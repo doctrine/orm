@@ -176,8 +176,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootTableStmt->execute();
 
             if ($isPostInsertId) {
-                $id = $idGenerator->generate($this->em, $entity);
-                $postInsertIds[$id] = $entity;
+                $generatedId = $idGenerator->generate($this->em, $entity);
+                $id = array(
+                    $this->class->identifier[0] => $generatedId
+                );
+                $postInsertIds[$generatedId] = $entity;
             } else {
                 $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
             }
@@ -572,7 +575,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function assignDefaultVersionValue($entity, $id)
+    protected function assignDefaultVersionValue($entity, array $id)
     {
         $value = $this->fetchVersionValue($this->getVersionedClassMetadata(), $id);
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
