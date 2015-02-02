@@ -281,8 +281,11 @@ class BasicEntityPersister implements EntityPersister
             $stmt->execute();
 
             if ($isPostInsertId) {
-                $id = $idGenerator->generate($this->em, $entity);
-                $postInsertIds[$id] = $entity;
+                $generatedId = $idGenerator->generate($this->em, $entity);
+                $id = array(
+                    $this->class->identifier[0] => $generatedId
+                );
+                $postInsertIds[$generatedId] = $entity;
             } else {
                 $id = $this->class->getIdentifierValues($entity);
             }
@@ -304,11 +307,11 @@ class BasicEntityPersister implements EntityPersister
      * entities version field.
      *
      * @param object $entity
-     * @param mixed  $id
+     * @param array  $id
      *
      * @return void
      */
-    protected function assignDefaultVersionValue($entity, $id)
+    protected function assignDefaultVersionValue($entity, array $id)
     {
         $value = $this->fetchVersionValue($this->class, $id);
 
@@ -319,11 +322,11 @@ class BasicEntityPersister implements EntityPersister
      * Fetches the current version value of a versioned entity.
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $versionedClass
-     * @param mixed                               $id
+     * @param array                               $id
      *
      * @return mixed
      */
-    protected function fetchVersionValue($versionedClass, $id)
+    protected function fetchVersionValue($versionedClass, array $id)
     {
         $versionField   = $versionedClass->versionField;
         $tableName      = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
@@ -334,10 +337,6 @@ class BasicEntityPersister implements EntityPersister
         $sql = 'SELECT ' . $columnName
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
-
-        if (!is_array($id)) {
-            $id = array($this->class->identifier[0] => $id);
-        }
 
         $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
 
