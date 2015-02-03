@@ -26,7 +26,6 @@ Reference Guide
    :numbered:
 
    reference/architecture
-   reference/installation
    reference/configuration.rst
    reference/faq
    reference/basic-mapping
@@ -57,7 +56,6 @@ Reference Guide
    tutorials/pagination
    reference/filters
    reference/namingstrategy
-   reference/installation
    reference/advanced-configuration
    reference/second-level-cache
    reference/security
