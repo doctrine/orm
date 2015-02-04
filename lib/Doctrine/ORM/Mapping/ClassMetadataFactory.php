@@ -78,7 +78,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function initialize()
     {
         $this->driver = $this->em->getConfiguration()->getMetadataDriverImpl();
-        $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
         $this->evm = $this->em->getEventManager();
         $this->initialized = true;
     }
@@ -432,9 +431,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $idGenType = $class->generatorType;
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
-            if ($this->targetPlatform->prefersSequences()) {
+            if ($this->getTargetPlatform()->prefersSequences()) {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
-            } else if ($this->targetPlatform->prefersIdentityColumns()) {
+            } else if ($this->getTargetPlatform()->prefersIdentityColumns()) {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
             } else {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);
@@ -450,19 +449,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
-                if ($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
+                if ($this->getTargetPlatform() instanceof Platforms\PostgreSQLPlatform) {
                     $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
                     $definition     = array(
-                        'sequenceName' => $this->targetPlatform->fixSchemaElementName($sequenceName)
+                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName)
                     );
 
                     if ($quoted) {
                         $definition['quoted'] = true;
                     }
 
-                    $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform);
+                    $sequenceName = $this
+                        ->em
+                        ->getConfiguration()
+                        ->getQuoteStrategy()
+                        ->getSequenceName($definition, $class, $this->getTargetPlatform());
                 }
 
                 $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')
@@ -483,7 +486,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
                     $definition     = array(
-                        'sequenceName'      => $this->targetPlatform->fixSchemaElementName($sequenceName),
+                        'sequenceName'      => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
                         'allocationSize'    => 1,
                         'initialValue'      => 1,
                     );
@@ -496,7 +499,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
 
                 $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
-                    $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform),
+                    $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->getTargetPlatform()),
                     $definition['allocationSize']
                 );
                 $class->setIdGenerator($sequenceGenerator);
@@ -568,5 +571,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function isEntity(ClassMetadataInterface $class)
     {
         return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+    }
+
+    /**
+     * @return Platforms\AbstractPlatform
+     */
+    private function getTargetPlatform()
+    {
+        if (!$this->targetPlatform) {
+            $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
+        }
+
+        return $this->targetPlatform;
     }
 }
