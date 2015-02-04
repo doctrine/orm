@@ -365,7 +365,7 @@ DQL Improvements
 .. code-block:: php
 
     <?php
-    $dql = SELECT COUNT(DISTINCT CONCAT(u.name, u.lastname)) FROM User u";
+    $dql = "SELECT COUNT(DISTINCT CONCAT(u.name, u.lastname)) FROM User u";
 
 7. Add support for ``HOUR`` in ``DATE_ADD()``/``DATE_SUB()`` functions
 
