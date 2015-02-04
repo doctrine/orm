@@ -194,15 +194,38 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $rootMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
     }
 
-    protected function _createEntityManager($metadataDriver)
+    public function testGetAllMetadataWorksWithBadConnection()
+    {
+        // DDC-3551
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockDriver    = new MetadataDriverMock();
+        $em = $this->_createEntityManager($mockDriver, $conn);
+
+        $conn->expects($this->any())
+            ->method('getDatabasePlatform')
+            ->will($this->throwException(new \Exception('Exception thrown in test when calling getDatabasePlatform')));
+
+        $cmf = new ClassMetadataFactory();
+        $cmf->setEntityManager($em);
+
+        // getting all the metadata should work, even if get DatabasePlatform blows up
+        $metadata = $cmf->getAllMetadata();
+        // this will just be an empty array - there was no error
+        $this->assertEquals(array(), $metadata);
+    }
+
+    protected function _createEntityManager($metadataDriver, $conn = null)
     {
         $driverMock = new DriverMock();
         $config = new \Doctrine\ORM\Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
-        $mockDriver = new MetadataDriverMock();
+        if (!$conn) {
+            $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+        }
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
