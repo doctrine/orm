@@ -753,6 +753,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
     }
 
+    /**
+     * @return Platforms\AbstractPlatform
+     */
     private function getTargetPlatform()
     {
         if (!$this->targetPlatform) {
