@@ -22,10 +22,10 @@ class MultiGetRegionTest extends AbstractRegionTest
     public function testGetMulti()
     {
         $key1 = new CacheKeyMock('key.1');
-        $value1 = new CacheEntryMock(array('id'=>1, 'name' => 'bar'));
+        $value1 = new CacheEntryMock(['id'=>1, 'name' => 'bar']);
 
         $key2 = new CacheKeyMock('key.2');
-        $value2 = new CacheEntryMock(array('id'=>2, 'name' => 'bar'));
+        $value2 = new CacheEntryMock(['id'=>2, 'name' => 'bar']);
 
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
@@ -33,7 +33,7 @@ class MultiGetRegionTest extends AbstractRegionTest
         $this->region->put($key1, $value1);
         $this->region->put($key2, $value2);
 
-        $actual = $this->region->getMultiple(new CollectionCacheEntry(array($key1, $key2)));
+        $actual = $this->region->getMultiple(new CollectionCacheEntry([$key1, $key2]));
 
         $this->assertEquals($value1, $actual[0]);
         $this->assertEquals($value2, $actual[1]);

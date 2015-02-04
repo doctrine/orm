@@ -16,9 +16,9 @@ class PersistentObjectTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PersistentEntity'),
-            ));
+            ]);
         } catch (\Exception $e) {
 
         }

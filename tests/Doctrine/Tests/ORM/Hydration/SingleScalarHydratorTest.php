@@ -9,40 +9,40 @@ class SingleScalarHydratorTest extends HydrationTestCase
 {
     /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */
     public static function singleScalarResultSetProvider() {
-        return array(
+        return [
           // valid
-          array('name' => 'result1',
-                'resultSet' => array(
-                  array(
+          ['name' => 'result1',
+                'resultSet' => [
+                  [
                       'u__name' => 'romanb'
-                  )
-               )),
+                  ]
+               ]],
           // valid
-          array('name' => 'result2',
-                'resultSet' => array(
-                  array(
+          ['name' => 'result2',
+                'resultSet' => [
+                  [
                       'u__id' => '1'
-                  )
-             )),
+                  ]
+             ]],
            // invalid
-           array('name' => 'result3',
-                'resultSet' => array(
-                  array(
+           ['name' => 'result3',
+                'resultSet' => [
+                  [
                       'u__id' => '1',
                       'u__name' => 'romanb'
-                  )
-             )),
+                  ]
+             ]],
            // invalid
-           array('name' => 'result4',
-                'resultSet' => array(
-                  array(
+           ['name' => 'result4',
+                'resultSet' => [
+                  [
                       'u__id' => '1'
-                  ),
-                  array(
+                  ],
+                  [
                       'u__id' => '2'
-                  )
-             )),
-        );
+                  ]
+             ]],
+        ];
     }
 
     /**

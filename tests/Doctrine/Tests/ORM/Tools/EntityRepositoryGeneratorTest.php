@@ -46,7 +46,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function tearDown()
     {
-        $dirs = array();
+        $dirs = [];
 
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir));
         foreach ($ri AS $file) {

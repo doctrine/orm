@@ -14,11 +14,11 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400Article'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400User'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400UserState'),
-            ));
+            ]);
         } catch (\Exception $ignored) {
         }
     }

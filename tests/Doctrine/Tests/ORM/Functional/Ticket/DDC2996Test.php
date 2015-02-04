@@ -12,10 +12,10 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996UserPreference'),
-        ));
+        ]);
 
         $pref = new DDC2996UserPreference();
         $pref->user = new DDC2996User();

@@ -38,10 +38,10 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->em               = $this->_getTestEntityManager();
         $this->regionsConfig    = new RegionsConfiguration;
-        $arguments              = array($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
-        $this->factory          = $this->getMock('\Doctrine\ORM\Cache\DefaultCacheFactory', array(
+        $arguments              = [$this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl()];
+        $this->factory          = $this->getMock('\Doctrine\ORM\Cache\DefaultCacheFactory', [
             'getRegion'
-        ), $arguments);
+        ], $arguments);
     }
 
     public function testImplementsCacheFactory()
@@ -258,24 +258,24 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
-        $factory->getRegion(array(
+        $factory->getRegion([
             'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
             'region'  => 'foo'
-        ));
+        ]);
     }
 
     public function testBuildsNewNamespacedCacheInstancePerRegionInstance()
     {
         $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
-        $fooRegion = $factory->getRegion(array(
+        $fooRegion = $factory->getRegion([
             'region' => 'foo',
             'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-        ));
-        $barRegion = $factory->getRegion(array(
+        ]);
+        $barRegion = $factory->getRegion([
             'region' => 'bar',
             'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-        ));
+        ]);
 
         $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
@@ -290,10 +290,10 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Cache\Region\DefaultRegion',
-            $factory->getRegion(array(
+            $factory->getRegion([
                 'region' => 'bar',
                 'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ))
+            ])
         );
     }
 
@@ -306,10 +306,10 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Cache\Region\DefaultMultiGetRegion',
-            $factory->getRegion(array(
+            $factory->getRegion([
                 'region' => 'bar',
                 'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ))
+            ])
         );
     }
 

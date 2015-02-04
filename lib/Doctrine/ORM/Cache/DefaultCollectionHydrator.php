@@ -46,7 +46,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     /**
      * @var array
      */
-    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
+    private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
@@ -62,7 +62,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
      */
     public function buildCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, $collection)
     {
-        $data = array();
+        $data = [];
 
         foreach ($collection as $index => $entity) {
             $data[$index] = new EntityCacheKey($metadata->name, $this->uow->getEntityIdentifier($entity));
@@ -79,7 +79,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
         /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
         $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
         $targetRegion    = $targetPersister->getCacheRegion();
-        $list            = array();
+        $list            = [];
 
         $entityEntries = $targetRegion->getMultiple($entry);
 

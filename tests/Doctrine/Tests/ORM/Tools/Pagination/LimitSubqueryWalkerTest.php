@@ -15,7 +15,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
         
-        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker']);
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id", 
@@ -29,7 +29,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
         
-        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker']);
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC", 
@@ -43,7 +43,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
         
-        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker']);
 
         $this->assertEquals(
             "SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1 FROM Author a0_", 
@@ -60,7 +60,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
         
-        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker']);
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0, m0_.author_id AS sclr_1 FROM MyBlogPost m0_ ORDER BY m0_.author_id ASC", 
@@ -77,7 +77,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
         
-        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker']);
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id)", 
@@ -91,7 +91,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
         
-        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker']);
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id) ORDER BY m0_.title ASC", 

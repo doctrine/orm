@@ -80,7 +80,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', array($user2->getId()));
+        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         // But we want to have this external change!
         // Solution 1: refresh(), broken atm!
@@ -123,7 +123,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', array($user2->getId()));
+        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         //select
         $q = $this->_em->createQuery('select a, u from Doctrine\Tests\Models\CMS\CmsAddress a join a.user u');
@@ -179,7 +179,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->getPhonenumbers()->isDirty());
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', array(999, $user->getId()));
+        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
 
         //select
         $q = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
@@ -230,7 +230,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(3, count($user->getPhonenumbers()));
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', array(999, $user->getId()));
+        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
 
         //select
         $q = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
@@ -282,9 +282,9 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // the object hash is not reused. This is not a memory leak!
         if (defined('HHVM_VERSION')) {
             $ed = $this->_em->getUnitOfWork()->getOriginalEntityData($user);
-            $ed['phonenumbers']->setOwner(null, array('inversedBy' => 1));
-            $ed['articles']->setOwner(null, array('inversedBy' => 1));
-            $ed['groups']->setOwner(null, array('inversedBy' => 1));
+            $ed['phonenumbers']->setOwner(null, ['inversedBy' => 1]);
+            $ed['articles']->setOwner(null, ['inversedBy' => 1]);
+            $ed['groups']->setOwner(null, ['inversedBy' => 1]);
         }
 
         $em->remove($user);

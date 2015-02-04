@@ -46,12 +46,12 @@ class QueryCommand extends Command
         $this
         ->setName('orm:clear-cache:query')
         ->setDescription('Clear all query cache of the various cache drivers.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'flush', null, InputOption::VALUE_NONE,
                 'If defined, cache entries will be flushed instead of deleted/invalidated.'
             )
-        ));
+        ]);
 
         $this->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear the query cache of associated Entity Manager.

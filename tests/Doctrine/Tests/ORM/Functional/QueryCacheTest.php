@@ -123,7 +123,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $sqlExecMock = $this->getMock('Doctrine\ORM\Query\Exec\AbstractSqlExecutor', array('execute'));
+        $sqlExecMock = $this->getMock('Doctrine\ORM\Query\Exec\AbstractSqlExecutor', ['execute']);
         $sqlExecMock->expects($this->once())
                     ->method('execute')
                     ->will($this->returnValue( 10 ));
@@ -134,7 +134,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
                          ->will($this->returnValue($sqlExecMock));
 
         $cache = $this->getMock('Doctrine\Common\Cache\CacheProvider',
-                array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'));
+                ['doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats']);
         $cache->expects($this->at(0))->method('doFetch')->will($this->returnValue(1));
         $cache->expects($this->at(1))
               ->method('doFetch')

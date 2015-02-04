@@ -15,11 +15,11 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityA'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityB'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityC'),
-            ));
+            ]);
         } catch (\Exception $ignored) {
         }
     }

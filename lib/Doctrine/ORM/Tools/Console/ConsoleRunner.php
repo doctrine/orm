@@ -40,10 +40,10 @@ class ConsoleRunner
      */
     public static function createHelperSet(EntityManagerInterface $entityManager)
     {
-        return new HelperSet(array(
+        return new HelperSet([
             'db' => new ConnectionHelper($entityManager->getConnection()),
             'em' => new EntityManagerHelper($entityManager)
-        ));
+        ]);
     }
 
     /**
@@ -54,7 +54,7 @@ class ConsoleRunner
      *
      * @return void
      */
-    static public function run(HelperSet $helperSet, $commands = array())
+    static public function run(HelperSet $helperSet, $commands = [])
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
@@ -69,7 +69,7 @@ class ConsoleRunner
      *
      * @return \Symfony\Component\Console\Application
      */
-    static public function createApplication(HelperSet $helperSet, $commands = array())
+    static public function createApplication(HelperSet $helperSet, $commands = [])
     {
         $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
         $cli->setCatchExceptions(true);
@@ -87,7 +87,7 @@ class ConsoleRunner
      */
     static public function addCommands(Application $cli)
     {
-        $cli->addCommands(array(
+        $cli->addCommands([
             // DBAL Commands
             new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
             new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
@@ -109,7 +109,7 @@ class ConsoleRunner
             new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
             new \Doctrine\ORM\Tools\Console\Command\InfoCommand(),
             new \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand(),
-        ));
+        ]);
     }
 
     static public function printCliConfigTemplate()

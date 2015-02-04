@@ -24,5 +24,5 @@ class DDC3346Author
     /**
      * @OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"})
      */
-    public $articles = array();
+    public $articles = [];
 }

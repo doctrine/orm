@@ -53,7 +53,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->listenersInvoker = $this->getMock('Doctrine\ORM\Event\ListenersInvoker', array(), array(), '', false);
+        $this->listenersInvoker = $this->getMock('Doctrine\ORM\Event\ListenersInvoker', [], [], '', false);
         $this->entityManager    = $this->getMock('Doctrine\ORM\EntityManagerInterface');
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
@@ -66,7 +66,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testDefersPostLoadOfEntity($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', [], [], '', false);
         $entity        = new stdClass();
         $entityManager = $this->entityManager;
 
@@ -104,7 +104,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', [], [], '', false);
         $entity   = new stdClass();
 
         $this
@@ -131,8 +131,8 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     {
         /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
         /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata1      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
-        $metadata2      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata1      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', [], [], '', false);
+        $metadata2      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', [], [], '', false);
         $entity1        = new stdClass();
         $entity2        = new stdClass();
         $entityManager  = $this->entityManager;
@@ -156,7 +156,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
                 $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
-                    return in_array($args->getEntity(), array($entity1, $entity2), true)
+                    return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -168,7 +168,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners()
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', [], [], '', false);
         $entity   = new stdClass();
 
         $this
@@ -187,13 +187,13 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetValidListenerInvocationFlags()
     {
-        return array(
-            array(ListenersInvoker::INVOKE_LISTENERS),
-            array(ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER),
-        );
+        return [
+            [ListenersInvoker::INVOKE_LISTENERS],
+            [ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER],
+        ];
     }
 }

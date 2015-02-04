@@ -69,7 +69,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         $owning = $this->_em->find(
@@ -88,7 +88,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         $owning = $this->_em->find(
@@ -121,7 +121,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         $this->assertCount(1, $inversed->associatedEntities);
@@ -139,7 +139,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         foreach ($inversed->associatedEntities as $owning) {

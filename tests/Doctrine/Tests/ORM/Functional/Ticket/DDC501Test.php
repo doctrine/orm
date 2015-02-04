@@ -91,13 +91,13 @@ class DDC501Test extends OrmFunctionalTestCase
         $user->username = 'lukacho';
         $user->status = 'developer';
 
-        foreach(array(1111,2222,3333,4444) as $number) {
+        foreach([1111,2222,3333,4444] as $number) {
             $phone = new CmsPhonenumber;
             $phone->phonenumber = $number;
             $user->addPhonenumber($phone);
         }
 
-        foreach(array('Moshers', 'Headbangers') as $groupName) {
+        foreach(['Moshers', 'Headbangers'] as $groupName) {
             $group = new CmsGroup;
             $group->setName($groupName);
             $user->addGroup($group);

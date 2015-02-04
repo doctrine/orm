@@ -100,7 +100,7 @@ class DefaultRegion implements Region
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        $keysToRetrieve = array();
+        $keysToRetrieve = [];
 
         foreach ($collection->identifiers as $index => $key) {
             $keysToRetrieve[$index] = $this->name . '_' . $key->hash;
@@ -117,7 +117,7 @@ class DefaultRegion implements Region
             return null;
         }
 
-        $returnableItems = array();
+        $returnableItems = [];
 
         foreach ($keysToRetrieve as $index => $key) {
             $returnableItems[$index] = $items[$key];

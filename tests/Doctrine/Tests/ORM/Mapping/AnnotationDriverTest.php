@@ -95,7 +95,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     protected function _loadDriverForCMSModels()
     {
         $annotationDriver = $this->_loadDriver();
-        $annotationDriver->addPaths(array(__DIR__ . '/../../Models/CMS/'));
+        $annotationDriver->addPaths([__DIR__ . '/../../Models/CMS/']);
         return $annotationDriver;
     }
 
@@ -117,7 +117,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testJoinTablesWithMappedSuperclassForAnnotationDriver()
     {
         $annotationDriver = $this->_loadDriver();
-        $annotationDriver->addPaths(array(__DIR__ . '/../../Models/DirectoryTree/'));
+        $annotationDriver->addPaths([__DIR__ . '/../../Models/DirectoryTree/']);
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
@@ -181,10 +181,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationChild');
-        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        $this->assertEquals(["postLoad" => ["postLoad"], "preUpdate" => ["preUpdate"]], $cm->lifecycleCallbacks);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationParent');
-        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        $this->assertEquals(["postLoad" => ["postLoad"], "preUpdate" => ["preUpdate"]], $cm->lifecycleCallbacks);
     }
 
     /**

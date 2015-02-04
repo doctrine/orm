@@ -17,10 +17,10 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2214Foo'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2214Bar'),
-        ));
+        ]);
     }
 
     public function testIssue()
@@ -44,7 +44,7 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $related = $this
             ->_em
             ->createQuery('SELECT b FROM '.__NAMESPACE__ . '\DDC2214Bar b WHERE b.id IN(:ids)')
-            ->setParameter('ids', array($bar))
+            ->setParameter('ids', [$bar])
             ->getResult();
 
         $query = end($logger->queries);

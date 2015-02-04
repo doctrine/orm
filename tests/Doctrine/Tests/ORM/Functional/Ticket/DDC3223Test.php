@@ -15,12 +15,12 @@ class DDC3223Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
+        $this->setUpEntitySchema([
             'Doctrine\Tests\ORM\Functional\Ticket\Journalist',
             'Doctrine\Tests\ORM\Functional\Ticket\Participant',
             'Doctrine\Tests\ORM\Functional\Ticket\Status',
             'Doctrine\Tests\ORM\Functional\Ticket\ProfileStatus',
-        ));
+        ]);
     }
 
     public function testIssueGetId()

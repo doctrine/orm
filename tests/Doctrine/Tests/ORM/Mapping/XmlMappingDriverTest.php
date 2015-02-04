@@ -22,11 +22,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $mappingDriver->loadMetadataForClass($className, $class);
 
-        $expectedMap = array(
+        $expectedMap = [
             'foo' => 'Doctrine\Tests\ORM\Mapping\CTIFoo',
             'bar' => 'Doctrine\Tests\ORM\Mapping\CTIBar',
             'baz' => 'Doctrine\Tests\ORM\Mapping\CTIBaz',
-        );
+        ];
 
         $this->assertEquals(3, count($class->discriminatorMap));
         $this->assertEquals($expectedMap, $class->discriminatorMap);
@@ -43,7 +43,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC117\DDC117Translation');
 
-        $this->assertEquals(array('language', 'article'), $class->identifier);
+        $this->assertEquals(['language', 'article'], $class->identifier);
         $this->assertArrayHasKey('article', $class->associationMappings);
 
         $this->assertArrayHasKey('id', $class->associationMappings['article']);
@@ -103,14 +103,14 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = $this->createClassMetadata('Doctrine\Tests\Models\ValueObjects\Person');
 
         $this->assertEquals(
-            array(
-                'name' => array(
+            [
+                'name' => [
                     'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
                     'columnPrefix' => 'nm_',
                     'declaredField' => null,
                     'originalField' => null,
-                )
-            ),
+                ]
+            ],
             $class->embeddedClasses
         );
     }
@@ -144,16 +144,16 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     static public function dataValidSchema()
     {
         $list    = glob(__DIR__ . '/xml/*.xml');
-        $invalid = array(
+        $invalid = [
             'Doctrine.Tests.Models.DDC889.DDC889Class.dcm'
-        );
+        ];
 
         $list = array_filter($list, function($item) use ($invalid){
             return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
         });
 
         return array_map(function($item){
-            return array($item);
+            return [$item];
         }, $list);
     }
 

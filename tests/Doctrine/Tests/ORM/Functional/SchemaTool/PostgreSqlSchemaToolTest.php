@@ -25,11 +25,11 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -53,15 +53,15 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AFE54D947 FOREIGN KEY (group_id) REFERENCES cms_groups (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
         $this->assertEquals("ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
 
-        $this->assertEquals(array(), $sql, "SQL Array should be empty now.");
+        $this->assertEquals([], $sql, "SQL Array should be empty now.");
         $this->assertEquals(17, $sqlCount, "Total of 17 queries should be executed");
     }
 
     public function testGetCreateSchemaSql2()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\DecimalModel')
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -74,9 +74,9 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql3()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel')
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -88,11 +88,11 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetDropSchemaSql()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getDropSchemaSQL($classes);
@@ -114,10 +114,10 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testUpdateSchemaWithPostgreSQLSchema()
     {
-        $classes = array(
+        $classes = [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Screen'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Avatar'),
-        );
+        ];
 
         $tool = new SchemaTool($this->_em);
         $tool->createSchema($classes);

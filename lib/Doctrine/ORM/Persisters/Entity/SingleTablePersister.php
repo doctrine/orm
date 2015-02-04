@@ -165,7 +165,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
      */
     protected function getSelectConditionDiscriminatorValueSQL()
     {
-        $values = array();
+        $values = [];
 
         if ($this->class->discriminatorValue !== null) { // discriminators can be 0
             $values[] = $this->conn->quote($this->class->discriminatorValue);

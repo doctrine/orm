@@ -30,7 +30,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        $this->listener->preFlushCalls  = array();
+        $this->listener->preFlushCalls  = [];
 
         $this->_em->persist($fix);
         $this->_em->flush();
@@ -59,7 +59,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->listener->postLoadCalls  = array();
+        $this->listener->postLoadCalls  = [];
 
         $dql = "SELECT f FROM Doctrine\Tests\Models\Company\CompanyFixContract f WHERE f.id = ?1";
         $fix = $this->_em->createQuery($dql)->setParameter(1, $fix->getId())->getSingleResult();
@@ -84,7 +84,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        $this->listener->prePersistCalls  = array();
+        $this->listener->prePersistCalls  = [];
 
         $this->_em->persist($fix);
         $this->_em->flush();
@@ -109,7 +109,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        $this->listener->postPersistCalls = array();
+        $this->listener->postPersistCalls = [];
 
         $this->_em->persist($fix);
         $this->_em->flush();
@@ -137,7 +137,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->listener->preUpdateCalls = array();
+        $this->listener->preUpdateCalls = [];
         
         $fix->setFixPrice(2000);
 
@@ -167,7 +167,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->listener->postUpdateCalls = array();
+        $this->listener->postUpdateCalls = [];
 
         $fix->setFixPrice(2000);
 
@@ -197,7 +197,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->listener->preRemoveCalls = array();
+        $this->listener->preRemoveCalls = [];
 
         $this->_em->remove($fix);
         $this->_em->flush();
@@ -225,7 +225,7 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->listener->postRemoveCalls = array();
+        $this->listener->postRemoveCalls = [];
 
         $this->_em->remove($fix);
         $this->_em->flush();

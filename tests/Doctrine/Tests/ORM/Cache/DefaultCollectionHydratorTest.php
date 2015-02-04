@@ -41,17 +41,17 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
     public function testLoadCacheCollection()
     {
         $targetRegion   = $this->_em->getCache()->getEntityCacheRegion(City::CLASSNAME);
-        $entry          = new CollectionCacheEntry(array(
-            new EntityCacheKey(City::CLASSNAME, array('id'=>31)),
-            new EntityCacheKey(City::CLASSNAME, array('id'=>32)),
-        ));
+        $entry          = new CollectionCacheEntry([
+            new EntityCacheKey(City::CLASSNAME, ['id'=>31]),
+            new EntityCacheKey(City::CLASSNAME, ['id'=>32]),
+        ]);
 
-        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>31)), new EntityCacheEntry(City::CLASSNAME, array('id'=>31, 'name'=>'Foo')));
-        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, array('id'=>32)), new EntityCacheEntry(City::CLASSNAME, array('id'=>32, 'name'=>'Bar')));
+        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, ['id'=>31]), new EntityCacheEntry(City::CLASSNAME, ['id'=>31, 'name'=>'Foo']));
+        $targetRegion->put(new EntityCacheKey(City::CLASSNAME, ['id'=>32]), new EntityCacheEntry(City::CLASSNAME, ['id'=>32, 'name'=>'Bar']));
 
         $sourceClass    = $this->_em->getClassMetadata(State::CLASSNAME);
         $targetClass    = $this->_em->getClassMetadata(City::CLASSNAME);
-        $key            = new CollectionCacheKey($sourceClass->name, 'cities', array('id'=>21));
+        $key            = new CollectionCacheKey($sourceClass->name, 'cities', ['id'=>21]);
         $collection     = new PersistentCollection($this->_em, $targetClass, new ArrayCollection());
         $list           = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
 

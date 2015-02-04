@@ -69,8 +69,8 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function getTestedReflectionProperties()
     {
-        return array(
-            array(
+        return [
+            [
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
                     'id'
@@ -80,9 +80,9 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'id'
                 ),
                 'Doctrine\\Tests\\Models\\Generic\\BooleanModel'
-            ),
+            ],
             // reflection on embeddables that have properties defined in abstract ancestors:
-            array(
+            [
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
                     'id'
@@ -92,8 +92,8 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'propertyInAbstractClass'
                 ),
                 'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
-            ),
-            array(
+            ],
+            [
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
                     'id'
@@ -103,9 +103,9 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'propertyInConcreteClass'
                 ),
                 'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
-            ),
+            ],
             // reflection on classes extending internal PHP classes:
-            array(
+            [
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'publicProperty'
@@ -115,8 +115,8 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'privateProperty'
                 ),
                 'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
-            ),
-            array(
+            ],
+            [
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'publicProperty'
@@ -126,8 +126,8 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'protectedProperty'
                 ),
                 'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
-            ),
-            array(
+            ],
+            [
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
                     'publicProperty'
@@ -137,8 +137,8 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                     'publicProperty'
                 ),
                 'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
-            ),
-        );
+            ],
+        ];
     }
 
     /**

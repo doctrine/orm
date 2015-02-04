@@ -15,10 +15,10 @@ class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\NotifyUser'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\NotifyGroup')
-            ));
+            ]);
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -88,7 +88,7 @@ class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 class NotifyBaseEntity implements NotifyPropertyChanged {
-    public $listeners = array();
+    public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener) {
         $this->listeners[] = $listener;

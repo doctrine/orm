@@ -35,15 +35,15 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         $metadataDriver = $this->_em->getConfiguration()->getMetadataDriverImpl();
 
-        $metadataDriver->addPaths(array(
+        $metadataDriver->addPaths([
             __DIR__ . '/../../../../Models/DDC3231/'
-        ));
+        ]);
         
         $this->application = new Application();
 
-        $this->application->setHelperSet(new HelperSet(array(
+        $this->application->setHelperSet(new HelperSet([
             'em' => new EntityManagerHelper($this->_em)
-        )));
+        ]));
 
         $this->application->add(new GenerateRepositoriesCommand());
 
@@ -54,7 +54,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
      */
     public function tearDown()
     {
-        $dirs = array();
+        $dirs = [];
 
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->path));
         foreach ($ri AS $file) {
@@ -133,11 +133,11 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         $command    = $this->application->find('orm:generate-repositories');
         $tester     = new CommandTester($command);
-        $tester->execute(array(
+        $tester->execute([
             'command'   => $command->getName(),
             'dest-path' => $this->path,
             '--filter'  => $filter,
-        ));
+        ]);
     }
 
 }

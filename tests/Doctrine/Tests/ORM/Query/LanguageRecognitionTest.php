@@ -40,7 +40,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         }
     }
 
-    public function parseDql($dql, $hints = array())
+    public function parseDql($dql, $hints = [])
     {
         $query = $this->_em->createQuery($dql);
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);

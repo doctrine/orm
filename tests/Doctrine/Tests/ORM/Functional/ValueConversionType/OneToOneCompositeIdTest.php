@@ -66,7 +66,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         $owning = $this->_em->find(
@@ -85,7 +85,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         $owning = $this->_em->find(
@@ -120,7 +120,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity',
-            array('id1' => 'abc', 'id2' => 'def')
+            ['id1' => 'abc', 'id2' => 'def']
         );
 
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity', $inversed->associatedEntity);

@@ -38,8 +38,8 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $persister = $this->_em->getUnitOfWork()->getEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         $newCart = new ECommerceCart();
-        $this->_em->getUnitOfWork()->registerManaged($newCart, array('id' => $cardId), array());
-        $persister->load(array('customer_id' => $customer->getId()), $newCart, $class->associationMappings['customer']);
+        $this->_em->getUnitOfWork()->registerManaged($newCart, ['id' => $cardId], []);
+        $persister->load(['customer_id' => $customer->getId()], $newCart, $class->associationMappings['customer']);
         $this->assertEquals('Credit card', $newCart->getPayment());
     }
 

@@ -26,9 +26,9 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'ocramius';
 
         $this->_em->persist($user);
-        $uow->scheduleExtraUpdate($user, array('name' => 'changed name'));
+        $uow->scheduleExtraUpdate($user, ['name' => 'changed name']);
 
-        $listener = $this->getMock('stdClass', array(Events::postFlush));
+        $listener = $this->getMock('stdClass', [Events::postFlush]);
 
         $listener
             ->expects($this->once())

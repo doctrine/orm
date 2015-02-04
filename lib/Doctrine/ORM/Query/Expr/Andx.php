@@ -38,12 +38,12 @@ class Andx extends Composite
     /**
      * @var array
      */
-    protected $allowedClasses = array(
+    protected $allowedClasses = [
         'Doctrine\ORM\Query\Expr\Comparison',
         'Doctrine\ORM\Query\Expr\Func',
         'Doctrine\ORM\Query\Expr\Orx',
         'Doctrine\ORM\Query\Expr\Andx',
-    );
+    ];
 
     /**
      * @return array

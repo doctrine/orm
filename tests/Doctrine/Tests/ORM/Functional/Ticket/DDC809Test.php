@@ -11,31 +11,31 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC809Variant'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC809SpecificationValue')
-        ));
+        ]);
 
         $conn = $this->_em->getConnection();
-        $conn->insert('specification_value_test', array('specification_value_id' => 94589));
-        $conn->insert('specification_value_test', array('specification_value_id' => 94593));
-        $conn->insert('specification_value_test', array('specification_value_id' => 94606));
-        $conn->insert('specification_value_test', array('specification_value_id' => 94607));
-        $conn->insert('specification_value_test', array('specification_value_id' => 94609));
-        $conn->insert('specification_value_test', array('specification_value_id' => 94711));
+        $conn->insert('specification_value_test', ['specification_value_id' => 94589]);
+        $conn->insert('specification_value_test', ['specification_value_id' => 94593]);
+        $conn->insert('specification_value_test', ['specification_value_id' => 94606]);
+        $conn->insert('specification_value_test', ['specification_value_id' => 94607]);
+        $conn->insert('specification_value_test', ['specification_value_id' => 94609]);
+        $conn->insert('specification_value_test', ['specification_value_id' => 94711]);
 
-        $conn->insert('variant_test', array('variant_id' => 545208));
-        $conn->insert('variant_test', array('variant_id' => 545209));
+        $conn->insert('variant_test', ['variant_id' => 545208]);
+        $conn->insert('variant_test', ['variant_id' => 545209]);
 
-        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94606));
-        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94607));
-        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94609));
-        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94711));
+        $conn->insert('var_spec_value_test', ['variant_id' => 545208, 'specification_value_id' => 94606]);
+        $conn->insert('var_spec_value_test', ['variant_id' => 545208, 'specification_value_id' => 94607]);
+        $conn->insert('var_spec_value_test', ['variant_id' => 545208, 'specification_value_id' => 94609]);
+        $conn->insert('var_spec_value_test', ['variant_id' => 545208, 'specification_value_id' => 94711]);
 
-        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94589));
-        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94593));
-        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94606));
-        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94607));
+        $conn->insert('var_spec_value_test', ['variant_id' => 545209, 'specification_value_id' => 94589]);
+        $conn->insert('var_spec_value_test', ['variant_id' => 545209, 'specification_value_id' => 94593]);
+        $conn->insert('var_spec_value_test', ['variant_id' => 545209, 'specification_value_id' => 94606]);
+        $conn->insert('var_spec_value_test', ['variant_id' => 545209, 'specification_value_id' => 94607]);
     }
 
     /**

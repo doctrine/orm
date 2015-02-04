@@ -284,22 +284,22 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testInExpr()
     {
-        $this->assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', array(1, 2, 3)));
+        $this->assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', [1, 2, 3]));
     }
 
     public function testInLiteralExpr()
     {
-        $this->assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', array('foo', 'bar')));
+        $this->assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', ['foo', 'bar']));
     }
 
     public function testNotInExpr()
     {
-        $this->assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', array(1, 2, 3)));
+        $this->assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', [1, 2, 3]));
     }
 
     public function testNotInLiteralExpr()
     {
-        $this->assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', array('foo', 'bar')));
+        $this->assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', ['foo', 'bar']));
     }
 
     public function testAndxOrxExpr()
@@ -370,8 +370,8 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
 
         // Andx
-        $andx = new Expr\Andx(array('1 = 1', '2 = 2'));
-        $this->assertEquals(array('1 = 1', '2 = 2'), $andx->getParts());
+        $andx = new Expr\Andx(['1 = 1', '2 = 2']);
+        $this->assertEquals(['1 = 1', '2 = 2'], $andx->getParts());
 
         // Comparison
         $comparison = new Expr\Comparison('foo', Expr\Comparison::EQ, 'bar');
@@ -386,13 +386,13 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('f.id', $from->getIndexBy());
 
         // Func
-        $func = new Expr\Func('MAX', array('f.id'));
+        $func = new Expr\Func('MAX', ['f.id']);
         $this->assertEquals('MAX', $func->getName());
-        $this->assertEquals(array('f.id'), $func->getArguments());
+        $this->assertEquals(['f.id'], $func->getArguments());
 
         // GroupBy
-        $group = new Expr\GroupBy(array('foo DESC', 'bar ASC'));
-        $this->assertEquals(array('foo DESC', 'bar ASC'), $group->getParts());
+        $group = new Expr\GroupBy(['foo DESC', 'bar ASC']);
+        $this->assertEquals(['foo DESC', 'bar ASC'], $group->getParts());
 
         // Join
         $join = new Expr\Join(Expr\Join::INNER_JOIN, 'f.bar', 'b', Expr\Join::ON, 'b.bar_id = 1', 'b.bar_id');
@@ -404,8 +404,8 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('b', $join->getAlias());
 
         // Literal
-        $literal = new Expr\Literal(array('foo'));
-        $this->assertEquals(array('foo'), $literal->getParts());
+        $literal = new Expr\Literal(['foo']);
+        $this->assertEquals(['foo'], $literal->getParts());
 
         // Math
         $math = new Expr\Math(10, '+', 20);
@@ -415,15 +415,15 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
         // OrderBy
         $order = new Expr\OrderBy('foo', 'DESC');
-        $this->assertEquals(array('foo DESC'), $order->getParts());
+        $this->assertEquals(['foo DESC'], $order->getParts());
 
         // Andx
-        $orx = new Expr\Orx(array('foo = 1', 'bar = 2'));
-        $this->assertEquals(array('foo = 1', 'bar = 2'), $orx->getParts());
+        $orx = new Expr\Orx(['foo = 1', 'bar = 2']);
+        $this->assertEquals(['foo = 1', 'bar = 2'], $orx->getParts());
 
         // Select
-        $select = new Expr\Select(array('foo', 'bar'));
-        $this->assertEquals(array('foo', 'bar'), $select->getParts());
+        $select = new Expr\Select(['foo', 'bar']);
+        $this->assertEquals(['foo', 'bar'], $select->getParts());
     }
 
     public function testAddEmpty() {

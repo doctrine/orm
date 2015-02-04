@@ -13,9 +13,9 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2895'),
-            ));
+            ]);
         } catch(\Exception $e) {
 
         }
@@ -26,10 +26,10 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2895');
 
         $this->assertEquals(
-            array(
-                "prePersist" => array("setLastModifiedPreUpdate"),
-                "preUpdate" => array("setLastModifiedPreUpdate"),
-            ),
+            [
+                "prePersist" => ["setLastModifiedPreUpdate"],
+                "preUpdate" => ["setLastModifiedPreUpdate"],
+            ],
             $cm->lifecycleCallbacks
         );
 

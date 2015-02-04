@@ -13,10 +13,10 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC618Author'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC618Book')
-            ));
+            ]);
 
             // Create author 10/Joe with two books 22/JoeA and 20/JoeB
             $author = new DDC618Author();

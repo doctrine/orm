@@ -24,10 +24,10 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $leavingFrom    = $this->_em->find(City::CLASSNAME, $leavingFromId);
         $goingTo        = $this->_em->find(City::CLASSNAME, $goingToId);
         $flight         = new Flight($leavingFrom, $goingTo);
-        $id             = array(
+        $id             = [
             'leavingFrom'   => $leavingFromId,
             'goingTo'       => $goingToId,
-        );
+        ];
 
         $flight->setDeparture(new \DateTime('tomorrow'));
 
@@ -70,10 +70,10 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $leavingFrom    = $this->_em->find(City::CLASSNAME, $leavingFromId);
         $goingTo        = $this->_em->find(City::CLASSNAME, $goingToId);
         $flight         = new Flight($leavingFrom, $goingTo);
-        $id             = array(
+        $id             = [
             'leavingFrom'   => $leavingFromId,
             'goingTo'       => $goingToId,
-        );
+        ];
 
         $flight->setDeparture(new \DateTime('tomorrow'));
 
@@ -114,10 +114,10 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $leavingFrom    = $this->_em->find(City::CLASSNAME, $leavingFromId);
         $goingTo        = $this->_em->find(City::CLASSNAME, $goingToId);
         $flight         = new Flight($leavingFrom, $goingTo);
-        $id             = array(
+        $id             = [
             'leavingFrom'   => $leavingFromId,
             'goingTo'       => $goingToId,
-        );
+        ];
 
         $flight->setDeparture($now);
 

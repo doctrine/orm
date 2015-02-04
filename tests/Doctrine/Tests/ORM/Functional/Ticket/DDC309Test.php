@@ -6,10 +6,10 @@ class DDC309Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC309Country'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC309User'),
-        ));
+        ]);
     }
 
     public function testTwoIterateHydrations()

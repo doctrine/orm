@@ -66,7 +66,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
-        $selectExpressions = array();
+        $selectExpressions = [];
 
         foreach ($queryComponents as $dqlAlias => $qComp) {
             // Preserve mixed data in query for ordering.

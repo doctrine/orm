@@ -95,7 +95,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      */
-    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = array(), $renameMode = null)
+    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = [], $renameMode = null)
     {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
@@ -117,7 +117,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      */
-    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = array(), $renameMode = null)
+    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = [], $renameMode = null)
     {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
@@ -137,7 +137,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @throws \InvalidArgumentException
      */
-    protected function addAllClassFields($class, $alias, $columnAliasMap = array())
+    protected function addAllClassFields($class, $alias, $columnAliasMap = [])
     {
         $classMetadata = $this->em->getClassMetadata($class);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
@@ -231,7 +231,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             $mode = self::COLUMN_RENAMING_CUSTOM;
         }
 
-        $columnAlias = array();
+        $columnAlias = [];
         $class       = $this->em->getClassMetadata($className);
 
         foreach ($class->getColumnNames() as $columnName) {
@@ -419,7 +419,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return string
      */
-    public function generateSelectClause($tableAliases = array())
+    public function generateSelectClause($tableAliases = [])
     {
         $sql = "";
 
@@ -453,6 +453,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function __toString()
     {
-        return $this->generateSelectClause(array());
+        return $this->generateSelectClause([]);
     }
 }

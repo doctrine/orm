@@ -10,9 +10,9 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2175Entity'),
-        ));
+        ]);
     }
 
     public function testIssue()

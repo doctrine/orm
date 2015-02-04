@@ -10,11 +10,11 @@ class DDC1209Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1209_1'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1209_2'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1209_3')
-            ));
+            ]);
         } catch(\Exception $e) {
         }
     }

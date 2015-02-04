@@ -15,12 +15,12 @@ class DDC2775Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
+        $this->setUpEntitySchema([
             'Doctrine\Tests\ORM\Functional\Ticket\User',
             'Doctrine\Tests\ORM\Functional\Ticket\Role',
             'Doctrine\Tests\ORM\Functional\Ticket\AdminRole',
             'Doctrine\Tests\ORM\Functional\Ticket\Authorization',
-        ));
+        ]);
     }
 
     /**

@@ -12,18 +12,18 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $user;
     private $merchant;
     private $membership;
-    private $privileges = array();
+    private $privileges = [];
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC2252User'),
             $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC2252Privilege'),
             $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC2252Membership'),
             $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC2252MerchantAccount'),
-        ));
+        ]);
 
         $this->loadFixtures();
     }
@@ -56,10 +56,10 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $identifier = array(
+        $identifier = [
             'merchantAccount' => $this->merchant->getAccountid(),
             'userAccount'     => $this->user->getUid(),
-        );
+        ];
 
         $class      = 'Doctrine\Tests\ORM\Functional\Ticket\DDC2252Membership';
         $membership = $this->_em->find($class, $identifier);

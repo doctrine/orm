@@ -16,10 +16,10 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1461TwitterAccount'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1461User')
-            ));
+            ]);
         } catch(\Exception $e) {
 
         }

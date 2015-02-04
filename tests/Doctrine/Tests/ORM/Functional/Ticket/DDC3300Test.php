@@ -16,20 +16,20 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300BossInterface::INTERFACENAME,
             DDC3300Boss::CLASSNAME,
-            array()
+            []
         );
 
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300EmployeeInterface::INTERFACENAME,
             DDC3300Employee::CLASSNAME,
-            array()
+            []
         );
 
         $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(DDC3300Person::CLASSNAME),
-        ));
+        ]);
 
         $boss     = new DDC3300Boss();
         $employee = new DDC3300Employee();

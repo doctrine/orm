@@ -281,7 +281,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address', array('id' => 'a_id'));
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address', ['id' => 'a_id']);
 
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
@@ -347,7 +347,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'un', 'address', array('id' => 'a_id'));
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'un', 'address', ['id' => 'a_id']);
 
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
@@ -557,7 +557,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $result = $repository->createNativeNamedQuery('fetchUserPhonenumberCount')
-                        ->setParameter(1, array('test','FabioBatSilva'))->getResult();
+                        ->setParameter(1, ['test','FabioBatSilva'])->getResult();
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result[0]));
@@ -745,10 +745,10 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testGenerateSelectClauseCustomRenames()
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', array(
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', [
             'id' => 'id1',
             'username' => 'username2'
-        ));
+        ]);
 
         $selectClause = $rsm->generateSelectClause();
 
@@ -763,7 +763,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
-        $selectClause = $rsm->generateSelectClause(array('u' => 'u1'));
+        $selectClause = $rsm->generateSelectClause(['u' => 'u1']);
 
         $this->assertSQLEquals('u1.id AS id, u1.status AS status, u1.username AS username, u1.name AS name, u1.email_id AS email_id', $selectClause);
     }

@@ -100,60 +100,60 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $cm->mapOneToOne(array(
+        $cm->mapOneToOne([
             'fieldName'     => 'email',
             'targetEntity'  => 'Doctrine\Tests\Models\CMS\CmsEmail',
-            'cascade'       => array('persist'),
+            'cascade'       => ['persist'],
             'inversedBy'    => 'user',
             'orphanRemoval' => false,
-            'joinColumns'   => array(array(
+            'joinColumns'   => [[
                     'nullable' => true,
                     'referencedColumnName' => 'id',
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
-        $cm->addNamedNativeQuery(array(
+        $cm->addNamedNativeQuery([
             'name'              => 'find-all',
             'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
             'resultSetMapping'  => 'find-all',
-        ));
-        $cm->addSqlResultSetMapping(array(
+        ]);
+        $cm->addSqlResultSetMapping([
             'name'      => 'find-all',
-            'entities'  => array(
-                array(
+            'entities'  => [
+                [
                     'entityClass'   => '__CLASS__',
-                    'fields'        => array(
-                        array(
+                    'fields'        => [
+                        [
                             'name'  => 'id',
                             'column'=> 'user_id'
-                        ),
-                        array(
+                        ],
+                        [
                             'name'  => 'name',
                             'column'=> 'name'
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'entityClass'   => 'CmsEmail',
-                    'fields'        => array(
-                        array(
+                    'fields'        => [
+                        [
                             'name'  => 'id',
                             'column'=> 'email_id'
-                        ),
-                        array(
+                        ],
+                        [
                             'name'  => 'email',
                             'column'=> 'email'
-                        )
-                    )
-                )
-            ),
-            'columns'   => array(
-                array(
+                        ]
+                    ]
+                ]
+            ],
+            'columns'   => [
+                [
                     'name' => 'scalarColumn'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
         
         $queryMapping = $cm->getNamedNativeQuery('find-all');
@@ -185,24 +185,24 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $cm->addNamedNativeQuery(array(
+        $cm->addNamedNativeQuery([
             'name'              => 'find-all',
             'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
             'resultSetMapping'  => 'find-all',
-        ));
-        $cm->addSqlResultSetMapping(array(
+        ]);
+        $cm->addSqlResultSetMapping([
             'name'      => 'find-all',
-            'entities'  => array(
-                array(
+            'entities'  => [
+                [
                     'entityClass'   => '__CLASS__',
-                )
-            ),
-            'columns'   => array(
-                array(
+                ]
+            ],
+            'columns'   => [
+                [
                     'name' => 'scalarColumn'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
@@ -231,11 +231,11 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $cm->addNamedNativeQuery(array(
+        $cm->addNamedNativeQuery([
             'name'              => 'find-all',
             'resultClass'       => '__CLASS__',
             'query'             => 'SELECT * FROM cms_users',
-        ));
+        ]);
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
 

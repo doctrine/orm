@@ -34,9 +34,9 @@ class InfoCommandTest extends OrmFunctionalTestCase
         $this->application = new Application();
         $command           = new InfoCommand();
 
-        $this->application->setHelperSet(new HelperSet(array(
+        $this->application->setHelperSet(new HelperSet([
             'em' => new EntityManagerHelper($this->_em)
-        )));
+        ]));
 
         $this->application->add($command);
 
@@ -46,9 +46,9 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
     public function testListAllClasses()
     {
-        $this->tester->execute(array(
+        $this->tester->execute([
             'command' => $this->command->getName(),
-        ));
+        ]);
 
         $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $this->tester->getDisplay());
         $this->assertContains('Doctrine\Tests\Models\Cache\City', $this->tester->getDisplay());

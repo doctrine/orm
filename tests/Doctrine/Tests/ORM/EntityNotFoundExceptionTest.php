@@ -16,7 +16,7 @@ class EntityNotFoundExceptionTest extends PHPUnit_Framework_TestCase
     {
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            array('foo' => 'bar')
+            ['foo' => 'bar']
         );
 
         $this->assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
@@ -24,7 +24,7 @@ class EntityNotFoundExceptionTest extends PHPUnit_Framework_TestCase
 
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            array()
+            []
         );
 
         $this->assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);

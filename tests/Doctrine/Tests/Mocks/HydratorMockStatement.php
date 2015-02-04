@@ -106,7 +106,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     /**
      * {@inheritdoc}
      */
-    public function execute($params = array())
+    public function execute($params = [])
     {
     }
 

@@ -79,7 +79,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
 
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
-        $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
+        $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // Append WHERE clause, if there is one.
@@ -91,7 +91,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
 
         // 3. Create and store DELETE statements
-        $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
+        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
         foreach (array_reverse($classNames) as $className) {
             $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className), $platform);
             $this->_sqlStatements[] = 'DELETE FROM ' . $tableName
@@ -99,12 +99,12 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         }
 
         // 4. Store DDL for temporary identifier table.
-        $columnDefinitions = array();
+        $columnDefinitions = [];
         foreach ($idColumnNames as $idColumnName) {
-            $columnDefinitions[$idColumnName] = array(
+            $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
                 'type' => \Doctrine\DBAL\Types\Type::getType($rootClass->getTypeOfColumn($idColumnName))
-            );
+            ];
         }
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';

@@ -1,5 +1,5 @@
 <?php
-$metadata->mapField(array(
+$metadata->mapField([
    'fieldName'  => 'serialNumber',
    'type'       => 'string',
-));
+]);

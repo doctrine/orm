@@ -40,17 +40,17 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFindUsingAnArrayOfObjectAsPrimaryKey()
     {
-        $ride1 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', array(
+        $ride1 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', [
             'driver' => $this->foo->getId(),
-            'car'    => $this->merc->getBrand())
+            'car'    => $this->merc->getBrand()]
         );
 
         $this->assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride1);
 
-        $ride2 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', array(
+        $ride2 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', [
             'driver' => $this->foo,
             'car'    => $this->merc
-        ));
+        ]);
 
         $this->assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride2);
         $this->assertSame($ride1, $ride2);

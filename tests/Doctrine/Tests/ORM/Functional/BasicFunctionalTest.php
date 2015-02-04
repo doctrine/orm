@@ -123,7 +123,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Check that the foreign key has been set
         $userId = $this->_em->getConnection()->executeQuery(
-            "SELECT user_id FROM cms_addresses WHERE id=?", array($address->id)
+            "SELECT user_id FROM cms_addresses WHERE id=?", [$address->id]
         )->fetchColumn();
         $this->assertTrue(is_numeric($userId));
 
@@ -1071,11 +1071,11 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($userB);
         $this->_em->persist($userC);
 
-        $this->_em->flush(array($userA, $userB, $userB));
+        $this->_em->flush([$userA, $userB, $userB]);
 
         $userC->name = 'changed name';
 
-        $this->_em->flush(array($userA, $userB));
+        $this->_em->flush([$userA, $userB]);
         $this->_em->refresh($userC);
 
         $this->assertTrue($userA->id > 0, 'user a has an id');

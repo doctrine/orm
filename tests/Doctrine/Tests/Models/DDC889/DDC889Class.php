@@ -33,12 +33,12 @@ class DDC889Class extends DDC889SuperClass
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField([
            'id'         => true,
            'fieldName'  => 'id',
            'type'       => 'integer',
            'columnName' => 'id',
-        ));
+        ]);
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }

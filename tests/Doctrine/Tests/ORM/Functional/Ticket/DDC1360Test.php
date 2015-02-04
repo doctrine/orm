@@ -15,15 +15,15 @@ class DDC1360Test extends OrmFunctionalTestCase
             $this->markTestSkipped("PostgreSQL only test.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSQL(array(
+        $sql = $this->_schemaTool->getCreateSchemaSQL([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1360DoubleQuote')
-        ));
+        ]);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'CREATE SCHEMA user',
             'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',
             'CREATE SEQUENCE "user"."user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1',
-        ), $sql);
+        ], $sql);
     }
 }
 

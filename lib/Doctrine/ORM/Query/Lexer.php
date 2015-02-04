@@ -125,12 +125,12 @@ class Lexer extends \Doctrine\Common\Lexer
      */
     protected function getCatchablePatterns()
     {
-        return array(
+        return [
             '[a-z_\\\][a-z0-9_\:\\\]*[a-z0-9_]{1}',
             '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
             "'(?:[^']|'')*'",
             '\?[0-9]*|:[a-z_][a-z0-9_]*'
-        );
+        ];
     }
 
     /**
@@ -138,7 +138,7 @@ class Lexer extends \Doctrine\Common\Lexer
      */
     protected function getNonCatchablePatterns()
     {
-        return array('\s+', '(.)');
+        return ['\s+', '(.)'];
     }
 
     /**

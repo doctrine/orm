@@ -36,5 +36,5 @@ final class NamedNativeQueries implements Annotation
      *
      * @var array<\Doctrine\ORM\Mapping\NamedNativeQuery>
      */
-    public $value = array();
+    public $value = [];
 }

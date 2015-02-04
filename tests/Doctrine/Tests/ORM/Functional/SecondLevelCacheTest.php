@@ -195,9 +195,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
     public function testPostFlushFailure()
     {
-        $listener = new ListenerSecondLevelCacheTest(array(Events::postFlush => function(){
+        $listener = new ListenerSecondLevelCacheTest([Events::postFlush => function(){
             throw new \RuntimeException('post flush failure');
-        }));
+        }]);
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postFlush, $listener);
@@ -225,9 +225,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesStates();
         $this->_em->clear();
 
-        $listener = new ListenerSecondLevelCacheTest(array(Events::postUpdate => function(){
+        $listener = new ListenerSecondLevelCacheTest([Events::postUpdate => function(){
             throw new \RuntimeException('post update failure');
-        }));
+        }]);
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postUpdate, $listener);
@@ -269,9 +269,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $listener = new ListenerSecondLevelCacheTest(array(Events::postRemove => function(){
+        $listener = new ListenerSecondLevelCacheTest([Events::postRemove => function(){
             throw new \RuntimeException('post remove failure');
-        }));
+        }]);
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postRemove, $listener);
@@ -324,7 +324,7 @@ class ListenerSecondLevelCacheTest
 {
     public $callbacks;
 
-    public function __construct(array $callbacks = array())
+    public function __construct(array $callbacks = [])
     {
         $this->callbacks = $callbacks;
     }

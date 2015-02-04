@@ -18,12 +18,12 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setup();
 
         $this->_schemaTool->createSchema(
-            array(
+            [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170AbstractEntityJoined'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170ProductJoined'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170AbstractEntitySingleTable'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170ProductSingleTable'),
-            )
+            ]
         );
     }
 

@@ -75,7 +75,7 @@ abstract class SQLFilter
             $type = ParameterTypeInferer::inferType($value);
         }
 
-        $this->parameters[$name] = array('value' => $value, 'type' => $type);
+        $this->parameters[$name] = ['value' => $value, 'type' => $type];
 
         // Keep the parameters sorted for the hash
         ksort($this->parameters);

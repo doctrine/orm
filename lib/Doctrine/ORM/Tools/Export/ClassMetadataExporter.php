@@ -32,13 +32,13 @@ class ClassMetadataExporter
     /**
      * @var array
      */
-    private static $_exporterDrivers = array(
+    private static $_exporterDrivers = [
         'xml' => 'Doctrine\ORM\Tools\Export\Driver\XmlExporter',
         'yaml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
         'yml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
         'php' => 'Doctrine\ORM\Tools\Export\Driver\PhpExporter',
         'annotation' => 'Doctrine\ORM\Tools\Export\Driver\AnnotationExporter'
-    );
+    ];
 
     /**
      * Registers a new exporter driver class under a specified name.

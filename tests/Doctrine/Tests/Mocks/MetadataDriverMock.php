@@ -27,6 +27,6 @@ class MetadataDriverMock implements \Doctrine\Common\Persistence\Mapping\Driver\
      */
     public function getAllClassNames()
     {
-        return array();
+        return [];
     }
 }

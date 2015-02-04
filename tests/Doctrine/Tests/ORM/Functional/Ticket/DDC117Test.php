@@ -53,7 +53,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testAssociationOnlyCompositeKey()
     {
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $mapRef = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
         $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $mapRef);
@@ -92,7 +92,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testUpdateAssociationEntity()
     {
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $mapRef = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
         $this->assertNotNull($mapRef);
@@ -126,7 +126,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testRemoveCompositeElement()
     {
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $refRep = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
 
@@ -143,7 +143,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testDqlRemoveCompositeElement()
     {
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $dql = "DELETE "."Doctrine\Tests\Models\DDC117\DDC117Reference r WHERE r.source = ?1 AND r.target = ?2";
         $this->_em->createQuery($dql)
@@ -188,7 +188,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testMixedCompositeKey()
     {
-        $idCriteria = array('article' => $this->article1->id(), 'language' => 'en');
+        $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
 
         $this->translation = $this->_em->find('Doctrine\Tests\Models\DDC117\DDC117Translation', $idCriteria);
         $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $this->translation);
@@ -282,10 +282,10 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testReferencesToForeignKeyEntities()
     {
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
         $reference = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
 
-        $idCriteria = array('article' => $this->article1->id(), 'language' => 'en');
+        $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
         $translation = $this->_em->find('Doctrine\Tests\Models\DDC117\DDC117Translation', $idCriteria);
 
         $approveChanges = new DDC117ApproveChanges($reference->source()->getDetails(), $reference, $translation);
@@ -429,7 +429,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testMergeForeignKeyIdentifierEntity()
     {
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $refRep = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
 
@@ -484,7 +484,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($this->reference));
 
-        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
         $reference = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
 
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($reference));

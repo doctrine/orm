@@ -69,7 +69,7 @@ final class IdentifierFlattener
      */
     public function flattenIdentifier(ClassMetadata $class, array $id)
     {
-        $flatId = array();
+        $flatId = [];
 
         foreach ($id as $idField => $idValue) {
             if (isset($class->associationMappings[$idField]) && is_object($idValue)) {

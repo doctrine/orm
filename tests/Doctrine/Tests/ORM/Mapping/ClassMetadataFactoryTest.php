@@ -34,7 +34,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cmf->setMetadataFor($cm1->name, $cm1);
 
         // Prechecks
-        $this->assertEquals(array(), $cm1->parentClasses);
+        $this->assertEquals([], $cm1->parentClasses);
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(2, count($cm1->associationMappings));
@@ -47,7 +47,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame($cm1, $cmMap1);
         $this->assertEquals('group', $cmMap1->table['name']);
         $this->assertTrue($cmMap1->table['quoted']);
-        $this->assertEquals(array(), $cmMap1->parentClasses);
+        $this->assertEquals([], $cmMap1->parentClasses);
         $this->assertTrue($cmMap1->hasField('name'));
     }
 
@@ -55,8 +55,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = array(
-            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
+        $cm1->customGeneratorDefinition = [
+            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator"];
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
@@ -72,7 +72,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = array("class" => "NotExistingGenerator");
+        $cm1->customGeneratorDefinition = ["class" => "NotExistingGenerator"];
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
@@ -95,7 +95,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
-        $metadataDriver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Global/'));
+        $metadataDriver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Global/']);
 
         $entityManager = $this->_createEntityManager($metadataDriver);
 
@@ -158,7 +158,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testAddDefaultDiscriminatorMap()
     {
         $cmf = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/JoinedInheritanceType/'));
+        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
         $em = $this->_createEntityManager($driver);
         $cmf->setEntityManager($em);
 
@@ -186,7 +186,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
         // discriminator map is already cached
-        $cmf = $this->getMock('Doctrine\ORM\Mapping\ClassMetadataFactory', array('addDefaultDiscriminatorMap'));
+        $cmf = $this->getMock('Doctrine\ORM\Mapping\ClassMetadataFactory', ['addDefaultDiscriminatorMap']);
         $cmf->setEntityManager($em);
         $cmf->expects($this->never())
             ->method('addDefaultDiscriminatorMap');
@@ -201,7 +201,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+        $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
         $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
@@ -229,18 +229,18 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // Self-made metadata
         $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
         $cm1->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-        $cm1->setPrimaryTable(array('name' => '`group`'));
+        $cm1->setPrimaryTable(['name' => '`group`']);
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
+        $cm1->mapField(['fieldName' => 'name', 'type' => 'varchar']);
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $cm1->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         // and a mapped association
-        $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this'));
+        $cm1->mapOneToOne(['fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this']);
         // and an association on the owning side
-        $joinColumns = array(
-            array('name' => 'other_id', 'referencedColumnName' => 'id')
-        );
-        $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns));
+        $joinColumns = [
+            ['name' => 'other_id', 'referencedColumnName' => 'id']
+        ];
+        $cm1->mapOneToOne(['fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns]);
         // and an id generator type
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         return $cm1;
@@ -252,7 +252,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testQuoteMetadata()
     {
         $cmf    = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Quote/'));
+        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Quote/']);
         $em     = $this->_createEntityManager($driver);
         $cmf->setEntityManager($em);
 
@@ -339,7 +339,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cmf           = new ClassMetadataFactory();
         $mockDriver    = new MetadataDriverMock();
         $em = $this->_createEntityManager($mockDriver);
-        $listener      = $this->getMock('stdClass', array('onClassMetadataNotFound'));
+        $listener      = $this->getMock('stdClass', ['onClassMetadataNotFound']);
         $eventManager  = $em->getEventManager();
 
         $cmf->setEntityManager($em);
@@ -355,7 +355,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
                 $args->setFoundMetadata($metadata);
             }));
 
-        $eventManager->addEventListener(array(Events::onClassMetadataNotFound), $listener);
+        $eventManager->addEventListener([Events::onClassMetadataNotFound], $listener);
 
         $this->assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }
@@ -383,11 +383,11 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $metadata = $this->_createValidClassMetadata();
 
-        $metadata->mapEmbedded(array(
+        $metadata->mapEmbedded([
             'fieldName'    => 'embedded',
             'class'        => '',
             'columnPrefix' => false,
-        ));
+        ]);
 
         $cmf = $this->_createTestFactory();
 
@@ -405,8 +405,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 /* Test subject class with overridden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
-    private $mockMetadata = array();
-    private $requestedClasses = array();
+    private $mockMetadata = [];
+    private $requestedClasses = [];
 
     /** @override */
     protected function newClassMetadataInstance($className)

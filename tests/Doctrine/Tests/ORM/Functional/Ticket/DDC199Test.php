@@ -7,11 +7,11 @@ class DDC199Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC199ParentClass'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC199ChildClass'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC199RelatedClass')
-        ));
+        ]);
     }
 
     public function testPolymorphicLoading()

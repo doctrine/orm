@@ -7,13 +7,13 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Super'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Class1'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Class2'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Class3'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Aggregate'),
-        ));
+        ]);
     }
 
     /**
