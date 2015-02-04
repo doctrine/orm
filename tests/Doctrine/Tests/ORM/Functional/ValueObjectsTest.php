@@ -243,25 +243,10 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
-    public function testThrowsExceptionWhenPersistingWithNullOnNonNullableEmbedded()
-    {
-        $this->setExpectedException('Doctrine\DBAL\Exception\NotNullConstraintViolationException');
-
-        $event = new DDC3529Event();
-        $event->name = 'PHP Conference';
-        $event->period = new DDC3529DateInterval(new \DateTime('2015-01-20 08:00:00'), new \DateTime('2015-01-23 19:00:00'));
-
-        $this->_em->persist($event);
-        $this->_em->flush();
-
-        return $event;
-    }
-
     public function testNoErrorsShouldHappenWhenPersistingAnEntityWithNullableEmbedded()
     {
         $event = new DDC3529Event();
         $event->name = 'PHP Conference';
-        $event->country = new DDC93Country('Brazil');
         $event->period = new DDC3529DateInterval(new \DateTime('2015-01-20 08:00:00'), new \DateTime('2015-01-23 19:00:00'));
 
         $this->_em->persist($event);
@@ -279,7 +264,6 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $event = $this->_em->find(DDC3529Event::CLASSNAME, $event->id);
 
         $this->assertEquals('PHP Conference', $event->name);
-        $this->assertEquals('Brazil', $event->country->name);
         $this->assertEquals('2015-01-20 08:00:00', $event->period->begin->format('Y-m-d H:i:s'));
         $this->assertEquals('2015-01-23 19:00:00', $event->period->end->format('Y-m-d H:i:s'));
         $this->assertNull($event->submissions);
@@ -395,9 +379,6 @@ class DDC3529Event
 
     /** @Embedded(class = "DDC3529DateInterval", nullable = true) */
     public $submissions;
-
-    /** @Embedded(class = "DDC93Country", nullable = false) */
-    public $country;
 }
 
 /**

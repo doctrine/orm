@@ -3242,7 +3242,7 @@ class ClassMetadataInfo implements ClassMetadata
                 : $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
-            if ($this->embeddedClasses[$property]['nullable'] !== null) {
+            if ($this->embeddedClasses[$property]['nullable'] === true) {
                 $fieldMapping['nullable'] = $this->embeddedClasses[$property]['nullable'];
             }
 
