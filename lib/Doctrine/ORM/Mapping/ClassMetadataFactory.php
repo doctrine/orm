@@ -755,7 +755,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function getTargetPlatform()
     {
-        if ($this->targetPlatform === null) {
+        if (!$this->targetPlatform) {
             $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
         }
 
