@@ -449,12 +449,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
-                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($this->getTargetPlatform()->usesSequenceEmulatedIdentityColumns()) {
+                if ($this->getTargetPlatform() instanceof Platforms\PostgreSQLPlatform) {
                     $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-                    $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
-                    $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
+                    $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
                     $definition     = array(
                         'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName)
                     );
@@ -484,10 +482,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 if ( ! $definition) {
                     $fieldName      = $class->getSingleIdentifierFieldName();
-                    $sequenceName   = $class->getSequenceName($this->getTargetPlatform());
+                    $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-
-                    $definition = array(
+                    $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
+                    $definition     = array(
                         'sequenceName'      => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
                         'allocationSize'    => 1,
                         'initialValue'      => 1,
