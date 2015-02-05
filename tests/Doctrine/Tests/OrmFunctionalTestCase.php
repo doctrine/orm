@@ -280,6 +280,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         if (isset($this->_usedModelSets['tweet'])) {
             $conn->executeUpdate('DELETE FROM tweet_tweet');
+            $conn->executeUpdate('DELETE FROM tweet_user_list');
             $conn->executeUpdate('DELETE FROM tweet_user');
         }
         if (isset($this->_usedModelSets['legacy'])) {
