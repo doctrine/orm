@@ -223,6 +223,13 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
+        $mapping = $coll->getMapping();
+
+        if ( ! $mapping['orphanRemoval']) {
+            // no-op: this is not the owning side, therefore no operations should be applied
+            return false;
+        }
+
         $uow = $this->em->getUnitOfWork();
 
         // shortcut for new entities
@@ -238,9 +245,9 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $mapping        = $coll->getMapping();
-        $persister      = $this->uow->getEntityPersister($mapping['targetEntity']);
-        $targetMetadata = $this->em->getClassMetadata($mapping['targetEntity']);
+        $class = $this->em->getClassMetadata($mapping['targetEntity']);
+        $sql   = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
+            . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
 
         if ($element instanceof Proxy && ! $element->__isInitialized()) {
             $element->__load();
