@@ -244,10 +244,11 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $class = $this->em->getClassMetadata($mapping['targetEntity']);
-        $sql   = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-            . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        $this
+            ->uow
+            ->getEntityPersister($mapping['targetEntity'])
+            ->delete($element);
 
-        return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
+        return true;
     }
 }
