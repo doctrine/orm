@@ -741,51 +741,6 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemovesManagedElementFromOneToManyExtraLazyCollection()
-    {
-        list($userId, $tweetId) = $this->loadTweetFixture();
-
-        /* @var $user User */
-        $user = $this->_em->find(User::CLASSNAME, $userId);
-
-        $user->tweets->removeElement($this->_em->find(Tweet::CLASSNAME, $tweetId));
-
-        $this->_em->clear();
-
-        /* @var $user User */
-        $user = $this->_em->find(User::CLASSNAME, $userId);
-
-        $this->assertCount(0, $user->tweets);
-    }
-
-    /**
-     * @group DDC-3343
-     */
-    public function testRemovesManagedElementFromOneToManyExtraLazyCollectionWithoutDeletingTheTargetEntityEntry()
-    {
-        list($userId, $tweetId) = $this->loadTweetFixture();
-
-        /* @var $user User */
-        $user  = $this->_em->find(User::CLASSNAME, $userId);
-
-        $user->tweets->removeElement($this->_em->find(Tweet::CLASSNAME, $tweetId));
-
-        $this->_em->clear();
-
-        /* @var $tweet Tweet */
-        $tweet = $this->_em->find(Tweet::CLASSNAME, $tweetId);
-        $this->assertInstanceOf(
-            Tweet::CLASSNAME,
-            $tweet,
-            'Even though the collection is extra lazy, the tweet should not have been deleted'
-        );
-
-        $this->assertNull($tweet->author, 'Tweet author link has been removed');
-    }
-
-    /**
-     * @group DDC-3343
-     */
     public function testRemoveOrphanedManagedElementFromOneToManyExtraLazyCollection()
     {
         list($userId, $userListId) = $this->loadUserListFixture();
