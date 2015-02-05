@@ -249,16 +249,6 @@ class OneToManyPersister extends AbstractCollectionPersister
         $sql   = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
             . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
 
-        if ($element instanceof Proxy && ! $element->__isInitialized()) {
-            $element->__load();
-        }
-
-        // clearing owning side value
-        $targetMetadata->reflFields[$mapping['mappedBy']]->setValue($element, null);
-
-        $this->uow->computeChangeSet($targetMetadata, $element);
-        $persister->update($element);
-
-        return true;
+        return (bool) $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
     }
 }
