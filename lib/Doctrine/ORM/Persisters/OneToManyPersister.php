@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 
