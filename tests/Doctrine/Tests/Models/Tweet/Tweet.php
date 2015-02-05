@@ -32,6 +32,6 @@ class Tweet
      */
     public function setAuthor(User $author)
     {
-        $this->user = $author;
+        $this->author = $author;
     }
 }

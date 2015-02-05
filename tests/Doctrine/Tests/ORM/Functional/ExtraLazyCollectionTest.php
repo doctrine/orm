@@ -369,8 +369,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->articles->removeElement($article);
 
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        // NOTE: +2 queries because CmsArticle is a versioned entity, and that needs to be handled accordingly
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
         $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
@@ -391,7 +390,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity will not cause queries when the owning side doesn't actually change.");
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity state as managed
@@ -847,7 +846,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
 
-        $user->tweets->removeElement($this->_em->find(UserList::CLASSNAME, $userListId));
+        $user->userLists->removeElement($this->_em->find(UserList::CLASSNAME, $userListId));
 
         $this->_em->clear();
 
@@ -900,7 +899,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::CLASSNAME, $userId);
 
-        $user->tweets->removeElement($this->_em->getReference(UserList::CLASSNAME, $userListId));
+        $user->userLists->removeElement($this->_em->getReference(UserList::CLASSNAME, $userListId));
 
         $this->_em->clear();
 
