@@ -73,8 +73,15 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             if ( ! isset($assoc['cache']) || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+                $associatedEntity = $data[$name];
                 unset($data[$name]);
 
+                if ($this->uow->isInIdentityMap($associatedEntity)) {
+                    $targetEntityMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
+                    foreach ($this->uow->getEntityIdentifier($associatedEntity) as $fieldName => $fieldValue) {
+                        $data[$assoc['targetToSourceKeyColumns'][$targetEntityMetadata->getColumnName($fieldName)]] = $fieldValue;
+                    }
+                }
                 continue;
             }
 
