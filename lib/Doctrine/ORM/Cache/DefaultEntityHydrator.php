@@ -25,6 +25,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * Default hydrator cache for entities
@@ -45,6 +46,13 @@ class DefaultEntityHydrator implements EntityHydrator
     private $uow;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * @var array
      */
     private static $hints = array(Query::HINT_CACHE_ENABLED => true);
@@ -56,6 +64,7 @@ class DefaultEntityHydrator implements EntityHydrator
     {
         $this->em   = $em;
         $this->uow  = $em->getUnitOfWork();
+        $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
     }
 
     /**
@@ -73,14 +82,13 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             if ( ! isset($assoc['cache']) || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
-                $associatedEntity = $data[$name];
+                $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                $associationIds = $this->identifierFlattener->flattenIdentifier($targetClassMetadata, $targetClassMetadata->getIdentifierValues($data[$name]));
                 unset($data[$name]);
 
-                if ($this->uow->isInIdentityMap($associatedEntity)) {
-                    $targetEntityMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
-                    foreach ($this->uow->getEntityIdentifier($associatedEntity) as $fieldName => $fieldValue) {
-                        $data[$assoc['targetToSourceKeyColumns'][$targetEntityMetadata->getColumnName($fieldName)]] = $fieldValue;
-                    }
+                foreach ($associationIds as $fieldName => $fieldValue) {
+                    $data[$assoc['targetToSourceKeyColumns'][$targetClassMetadata->getColumnName($fieldName)]] = $fieldValue;
                 }
                 continue;
             }
