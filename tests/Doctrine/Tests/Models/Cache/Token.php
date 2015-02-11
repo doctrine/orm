@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Models\Cache;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -27,11 +28,35 @@ class Token
      */
     protected $client;
 
+    /**
+     * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
+     * @var array
+     */
+    protected $logins;
+
     public function __construct($token, Client $client = null)
     {
         $this->token     = $token;
+        $this->logins    = new ArrayCollection();
         $this->client    = $client;
         $this->expiresAt = new \DateTime(date('Y-m-d H:i:s', strtotime("+7 day")));
+    }
+
+    /**
+     * @return array
+     */
+    public function getLogins()
+    {
+        return $this->logins;
+    }
+
+    /**
+     * @param Login $login
+     */
+    public function addLogin(Login $login)
+    {
+        $this->logins[] = $login;
+        $login->setToken($this);
     }
 
     public function getToken()
