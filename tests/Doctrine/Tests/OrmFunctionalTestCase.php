@@ -183,6 +183,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\Token',
             'Doctrine\Tests\Models\Cache\Login',
             'Doctrine\Tests\Models\Cache\Client',
+            'Doctrine\Tests\Models\Cache\Action',
             'Doctrine\Tests\Models\Cache\AttractionInfo',
             'Doctrine\Tests\Models\Cache\AttractionContactInfo',
             'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
@@ -420,6 +421,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_token');
             $conn->executeUpdate('DELETE FROM cache_login');
             $conn->executeUpdate('DELETE FROM cache_client');
+            $conn->executeUpdate('DELETE FROM cache_action');
         }
 
         if (isset($this->_usedModelSets['ddc3346'])) {

@@ -34,6 +34,13 @@ class Token
      */
     protected $logins;
 
+    /**
+     * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
+     * @JoinColumn(name="action_id", referencedColumnName="id")
+     * @var array
+     */
+    protected $action;
+
     public function __construct($token, Client $client = null)
     {
         $this->token     = $token;
@@ -57,6 +64,16 @@ class Token
     {
         $this->logins[] = $login;
         $login->setToken($this);
+    }
+
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    public function setAction(Action $action)
+    {
+        $this->action = $action;
     }
 
     public function getToken()

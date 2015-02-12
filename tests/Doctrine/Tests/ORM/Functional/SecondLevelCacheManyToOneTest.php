@@ -5,6 +5,8 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\Models\Cache\Token;
+use Doctrine\Tests\Models\Cache\Action;
 
 /**
  * @group DDC-2183
@@ -139,5 +141,35 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($countryId2, $state2->getCountry()->getId());
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+    }
+
+    public function testPutAndLoadNonCacheableManyToOne()
+    {
+        $this->assertNull($this->cache->getEntityCacheRegion(Action::CLASSNAME));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(Token::CLASSNAME));
+
+        $token  = new Token('token-hash');
+        $action = new Action('exec');
+        $action->addToken($token);
+
+        $this->_em->persist($token);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->getToken()));
+        $this->assertFalse($this->cache->containsEntity(Token::CLASSNAME, $action->getId()));
+
+        $queryCount = $this->getCurrentQueryCount();
+        $entity = $this->_em->find(Token::CLASSNAME, $token->getToken());
+
+        $this->assertInstanceOf(Token::CLASSNAME, $entity);
+        $this->assertEquals('token-hash', $entity->getToken());
+
+        $this->assertInstanceOf(Action::CLASSNAME, $entity->getAction());
+        $this->assertEquals('exec', $entity->getAction()->getName());
+
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
     }
 }
