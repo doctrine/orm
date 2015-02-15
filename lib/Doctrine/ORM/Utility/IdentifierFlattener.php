@@ -71,20 +71,27 @@ final class IdentifierFlattener
     {
         $flatId = array();
 
-        foreach ($id as $idField => $idValue) {
-            if (isset($class->associationMappings[$idField]) && is_object($idValue)) {
-                /* @var $targetClassMetadata ClassMetadata */
+        foreach ($class->identifier as $field) {
+            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_object($id[$field])) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
-                    $class->associationMappings[$idField]['targetEntity']
+                    $class->associationMappings[$field]['targetEntity']
                 );
 
-                $associatedId = $this->unitOfWork->isInIdentityMap($idValue)
-                    ? $this->unitOfWork->getEntityIdentifier($idValue)
-                    : $targetClassMetadata->getIdentifierValues($idValue);
+                if ($this->unitOfWork->isInIdentityMap($id[$field])) {
+                    $associatedId = $this->flattenIdentifier($targetClassMetadata, $this->unitOfWork->getEntityIdentifier($id[$field]));
+                } else {
+                    $associatedId = $this->flattenIdentifier($targetClassMetadata, $targetClassMetadata->getIdentifierValues($id[$field]));
+                }
 
-                $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
+                $flatId[$field] = implode(' ', $associatedId);
+            } elseif (isset($class->associationMappings[$field])) {
+                $associatedId = array();
+                foreach ($class->associationMappings[$field]['joinColumns'] as $joinColumn) {
+                    $associatedId[] = $id[$joinColumn['name']];
+                }
+                $flatId[$field] = implode(' ', $associatedId);
             } else {
-                $flatId[$idField] = $idValue;
+                $flatId[$field] = $id[$field];
             }
         }
 
