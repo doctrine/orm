@@ -66,11 +66,13 @@ class PersisterHelper
             $joinData = $assoc;
         }
 
-        $types = array();
+        $types       = array();
         $targetClass = $em->getClassMetadata($assoc['targetEntity']);
+
         foreach ($joinData['joinColumns'] as $joinColumn) {
             $types[] = self::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $em);
         }
+
         return $types;
     }
 

@@ -1649,16 +1649,19 @@ class BasicEntityPersister implements EntityPersister
             $association = $this->class->associationMappings[$field];
             // Many-To-Many requires join table check for joinColumn
             $columns = array();
-            $class = $this->class;
+            $class   = $this->class;
+
             if ($association['type'] === ClassMetadata::MANY_TO_MANY) {
                 if ( ! $association['isOwningSide']) {
                     $association = $assoc;
                 }
-                $joinColumns = $assoc['isOwningSide']
+
+                $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
+                $joinColumns   = $assoc['isOwningSide']
                     ? $association['joinTable']['joinColumns']
                     : $association['joinTable']['inverseJoinColumns'];
 
-                $joinTableName  = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
+
                 foreach ($joinColumns as $joinColumn) {
                     $columns[] = $joinTableName . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                 }
@@ -1690,7 +1693,6 @@ class BasicEntityPersister implements EntityPersister
 
         throw ORMException::unrecognizedField($field);
     }
-
 
     /**
      * Gets the conditional SQL fragment used in the WHERE clause when selecting
@@ -1812,6 +1814,7 @@ class BasicEntityPersister implements EntityPersister
             $types  = array_merge($types, $this->getTypes($field, $value, $this->class));
             $params = array_merge($params, $this->getValues($value));
         }
+
         return array($params, $types);
     }
 
@@ -1840,6 +1843,7 @@ class BasicEntityPersister implements EntityPersister
             $types  = array_merge($types, $this->getTypes($criterion['field'], $criterion['value'], $criterion['class']));
             $params = array_merge($params, $this->getValues($criterion['value']));
         }
+
         return array($params, $types);
     }
 
@@ -1861,10 +1865,12 @@ class BasicEntityPersister implements EntityPersister
             case (isset($class->fieldMappings[$field])):
                 $types = array_merge($types, PersisterHelper::getTypeOfField($field, $class, $this->em));
                 break;
+
             case (isset($class->associationMappings[$field])):
                 $assoc = $class->associationMappings[$field];
                 $class = $this->em->getClassMetadata($assoc['targetEntity']);
-                if (!$assoc['isOwningSide']) {
+
+                if (! $assoc['isOwningSide']) {
                     $assoc = $class->associationMappings[$assoc['mappedBy']];
                     $class = $this->em->getClassMetadata($assoc['targetEntity']);
                 }
@@ -1872,6 +1878,7 @@ class BasicEntityPersister implements EntityPersister
                 $columns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
                     ? $assoc['relationToTargetKeyColumns']
                     : $assoc['sourceToTargetKeyColumns'];
+
                 foreach ($columns as $column){
                     $types[] = PersisterHelper::getTypeOfColumn($column, $class, $this->em);
                 }
@@ -1883,11 +1890,14 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (is_array($value)) {
-            $types = array_map(function ($type) {
-                $type = Type::getType($type)->getBindingType();
-                return $type + Connection::ARRAY_PARAM_OFFSET;
-            }, $types);
+            return array_map(
+                function ($type) {
+                    return Type::getType($type)->getBindingType() + Connection::ARRAY_PARAM_OFFSET;
+                },
+                $types
+            );
         }
+
         return $types;
     }
 
@@ -1914,6 +1924,7 @@ class BasicEntityPersister implements EntityPersister
             $class = $this->em->getClassMetadata(get_class($value));
             if ($class->isIdentifierComposite) {
                 $newValue = array();
+
                 foreach ($class->getIdentifierValues($value) as $innerValue) {
                     $newValue = array_merge($newValue, $this->getValues($innerValue));
                 }
