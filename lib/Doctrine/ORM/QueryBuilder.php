@@ -690,7 +690,13 @@ class QueryBuilder
             );
         }
 
-        $isMultiple = is_array($this->_dqlParts[$dqlPartName]);
+        $isMultiple = is_array($this->_dqlParts[$dqlPartName])
+            && !($dqlPartName == 'join' && !$append);
+
+        // Allow adding any part retrieved from self::getDQLParts().
+        if (is_array($dqlPart) && $dqlPartName != 'join') {
+            $dqlPart = reset($dqlPart);
+        }
 
         // This is introduced for backwards compatibility reasons.
         // TODO: Remove for 3.0

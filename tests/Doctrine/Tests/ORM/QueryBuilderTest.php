@@ -1098,4 +1098,26 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('foo_reg', $query->getCacheRegion());
         $this->assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
     }
+
+    /**
+     * @group DDC-2253
+     */
+    public function testRebuildsFromParts()
+    {
+        $qb = $this->_em->createQueryBuilder()
+          ->select('u')
+          ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+          ->join('u.article', 'a');
+
+        $dqlParts = $qb->getDQLParts();
+        $dql = $qb->getDQL();
+
+        $qb2 = $this->_em->createQueryBuilder();
+        foreach (array_filter($dqlParts) as $name => $part) {
+            $qb2->add($name, $part);
+        }
+        $dql2 = $qb2->getDQL();
+
+        $this->assertEquals($dql, $dql2);
+    }
 }
