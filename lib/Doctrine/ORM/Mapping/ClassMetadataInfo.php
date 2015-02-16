@@ -1461,6 +1461,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
+                if (!isset($mapping['joinColumns'])) {
+                    throw MappingException::illegalInverseIdentifierAssociation($this->name, $mapping['fieldName']);
+                }
+
                 if (count($mapping['joinColumns']) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $mapping['targetEntity'], $this->name, $mapping['fieldName']
