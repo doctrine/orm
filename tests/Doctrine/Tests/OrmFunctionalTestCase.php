@@ -166,6 +166,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Taxi\Car',
             'Doctrine\Tests\Models\Taxi\Driver',
         ),
+        'tweet' => array(
+            'Doctrine\Tests\Models\Tweet\User',
+            'Doctrine\Tests\Models\Tweet\Tweet',
+            'Doctrine\Tests\Models\Tweet\UserList',
+        ),
     );
 
     /**
@@ -275,6 +280,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         if (isset($this->_usedModelSets['tweet'])) {
             $conn->executeUpdate('DELETE FROM tweet_tweet');
+            $conn->executeUpdate('DELETE FROM tweet_user_list');
             $conn->executeUpdate('DELETE FROM tweet_user');
         }
         if (isset($this->_usedModelSets['legacy'])) {
@@ -303,6 +309,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM taxi_ride');
             $conn->executeUpdate('DELETE FROM taxi_car');
             $conn->executeUpdate('DELETE FROM taxi_driver');
+        }
+
+        if (isset($this->_usedModelSets['tweet'])) {
+            $conn->executeUpdate('DELETE FROM tweet_tweet');
+            $conn->executeUpdate('DELETE FROM tweet_user_list');
+            $conn->executeUpdate('DELETE FROM tweet_user');
         }
 
         $this->_em->clear();

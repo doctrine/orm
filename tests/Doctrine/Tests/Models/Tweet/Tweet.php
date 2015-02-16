@@ -18,17 +18,20 @@ class Tweet
     public $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=140)
      */
-    public $content;
+    public $content = '';
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="tweets")
+     * @ManyToOne(targetEntity="User", inversedBy="tweets", cascade={"persist"}, fetch="EXTRA_LAZY")
      */
     public $author;
 
-    public function setAuthor(User $user)
+    /**
+     * @param User $author
+     */
+    public function setAuthor(User $author)
     {
-        $this->author = $user;
+        $this->author = $author;
     }
 }
