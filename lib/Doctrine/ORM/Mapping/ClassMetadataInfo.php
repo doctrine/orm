@@ -1461,7 +1461,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
-                if (!isset($mapping['joinColumns'])) {
+                if (! isset($mapping['joinColumns'])) {
                     throw MappingException::illegalInverseIdentifierAssociation($this->name, $mapping['fieldName']);
                 }
 

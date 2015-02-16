@@ -335,62 +335,68 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testCreateManyToOneWithIdentity()
     {
         $this->assertIsFluent(
-            $this->builder->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
-                              ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                              ->cascadeAll()
-                              ->fetchExtraLazy()
-                              ->isPrimaryKey()
-                              ->build()
+            $this
+                ->builder
+                ->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
+                ->cascadeAll()
+                ->fetchExtraLazy()
+                ->isPrimaryKey()
+                ->build()
         );
 
-        $this->assertEquals(array('groups' => array (
-                'fieldName' => 'groups',
-                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
-                'cascade' => array (
-                  0 => 'remove',
-                  1 => 'persist',
-                  2 => 'refresh',
-                  3 => 'merge',
-                  4 => 'detach',
+        $this->assertEquals(
+            array(
+                'groups' => array(
+                    'fieldName' => 'groups',
+                    'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                    'cascade' => array(
+                        0 => 'remove',
+                        1 => 'persist',
+                        2 => 'refresh',
+                        3 => 'merge',
+                        4 => 'detach',
+                    ),
+                    'fetch' => 4,
+                    'joinColumns' => array(
+                        0 =>
+                            array(
+                                'name' => 'group_id',
+                                'referencedColumnName' => 'id',
+                                'nullable' => true,
+                                'unique' => false,
+                                'onDelete' => 'CASCADE',
+                                'columnDefinition' => NULL,
+                            ),
+                    ),
+                    'type' => 2,
+                    'mappedBy' => NULL,
+                    'inversedBy' => NULL,
+                    'isOwningSide' => true,
+                    'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => true,
+                    'isCascadeRefresh' => true,
+                    'isCascadeMerge' => true,
+                    'isCascadeDetach' => true,
+                    'sourceToTargetKeyColumns' =>
+                        array(
+                            'group_id' => 'id',
+                        ),
+                    'joinColumnFieldNames' =>
+                        array(
+                            'group_id' => 'group_id',
+                        ),
+                    'targetToSourceKeyColumns' =>
+                        array(
+                            'id' => 'group_id',
+                        ),
+                    'orphanRemoval' => false,
+                    'id' => true
                 ),
-                'fetch' => 4,
-                'joinColumns' => array (
-                  0 =>
-                  array (
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-                    'nullable' => true,
-                    'unique' => false,
-                    'onDelete' => 'CASCADE',
-                    'columnDefinition' => NULL,
-                  ),
-                ),
-                'type' => 2,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                'isCascadeRemove' => true,
-                'isCascadePersist' => true,
-                'isCascadeRefresh' => true,
-                'isCascadeMerge' => true,
-                'isCascadeDetach' => true,
-                'sourceToTargetKeyColumns' =>
-                array (
-                  'group_id' => 'id',
-                ),
-                'joinColumnFieldNames' =>
-                array (
-                  'group_id' => 'group_id',
-                ),
-                'targetToSourceKeyColumns' =>
-                array (
-                  'id' => 'group_id',
-                ),
-                'orphanRemoval' => false,
-                'id' => true
-              ),
-            ), $this->cm->associationMappings);
+            ),
+            $this->cm->associationMappings
+        );
     }
 
     public function testCreateOneToOne()
@@ -455,73 +461,81 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testCreateOneToOneWithIdentity()
     {
         $this->assertIsFluent(
-            $this->builder->createOneToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
-                              ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                              ->cascadeAll()
-                              ->fetchExtraLazy()
-                              ->isPrimaryKey()
-                              ->build()
+            $this
+                ->builder
+                ->createOneToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
+                ->cascadeAll()
+                ->fetchExtraLazy()
+                ->isPrimaryKey()
+                ->build()
         );
 
-        $this->assertEquals(array('groups' => array (
-                'fieldName' => 'groups',
-                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
-                'cascade' => array (
-                  0 => 'remove',
-                  1 => 'persist',
-                  2 => 'refresh',
-                  3 => 'merge',
-                  4 => 'detach',
+        $this->assertEquals(
+            array(
+                'groups' => array(
+                    'fieldName' => 'groups',
+                    'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                    'cascade' => array(
+                        0 => 'remove',
+                        1 => 'persist',
+                        2 => 'refresh',
+                        3 => 'merge',
+                        4 => 'detach',
+                    ),
+                    'fetch' => 4,
+                    'id' => true,
+                    'joinColumns' => array(
+                        0 =>
+                            array(
+                                'name' => 'group_id',
+                                'referencedColumnName' => 'id',
+                                'nullable' => true,
+                                'unique' => false,
+                                'onDelete' => 'CASCADE',
+                                'columnDefinition' => NULL,
+                            ),
+                    ),
+                    'type' => 1,
+                    'mappedBy' => NULL,
+                    'inversedBy' => NULL,
+                    'isOwningSide' => true,
+                    'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => true,
+                    'isCascadeRefresh' => true,
+                    'isCascadeMerge' => true,
+                    'isCascadeDetach' => true,
+                    'sourceToTargetKeyColumns' =>
+                        array(
+                            'group_id' => 'id',
+                        ),
+                    'joinColumnFieldNames' =>
+                        array(
+                            'group_id' => 'group_id',
+                        ),
+                    'targetToSourceKeyColumns' =>
+                        array(
+                            'id' => 'group_id',
+                        ),
+                    'orphanRemoval' => false
                 ),
-                'fetch' => 4,
-                'id' => true,
-                'joinColumns' => array (
-                  0 =>
-                  array (
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-                    'nullable' => true,
-                    'unique' => false,
-                    'onDelete' => 'CASCADE',
-                    'columnDefinition' => NULL,
-                  ),
-                ),
-                'type' => 1,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                'isCascadeRemove' => true,
-                'isCascadePersist' => true,
-                'isCascadeRefresh' => true,
-                'isCascadeMerge' => true,
-                'isCascadeDetach' => true,
-                'sourceToTargetKeyColumns' =>
-                array (
-                  'group_id' => 'id',
-                ),
-                'joinColumnFieldNames' =>
-                array (
-                  'group_id' => 'group_id',
-                ),
-                'targetToSourceKeyColumns' =>
-                array (
-                  'id' => 'group_id',
-                ),
-                'orphanRemoval' => false
-              ),
-            ), $this->cm->associationMappings);
+            ),
+            $this->cm->associationMappings
+        );
     }
 
     public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide()
     {
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
-        $this->builder->createOneToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
-                          ->mappedBy('test')
-                          ->fetchExtraLazy()
-                          ->isPrimaryKey()
-                          ->build();
+        $this
+            ->builder
+            ->createOneToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+            ->mappedBy('test')
+            ->fetchExtraLazy()
+            ->isPrimaryKey()
+            ->build();
     }
 
     public function testCreateManyToMany()

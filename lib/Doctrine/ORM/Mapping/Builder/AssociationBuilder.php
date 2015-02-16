@@ -186,11 +186,12 @@ class AssociationBuilder
     /**
      * Sets field as primary key.
      *
-     * @return AssociationBuilder
+     * @return self
      */
     public function isPrimaryKey()
     {
         $this->mapping['id'] = true;
+
         return $this;
     }
 
