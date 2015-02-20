@@ -941,6 +941,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $parentReflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
+            $this->reflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
         }
 
         foreach ($this->fieldMappings as $field => $mapping) {

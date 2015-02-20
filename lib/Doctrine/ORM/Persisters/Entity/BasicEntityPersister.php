@@ -613,10 +613,13 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
+            if (isset($this->class->embeddedClasses[$field])) {
+                continue;
+            }
+
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
-
                 $columnName = $this->class->columnNames[$field];
                 $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
@@ -1417,6 +1420,10 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($this->class->reflFields as $name => $field) {
             if ($this->class->isVersioned && $this->class->versionField == $name) {
+                continue;
+            }
+
+            if (isset($this->class->embeddedClasses[$name])) {
                 continue;
             }
 

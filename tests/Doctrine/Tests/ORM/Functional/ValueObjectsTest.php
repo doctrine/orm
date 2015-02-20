@@ -24,6 +24,14 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    public function testMetadataHasReflectionEmbeddablesAccessible()
+    {
+        $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person');
+
+        $this->assertInstanceOf('Doctrine\Common\Reflection\RuntimePublicReflectionProperty', $classMetadata->getReflectionProperty('address'));
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\ReflectionEmbeddedProperty', $classMetadata->getReflectionProperty('address.street'));
+    }
+
     public function testCRUD()
     {
         $person = new DDC93Person();
