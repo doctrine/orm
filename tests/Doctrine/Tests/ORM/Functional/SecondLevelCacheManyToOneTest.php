@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\Cache\ComplexAction;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -170,6 +171,58 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals('exec', $entity->getAction()->getName());
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
 
+    public function testPutAndLoadNonCacheableCompositeManyToOne()
+    {
+        $this->assertNull($this->cache->getEntityCacheRegion(Action::CLASSNAME));
+        $this->assertNull($this->cache->getEntityCacheRegion(ComplexAction::CLASSNAME));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(Token::CLASSNAME));
+
+        $token  = new Token('token-hash');
+
+        $action1 = new Action('login');
+        $action2 = new Action('logout');
+        $action3 = new Action('rememberme');
+
+        $complexAction = new ComplexAction($action1, $action3, 'login,rememberme');
+
+        $complexAction->addToken($token);
+
+        $token->setAction($action2);
+
+        $this->_em->persist($token);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->getToken()));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action1->getId()));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action2->getId()));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action3->getId()));
+
+        $queryCount = $this->getCurrentQueryCount();
+        /**
+         * @var $entity Token
+         */
+        $entity = $this->_em->find(Token::CLASSNAME, $token->getToken());
+
+        $this->assertInstanceOf(Token::CLASSNAME, $entity);
+        $this->assertEquals('token-hash', $entity->getToken());
+
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertInstanceOf(Action::CLASSNAME, $entity->getAction());
+        $this->assertInstanceOf(ComplexAction::CLASSNAME, $entity->getComplexAction());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertInstanceOf(Action::CLASSNAME, $entity->getComplexAction()->getAction1());
+        $this->assertInstanceOf(Action::CLASSNAME, $entity->getComplexAction()->getAction2());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->assertEquals('login', $entity->getComplexAction()->getAction1()->getName());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals('rememberme', $entity->getComplexAction()->getAction2()->getName());
+        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
 }

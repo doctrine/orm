@@ -41,12 +41,35 @@ class Token
      */
     protected $action;
 
+    /**
+     * @ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
+     * @JoinColumns({
+     *   @JoinColumn(name="complex_action1_id", referencedColumnName="action1_id"),
+     *   @JoinColumn(name="complex_action2_id", referencedColumnName="action2_id")
+     * })
+     * @var ComplexAction
+     */
+    protected $complexAction;
+
     public function __construct($token, Client $client = null)
     {
-        $this->token     = $token;
         $this->logins    = new ArrayCollection();
+        $this->token     = $token;
         $this->client    = $client;
         $this->expiresAt = new \DateTime(date('Y-m-d H:i:s', strtotime("+7 day")));
+    }
+
+    /**
+     * @return ComplexAction
+     */
+    public function getComplexAction()
+    {
+        return $this->complexAction;
+    }
+
+    public function setComplexAction(ComplexAction $complexAction)
+    {
+        $this->complexAction = $complexAction;
     }
 
     /**
@@ -94,15 +117,5 @@ class Token
     public function setToken($token)
     {
         $this->token = $token;
-    }
-
-    public function setExpiresAt(DateTime $expiresAt)
-    {
-        $this->expiresAt = $expiresAt;
-    }
-
-    public function setClient(Client $client)
-    {
-        $this->client = $client;
     }
 }
