@@ -697,7 +697,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null,  $toArray = false)
     {
         $this->switchPersisterContext(null, $limit);
 
@@ -710,7 +710,12 @@ class BasicEntityPersister implements EntityPersister
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        $hydrator = $this->em->newHydrator($this->currentPersisterContext->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        if($toArray){
+            $hydrator = $this->em->newHydrator($this->currentPersisterContext->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        }else{
+            $hydrator = $this->em->newHydrator(Query::HYDRATE_ARRAY);
+        }
+
         $entities = $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, $hints);
 
         return $entities ? $entities[0] : null;
@@ -869,7 +874,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null, $toArray = false)
     {
         $this->switchPersisterContext($offset, $limit);
 
@@ -877,10 +882,18 @@ class BasicEntityPersister implements EntityPersister
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
-        $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        if($toArray){
+            $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        }else{
+            $hydrator = $this->em->newHydrator(Query::HYDRATE_ARRAY);
+        }
 
         return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
+
+
+
+
 
     /**
      * {@inheritdoc}
