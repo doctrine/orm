@@ -91,7 +91,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
         if (null === $embeddedObject) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
 
-            $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);
+            $embeddedObject = $this->instantiator->instantiate($this->class);
 
             $this->parentProperty->setValue($object, $embeddedObject);
         }
