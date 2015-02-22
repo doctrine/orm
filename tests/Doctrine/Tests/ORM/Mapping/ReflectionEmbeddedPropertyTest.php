@@ -81,18 +81,6 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
                 ),
                 'Doctrine\\Tests\\Models\\Generic\\BooleanModel'
             ),
-            // reflection on embeddables that have properties defined in abstract ancestors:
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
-                    'id'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\AbstractEmbeddable',
-                    'propertyInAbstractClass'
-                ),
-                'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
-            ),
             array(
                 $this->getReflectionProperty(
                     'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
