@@ -399,17 +399,17 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->getToken()));
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $entity = $this->_em->find(Token::CLASSNAME, $token->getToken());
+        $entity = $this->_em->find(Token::CLASSNAME, $token->token);
 
         $this->assertInstanceOf(Token::CLASSNAME, $entity);
-        $this->assertEquals('token-hash', $entity->getToken());
+        $this->assertEquals('token-hash', $entity->token);
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertCount(2, $entity->getLogins());
+        $this->assertCount(2, $entity->logins);
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }

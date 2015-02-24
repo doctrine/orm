@@ -158,17 +158,17 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->getToken()));
-        $this->assertFalse($this->cache->containsEntity(Token::CLASSNAME, $action->getId()));
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
+        $this->assertFalse($this->cache->containsEntity(Token::CLASSNAME, $action->id));
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity = $this->_em->find(Token::CLASSNAME, $token->getToken());
+        $entity = $this->_em->find(Token::CLASSNAME, $token->token);
 
         $this->assertInstanceOf(Token::CLASSNAME, $entity);
-        $this->assertEquals('token-hash', $entity->getToken());
+        $this->assertEquals('token-hash', $entity->token);
 
         $this->assertInstanceOf(Action::CLASSNAME, $entity->getAction());
-        $this->assertEquals('exec', $entity->getAction()->getName());
+        $this->assertEquals('exec', $entity->getAction()->name);
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
@@ -189,26 +189,26 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 
         $complexAction->addToken($token);
 
-        $token->setAction($action2);
+        $token->action = $action2;
 
         $this->_em->persist($token);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->getToken()));
-        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action1->getId()));
-        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action2->getId()));
-        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action3->getId()));
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action1->id));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action2->id));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action3->id));
 
         $queryCount = $this->getCurrentQueryCount();
         /**
          * @var $entity Token
          */
-        $entity = $this->_em->find(Token::CLASSNAME, $token->getToken());
+        $entity = $this->_em->find(Token::CLASSNAME, $token->token);
 
         $this->assertInstanceOf(Token::CLASSNAME, $entity);
-        $this->assertEquals('token-hash', $entity->getToken());
+        $this->assertEquals('token-hash', $entity->token);
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
@@ -220,9 +220,9 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(Action::CLASSNAME, $entity->getComplexAction()->getAction2());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $this->assertEquals('login', $entity->getComplexAction()->getAction1()->getName());
+        $this->assertEquals('login', $entity->getComplexAction()->getAction1()->name);
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
-        $this->assertEquals('rememberme', $entity->getComplexAction()->getAction2()->getName());
+        $this->assertEquals('rememberme', $entity->getComplexAction()->getAction2()->name);
         $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
 }

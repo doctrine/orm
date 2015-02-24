@@ -15,18 +15,18 @@ class Login
      * @GeneratedValue
      * @Column(type="integer")
      */
-    protected $id;
+    public $id;
 
     /**
      * @Column
      */
-    private $name;
+    public $name;
 
     /**
      * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
      * @JoinColumn(name="token_id", referencedColumnName="token")
      */
-    private $token;
+    public $token;
 
     public function __construct($name)
     {
@@ -34,30 +34,10 @@ class Login
     }
 
     /**
-     * @param Token $token
+     * @return Token
      */
-    public function setToken(Token $token)
+    public function getToken()
     {
-        $this->token = $token;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($nae)
-    {
-        $this->name = $nae;
+        return $this->token;
     }
 }

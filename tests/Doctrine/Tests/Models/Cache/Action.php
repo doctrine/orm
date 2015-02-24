@@ -17,17 +17,17 @@ class Action
      * @GeneratedValue
      * @Column(type="integer")
      */
-    protected $id;
+    public $id;
 
     /**
      * @Column
      */
-    private $name;
+    public $name;
 
     /**
      * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="action")
      */
-    private $tokens;
+    public $tokens;
 
     public function __construct($name)
     {
@@ -38,31 +38,6 @@ class Action
     public function addToken(Token $token)
     {
         $this->tokens[] = $token;
-        $token->setAction($this);
-    }
-
-    public function getTokens()
-    {
-        return $this->tokens;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($nae)
-    {
-        $this->name = $nae;
+        $token->action = $this;
     }
 }

@@ -16,30 +16,30 @@ class Token
      * @Id
      * @Column(type="string")
      */
-    protected $token;
+    public $token;
 
     /**
      * @Column(type="date")
      */
-    protected $expiresAt;
+    public $expiresAt;
 
     /**
      * @OneToOne(targetEntity="Client")
      */
-    protected $client;
+    public $client;
 
     /**
      * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
      * @var array
      */
-    protected $logins;
+    public $logins;
 
     /**
      * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
      * @JoinColumn(name="action_id", referencedColumnName="id")
      * @var array
      */
-    protected $action;
+    public $action;
 
     /**
      * @ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
@@ -49,7 +49,7 @@ class Token
      * })
      * @var ComplexAction
      */
-    protected $complexAction;
+    public $complexAction;
 
     public function __construct($token, Client $client = null)
     {
@@ -60,6 +60,31 @@ class Token
     }
 
     /**
+     * @param Login $login
+     */
+    public function addLogin(Login $login)
+    {
+        $this->logins[] = $login;
+        $login->token = $this;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @return Action
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
      * @return ComplexAction
      */
     public function getComplexAction()
@@ -67,55 +92,4 @@ class Token
         return $this->complexAction;
     }
 
-    public function setComplexAction(ComplexAction $complexAction)
-    {
-        $this->complexAction = $complexAction;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLogins()
-    {
-        return $this->logins;
-    }
-
-    /**
-     * @param Login $login
-     */
-    public function addLogin(Login $login)
-    {
-        $this->logins[] = $login;
-        $login->setToken($this);
-    }
-
-    public function getAction()
-    {
-        return $this->action;
-    }
-
-    public function setAction(Action $action)
-    {
-        $this->action = $action;
-    }
-
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    public function getExpiresAt()
-    {
-        return $this->expiresAt;
-    }
-
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    public function setToken($token)
-    {
-        $this->token = $token;
-    }
 }
