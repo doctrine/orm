@@ -109,6 +109,25 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
+    public function testSimpleSelectWithFromIndexBy()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'u.id')
+            ->select('u.id', 'u.username');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id');
+    }
+
+    public function testSimpleSelectWithIndexBy()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->indexBy('u', 'u.id')
+            ->select('u.id', 'u.username');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id');
+    }
+
     public function testSimpleUpdate()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -182,6 +201,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsGroup', 'g');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsGroup g');
+    }
+
+    public function testMultipleFromWithIndexBy()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'g')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->from('Doctrine\Tests\Models\CMS\CmsGroup', 'g')
+            ->indexBy('g', 'g.id');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsGroup g INDEX BY g.id');
     }
 
     public function testMultipleFromWithJoin()

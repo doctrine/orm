@@ -882,6 +882,50 @@ class QueryBuilder
     }
 
     /**
+     * Updates a query root corresponding to an entity setting its index by. This method is intended to be used with
+     * EntityRepository->createQueryBuilder(), which creates the initial FROM clause and do not allow you to update it
+     * setting an index by.
+     *
+     * <code>
+     *     $qb = $userRepository->createQueryBuilder('u')
+     *         ->indexBy('u', 'u.id');
+     *
+     *     // Is equivalent to...
+     *
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u', 'u.id');
+     * </code>
+     *
+     * @param string $alias   The root alias of the class.
+     * @param string $indexBy The index for the from.
+     *
+     * @return QueryBuilder This QueryBuilder instance.
+     *
+     * @throws Query\QueryException
+     */
+    public function indexBy($alias, $indexBy)
+    {
+        $rootAliases = $this->getRootAliases();
+
+        if (!in_array($alias, $rootAliases)) {
+            throw new Query\QueryException(
+                sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
+            );
+        }
+
+        foreach ($this->_dqlParts['from'] as &$fromClause) {
+            if ($fromClause->getAlias() !== $alias) {
+                continue;
+            }
+
+            $fromClause = new Expr\From($fromClause->getFrom(), $fromClause->getAlias(), $indexBy);
+        }
+
+        return $this;
+    }
+
+    /**
      * Creates and adds a join over an entity association to the query.
      *
      * The entities in the joined association will be fetched as part of the query
