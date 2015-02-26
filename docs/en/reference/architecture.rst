@@ -83,7 +83,7 @@ be any regular PHP class observing the following restrictions:
 -  An entity class must not implement ``__wakeup`` or
    :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
    Also consider implementing
-   `Serializable <http://de3.php.net/manual/en/class.serializable.php>`_
+   `Serializable <http://php.net/manual/en/class.serializable.php>`_
    instead.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
