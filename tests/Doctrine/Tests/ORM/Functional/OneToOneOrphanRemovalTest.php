@@ -89,4 +89,45 @@ class OneToOneOrphanRemovalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(0, count($result), 'CmsEmail should be removed by orphanRemoval');
     }
+
+    public function testOrphanRemovalWhenExplicitlyNonUniqueAssociation()
+    {
+        $user = new CmsUser();
+        $user->name = "Benjamin";
+        $user->username = "beberlei";
+        $user->status = "something";
+
+        $address = new CmsAddress();
+        $address->country = 'Canada';
+        $address->city = 'Kingston';
+        $address->zip = 'V7L1L7';
+        $address->street = 'Princess Street';
+        $address->setUser($user);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->assertTrue($this->_em->contains($address));
+
+        $newAddress = new CmsAddress();
+        $newAddress->country = 'Canada';
+        $newAddress->city = 'Vancouver';
+        $newAddress->zip = 'V4A9J6';
+        $newAddress->street = '21 Avenue';
+        $newAddress->setUser($user);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->assertFalse($this->_em->contains($address));
+
+        $this->_em->clear();
+
+        $query  = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a');
+        /** @var CmsAddress[] $result */
+        $result = $query->getResult();
+
+        $this->assertEquals(1, count($result), 'There should be only one CmsAddress.');
+        $this->assertEquals($result[0]->getCity(), 'Vancouver');
+    }
 }

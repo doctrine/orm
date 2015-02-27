@@ -426,7 +426,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'name' => 'group_id',
                     'referencedColumnName' => 'id',
                     'nullable' => true,
-                    'unique' => true,
+                    'unique' => false,
                     'onDelete' => 'CASCADE',
                     'columnDefinition' => NULL,
                   ),

@@ -91,7 +91,7 @@ class CmsAddress
 
     /**
      * @OneToOne(targetEntity="CmsUser", inversedBy="address")
-     * @JoinColumn(referencedColumnName="id")
+     * @JoinColumn(referencedColumnName="id", unique=false)
      */
     public $user;
 
