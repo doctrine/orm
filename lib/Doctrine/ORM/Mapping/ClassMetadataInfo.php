@@ -934,7 +934,7 @@ class ClassMetadataInfo implements ClassMetadata
                         $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
                         $embeddedClass['originalField']
                     ),
-                    $embeddedClass['class']
+                    $this->embeddedClasses[$embeddedClass['declaredField']]['class']
                 );
 
                 continue;
