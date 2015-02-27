@@ -151,7 +151,7 @@ class CmsUser
     public $address;
     /**
      * @OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
-     * @JoinColumn(referencedColumnName="id", nullable=true)
+     * @JoinColumn(referencedColumnName="id", nullable=true, unique=true)
      */
     public $email;
     /**

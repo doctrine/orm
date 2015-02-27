@@ -1378,14 +1378,14 @@ class ClassMetadataInfo implements ClassMetadata
             $uniqueContraintColumns = array();
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
-                    if (count($mapping['joinColumns']) == 1) {
-                        if ( ! isset($mapping['id']) || ! $mapping['id']) {
-                            $joinColumn['unique'] = true;
+                        if (count($mapping['joinColumns']) == 1) {
+                            if ( (! isset($mapping['id']) || ! $mapping['id'])) {
+                                $joinColumn['unique'] = isset($joinColumn['unique']) ? $joinColumn['unique'] : true ;
+                            }
+                        } else {
+                            $uniqueContraintColumns[] = $joinColumn['name'];
                         }
-                    } else {
-                        $uniqueContraintColumns[] = $joinColumn['name'];
                     }
-                }
 
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName']);
