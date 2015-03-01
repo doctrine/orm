@@ -250,47 +250,5 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Now the collection should be refreshed with correct count
         $this->assertEquals(4, count($user2->getPhonenumbers()));
     }
-
-    public function testReusedSplObjectHashDoesNotConfuseUnitOfWork()
-    {
-        $hash1 = $this->subRoutine($this->_em);
-        if (!defined('HHVM_VERSION')) {
-            // See comment below about PersistentCollection
-            gc_collect_cycles();
-        }
-
-        $user1 = new CmsUser;
-        $user1->status = 'dev';
-        $user1->username = 'jwage';
-        $user1->name = 'Jonathan W.';
-        $hash2 = spl_object_hash($user1);
-        $this->assertEquals($hash1, $hash2); // Hash reused!
-        $this->_em->persist($user1);
-        $this->_em->flush();
-    }
-
-    private function subRoutine($em) {
-        $user = new CmsUser;
-        $user->status = 'dev';
-        $user->username = 'romanb';
-        $user->name = 'Roman B.';
-        $em->persist($user);
-        $em->flush();
-
-        // The PersistentCollection references its owner, hence without breaking
-        // the cycle the object will not (yet) be garbage collected and thus
-        // the object hash is not reused. This is not a memory leak!
-        if (defined('HHVM_VERSION')) {
-            $ed = $this->_em->getUnitOfWork()->getOriginalEntityData($user);
-            $ed['phonenumbers']->setOwner(null, array('inversedBy' => 1));
-            $ed['articles']->setOwner(null, array('inversedBy' => 1));
-            $ed['groups']->setOwner(null, array('inversedBy' => 1));
-        }
-
-        $em->remove($user);
-        $em->flush();
-
-        return spl_object_hash($user);
-    }
 }
 
