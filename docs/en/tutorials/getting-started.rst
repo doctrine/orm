@@ -196,7 +196,7 @@ Doctrine command-line tool:
     $ cd project/
     $ vendor/bin/doctrine orm:schema-tool:create
 
-At this point no entitiy metadata exists in `src` so you will see a message like 
+At this point no entity metadata exists in `src` so you will see a message like 
 "No Metadata Classes to process." Don't worry, we'll create a Product entity and 
 corresponding metadata in the next section.
 
