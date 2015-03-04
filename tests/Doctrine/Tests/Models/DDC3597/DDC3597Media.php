@@ -10,6 +10,8 @@ namespace Doctrine\Tests\Models\DDC3597;
  */
 abstract class DDC3597Media extends DDC3597Root {
 
+    const CLASSNAME = __CLASS__;
+
     /**
      * @var string
      *

@@ -2,23 +2,21 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\DDC3597\DDC3597Root;
-use Doctrine\Tests\Models\DDC3597\DDC3597Media;
 use Doctrine\Tests\Models\DDC3597\DDC3597Image;
+use Doctrine\Tests\Models\DDC3597\DDC3597Media;
+use Doctrine\Tests\Models\DDC3597\DDC3597Root;
 
 /**
  * @group DDC-117
  */
-class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
-{
+class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
 
-    protected function setUp()
-    {
+    protected function setUp() {
         parent::setUp();
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(DDC3597Root::class),
-            $this->_em->getClassMetadata(DDC3597Media::class),
-            $this->_em->getClassMetadata(DDC3597Image::class)
+            $this->_em->getClassMetadata(DDC3597Root::CLASSNAME),
+            $this->_em->getClassMetadata(DDC3597Media::CLASSNAME),
+            $this->_em->getClassMetadata(DDC3597Image::CLASSNAME)
         ));
     }
 
@@ -38,8 +36,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         //request entity
-        $imageEntity = $this->_em->find(DDC3597Image::class, $imageEntity->getId());
-        $this->assertInstanceOf(DDC3597Image::class, $imageEntity);
+        $imageEntity = $this->_em->find(DDC3597Image::CLASSNAME, $imageEntity->getId());
+        $this->assertInstanceOf(DDC3597Image::CLASSNAME, $imageEntity);
 
         //cleanup
         $this->_em->remove($imageEntity);
@@ -47,8 +45,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         //check delete
-        $imageEntity = $this->_em->find(DDC3597Image::class, $imageEntity->getId());
+        $imageEntity = $this->_em->find(DDC3597Image::CLASSNAME, $imageEntity->getId());
         $this->assertNull($imageEntity);
     }
-
 }
