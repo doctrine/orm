@@ -247,7 +247,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                  * which are participated in order by statement, arent selected in
                  * main select statement.
                  */
-                if($this->platform->getName() == 'mysql'){
+                if ($this->platform->getName() == 'mysql') {
                     $selectFields = array_merge($sqlIdentifier);
                 } else {
                     $selectFields = array_merge($sqlIdentifier, $sqlOrderColumns);
