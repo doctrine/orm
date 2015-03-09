@@ -217,12 +217,48 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         if (count($orderBy)) {
-            $sql = sprintf(
-                'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
-                implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
-                $innerSql,
-                implode(', ', $orderBy)
-            );
+
+            // http://www.doctrine-project.org/jira/browse/DDC-1958
+            if ($this->platform->getName() == 'postgresql' || $this->platform->getName() == 'oracle') {
+                if (preg_match('/SELECT (.*?) FROM /i', $innerSql, $regs)) {
+                    $selectedParts = explode(",", $regs[1]);
+                }
+                $globalOrderByStmt = SqlWalker::walkOrderByClause($AST->orderByClause);
+
+                /*
+                 * Adding row_number in select statement, instead of selecting all fields in order clause
+                 * being away from the DISTINCTION leaks, (e.g. 1-a, a 1-b)
+                 */
+                $selectedParts[] = sprintf("row_number() OVER(%s) as rownum ", $globalOrderByStmt);
+
+                $selectClause = implode(',', $selectedParts);
+                $innerSql = preg_replace("/^\s*select .+ from (.*)$/im", "SELECT {$selectClause} FROM $1", $innerSql);
+
+                // Grouping by primary key and min(rownumber) for correct result
+                $sql = sprintf(
+                    'SELECT %s FROM (%s) dctrn_result GROUP BY %s ORDER BY %s',
+                    implode(', ', array_merge($sqlIdentifier, ['min(rownum) as minrow'])),
+                    $innerSql, implode(',', $sqlIdentifier),
+                    'minrow asc');
+            } else {
+
+                /*
+                 * MySQL does'nt reset the ordering of subselect even when the fields
+                 * which are participated in order by statement, arent selected in
+                 * main select statement.
+                 */
+                if($this->platform->getName() == 'mysql'){
+                    $selectFields = array_merge($sqlIdentifier);
+                } else {
+                    $selectFields = array_merge($sqlIdentifier, $sqlOrderColumns);
+                }
+                $sql = sprintf(
+                    'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+                    implode(', ', $selectFields),
+                    $innerSql,
+                    implode(', ', $orderBy)
+                );
+            }
         }
 
         return $sql;
