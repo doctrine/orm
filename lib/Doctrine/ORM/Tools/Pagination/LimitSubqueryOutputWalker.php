@@ -237,7 +237,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 // Grouping by primary key and min(rownumber) for correct result
                 $sql = sprintf(
                     'SELECT %s FROM (%s) dctrn_result GROUP BY %s ORDER BY %s',
-                    implode(', ', array_merge($sqlIdentifier, ['min(rownum) as minrow'])),
+                    implode(', ', array_merge($sqlIdentifier, array('min(rownum) as minrow'))),
                     $innerSql, implode(',', $sqlIdentifier),
                     'minrow asc');
             } else {
