@@ -686,6 +686,163 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 ->build();
     }
 
+    public function testOrphanRemovalOnCreateOneToOne()
+    {
+        $this->assertIsFluent(
+            $this->builder
+                ->createOneToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
+                ->orphanRemoval()
+                ->build()
+        );
+
+        $this->assertEquals(array(
+            'groups' => array(
+                'fieldName' => 'groups',
+                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'cascade' => array (),
+                'fetch' => 2,
+                'joinColumns' => array (
+                  0 =>
+                  array (
+                    'name' => 'group_id',
+                    'referencedColumnName' => 'id',
+                    'nullable' => true,
+                    'unique' => true,
+                    'onDelete' => 'CASCADE',
+                    'columnDefinition' => NULL,
+                  ),
+                ),
+                'type' => 1,
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'isOwningSide' => true,
+                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'isCascadeRemove' => true,
+                'isCascadePersist' => false,
+                'isCascadeRefresh' => false,
+                'isCascadeMerge' => false,
+                'isCascadeDetach' => false,
+                'sourceToTargetKeyColumns' =>
+                array (
+                  'group_id' => 'id',
+                ),
+                'joinColumnFieldNames' =>
+                array (
+                  'group_id' => 'group_id',
+                ),
+                'targetToSourceKeyColumns' =>
+                array (
+                  'id' => 'group_id',
+                ),
+                'orphanRemoval' => true
+            ),
+        ), $this->cm->associationMappings);
+    }
+
+    public function testOrphanRemovalOnCreateOneToMany()
+    {
+        $this->assertIsFluent(
+            $this->builder
+                ->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+                ->mappedBy('test')
+                ->orphanRemoval()
+                ->build()
+        );
+
+        $this->assertEquals(array(
+            'groups' =>
+            array(
+                'fieldName' => 'groups',
+                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'mappedBy' => 'test',
+                'type' => 4,
+                'inversedBy' => NULL,
+                'isOwningSide' => false,
+                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'fetch' => 2,
+                'cascade' => array(),
+                'isCascadeRemove' => true,
+                'isCascadePersist' => false,
+                'isCascadeRefresh' => false,
+                'isCascadeMerge' => false,
+                'isCascadeDetach' => false,
+                'orphanRemoval' => true,
+            ),
+        ), $this->cm->associationMappings);
+    }
+
+    public function testExceptionOnOrphanRemovalOnManyToOne()
+    {
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+
+        $this->builder
+            ->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+            ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
+            ->orphanRemoval()
+            ->build();
+    }
+
+    public function testOrphanRemovalOnManyToMany()
+    {
+        $this->builder
+            ->createManyToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
+            ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
+            ->orphanRemoval()
+            ->build();
+
+        $this->assertEquals(array(
+            'groups' => array(
+                'fieldName' => 'groups',
+                'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
+                'cascade' => array(),
+                'fetch' => 2,
+                'joinTable' => array(
+                    'joinColumns' => array(
+                        0 => array(
+                            'name' => 'group_id',
+                            'referencedColumnName' => 'id',
+                            'nullable' => true,
+                            'unique' => false,
+                            'onDelete' => 'CASCADE',
+                            'columnDefinition' => NULL,
+                        ),
+                    ),
+                    'inverseJoinColumns' => array(
+                        0 => array(
+                            'name' => 'cmsgroup_id',
+                            'referencedColumnName' => 'id',
+                            'onDelete' => 'CASCADE'
+                        )
+                    ),
+                    'name' => 'cmsuser_cmsgroup',
+                ),
+                'type' => 8,
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'isOwningSide' => true,
+                'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'isCascadeRemove' => false,
+                'isCascadePersist' => false,
+                'isCascadeRefresh' => false,
+                'isCascadeMerge' => false,
+                'isCascadeDetach' => false,
+                'isOnDeleteCascade' => true,
+                'relationToSourceKeyColumns' => array(
+                    'group_id' => 'id',
+                ),
+                'joinTableColumns' => array(
+                    0 => 'group_id',
+                    1 => 'cmsgroup_id',
+                ),
+                'relationToTargetKeyColumns' => array(
+                    'cmsgroup_id' => 'id',
+                ),
+                'orphanRemoval' => true,
+            ),
+        ), $this->cm->associationMappings);
+    }
+
     public function assertIsFluent($ret)
     {
         $this->assertSame($this->builder, $ret, "Return Value has to be same instance as used builder");
