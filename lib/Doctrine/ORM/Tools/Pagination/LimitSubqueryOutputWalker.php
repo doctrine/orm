@@ -225,11 +225,16 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 }
                 $globalOrderByStmt = SqlWalker::walkOrderByClause($AST->orderByClause);
 
+                $innerRowNumberSelectPart = ' ROW_NUMBER() OVER(%s) as ROWNUM';
+                $mainRowNumberSelectPart = 'MIN(ROWNUM) AS MINROWNUM';
+                $mainRowNumberOrderPart = 'MINROWNUM ASC';
+
+
                 /*
                  * Adding row_number in select statement, instead of selecting all fields in order clause
                  * being away from the DISTINCTION leaks, (e.g. 1-a, a 1-b)
                  */
-                $selectedParts[] = sprintf("row_number() OVER(%s) as rownum ", $globalOrderByStmt);
+                $selectedParts[] = sprintf($innerRowNumberSelectPart, $globalOrderByStmt);
 
                 $selectClause = implode(',', $selectedParts);
                 $innerSql = preg_replace("/^\s*select .+ from (.*)$/im", "SELECT {$selectClause} FROM $1", $innerSql);
@@ -237,9 +242,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 // Grouping by primary key and min(rownumber) for correct result
                 $sql = sprintf(
                     'SELECT %s FROM (%s) dctrn_result GROUP BY %s ORDER BY %s',
-                    implode(', ', array_merge($sqlIdentifier, array('min(rownum) as minrow'))),
+                    implode(', ', array_merge($sqlIdentifier, array($mainRowNumberSelectPart))),
                     $innerSql, implode(',', $sqlIdentifier),
-                    'minrow asc');
+                    $mainRowNumberOrderPart);
             } else {
 
                 /*
