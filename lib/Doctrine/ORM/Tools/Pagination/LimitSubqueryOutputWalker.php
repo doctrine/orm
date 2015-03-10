@@ -225,7 +225,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 }
                 $globalOrderByStmt = SqlWalker::walkOrderByClause($AST->orderByClause);
 
-                $innerRowNumberSelectPart = ' ROW_NUMBER() OVER(%s) as ROWNUM';
+                $innerRowNumberSelectPart = ' ROW_NUMBER() OVER(%s) AS ROWNUM';
                 $mainRowNumberSelectPart = 'MIN(ROWNUM) AS MINROWNUM';
                 $mainRowNumberOrderPart = 'MINROWNUM ASC';
 

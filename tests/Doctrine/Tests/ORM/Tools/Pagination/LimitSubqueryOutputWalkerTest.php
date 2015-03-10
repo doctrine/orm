@@ -33,7 +33,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT id_0, MIN(ROWNUM) AS MINROWNUM FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, m0_.author_id AS author_id_5, m0_.category_id AS category_id_6, ROW_NUMBER() OVER( ORDER BY m0_.title ASC) as ROWNUM FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result GROUP BY id_0 ORDER BY MINROWNUM ASC", $limitQuery->getSql()
+            "SELECT id_0, MIN(ROWNUM) AS MINROWNUM FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, m0_.author_id AS author_id_5, m0_.category_id AS category_id_6, ROW_NUMBER() OVER( ORDER BY m0_.title ASC) AS ROWNUM FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result GROUP BY id_0 ORDER BY MINROWNUM ASC", $limitQuery->getSql()
         );
 
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
@@ -51,7 +51,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT id_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER( ORDER BY sclr_0 ASC) as ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC) dctrn_result GROUP BY id_1 ORDER BY MINROWNUM ASC",
+            "SELECT id_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER( ORDER BY sclr_0 ASC) AS ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC) dctrn_result GROUP BY id_1 ORDER BY MINROWNUM ASC",
             $limitQuery->getSql()
         );
 
@@ -70,7 +70,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT id_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER( ORDER BY sclr_0 ASC, u1_.id DESC) as ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC, u1_.id DESC) dctrn_result GROUP BY id_1 ORDER BY MINROWNUM ASC",
+            "SELECT id_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER( ORDER BY sclr_0 ASC, u1_.id DESC) AS ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC, u1_.id DESC) dctrn_result GROUP BY id_1 ORDER BY MINROWNUM ASC",
             $limitQuery->getSql()
         );
 
@@ -89,7 +89,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT id_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER( ORDER BY sclr_0 ASC, u1_.id DESC) as ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC, u1_.id DESC) dctrn_result GROUP BY id_1 ORDER BY MINROWNUM ASC",
+            "SELECT id_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER( ORDER BY sclr_0 ASC, u1_.id DESC) AS ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY sclr_0 ASC, u1_.id DESC) dctrn_result GROUP BY id_1 ORDER BY MINROWNUM ASC",
             $limitQuery->getSql()
         );
 
@@ -118,7 +118,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT ID_0, MIN(ROWNUM) AS MINROWNUM FROM (SELECT m0_.id AS ID_0, m0_.title AS TITLE_1, c1_.id AS ID_2, a2_.id AS ID_3, a2_.name AS NAME_4, m0_.author_id AS AUTHOR_ID_5, m0_.category_id AS CATEGORY_ID_6, ROW_NUMBER() OVER( ORDER BY m0_.title ASC) as ROWNUM FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result GROUP BY ID_0 ORDER BY MINROWNUM ASC", $limitQuery->getSql()
+            "SELECT ID_0, MIN(ROWNUM) AS MINROWNUM FROM (SELECT m0_.id AS ID_0, m0_.title AS TITLE_1, c1_.id AS ID_2, a2_.id AS ID_3, a2_.name AS NAME_4, m0_.author_id AS AUTHOR_ID_5, m0_.category_id AS CATEGORY_ID_6, ROW_NUMBER() OVER( ORDER BY m0_.title ASC) AS ROWNUM FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC) dctrn_result GROUP BY ID_0 ORDER BY MINROWNUM ASC", $limitQuery->getSql()
         );
 
         $this->entityManager->getConnection()->setDatabasePlatform($odp);
@@ -137,7 +137,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT ID_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2, ROW_NUMBER() OVER( ORDER BY SCLR_0 ASC) as ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR_0 ASC) dctrn_result GROUP BY ID_1 ORDER BY MINROWNUM ASC",
+            "SELECT ID_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2, ROW_NUMBER() OVER( ORDER BY SCLR_0 ASC) AS ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR_0 ASC) dctrn_result GROUP BY ID_1 ORDER BY MINROWNUM ASC",
             $limitQuery->getSql()
         );
 
@@ -157,7 +157,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            "SELECT ID_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2, ROW_NUMBER() OVER( ORDER BY SCLR_0 ASC, u1_.id DESC) as ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR_0 ASC, u1_.id DESC) dctrn_result GROUP BY ID_1 ORDER BY MINROWNUM ASC",
+            "SELECT ID_1, MIN(ROWNUM) AS MINROWNUM FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2, ROW_NUMBER() OVER( ORDER BY SCLR_0 ASC, u1_.id DESC) AS ROWNUM FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id ORDER BY SCLR_0 ASC, u1_.id DESC) dctrn_result GROUP BY ID_1 ORDER BY MINROWNUM ASC",
             $limitQuery->getSql()
         );
 
