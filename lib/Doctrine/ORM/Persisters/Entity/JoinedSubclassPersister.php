@@ -546,7 +546,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if (isset($this->class->fieldMappings[$name]['inherited'])
                     && ! isset($this->class->fieldMappings[$name]['id'])
                     || isset($this->class->associationMappings[$name]['inherited'])
-                    || ($this->class->isVersioned && $this->class->versionField == $name)) {
+                    || ($this->class->isVersioned && $this->class->versionField == $name)
+                    || isset($this->class->embeddedClasses[$name])) {
                 continue;
             }
 
