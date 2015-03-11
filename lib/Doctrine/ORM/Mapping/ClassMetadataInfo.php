@@ -3221,6 +3221,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->embeddedClasses[$mapping['fieldName']] = array(
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
+            'nullable' => isset($mapping['nullable']) ? $mapping['nullable'] : null,
             'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
             'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
         );
@@ -3245,6 +3246,10 @@ class ClassMetadataInfo implements ClassMetadata
                 ? $fieldMapping['originalField']
                 : $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
+
+            if ($this->embeddedClasses[$property]['nullable'] === true) {
+                $fieldMapping['nullable'] = $this->embeddedClasses[$property]['nullable'];
+            }
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
@@ -3317,5 +3322,43 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return $sequencePrefix;
+    }
+
+    /**
+     * Configures the entity with the data values according with the class configuration
+     *
+     * @param object $entity
+     * @param array $data
+     */
+    public function populateEntity($entity, array $data)
+    {
+        foreach ($data as $field => $value) {
+            if ($this->shouldUseData($field, $value)) {
+                $this->reflFields[$field]->setValue($entity, $value);
+            }
+        }
+    }
+
+    /**
+     * Returns if the data should be used to populate the entity
+     *
+     * @param string $field
+     * @param string $value
+     * @return boolean
+     */
+    private function shouldUseData($field, $value)
+    {
+        if ( ! isset($this->fieldMappings[$field])) {
+            return false;
+        }
+
+        if ($value !== null) {
+            return true;
+        }
+
+        return isset(
+            $this->fieldMappings[$field]['declaredField'],
+            $this->embeddedClasses[$name = $this->fieldMappings[$field]['declaredField']]
+        ) && $this->embeddedClasses[$name]['nullable'] !== true;
     }
 }

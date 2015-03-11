@@ -482,6 +482,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $parentClass->mapEmbedded(array(
                 'fieldName' => $prefix . '.' . $property,
                 'class' => $embeddableMetadata->name,
+                'nullable' => $embeddableClass['nullable'],
                 'columnPrefix' => $embeddableClass['columnPrefix'],
                 'declaredField' => $embeddableClass['declaredField']
                         ? $prefix . '.' . $embeddableClass['declaredField']

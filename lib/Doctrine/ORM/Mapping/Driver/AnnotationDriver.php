@@ -394,6 +394,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
                 $mapping['class'] = $embeddedAnnot->class;
                 $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
+                $mapping['nullable'] = $embeddedAnnot->nullable;
                 $metadata->mapEmbedded($mapping);
             }
 
