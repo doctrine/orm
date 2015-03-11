@@ -4,6 +4,7 @@ php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
   - hhvm
   - hhvm-nightly
 
@@ -14,7 +15,7 @@ env:
 
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '5.6' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
-  - if [[ $TRAVIS_PHP_VERSION != '5.6' && $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != 'hhvm-nightly' ]]; then phpenv config-rm xdebug.ini;  fi
+  - if [[ $TRAVIS_PHP_VERSION != '5.6' && $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != 'hhvm-nightly' && $TRAVIS_PHP_VERSION != '7.0' ]]; then phpenv config-rm xdebug.ini; fi
   - composer self-update
   - composer install --prefer-source --dev
 
@@ -36,4 +37,5 @@ matrix:
     - php: hhvm-nightly
       env: DB=mysqli # driver currently unsupported by HHVM
   allow_failures:
+    - php: 7.0
     - php: hhvm-nightly # hhvm-nightly currently chokes on composer installation
