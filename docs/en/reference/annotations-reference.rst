@@ -129,8 +129,7 @@ Optional attributes:
    -  ``comment``: The comment of the column in the schema (might not
       be supported by all vendors).
 
-   -  ``customSchemaOptions``: Array of additional schema options
-      which are mostly vendor specific.
+   -  ``collation``: The collation of the column (only supported by Drizzle, Mysql, PostgreSQL>=9.1, Sqlite and SQLServer).
 
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
