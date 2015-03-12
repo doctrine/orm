@@ -332,7 +332,7 @@ Optimistic locking is as easy as adding a version column:
 .. code-block:: php
 
     <?php
-    class Amount
+    class Account
     {
         /** @Column(type="integer") @Version */
         private $version;
