@@ -336,7 +336,7 @@ abstract class AbstractHydrator
             if ( ! isset($cacheKeyInfo['isScalar'])) {
                 $dqlAlias  = $cacheKeyInfo['dqlAlias'];
                 $type      = $cacheKeyInfo['type'];
-                $fieldName = $dqlAlias . '_' . $fieldName;
+                $fieldName = $dqlAlias . $this->getScalarFieldSeparator() . $fieldName;
                 $value     = $type
                     ? $type->convertToPHPValue($value, $this->_platform)
                     : $value;
@@ -346,6 +346,15 @@ abstract class AbstractHydrator
         }
 
         return $rowData;
+    }
+    
+    /**
+     * Return separation string used to generate scalar result keys
+     * @return string
+     */
+    protected function getScalarFieldSeparator()
+    {
+        return '_';
     }
 
     /**
