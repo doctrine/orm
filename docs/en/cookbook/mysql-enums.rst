@@ -96,7 +96,7 @@ For example for the previous enum type:
         const STATUS_VISIBLE = 'visible';
         const STATUS_INVISIBLE = 'invisible';
 
-        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
             return "ENUM('visible', 'invisible') COMMENT '(DC2Type:enumvisibility)'";
         }
@@ -148,7 +148,7 @@ You can generalize this approach easily to create a base class for enums:
         protected $name;
         protected $values = array();
 
-        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
             $values = array_map(function($val) { return "'".$val."'"; }, $this->values);
 

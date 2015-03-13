@@ -150,7 +150,7 @@ Now we're going to create the ``point`` type and implement all required methods.
             return self::POINT;
         }
 
-        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
             return 'POINT';
         }

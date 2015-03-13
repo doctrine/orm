@@ -24,7 +24,7 @@ you wish. Here is an example skeleton of such a custom type class:
     {
         const MYTYPE = 'mytype'; // modify to match your type name
     
-        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
             // return the SQL used to create your column type. To create a portable column type, use the $platform.
         }
