@@ -33,12 +33,12 @@ use Doctrine\ORM\Proxy\Proxy;
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
  *
+ * Internal note: Highly performance-sensitive code.
+ *
  * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- *
- * @internal Highly performance-sensitive code.
  */
 class ObjectHydrator extends AbstractHydrator
 {

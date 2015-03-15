@@ -376,9 +376,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      *
+     * Internal note: Order of the parameters must be the same as the order of the columns in getDeleteSql.
      * @override
-     *
-     * @internal Order of the parameters must be the same as the order of the columns in getDeleteSql.
      */
     protected function getDeleteSQLParameters(PersistentCollection $collection)
     {
@@ -440,7 +439,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Gets the SQL parameters for the corresponding SQL statement to delete the given
      * element from the given collection.
      *
-     * @internal Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
+     * Internal note: Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection
      * @param mixed                              $element
@@ -491,7 +490,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Gets the SQL parameters for the corresponding SQL statement to insert the given
      * element of the given collection into the database.
      *
-     * @internal Order of the parameters must be the same as the order of the columns in getInsertRowSql.
+     * Internal note: Order of the parameters must be the same as the order of the columns in getInsertRowSql.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection
      * @param mixed                              $element

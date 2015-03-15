@@ -56,13 +56,14 @@ use Doctrine\ORM\Cache\AssociationCacheEntry;
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
+ * Internal note: This class contains highly performance-sensitive code.
+ *
  * @since       2.0
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Rob Caiger <rob@clocal.co.uk>
- * @internal    This class contains highly performance-sensitive code.
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -120,10 +121,11 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash). This is used for calculating changesets
      * at commit time.
      *
+     * Internal note: Note that PHPs "copy-on-write" behavior helps a lot with memory usage.
+     *                A value will only really be copied if the value in the entity is modified
+     *                by the user.
+     *
      * @var array
-     * @internal Note that PHPs "copy-on-write" behavior helps a lot with memory usage.
-     *           A value will only really be copied if the value in the entity is modified
-     *           by the user.
      */
     private $originalEntityData = array();
 
@@ -2474,6 +2476,8 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Creates an entity. Used for reconstitution of persistent entities.
      *
+     * Internal note: Highly performance-sensitive method.
+     *
      * @ignore
      *
      * @param string $className The name of the entity class.
@@ -2481,8 +2485,6 @@ class UnitOfWork implements PropertyChangedListener
      * @param array  $hints     Any hints to account for during reconstitution/lookup of the entity.
      *
      * @return object The managed entity instance.
-     *
-     * @internal Highly performance-sensitive method.
      *
      * @todo Rename: getOrCreateEntity
      */
