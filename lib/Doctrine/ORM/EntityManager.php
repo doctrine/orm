@@ -270,11 +270,11 @@ use Doctrine\Common\Util\ClassUtils;
      * MyProject\Domain\User
      * sales:PriceRequest
      *
+     * Internal note: Performance-sensitive method.
+     *
      * @param string $className
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
-     *
-     * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
     {

@@ -707,10 +707,10 @@ final class PersistentCollection implements Collection, Selectable
      * Called by PHP when this collection is serialized. Ensures that only the
      * elements are properly serialized.
      *
-     * @return array
+     * Internal note: Tried to implement Serializable first but that did not work well
+     *                with circular references. This solution seems simpler and works well.
      *
-     * @internal Tried to implement Serializable first but that did not work well
-     *           with circular references. This solution seems simpler and works well.
+     * @return array
      */
     public function __sleep()
     {

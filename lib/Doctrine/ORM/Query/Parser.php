@@ -1578,7 +1578,7 @@ class Parser
      *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
      *
-     * {@internal WARNING: Solution is harder than a bare implementation.
+     * {Internal note: WARNING: Solution is harder than a bare implementation.
      * Desired EBNF support:
      *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
