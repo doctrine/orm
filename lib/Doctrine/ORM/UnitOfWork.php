@@ -2940,10 +2940,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $idHash = implode(' ', (array) $id);
 
-        if (! is_string($idHash)) {
-            $idHash = (string) $idHash;
-        }
-
         if (isset($this->identityMap[$rootClassName][$idHash])) {
             return $this->identityMap[$rootClassName][$idHash];
         }
