@@ -257,7 +257,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\GeoNames\Admin1',
             'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
             'Doctrine\Tests\Models\GeoNames\City'
-        )
+        ),
+        'custom_id_object_type' => array(
+            'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent',
+            'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild',
+        ),
     );
 
     /**
@@ -494,6 +498,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM geonames_admin1');
             $conn->executeUpdate('DELETE FROM geonames_city');
             $conn->executeUpdate('DELETE FROM geonames_country');
+        }
+
+        if (isset($this->_usedModelSets['custom_id_object_type'])) {
+            $conn->executeUpdate('DELETE FROM custom_id_type_parent');
+            $conn->executeUpdate('DELETE FROM custom_id_type_child');
         }
 
         $this->_em->clear();
