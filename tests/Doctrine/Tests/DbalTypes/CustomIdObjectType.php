@@ -30,13 +30,12 @@ class CustomIdObjectType extends Type
         return $idObject;
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
