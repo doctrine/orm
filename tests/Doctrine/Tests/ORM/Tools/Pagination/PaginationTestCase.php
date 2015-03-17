@@ -145,3 +145,23 @@ class User
      */
     public $groups;
 }
+
+/** @Entity */
+class Avatar
+{
+    /** @Id @column(type="integer") @generatedValue */
+    public $id;
+    /**
+     * @OneToOne(targetEntity="User", inversedBy="avatar")
+     * @JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    public $user;
+    /** @column(type="string", length=255) */
+    public $image;
+    /** @column(type="integer") */
+    public $image_height;
+    /** @column(type="integer") */
+    public $image_width;
+    /** @column(type="string", length=255) */
+    public $image_alt_desc;
+}
