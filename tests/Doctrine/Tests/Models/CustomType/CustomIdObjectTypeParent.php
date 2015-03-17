@@ -43,14 +43,10 @@ class CustomIdObjectTypeParent
     public $children;
 
     /**
-     * @param CustomIdObject|string $id
+     * @param CustomIdObject $id
      */
-    public function __construct($id)
+    public function __construct(CustomIdObject $id)
     {
-        if (! $id instanceof CustomIdObject) {
-            $id = new CustomIdObject($id);
-        }
-
         $this->id       = $id;
         $this->children = new ArrayCollection();
     }

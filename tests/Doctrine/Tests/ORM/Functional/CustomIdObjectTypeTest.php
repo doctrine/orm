@@ -19,6 +19,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
@@ -42,7 +43,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 
     public function testFindByCustomIdObject()
     {
-        $parent = new CustomIdObjectTypeParent('foo');
+        $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
         $this->_em->persist($parent);
         $this->_em->flush();
@@ -58,9 +59,9 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
      */
     public function testFetchJoinCustomIdObject()
     {
-        $parent = new CustomIdObjectTypeParent('foo');
+        $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
-        $parent->children->add(new CustomIdObjectTypeChild('bar', $parent));
+        $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
         $this->_em->persist($parent);
         $this->_em->flush();
@@ -84,9 +85,9 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
      */
     public function testFetchJoinWhereCustomIdObject()
     {
-        $parent = new CustomIdObjectTypeParent('foo');
+        $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
-        $parent->children->add(new CustomIdObjectTypeChild('bar', $parent));
+        $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
         $this->_em->persist($parent);
         $this->_em->flush();
