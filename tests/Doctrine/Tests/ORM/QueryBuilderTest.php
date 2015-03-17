@@ -1150,4 +1150,26 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals($dql, $dql2);
     }
+
+    public function testGetAllAliasesWithNoJoins()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
+        $aliases = $qb->getAllAliases();
+
+        $this->assertEquals(['u'], $aliases);
+    }
+
+    public function testGetAllAliasesWithJoins()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->join('u.groups', 'g');
+
+        $aliases = $qb->getAllAliases();
+
+        $this->assertEquals(['u', 'g'], $aliases);
+    }
 }

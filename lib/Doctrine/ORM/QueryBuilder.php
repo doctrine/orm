@@ -473,7 +473,7 @@ class QueryBuilder
      * </code>
      * @return array
      */
-    private function getAllAliases() {
+    public function getAllAliases() {
         return array_merge($this->getRootAliases(),array_keys($this->joinRootAliases));
     }
 
