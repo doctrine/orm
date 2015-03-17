@@ -1566,19 +1566,17 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @ignore
      *
-     * @param string $idHash
+     * @param mixed  $idHash        (must be possible to cast it to string)
      * @param string $rootClassName
      *
      * @return object|bool The found entity or FALSE.
      */
     public function tryGetByIdHash($idHash, $rootClassName)
     {
-        if (! is_string($idHash)) {
-            $idHash = (string) $idHash;
-        }
+        $stringIdHash = (string) $idHash;
 
-        if (isset($this->identityMap[$rootClassName][$idHash])) {
-            return $this->identityMap[$rootClassName][$idHash];
+        if (isset($this->identityMap[$rootClassName][$stringIdHash])) {
+            return $this->identityMap[$rootClassName][$stringIdHash];
         }
 
         return false;
