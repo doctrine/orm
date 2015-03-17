@@ -1573,6 +1573,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetByIdHash($idHash, $rootClassName)
     {
+        if (! is_string($idHash)) {
+            $idHash = (string) $idHash;
+        }
+
         if (isset($this->identityMap[$rootClassName][$idHash])) {
             return $this->identityMap[$rootClassName][$idHash];
         }
@@ -2937,6 +2941,10 @@ class UnitOfWork implements PropertyChangedListener
     public function tryGetById($id, $rootClassName)
     {
         $idHash = implode(' ', (array) $id);
+
+        if (! is_string($idHash)) {
+            $idHash = (string) $idHash;
+        }
 
         if (isset($this->identityMap[$rootClassName][$idHash])) {
             return $this->identityMap[$rootClassName][$idHash];
