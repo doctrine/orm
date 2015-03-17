@@ -131,6 +131,13 @@ final class Query extends AbstractQuery
     private $_state = self::STATE_CLEAN;
 
     /**
+     * A snapshot of the parameter types the query was parsed with.
+     *
+     * @var array
+     */
+    private $_parsedTypes = array();
+
+    /**
      * Cached DQL query.
      *
      * @var string
@@ -234,12 +241,20 @@ final class Query extends AbstractQuery
      */
     private function _parse()
     {
+        $types = array();
+
+        foreach ($this->parameters as $parameter) {
+            /** @var Query\Parameter $parameter */
+            $types[$parameter->getName()] = $parameter->getType();
+        }
+
         // Return previous parser result if the query and the filter collection are both clean
-        if ($this->_state === self::STATE_CLEAN && $this->_em->isFiltersStateClean()) {
+        if ($this->_state === self::STATE_CLEAN && $this->_parsedTypes === $types && $this->_em->isFiltersStateClean()) {
             return $this->_parserResult;
         }
 
         $this->_state = self::STATE_CLEAN;
+        $this->_parsedTypes = $types;
 
         // Check query cache.
         if ( ! ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver()))) {
@@ -250,7 +265,7 @@ final class Query extends AbstractQuery
             return $this->_parserResult;
         }
 
-        $hash   = $this->_getQueryCacheId();
+        $hash   = $this->_getQueryCacheId($types);
         $cached = $this->_expireQueryCache ? false : $queryCache->fetch($hash);
 
         if ($cached instanceof ParserResult) {
@@ -678,11 +693,11 @@ final class Query extends AbstractQuery
     /**
      * Generate a cache id for the query cache - reusing the Result-Cache-Id generator.
      *
-     * The query cache
+     * @param array $types The parameter types, indexed by parameter key.
      *
      * @return string
      */
-    protected function _getQueryCacheId()
+    protected function _getQueryCacheId(array $types)
     {
         ksort($this->_hints);
 
@@ -696,7 +711,7 @@ final class Query extends AbstractQuery
             '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
-            '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
+            '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($types) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
 
