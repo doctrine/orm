@@ -291,23 +291,25 @@ class LimitSubqueryOutputWalker extends SqlWalker
     {
         // If the sql statement has an order by clause, we need to wrap it in a new select distinct
         // statement
-        if ($orderByClause instanceof OrderByClause) {
-            // Rebuild the order by clause to work in the scope of the new select statement
-            /** @var array $sqlOrderColumns an array of items that need to be included in the select list */
-            /** @var array $orderBy an array of rebuilt order by items */
-            list($sqlOrderColumns, $orderBy) = $this->rebuildOrderByClauseForOuterScope($orderByClause);
-
-            // Identifiers are always included in the select list, so there's no need to include them twice
-            $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
-
-            // Build the select distinct statement
-            $sql = sprintf(
-                'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
-                implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
-                $innerSql,
-                implode(', ', $orderBy)
-            );
+        if (!$orderByClause instanceof OrderByClause) {
+            return $sql;
         }
+
+        // Rebuild the order by clause to work in the scope of the new select statement
+        /* @var array $sqlOrderColumns an array of items that need to be included in the select list */
+        /* @var array $orderBy an array of rebuilt order by items */
+        list($sqlOrderColumns, $orderBy) = $this->rebuildOrderByClauseForOuterScope($orderByClause);
+
+        // Identifiers are always included in the select list, so there's no need to include them twice
+        $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
+
+        // Build the select distinct statement
+        $sql = sprintf(
+            'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+            implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
+            $innerSql,
+            implode(', ', $orderBy)
+        );
 
         return $sql;
     }
@@ -318,14 +320,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * @param OrderByClause $orderByClause
      * @return array
      */
-    protected function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause) {
+    private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause) {
         $dqlAliasToSqlTableAliasMap
             = $searchPatterns
             = $replacements
             = $dqlAliasToClassMap
             = $selectListAdditions
             = $orderByItems
-            = array();
+            = [];
 
         // Generate DQL alias -> SQL table alias mapping
         foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
@@ -334,7 +336,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Pattern to find table path expressions in the order by clause
-        $fieldSearchPattern = "/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i";
+        $fieldSearchPattern = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
         // Generate search patterns for each field's path expression in the order by clause
         foreach($this->rsm->fieldMappings as $fieldAlias => $columnName) {
