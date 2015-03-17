@@ -52,6 +52,10 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         $this->assertSame($parent, $result);
     }
 
+    /**
+     * @group DDC-3622
+     * @group 1336
+     */
     public function testFetchJoinCustomIdObject()
     {
         $parent = new CustomIdObjectTypeParent('foo');
@@ -74,6 +78,10 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         $this->assertSame($parent, $result[0]);
     }
 
+    /**
+     * @group DDC-3622
+     * @group 1336
+     */
     public function testFetchJoinWhereCustomIdObject()
     {
         $parent = new CustomIdObjectTypeParent('foo');
