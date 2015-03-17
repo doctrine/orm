@@ -233,7 +233,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 $selectFields = array_merge($sqlIdentifier, $sqlOrderColumns);
             }
 
-            return sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s', implode(', ', $selectFields), $innerSql, implode(', ', $orderBy));
+            return sprintf(
+                'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+                implode(', ', $selectFields),
+                $innerSql,
+                implode(', ', $orderBy)
+            );
         }
 
         return $sql;
@@ -266,6 +271,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $innerSql = preg_replace("/^\s*select .+ from (.*)$/im", "SELECT {$selectClause} FROM $1", $innerSql);
 
         // Grouping by primary key and min(rownumber) for correct result
-        return sprintf('SELECT %s FROM (%s) dctrn_result GROUP BY %s ORDER BY %s', implode(', ', array_merge($sqlIdentifier, array($mainRowNumberSelectPart))), $innerSql, implode(',', $sqlIdentifier), $mainRowNumberOrderPart);
+        return sprintf(
+            'SELECT %s FROM (%s) dctrn_result GROUP BY %s ORDER BY %s',
+            implode(', ', array_merge($sqlIdentifier, array($mainRowNumberSelectPart))),
+            $innerSql,
+            implode(',', $sqlIdentifier),
+            $mainRowNumberOrderPart
+        );
     }
 }
