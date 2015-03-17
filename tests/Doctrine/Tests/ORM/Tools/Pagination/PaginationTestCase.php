@@ -144,6 +144,10 @@ class User
      * )
      */
     public $groups;
+    /**
+     * @OneToOne(targetEntity="Avatar", mappedBy="user")
+     */
+    public $avatar;
 }
 
 /** @Entity */

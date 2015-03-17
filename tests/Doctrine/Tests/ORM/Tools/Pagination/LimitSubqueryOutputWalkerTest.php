@@ -228,6 +228,36 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
+    public function testCountQueryWithComplexScalarOrderByItemJoined()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT u FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.avatar a ORDER BY a.image_height * a.image_width DESC'
+        );
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertSame(
+            'SELECT DISTINCT id_0, image_height_1 * image_width_2 FROM (SELECT u0_.id AS id_0, a1_.image_height AS image_height_1, a1_.image_width AS image_width_2, a1_.user_id AS user_id_3 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result ORDER BY image_height_1 * image_width_2 DESC',
+            $query->getSQL()
+        );
+    }
+
+    public function testCountQueryWithComplexScalarOrderByItemJoinedWithPartial()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT u, partial a.{id, image_alt_desc} FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.avatar a ORDER BY a.image_height * a.image_width DESC'
+        );
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertSame(
+            'SELECT DISTINCT id_0, image_height_3 * image_width_4 FROM (SELECT u0_.id AS id_0, a1_.id AS id_1, a1_.image_alt_desc AS image_alt_desc_2, a1_.image_height AS image_height_3, a1_.image_width AS image_width_4, a1_.user_id AS user_id_5 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result ORDER BY image_height_3 * image_width_4 DESC',
+            $query->getSQL()
+        );
+    }
+
     public function testCountQueryWithComplexScalarOrderByItemOracle()
     {
         $query = $this->entityManager->createQuery(
@@ -284,7 +314,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
 
         $this->assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ INNER JOIN Author a1_ ON b0_.author_id = a1_.id ORDER BY a1_.name ASC) dctrn_result',
+            'SELECT DISTINCT id_0, name_1 FROM (SELECT b0_.id AS id_0, a1_.name AS name_1, b0_.author_id AS author_id_2, b0_.category_id AS category_id_3 FROM BlogPost b0_ INNER JOIN Author a1_ ON b0_.author_id = a1_.id) dctrn_result ORDER BY name_1 ASC',
             $query->getSQL()
         );
     }
