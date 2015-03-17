@@ -14,6 +14,10 @@ use Doctrine\Tests\OrmTestCase;
  */
 class DefaultQuoteStrategyTest extends OrmTestCase
 {
+    /**
+     * @group DDC-3590
+     * @group 1316
+     */
     public function testGetJoinTableName()
     {
         $em       = $this->_getTestEntityManager();
