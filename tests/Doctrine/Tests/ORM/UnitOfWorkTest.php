@@ -229,6 +229,25 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('InvalidArgumentException');
         $this->_unitOfWork->lock(null, null, null);
     }
+
+    /**
+     * @group DDC-3619
+     * @group 1338
+     */
+    public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected()
+    {
+        $entity     = new ForumUser();
+        $entity->id = 123;
+
+        $this->_unitOfWork->registerManaged($entity, array('id' => 123), array());
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+
+        $this->_unitOfWork->remove($entity);
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity));
+
+        $this->_unitOfWork->persist($entity);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+    }
 }
 
 /**
