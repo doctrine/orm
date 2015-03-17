@@ -39,9 +39,11 @@ class ParameterTypeInfererTest extends \Doctrine\Tests\OrmTestCase
             array(array(),           Connection::PARAM_STR_ARRAY),
             array(true,              Type::BOOLEAN),
         );
-        if(PHP_VERSION_ID >= 50500) {
+
+        if (PHP_VERSION_ID >= 50500) {
             $data[] = array(new \DateTimeImmutable(), Type::DATETIME);
         }
+
         return $data;
     }
 
