@@ -501,8 +501,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['custom_id_object_type'])) {
-            $conn->executeUpdate('DELETE FROM custom_id_type_parent');
             $conn->executeUpdate('DELETE FROM custom_id_type_child');
+            $conn->executeUpdate('DELETE FROM custom_id_type_parent');
         }
 
         $this->_em->clear();
