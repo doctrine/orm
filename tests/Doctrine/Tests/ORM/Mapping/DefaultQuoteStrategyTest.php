@@ -4,6 +4,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\Tests\Models\NonPublicSchemaJoins\User;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -13,15 +14,17 @@ use Doctrine\Tests\OrmTestCase;
  */
 class DefaultQuoteStrategyTest extends OrmTestCase
 {
-    const TEST_ENTITY = 'Doctrine\Tests\Models\NonPublicSchemaJoins\User';
-
     public function testGetJoinTableName()
     {
-        $em = $this->_getTestEntityManager();
-        $metadata = $em->getClassMetadata(self::TEST_ENTITY);
-        $platform = $em->getConnection()->getDatabasePlatform();
+        $em       = $this->_getTestEntityManager();
+        $metadata = $em->getClassMetadata(User::CLASSNAME);
+        /* @var $platform \Doctrine\DBAL\Platforms\AbstractPlatform */
         $strategy = new DefaultQuoteStrategy();
-        $tableName = $strategy->getJoinTableName($metadata->associationMappings['readers'], $metadata, $platform);
-        $this->assertEquals($tableName, 'readers.author_reader');
+        $platform = $this->getMockForAbstractClass('Doctrine\DBAL\Platforms\AbstractPlatform');
+
+        $this->assertSame(
+            'readers.author_reader',
+            $strategy->getJoinTableName($metadata->associationMappings['readers'], $metadata, $platform)
+        );
     }
 }
