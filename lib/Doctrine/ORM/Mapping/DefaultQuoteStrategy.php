@@ -97,10 +97,13 @@ class DefaultQuoteStrategy implements QuoteStrategy
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {
         $schema = '';
-        if (isset($association['joinTable']['schema']) && null !== $association['joinTable']['schema']) {
+
+        if (isset($association['joinTable']['schema'])) {
             $schema = $association['joinTable']['schema'] . '.';
         }
+
         $tableName = $association['joinTable']['name'];
+
         if (isset($association['joinTable']['quoted'])) {
             $tableName = $platform->quoteIdentifier($tableName);
         }
