@@ -230,6 +230,10 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork->lock(null, null, null);
     }
 
+    /**
+     * @group DDC-3619
+     * @group 1338
+     */
     public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected()
     {
         $entity     = new ForumUser();
