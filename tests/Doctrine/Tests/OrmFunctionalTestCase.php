@@ -180,6 +180,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\Beach',
             'Doctrine\Tests\Models\Cache\Bar',
             'Doctrine\Tests\Models\Cache\Flight',
+            'Doctrine\Tests\Models\Cache\Token',
+            'Doctrine\Tests\Models\Cache\Login',
+            'Doctrine\Tests\Models\Cache\Client',
+            'Doctrine\Tests\Models\Cache\Action',
+            'Doctrine\Tests\Models\Cache\ComplexAction',
             'Doctrine\Tests\Models\Cache\AttractionInfo',
             'Doctrine\Tests\Models\Cache\AttractionContactInfo',
             'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
@@ -418,6 +423,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
+            $conn->executeUpdate('DELETE FROM cache_login');
+            $conn->executeUpdate('DELETE FROM cache_complex_action');
+            $conn->executeUpdate('DELETE FROM cache_token');
+            $conn->executeUpdate('DELETE FROM cache_action');
+            $conn->executeUpdate('DELETE FROM cache_client');
         }
 
         if (isset($this->_usedModelSets['ddc3346'])) {

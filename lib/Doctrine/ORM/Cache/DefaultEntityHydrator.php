@@ -25,6 +25,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * Default hydrator cache for entities
@@ -45,6 +46,13 @@ class DefaultEntityHydrator implements EntityHydrator
     private $uow;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * @var array
      */
     private static $hints = array(Query::HINT_CACHE_ENABLED => true);
@@ -56,6 +64,7 @@ class DefaultEntityHydrator implements EntityHydrator
     {
         $this->em   = $em;
         $this->uow  = $em->getUnitOfWork();
+        $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
     }
 
     /**
@@ -72,8 +81,31 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if ( ! isset($assoc['cache']) || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if (! ($assoc['type'] & ClassMetadata::TO_ONE)) {
                 unset($data[$name]);
+                continue;
+            }
+
+            if ( ! isset($assoc['cache'])) {
+                $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
+                $associationIds = $this->identifierFlattener->flattenIdentifier($targetClassMetadata, $targetClassMetadata->getIdentifierValues($data[$name]));
+                unset($data[$name]);
+
+                foreach ($associationIds as $fieldName => $fieldValue) {
+
+                    if (isset($targetClassMetadata->associationMappings[$fieldName])){
+                        $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
+
+                        foreach($assoc['targetToSourceKeyColumns'] as $referencedColumn => $localColumn) {
+
+                            if (isset($targetAssoc['sourceToTargetKeyColumns'][$referencedColumn])) {
+                                $data[$localColumn] = $fieldValue;
+                            }
+                        }
+                    }else{
+                        $data[$assoc['targetToSourceKeyColumns'][$targetClassMetadata->columnNames[$fieldName]]] = $fieldValue;
+                    }
+                }
 
                 continue;
             }

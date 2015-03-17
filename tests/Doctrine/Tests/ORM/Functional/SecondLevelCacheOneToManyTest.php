@@ -3,7 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Login;
 use Doctrine\Tests\Models\Cache\State;
+use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
 
@@ -380,5 +382,34 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $result = $this->_em->createQuery($query)->getSingleResult();
 
         $this->assertEquals(4, $result->getTravels()->count());
+    }
+
+    public function testPutAndLoadNonCacheableOneToMany()
+    {
+        $this->assertNull($this->cache->getEntityCacheRegion(Login::CLASSNAME));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(Token::CLASSNAME));
+
+        $l1 = new Login('session1');
+        $l2 = new Login('session2');
+        $token  = new Token('token-hash');
+        $token->addLogin($l1);
+        $token->addLogin($l2);
+
+        $this->_em->persist($token);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $entity = $this->_em->find(Token::CLASSNAME, $token->token);
+
+        $this->assertInstanceOf(Token::CLASSNAME, $entity);
+        $this->assertEquals('token-hash', $entity->token);
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertCount(2, $entity->logins);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }
