@@ -302,6 +302,10 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork->computeChangeSet($metadata, $user);
     }
 
+    /**
+     * @group DDC-3619
+     * @group 1338
+     */
     public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected()
     {
         $entity     = new ForumUser();
