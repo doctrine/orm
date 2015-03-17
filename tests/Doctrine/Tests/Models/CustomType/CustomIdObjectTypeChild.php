@@ -27,6 +27,8 @@ use Doctrine\Tests\DbalTypes\CustomIdObject;
  */
 class CustomIdObjectTypeChild
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id @Column(type="CustomIdObject")
      *

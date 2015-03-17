@@ -24,6 +24,9 @@ use Doctrine\DBAL\Types\Type;
 
 class CustomIdObjectType extends Type
 {
+    const NAME      = 'CustomIdObject';
+    const CLASSNAME = __CLASS__;
+
     /**
      * {@inheritdoc}
      */
@@ -55,6 +58,6 @@ class CustomIdObjectType extends Type
      */
     public function getName()
     {
-        return 'CustomIdObject';
+        return self::NAME;
     }
 }
