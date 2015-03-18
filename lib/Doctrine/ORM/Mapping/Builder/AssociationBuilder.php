@@ -188,7 +188,7 @@ class AssociationBuilder
      *
      * @return self
      */
-    public function isPrimaryKey()
+    public function makePrimaryKey()
     {
         $this->mapping['id'] = true;
 

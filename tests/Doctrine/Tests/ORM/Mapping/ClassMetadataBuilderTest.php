@@ -253,7 +253,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreatePrimaryField()
     {
-        $this->builder->createField('id', 'integer')->isPrimaryKey()->generatedValue()->build();
+        $this->builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();
 
         $this->assertEquals(array('id'), $this->cm->identifier);
         $this->assertEquals(array('columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'), $this->cm->fieldMappings['id']);
@@ -341,7 +341,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                 ->cascadeAll()
                 ->fetchExtraLazy()
-                ->isPrimaryKey()
+                ->makePrimaryKey()
                 ->build()
         );
 
@@ -467,7 +467,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                 ->cascadeAll()
                 ->fetchExtraLazy()
-                ->isPrimaryKey()
+                ->makePrimaryKey()
                 ->build()
         );
 
@@ -534,7 +534,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->createOneToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
             ->mappedBy('test')
             ->fetchExtraLazy()
-            ->isPrimaryKey()
+            ->makePrimaryKey()
             ->build();
     }
 
@@ -626,7 +626,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
         $this->builder->createManyToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
-                          ->isPrimaryKey()
+                          ->makePrimaryKey()
                           ->setJoinTable('groups_users')
                           ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                           ->addInverseJoinColumn('user_id', 'id')
@@ -679,7 +679,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
         $this->builder->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
-                ->isPrimaryKey()
+                ->makePrimaryKey()
                 ->mappedBy('test')
                 ->setOrderBy(array('test'))
                 ->setIndexBy('test')

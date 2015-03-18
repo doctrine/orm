@@ -145,9 +145,20 @@ class FieldBuilder
     /**
      * Sets field as primary key.
      *
+     * @deprecated Use makePrimaryKey() instead
      * @return FieldBuilder
      */
     public function isPrimaryKey()
+    {
+        return $this->makePrimaryKey();
+    }
+
+    /**
+     * Sets field as primary key.
+     *
+     * @return FieldBuilder
+     */
+    public function makePrimaryKey()
     {
         $this->mapping['id'] = true;
         return $this;
