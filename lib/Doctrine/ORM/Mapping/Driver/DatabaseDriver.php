@@ -208,7 +208,7 @@ class DatabaseDriver implements MappingDriver
 
         $this->buildIndexes($metadata);
         $this->buildFieldMappings($metadata);
-        if (false !== $this->isBiDirecionalEntities()){
+        if (false !== $this->isBiDirecionalEntities() && null !== $this->isBiDirecionalEntities()){
             $this->buildBiDirecionalToOneAssociationMappings($metadata);
         }else{
             $this->buildToOneAssociationMappings($metadata);
