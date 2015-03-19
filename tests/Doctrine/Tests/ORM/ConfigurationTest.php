@@ -295,6 +295,15 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
         $this->configuration->addFilter('FilterName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
+        $this->assertSame(array(), $this->configuration->getFilterParameters('FilterName'));
+    }
+
+    public function testAddGetFiltersWithParameters()
+    {
+        $this->assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
+        $this->configuration->addFilter('FilterName', __CLASS__, array('foo' => 'bar'));
+        $this->assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
+        $this->assertSame(array('foo' => 'bar'), $this->configuration->getFilterParameters('FilterName'));
     }
 
     public function setDefaultRepositoryClassName()
