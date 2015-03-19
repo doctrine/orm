@@ -13,6 +13,8 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Query\AST\ArithmeticExpression;
+use Doctrine\ORM\Query\AST\ArithmeticTerm;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
@@ -353,18 +355,27 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $replacements[] = $fieldAlias;
         }
 
+        $complexAddedOrderByAliases = 0;
         foreach($orderByClause->orderByItems as $orderByItem) {
             // Walk order by item to get string representation of it
-            $orderByItem = $this->walkOrderByItem($orderByItem);
+            $orderByItemString = $this->walkOrderByItem($orderByItem);
 
             // Replace path expressions in the order by clause with their column alias
-            $orderByItem = preg_replace($searchPatterns, $replacements, $orderByItem);
+            $orderByItemString = preg_replace($searchPatterns, $replacements, $orderByItemString);
 
             // The order by items are not required to be in the select list on Oracle and PostgreSQL, but
             // for the sake of simplicity, order by items will be included in the select list on all platforms.
             // This doesn't impact functionality.
-            $selectListAdditions[] = trim(preg_replace('/([^ ]+) (?:asc|desc)/i', '$1', $orderByItem));
-            $orderByItems[] = $orderByItem;
+            $selectListAddition = trim(preg_replace('/([^ ]+) (?:asc|desc)/i', '$1', $orderByItemString));
+
+            // If the expression is an arithmetic expression, we need to create an alias for it.
+            if ($orderByItem->expression instanceof ArithmeticTerm) {
+                $orderByAlias = "ordr_" . $complexAddedOrderByAliases++;
+                $orderByItemString = $orderByAlias . " " . $orderByItem->type;
+                $selectListAddition .= " AS $orderByAlias";
+            }
+            $selectListAdditions[] = $selectListAddition;
+            $orderByItems[] = $orderByItemString;
         }
 
         return array($selectListAdditions, $orderByItems);
