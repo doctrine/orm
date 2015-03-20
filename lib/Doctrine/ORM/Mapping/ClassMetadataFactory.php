@@ -311,6 +311,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($metadata->discriminatorValue
             || ! $metadata->discriminatorMap
             || $metadata->isMappedSuperclass
+            || ! $metadata->reflClass
             || $metadata->reflClass->isAbstract()
         ) {
             return;
