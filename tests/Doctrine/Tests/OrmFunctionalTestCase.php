@@ -267,6 +267,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild',
         ),
+        'pagination' => array(
+            'Doctrine\Tests\Models\Pagination\Company',
+            'Doctrine\Tests\Models\Pagination\Logo',
+        ),
     );
 
     /**
@@ -513,6 +517,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($this->_usedModelSets['custom_id_object_type'])) {
             $conn->executeUpdate('DELETE FROM custom_id_type_child');
             $conn->executeUpdate('DELETE FROM custom_id_type_parent');
+        }
+
+        if (isset($this->_usedModelSets['pagination'])) {
+            $conn->executeUpdate('DELETE FROM pagination_logo');
+            $conn->executeUpdate('DELETE FROM pagination_company');
         }
 
         $this->_em->clear();
