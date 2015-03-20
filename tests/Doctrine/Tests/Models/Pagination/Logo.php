@@ -1,10 +1,4 @@
 <?php
-/**
- * Logo.php
- * Created by William Schaller
- * Date: 3/19/2015
- * Time: 9:44 PM
- */
 namespace Doctrine\Tests\Models\Pagination;
 
 /**
@@ -12,6 +6,7 @@ namespace Doctrine\Tests\Models\Pagination;
  *
  * @package Doctrine\Tests\Models\Pagination
  *
+ * @Author Bill Schaller
  * @Entity
  * @Table(name="pagination_logo")
  */
