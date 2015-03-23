@@ -1019,7 +1019,9 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($postInsertIds) {
             // Persister returned post-insert IDs
-            foreach ($postInsertIds as $id => $entity) {
+            foreach ($postInsertIds as $postInsertId) {
+                $id      = $postInsertId['generatedId'];
+                $entity  = $postInsertId['entity'];
                 $oid     = spl_object_hash($entity);
                 $idField = $class->identifier[0];
 
