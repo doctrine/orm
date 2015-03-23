@@ -172,12 +172,56 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $this->assertNull($this->_em->find(__NAMESPACE__.'\\DDC93Person', $person->id));
     }
+    
+    public function testPartialDqlOnEmbeddedObjectsField()
+    {
+        $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
+        $this->_em->persist($person);
+        $this->_em->flush($person);
+        $this->_em->clear();
+        
+        // Prove that the entity was persisted correctly.
+        $dql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
+    
+        $person = $this->_em->createQuery($dql)
+            ->setParameter('name', 'Karl')
+            ->getSingleResult();
+    
+        $this->assertEquals('Gosport', $person->address->city);
+        $this->assertEquals('Foo', $person->address->street);
+        $this->assertEquals('12345', $person->address->zip);
+        $this->assertEquals('England', $person->address->country->name);
+        
+        // Clear the EM and prove that the embeddable can be the subject of a partial query.
+        $this->_em->clear();
+    
+        $dql = "SELECT PARTIAL p.{id,address.city} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
+    
+        $person = $this->_em->createQuery($dql)
+            ->setParameter('name', 'Karl')
+            ->getSingleResult();
+        
+        // Selected field must be equal, all other fields must be null.
+        $this->assertEquals('Gosport', $person->address->city);
+        $this->assertNull($person->address->street);
+        $this->assertNull($person->address->zip);
+        $this->assertNull($person->address->country);
+        $this->assertNull($person->name);
+    }
 
     public function testDqlWithNonExistentEmbeddableField()
     {
         $this->setExpectedException('Doctrine\ORM\Query\QueryException', 'no field or association named address.asdfasdf');
 
         $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
+            ->execute();
+    }
+    
+    public function testPartialDqlWithNonExistentEmbeddableField()
+    {
+        $this->setExpectedException('Doctrine\ORM\Query\QueryException', "no mapped field named 'address.asdfasdf'");
+        
+        $this->_em->createQuery("SELECT PARTIAL p.{id,address.asdfasdf} FROM " . __NAMESPACE__ . "\\DDC93Person p")
             ->execute();
     }
 
