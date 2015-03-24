@@ -265,7 +265,7 @@ final class Query extends AbstractQuery
             return $this->_parserResult;
         }
 
-        $hash   = $this->_getQueryCacheId($types);
+        $hash   = $this->_getQueryCacheId();
         $cached = $this->_expireQueryCache ? false : $queryCache->fetch($hash);
 
         if ($cached instanceof ParserResult) {
@@ -693,11 +693,9 @@ final class Query extends AbstractQuery
     /**
      * Generate a cache id for the query cache - reusing the Result-Cache-Id generator.
      *
-     * @param array $types The parameter types, indexed by parameter key.
-     *
      * @return string
      */
-    protected function _getQueryCacheId(array $types)
+    protected function _getQueryCacheId()
     {
         ksort($this->_hints);
 
@@ -711,7 +709,7 @@ final class Query extends AbstractQuery
             '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
-            '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($types) . 'DOCTRINE_QUERY_CACHE_SALT'
+            '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->_parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
 
