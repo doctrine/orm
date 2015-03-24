@@ -217,14 +217,66 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         if (count($orderBy)) {
-            $sql = sprintf(
+            // http://www.doctrine-project.org/jira/browse/DDC-1958
+            if ($this->platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform || $this->platform instanceof \Doctrine\DBAL\Platforms\OraclePlatform) {
+                return $this->generateLimitQueryWithRowNumber($AST, $sqlIdentifier, $innerSql);
+            }
+            elseif ($this->platform instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
+                /*
+                * MySQL does'nt reset the ordering of subselect even when the fields
+                * which are participated in order by statement, arent selected in
+                * main select statement.
+                */
+                $selectFields = $sqlIdentifier;
+            }
+            else {
+                $selectFields = array_merge($sqlIdentifier, $sqlOrderColumns);
+            }
+
+            return sprintf(
                 'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
-                implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
+                implode(', ', $selectFields),
                 $innerSql,
                 implode(', ', $orderBy)
             );
         }
 
         return $sql;
+    }
+
+    /**
+     * @param SelectStatement   $AST
+     * @param array             $sqlIdentifier
+     * @param string            $innerSql
+     *
+     * @return string
+     */
+    private function generateLimitQueryWithRowNumber(SelectStatement $AST, array $sqlIdentifier, $innerSql) {
+        if (preg_match('/SELECT (.*?) FROM /i', $innerSql, $regs)) {
+            $selectedParts = explode(",", $regs[1]);
+        }
+        $globalOrderByStmt = SqlWalker::walkOrderByClause($AST->orderByClause);
+
+        $innerRowNumberSelectPart = ' ROW_NUMBER() OVER(%s) AS ROWNUM';
+        $mainRowNumberSelectPart = 'MIN(ROWNUM) AS MINROWNUM';
+        $mainRowNumberOrderPart = 'MINROWNUM ASC';
+
+        /*
+         * Adding row_number in select statement, instead of selecting all fields in order clause
+         * being away from the DISTINCTION leaks, (e.g. 1-a, a 1-b)
+         */
+        $selectedParts[] = sprintf($innerRowNumberSelectPart, $globalOrderByStmt);
+
+        $selectClause = implode(',', $selectedParts);
+        $innerSql = preg_replace("/^\s*select .+ from (.*)$/im", "SELECT {$selectClause} FROM $1", $innerSql);
+
+        // Grouping by primary key and min(rownumber) for correct result
+        return sprintf(
+            'SELECT %s FROM (%s) dctrn_result GROUP BY %s ORDER BY %s',
+            implode(', ', array_merge($sqlIdentifier, array($mainRowNumberSelectPart))),
+            $innerSql,
+            implode(',', $sqlIdentifier),
+            $mainRowNumberOrderPart
+        );
     }
 }
