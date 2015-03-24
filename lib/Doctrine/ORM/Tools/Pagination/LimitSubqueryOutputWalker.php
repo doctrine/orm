@@ -289,11 +289,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return string
      */
-    public function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
+    private function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
     {
         // If the sql statement has an order by clause, we need to wrap it in a new select distinct
         // statement
-        if (!$orderByClause instanceof OrderByClause) {
+        if (! $orderByClause instanceof OrderByClause) {
             return $sql;
         }
 
