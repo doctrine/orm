@@ -322,7 +322,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * @param OrderByClause $orderByClause
      * @return array
      */
-    private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause) {
+    private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause)
+    {
         $dqlAliasToSqlTableAliasMap
             = $searchPatterns
             = $replacements
