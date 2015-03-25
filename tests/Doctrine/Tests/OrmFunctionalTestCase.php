@@ -271,6 +271,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Pagination\Company',
             'Doctrine\Tests\Models\Pagination\Logo',
             'Doctrine\Tests\Models\Pagination\Department',
+            'Doctrine\Tests\Models\Pagination\User',
+            'Doctrine\Tests\Models\Pagination\User1',
         ),
     );
 
@@ -524,6 +526,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM pagination_logo');
             $conn->executeUpdate('DELETE FROM pagination_department');
             $conn->executeUpdate('DELETE FROM pagination_company');
+            $conn->executeUpdate('DELETE FROM pagination_user');
         }
 
         $this->_em->clear();
