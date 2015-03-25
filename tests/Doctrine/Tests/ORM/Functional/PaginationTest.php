@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Logo;
+use Doctrine\Tests\Models\Pagination\User1;
 use ReflectionMethod;
 
 /**
@@ -439,6 +440,16 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, "name");
     }
 
+    /**
+     * @dataProvider fetchJoinCollection
+     */
+    public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimitAndOffsetWithInheritanceType($fetchJoinCollection)
+    {
+        $dql = 'SELECT u FROM Doctrine\Tests\Models\Pagination\User u ORDER BY u.id';
+        $this->iterateWithOrderAscWithLimit(true, $fetchJoinCollection, $dql, "name");
+        $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, "name");
+    }
+
     public function testIterateComplexWithOutputWalker()
     {
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
@@ -554,6 +565,13 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $company->logo->image_height = 100 + $i;
             $company->logo->company = $company;
             $this->_em->persist($company);
+        }
+
+        for ($i = 0; $i < 9; $i++) {
+            $user = new User1();
+            $user->name = "name$i";
+            $user->email = "email$i";
+            $this->_em->persist($user);
         }
 
         $this->_em->flush();
