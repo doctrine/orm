@@ -56,6 +56,7 @@ abstract class SQLFilter
     final public function __construct(EntityManager $em)
     {
         $this->em = $em;
+        $this->parameters = array();
     }
 
     /**
