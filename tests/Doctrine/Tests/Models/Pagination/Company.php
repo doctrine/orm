@@ -27,4 +27,9 @@ class Company
      * @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
      */
     public $logo;
+
+    /**
+     * @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     */
+    public $departments;
 }
