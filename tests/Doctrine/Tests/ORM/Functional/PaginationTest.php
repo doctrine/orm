@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\Pagination\Company;
+use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use ReflectionMethod;
 
@@ -449,6 +450,106 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(3, $paginator->getIterator());
     }
 
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBoth($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $dqlAsc = $dql . " ASC, d.name";
+        $dqlDesc = $dql . " DESC, d.name";
+        $this->iterateWithOrderAsc($useOutputWalkers, true, $dqlAsc, "name");
+        $this->iterateWithOrderDesc($useOutputWalkers, true, $dqlDesc, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithOutputWalker()
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $dqlAsc = $dql . " ASC, d.name";
+        $dqlDesc = $dql . " DESC, d.name";
+        $this->iterateWithOrderAscWithLimit(true, true, $dqlAsc, "name");
+        $this->iterateWithOrderDescWithLimit(true, true, $dqlDesc, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithoutOutputWalker()
+    {
+        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a joined entity. Use output walkers.");
+
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name ASC';
+        // Ascending
+        $query = $this->_em->createQuery($dql);
+
+        // With limit
+        $query->setMaxResults(3);
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(false);
+        $iter = $paginator->getIterator();
+        iterator_to_array($iter);
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRoot($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $this->iterateWithOrderAsc($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRootWithLimit($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $this->iterateWithOrderAscWithLimit($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimit($useOutputWalkers, true, $dql, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRootWithLimitAndOffset($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $this->iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, true, $dql, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoined($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
+        $this->iterateWithOrderAsc($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithOutputWalker()
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
+        $this->iterateWithOrderAscWithLimit(true, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimit(true, true, $dql, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithoutOutputWalker()
+    {
+        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a joined entity. Use output walkers.");
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name ASC';
+
+        // Ascending
+        $query = $this->_em->createQuery($dql);
+
+        // With limit
+        $query->setMaxResults(3);
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(false);
+        $iter = $paginator->getIterator();
+        iterator_to_array($iter);
+    }
+
     public function testDetectOutputWalker()
     {
         // This query works using the output walkers but causes an exception using the TreeWalker
@@ -553,6 +654,12 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $company->logo->image_width = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company = $company;
+            for($j=0;$j<3;$j++) {
+                $department = new Department();
+                $department->name = "name$i$j";
+                $department->company = $company;
+                $company->departments[] = $department;
+            }
             $this->_em->persist($company);
         }
 

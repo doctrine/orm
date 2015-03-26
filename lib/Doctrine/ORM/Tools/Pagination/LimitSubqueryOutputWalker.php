@@ -13,13 +13,23 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\DB2Platform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
+use Doctrine\ORM\Query\AST\ArithmeticFactor;
 use Doctrine\ORM\Query\AST\ArithmeticTerm;
+use Doctrine\ORM\Query\AST\Literal;
 use Doctrine\ORM\Query\AST\OrderByClause;
+use Doctrine\ORM\Query\AST\OrderByItem;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Expr\OrderBy;
+use Doctrine\ORM\Query\Expr\Select;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 
@@ -39,17 +49,17 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
-    private $platform;
+    private $_platform;
 
     /**
      * @var \Doctrine\ORM\Query\ResultSetMapping
      */
-    private $rsm;
+    private $_rsm;
 
     /**
      * @var array
      */
-    private $queryComponents;
+    private $_queryComponents;
 
     /**
      * @var int
@@ -64,19 +74,19 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    private $em;
-
-    /**
-     * @var array
-     */
-    private $orderByPathExpressions = [];
+    private $_em;
 
     /**
      * The quote strategy.
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
      */
-    private $quoteStrategy;
+    private $_quoteStrategy;
+
+    /**
+     * @var array
+     */
+    private $orderByPathExpressions = [];
 
     /**
      * Constructor.
@@ -91,23 +101,134 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
-        $this->rsm = $parserResult->getResultSetMapping();
-        $this->queryComponents = $queryComponents;
+        $this->_platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->_rsm = $parserResult->getResultSetMapping();
+        $this->_queryComponents = $queryComponents;
 
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
         $this->maxResults = $query->getMaxResults();
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->em               = $query->getEntityManager();
-        $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();
+        $this->_em               = $query->getEntityManager();
+        $this->_quoteStrategy    = $this->_em->getConfiguration()->getQuoteStrategy();
 
         parent::__construct($query, $parserResult, $queryComponents);
     }
 
     /**
+     * Check if the platform supports the ROW_NUMBER window function.
+     *
+     * @return bool
+     */
+    private function platformSupportsRowNumber() {
+        return $this->_platform instanceof PostgreSqlPlatform
+            || $this->_platform instanceof SQLServerPlatform
+            || $this->_platform instanceof OraclePlatform
+            || $this->_platform instanceof SQLAnywherePlatform
+            || $this->_platform instanceof DB2Platform
+            || (method_exists($this->_platform, "supportsRowNumberFunction")
+                && $this->_platform->supportsRowNumberFunction());
+    }
+
+    /**
+     * Rebuilds a select statement's order by clause for use in a
+     * ROW_NUMBER() OVER() expression.
+     *
+     * @param SelectStatement $AST
+     */
+    private function rebuildOrderByForRowNumber(SelectStatement $AST) {
+        $orderByClause = $AST->orderByClause;
+        $selectAliasToExpressionMap = [];
+        foreach($AST->selectClause->selectExpressions as $selectExpression) {
+            $selectAliasToExpressionMap[$selectExpression->fieldIdentificationVariable] = $selectExpression->expression;
+        }
+        foreach($orderByClause->orderByItems as $orderByItem) {
+            if (is_string($orderByItem->expression) && isset($selectAliasToExpressionMap[$orderByItem->expression])) {
+                $orderByItem->expression = $selectAliasToExpressionMap[$orderByItem->expression];
+            }
+        }
+        $func = new RowNumberOverFunction("dctrn_rownum");
+        $func->orderByClause = $AST->orderByClause;
+        $AST->selectClause->selectExpressions[] = new SelectExpression($func, "dctrn_rownum", true);
+
+        // No need for an order by clause, we'll order by rownum in the outer query.
+        $AST->orderByClause = null;
+    }
+
+    /**
      * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
+     *
+     * @param SelectStatement $AST
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function walkSelectStatement(SelectStatement $AST)
+    {
+        if ($this->platformSupportsRowNumber()) {
+            return $this->walkSelectStatementWithRowNumber($AST);
+        }
+        return $this->walkSelectStatementWithoutRowNumber($AST);
+    }
+
+    /**
+     * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
+     * This method is for use with platforms which support ROW_NUMBER.
+     *
+     * @param SelectStatement $AST
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function walkSelectStatementWithRowNumber(SelectStatement $AST)
+    {
+        $hasOrderBy = false;
+        $outerOrderBy = " ORDER BY dctrn_minrownum ASC";
+        $orderGroupBy = '';
+        if ($AST->orderByClause instanceof OrderByClause) {
+            $hasOrderBy = true;
+            $this->rebuildOrderByForRowNumber($AST);
+        }
+
+        $innerSql = $this->getInnerSQL($AST);
+
+        $sqlIdentifier = $this->getSQLIdentifier($AST);
+
+        if ($hasOrderBy) {
+            $orderGroupBy = " GROUP BY " . implode(', ', $sqlIdentifier);
+            $sqlIdentifier[] = "MIN(" . $this->walkResultVariable("dctrn_rownum") . ") AS dctrn_minrownum";
+        }
+
+        // Build the counter query
+        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
+            implode(', ', $sqlIdentifier), $innerSql);
+
+        if ($hasOrderBy) {
+            $sql .= $orderGroupBy . $outerOrderBy;
+        }
+
+        // Apply the limit and offset.
+        $sql = $this->_platform->modifyLimitQuery(
+            $sql, $this->maxResults, $this->firstResult
+        );
+
+        // Add the columns to the ResultSetMapping. It's not really nice but
+        // it works. Preferably I'd clear the RSM or simply create a new one
+        // but that is not possible from inside the output walker, so we dirty
+        // up the one we have.
+        foreach ($sqlIdentifier as $property => $alias) {
+            $this->_rsm->addScalarResult($alias, $property);
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
+     * This method is for platforms which DO NOT support ROW_NUMBER.
      *
      * @param SelectStatement $AST
      * @param bool $addMissingItemsFromOrderByToSelect
@@ -116,7 +237,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @throws \RuntimeException
      */
-    public function walkSelectStatement(SelectStatement $AST, $addMissingItemsFromOrderByToSelect = true)
+    public function walkSelectStatementWithoutRowNumber(SelectStatement $AST, $addMissingItemsFromOrderByToSelect = true)
     {
         // We don't want to call this recursively!
         if ($AST->orderByClause instanceof OrderByClause && $addMissingItemsFromOrderByToSelect) {
@@ -131,74 +252,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $orderByClause = $AST->orderByClause;
         $AST->orderByClause = null;
 
-        // Set every select expression as visible(hidden = false) to
-        // make $AST have scalar mappings properly - this is relevant for referencing selected
-        // fields from outside the subquery, for example in the ORDER BY segment
-        $hiddens = array();
+        $innerSql = $this->getInnerSQL($AST);
 
-        foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
-            $hiddens[$idx] = $expr->hiddenAliasResultVariable;
-            $expr->hiddenAliasResultVariable = false;
-        }
-
-        $innerSql = parent::walkSelectStatement($AST);
-
-        // Restore orderByClause
-        $AST->orderByClause = $orderByClause;
-
-        // Restore hiddens
-        foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
-            $expr->hiddenAliasResultVariable = $hiddens[$idx];
-        }
-
-        // Find out the SQL alias of the identifier column of the root entity.
-        // It may be possible to make this work with multiple root entities but that
-        // would probably require issuing multiple queries or doing a UNION SELECT.
-        // So for now, it's not supported.
-
-        // Get the root entity and alias from the AST fromClause.
-        $from = $AST->fromClause->identificationVariableDeclarations;
-        if (count($from) !== 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
-        }
-
-        $fromRoot       = reset($from);
-        $rootAlias      = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass      = $this->queryComponents[$rootAlias]['metadata'];
-        $rootIdentifier = $rootClass->identifier;
-
-        // For every identifier, find out the SQL alias by combing through the ResultSetMapping
-        $sqlIdentifier = array();
-        foreach ($rootIdentifier as $property) {
-            if (isset($rootClass->fieldMappings[$property])) {
-                foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
-                        $sqlIdentifier[$property] = $alias;
-                    }
-                }
-            }
-
-            if (isset($rootClass->associationMappings[$property])) {
-                $joinColumn = $rootClass->associationMappings[$property]['joinColumns'][0]['name'];
-
-                foreach (array_keys($this->rsm->metaMappings, $joinColumn) as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
-                        $sqlIdentifier[$property] = $alias;
-                    }
-                }
-            }
-        }
-
-        if (count($sqlIdentifier) === 0) {
-            throw new \RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
-        }
-
-        if (count($rootIdentifier) != count($sqlIdentifier)) {
-            throw new \RuntimeException(sprintf(
-                'Not all identifier properties can be found in the ResultSetMapping: %s',
-                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
-            ));
-        }
+        $sqlIdentifier = $this->getSQLIdentifier($AST);
 
         // Build the counter query
         $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
@@ -208,7 +264,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = $this->preserveSqlOrdering($sqlIdentifier, $innerSql, $sql, $orderByClause);
 
         // Apply the limit and offset.
-        $sql = $this->platform->modifyLimitQuery(
+        $sql = $this->_platform->modifyLimitQuery(
             $sql, $this->maxResults, $this->firstResult
         );
 
@@ -217,8 +273,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // but that is not possible from inside the output walker, so we dirty
         // up the one we have.
         foreach ($sqlIdentifier as $property => $alias) {
-            $this->rsm->addScalarResult($alias, $property);
+            $this->_rsm->addScalarResult($alias, $property);
         }
+
+        // Restore orderByClause
+        $AST->orderByClause = $orderByClause;
 
         return $sql;
     }
@@ -241,7 +300,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // LimitSubqueryOutputWalker::walkPathExpression, which will be called
         // as the select statement is walked. We'll end up with an array of all
         // path expressions referenced in the query.
-        $walker->walkSelectStatement($AST, false);
+        $walker->walkSelectStatementWithoutRowNumber($AST, false);
         $orderByPathExpressions = $walker->getOrderByPathExpressions();
 
         // Get a map of referenced identifiers to field names.
@@ -298,17 +357,13 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Rebuild the order by clause to work in the scope of the new select statement
-        /* @var array $sqlOrderColumns an array of items that need to be included in the select list */
         /* @var array $orderBy an array of rebuilt order by items */
-        list($sqlOrderColumns, $orderBy) = $this->rebuildOrderByClauseForOuterScope($orderByClause);
-
-        // Identifiers are always included in the select list, so there's no need to include them twice
-        $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
+        $orderBy = $this->rebuildOrderByClauseForOuterScope($orderByClause);
 
         // Build the select distinct statement
         $sql = sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
-            implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
+            implode(', ', $sqlIdentifier),
             $innerSql,
             implode(', ', $orderBy)
         );
@@ -333,8 +388,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
             = [];
 
         // Generate DQL alias -> SQL table alias mapping
-        foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
-            $dqlAliasToClassMap[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
+        foreach(array_keys($this->_rsm->aliasMap) as $dqlAlias) {
+            $dqlAliasToClassMap[$dqlAlias] = $class = $this->_queryComponents[$dqlAlias]['metadata'];
             $dqlAliasToSqlTableAliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
         }
 
@@ -342,12 +397,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $fieldSearchPattern = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
         // Generate search patterns for each field's path expression in the order by clause
-        foreach($this->rsm->fieldMappings as $fieldAlias => $columnName) {
-            $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
-            $columnName = $this->quoteStrategy->getColumnName(
+        foreach($this->_rsm->fieldMappings as $fieldAlias => $columnName) {
+            $dqlAliasForFieldAlias = $this->_rsm->columnOwnerMap[$fieldAlias];
+            $columnName = $this->_quoteStrategy->getColumnName(
                 $columnName,
                 $dqlAliasToClassMap[$dqlAliasForFieldAlias],
-                $this->em->getConnection()->getDatabasePlatform()
+                $this->_em->getConnection()->getDatabasePlatform()
             );
 
             $sqlTableAliasForFieldAlias = $dqlAliasToSqlTableAliasMap[$dqlAliasForFieldAlias];
@@ -356,7 +411,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $replacements[] = $fieldAlias;
         }
 
-        $complexAddedOrderByAliases = 0;
         foreach($orderByClause->orderByItems as $orderByItem) {
             // Walk order by item to get string representation of it
             $orderByItemString = $this->walkOrderByItem($orderByItem);
@@ -364,22 +418,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
             // Replace path expressions in the order by clause with their column alias
             $orderByItemString = preg_replace($searchPatterns, $replacements, $orderByItemString);
 
-            // The order by items are not required to be in the select list on Oracle and PostgreSQL, but
-            // for the sake of simplicity, order by items will be included in the select list on all platforms.
-            // This doesn't impact functionality.
-            $selectListAddition = trim(preg_replace('/([^ ]+) (?:asc|desc)/i', '$1', $orderByItemString));
-
-            // If the expression is an arithmetic expression, we need to create an alias for it.
-            if ($orderByItem->expression instanceof ArithmeticTerm) {
-                $orderByAlias = "ordr_" . $complexAddedOrderByAliases++;
-                $orderByItemString = $orderByAlias . " " . $orderByItem->type;
-                $selectListAddition .= " AS $orderByAlias";
-            }
-            $selectListAdditions[] = $selectListAddition;
             $orderByItems[] = $orderByItemString;
         }
 
-        return array($selectListAdditions, $orderByItems);
+        return $orderByItems;
     }
 
     /**
@@ -387,7 +429,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkPathExpression($pathExpr)
     {
-        if (!in_array($pathExpr, $this->orderByPathExpressions)) {
+        if (!$this->platformSupportsRowNumber() && !in_array($pathExpr, $this->orderByPathExpressions)) {
             $this->orderByPathExpressions[] = $pathExpr;
         }
 
@@ -402,5 +444,91 @@ class LimitSubqueryOutputWalker extends SqlWalker
     public function getOrderByPathExpressions()
     {
         return $this->orderByPathExpressions;
+    }
+
+    /**
+     * @param $AST
+     * @return string
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\Query\QueryException
+     */
+    private function getInnerSQL($AST)
+    {
+        // Set every select expression as visible(hidden = false) to
+        // make $AST have scalar mappings properly - this is relevant for referencing selected
+        // fields from outside the subquery, for example in the ORDER BY segment
+        $hiddens = array();
+
+        foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
+            $hiddens[$idx] = $expr->hiddenAliasResultVariable;
+            $expr->hiddenAliasResultVariable = false;
+        }
+
+        $innerSql = parent::walkSelectStatement($AST);
+
+        // Restore hiddens
+        foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
+            $expr->hiddenAliasResultVariable = $hiddens[$idx];
+        }
+
+        return $innerSql;
+    }
+
+    /**
+     * @param $AST
+     * @return array
+     */
+    private function getSQLIdentifier($AST)
+    {
+        // Find out the SQL alias of the identifier column of the root entity.
+        // It may be possible to make this work with multiple root entities but that
+        // would probably require issuing multiple queries or doing a UNION SELECT.
+        // So for now, it's not supported.
+
+        // Get the root entity and alias from the AST fromClause.
+        $from = $AST->fromClause->identificationVariableDeclarations;
+        if (count($from) !== 1) {
+            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+        }
+
+        $fromRoot       = reset($from);
+        $rootAlias      = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass      = $this->_queryComponents[$rootAlias]['metadata'];
+        $rootIdentifier = $rootClass->identifier;
+
+        // For every identifier, find out the SQL alias by combing through the ResultSetMapping
+        $sqlIdentifier = array();
+        foreach ($rootIdentifier as $property) {
+            if (isset($rootClass->fieldMappings[$property])) {
+                foreach (array_keys($this->_rsm->fieldMappings, $property) as $alias) {
+                    if ($this->_rsm->columnOwnerMap[$alias] == $rootAlias) {
+                        $sqlIdentifier[$property] = $alias;
+                    }
+                }
+            }
+
+            if (isset($rootClass->associationMappings[$property])) {
+                $joinColumn = $rootClass->associationMappings[$property]['joinColumns'][0]['name'];
+
+                foreach (array_keys($this->_rsm->metaMappings, $joinColumn) as $alias) {
+                    if ($this->_rsm->columnOwnerMap[$alias] == $rootAlias) {
+                        $sqlIdentifier[$property] = $alias;
+                    }
+                }
+            }
+        }
+
+        if (count($sqlIdentifier) === 0) {
+            throw new \RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
+        }
+
+        if (count($rootIdentifier) != count($sqlIdentifier)) {
+            throw new \RuntimeException(sprintf(
+                'Not all identifier properties can be found in the ResultSetMapping: %s',
+                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
+            ));
+        }
+
+        return $sqlIdentifier;
     }
 }
