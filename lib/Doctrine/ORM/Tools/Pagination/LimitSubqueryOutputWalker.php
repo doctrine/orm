@@ -399,6 +399,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Generate search patterns for each field's path expression in the order by clause
         foreach($this->_rsm->fieldMappings as $fieldAlias => $columnName) {
             $dqlAliasForFieldAlias = $this->_rsm->columnOwnerMap[$fieldAlias];
+            $class = $dqlAliasToClassMap[$dqlAliasForFieldAlias];
+
+            // If the field is from a joined child table, we won't be ordering
+            // on it.
+            if (!isset($class->fieldMappings[$columnName])) {
+                continue;
+            }
+
             $columnName = $this->_quoteStrategy->getColumnName(
                 $columnName,
                 $dqlAliasToClassMap[$dqlAliasForFieldAlias],
