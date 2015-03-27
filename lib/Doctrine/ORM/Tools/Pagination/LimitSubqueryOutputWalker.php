@@ -121,7 +121,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return bool
      */
-    private function platformSupportsRowNumber() {
+    private function platformSupportsRowNumber()
+    {
         return $this->_platform instanceof PostgreSqlPlatform
             || $this->_platform instanceof SQLServerPlatform
             || $this->_platform instanceof OraclePlatform
@@ -137,13 +138,17 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @param SelectStatement $AST
      */
-    private function rebuildOrderByForRowNumber(SelectStatement $AST) {
+    private function rebuildOrderByForRowNumber(SelectStatement $AST)
+    {
         $orderByClause = $AST->orderByClause;
         $selectAliasToExpressionMap = [];
-        foreach($AST->selectClause->selectExpressions as $selectExpression) {
+        // Get any aliases that are available for select expressions.
+        foreach ($AST->selectClause->selectExpressions as $selectExpression) {
             $selectAliasToExpressionMap[$selectExpression->fieldIdentificationVariable] = $selectExpression->expression;
         }
-        foreach($orderByClause->orderByItems as $orderByItem) {
+
+        // Rebuild string orderby expressions to use the select expression they're referencing
+        foreach ($orderByClause->orderByItems as $orderByItem) {
             if (is_string($orderByItem->expression) && isset($selectAliasToExpressionMap[$orderByItem->expression])) {
                 $orderByItem->expression = $selectAliasToExpressionMap[$orderByItem->expression];
             }
@@ -203,8 +208,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Build the counter query
-        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
-            implode(', ', $sqlIdentifier), $innerSql);
+        $sql = sprintf(
+            'SELECT DISTINCT %s FROM (%s) dctrn_result',
+            implode(', ', $sqlIdentifier),
+            $innerSql
+        );
 
         if ($hasOrderBy) {
             $sql .= $orderGroupBy . $outerOrderBy;
@@ -212,7 +220,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         // Apply the limit and offset.
         $sql = $this->_platform->modifyLimitQuery(
-            $sql, $this->maxResults, $this->firstResult
+            $sql,
+            $this->maxResults,
+            $this->firstResult
         );
 
         // Add the columns to the ResultSetMapping. It's not really nice but
