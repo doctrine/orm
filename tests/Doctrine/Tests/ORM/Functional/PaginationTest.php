@@ -455,7 +455,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(9, $paginator);
 
         $i = 9;
-
+        $this -> assertCount(3,$paginator -> getIterator());
         foreach($paginator as $company) {
             $this->assertEquals("name" . --$i, $company->name);
             $this->assertCount(3, $company->departments);
@@ -464,7 +464,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->assertEquals("name$i" . $j++, $department->name);
             }
         }
-        $this->assertEquals($i,6);
+        $this->assertEquals(6, $i);
     }
 
     public function testIterateComplexWithOutputWalker()
