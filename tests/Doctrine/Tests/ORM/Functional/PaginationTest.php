@@ -447,17 +447,16 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name DESC, d.name ASC';
         $query = $this->_em->createQuery($dql);
-        $query -> setFirstResult(1) -> setMaxResults(3);
-        assertEquals($query->getMaxResults(),3);
+        $query -> setMaxResults(3);
+
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
+
         $this->assertCount(9, $paginator);
-        $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+
         $i = 9;
-        $companies = iterator_to_array($iter);
-        $this->assertCount(3, $companies);
-        foreach($companies as $company) {
+
+        foreach($paginator as $company) {
             $this->assertEquals("name" . --$i, $company->name);
             $this->assertCount(3, $company->departments);
             $j = 0;
@@ -465,6 +464,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->assertEquals("name$i" . $j++, $department->name);
             }
         }
+        $this->assertEquals($i,6);
     }
 
     public function testIterateComplexWithOutputWalker()

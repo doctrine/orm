@@ -522,8 +522,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($this->_usedModelSets['pagination'])) {
             $conn->executeUpdate('DELETE FROM pagination_logo');
-            $conn->executeUpdate('DELETE FROM pagination_company');
             $conn->executeUpdate('DELETE FROM pagination_department');
+            $conn->executeUpdate('DELETE FROM pagination_company');
         }
 
         $this->_em->clear();
