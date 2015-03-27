@@ -527,7 +527,25 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($rc3->hasMethod('getCreatedAt'));
         $this->assertFalse($rc3->hasMethod('setCreatedAt'));
     }
-    
+
+    public function testRegenerateEntityClass()
+    {
+        $metadata = $this->generateBookEntityFixture();
+        $this->loadEntityClass($metadata);
+
+        $className = basename(str_replace('\\', '/', $metadata->name));
+        $path = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $classTest = file_get_contents($path);
+
+        $this->_generator->setRegenerateEntityIfExists(true);
+        $this->_generator->setBackupExisting(false);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $classNew = file_get_contents($path);
+
+        $this->assertSame($classTest,$classNew);
+    }
+
     /**
      * @return array
      */
@@ -637,6 +655,19 @@ class
                 array('Foo\Bar\Baz'),
             ),
         );
+    }
+
+    /**
+     * @param ClassMetadataInfo $metadata
+     */
+    private function loadEntityClass(ClassMetadataInfo $metadata)
+    {
+        $className = basename(str_replace('\\', '/', $metadata->name));
+        $path      = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+
+        $this->assertFileExists($path);
+
+        require_once $path;
     }
 
     /**
