@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Logo;
+use Doctrine\Tests\Models\Pagination\Department;
 use ReflectionMethod;
 
 /**
@@ -439,6 +440,33 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, "name");
     }
 
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateResultWithOrderIsValid($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name DESC, d.name ASC';
+        $query = $this->_em->createQuery($dql);
+        $query -> setFirstResult(1) -> setMaxResults(3);
+        assertEquals($query->getMaxResults(),3);
+        $paginator = new Paginator($query);
+        $paginator->setUseOutputWalkers($useOutputWalkers);
+        $this->assertCount(9, $paginator);
+        $iter = $paginator->getIterator();
+        $this->assertCount(3, $iter);
+        $i = 9;
+        $companies = iterator_to_array($iter);
+        $this->assertCount(3, $companies);
+        foreach($companies as $company) {
+            $this->assertEquals("name" . --$i, $company->name);
+            $this->assertCount(3, $company->departments);
+            $j = 0;
+            foreach($company->departments as $department) {
+                $this->assertEquals("name$i" . $j++, $department->name);
+            }
+        }
+    }
+
     public function testIterateComplexWithOutputWalker()
     {
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
@@ -553,6 +581,12 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $company->logo->image_width = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company = $company;
+            for($j=0;$j<3;$j++) {
+                $department = new Department();
+                $department->name = "name$i$j";
+                $department->company = $company;
+                $company->departments[] = $department;
+            }
             $this->_em->persist($company);
         }
 
