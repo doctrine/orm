@@ -49,17 +49,17 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
-    private $_platform;
+    private $platform;
 
     /**
      * @var \Doctrine\ORM\Query\ResultSetMapping
      */
-    private $_rsm;
+    private $rsm;
 
     /**
      * @var array
      */
-    private $_queryComponents;
+    private $queryComponents;
 
     /**
      * @var int
@@ -74,14 +74,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    private $_em;
+    private $em;
 
     /**
      * The quote strategy.
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
      */
-    private $_quoteStrategy;
+    private $quoteStrategy;
 
     /**
      * @var array
@@ -104,17 +104,17 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->_platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
-        $this->_rsm = $parserResult->getResultSetMapping();
-        $this->_queryComponents = $queryComponents;
+        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->rsm = $parserResult->getResultSetMapping();
+        $this->queryComponents = $queryComponents;
 
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
         $this->maxResults = $query->getMaxResults();
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->_em               = $query->getEntityManager();
-        $this->_quoteStrategy    = $this->_em->getConfiguration()->getQuoteStrategy();
+        $this->em               = $query->getEntityManager();
+        $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();
 
         parent::__construct($query, $parserResult, $queryComponents);
     }
@@ -126,13 +126,13 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private function platformSupportsRowNumber()
     {
-        return $this->_platform instanceof PostgreSqlPlatform
-            || $this->_platform instanceof SQLServerPlatform
-            || $this->_platform instanceof OraclePlatform
-            || $this->_platform instanceof SQLAnywherePlatform
-            || $this->_platform instanceof DB2Platform
-            || (method_exists($this->_platform, "supportsRowNumberFunction")
-                && $this->_platform->supportsRowNumberFunction());
+        return $this->platform instanceof PostgreSqlPlatform
+            || $this->platform instanceof SQLServerPlatform
+            || $this->platform instanceof OraclePlatform
+            || $this->platform instanceof SQLAnywherePlatform
+            || $this->platform instanceof DB2Platform
+            || (method_exists($this->platform, "supportsRowNumberFunction")
+                && $this->platform->supportsRowNumberFunction());
     }
 
     /**
@@ -222,7 +222,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Apply the limit and offset.
-        $sql = $this->_platform->modifyLimitQuery(
+        $sql = $this->platform->modifyLimitQuery(
             $sql,
             $this->maxResults,
             $this->firstResult
@@ -233,7 +233,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // but that is not possible from inside the output walker, so we dirty
         // up the one we have.
         foreach ($sqlIdentifier as $property => $alias) {
-            $this->_rsm->addScalarResult($alias, $property);
+            $this->rsm->addScalarResult($alias, $property);
         }
 
         return $sql;
@@ -277,7 +277,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = $this->preserveSqlOrdering($sqlIdentifier, $innerSql, $sql, $orderByClause);
 
         // Apply the limit and offset.
-        $sql = $this->_platform->modifyLimitQuery(
+        $sql = $this->platform->modifyLimitQuery(
             $sql, $this->maxResults, $this->firstResult
         );
 
@@ -286,7 +286,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // but that is not possible from inside the output walker, so we dirty
         // up the one we have.
         foreach ($sqlIdentifier as $property => $alias) {
-            $this->_rsm->addScalarResult($alias, $property);
+            $this->rsm->addScalarResult($alias, $property);
         }
 
         // Restore orderByClause
@@ -401,8 +401,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
             = [];
 
         // Generate DQL alias -> SQL table alias mapping
-        foreach(array_keys($this->_rsm->aliasMap) as $dqlAlias) {
-            $dqlAliasToClassMap[$dqlAlias] = $class = $this->_queryComponents[$dqlAlias]['metadata'];
+        foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
+            $dqlAliasToClassMap[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
             $dqlAliasToSqlTableAliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
         }
 
@@ -410,8 +410,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $fieldSearchPattern = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
         // Generate search patterns for each field's path expression in the order by clause
-        foreach($this->_rsm->fieldMappings as $fieldAlias => $columnName) {
-            $dqlAliasForFieldAlias = $this->_rsm->columnOwnerMap[$fieldAlias];
+        foreach($this->rsm->fieldMappings as $fieldAlias => $columnName) {
+            $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
             $class = $dqlAliasToClassMap[$dqlAliasForFieldAlias];
 
             // If the field is from a joined child table, we won't be ordering
@@ -421,10 +421,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
             }
 
             // Get the proper column name as will appear in the select list
-            $columnName = $this->_quoteStrategy->getColumnName(
+            $columnName = $this->quoteStrategy->getColumnName(
                 $columnName,
                 $dqlAliasToClassMap[$dqlAliasForFieldAlias],
-                $this->_em->getConnection()->getDatabasePlatform()
+                $this->em->getConnection()->getDatabasePlatform()
             );
 
             // Get the SQL table alias for the entity and field
@@ -434,7 +434,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             if (isset($fieldMapping['declared']) && $fieldMapping['declared'] !== $class->name) {
                 // Field was declared in a parent class, so we need to get the proper SQL table alias
                 // for the joined parent table.
-                $otherClassMetadata = $this->_em->getClassMetadata($fieldMapping['declared']);
+                $otherClassMetadata = $this->em->getClassMetadata($fieldMapping['declared']);
                 $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($otherClassMetadata->getTableName(), $dqlAliasForFieldAlias);
             }
 
@@ -467,12 +467,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * @param $AST
+     * @param SelectStatement $AST
+     *
      * @return string
+     *
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function getInnerSQL($AST)
+    private function getInnerSQL(SelectStatement $AST)
     {
         // Set every select expression as visible(hidden = false) to
         // make $AST have scalar mappings properly - this is relevant for referencing selected
@@ -495,10 +497,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * @param $AST
+     * @param SelectStatement $AST
+     *
      * @return array
      */
-    private function getSQLIdentifier($AST)
+    private function getSQLIdentifier(SelectStatement $AST)
     {
         // Find out the SQL alias of the identifier column of the root entity.
         // It may be possible to make this work with multiple root entities but that
@@ -513,15 +516,15 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         $fromRoot       = reset($from);
         $rootAlias      = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass      = $this->_queryComponents[$rootAlias]['metadata'];
+        $rootClass      = $this->queryComponents[$rootAlias]['metadata'];
         $rootIdentifier = $rootClass->identifier;
 
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping
         $sqlIdentifier = array();
         foreach ($rootIdentifier as $property) {
             if (isset($rootClass->fieldMappings[$property])) {
-                foreach (array_keys($this->_rsm->fieldMappings, $property) as $alias) {
-                    if ($this->_rsm->columnOwnerMap[$alias] == $rootAlias) {
+                foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
+                    if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
                         $sqlIdentifier[$property] = $alias;
                     }
                 }
@@ -530,8 +533,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
             if (isset($rootClass->associationMappings[$property])) {
                 $joinColumn = $rootClass->associationMappings[$property]['joinColumns'][0]['name'];
 
-                foreach (array_keys($this->_rsm->metaMappings, $joinColumn) as $alias) {
-                    if ($this->_rsm->columnOwnerMap[$alias] == $rootAlias) {
+                foreach (array_keys($this->rsm->metaMappings, $joinColumn) as $alias) {
+                    if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
                         $sqlIdentifier[$property] = $alias;
                     }
                 }
