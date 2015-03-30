@@ -88,6 +88,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private $orderByPathExpressions = [];
 
+    /** @var bool $inSubselect */
+    private $inSubselect = false;
+
     /**
      * Constructor.
      *
@@ -435,18 +438,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function walkPathExpression($pathExpr)
-    {
-        if (!$this->platformSupportsRowNumber() && !in_array($pathExpr, $this->orderByPathExpressions)) {
-            $this->orderByPathExpressions[] = $pathExpr;
-        }
-
-        return parent::walkPathExpression($pathExpr);
-    }
-
-    /**
      * getter for $orderByPathExpressions
      *
      * @return array
@@ -540,5 +531,32 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         return $sqlIdentifier;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function walkPathExpression($pathExpr)
+    {
+        if (!$this->inSubselect && !$this->platformSupportsRowNumber() && !in_array($pathExpr, $this->orderByPathExpressions)) {
+            $this->orderByPathExpressions[] = $pathExpr;
+        }
+
+        return parent::walkPathExpression($pathExpr);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function walkSubSelect($subselect)
+    {
+        // We don't want to add path expressions from subselects into the select clause of the containing query.
+        $this->inSubselect = true;
+
+        $sql = parent::walkSubselect($subselect);
+
+        $this->inSubselect = false;
+
+        return $sql;
     }
 }
