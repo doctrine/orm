@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -571,6 +572,31 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         iterator_to_array($iter);
     }
 
+    public function testCountWithCountSubqueryInWhereClauseWithOutputWalker()
+    {
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((SELECT COUNT(s.id) FROM Doctrine\Tests\Models\CMS\CmsUser s) = 9) ORDER BY u.id desc";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(true);
+        $this->assertCount(9, $paginator);
+    }
+
+    public function testIterateWithCountSubqueryInWhereClause()
+    {
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((SELECT COUNT(s.id) FROM Doctrine\Tests\Models\CMS\CmsUser s) = 9) ORDER BY u.id desc";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(true);
+
+        $users = iterator_to_array($paginator->getIterator());
+        $this->assertCount(9, $users);
+        foreach ($users as $i => $user) {
+            $this->assertEquals("username" . (8 - $i), $user->username);
+        }
+    }
+
     public function testDetectOutputWalker()
     {
         // This query works using the output walkers but causes an exception using the TreeWalker
@@ -665,6 +691,14 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $user->addGroup($groups[$j]);
             }
             $this->_em->persist($user);
+            for ($j = 0; $j < $i + 1; $j++) {
+                $article = new CmsArticle();
+                $article->topic = "topic$i$j";
+                $article->text = "text$i$j";
+                $article->setAuthor($user);
+                $article->version = 0;
+                $this->_em->persist($article);
+            }
         }
 
         for ($i = 0; $i < 9; $i++) {

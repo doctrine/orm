@@ -318,5 +318,37 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             $query->getSQL()
         );
     }
+
+    public function testLimitSubqueryWithOrderByAndSubSelectInWhereClauseMySql()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+        $query = $this->entityManager->createQuery(
+            'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b
+WHERE  ((SELECT COUNT(simple.id) FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost simple) = 1)
+ORDER BY b.id DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0 FROM (SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ WHERE ((SELECT COUNT(b1_.id) AS dctrn__1 FROM BlogPost b1_) = 1)) dctrn_result ORDER BY id_0 DESC',
+            $query->getSQL()
+        );
+    }
+
+    public function testLimitSubqueryWithOrderByAndSubSelectInWhereClausePgSql()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $query = $this->entityManager->createQuery(
+            'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b
+WHERE  ((SELECT COUNT(simple.id) FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost simple) = 1)
+ORDER BY b.id DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0, MIN(sclr_1) AS dctrn_minrownum FROM (SELECT b0_.id AS id_0, ROW_NUMBER() OVER(ORDER BY b0_.id DESC) AS sclr_1, b0_.author_id AS author_id_2, b0_.category_id AS category_id_3 FROM BlogPost b0_ WHERE ((SELECT COUNT(b1_.id) AS dctrn__1 FROM BlogPost b1_) = 1)) dctrn_result GROUP BY id_0 ORDER BY dctrn_minrownum ASC',
+            $query->getSQL()
+        );
+    }
 }
 
