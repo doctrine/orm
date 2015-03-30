@@ -120,7 +120,6 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function iterateWithOrderAsc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-
         // Ascending
         $dql = "$baseDql ASC";
         $query = $this->_em->createQuery($dql);
@@ -135,7 +134,6 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-
         // Ascending
         $dql = "$baseDql ASC";
         $query = $this->_em->createQuery($dql);
@@ -487,18 +485,12 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a joined entity. Use output walkers.");
-
-        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name ASC';
-        // Ascending
-        $query = $this->_em->createQuery($dql);
-
-        // With limit
-        $query->setMaxResults(3);
-        $paginator = new Paginator($query, true);
-        $paginator->setUseOutputWalkers(false);
-        $iter = $paginator->getIterator();
-        iterator_to_array($iter);
+        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $dqlAsc = $dql . " ASC, d.name";
+        $dqlDesc = $dql . " DESC, d.name";
+        $this->iterateWithOrderAscWithLimit(false, true, $dqlAsc, "name");
+        $this->iterateWithOrderDescWithLimit(false, true, $dqlDesc, "name");
     }
 
     /**
@@ -550,18 +542,11 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a joined entity. Use output walkers.");
-        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name ASC';
+        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
 
-        // Ascending
-        $query = $this->_em->createQuery($dql);
-
-        // With limit
-        $query->setMaxResults(3);
-        $paginator = new Paginator($query, true);
-        $paginator->setUseOutputWalkers(false);
-        $iter = $paginator->getIterator();
-        iterator_to_array($iter);
+        $this->iterateWithOrderAscWithLimit(false, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimit(false, true, $dql, "name");
     }
 
     public function testCountWithCountSubqueryInWhereClauseWithOutputWalker()
