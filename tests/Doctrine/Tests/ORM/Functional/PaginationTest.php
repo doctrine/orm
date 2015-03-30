@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
@@ -724,6 +725,14 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $user->email = "email$i";
             $this->_em->persist($user);
         }
+
+        $manager = new CompanyManager();
+        $manager->setName('Roman B.');
+        $manager->setTitle('Foo');
+        $manager->setDepartment('IT');
+        $manager->setSalary(100000);
+
+        $this->_em->persist($manager);
 
         $this->_em->flush();
     }
