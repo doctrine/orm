@@ -23,6 +23,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         $this->useModelSet('pagination');
+        $this->useModelSet('company');
         parent::setUp();
         $this->populate();
     }
@@ -585,6 +586,15 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         foreach ($users as $i => $user) {
             $this->assertEquals("username" . (8 - $i), $user->username);
         }
+    }
+
+    public function testJoinedClassTableInheritance()
+    {
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Company\CompanyManager c ORDER BY c.startDate';
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $this->assertCount(1, $paginator->getIterator());
     }
 
     public function testDetectOutputWalker()
