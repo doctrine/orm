@@ -420,14 +420,25 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 continue;
             }
 
+            // Get the proper column name as will appear in the select list
             $columnName = $this->_quoteStrategy->getColumnName(
                 $columnName,
                 $dqlAliasToClassMap[$dqlAliasForFieldAlias],
                 $this->_em->getConnection()->getDatabasePlatform()
             );
 
+            // Get the SQL table alias for the entity and field
             $sqlTableAliasForFieldAlias = $dqlAliasToSqlTableAliasMap[$dqlAliasForFieldAlias];
 
+            $fieldMapping = $class->fieldMappings[$columnName];
+            if (isset($fieldMapping['declared']) && $fieldMapping['declared'] !== $class->name) {
+                // Field was declared in a parent class, so we need to get the proper SQL table alias
+                // for the joined parent table.
+                $otherClassMetadata = $this->_em->getClassMetadata($fieldMapping['declared']);
+                $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($otherClassMetadata->getTableName(), $dqlAliasForFieldAlias);
+            }
+
+            // Compose search/replace patterns
             $searchPatterns[] = sprintf($fieldSearchPattern, $sqlTableAliasForFieldAlias, $columnName);
             $replacements[] = $fieldAlias;
         }
