@@ -937,6 +937,24 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertTrue($reflParameters[3]->isOptional());
     }
 
+    public function testRegenerateEntityClass()
+    {
+        $metadata = $this->generateBookEntityFixture();
+        $this->loadEntityClass($metadata);
+
+        $className = basename(str_replace('\\', '/', $metadata->name));
+        $path = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $classTest = file_get_contents($path);
+
+        $this->_generator->setRegenerateEntityIfExists(true);
+        $this->_generator->setBackupExisting(false);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $classNew = file_get_contents($path);
+
+        $this->assertSame($classTest,$classNew);
+    }
+
     /**
      * @return array
      */
