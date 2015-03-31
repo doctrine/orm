@@ -410,27 +410,27 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $fieldSearchPattern = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
         // Generate search patterns for each field's path expression in the order by clause
-        foreach($this->rsm->fieldMappings as $fieldAlias => $columnName) {
+        foreach($this->rsm->fieldMappings as $fieldAlias => $fieldName) {
             $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
             $class = $dqlAliasToClassMap[$dqlAliasForFieldAlias];
 
             // If the field is from a joined child table, we won't be ordering
             // on it.
-            if (!isset($class->fieldMappings[$columnName])) {
+            if (!isset($class->fieldMappings[$fieldName])) {
                 continue;
             }
 
+            $fieldMapping = $class->fieldMappings[$fieldName];
+
             // Get the proper column name as will appear in the select list
             $columnName = $this->quoteStrategy->getColumnName(
-                $columnName,
+                $fieldName,
                 $dqlAliasToClassMap[$dqlAliasForFieldAlias],
                 $this->em->getConnection()->getDatabasePlatform()
             );
 
             // Get the SQL table alias for the entity and field
             $sqlTableAliasForFieldAlias = $dqlAliasToSqlTableAliasMap[$dqlAliasForFieldAlias];
-
-            $fieldMapping = $class->fieldMappings[$columnName];
             if (isset($fieldMapping['declared']) && $fieldMapping['declared'] !== $class->name) {
                 // Field was declared in a parent class, so we need to get the proper SQL table alias
                 // for the joined parent table.
