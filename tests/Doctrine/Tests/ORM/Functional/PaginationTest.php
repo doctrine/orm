@@ -3,12 +3,16 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Pagination\Company;
+use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
+use Doctrine\Tests\Models\Pagination\User1;
 use ReflectionMethod;
 
 /**
@@ -20,6 +24,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         $this->useModelSet('pagination');
+        $this->useModelSet('company');
         parent::setUp();
         $this->populate();
     }
@@ -115,7 +120,6 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function iterateWithOrderAsc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-
         // Ascending
         $dql = "$baseDql ASC";
         $query = $this->_em->createQuery($dql);
@@ -130,7 +134,6 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-
         // Ascending
         $dql = "$baseDql ASC";
         $query = $this->_em->createQuery($dql);
@@ -439,6 +442,16 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, "name");
     }
 
+    /**
+     * @dataProvider fetchJoinCollection
+     */
+    public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimitAndOffsetWithInheritanceType($fetchJoinCollection)
+    {
+        $dql = 'SELECT u FROM Doctrine\Tests\Models\Pagination\User u ORDER BY u.id';
+        $this->iterateWithOrderAscWithLimit(true, $fetchJoinCollection, $dql, "name");
+        $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, "name");
+    }
+
     public function testIterateComplexWithOutputWalker()
     {
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
@@ -447,6 +460,127 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(true);
         $this->assertCount(3, $paginator->getIterator());
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBoth($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $dqlAsc = $dql . " ASC, d.name";
+        $dqlDesc = $dql . " DESC, d.name";
+        $this->iterateWithOrderAsc($useOutputWalkers, true, $dqlAsc, "name");
+        $this->iterateWithOrderDesc($useOutputWalkers, true, $dqlDesc, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithOutputWalker()
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $dqlAsc = $dql . " ASC, d.name";
+        $dqlDesc = $dql . " DESC, d.name";
+        $this->iterateWithOrderAscWithLimit(true, true, $dqlAsc, "name");
+        $this->iterateWithOrderDescWithLimit(true, true, $dqlDesc, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithoutOutputWalker()
+    {
+        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $dqlAsc = $dql . " ASC, d.name";
+        $dqlDesc = $dql . " DESC, d.name";
+        $this->iterateWithOrderAscWithLimit(false, true, $dqlAsc, "name");
+        $this->iterateWithOrderDescWithLimit(false, true, $dqlDesc, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRoot($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $this->iterateWithOrderAsc($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRootWithLimit($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $this->iterateWithOrderAscWithLimit($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimit($useOutputWalkers, true, $dql, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRootWithLimitAndOffset($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
+        $this->iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, true, $dql, "name");
+    }
+
+    /**
+     * @dataProvider useOutputWalkers
+     */
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoined($useOutputWalkers)
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
+        $this->iterateWithOrderAsc($useOutputWalkers, true, $dql, "name");
+        $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithOutputWalker()
+    {
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
+        $this->iterateWithOrderAscWithLimit(true, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimit(true, true, $dql, "name");
+    }
+
+    public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithoutOutputWalker()
+    {
+        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
+
+        $this->iterateWithOrderAscWithLimit(false, true, $dql, "name");
+        $this->iterateWithOrderDescWithLimit(false, true, $dql, "name");
+    }
+
+    public function testCountWithCountSubqueryInWhereClauseWithOutputWalker()
+    {
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((SELECT COUNT(s.id) FROM Doctrine\Tests\Models\CMS\CmsUser s) = 9) ORDER BY u.id desc";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(true);
+        $this->assertCount(9, $paginator);
+    }
+
+    public function testIterateWithCountSubqueryInWhereClause()
+    {
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((SELECT COUNT(s.id) FROM Doctrine\Tests\Models\CMS\CmsUser s) = 9) ORDER BY u.id desc";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(true);
+
+        $users = iterator_to_array($paginator->getIterator());
+        $this->assertCount(9, $users);
+        foreach ($users as $i => $user) {
+            $this->assertEquals("username" . (8 - $i), $user->username);
+        }
+    }
+
+    public function testJoinedClassTableInheritance()
+    {
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Company\CompanyManager c ORDER BY c.startDate';
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $this->assertCount(1, $paginator->getIterator());
     }
 
     public function testDetectOutputWalker()
@@ -466,6 +600,20 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         count($paginator);
+    }
+
+    /**
+     * Test using a paginator when the entity attribute name and corresponding column name are not the same.
+     */
+    public function testPaginationWithColumnAttributeNameDifference()
+    {
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c ORDER BY c.id';
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $paginator->getIterator();
+
+        $this->assertCount(9, $paginator->getIterator());
     }
 
     public function testCloneQuery()
@@ -543,6 +691,14 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $user->addGroup($groups[$j]);
             }
             $this->_em->persist($user);
+            for ($j = 0; $j < $i + 1; $j++) {
+                $article = new CmsArticle();
+                $article->topic = "topic$i$j";
+                $article->text = "text$i$j";
+                $article->setAuthor($user);
+                $article->version = 0;
+                $this->_em->persist($article);
+            }
         }
 
         for ($i = 0; $i < 9; $i++) {
@@ -553,8 +709,29 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $company->logo->image_width = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company = $company;
+            for($j=0;$j<3;$j++) {
+                $department = new Department();
+                $department->name = "name$i$j";
+                $department->company = $company;
+                $company->departments[] = $department;
+            }
             $this->_em->persist($company);
         }
+
+        for ($i = 0; $i < 9; $i++) {
+            $user = new User1();
+            $user->name = "name$i";
+            $user->email = "email$i";
+            $this->_em->persist($user);
+        }
+
+        $manager = new CompanyManager();
+        $manager->setName('Roman B.');
+        $manager->setTitle('Foo');
+        $manager->setDepartment('IT');
+        $manager->setSalary(100000);
+
+        $this->_em->persist($manager);
 
         $this->_em->flush();
     }
