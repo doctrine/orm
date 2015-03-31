@@ -88,8 +88,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private $orderByPathExpressions = [];
 
-    /** @var bool $inSubselect */
-    private $inSubselect = false;
+    /**
+     * @var bool We don't want to add path expressions from sub-selects into the select clause of the containing query.
+     *           This state flag simply keeps track on whether we are walking on a subquery or not
+     */
+    private $inSubSelect = false;
 
     /**
      * Constructor.
@@ -479,7 +482,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Set every select expression as visible(hidden = false) to
         // make $AST have scalar mappings properly - this is relevant for referencing selected
         // fields from outside the subquery, for example in the ORDER BY segment
-        $hiddens = array();
+        $hiddens = [];
 
         foreach ($AST->selectClause->selectExpressions as $idx => $expr) {
             $hiddens[$idx] = $expr->hiddenAliasResultVariable;
@@ -520,7 +523,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $rootIdentifier = $rootClass->identifier;
 
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping
-        $sqlIdentifier = array();
+        $sqlIdentifier = [];
         foreach ($rootIdentifier as $property) {
             if (isset($rootClass->fieldMappings[$property])) {
                 foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
@@ -560,7 +563,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkPathExpression($pathExpr)
     {
-        if (!$this->inSubselect && !$this->platformSupportsRowNumber() && !in_array($pathExpr, $this->orderByPathExpressions)) {
+        if (!$this->inSubSelect && !$this->platformSupportsRowNumber() && !in_array($pathExpr, $this->orderByPathExpressions)) {
             $this->orderByPathExpressions[] = $pathExpr;
         }
 
@@ -572,12 +575,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkSubSelect($subselect)
     {
-        // We don't want to add path expressions from subselects into the select clause of the containing query.
-        $this->inSubselect = true;
+        $this->inSubSelect = true;
 
         $sql = parent::walkSubselect($subselect);
 
-        $this->inSubselect = false;
+        $this->inSubSelect = false;
 
         return $sql;
     }
