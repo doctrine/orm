@@ -46,7 +46,7 @@ abstract class SQLFilter
      *
      * @var array
      */
-    private $parameters;
+    private $parameters = [];
 
     /**
      * Constructs the SQLFilter object.
@@ -56,7 +56,6 @@ abstract class SQLFilter
     final public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-        $this->parameters = array();
     }
 
     /**
