@@ -602,6 +602,20 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         count($paginator);
     }
 
+    /**
+     * Test using a paginator when the entity attribute name and corresponding column name are not the same.
+     */
+    public function testPaginationWithColumnAttributeNameDifference()
+    {
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c ORDER BY c.id';
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $paginator->getIterator();
+
+        $this->assertCount(9, $paginator->getIterator());
+    }
+
     public function testCloneQuery()
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
