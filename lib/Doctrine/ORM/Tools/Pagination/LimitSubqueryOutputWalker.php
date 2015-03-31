@@ -131,7 +131,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             || $this->platform instanceof OraclePlatform
             || $this->platform instanceof SQLAnywherePlatform
             || $this->platform instanceof DB2Platform
-            || (method_exists($this->platform, "supportsRowNumberFunction")
+            || (method_exists($this->platform, 'supportsRowNumberFunction')
                 && $this->platform->supportsRowNumberFunction());
     }
 
@@ -156,9 +156,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 $orderByItem->expression = $selectAliasToExpressionMap[$orderByItem->expression];
             }
         }
-        $func = new RowNumberOverFunction("dctrn_rownum");
+        $func = new RowNumberOverFunction('dctrn_rownum');
         $func->orderByClause = $AST->orderByClause;
-        $AST->selectClause->selectExpressions[] = new SelectExpression($func, "dctrn_rownum", true);
+        $AST->selectClause->selectExpressions[] = new SelectExpression($func, 'dctrn_rownum', true);
 
         // No need for an order by clause, we'll order by rownum in the outer query.
         $AST->orderByClause = null;
@@ -194,7 +194,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     public function walkSelectStatementWithRowNumber(SelectStatement $AST)
     {
         $hasOrderBy = false;
-        $outerOrderBy = " ORDER BY dctrn_minrownum ASC";
+        $outerOrderBy = ' ORDER BY dctrn_minrownum ASC';
         $orderGroupBy = '';
         if ($AST->orderByClause instanceof OrderByClause) {
             $hasOrderBy = true;
@@ -206,8 +206,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sqlIdentifier = $this->getSQLIdentifier($AST);
 
         if ($hasOrderBy) {
-            $orderGroupBy = " GROUP BY " . implode(', ', $sqlIdentifier);
-            $sqlIdentifier[] = "MIN(" . $this->walkResultVariable("dctrn_rownum") . ") AS dctrn_minrownum";
+            $orderGroupBy = ' GROUP BY ' . implode(', ', $sqlIdentifier);
+            $sqlIdentifier[] = 'MIN(' . $this->walkResultVariable('dctrn_rownum') . ') AS dctrn_minrownum';
         }
 
         // Build the counter query
@@ -511,7 +511,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Get the root entity and alias from the AST fromClause.
         $from = $AST->fromClause->identificationVariableDeclarations;
         if (count($from) !== 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot       = reset($from);
