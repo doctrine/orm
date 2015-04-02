@@ -1968,7 +1968,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('e1', 'a1__id', 'id');
         $rsm->addFieldResult('e2', 'e2__id', 'id');
 
-        $result = (new ObjectHydrator($this->_em))
+        $result = (new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em))
             ->hydrateAll(
                 new HydratorMockStatement([[
                     'a1__id' => '1',
