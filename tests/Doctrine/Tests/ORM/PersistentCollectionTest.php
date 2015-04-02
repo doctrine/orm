@@ -3,8 +3,10 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
@@ -21,15 +23,16 @@ class PersistentCollectionTest extends OrmTestCase
      */
     protected $collection;
 
-    private $_connectionMock;
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     private $_emMock;
 
     protected function setUp()
     {
         parent::setUp();
-        // SUT
-        $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
+
+        $this->_emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
     }
 
     /**
@@ -79,5 +82,40 @@ class PersistentCollectionTest extends OrmTestCase
         $this->setUpPersistentCollection();
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
+    }
+
+    public function testAcceptsArrayAsConstructorArgument()
+    {
+        $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+
+        $collection = new PersistentCollection($this->_emMock, $metadata, []);
+
+        $this->assertEmpty($collection);
+        $this->tryGenericCollectionOperations($collection);
+    }
+
+    public function testAcceptsNullAsConstructorArgument()
+    {
+        $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+
+        $collection = new PersistentCollection($this->_emMock, $metadata, null);
+
+        $this->assertEmpty($collection);
+        $this->tryGenericCollectionOperations($collection);
+    }
+
+    private function tryGenericCollectionOperations(Collection $collection)
+    {
+        $count  = count($collection);
+        $object = new \stdClass();
+
+        $collection->add($object);
+
+        $this->assertTrue($collection->contains($object));
+        $this->assertCount($count + 1, $collection);
+
+        $collection->removeElement($object);
+
+        $this->assertCount($count, $collection);
     }
 }
