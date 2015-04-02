@@ -8,6 +8,8 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
+use Doctrine\Tests\Models\Hydration\SimpleEntity;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 
@@ -1955,5 +1957,30 @@ class ObjectHydratorTest extends HydrationTestCase
         $stmt       = new HydratorMockStatement($resultSet);
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
         $hydrator->hydrateAll($stmt, $rsm);
+    }
+
+    public function testFetchJoinCollectionValuedAssociationWithDefaultArrayValue()
+    {
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult(EntityWithArrayDefaultArrayValueM2M::CLASSNAME, 'e1', null);
+        $rsm->addJoinedEntityResult(SimpleEntity::CLASSNAME, 'e2', 'e1', 'collection');
+        $rsm->addFieldResult('e1', 'a1__id', 'id');
+        $rsm->addFieldResult('e2', 'e2__id', 'id');
+
+        $result = (new ObjectHydrator($this->_em))
+            ->hydrateAll(
+                new HydratorMockStatement([[
+                    'a1__id' => '1',
+                    'e2__id' => '1',
+                ]]),
+                $rsm
+            );
+
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(EntityWithArrayDefaultArrayValueM2M::CLASSNAME, $result[0]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0]->collection);
+        $this->assertCount(1, $result[0]->collection);
+        $this->assertInstanceOf(SimpleEntity::CLASSNAME, $result[0]->collection[0]);
     }
 }
