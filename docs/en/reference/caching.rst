@@ -375,40 +375,31 @@ Clearing the Cache
 
 We've already shown you how you can use the API of the
 cache drivers to manually delete cache entries. For your
-convenience we offer a command line task to help you with
+convenience we offer command line tasks to help you with
 clearing the query, result and metadata cache.
 
-From the Doctrine command line you can run the following command.
+From the Doctrine command line you can run the following commands:
+
+To clear the query cache use the ``orm:clear-cache:query`` task.
 
 .. code-block:: php
 
-    $ ./doctrine clear-cache
+    $ ./doctrine orm:clear-cache:query
 
-Running this task with no arguments will clear all the cache for
-all the configured drivers. If you want to be more specific about
-what you clear you can use the following options.
-
-To clear the query cache use the ``--query`` option.
+To clear the metadata cache use the ``orm:clear-cache:metadata`` task.
 
 .. code-block:: php
 
-    $ ./doctrine clear-cache --query
+    $ ./doctrine orm:clear-cache:metadata
 
-To clear the metadata cache use the ``--metadata`` option.
-
-.. code-block:: php
-
-    $ ./doctrine clear-cache --metadata
-
-To clear the result cache use the ``--result`` option.
+To clear the result cache use the ``orm:clear-cache:result`` task.
 
 .. code-block:: php
 
-    $ ./doctrine clear-cache --result
+    $ ./doctrine orm:clear-cache:result
 
-When you use the ``--result`` option you can use some other options
-to be more specific about which queries' result sets you want to
-clear.
+All these tasks accept a ``--flush`` option to flush the entire
+contents of the cache instead of invalidating the entries.
 
 Cache Slams
 -----------
