@@ -86,7 +86,7 @@ Following the example above, your columns would be named as ``address_street``,
 ``address_postalCode``...
 
 You can change this behaviour to meet your needs by changing the
-``columnPrefix`` attribute in the ``@Embeddable`` notation.
+``columnPrefix`` attribute in the ``@Embedded`` notation.
 
 The following example shows you how to set your prefix to ``myPrefix_``:
 
