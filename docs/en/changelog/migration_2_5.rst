@@ -58,11 +58,11 @@ metadata generation:
         }
     }
 
-Embeddedable Objects
-~~~~~~~~~~~~~~~~~~~~
+Embeddable Objects
+~~~~~~~~~~~~~~~~~~
 
 Doctrine now supports creating multiple PHP objects from one database table
-implementing a feature called "Embeddedable Objects". Next to an ``@Entity``
+implementing a feature called "Embeddable Objects". Next to an ``@Entity``
 class you can now define a class that is embeddable into a database table of an
 entity using the ``@Embeddable`` annotation. Embeddable objects can never be
 saved, updated or deleted on their own, only as part of an entity (called
