@@ -103,16 +103,14 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param EntityManagerInterface $em         The EntityManager the collection will be associated with.
      * @param ClassMetadata          $class      The class descriptor of the entity type of this collection.
-     * @param Collection|array|null  $collection The collection elements.
+     * @param Collection             $collection The collection elements.
      */
-    public function __construct(EntityManagerInterface $em, $class, $collection)
+    public function __construct(EntityManagerInterface $em, $class, Collection $collection)
     {
+        $this->collection  = $collection;
         $this->em          = $em;
         $this->typeClass   = $class;
         $this->initialized = true;
-        $this->collection  = $collection instanceof Collection
-            ? $collection
-            : new ArrayCollection((array) $collection);
     }
 
     /**
