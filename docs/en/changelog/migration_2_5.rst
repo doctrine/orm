@@ -1,9 +1,9 @@
 What is new in Doctrine ORM 2.5?
 ================================
 
-This document describes changes between Doctrine ORM 2.4 and 2.5 (currently in
-Beta). It contains a description of all the new features and sections
-about behavioral changes and potential backwards compatibility breaks.
+This document describes changes between Doctrine ORM 2.4 and 2.5.
+It contains a description of all the new features and sections about
+behavioral changes and potential backwards compatibility breaks.
 Please review this document carefully when updating to Doctrine 2.5.
 
 First note, that with the ORM 2.5 release we are dropping support
