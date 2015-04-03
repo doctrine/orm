@@ -418,8 +418,8 @@ This feature was contributed by `Michael Perrin
 - `Pull Request <https://github.com/doctrine/doctrine2/pull/590>`_
 - `DDC-2319 <http://doctrine-project.org/jira/browse/DDC-2319>`_
 
-Query API: Add suport for default Query Hints
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Query API: Add support for default Query Hints
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To configure multiple different features such as custom AST Walker, fetch modes,
 locking and other features affecting DQL generation we have had a feature
@@ -486,8 +486,8 @@ EntityGenerator Command: Avoid backups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When calling the EntityGenerator for an existing entity, Doctrine would
-create a backup file every time to avoid loosing changes to the code.
-You can now skip generating the backup file by passing the ``--no-backup``
+create a backup file every time to avoid losing changes to the code. You
+can now skip generating the backup file by passing the ``--no-backup``
 flag:
 
 ::
