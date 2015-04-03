@@ -9,6 +9,7 @@ is the option to write database queries in a proprietary object oriented SQL dia
 inspired by Hibernate's HQL. This provides developers with a powerful alternative to SQL that maintains flexibility
 without requiring unnecessary code duplication.
 
+
 ## More resources:
 
 * [Website](http://www.doctrine-project.org)
@@ -16,13 +17,14 @@ without requiring unnecessary code duplication.
 * [Issue Tracker](http://www.doctrine-project.org/jira/browse/DDC)
 * [Downloads](http://github.com/doctrine/doctrine2/downloads)
 
-  [Master image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=master
+
+  [Master image]: https://img.shields.io/travis/doctrine/doctrine2/master.svg?style=flat-square
   [Master]: https://travis-ci.org/doctrine/doctrine2
-  [Master coverage image]: https://coveralls.io/repos/doctrine/doctrine2/badge.png?branch=master
+  [Master coverage image]: https://img.shields.io/coveralls/doctrine/doctrine2/master.svg?style=flat-square
   [Master coverage]: https://coveralls.io/r/doctrine/doctrine2?branch=master
-  [2.5 image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=2.5
+  [2.5 image]: https://img.shields.io/travis/doctrine/doctrine2/2.5.svg?style=flat-square
   [2.5]: https://github.com/doctrine/doctrine2/tree/2.5
-  [2.5 coverage image]: https://coveralls.io/repos/doctrine/doctrine2/badge.png?branch=2.5
+  [2.5 coverage image]: https://img.shields.io/coveralls/doctrine/doctrine2/2.5.svg?style=flat-square
   [2.5 coverage]: https://coveralls.io/r/doctrine/doctrine2?branch=2.5
-  [2.4 image]: https://travis-ci.org/doctrine/doctrine2.svg?branch=2.4
+  [2.4 image]: https://img.shields.io/travis/doctrine/doctrine2/2.4.svg?style=flat-square
   [2.4]: https://github.com/doctrine/doctrine2/tree/2.4
