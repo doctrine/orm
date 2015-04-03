@@ -83,39 +83,4 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
     }
-
-    public function testAcceptsArrayAsConstructorArgument()
-    {
-        $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
-
-        $collection = new PersistentCollection($this->_emMock, $metadata, []);
-
-        $this->assertEmpty($collection);
-        $this->tryGenericCollectionOperations($collection);
-    }
-
-    public function testAcceptsNullAsConstructorArgument()
-    {
-        $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
-
-        $collection = new PersistentCollection($this->_emMock, $metadata, null);
-
-        $this->assertEmpty($collection);
-        $this->tryGenericCollectionOperations($collection);
-    }
-
-    private function tryGenericCollectionOperations(Collection $collection)
-    {
-        $count  = count($collection);
-        $object = new \stdClass();
-
-        $collection->add($object);
-
-        $this->assertTrue($collection->contains($object));
-        $this->assertCount($count + 1, $collection);
-
-        $collection->removeElement($object);
-
-        $this->assertCount($count, $collection);
-    }
 }
