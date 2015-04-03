@@ -46,7 +46,7 @@ abstract class SQLFilter
      *
      * @var array
      */
-    private $parameters;
+    private $parameters = [];
 
     /**
      * Constructs the SQLFilter object.

@@ -934,13 +934,14 @@ class ClassMetadataInfo implements ClassMetadata
                         $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
                         $embeddedClass['originalField']
                     ),
-                    $embeddedClass['class']
+                    $this->embeddedClasses[$embeddedClass['declaredField']]['class']
                 );
 
                 continue;
             }
 
             $parentReflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
+            $this->reflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
         }
 
         foreach ($this->fieldMappings as $field => $mapping) {
@@ -1461,7 +1462,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
-                if (count($mapping['joinColumns']) >= 2) {
+                if (isset($mapping['joinColumns']) && count($mapping['joinColumns']) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $mapping['targetEntity'], $this->name, $mapping['fieldName']
                     );

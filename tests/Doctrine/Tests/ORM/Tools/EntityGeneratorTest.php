@@ -64,7 +64,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->table['uniqueConstraints']['name_uniq'] = array('columns' => array('name'));
         $metadata->table['indexes']['status_idx'] = array('columns' => array('status'));
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
-        $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'default' => 'published'));
+        $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'options' => array('default' => 'published')));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
         $joinColumns = array(
@@ -935,6 +935,24 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertSame('DateTime', $reflParameters[3]->getClass()->name);
         $this->assertSame('field4', $reflParameters[3]->getName());
         $this->assertTrue($reflParameters[3]->isOptional());
+    }
+
+    public function testRegenerateEntityClass()
+    {
+        $metadata = $this->generateBookEntityFixture();
+        $this->loadEntityClass($metadata);
+
+        $className = basename(str_replace('\\', '/', $metadata->name));
+        $path = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $classTest = file_get_contents($path);
+
+        $this->_generator->setRegenerateEntityIfExists(true);
+        $this->_generator->setBackupExisting(false);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $classNew = file_get_contents($path);
+
+        $this->assertSame($classTest,$classNew);
     }
 
     /**

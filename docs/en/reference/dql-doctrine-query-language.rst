@@ -1404,8 +1404,8 @@ Document syntax:
    e.g. zero or one time
 -  curly brackets {...} are used for repetition, e.g. zero or more
    times
--  double quotation marks "..." define a terminal string a vertical
-   bar \| represents an alternative
+-  double quotation marks "..." define a terminal string
+-  a vertical bar \| represents an alternative
 
 Terminals
 ~~~~~~~~~

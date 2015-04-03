@@ -1578,7 +1578,7 @@ class Parser
      *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
      *
-     * {@internal WARNING: Solution is harder than a bare implementation.
+     * {Internal note: WARNING: Solution is harder than a bare implementation.
      * Desired EBNF support:
      *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
@@ -1784,8 +1784,16 @@ class Parser
         while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $this->match(Lexer::T_IDENTIFIER);
-
-            $partialFieldSet[] = $this->lexer->token['value'];
+    
+            $field = $this->lexer->token['value'];
+    
+            while ($this->lexer->isNextToken(Lexer::T_DOT)) {
+                $this->match(Lexer::T_DOT);
+                $this->match(Lexer::T_IDENTIFIER);
+                $field .= '.'.$this->lexer->token['value'];
+            }
+    
+            $partialFieldSet[] = $field;
         }
 
         $this->match(Lexer::T_CLOSE_CURLY_BRACE);

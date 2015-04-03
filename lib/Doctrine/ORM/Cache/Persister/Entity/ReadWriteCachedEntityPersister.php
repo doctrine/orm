@@ -35,10 +35,10 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
     /**
-     * @param \Doctrine\ORM\Persister\Entity\EntityPersister $persister The entity persister to cache.
-     * @param \Doctrine\ORM\Cache\ConcurrentRegion           $region    The entity cache region.
-     * @param \Doctrine\ORM\EntityManagerInterface           $em        The entity manager.
-     * @param \Doctrine\ORM\Mapping\ClassMetadata            $class     The entity metadata.
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister The entity persister to cache.
+     * @param \Doctrine\ORM\Cache\ConcurrentRegion            $region    The entity cache region.
+     * @param \Doctrine\ORM\EntityManagerInterface            $em        The entity manager.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata             $class     The entity metadata.
      */
     public function __construct(EntityPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, ClassMetadata $class)
     {

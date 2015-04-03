@@ -19,6 +19,9 @@
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Query\AST\PathExpression;
@@ -68,6 +71,8 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $rootClass = $queryComponents[$rootAlias]['metadata'];
         $selectExpressions = array();
 
+        $this->validate($AST);
+
         foreach ($queryComponents as $dqlAlias => $qComp) {
             // Preserve mixed data in query for ordering.
             if (isset($qComp['resultVariable'])) {
@@ -111,6 +116,41 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         }
 
         $AST->selectClause->isDistinct = true;
+    }
+
+    /**
+     * Validate the AST to ensure that this walker is able to properly manipulate it.
+     *
+     * @param SelectStatement $AST
+     */
+    private function validate(SelectStatement $AST)
+    {
+        // Prevent LimitSubqueryWalker from being used with queries that include
+        // a limit, a fetched to-many join, and an order by condition that
+        // references a column from the fetch joined table.
+        $queryComponents = $this->getQueryComponents();
+        $query           = $this->_getQuery();
+        $from            = $AST->fromClause->identificationVariableDeclarations;
+        $fromRoot        = reset($from);
+
+        if ($query instanceof Query
+            && $query->getMaxResults()
+            && $AST->orderByClause
+            && count($fromRoot->joins)) {
+            // Check each orderby item.
+            // TODO: check complex orderby items too...
+            foreach ($AST->orderByClause->orderByItems as $orderByItem) {
+                $expression = $orderByItem->expression;
+                if ($orderByItem->expression instanceof PathExpression
+                    && isset($queryComponents[$expression->identificationVariable])) {
+                    $queryComponent = $queryComponents[$expression->identificationVariable];
+                    if (isset($queryComponent['parent'])
+                        && $queryComponent['relation']['type'] & ClassMetadataInfo::TO_MANY) {
+                        throw new \RuntimeException("Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+                    }
+                }
+            }
+        }
     }
     
     /**

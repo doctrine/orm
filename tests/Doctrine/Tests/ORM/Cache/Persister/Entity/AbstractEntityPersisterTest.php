@@ -390,7 +390,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     {
         $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
         $assoc     = array('type' => 1);
-        $coll      = new PersistentCollection($this->em, 'Foo', $mapping);
+        $coll      = new PersistentCollection($this->em, $mapping, null);
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
 
@@ -406,7 +406,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     {
         $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
         $assoc     = array('type' => 1);
-        $coll      = new PersistentCollection($this->em, 'Foo', $mapping);
+        $coll      = new PersistentCollection($this->em, $mapping, null);
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
 

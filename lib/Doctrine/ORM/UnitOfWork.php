@@ -49,11 +49,14 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Cache\AssociationCacheEntry;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
+ *
+ * Internal note: This class contains highly performance-sensitive code.
  *
  * @since       2.0
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
@@ -61,7 +64,6 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Rob Caiger <rob@clocal.co.uk>
- * @internal    This class contains highly performance-sensitive code.
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -119,10 +121,11 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash). This is used for calculating changesets
      * at commit time.
      *
+     * Internal note: Note that PHPs "copy-on-write" behavior helps a lot with memory usage.
+     *                A value will only really be copied if the value in the entity is modified
+     *                by the user.
+     *
      * @var array
-     * @internal Note that PHPs "copy-on-write" behavior helps a lot with memory usage.
-     *           A value will only really be copied if the value in the entity is modified
-     *           by the user.
      */
     private $originalEntityData = array();
 
@@ -1016,7 +1019,9 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($postInsertIds) {
             // Persister returned post-insert IDs
-            foreach ($postInsertIds as $id => $entity) {
+            foreach ($postInsertIds as $postInsertId) {
+                $id      = $postInsertId['generatedId'];
+                $entity  = $postInsertId['entity'];
                 $oid     = spl_object_hash($entity);
                 $idField = $class->identifier[0];
 
@@ -1563,15 +1568,17 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @ignore
      *
-     * @param string $idHash
+     * @param mixed  $idHash        (must be possible to cast it to string)
      * @param string $rootClassName
      *
      * @return object|bool The found entity or FALSE.
      */
     public function tryGetByIdHash($idHash, $rootClassName)
     {
-        if (isset($this->identityMap[$rootClassName][$idHash])) {
-            return $this->identityMap[$rootClassName][$idHash];
+        $stringIdHash = (string) $idHash;
+
+        if (isset($this->identityMap[$rootClassName][$stringIdHash])) {
+            return $this->identityMap[$rootClassName][$stringIdHash];
         }
 
         return false;
@@ -1679,6 +1686,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_REMOVED:
                 // Entity becomes managed again
                 unset($this->entityDeletions[$oid]);
+                $this->addToIdentityMap($entity);
 
                 $this->entityStates[$oid] = self::STATE_MANAGED;
                 break;
@@ -2473,6 +2481,8 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Creates an entity. Used for reconstitution of persistent entities.
      *
+     * Internal note: Highly performance-sensitive method.
+     *
      * @ignore
      *
      * @param string $className The name of the entity class.
@@ -2481,8 +2491,6 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return object The managed entity instance.
      *
-     * @internal Highly performance-sensitive method.
-     *
      * @todo Rename: getOrCreateEntity
      */
     public function createEntity($className, array $data, &$hints = array())
@@ -2490,22 +2498,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata($className);
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
-        if ($class->isIdentifierComposite) {
-            $id = array();
-
-            foreach ($class->identifier as $fieldName) {
-                $id[$fieldName] = isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName];
-            }
-        } else {
-            $id = isset($class->associationMappings[$class->identifier[0]])
-                ? $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]
-                : $data[$class->identifier[0]];
-
-            $id = array($class->identifier[0] => $id);
-        }
-
+        $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
@@ -2643,6 +2636,12 @@ class UnitOfWork implements PropertyChangedListener
                             } else {
                                 $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
                             }
+                        } elseif ($targetClass->containsForeignIdentifier
+                            && in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)
+                        ) {
+                            // the missing key is part of target's entity primary key
+                            $associatedId = array();
+                            break;
                         }
                     }
 

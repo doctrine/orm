@@ -55,7 +55,10 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPer
         if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
                 || $this->class->isIdGeneratorIdentity()) {
             $id = $this->identityColumnValueCounter++;
-            $this->postInsertIds[$id] = $entity;
+            $this->postInsertIds[] = array(
+                'generatedId' => $id,
+                'entity' => $entity,
+            );
             return $id;
         }
         return null;

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\Cache\Client;
+use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Traveler;
 use Doctrine\Tests\Models\Cache\TravelerProfile;
 use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
@@ -187,4 +189,32 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
+    public function testPutAndLoadNonCacheableOneToOne()
+    {
+        $this->assertNull($this->cache->getEntityCacheRegion(Client::CLASSNAME));
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(Token::CLASSNAME));
+
+        $client = new Client('FabioBatSilva');
+        $token  = new Token('token-hash', $client);
+
+        $this->_em->persist($client);
+        $this->_em->persist($token);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
+        $this->assertFalse($this->cache->containsEntity(Client::CLASSNAME, $client->id));
+
+        $entity = $this->_em->find(Token::CLASSNAME, $token->token);
+
+        $this->assertInstanceOf(Token::CLASSNAME, $entity);
+        $this->assertInstanceOf(Client::CLASSNAME, $entity->getClient());
+        $this->assertEquals('token-hash', $entity->token);
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+
+        $this->assertEquals('FabioBatSilva', $entity->getClient()->name);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+    }
 }

@@ -131,7 +131,10 @@ EOT
         	}
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
-            $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" queries were executed', count($sqls)));
+
+            $pluralization = (1 === count($sqls)) ? 'query was' : 'queries were';
+
+            $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" %s executed', count($sqls), $pluralization));
         }
 
         if ($dumpSql || $force) {

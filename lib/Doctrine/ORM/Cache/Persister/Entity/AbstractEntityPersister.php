@@ -27,6 +27,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -231,6 +232,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
         if ($className !== $this->class->name) {
             $class = $this->metadataFactory->getMetadataFor($className);
+        }
+
+        if ($class->containsForeignIdentifier) {
+            foreach ($class->associationMappings as $name => $assoc) {
+                if (!empty($assoc['id']) && !isset($assoc['cache'])) {
+                    throw CacheException::nonCacheableEntityAssociation($class->name, $name);
+                }
+            }
         }
 
         $entry  = $this->hydrator->buildCacheEntry($class, $key, $entity);

@@ -180,6 +180,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\Beach',
             'Doctrine\Tests\Models\Cache\Bar',
             'Doctrine\Tests\Models\Cache\Flight',
+            'Doctrine\Tests\Models\Cache\Token',
+            'Doctrine\Tests\Models\Cache\Login',
+            'Doctrine\Tests\Models\Cache\Client',
+            'Doctrine\Tests\Models\Cache\Action',
+            'Doctrine\Tests\Models\Cache\ComplexAction',
             'Doctrine\Tests\Models\Cache\AttractionInfo',
             'Doctrine\Tests\Models\Cache\AttractionContactInfo',
             'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
@@ -251,6 +256,23 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         'vct_manytomany_extralazy' => array(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity'
+        ),
+        'geonames' => array(
+            'Doctrine\Tests\Models\GeoNames\Country',
+            'Doctrine\Tests\Models\GeoNames\Admin1',
+            'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
+            'Doctrine\Tests\Models\GeoNames\City'
+        ),
+        'custom_id_object_type' => array(
+            'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent',
+            'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild',
+        ),
+        'pagination' => array(
+            'Doctrine\Tests\Models\Pagination\Company',
+            'Doctrine\Tests\Models\Pagination\Logo',
+            'Doctrine\Tests\Models\Pagination\Department',
+            'Doctrine\Tests\Models\Pagination\User',
+            'Doctrine\Tests\Models\Pagination\User1',
         ),
     );
 
@@ -408,6 +430,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_city');
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
+            $conn->executeUpdate('DELETE FROM cache_login');
+            $conn->executeUpdate('DELETE FROM cache_complex_action');
+            $conn->executeUpdate('DELETE FROM cache_token');
+            $conn->executeUpdate('DELETE FROM cache_action');
+            $conn->executeUpdate('DELETE FROM cache_client');
         }
 
         if (isset($this->_usedModelSets['ddc3346'])) {
@@ -482,6 +509,24 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM vct_xref_manytomany_extralazy');
             $conn->executeUpdate('DELETE FROM vct_owning_manytomany_extralazy');
             $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_extralazy');
+        }
+        if (isset($this->_usedModelSets['geonames'])) {
+            $conn->executeUpdate('DELETE FROM geonames_admin1_alternate_name');
+            $conn->executeUpdate('DELETE FROM geonames_admin1');
+            $conn->executeUpdate('DELETE FROM geonames_city');
+            $conn->executeUpdate('DELETE FROM geonames_country');
+        }
+
+        if (isset($this->_usedModelSets['custom_id_object_type'])) {
+            $conn->executeUpdate('DELETE FROM custom_id_type_child');
+            $conn->executeUpdate('DELETE FROM custom_id_type_parent');
+        }
+
+        if (isset($this->_usedModelSets['pagination'])) {
+            $conn->executeUpdate('DELETE FROM pagination_logo');
+            $conn->executeUpdate('DELETE FROM pagination_department');
+            $conn->executeUpdate('DELETE FROM pagination_company');
+            $conn->executeUpdate('DELETE FROM pagination_user');
         }
 
         $this->_em->clear();
@@ -623,7 +668,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
-            realpath(__DIR__ . '/Models/Cache')
+            realpath(__DIR__ . '/Models/Cache'),
+            realpath(__DIR__ . '/Models/GeoNames')
         ), true));
 
         $conn = static::$_sharedConn;

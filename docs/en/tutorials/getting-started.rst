@@ -196,7 +196,7 @@ Doctrine command-line tool:
     $ cd project/
     $ vendor/bin/doctrine orm:schema-tool:create
 
-At this point no entitiy metadata exists in `src` so you will see a message like 
+At this point no entity metadata exists in `src` so you will see a message like 
 "No Metadata Classes to process." Don't worry, we'll create a Product entity and 
 corresponding metadata in the next section.
 
@@ -338,7 +338,7 @@ uses the database platforms native id generation strategy (for
 example AUTO INCREMENT in the case of MySql or Sequences in the
 case of PostgreSql and Oracle).
 
-Now that we have defined our first entity, lets update the database:
+Now that we have defined our first entity, let's update the database:
 
 ::
 
@@ -375,7 +375,7 @@ Call this script from the command-line to see how new products are created:
 What is happening here? Using the ``Product`` is pretty standard OOP.
 The interesting bits are the use of the ``EntityManager`` service. To
 notify the EntityManager that a new entity should be inserted into the database
-you have to call ``persist()``. To intiate a transaction to actually perform
+you have to call ``persist()``. To initiate a transaction to actually perform
 the insertion, You have to explicitly call ``flush()`` on the ``EntityManager``.
 
 This distinction between persist and flush is allows to aggregate all writes
@@ -1547,4 +1547,3 @@ will be added to this tutorial incrementally, topics will include:
 
 Additional details on all the topics discussed here can be found in
 the respective manual chapters.
-

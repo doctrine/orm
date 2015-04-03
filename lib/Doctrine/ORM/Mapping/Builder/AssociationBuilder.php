@@ -184,6 +184,30 @@ class AssociationBuilder
     }
 
     /**
+     * Sets field as primary key.
+     *
+     * @return self
+     */
+    public function makePrimaryKey()
+    {
+        $this->mapping['id'] = true;
+
+        return $this;
+    }
+
+    /**
+     * Removes orphan entities when detached from their parent.
+     *
+     * @return self
+     */
+    public function orphanRemoval()
+    {
+        $this->mapping['orphanRemoval'] = true;
+
+        return $this;
+    }
+
+    /**
      * @return ClassMetadataBuilder
      *
      * @throws \InvalidArgumentException
