@@ -61,7 +61,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionAbs()
     {
-        $result = $this->_em->createQuery('SELECT m, ABS(m.salary * -1) AS abs FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, ABS(m.salary * -1) AS abs FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                          ->getResult();
 
         $this->assertEquals(4, count($result));
@@ -73,7 +73,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionConcat()
     {
-        $arg = $this->_em->createQuery('SELECT m, CONCAT(m.name, m.department) AS namedep FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $arg = $this->_em->createQuery('SELECT m, CONCAT(m.name, m.department) AS namedep FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                          ->getArrayResult();
 
         $this->assertEquals(4, count($arg));
@@ -85,7 +85,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionLength()
     {
-        $result = $this->_em->createQuery('SELECT m, LENGTH(CONCAT(m.name, m.department)) AS namedeplength FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, LENGTH(CONCAT(m.name, m.department)) AS namedeplength FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
@@ -98,7 +98,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFunctionLocate()
     {
         $dql = "SELECT m, LOCATE('e', LOWER(m.name)) AS loc, LOCATE('e', LOWER(m.name), 7) AS loc2 ".
-               "FROM Doctrine\Tests\Models\Company\CompanyManager m";
+               "FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC";
 
         $result = $this->_em->createQuery($dql)
                          ->getArrayResult();
@@ -116,7 +116,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionLower()
     {
-        $result = $this->_em->createQuery("SELECT m, LOWER(m.name) AS lowername FROM Doctrine\Tests\Models\Company\CompanyManager m")
+        $result = $this->_em->createQuery("SELECT m, LOWER(m.name) AS lowername FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
@@ -128,7 +128,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionMod()
     {
-        $result = $this->_em->createQuery("SELECT m, MOD(m.salary, 3500) AS amod FROM Doctrine\Tests\Models\Company\CompanyManager m")
+        $result = $this->_em->createQuery("SELECT m, MOD(m.salary, 3500) AS amod FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
@@ -140,7 +140,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionSqrt()
     {
-        $result = $this->_em->createQuery("SELECT m, SQRT(m.salary) AS sqrtsalary FROM Doctrine\Tests\Models\Company\CompanyManager m")
+        $result = $this->_em->createQuery("SELECT m, SQRT(m.salary) AS sqrtsalary FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
@@ -152,7 +152,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionUpper()
     {
-        $result = $this->_em->createQuery("SELECT m, UPPER(m.name) AS uppername FROM Doctrine\Tests\Models\Company\CompanyManager m")
+        $result = $this->_em->createQuery("SELECT m, UPPER(m.name) AS uppername FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
@@ -186,7 +186,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $dql = "SELECT m, TRIM(TRAILING '.' FROM m.name) AS str1, ".
                " TRIM(LEADING '.' FROM m.name) AS str2, TRIM(CONCAT(' ', CONCAT(m.name, ' '))) AS str3 ".
-               "FROM Doctrine\Tests\Models\Company\CompanyManager m";
+               "FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC";
 
         $result = $this->_em->createQuery($dql)->getArrayResult();
 
@@ -207,7 +207,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOperatorAdd()
     {
-        $result = $this->_em->createQuery('SELECT m, m.salary+2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, m.salary+2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
         $this->assertEquals(4, count($result));
@@ -219,7 +219,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOperatorSub()
     {
-        $result = $this->_em->createQuery('SELECT m, m.salary-2500 AS sub FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, m.salary-2500 AS sub FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
         $this->assertEquals(4, count($result));
@@ -231,7 +231,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOperatorMultiply()
     {
-        $result = $this->_em->createQuery('SELECT m, m.salary*2 AS op FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, m.salary*2 AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
         $this->assertEquals(4, count($result));
@@ -246,7 +246,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOperatorDiv()
     {
-        $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
         $this->assertEquals(4, count($result));
