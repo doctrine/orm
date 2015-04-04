@@ -15,7 +15,6 @@ without requiring unnecessary code duplication.
 * [Website](http://www.doctrine-project.org)
 * [Documentation](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
 * [Issue Tracker](http://www.doctrine-project.org/jira/browse/DDC)
-* [Downloads](http://github.com/doctrine/doctrine2/downloads)
 
 
   [Master image]: https://img.shields.io/travis/doctrine/doctrine2/master.svg?style=flat-square
