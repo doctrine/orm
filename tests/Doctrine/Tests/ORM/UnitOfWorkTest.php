@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
+use Doctrine\Tests\Mocks\EntityManagerFactoryMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
@@ -45,7 +46,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp() {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock(array(), new DriverMock());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
+        $this->_emMock = EntityManagerFactoryMock::create($this->_connectionMock);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);

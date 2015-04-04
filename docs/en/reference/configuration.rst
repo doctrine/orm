@@ -45,7 +45,7 @@ access point to ORM functionality provided by Doctrine.
     require_once "vendor/autoload.php";
 
     use Doctrine\ORM\Tools\Setup;
-    use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\EntityManagerFactory;
 
     $paths = array("/path/to/entity-files");
     $isDevMode = false;
@@ -59,7 +59,7 @@ access point to ORM functionality provided by Doctrine.
     );
 
     $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $entityManager = EntityManagerFactory::create($dbParams, $config);
 
 Or if you prefer XML:
 
@@ -68,7 +68,7 @@ Or if you prefer XML:
     <?php
     $paths = array("/path/to/xml-mappings");
     $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $entityManager = EntityManagerFactory::create($dbParams, $config);
 
 Or if you prefer YAML:
 
@@ -77,7 +77,7 @@ Or if you prefer YAML:
     <?php
     $paths = array("/path/to/yml-mappings");
     $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $entityManager = EntityManagerFactory::create($dbParams, $config);
 
 Inside the ``Setup`` methods several assumptions are made:
 

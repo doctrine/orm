@@ -9,7 +9,7 @@ steps of configuration.
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\EntityManager,
+    use Doctrine\ORM\EntityManagerFactory,
         Doctrine\ORM\Configuration;
     
     // ...
@@ -39,7 +39,7 @@ steps of configuration.
         'path' => 'database.sqlite'
     );
     
-    $em = EntityManager::create($connectionOptions, $config);
+    $em = EntityManagerFactory::create($connectionOptions, $config);
 
 .. note::
 
@@ -285,7 +285,7 @@ Connection Options
 ------------------
 
 The ``$connectionOptions`` passed as the first argument to
-``EntityManager::create()`` has to be either an array or an
+``EntityManagerFactory::create()`` has to be either an array or an
 instance of ``Doctrine\DBAL\Connection``. If an array is passed it
 is directly passed along to the DBAL Factory
 ``Doctrine\DBAL\DriverManager::getConnection()``. The DBAL

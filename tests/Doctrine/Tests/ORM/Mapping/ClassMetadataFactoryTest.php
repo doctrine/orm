@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\EntityManagerFactoryMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 
 class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
@@ -228,7 +228,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         }
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerFactoryMock::create($conn, $config, $eventManager);
     }
 
     /**

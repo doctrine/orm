@@ -77,25 +77,4 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     {
         return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
     }
-
-    /**
-     * Mock factory method to create an EntityManager.
-     *
-     * {@inheritdoc}
-     */
-    public static function create($conn, \Doctrine\ORM\Configuration $config = null,
-            \Doctrine\Common\EventManager $eventManager = null)
-    {
-        if (null === $config) {
-            $config = new \Doctrine\ORM\Configuration();
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
-        }
-        if (null === $eventManager) {
-            $eventManager = new \Doctrine\Common\EventManager();
-        }
-
-        return new EntityManagerMock($conn, $config, $eventManager);
-    }
 }

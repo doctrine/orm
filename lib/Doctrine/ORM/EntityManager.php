@@ -32,18 +32,17 @@ use Doctrine\Common\Util\ClassUtils;
  * The EntityManager is the central access point to ORM functionality.
  *
  * It is a facade to all different ORM subsystems such as UnitOfWork,
- * Query Language and Repository API. Instantiation is done through
- * the static create() method. The quickest way to obtain a fully
+ * Query Language and Repository API. The quickest way to obtain a fully
  * configured EntityManager is:
  *
  *     use Doctrine\ORM\Tools\Setup;
- *     use Doctrine\ORM\EntityManager;
+ *     use Doctrine\ORM\EntityManagerFactory;
  *
  *     $paths = array('/path/to/entity/mapping/files');
  *
  *     $config = Setup::createAnnotationMetadataConfiguration($paths);
  *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
- *     $entityManager = EntityManager::create($dbParams, $config);
+ *     $entityManager = EntityManagerFactory::create($dbParams, $config);
  *
  * For more information see
  * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
@@ -144,7 +143,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @param \Doctrine\ORM\Configuration   $config
      * @param \Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    public function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
         $this->conn              = $conn;
         $this->config            = $config;
@@ -157,8 +156,12 @@ use Doctrine\Common\Util\ClassUtils;
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
         $this->repositoryFactory = $config->getRepositoryFactory();
-        $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new ProxyFactory(
+
+        $unitOfWorkClassName  = $config->getUnitOfWorkClassName();
+        $this->unitOfWork     = new $unitOfWorkClassName($this);
+
+       $proxyFactoryClassName = $config->getProxyFactoryClassName();
+        $this->proxyFactory   = new $proxyFactoryClassName(
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
@@ -821,33 +824,14 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @return EntityManager The created EntityManager.
      *
+     * @deprecated since version 2.5. Use \Doctrine\ORM\EntityManagerFactory::create() instead
+     *
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        if ( ! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
-        }
-
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
-
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
-        }
-
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        return EntityManagerFactory::create($conn, $config, $eventManager);
     }
 
     /**

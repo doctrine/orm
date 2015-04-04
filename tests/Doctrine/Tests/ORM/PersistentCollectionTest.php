@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\EntityManagerFactoryMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
 
@@ -29,7 +29,7 @@ class PersistentCollectionTest extends OrmTestCase
         parent::setUp();
         // SUT
         $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
+        $this->_emMock = EntityManagerFactoryMock::create($this->_connectionMock);
     }
 
     /**

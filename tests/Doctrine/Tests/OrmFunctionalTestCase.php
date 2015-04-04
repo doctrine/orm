@@ -698,7 +698,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $evm->addEventListener(array('onFlush'), new \Doctrine\ORM\Tools\DebugUnitOfWorkListener());
         }
 
-        return \Doctrine\ORM\EntityManager::create($conn, $config);
+        return \Doctrine\ORM\EntityManagerFactory::create($conn, $config);
     }
 
     /**

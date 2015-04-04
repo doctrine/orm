@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\EntityManagerFactoryMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
@@ -45,7 +45,7 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         parent::setUp();
         $this->connectionMock = new ConnectionMock(array(), new DriverMock());
-        $this->emMock = EntityManagerMock::create($this->connectionMock);
+        $this->emMock = EntityManagerFactoryMock::create($this->connectionMock);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
         $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);

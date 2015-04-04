@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Mocks\DatabasePlatformMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\EntityManagerFactoryMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\EventManager;
@@ -60,7 +60,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerFactoryMock::create($conn, $config, $eventManager);
     }
 
     protected function _createMetadataDriver($type, $path)
