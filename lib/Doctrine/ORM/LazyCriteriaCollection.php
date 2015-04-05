@@ -70,16 +70,16 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      */
     public function count()
     {
-        if ($this->isInitialized()) {
-            return $this->collection->count();
-        }
-
         // Return cached result in case count query was already executed
         if ($this->count !== null) {
             return $this->count;
         }
 
-        return $this->count = $this->entityPersister->count($this->criteria);
+        $maxResults  = $this->criteria->getMaxResults();
+        $total       = $this->entityPersister->count($this->criteria);
+        $this->count = $maxResults === null ? $total : min($maxResults, $total);
+
+        return $this->count;
     }
 
     /**
