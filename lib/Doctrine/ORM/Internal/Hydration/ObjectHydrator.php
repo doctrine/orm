@@ -189,8 +189,8 @@ class ObjectHydrator extends AbstractHydrator
         $relation = $class->associationMappings[$fieldName];
         $value    = $class->reflFields[$fieldName]->getValue($entity);
 
-        if ($value === null) {
-            $value = new ArrayCollection;
+        if ($value === null || is_array($value)) {
+            $value = new ArrayCollection((array) $value);
         }
 
         if ( ! $value instanceof PersistentCollection) {
