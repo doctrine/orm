@@ -11,6 +11,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\PersistentCollection;
 
@@ -390,7 +391,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     {
         $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
         $assoc     = array('type' => 1);
-        $coll      = new PersistentCollection($this->em, $mapping, null);
+        $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
 
@@ -406,7 +407,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     {
         $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
         $assoc     = array('type' => 1);
-        $coll      = new PersistentCollection($this->em, $mapping, null);
+        $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
 
