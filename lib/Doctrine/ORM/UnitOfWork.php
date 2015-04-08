@@ -375,6 +375,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchOnFlushEvent();
 
+        // Needed because $this->entityUpdateVersions may be changed during execution
+        $entitiesNeedingFlagReset = array_values($this->entityUpdateVersions);
+
+
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->getCommitOrder();
 
@@ -431,6 +435,15 @@ class UnitOfWork implements PropertyChangedListener
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
             $coll->takeSnapshot();
+        }
+
+        // Reset all version-update flags to false
+        foreach($entitiesNeedingFlagReset as $entity){
+            /** @var $class ClassMetadata */
+            $class = $this->em->getClassMetadata(get_class($entity));
+            if(isset($class->reflVersionUpdateField)){
+                $class->reflVersionUpdateField->setValue($entity,false);
+            }
         }
 
         $this->dispatchPostFlushEvent();
