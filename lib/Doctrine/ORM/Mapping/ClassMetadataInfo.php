@@ -608,6 +608,17 @@ class ClassMetadataInfo implements ClassMetadata
     public $versionField;
 
     /**
+     * READ-ONLY: The name of the PHP property, which signals that the entity's
+     * version must be updated regardless of whether other changes occurred.
+     *
+     * This is primarily used for optimistic locking and does not, itself,
+     * correspond to any field in the database.
+     *
+     * @var mixed
+     */
+    public $versionUpdateProperty;
+
+    /**
      * @var array
      */
     public $cache = null;

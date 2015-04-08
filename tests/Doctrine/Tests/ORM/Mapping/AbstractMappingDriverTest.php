@@ -172,6 +172,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertTrue($class->isVersioned);
         $this->assertEquals("version", $class->versionField);
+        $this->assertEquals("versionBump", $class->versionUpdateProperty);
 
         $this->assertFalse(isset($class->fieldMappings['version']['version']));
     }
@@ -1019,6 +1020,12 @@ class User
      * @Version
      */
     public $version;
+
+    /**
+     * @VersionBump
+     * @var bool
+     */
+    public $versionBump;
 
 
     /**
