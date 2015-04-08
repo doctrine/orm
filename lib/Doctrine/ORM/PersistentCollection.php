@@ -99,6 +99,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private $isDirty = false;
 
     /**
+     * Whether the collection is initialized, meaning if contents has been loaded from database
+     *
+     * @var boolean
+     */
+    private $initialized = false;
+
+    /**
      * Creates a new persistent collection.
      *
      * @param EntityManagerInterface $em         The EntityManager the collection will be associated with.
