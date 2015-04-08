@@ -221,6 +221,19 @@ class ClassMetadataBuilder
     }
 
     /**
+     * Sets the property-name to use for forcing version updates
+     *
+     * @param string $name
+     * @return ClassMetadataBuilder
+     */
+    public function setVersionUpdateProperty($name){
+
+        $this->cm->setVersionUpdateProperty($name);
+
+        return $this;
+    }
+
+    /**
      * Sets the discriminator column details.
      *
      * @param string $name

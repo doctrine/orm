@@ -251,6 +251,12 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         ), $this->cm->fieldMappings['name']);
     }
 
+    public function testSetVersionUpdateProperty(){
+        $this->assertFalse(isset($this->cm->versionUpdateProperty));
+        $this->assertIsFluent($this->builder->setVersionUpdateProperty("Foo"));
+        $this->assertEquals("Foo", $this->cm->versionUpdateProperty);
+    }
+
     public function testCreatePrimaryField()
     {
         $this->builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();

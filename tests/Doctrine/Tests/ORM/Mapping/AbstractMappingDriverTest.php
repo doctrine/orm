@@ -1084,6 +1084,7 @@ class User
           ));
         $mapping = array('fieldName' => 'version', 'type' => 'integer');
         $metadata->setVersionMapping($mapping);
+        $metadata->setVersionUpdateProperty("versionBump");
         $metadata->mapField($mapping);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(
