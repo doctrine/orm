@@ -176,6 +176,14 @@ class UnitOfWork implements PropertyChangedListener
     private $extraUpdates = array();
 
     /**
+     * Versioned entities whose versions must be updated even if no other,
+     * "real" updates are necessary. Applies only to managed entities.
+     *
+     * @var array
+     */
+    private $entityUpdateVersions = array();
+
+    /**
      * A list of all pending entity deletions.
      *
      * @var array
@@ -349,6 +357,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
                 $this->entityUpdates ||
+                $this->entityUpdateVersions ||
                 $this->collectionUpdates ||
                 $this->collectionDeletions ||
                 $this->orphanRemovals)) {
@@ -431,6 +440,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityUpdates =
         $this->entityDeletions =
         $this->extraUpdates =
+        $this->entityUpdateVersions =
         $this->entityChangeSets =
         $this->collectionUpdates =
         $this->collectionDeletions =
@@ -558,6 +568,8 @@ class UnitOfWork implements PropertyChangedListener
      * {@link _collectionDeletions}
      * If a PersistentCollection has been de-referenced in a fully MANAGED entity,
      * then this collection is marked for deletion.
+     *
+     * {@link _entityUpdateVersions}
      *
      * @ignore
      *
@@ -728,6 +740,10 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityChangeSets[$oid]   = $changeSet;
                 $this->originalEntityData[$oid] = $actualData;
                 $this->entityUpdates[$oid]      = $entity;
+            }
+
+            if($class->isVersioned && isset($class->reflVersionUpdateField)){
+                $this->entityUpdateVersions[$oid] = $entity;
             }
         }
 
@@ -2383,6 +2399,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->scheduledForSynchronization =
             $this->entityInsertions =
             $this->entityUpdates =
+            $this->entityUpdateVersions =
             $this->entityDeletions =
             $this->collectionDeletions =
             $this->collectionUpdates =
