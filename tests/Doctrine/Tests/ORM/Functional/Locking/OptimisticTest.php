@@ -114,6 +114,39 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * Tests that the version-code can be forcibly updated even if the entity
+     * has no direct changes.
+     */
+    public function testForceVersionUpdate()
+    {
+        $test = new OptimisticStandard();
+        $test->name = 'test';
+        $this->_em->persist($test);
+        $this->_em->flush();
+
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+        $baselineVersion = $test->getVersion();
+
+        /*
+         * Check that our flag forces an update and resets the flag
+         */
+        $test->setVersionBump(true);
+        $this->_em->flush();
+        $this->assertEquals($baselineVersion+1, $test->getVersion());
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
+
+        /*
+         * Check that further flushes don't do anything with our flag set to
+         * false (preserving the usual behavior)
+         */
+        $this->_em->flush();
+        $this->assertEquals($baselineVersion+1, $test->getVersion());
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
+    }
+
     public function testStandardInsertSetsInitialVersionValue()
     {
         $test = new OptimisticStandard();
@@ -294,7 +327,21 @@ class OptimisticStandard
      */
     private $version;
 
-    function getVersion() {return $this->version;}
+    /**
+     * @VersionBump
+     * @var bool
+     */
+    private $versionBump = false;
+
+    public function setVersionBump($val){
+        $this->versionBump = (bool)$val;
+    }
+
+    public function getVersionBump(){
+        return $this->versionBump;
+    }
+
+    public function getVersion() {return $this->version;}
 }
 
 /**
