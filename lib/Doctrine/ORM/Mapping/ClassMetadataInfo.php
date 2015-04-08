@@ -656,6 +656,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $reflFields = array();
 
     /**
+     * A single ReflectionProperty pointing to the mapped class' version-update
+     * property, if any. (Needed since the property may be private.)
+     * @var \ReflectionProperty | null
+     */
+    public $reflVersionUpdateField;
+
+    /**
      * @var \Doctrine\Instantiator\InstantiatorInterface|null
      */
     private $instantiator;
@@ -975,6 +982,10 @@ class ClassMetadataInfo implements ClassMetadata
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
+        }
+
+        if($this->isVersioned && isset($this->versionUpdateProperty)){
+            $this->reflVersionUpdateField = $reflService->getAccessibleProperty($this->name, $this->versionUpdateProperty);
         }
     }
 
