@@ -115,6 +115,7 @@ EOT
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
                     $this->formatField('Versioned?', $metadata->isVersioned),
                     $this->formatField('Version field', $metadata->versionField),
+                    $this->formatField('Version force-update property', $metadata->versionUpdateProperty),
                     $this->formatField('Read only?', $metadata->isReadOnly),
 
                     $this->formatEntityListeners($metadata->entityListeners),
