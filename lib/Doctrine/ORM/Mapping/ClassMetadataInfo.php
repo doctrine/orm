@@ -875,6 +875,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isVersioned) {
             $serialized[] = 'isVersioned';
             $serialized[] = 'versionField';
+            $serialized[] = 'versionUpdateProperty';
         }
 
         if ($this->lifecycleCallbacks) {
@@ -2991,6 +2992,18 @@ class ClassMetadataInfo implements ClassMetadata
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
             }
         }
+    }
+
+    /**
+     * Sets the property-name that will be checked on the entity to determine if
+     * its version must forcibly be incremented. Use null to disable.
+     *
+     * @param string $propName
+     *
+     * @return void
+     */
+    public function setVersionUpdateProperty($propName){
+        $this->versionUpdateProperty = $propName;
     }
 
     /**
