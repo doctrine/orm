@@ -350,5 +350,24 @@ ORDER BY b.id DESC'
             $query->getSQL()
         );
     }
+
+    /**
+     * This tests ordering by property that has the 'declared' field.
+     */
+    public function testLimitSubqueryOrderByFieldFromMappedSuperclass()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+
+        // now use the third one in query
+        $query = $this->entityManager->createQuery(
+            'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\Banner b ORDER BY b.id DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0 FROM (SELECT b0_.id AS id_0, b0_.name AS name_1 FROM Banner b0_) dctrn_result ORDER BY id_0 DESC',
+            $query->getSQL()
+        );
+    }
 }
 
