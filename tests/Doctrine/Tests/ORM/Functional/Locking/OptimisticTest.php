@@ -145,6 +145,16 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($baselineVersion+1, $test->getVersion());
         $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
 
+        /*
+         * Check that using the flag AND making a change still results in only
+         * a single increment to the version.
+         */
+        $test->setVersionBump(true);
+        $test->name = "test2";
+        $this->_em->flush();
+        $this->assertEquals($baselineVersion+2, $test->getVersion());
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
     }
 
     public function testStandardInsertSetsInitialVersionValue()
