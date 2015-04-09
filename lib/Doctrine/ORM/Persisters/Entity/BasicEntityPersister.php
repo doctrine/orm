@@ -356,10 +356,12 @@ class BasicEntityPersister implements EntityPersister
         $tableName  = $this->class->getTableName();
         $updateData = $this->prepareUpdateData($entity);
         $isVersioned     = $this->class->isVersioned;
+        $forceBumping = false;
 
         if ( ! isset($updateData[$tableName]) || ! ($data = $updateData[$tableName])) {
             if($isVersioned && $this->em->getUnitOfWork()->isEntityVersionBumped($entity)){
                 $data = array();
+                $forceBumping = true;
             }else{
                 return;
             }
@@ -374,6 +376,15 @@ class BasicEntityPersister implements EntityPersister
             $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
 
             $this->assignDefaultVersionValue($entity, $id);
+
+            if(!$forceBumping){
+                /*
+                 * We're doing a "real change" here? Then preemptively remove
+                 * this one from the list so that its version doesn't get
+                 * doubly-updated.
+                 */
+                $this->em->getUnitOfWork()->setEntityVersionBumped($entity,false);
+            }
         }
     }
 
