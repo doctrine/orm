@@ -319,6 +319,11 @@ class BasicEntityPersister implements EntityPersister
         $value = $this->fetchVersionValue($this->class, $id);
 
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
+
+        // If a force-increment flag is present, ensure it is reset to false
+        if(isset($this->class->reflVersionUpdateProperty)){
+            $this->class->reflVersionUpdateProperty->setValue($entity, false);
+        }
     }
 
     /**
