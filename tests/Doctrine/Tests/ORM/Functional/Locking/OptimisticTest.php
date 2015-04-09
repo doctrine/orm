@@ -120,20 +120,21 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testForceVersionUpdate()
     {
+
         $test = new OptimisticStandard();
         $test->name = 'test';
         $this->_em->persist($test);
         $this->_em->flush();
 
         $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
-        $baselineVersion = $test->getVersion();
+        $this->assertEquals(1, $test->getVersion());
 
         /*
          * Check that our flag forces an update and resets the flag
          */
         $test->setVersionBump(true);
         $this->_em->flush();
-        $this->assertEquals($baselineVersion+1, $test->getVersion());
+        $this->assertEquals(2, $test->getVersion());
         $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
 
 
@@ -142,7 +143,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
          * false (preserving the usual behavior)
          */
         $this->_em->flush();
-        $this->assertEquals($baselineVersion+1, $test->getVersion());
+        $this->assertEquals(2, $test->getVersion());
         $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
 
         /*
@@ -152,8 +153,23 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $test->setVersionBump(true);
         $test->name = "test2";
         $this->_em->flush();
-        $this->assertEquals($baselineVersion+2, $test->getVersion());
+        $this->assertEquals(3, $test->getVersion());
         $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
+        /*
+         * With another entity, ensure that using the flag doesn't cause the
+         * version number to jump to 2 on initial insert, and that it is
+         * properly reset to false after an insert.
+         */
+
+        $test2 = new OptimisticStandard();
+        $test2->name = 'insert_checks';
+        $test2->setVersionBump(true);
+        $this->_em->persist($test2);
+        $this->_em->flush();
+
+        $this->assertFalse($test2->getVersionBump(),"Should always be false after flushing");
+        $this->assertEquals(1, $test2->getVersion());
 
     }
 
