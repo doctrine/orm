@@ -447,8 +447,8 @@ class UnitOfWork implements PropertyChangedListener
         foreach($entitiesNeedingFlagReset as $entity){
             /** @var $class ClassMetadata */
             $class = $this->em->getClassMetadata(get_class($entity));
-            if(isset($class->reflVersionUpdateField)){
-                $class->reflVersionUpdateField->setValue($entity,false);
+            if(isset($class->reflVersionUpdateProperty)){
+                $class->reflVersionUpdateProperty->setValue($entity,false);
             }
         }
 
@@ -593,14 +593,14 @@ class UnitOfWork implements PropertyChangedListener
         /** @var $class ClassMetadata */
         $class = $this->em->getClassMetadata(get_class($entity));
         if($flag){
-            if($class->isVersioned && isset($class->reflVersionUpdateField)){
+            if($class->isVersioned && isset($class->reflVersionUpdateProperty)){
                 //TODO Should we setValue() the entity's actual flag or not?
                 $this->entityUpdateVersions[$oid] = $entity;
             }else{
                 // Attempted to set the flag on an incompatible entity. Do we have a logger?
             }
         }else{
-            $class->reflVersionUpdateField->setValue($entity,false);
+            $class->reflVersionUpdateProperty->setValue($entity,false);
             unset($this->entityUpdateVersions[$oid]);
         }
     }
@@ -803,7 +803,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityUpdates[$oid]      = $entity;
             }
 
-            if($class->isVersioned && isset($class->reflVersionUpdateField) && ((bool)$class->reflVersionUpdateField->getValue($entity))){
+            if($class->isVersioned && isset($class->reflVersionUpdateProperty) && ((bool)$class->reflVersionUpdateProperty->getValue($entity))){
                 $this->entityUpdateVersions[$oid] = $entity;
             }
         }

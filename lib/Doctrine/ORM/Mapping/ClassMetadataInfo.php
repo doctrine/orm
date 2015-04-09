@@ -660,7 +660,7 @@ class ClassMetadataInfo implements ClassMetadata
      * property, if any. (Needed since the property may be private.)
      * @var \ReflectionProperty | null
      */
-    public $reflVersionUpdateField;
+    public $reflVersionUpdateProperty;
 
     /**
      * @var \Doctrine\Instantiator\InstantiatorInterface|null
@@ -985,7 +985,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if($this->isVersioned && isset($this->versionUpdateProperty)){
-            $this->reflVersionUpdateField = $reflService->getAccessibleProperty($this->name, $this->versionUpdateProperty);
+            $this->reflVersionUpdateProperty = $reflService->getAccessibleProperty($this->name, $this->versionUpdateProperty);
         }
     }
 
