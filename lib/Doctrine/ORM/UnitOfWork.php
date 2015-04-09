@@ -398,6 +398,12 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
+            if ($this->entityUpdateVersions) {
+                foreach ($commitOrder as $class) {
+                    $this->executeUpdateVersions($class);
+                }
+            }
+
             // Extra updates that were requested by persisters.
             if ($this->extraUpdates) {
                 $this->executeExtraUpdates();
@@ -555,6 +561,18 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return array();
+    }
+
+    /**
+     * Checks if the entity is scheduled for a forced version increment
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    public function isEntityVersionBumped($entity){
+        $oid = spl_object_hash($entity);
+        return array_key_exists($oid,$this->entityUpdateVersions);
     }
 
     /**
@@ -755,7 +773,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityUpdates[$oid]      = $entity;
             }
 
-            if($class->isVersioned && isset($class->reflVersionUpdateField)){
+            if($class->isVersioned && isset($class->reflVersionUpdateField) && ((bool)$class->reflVersionUpdateField->getValue($entity))){
                 $this->entityUpdateVersions[$oid] = $entity;
             }
         }
@@ -1147,6 +1165,44 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Updates the versions for entities who had the force-update flag set,
+     * excluding those which should already be getting updated due to normal
+     * changes.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     *
+     * @return void
+     */
+    private function executeUpdateVersions($class)
+    {
+        $className          = $class->name;
+        $persister          = $this->getEntityPersister($className);
+        $preUpdateInvoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
+        $postUpdateInvoke   = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
+
+        foreach ($this->entityUpdateVersions as $oid => $entity) {
+
+            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+                continue;
+            }
+
+            if ($preUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
+                $blankArray = array(); //TODO document that "no-change" events are a new thing
+                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $blankArray), $preUpdateInvoke);
+                $this->recomputeSingleEntityChangeSet($class, $entity);
+            }
+
+            $persister->update($entity);
+
+            unset($this->entityUpdateVersions[$oid]);
+
+            if ($postUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
+                $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new LifecycleEventArgs($entity, $this->em), $postUpdateInvoke);
+            }
+        }
+    }
+
+    /**
      * Gets the commit order.
      *
      * @param array|null $entityChangeSet
@@ -1407,6 +1463,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether an entity is scheduled for insertion, update or deletion.
+     *
+     * Does not include "forced" updates to version fields.
      *
      * @param object $entity
      *
