@@ -180,13 +180,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping)
     {
-        /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
-        $targetPersister = $em->getUnitOfWork()->getEntityPersister($mapping['targetEntity']);
-
-        return new DefaultCollectionHydrator(
-            $em,
-            $targetPersister->getCacheRegion()
-        );
+        return new DefaultCollectionHydrator($em);
     }
 
     /**
