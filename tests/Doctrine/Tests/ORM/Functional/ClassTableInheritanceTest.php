@@ -497,41 +497,39 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testVersioning()
     {
-        $employee = new CompanyEmployee();
-        $employee->setName('John doe');
-        $employee->setSalary(94000);
-        $employee->setDepartment('IT');
+        $raffle = new CompanyRaffle();
+        $raffle->setData("foo");
 
 
-        $this->_em->persist($employee);
+        $this->_em->persist($raffle);
 
         $this->_em->flush();
 
-        $this->assertEquals(1,$employee->getVersion());
-        $this->assertFalse($employee->getVersionBump());
+        $this->assertEquals(1,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
 
         /*
          * Ensure no changes when nothing at all is needed
          */
         $this->_em->flush();
-        $this->assertEquals(1,$employee->getVersion());
-        $this->assertFalse($employee->getVersionBump());
+        $this->assertEquals(1,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
 
         /*
          * Check that real changes come through
          */
-        $employee->setSalary(95000);
+        $raffle->setData("bar");
         $this->_em->flush();
-        $this->assertEquals(2,$employee->getVersion());
-        $this->assertFalse($employee->getVersionBump());
+        $this->assertEquals(2,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
 
         /*
          * Check that bump works
          */
-        $employee->setVersionBump(true);
+        $raffle->setVersionBump(true);
         $this->_em->flush();
-        $this->assertEquals(3,$employee->getVersion());
-        $this->assertFalse($employee->getVersionBump());
+        $this->assertEquals(3,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
 
     }
 }

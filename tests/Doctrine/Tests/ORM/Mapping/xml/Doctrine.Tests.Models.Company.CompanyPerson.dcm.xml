@@ -35,14 +35,9 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-
+        
         <field name="name" column="name"/>
-        <field name="version" type="integer" version="true" />
-
-        <special-properties>
-            <property type="VERSION_BUMP" target="bflag"/>
-        </special-properties>
-
+        
         <one-to-one field="spouse" target-entity="CompanyPerson">
             <join-column name="spouse_id" referenced-column-name="id"/>
         </one-to-one>
