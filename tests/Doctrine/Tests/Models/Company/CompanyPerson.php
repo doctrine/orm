@@ -79,6 +79,18 @@ class CompanyPerson
      */
     private $friends;
 
+    /**
+     * @Version @Column(type="integer")
+     * @var int
+     */
+    protected $version;
+
+    /**
+     * @VersionBump
+     * @var boolean
+     */
+    protected $bflag;
+
     public function __construct() {
         $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
     }
@@ -116,6 +128,16 @@ class CompanyPerson
             $this->spouse->setSpouse($this);
         }
     }
+
+    public function setVersionBump($val){
+        $this->bflag = (bool)$val;
+    }
+
+    public function getVersionBump(){
+        return $this->bflag;
+    }
+
+    public function getVersion() {return $this->version;}
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
