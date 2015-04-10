@@ -166,6 +166,23 @@
     <xs:attribute name="region" type="xs:string" />
   </xs:complexType>
 
+  <xs:complexType name="special-properties">
+    <xs:sequence>
+        <xs:element name="property" type="orm:special-property" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="special-property">
+    <xs:attribute name="type" type="orm:special-property-type" />
+    <xs:attribute name="target" type="xs:NMTOKEN"/>
+  </xs:complexType>
+
+  <xs:simpleType name="special-property-type">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="VERSION_BUMP"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="entity">
     <xs:sequence>
       <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="1"/>
@@ -182,6 +199,7 @@
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="embedded" type="orm:embedded" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="special-properties" type="orm:special-properties" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="many-to-one" type="orm:many-to-one" minOccurs="0" maxOccurs="unbounded" />

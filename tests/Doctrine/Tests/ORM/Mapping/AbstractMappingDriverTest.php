@@ -172,7 +172,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertTrue($class->isVersioned);
         $this->assertEquals("version", $class->versionField);
-        $this->assertEquals("versionBump", $class->versionUpdateProperty);
+        $this->assertEquals("bflag", $class->versionUpdateProperty);
 
         $this->assertFalse(isset($class->fieldMappings['version']['version']));
     }
@@ -1025,7 +1025,7 @@ class User
      * @VersionBump
      * @var bool
      */
-    public $versionBump;
+    public $bflag;
 
 
     /**
@@ -1084,7 +1084,7 @@ class User
           ));
         $mapping = array('fieldName' => 'version', 'type' => 'integer');
         $metadata->setVersionMapping($mapping);
-        $metadata->setVersionUpdateProperty("versionBump");
+        $metadata->setVersionUpdateProperty("bflag");
         $metadata->mapField($mapping);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(

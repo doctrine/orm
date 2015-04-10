@@ -357,14 +357,14 @@ class OptimisticStandard
      * @VersionBump
      * @var bool
      */
-    private $versionBump = false;
+    private $bflag = false;
 
     public function setVersionBump($val){
-        $this->versionBump = (bool)$val;
+        $this->bflag = (bool)$val;
     }
 
     public function getVersionBump(){
-        return $this->versionBump;
+        return $this->bflag;
     }
 
     public function getVersion() {return $this->version;}

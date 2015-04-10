@@ -281,6 +281,15 @@ class XmlDriver extends FileDriver
             $metadata->mapField($mapping);
         }
 
+        // Evaluate properties marked for special purposes
+        if (isset($xmlRoot->{'special-properties'})) {
+            foreach ($xmlRoot->{'special-properties'}->property as $specProp) {
+                if($specProp['type'] == 'VERSION_BUMP'){
+                    $metadata->setVersionUpdateProperty($specProp['target']);
+                }
+            }
+        }
+
         // Evaluate <id ...> mappings
         $associationIds = array();
         foreach ($xmlRoot->id as $idElement) {

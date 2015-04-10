@@ -340,6 +340,15 @@ class YamlDriver extends FileDriver
             }
         }
 
+        // Evaluate properties marked for special purposes
+        if (isset($element['specialProperties'])) {
+            foreach ($element['specialProperties'] as $target => $type) {
+                if($type == 'versionBump'){
+                    $metadata->setVersionUpdateProperty($target);
+                }
+            }
+        }
+
         // Evaluate oneToOne relationships
         if (isset($element['oneToOne'])) {
             foreach ($element['oneToOne'] as $name => $oneToOneElement) {
