@@ -563,35 +563,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Sets whether an entity needs its version bumped. This method primarily
-     * exists so that the EntityPersister can prevent a second-update when a
-     * "real" change goes through.
-     *
-     * @param object $entity
-     * @param boolean $flag True to enable, false to disable.
-     */
-    public function setEntityVersionBumped($entity, $flag){
-        $oid = spl_object_hash($entity);
-
-        if($flag == $this->isEntityVersionBumped($entity)){
-            return; // Already set to correct value
-        }
-
-        /** @var $class ClassMetadata */
-        $class = $this->em->getClassMetadata(get_class($entity));
-        if($flag){
-            if($class->isVersioned && isset($class->reflVersionUpdateProperty)){
-                //TODO Should we setValue() the entity's actual flag or not?
-                $this->entityUpdateVersions[$oid] = $entity;
-            }else{
-                // Attempted to set the flag on an incompatible entity. Do we have a logger?
-            }
-        }else{
-            unset($this->entityUpdateVersions[$oid]);
-        }
-    }
-
-    /**
      * Computes the changes that happened to a single entity.
      *
      * Modifies/populates the following properties:
@@ -1199,6 +1170,17 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->entityUpdateVersions as $oid => $entity) {
 
             if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+                continue;
+            }
+
+            if(!$class->reflVersionUpdateProperty->getValue($entity)){
+                /*
+                 * This entity was on the list to update earlier, but now its
+                 * flag has gone back to false. This is most likely because it
+                 * was already updated as part of a normal "real" update, so we
+                 * should be able to safely skip it.
+                 */
+                unset($this->entityUpdateVersions[$oid]);
                 continue;
             }
 
