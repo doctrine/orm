@@ -120,7 +120,7 @@ class DefaultRegion implements Region
         $returnableItems = array();
 
         foreach ($keysToRetrieve as $index => $key) {
-            $returnableItems[$index] = $items[$key];
+            $returnableItems[$index] = $items[$index];
         }
 
         return $returnableItems;
