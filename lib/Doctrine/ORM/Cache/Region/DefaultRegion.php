@@ -105,13 +105,14 @@ class DefaultRegion implements Region
         $result = array();
 
         foreach ($collection->identifiers as $key) {
-            $entry = $this->cache->fetch($this->getCacheEntryKey($key));
-            if ($entry === false) {
-                $result = null;
-                break;
-            } else {
-                $result[] = $entry;
+            $entryKey   = $this->getCacheEntryKey($key);
+            $entryValue = $this->cache->fetch($entryKey);
+
+            if ($entryValue === false) {
+                return null;
             }
+
+            $result[] = $entryValue;
         }
 
         return $result;
