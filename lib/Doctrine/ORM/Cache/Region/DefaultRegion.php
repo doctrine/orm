@@ -100,30 +100,19 @@ class DefaultRegion implements Region
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        $keysToRetrieve = array();
+        $result = array();
 
-        foreach ($collection->identifiers as $index => $key) {
-            $keysToRetrieve[$index] = $this->name . '_' . $key->hash;
-        }
-
-        $items = array_filter(
-            array_map([$this->cache, 'fetch'], $keysToRetrieve),
-            function ($retrieved) {
-                return false !== $retrieved;
+        foreach ($collection->identifiers as $key) {
+            $entry = $this->cache->fetch($this->name . '_' . $key->hash);
+            if ($entry === false) {
+                $result = null;
+                break;
+            } else {
+                $result[] = $entry;
             }
-        );
-
-        if (count($items) !== count($keysToRetrieve)) {
-            return null;
         }
 
-        $returnableItems = array();
-
-        foreach ($keysToRetrieve as $index => $key) {
-            $returnableItems[$index] = $items[$index];
-        }
-
-        return $returnableItems;
+        return $result;
     }
 
     /**
