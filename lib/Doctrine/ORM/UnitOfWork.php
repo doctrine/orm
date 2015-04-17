@@ -3378,7 +3378,7 @@ class UnitOfWork implements PropertyChangedListener
                     } else {
                         if ($other instanceof Proxy && !$other->__isInitialized()) {
                             // do not merge fields marked lazy that have not been fetched.
-                            return;
+                            continue;
                         }
 
                         if ( ! $assoc2['isCascadeMerge']) {
@@ -3406,7 +3406,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($mergeCol instanceof PersistentCollection && ! $mergeCol->isInitialized()) {
                         // do not merge fields marked lazy that have not been fetched.
                         // keep the lazy persistent collection of the managed copy.
-                        return;
+                        continue;
                     }
 
                     $managedCol = $prop->getValue($managedCopy);
