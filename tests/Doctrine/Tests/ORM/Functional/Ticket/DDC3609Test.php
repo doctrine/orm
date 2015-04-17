@@ -27,6 +27,9 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * Verifies that class table inheritance joins work correctly when additional
      * restrictions are placed on the joins for child tables.
+     *
+     * This test case is a simplification of the query where this issue was
+     * originally discovered, see other test methods for simplified cases.
      */
     public function testIssue()
     {
@@ -89,6 +92,123 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue($foundSimple, 'Simple order was not found in search results');
         $this->assertTrue($foundComplex, 'Complex order was not found in search results');
+    }
+
+    /**
+     * Verifies that a SimpleOrder can be found by selecting the base class and
+     * only querying on fields that are on the base class.
+     */
+    public function testCanFindSimpleOrderByBaseField()
+    {
+        $orderToFind = new DDC3609SimpleOrder();
+        $orderToFind->requester = 'RequesterUser';
+
+        $this->_em->persist($orderToFind);
+        $this->_em->flush();
+
+        $dql = "
+        SELECT
+          BaseOrder
+
+        FROM
+          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+
+        WHERE
+          BaseOrder.requester = 'RequesterUser'
+        ";
+
+        $query = $this->_em->createQuery($dql);
+        $results = $query->execute();
+
+        $foundOrder = false;
+        foreach ($results as $result) {
+            if ($result->id == $orderToFind->id) {
+                $foundOrder = true;
+            }
+        }
+
+        $this->assertTrue($foundOrder, 'Order was not found in search results');
+    }
+
+    /**
+     * Tests that a property on the SimpleOrder (one level of inheritance) can be
+     * queried on.
+     */
+    public function testCanFindSimpleOrderByChildField()
+    {
+        $orderToFind = new DDC3609SimpleOrder();
+        $orderToFind->fulfiller = 'FulfillerUser';
+
+        $this->_em->persist($orderToFind);
+        $this->_em->flush();
+
+        $dql = "
+        SELECT
+          BaseOrder
+
+        FROM
+          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
+
+        WHERE
+          SimpleOrder.fulfiller = 'FulfillerUser'
+        ";
+
+        $query = $this->_em->createQuery($dql);
+        $results = $query->execute();
+
+        $foundOrder = false;
+        foreach ($results as $result) {
+            if ($result->id == $orderToFind->id) {
+                $foundOrder = true;
+            }
+        }
+
+        $this->assertTrue($foundOrder, 'Order was not found in search results');
+    }
+
+    /**
+     * Tests that a property of the ComplexOrder (two levels of inheritance) can
+     * be queried on.
+     */
+    public function testCanFindComplexOrder()
+    {
+        $orderToFind = new DDC3609ComplexOrder();
+        $deliverTo = new DDC3609DeliveryLocation($orderToFind);
+        $deliverTo->location = 'Room 100';
+        $deliverTo->fulfiller = 'FulfillerUser';
+
+        $this->_em->persist($orderToFind);
+        $this->_em->flush();
+
+        $dql = "
+        SELECT
+          BaseOrder
+
+        FROM
+          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
+          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder ComplexOrder WITH ComplexOrder.id = BaseOrder.id
+
+          LEFT JOIN ComplexOrder.deliveryLocations ComplexDeliveryLocation
+
+        WHERE
+          BaseOrder INSTANCE OF \Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder
+          AND
+          ComplexDeliveryLocation.fulfiller = 'FulfillerUser'
+        ";
+
+        $query = $this->_em->createQuery($dql);
+        $results = $query->execute();
+
+        $foundOrder = false;
+        foreach ($results as $result) {
+            if ($result->id == $orderToFind->id) {
+                $foundOrder = true;
+            }
+        }
+
+        $this->assertTrue($foundOrder, 'Order was not found in search results');
     }
 }
 
