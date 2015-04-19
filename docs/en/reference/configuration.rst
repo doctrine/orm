@@ -79,6 +79,13 @@ Or if you prefer YAML:
     $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
+.. note::
+    If you want to use yml mapping you should add yaml dependency to your `composer.json`:
+    
+    ::
+    
+        "symfony/yaml": "*"
+
 Inside the ``Setup`` methods several assumptions are made:
 
 -  If `$isDevMode` is true caching is done in memory with the ``ArrayCache``. Proxy objects are recreated on every request.
