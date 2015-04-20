@@ -41,6 +41,10 @@ drivers do the raw interaction with the cache implementation and
 the ``AbstractCache`` can build custom functionality on top of
 these methods.
 
+This documentation does not cover every single cache driver included
+with Doctrine. For an up-to-date-list, see the
+`cache directory on GitHub <https://github.com/doctrine/cache/tree/master/lib/Doctrine/Common/Cache>`.
+
 APC
 ~~~
 
