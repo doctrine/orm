@@ -440,16 +440,14 @@ class UnitOfWork implements PropertyChangedListener
         	$this->entityChangeSets =
         	$this->scheduledForSynchronization = array();
         } elseif (is_object($entity)) {
-        	$oid = spl_object_hash($entity);
-        	$rootClassName = $this->em->getClassMetadata(get_class($entity))->rootEntityName;
-        
+        	$oid 			= spl_object_hash($entity);
+        	$rootClassName 	= $this->em->getClassMetadata(get_class($entity))->rootEntityName;
         	unset($this->entityChangeSets[$oid]);
         	unset($this->scheduledForSynchronization[$rootClassName][$oid]);
         } elseif (is_array($entity)) {
         	foreach ($entity as $object) {
-        		$oid = spl_object_hash($object);
-        		$rootClassName = $this->em->getClassMetadata(get_class($object))->rootEntityName;
-        		 
+        		$oid 			= spl_object_hash($object);
+        		$rootClassName 	= $this->em->getClassMetadata(get_class($object))->rootEntityName;
         		unset($this->entityChangeSets[$oid]);
         		unset($this->scheduledForSynchronization[$rootClassName][$oid]);
         	}
