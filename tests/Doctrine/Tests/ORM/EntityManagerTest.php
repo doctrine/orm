@@ -179,6 +179,44 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('foo', $return);
     }
 
+    static public function transactionalReturnValues()
+    {
+        $values = array(
+            true,
+            false,
+            1,
+            0,
+            -1,
+            "1",
+            "0",
+            "",
+            array(),
+            null,
+            NAN, // Remember that this has special equality rules
+            new \stdClass()
+        );
+        return array_map(function($val){ return array($val);}, $values);
+    }
+
+    /**
+     * Tests that the transactional() call cleanly passes returned values and
+     * does not alter or coerce them to the wrong types.
+     * @dataProvider transactionalReturnValues
+     */
+    public function testTransactionalReturnValues($expected)
+    {
+        $returned = $this->_em->transactional(function () use ($expected) {
+            return $expected;
+        });
+
+        if(is_float($expected) && is_nan($expected)){
+            // NAN is an exceptional case for comparisons
+            $this->assertTrue(is_nan($returned));
+        }else{
+            $this->assertSame($expected, $returned);
+        }
+    }
+
     public function testTransactionalAcceptsVariousCallables()
     {
         $this->assertSame('callback', $this->_em->transactional(array($this, 'transactionalCallback')));
