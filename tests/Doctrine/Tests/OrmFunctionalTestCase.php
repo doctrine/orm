@@ -261,7 +261,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\GeoNames\Country',
             'Doctrine\Tests\Models\GeoNames\Admin1',
             'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
-            'Doctrine\Tests\Models\GeoNames\City'
+            'Doctrine\Tests\Models\GeoNames\City',
+            'Doctrine\Tests\Models\PriceRegions\PriceRegion',
+            'Doctrine\Tests\Models\PriceRegions\VatRate',
         ),
         'custom_id_object_type' => array(
             'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent',

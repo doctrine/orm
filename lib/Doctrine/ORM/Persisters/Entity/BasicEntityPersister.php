@@ -666,6 +666,12 @@ class BasicEntityPersister implements EntityPersister
 
                 $this->quotedColumns[$sourceColumn]  = $quotedColumn;
                 $this->columnTypes[$sourceColumn]    = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+
+                // Skip the null aissgnment for Id fields, to prevent overwriting a composite key.
+                if ( ! isset($newValId) && isset($this->class->fieldMappings[$sourceColumn]['id']) && $this->class->fieldMappings[$sourceColumn]['id']) {
+                    continue;
+                }
+
                 $result[$owningTable][$sourceColumn] = $newValId
                     ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
                     : null;

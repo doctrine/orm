@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
+use Doctrine\Tests\Models\PriceRegions\PriceRegion;
 
 class CompositePrimaryKeyWithAssociationsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -56,5 +57,19 @@ class CompositePrimaryKeyWithAssociationsTest extends \Doctrine\Tests\OrmFunctio
 
         $this->assertEquals(2, $name2->id);
         $this->assertEquals("Rome", $name2->name);
+    }
+
+    public function testFindByAbleToGetCompositeEntitiesWithMixedNullableRelation()
+    {
+        $priceRegion = $this->_em->getRepository('Doctrine\Tests\Models\PriceRegions\PriceRegion');
+        $pr          = new PriceRegion("dk-pr-1", "mu-1", "Denmark");
+
+        $this->_em->persist($pr);
+        $this->_em->flush();
+
+        $region = $priceRegion->findOneBy(array('id' => 'dk-pr-1'));
+
+        $this->assertEquals($region->id, "dk-pr-1");
+        $this->assertEquals($region->name, "Denmark");
     }
 }
