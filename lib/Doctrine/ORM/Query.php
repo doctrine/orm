@@ -294,6 +294,8 @@ final class Query extends AbstractQuery
 
         if ($this->_queryCacheProfile) {
             $executor->setQueryCacheProfile($this->_queryCacheProfile);
+        } else {
+            $executor->removeQueryCacheProfile();
         }
 
         if ($this->_resultSetMapping === null) {
