@@ -84,6 +84,23 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->fail($sql);
     }
 
+    public function testDDC3697WithPartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT c.id FROM \Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
+            'SELECT c0_.id AS id_0 FROM company_persons c0_ INNER JOIN company_persons c1_ WHERE c0_.spouse_id = c1_.id AND c1_.id = 42',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+
+    public function testDDC3697WithoutPartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT c.id FROM \Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
+            'SELECT c0_.id AS id_0 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id WHERE c0_.spouse_id = c3_.id AND c3_.id = 42',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
 
     public function testSupportsSelectForAllFields()
     {

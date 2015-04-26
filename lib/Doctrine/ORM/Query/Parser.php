@@ -312,10 +312,9 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
 
         // short-circuit on first condition, usually types match
-        if ($lookaheadType !== $token && $token !== Lexer::T_IDENTIFIER && $lookaheadType <= Lexer::T_IDENTIFIER) {
+        if ($lookaheadType !== $token && ($token !== Lexer::T_IDENTIFIER || $lookaheadType <= Lexer::T_IDENTIFIER)) {
             $this->syntaxError($this->lexer->getLiteral($token));
         }
-
         $this->lexer->moveNext();
     }
 
@@ -1678,8 +1677,6 @@ class Parser
         // Describe non-root join declaration
         if ($joinDeclaration instanceof AST\RangeVariableDeclaration) {
             $joinDeclaration->isRoot = false;
-
-            $adhocConditions = true;
         }
 
         // Check for ad-hoc Join conditions
