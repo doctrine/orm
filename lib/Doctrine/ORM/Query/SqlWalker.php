@@ -1129,14 +1129,17 @@ class SqlWalker implements TreeWalker
                 $class      = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
                 $dqlAlias   = $joinDeclaration->aliasIdentificationVariable;
                 $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
-                $condition = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+                $conditions = [];
+
+                if ($join->conditionalExpression) {
+                    $conditions[] = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+                }
+
                 $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER)
                     ? ' AND '
                     : ' ON ';
 
                 $sql .= $this->walkRangeVariableDeclaration($joinDeclaration);
-
-                $conditions = array($condition);
 
                 // Apply remaining inheritance restrictions
                 $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($dqlAlias));
@@ -1152,7 +1155,10 @@ class SqlWalker implements TreeWalker
                     $conditions[] = $filterExpr;
                 }
 
-                $sql .= $condExprConjunction . implode(' AND ', $conditions);
+                if ($conditions) {
+                    $sql .= $condExprConjunction . implode(' AND ', $conditions);
+                }
+
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
