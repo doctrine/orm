@@ -76,6 +76,20 @@ In terms of your database schema, Doctrine will automatically inline all
 columns from the ``Address`` class into the table of the ``User`` class,
 just as if you had declared them directly there.
 
+Initializing embeddables
+------------------------
+
+In case all fields in the embeddable are ``nullable``, you might want
+to initialize the embeddable, to avoid getting a null value instead of
+the embedded object.
+
+.. code-block:: php
+
+    public function __construct()
+    {
+        $this->address = new Address();
+    }
+
 Column Prefixing
 ----------------
 
