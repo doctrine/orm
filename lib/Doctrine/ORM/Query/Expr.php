@@ -526,13 +526,13 @@ class Expr
      * Creates a CONCAT() function expression with the given arguments.
      *
      * @param mixed $x First argument to be used in CONCAT() function.
-     * @param mixed $y Second argument to be used in CONCAT() function.
+     * @param mixed $y,... Other arguments to be used in CONCAT() function.
      *
      * @return Expr\Func
      */
     public function concat($x, $y)
     {
-        return new Expr\Func('CONCAT', array($x, $y));
+        return new Expr\Func('CONCAT', func_get_args());
     }
 
     /**

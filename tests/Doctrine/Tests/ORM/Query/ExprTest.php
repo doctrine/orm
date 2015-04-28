@@ -184,6 +184,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testConcatExpr()
     {
         $this->assertEquals('CONCAT(u.first_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.last_name'));
+        $this->assertEquals('CONCAT(u.first_name, u.middle_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.middle_name', 'u.last_name'));
     }
 
     public function testSubstringExpr()
