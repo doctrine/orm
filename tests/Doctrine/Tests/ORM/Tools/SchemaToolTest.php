@@ -47,6 +47,26 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
     }
 
+    public function testAnnotationLengthAttributeOnAssociation()
+    {
+        $em = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $classes = [
+            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithAnnotationLengthAttribute'),
+            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithOneToOneOwning'),
+        ];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        $this->assertEquals(
+            $schema->getTable('TestEntityWithAnnotationLengthAttribute')->getColumn('id')->getLength(),
+            $schema->getTable('TestEntityWithOneToOneOwning')->getColumn('entityWithAnnotationLengthAttribute_id')->getLength(),
+            "length annotation is passed to associated entity column"
+        );
+
+    }
+
     /**
      * @group DDC-200
      */
@@ -116,6 +136,40 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSame(array(), $customSchemaOptions);
     }
+}
+
+/**
+ * @Entity
+ */
+class TestEntityWithAnnotationLengthAttribute
+{
+    /**
+     * @Id
+     * @Column(type="string", length=128)
+     */
+    private $id;
+
+    /**
+     * @OneToOne(targetEntity="TestEntityWithOneToOneOwning", mappedBy="entityWithAnnotationLengthAttribute")
+     */
+    private $entityWithOneToOneOwning;
+}
+
+/**
+ * @Entity
+ */
+class TestEntityWithOneToOneOwning
+{
+    /**
+     * @Id
+     * @Column(type="string", length=128)
+     */
+    private $id;
+
+    /**
+     * @OneToOne(targetEntity="TestEntityWithAnnotationLengthAttribute", inversedBy="entityWithOneToOneOwning")
+     */
+    private $entityWithAnnotationLengthAttribute;
 }
 
 /**
