@@ -26,10 +26,5 @@ after_script:
   - php vendor/bin/coveralls -v
 
 matrix:
-  exclude:
-    - php: hhvm
-      env: DB=pgsql  # driver currently unsupported by HHVM
-    - php: hhvm
-      env: DB=mysqli # driver currently unsupported by HHVM
   allow_failures:
     - php: 7.0
