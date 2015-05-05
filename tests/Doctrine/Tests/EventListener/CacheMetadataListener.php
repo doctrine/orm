@@ -37,13 +37,13 @@ class CacheMetadataListener
      * @param ClassMetadata $metadata
      * @param EntityManager $em
      */
-    protected function enableCaching(ClassMetadata $metadata, EntityManager $em){
+    protected function enableCaching(ClassMetadata $metadata, EntityManager $em) {
 
-        if(array_key_exists($metadata->getName(), $this->enabledItems)){
+        if (array_key_exists($metadata->getName(), $this->enabledItems)) {
             return; // Already handled in the past
         }
 
-        $cache    = array(
+        $cache = array(
             'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
         );
 
@@ -64,7 +64,7 @@ class CacheMetadataListener
             $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
             $this->enableCaching($targetMeta, $em);
 
-            if(array_key_exists($targetMeta->getName(), $this->enabledItems)){
+            if (array_key_exists($targetMeta->getName(), $this->enabledItems)) {
                 $metadata->enableAssociationCache($mapping['fieldName'], $cache);
             }
         }
