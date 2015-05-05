@@ -30,10 +30,6 @@ class CacheMetadataListener
             return;
         }
 
-        if( ! $em instanceof EntityManager){
-            return;
-        }
-
         $this->enableCaching($metadata, $em);
     }
 
