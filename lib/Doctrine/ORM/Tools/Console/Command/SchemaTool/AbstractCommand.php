@@ -51,7 +51,7 @@ abstract class AbstractCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $emHelper = $this->getHelper('em');
+        $emHelper = $this->getHelper('entityManager');
 
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $emHelper->getEntityManager();
