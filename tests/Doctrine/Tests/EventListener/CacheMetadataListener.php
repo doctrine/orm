@@ -13,6 +13,9 @@ class CacheMetadataListener
     /**
      * Tracks which entities we have already forced caching enabled on. This is
      * important to avoid some potential infinite-recursion issues.
+     *
+     * Key is the name of the entity, payload is unimportant.
+     *
      * @var array
      */
     protected $enabledItems = array();
@@ -35,11 +38,26 @@ class CacheMetadataListener
 
     /**
      * @param ClassMetadata $metadata
+     * @return bool
+     */
+    private function isVisited(ClassMetaData $metadata) {
+        return isset($this->enabledItems[$metadata->getName()]);
+    }
+
+    /**
+     * @param ClassMetadata $metadata
+     */
+    private function recordVisit(ClassMetaData $metadata) {
+        $this->enabledItems[$metadata->getName()] = true;
+    }
+
+    /**
+     * @param ClassMetadata $metadata
      * @param EntityManager $em
      */
     protected function enableCaching(ClassMetadata $metadata, EntityManager $em) {
 
-        if (array_key_exists($metadata->getName(), $this->enabledItems)) {
+        if ($this->isVisited($metadata)) {
             return; // Already handled in the past
         }
 
@@ -53,7 +71,7 @@ class CacheMetadataListener
 
         $metadata->enableCache($cache);
 
-        $this->enabledItems[$metadata->getName()] = $metadata;
+        $this->recordVisit($metadata);
 
         /*
          * Only enable association-caching when the target has already been
@@ -64,7 +82,7 @@ class CacheMetadataListener
             $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
             $this->enableCaching($targetMeta, $em);
 
-            if (array_key_exists($targetMeta->getName(), $this->enabledItems)) {
+            if ($this->isVisited($targetMeta)) {
                 $metadata->enableAssociationCache($mapping['fieldName'], $cache);
             }
         }
