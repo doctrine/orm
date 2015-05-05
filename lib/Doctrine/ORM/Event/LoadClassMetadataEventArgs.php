@@ -20,6 +20,8 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
@@ -30,12 +32,40 @@ use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClas
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
     /**
+     * @param ClassMetadata $classMetadata
+     * @param EntityManager $entityManager
+     */
+    function __construct(ClassMetadata $classMetadata, EntityManager $entityManager)
+    {
+        /*
+        We use our own constructor here to enforce type-hinting requirements,
+        since both inputs are specialized subclasses compared to what the super-
+        class is willing to accept.
+
+        In particular, we want to have EntityManager rather than ObjectManager.
+        */
+        parent::__construct($classMetadata, $entityManager);
+    }
+
+    /**
      * Retrieve associated EntityManager.
      *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
-        return $this->getObjectManager();
+        $em = $this->getObjectManager();
+        assert($em instanceof EntityManager);
+        return $em;
+    }
+
+    /**
+     * Retrieves the associated ClassMetadata.
+     *
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     */
+    public function getClassMetadata()
+    {
+        return parent::getClassMetadata();
     }
 }
