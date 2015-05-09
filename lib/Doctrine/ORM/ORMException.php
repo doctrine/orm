@@ -296,7 +296,7 @@ class ORMException extends Exception
 
     /**
      * @param string $className
-     * @param string $fieldName
+     * @param string[] $fieldNames
      *
      * @return ORMException
      */

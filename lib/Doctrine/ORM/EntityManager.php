@@ -482,6 +482,11 @@ use Doctrine\Common\Util\ClassUtils;
             }
 
             $sortedId[$identifier] = $id[$identifier];
+            unset($id[$identifier]);
+        }
+
+        if ($id) {
+            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -491,10 +496,6 @@ use Doctrine\Common\Util\ClassUtils;
 
         if ($class->subClasses) {
             return $this->find($entityName, $sortedId);
-        }
-
-        if ( ! is_array($sortedId)) {
-            $sortedId = array($class->identifier[0] => $sortedId);
         }
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);

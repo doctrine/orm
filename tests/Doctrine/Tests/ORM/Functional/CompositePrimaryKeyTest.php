@@ -136,6 +136,12 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('key1' => 100));
     }
 
+    public function testUnrecognizedIdentifierFieldsOnGetReference()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', "Unrecognized identifier fields: 'key1'");
+        $poi = $this->_em->getReference('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 10, 'long' => 20, 'key1' => 100));
+    }
+
     /**
      * @group DDC-1939
      */
