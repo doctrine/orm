@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\Tests\Mocks\DriverConnectionMock;
+use Doctrine\Tests\Mocks\StatementArrayMock;
 
 class QueryTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -196,5 +198,34 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotSame($config->getDefaultQueryHints(), $query->getHints());
         $q2 = clone $query;
         $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
+    }
+
+    public function testResultCacheCaching()
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        /** @var DriverConnectionMock $driverConnectionMock */
+        $driverConnectionMock = $this->_em->getConnection()->getWrappedConnection();
+        $stmt = new StatementArrayMock([
+            [
+                'id_0' => 1,
+            ]
+        ]);
+        $driverConnectionMock->setStatementMock($stmt);
+        $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
+            ->useQueryCache(true)
+            ->useResultCache(true, 60)
+            //let it cache
+            ->getResult();
+
+        $this->assertCount(1, $res);
+
+        $driverConnectionMock->setStatementMock(null);
+
+        $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
+            ->useQueryCache(true)
+            ->useResultCache(false)
+            ->getResult();
+        $this->assertCount(0, $res);
     }
 }
