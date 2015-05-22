@@ -381,6 +381,14 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(($result[3][0]['salary']/100000) & 2, $result[3]['salary_bit_and']);
     }
 
+    public function testRandom()
+    {
+        $arg = $this->_em->createQuery("SELECT RANDOM() AS value FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+
+        $this->assertTrue(is_numeric($arg[0]['value']));
+    }
+
     protected function generateFixture()
     {
         $manager1 = new CompanyManager();
