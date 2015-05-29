@@ -152,7 +152,7 @@ abstract class SQLFilter
      */
     public function getHash()
     {
-    	return $this->__toString();
+        return $this->__toString();
     }
 
     /**
