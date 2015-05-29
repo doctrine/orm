@@ -142,6 +142,18 @@ abstract class SQLFilter
     {
         return $this->em->getConnection();
     }
+    
+    /**
+     * Return a hash representation of this instance for e.g. caching id purposes.
+     * Defaults to __toString(). Can be overridden in case a custom SQLFilter
+     * needs to manipulate its caching behaviour.
+     *
+     * @return string A string representation as hash id
+     */
+    public function getHash()
+    {
+    	return $this->__toString();
+    }
 
     /**
      * Gets the SQL query part to add to a query.
