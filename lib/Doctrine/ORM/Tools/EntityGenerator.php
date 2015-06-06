@@ -1208,7 +1208,8 @@ public function __construct(<params>)
                 if ($code = $this->generateEntityStubMethod($metadata, 'remove', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], 'Doctrine\Common\Collections\Collection')) {
+                $getAssociationType = sprintf('%s[]|\Doctrine\Common\Collections\ArrayCollection', $associationMapping['targetEntity']);
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $getAssociationType)) {
                     $methods[] = $code;
                 }
             }
