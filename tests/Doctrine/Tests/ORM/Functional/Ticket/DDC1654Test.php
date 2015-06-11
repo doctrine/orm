@@ -16,6 +16,14 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
+    public function tearDown()
+    {
+        $conn = static::$_sharedConn;
+        $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
+        $conn->executeUpdate('DELETE FROM DDC1654Comment');
+        $conn->executeUpdate('DELETE FROM DDC1654Post');
+    }
+
     public function testManyToManyRemoveFromCollectionOrphanRemoval()
     {
         $post = new DDC1654Post();
@@ -54,6 +62,29 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, count($comments));
     }
 
+    /**
+     * @group DDC-3382
+     */
+    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval()
+    {
+        $post = new DDC1654Post();
+        $post->comments[] = new DDC1654Comment();
+        $post->comments[] = new DDC1654Comment();
+
+        $this->_em->persist($post);
+        $this->_em->flush();
+
+        $comment = $post->comments[0];
+        $post->comments->removeElement($comment);
+        $post->comments->add($comment);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $this->assertEquals(2, count($comments));
+    }
+
     public function testManyToManyClearCollectionOrphanRemoval()
     {
         $post = new DDC1654Post();
@@ -71,6 +102,29 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
         $this->assertEquals(0, count($comments));
 
+    }
+
+    /**
+     * @group DDC-3382
+     */
+    public function testManyToManyClearCollectionReAddOrphanRemoval()
+    {
+        $post = new DDC1654Post();
+        $post->comments[] = new DDC1654Comment();
+        $post->comments[] = new DDC1654Comment();
+
+        $this->_em->persist($post);
+        $this->_em->flush();
+
+        $comment = $post->comments[0];
+        $post->comments->clear();
+        $post->comments->add($comment);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $this->assertEquals(1, count($comments));
     }
 }
 
