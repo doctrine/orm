@@ -3122,7 +3122,13 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedTableName($platform)
     {
-        return isset($this->table['quoted']) ? $platform->quoteIdentifier($this->table['name']) : $this->table['name'];
+        if (isset($this->table['quoted'])) {
+            $schema = ! empty($this->table['schema']) ? $platform->quoteIdentifier($this->table['schema']) . '.' : null;
+            return sprintf("%s%s", $schema, $platform->quoteIdentifier($this->table['name']));
+        } else {
+            $schema = ! empty($this->table['schema']) ? $this->table['schema'] . '.' : null;
+            return sprintf("%s%s", $schema, $this->table['name']);
+        }
     }
 
     /**
