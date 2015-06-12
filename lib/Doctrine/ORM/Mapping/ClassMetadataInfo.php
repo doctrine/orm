@@ -2252,11 +2252,14 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($table['name'])) {
             // Split schema and table name from a table name like "myschema.mytable"
             if (strpos($table['name'], '.') !== false) {
-                list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
+                list($table['schema'], $table['name']) = explode('.', $table['name'], 2);
             }
 
             if ($table['name'][0] === '`') {
                 $table['name']          = trim($table['name'], '`');
+                if (isset($table['schema'])) {
+                    $table['schema'] = trim($table['schema'], '`');
+                }
                 $this->table['quoted']  = true;
             }
 
@@ -3122,7 +3125,17 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedTableName($platform)
     {
-        return isset($this->table['quoted']) ? $platform->quoteIdentifier($this->table['name']) : $this->table['name'];
+        $tableName = $this->table['name'];
+
+        if (! empty($this->table['schema'])) {
+            $tableName = $this->table['schema']
+                . ((! $platform->supportsSchemas() && $platform->canEmulateSchemas()) ? '__' : '.')
+                . $this->table['name'];
+        }
+
+        return isset($this->table['quoted'])
+            ? $platform->quoteIdentifier($tableName)
+            : $tableName;
     }
 
     /**
