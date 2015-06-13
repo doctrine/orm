@@ -38,15 +38,6 @@ class ManyToManyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$_sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->_em->getConnection();

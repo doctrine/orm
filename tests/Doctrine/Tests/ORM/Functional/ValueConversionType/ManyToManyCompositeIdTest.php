@@ -39,15 +39,6 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$_sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany_compositeid');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany_compositeid');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany_compositeid');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->_em->getConnection();

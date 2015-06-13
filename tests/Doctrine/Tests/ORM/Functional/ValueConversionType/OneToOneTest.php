@@ -39,14 +39,6 @@ class OneToOneTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$_sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_onetoone');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetoone');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->_em->getConnection();

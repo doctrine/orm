@@ -39,14 +39,6 @@ class OneToManyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$_sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->_em->getConnection();

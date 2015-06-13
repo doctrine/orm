@@ -50,14 +50,6 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$_sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone_extralazy');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_extralazy');
-    }
-
     public function testThatExtraLazyCollectionIsCounted()
     {
         $inversed = $this->_em->find(
