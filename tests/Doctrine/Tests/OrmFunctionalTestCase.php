@@ -58,13 +58,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected $_usedModelSets = array();
 
     /**
-     * Whether the database schema has already been created.
-     *
-     * @var array
-     */
-    protected static $_tablesCreated = array();
-
-    /**
      * Array of entity class name to their tables that were created.
      *
      * @var array
@@ -533,6 +526,28 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
+     * Returns an array of className => ClassMetadata for each item in the provided array
+     *
+     * @param array $classNames
+     *
+     * @return array
+     *
+     * @throws \RuntimeException
+     */
+    protected function mapClassnamesToClassMetadata(array $classNames)
+    {
+        if ($this->_em === null) {
+            throw new \RuntimeException("EntityManager not set, you have to call parent::setUp() before invoking this method.");
+        }
+
+        $classnamesToClassMetadata = array();
+        foreach ($classNames as $className) {
+            $classnamesToClassMetadata[$className] = $this->_em->getClassMetadata($className);
+        }
+        return $classnamesToClassMetadata;
+    }
+
+    /**
      * @param array $classNames
      *
      * @return void
@@ -545,16 +560,17 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw new \RuntimeException("EntityManager not set, you have to call parent::setUp() before invoking this method.");
         }
 
-        $classes = array();
-        foreach ($classNames as $className) {
-            if ( ! isset(static::$_entityTablesCreated[$className])) {
+        $classnamesToClassMetadata = $this->mapClassnamesToClassMetadata($classNames);
+        foreach ($classnamesToClassMetadata as $className => $classMetadata) {
+            if (isset(static::$_entityTablesCreated[$className])) {
+                unset($classnamesToClassMetadata[$className]);
+            } else {
                 static::$_entityTablesCreated[$className] = true;
-                $classes[] = $this->_em->getClassMetadata($className);
             }
         }
 
-        if ($classes) {
-            $this->_schemaTool->createSchema($classes);
+        if ($classnamesToClassMetadata) {
+            $this->_schemaTool->createSchema(array_values($classnamesToClassMetadata));
         }
     }
 
@@ -591,20 +607,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->_schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
         }
 
-        $classes = array();
-
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if ( ! isset(static::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
-                foreach (static::$_modelSets[$setName] as $className) {
-                    $classes[] = $this->_em->getClassMetadata($className);
-                }
-
-                static::$_tablesCreated[$setName] = true;
-            }
-        }
-
-        if ($classes) {
-            $this->_schemaTool->createSchema($classes);
+            $this->setUpEntitySchema(static::$_modelSets[$setName]);
         }
 
         $this->_sqlLoggerStack->enabled = true;
