@@ -603,13 +603,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Completes the ID generator mapping. If "auto" is specified we choose the generator
      * most appropriate for the targeted database platform.
      *
-     * @param ClassMetadataInfo $class
+     * @param ClassMetadata $class
      *
      * @return void
      *
      * @throws ORMException
      */
-    private function completeIdGeneratorMapping(ClassMetadataInfo $class)
+    private function completeIdGeneratorMapping(ClassMetadata $class)
     {
         $idGenType = $class->generatorType;
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {

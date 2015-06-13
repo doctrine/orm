@@ -1,12 +1,12 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'name' => 'cms_users',
   ));
-$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
 $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
@@ -39,7 +39,7 @@ $metadata->mapField(array(
 $mapping = array('fieldName' => 'version', 'type' => 'integer');
 $metadata->setVersionMapping($mapping);
 $metadata->mapField($mapping);
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 $metadata->mapOneToOne(array(
    'fieldName' => 'address',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',

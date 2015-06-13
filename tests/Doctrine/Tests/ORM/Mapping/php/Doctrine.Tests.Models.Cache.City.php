@@ -1,14 +1,14 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array('name' => 'cache_city'));
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY);
-$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->enableCache(array(
-    'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY
+    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
 ));
 
 $metadata->mapField(array(
@@ -34,7 +34,7 @@ $metadata->mapOneToOne(array(
    ))
 ));
 $metadata->enableAssociationCache('state', array(
-    'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY
+    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
 ));
 
 $metadata->mapManyToMany(array(
@@ -50,5 +50,5 @@ $metadata->mapOneToMany(array(
    'orderBy' => array('name' => 'ASC',),
 ));
 $metadata->enableAssociationCache('attractions', array(
-    'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY
+    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
 ));

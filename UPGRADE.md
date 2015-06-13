@@ -292,7 +292,7 @@ There have been some changes to the annotation handling in Common 2.2 again, tha
 from 2.0 have to configure the annotation driver if they don't use `Configuration::newDefaultAnnotationDriver()`:
 
     // Register the ORM Annotations in the AnnotationRegistry
-    AnnotationRegistry::registerFile('path/to/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+    AnnotationRegistry::registerFile('path/to/Doctrine/ORM/Annotation/DoctrineAnnotations.php');
 
     $reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
     $reader->addNamespace('Doctrine\ORM\Mapping');
@@ -345,7 +345,7 @@ The EntityRepository now has an interface Doctrine\Common\Persistence\ObjectRepo
 The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory the operation of the new reader should be backwards compatible, but it has to be setup differently to work that way:
 
     // new call to the AnnotationRegistry
-    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Doctrine/ORM/Annotation/DoctrineAnnotations.php');
 
     $reader = new \Doctrine\Common\Annotations\AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
