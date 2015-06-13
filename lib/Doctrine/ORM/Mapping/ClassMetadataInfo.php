@@ -1598,7 +1598,17 @@ class ClassMetadataInfo implements ClassMetadata
                 if ( ! $this->table) {
                     throw new RuntimeException("ClassMetadataInfo::setTable() has to be called before defining a one to one relationship.");
                 }
+                /*
+                 * Mapping via the field name causes issues if unrelated tables use the same fieldName in their independent mappings
+                 * Note: The hack below of prepending the table name probably exceeds length constraints of some databases
+                 * e.g. Oracle.
+                 * Naming should really be delegated to the NamingStrategy but there is no API in the interface to support this yet.
+
                 $this->table['uniqueConstraints'][$mapping['fieldName']."_uniq"] = array(
+                    'columns' => $uniqueConstraintColumns
+                );
+                 */
+                $this->table['uniqueConstraints'][$this->table['name'].$mapping['fieldName']."_uniq"] = array(
                     'columns' => $uniqueConstraintColumns
                 );
             }
