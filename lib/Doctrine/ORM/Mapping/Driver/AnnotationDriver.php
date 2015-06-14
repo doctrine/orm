@@ -90,7 +90,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
-        // Evaluate Table annotation
+        // Evaluate Table annotatio
         if (isset($classAnnotations['Doctrine\ORM\Annotation\Table'])) {
             $tableAnnot   = $classAnnotations['Doctrine\ORM\Annotation\Table'];
             $primaryTable = array(

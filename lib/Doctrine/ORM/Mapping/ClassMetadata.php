@@ -741,13 +741,11 @@ class ClassMetadata implements PersistenceClassMetadata
      * Populates the entity identifier of an entity.
      *
      * @param object $entity
-     * @param mixed  $id
+     * @param array  $id
      *
      * @return void
-     *
-     * @todo Rename to assignIdentifier()
      */
-    public function setIdentifierValues($entity, array $id)
+    public function assignIdentifier($entity, array $id)
     {
         foreach ($id as $idField => $idValue) {
             $this->reflFields[$idField]->setValue($entity, $idValue);
