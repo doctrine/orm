@@ -398,22 +398,10 @@ class ClassMetadata implements PersistenceClassMetadata
     /**
      * READ-ONLY: An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
-     * This is the reverse lookup map of $_columnNames.
      *
      * @var array
      */
     public $fieldNames = array();
-
-    /**
-     * READ-ONLY: A map of field names to column names. Keys are field names and values column names.
-     * Used to look up column names from field names.
-     * This is the reverse lookup map of $_fieldNames.
-     *
-     * @var array
-     *
-     * @todo We could get rid of this array by just using $fieldMappings[$fieldName]['columnName'].
-     */
-    public $columnNames = array();
 
     /**
      * READ-ONLY: The discriminator value of this class.
@@ -809,7 +797,6 @@ class ClassMetadata implements PersistenceClassMetadata
         // This metadata is always serialized/cached.
         $serialized = array(
             'associationMappings',
-            'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'fieldMappings',
             'fieldNames',
             'embeddedClasses',
@@ -1196,8 +1183,9 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function getColumnName($fieldName)
     {
-        return isset($this->columnNames[$fieldName]) ?
-            $this->columnNames[$fieldName] : $fieldName;
+        return isset($this->fieldMappings[$fieldName])
+            ? $this->fieldMappings[$fieldName]['columnName']
+            : $fieldName;
     }
 
     /**
@@ -1215,6 +1203,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
+
         return $this->fieldMappings[$fieldName];
     }
 
@@ -1381,7 +1370,6 @@ class ClassMetadata implements PersistenceClassMetadata
             $mapping['quoted']      = true;
         }
 
-        $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
         if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $mapping['columnName'])) {
             throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
         }
@@ -1830,13 +1818,15 @@ class ClassMetadata implements PersistenceClassMetadata
     {
         if ($fieldNames === null) {
             return array_keys($this->fieldNames);
-        } else {
-            $columnNames = array();
-            foreach ($fieldNames as $fieldName) {
-                $columnNames[] = $this->getColumnName($fieldName);
-            }
-            return $columnNames;
         }
+
+        $columnNames = array();
+
+        foreach ($fieldNames as $fieldName) {
+            $columnNames[] = $this->getColumnName($fieldName);
+        }
+
+        return $columnNames;
     }
 
     /**
@@ -2172,7 +2162,7 @@ class ClassMetadata implements PersistenceClassMetadata
 
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
-        unset($this->columnNames[$mapping['fieldName']]);
+
         $this->_validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
@@ -2341,7 +2331,6 @@ class ClassMetadata implements PersistenceClassMetadata
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        $this->columnNames[$fieldMapping['fieldName']] = $fieldMapping['columnName'];
         $this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
     }
 

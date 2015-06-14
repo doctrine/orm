@@ -623,8 +623,11 @@ class BasicEntityPersister implements EntityPersister
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
-                $columnName = $this->class->columnNames[$field];
-                $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
+                $fieldMapping = $this->class->fieldMappings[$field];
+                $columnName   = $fieldMapping['columnName'];
+
+                $this->columnTypes[$columnName] = $fieldMapping['type'];
+
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
                 continue;
@@ -1462,15 +1465,15 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $root           = $alias == 'r' ? '' : $alias ;
-        $tableAlias     = $this->getSQLTableAlias($class->name, $root);
-        $columnName     = $this->quoteStrategy->getColumnName($field, $class, $this->platform);
-        $sql            = $tableAlias . '.' . $columnName;
-        $columnAlias    = $this->getSQLColumnAlias($class->columnNames[$field]);
+        $root         = $alias == 'r' ? '' : $alias ;
+        $tableAlias   = $this->getSQLTableAlias($class->name, $root);
+        $fieldMapping = $class->fieldMappings[$field];
+        $sql          = sprintf('%s.%s', $tableAlias, $this->quoteStrategy->getColumnName($field, $class, $this->platform));
+        $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
 
-        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
+        if (isset($fieldMapping['requireSQLConversion'])) {
             $type   = Type::getType($class->getTypeOfField($field));
             $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
         }
@@ -1647,7 +1650,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
-        if (isset($this->class->columnNames[$field])) {
+        if (isset($this->class->fieldMappings[$field])) {
             $className = (isset($this->class->fieldMappings[$field]['inherited']))
                 ? $this->class->fieldMappings[$field]['inherited']
                 : $this->class->name;
