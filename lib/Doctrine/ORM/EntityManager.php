@@ -208,6 +208,8 @@ use Doctrine\Common\Util\ClassUtils;
     public function beginTransaction()
     {
         $this->conn->beginTransaction();
+
+        return $this;
     }
 
     /**
@@ -242,6 +244,8 @@ use Doctrine\Common\Util\ClassUtils;
 
             throw $e;
         }
+
+        return $this;
     }
 
     /**
@@ -250,6 +254,8 @@ use Doctrine\Common\Util\ClassUtils;
     public function commit()
     {
         $this->conn->commit();
+
+        return $this;
     }
 
     /**
@@ -258,6 +264,8 @@ use Doctrine\Common\Util\ClassUtils;
     public function rollback()
     {
         $this->conn->rollback();
+
+        return $this;
     }
 
     /**
@@ -344,7 +352,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param null|object|array $entity
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
@@ -354,6 +362,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->errorIfClosed();
 
         $this->unitOfWork->commit($entity);
+
+        return $this;
     }
 
     /**
@@ -536,11 +546,13 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param string|null $entityName if given, only entities of this type will get detached
      *
-     * @return void
+     * @return EntityManager
      */
     public function clear($entityName = null)
     {
         $this->unitOfWork->clear($entityName);
+
+        return $this;
     }
 
     /**
@@ -551,6 +563,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->clear();
 
         $this->closed = true;
+
+        return $this;
     }
 
     /**
@@ -564,7 +578,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws ORMInvalidArgumentException
      */
@@ -577,6 +591,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->errorIfClosed();
 
         $this->unitOfWork->persist($entity);
+
+        return $this;
     }
 
     /**
@@ -587,7 +603,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The entity instance to remove.
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws ORMInvalidArgumentException
      */
@@ -600,6 +616,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->errorIfClosed();
 
         $this->unitOfWork->remove($entity);
+
+        return $this;
     }
 
     /**
@@ -608,7 +626,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The entity to refresh.
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws ORMInvalidArgumentException
      */
@@ -621,6 +639,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->errorIfClosed();
 
         $this->unitOfWork->refresh($entity);
+
+        return $this;
     }
 
     /**
@@ -632,7 +652,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The entity to detach.
      *
-     * @return void
+     * @return EntityManager
      *
      * @throws ORMInvalidArgumentException
      */
@@ -643,6 +663,8 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         $this->unitOfWork->detach($entity);
+
+        return $this;
     }
 
     /**
@@ -684,6 +706,8 @@ use Doctrine\Common\Util\ClassUtils;
     public function lock($entity, $lockMode, $lockVersion = null)
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
+
+        return $this;
     }
 
     /**
@@ -810,6 +834,8 @@ use Doctrine\Common\Util\ClassUtils;
     public function initializeObject($obj)
     {
         $this->unitOfWork->initializeObject($obj);
+
+        return $this;
     }
 
     /**
