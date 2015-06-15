@@ -213,15 +213,6 @@ class ClassMetadata implements PersistenceClassMetadata
     public $name;
 
     /**
-     * READ-ONLY: The namespace the entity class is contained in.
-     *
-     * @var string
-     *
-     * @todo Not really needed. Usage could be localized.
-     */
-    public $namespace;
-
-    /**
      * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
      * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
      * as {@link $entityName}.
@@ -803,7 +794,6 @@ class ClassMetadata implements PersistenceClassMetadata
             'identifier',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
-            'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
@@ -962,7 +952,6 @@ class ClassMetadata implements PersistenceClassMetadata
     public function initializeReflection($reflService)
     {
         $this->reflClass = $reflService->getClass($this->name);
-        $this->namespace = $reflService->getClassNamespace($this->name);
 
         if ($this->reflClass) {
             $this->name = $this->rootEntityName = $this->reflClass->getName();
@@ -1349,7 +1338,7 @@ class ClassMetadata implements PersistenceClassMetadata
      *
      * @throws MappingException
      */
-    protected function _validateAndCompleteFieldMapping(array &$mapping)
+    protected function validateAndCompleteFieldMapping(array &$mapping)
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
@@ -1410,7 +1399,7 @@ class ClassMetadata implements PersistenceClassMetadata
      *
      * @throws MappingException If something is wrong with the mapping.
      */
-    protected function _validateAndCompleteAssociationMapping(array $mapping)
+    protected function validateAndCompleteAssociationMapping(array $mapping)
     {
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
@@ -1528,9 +1517,9 @@ class ClassMetadata implements PersistenceClassMetadata
      * @throws RuntimeException
      * @throws MappingException
      */
-    protected function _validateAndCompleteOneToOneMapping(array $mapping)
+    protected function validateAndCompleteOneToOneMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
@@ -1540,9 +1529,9 @@ class ClassMetadata implements PersistenceClassMetadata
             if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
                 // Apply default join column
                 $mapping['joinColumns'] = array(array(
-                                                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
-                                                    'referencedColumnName' => $this->namingStrategy->referenceColumnName()
-                                                ));
+                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
+                    'referencedColumnName' => $this->namingStrategy->referenceColumnName()
+                ));
             }
 
             $uniqueConstraintColumns = array();
@@ -1616,9 +1605,9 @@ class ClassMetadata implements PersistenceClassMetadata
      * @throws MappingException
      * @throws InvalidArgumentException
      */
-    protected function _validateAndCompleteOneToManyMapping(array $mapping)
+    protected function validateAndCompleteOneToManyMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         // OneToMany-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
@@ -1646,9 +1635,9 @@ class ClassMetadata implements PersistenceClassMetadata
      *
      * @throws \InvalidArgumentException
      */
-    protected function _validateAndCompleteManyToManyMapping(array $mapping)
+    protected function validateAndCompleteManyToManyMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
             if ( ! isset($mapping['joinTable']['name'])) {
@@ -2070,7 +2059,7 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function setInheritanceType($type)
     {
-        if ( ! $this->_isInheritanceType($type)) {
+        if ( ! $this->isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($this->name, $type);
         }
         $this->inheritanceType = $type;
@@ -2110,16 +2099,16 @@ class ClassMetadata implements PersistenceClassMetadata
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::ONE_TO_MANY:
-                $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
                 break;
             case self::MANY_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::MANY_TO_MANY:
-                $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+                $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
                 break;
         }
 
@@ -2163,7 +2152,7 @@ class ClassMetadata implements PersistenceClassMetadata
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
 
-        $this->_validateAndCompleteFieldMapping($overrideMapping);
+        $this->validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
     }
@@ -2275,7 +2264,7 @@ class ClassMetadata implements PersistenceClassMetadata
      *
      * @return boolean TRUE if the given type identifies an inheritance type, FALSe otherwise.
      */
-    private function _isInheritanceType($type)
+    private function isInheritanceType($type)
     {
         return $type == self::INHERITANCE_TYPE_NONE ||
         $type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
@@ -2294,7 +2283,7 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function mapField(array $mapping)
     {
-        $this->_validateAndCompleteFieldMapping($mapping);
+        $this->validateAndCompleteFieldMapping($mapping);
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
@@ -2483,8 +2472,10 @@ class ClassMetadata implements PersistenceClassMetadata
     public function mapOneToOne(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_ONE;
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+
+        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
+
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2497,8 +2488,10 @@ class ClassMetadata implements PersistenceClassMetadata
     public function mapOneToMany(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_MANY;
-        $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+
+        $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
+
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2511,9 +2504,11 @@ class ClassMetadata implements PersistenceClassMetadata
     public function mapManyToOne(array $mapping)
     {
         $mapping['type'] = self::MANY_TO_ONE;
-        // A many-to-one mapping is essentially a one-one backreference
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+
+        // A many-to-one mapping is essentially a one-one back reference
+        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
+
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2526,8 +2521,10 @@ class ClassMetadata implements PersistenceClassMetadata
     public function mapManyToMany(array $mapping)
     {
         $mapping['type'] = self::MANY_TO_MANY;
-        $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+
+        $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
+
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2539,7 +2536,7 @@ class ClassMetadata implements PersistenceClassMetadata
      *
      * @throws MappingException
      */
-    protected function _storeAssociationMapping(array $assocMapping)
+    protected function storeAssociationMapping(array $assocMapping)
     {
         $sourceFieldName = $assocMapping['fieldName'];
 
@@ -3165,12 +3162,14 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function fullyQualifiedClassName($className)
     {
-        if (empty($className)) {
+        if (empty($className) || ! $this->reflClass) {
             return $className;
         }
 
-        if ($className !== null && strpos($className, '\\') === false && strlen($this->namespace) > 0) {
-            return $this->namespace . '\\' . $className;
+        $namespace = $this->reflClass->getNamespaceName();
+
+        if ($className !== null && strpos($className, '\\') === false && strlen($namespace) > 0) {
+            return $namespace . '\\' . $className;
         }
 
         return $className;
