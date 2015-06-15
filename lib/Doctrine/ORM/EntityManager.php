@@ -244,8 +244,6 @@ use Doctrine\Common\Util\ClassUtils;
 
             throw $e;
         }
-
-        return $this;
     }
 
     /**
