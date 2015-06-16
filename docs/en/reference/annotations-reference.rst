@@ -357,11 +357,12 @@ conjunction with @Id.
 If this annotation is not specified with @Id the NONE strategy is
 used as default.
 
-Required attributes:
+Optional attributes:
 
 
 -  **strategy**: Set the name of the identifier generation strategy.
    Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
+   If not specified, default value is AUTO.
 
 Example:
 
