@@ -470,6 +470,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         parent::set($key, $value);
 
         $this->changed();
+
+        if ($this->em) {
+            $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
+        }
     }
 
     /**
@@ -480,6 +484,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $this->collection->add($value);
 
         $this->changed();
+
+        if ($this->em) {
+            $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
+        }
 
         return true;
     }
