@@ -64,6 +64,7 @@ class Parser
         'date_diff' => 'Doctrine\ORM\Query\AST\Functions\DateDiffFunction',
         'bit_and'   => 'Doctrine\ORM\Query\AST\Functions\BitAndFunction',
         'bit_or'    => 'Doctrine\ORM\Query\AST\Functions\BitOrFunction',
+        'random'    => 'Doctrine\ORM\Query\AST\Functions\RandomFunction',
     );
 
     /**
