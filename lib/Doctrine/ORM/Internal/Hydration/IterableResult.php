@@ -74,7 +74,7 @@ class IterableResult implements \Iterator
     /**
      * Gets the next set of results.
      *
-     * @return array
+     * @return array|false
      */
     public function next()
     {
