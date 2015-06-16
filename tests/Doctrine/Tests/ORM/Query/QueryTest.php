@@ -197,4 +197,15 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $q2 = clone $query;
         $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
+
+    /**
+     * @group DDC-3741
+     */
+    public function testSetHydrationCacheProfileNull()
+    {
+        $query = $this->_em->createQuery();
+        $query->setHydrationCacheProfile(null);
+
+        $this->assertNull($query->getHydrationCacheProfile());
+    }
 }
