@@ -2518,6 +2518,21 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
+     * Cancels a previously scheduled orphan removal.
+     *
+     * @ignore
+     *
+     * @param object $entity
+     *
+     * @return void
+     */
+    public function cancelOrphanRemoval($entity)
+    {
+        unset($this->orphanRemovals[spl_object_hash($entity)]);
+    }
+
+    /**
+     * INTERNAL:
      * Schedules a complete collection for removal when this UnitOfWork commits.
      *
      * @param PersistentCollection $coll
