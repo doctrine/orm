@@ -1280,35 +1280,31 @@ class SqlWalker implements TreeWalker
                     throw QueryException::invalidPathExpression($expr);
                 }
 
-                $fieldName = $expr->field;
-                $dqlAlias  = $expr->identificationVariable;
-                $qComp     = $this->queryComponents[$dqlAlias];
-                $class     = $qComp['metadata'];
-
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: $fieldName;
-                $tableName   = ($class->isInheritanceTypeJoined())
+                $fieldName    = $expr->field;
+                $dqlAlias     = $expr->identificationVariable;
+                $qComp        = $this->queryComponents[$dqlAlias];
+                $class        = $qComp['metadata'];
+                $fieldMapping = $class->fieldMappings[$fieldName];
+                $type         = Type::getType($fieldMapping['type']);
+                $resultAlias  = $selectExpression->fieldIdentificationVariable ?: $fieldName;
+                $tableName    = ($class->isInheritanceTypeJoined())
                     ? $this->em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName)
                     : $class->getTableName();
 
-                $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
-                $columnName    = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
-                $columnAlias   = $this->getSQLColumnAlias($class->fieldMappings[$fieldName]['columnName']);
+                $col = sprintf(
+                    '%s.%s',
+                    $this->getSQLTableAlias($tableName, $dqlAlias),
+                    $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
+                );
 
-                $col = $sqlTableAlias . '.' . $columnName;
+                $columnAlias = $this->getSQLColumnAlias($fieldMapping['columnName']);
 
-                $fieldType = $class->getTypeOfField($fieldName);
-
-                if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                    $type = Type::getType($fieldType);
-                    $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
-                }
-
-                $sql .= $col . ' AS ' . $columnAlias;
+                $sql .= $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform()) . ' AS ' . $columnAlias;
 
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldType);
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldMapping['type']);
                     $this->scalarFields[$dqlAlias][$fieldName] = $columnAlias;
                 }
                 break;
@@ -1385,22 +1381,20 @@ class SqlWalker implements TreeWalker
                         continue;
                     }
 
+                    $type      = Type::getType($mapping['type']);
                     $tableName = (isset($mapping['inherited']))
                         ? $this->em->getClassMetadata($mapping['inherited'])->getTableName()
                         : $class->getTableName();
 
-                    $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
-                    $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
-                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                    $col = sprintf(
+                        '%s.%s',
+                        $this->getSQLTableAlias($tableName, $dqlAlias),
+                        $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
+                    );
 
-                    $col = $sqlTableAlias . '.' . $quotedColumnName;
+                    $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
 
-                    if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                        $type = Type::getType($class->getTypeOfField($fieldName));
-                        $col = $type->convertToPHPValueSQL($col, $this->platform);
-                    }
-
-                    $sqlParts[] = $col . ' AS '. $columnAlias;
+                    $sqlParts[] = $type->convertToPHPValueSQL($col, $this->platform) . ' AS '. $columnAlias;
 
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
@@ -1421,17 +1415,16 @@ class SqlWalker implements TreeWalker
                                 continue;
                             }
 
-                            $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
-                            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
+                            $type = Type::getType($mapping['type']);
+                            $col  = sprintf(
+                                '%s.%s',
+                                $sqlTableAlias,
+                                $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform)
+                            );
 
-                            $col = $sqlTableAlias . '.' . $quotedColumnName;
+                            $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
 
-                            if (isset($subClass->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                                $type = Type::getType($subClass->getTypeOfField($fieldName));
-                                $col = $type->convertToPHPValueSQL($col, $this->platform);
-                            }
-
-                            $sqlParts[] = $col . ' AS ' . $columnAlias;
+                            $sqlParts[] = $type->convertToPHPValueSQL($col, $this->platform) . ' AS ' . $columnAlias;
 
                             $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 

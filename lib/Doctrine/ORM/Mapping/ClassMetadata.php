@@ -1384,8 +1384,6 @@ class ClassMetadata implements PersistenceClassMetadata
             if (isset($mapping['id']) && $mapping['id'] === true) {
                 throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
             }
-
-            $mapping['requireSQLConversion'] = true;
         }
     }
 
