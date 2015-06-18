@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
 use Doctrine\Instantiator\Instantiator;
+use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use RuntimeException;
 use Doctrine\DBAL\Types\Type;
@@ -352,8 +353,8 @@ class ClassMetadata implements PersistenceClassMetadata
      * - <b>fieldName</b> (string)
      * The name of the field in the Entity.
      *
-     * - <b>type</b> (string)
-     * The type name of the mapped field. Can be one of Doctrine's mapping types
+     * - <b>type</b> (Type)
+     * The type of the mapped field. Can be one of Doctrine's mapping types
      * or a custom mapping type.
      *
      * - <b>columnName</b> (string, optional)
@@ -1236,8 +1237,9 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function getFieldName($columnName)
     {
-        return isset($this->fieldNames[$columnName]) ?
-            $this->fieldNames[$columnName] : $columnName;
+        return isset($this->fieldNames[$columnName])
+            ? $this->fieldNames[$columnName]
+            : $columnName;
     }
 
     /**
@@ -1256,6 +1258,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! isset($this->namedQueries[$queryName])) {
             throw MappingException::queryNotFound($this->name, $queryName);
         }
+
         return $this->namedQueries[$queryName]['dql'];
     }
 
@@ -1344,6 +1347,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
             throw MappingException::missingFieldName($this->name);
         }
+
         if ( ! isset($mapping['type'])) {
             // Default to string
             $mapping['type'] = 'string';
@@ -1374,6 +1378,7 @@ class ClassMetadata implements PersistenceClassMetadata
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
                 $this->identifier[] = $mapping['fieldName'];
             }
+
             // Check for composite key
             if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
@@ -1402,9 +1407,11 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
         }
+
         if ( ! isset($mapping['inversedBy'])) {
             $mapping['inversedBy'] = null;
         }
+
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
         // unset optional indexBy attribute if its empty
@@ -1444,6 +1451,7 @@ class ClassMetadata implements PersistenceClassMetadata
                 $this->identifier[] = $mapping['fieldName'];
                 $this->containsForeignIdentifier = true;
             }
+
             // Check for composite key
             if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
@@ -1455,6 +1463,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
             throw MappingException::missingFieldName($this->name);
         }
+
         if ( ! isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
@@ -1526,13 +1535,16 @@ class ClassMetadata implements PersistenceClassMetadata
         if ($mapping['isOwningSide']) {
             if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
                 // Apply default join column
-                $mapping['joinColumns'] = array(array(
-                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
-                    'referencedColumnName' => $this->namingStrategy->referenceColumnName()
-                ));
+                $mapping['joinColumns'] = array(
+                    array(
+                        'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
+                        'referencedColumnName' => $this->namingStrategy->referenceColumnName()
+                    )
+                );
             }
 
             $uniqueConstraintColumns = array();
+
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
                     if (count($mapping['joinColumns']) == 1) {
@@ -1646,16 +1658,22 @@ class ClassMetadata implements PersistenceClassMetadata
                 && (! (isset($mapping['joinTable']['joinColumns']) || isset($mapping['joinTable']['inverseJoinColumns'])));
 
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
-                $mapping['joinTable']['joinColumns'] = array(array(
-                                                                 'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
-                                                                 'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                                                                 'onDelete' => 'CASCADE'));
+                $mapping['joinTable']['joinColumns'] = array(
+                    array(
+                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
+                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'onDelete' => 'CASCADE'
+                    )
+                );
             }
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
-                $mapping['joinTable']['inverseJoinColumns'] = array(array(
-                                                                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $selfReferencingEntityWithoutJoinColumns ? 'target' : null),
-                                                                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                                                                        'onDelete' => 'CASCADE'));
+                $mapping['joinTable']['inverseJoinColumns'] = array(
+                    array(
+                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $selfReferencingEntityWithoutJoinColumns ? 'target' : null),
+                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'onDelete' => 'CASCADE'
+                    )
+                );
             }
 
             $mapping['joinTableColumns'] = array();
@@ -1747,6 +1765,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
+
         return $this->identifier[0];
     }
 
@@ -1962,26 +1981,14 @@ class ClassMetadata implements PersistenceClassMetadata
      * @param string $fieldName
      *
      * @return \Doctrine\DBAL\Types\Type|string|null
+     *
+     * @deprecated use PersisterHelper instead. It is here for Doctrine\Common\Persitence compatibility
      */
     public function getTypeOfField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]) ?
-            $this->fieldMappings[$fieldName]['type'] : null;
-    }
-
-    /**
-     * Gets the type of a column.
-     *
-     * @param string $columnName
-     *
-     * @return \Doctrine\DBAL\Types\Type|string|null
-     *
-     * @deprecated this method is bogous and unreliable, since it cannot resolve the type of a column that is
-     *             derived by a referenced field on a different entity.
-     */
-    public function getTypeOfColumn($columnName)
-    {
-        return $this->getTypeOfField($this->getFieldName($columnName));
+        return isset($this->fieldMappings[$fieldName])
+            ? $this->fieldMappings[$fieldName]['type']
+            : null;
     }
 
     /**
@@ -2351,7 +2358,7 @@ class ClassMetadata implements PersistenceClassMetadata
         $this->namedQueries[$name] = array(
             'name'  => $name,
             'query' => $query,
-            'dql'   => $dql
+            'dql'   => $dql,
         );
     }
 
@@ -2641,7 +2648,7 @@ class ClassMetadata implements PersistenceClassMetadata
         $class    = $this->fullyQualifiedClassName($class);
         $listener = array(
             'class'  => $class,
-            'method' => $method
+            'method' => $method,
         );
 
         if ( ! class_exists($class)) {
@@ -2792,8 +2799,8 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function isSingleValuedAssociation($fieldName)
     {
-        return isset($this->associationMappings[$fieldName]) &&
-        ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+        return isset($this->associationMappings[$fieldName])
+            && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
     }
 
     /**
@@ -2801,8 +2808,8 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function isCollectionValuedAssociation($fieldName)
     {
-        return isset($this->associationMappings[$fieldName]) &&
-        ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+        return isset($this->associationMappings[$fieldName])
+            && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
     }
 
     /**
@@ -2814,11 +2821,9 @@ class ClassMetadata implements PersistenceClassMetadata
      */
     public function isAssociationWithSingleJoinColumn($fieldName)
     {
-        return (
-            isset($this->associationMappings[$fieldName]) &&
-            isset($this->associationMappings[$fieldName]['joinColumns'][0]) &&
-            !isset($this->associationMappings[$fieldName]['joinColumns'][1])
-        );
+        return isset($this->associationMappings[$fieldName])
+            && isset($this->associationMappings[$fieldName]['joinColumns'][0])
+            && ! isset($this->associationMappings[$fieldName]['joinColumns'][1]);
     }
 
     /**
@@ -2835,6 +2840,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
+
         return $this->associationMappings[$fieldName]['joinColumns'][0]['name'];
     }
 
@@ -2852,6 +2858,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
+
         return $this->associationMappings[$fieldName]['joinColumns'][0]['referencedColumnName'];
     }
 
@@ -2921,6 +2928,8 @@ class ClassMetadata implements PersistenceClassMetadata
      * </code>
      *
      * @param array $definition
+     *
+     * @throws MappingException
      *
      * @return void
      */
@@ -3146,11 +3155,13 @@ class ClassMetadata implements PersistenceClassMetadata
     public function getAssociationsByTargetClass($targetClass)
     {
         $relations = array();
+
         foreach ($this->associationMappings as $mapping) {
             if ($mapping['targetEntity'] == $targetClass) {
                 $relations[$mapping['fieldName']] = $mapping;
             }
         }
+
         return $relations;
     }
 

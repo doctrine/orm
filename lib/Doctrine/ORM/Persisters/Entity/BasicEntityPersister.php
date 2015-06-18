@@ -1593,7 +1593,7 @@ class BasicEntityPersister implements EntityPersister
             $placeholder = '?';
 
             if (isset($this->class->fieldMappings[$field])) {
-                $type        = Type::getType($this->class->getTypeOfField($field));
+                $type        = Type::getType($this->class->fieldMappings[$field]['type']);
                 $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
@@ -1874,7 +1874,7 @@ class BasicEntityPersister implements EntityPersister
 
         switch (true) {
             case (isset($class->fieldMappings[$field])):
-                $types = array_merge($types, PersisterHelper::getTypeOfField($field, $class, $this->em));
+                $types = array_merge($types, array($class->fieldMappings[$field]['type']));
                 break;
 
             case (isset($class->associationMappings[$field])):

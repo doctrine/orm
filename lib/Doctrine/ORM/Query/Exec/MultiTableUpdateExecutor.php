@@ -21,9 +21,9 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -111,8 +111,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
 
-                if (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited']) ||
-                    isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited'])) {
+                if ((isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited'])) ||
+                    (isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited']))) {
                     $newValue = $updateItem->newValue;
 
                     if ( ! $affected) {
@@ -148,7 +148,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = array(
                 'notnull' => true,
-                'type' => Type::getType($rootClass->getTypeOfColumn($idColumnName))
+                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             );
         }
 
