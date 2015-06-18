@@ -494,4 +494,42 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
         $this->assertEquals(1, count($users));
     }
+
+    public function testVersioning()
+    {
+        $raffle = new CompanyRaffle();
+        $raffle->setData("foo");
+
+
+        $this->_em->persist($raffle);
+
+        $this->_em->flush();
+
+        $this->assertEquals(1,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
+
+        /*
+         * Ensure no changes when nothing at all is needed
+         */
+        $this->_em->flush();
+        $this->assertEquals(1,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
+
+        /*
+         * Check that real changes come through
+         */
+        $raffle->setData("bar");
+        $this->_em->flush();
+        $this->assertEquals(2,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
+
+        /*
+         * Check that bump works
+         */
+        $raffle->setVersionBump(true);
+        $this->_em->flush();
+        $this->assertEquals(3,$raffle->getVersion());
+        $this->assertFalse($raffle->getVersionBump());
+
+    }
 }

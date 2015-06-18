@@ -235,16 +235,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $updateData = $this->prepareUpdateData($entity);
 
-        if ( ! $updateData) {
-            return;
-        }
-
         if (($isVersioned = $this->class->isVersioned) === false) {
             return;
         }
 
         $versionedClass  = $this->getVersionedClassMetadata();
         $versionedTable  = $versionedClass->getTableName();
+
+        if ( !$updateData && (!$isVersioned || !$this->em->getUnitOfWork()->isEntityVersionBumped($entity)) ) {
+            return;
+        }
 
         foreach ($updateData as $tableName => $data) {
             $tableName = $this->quotedTableMap[$tableName];
@@ -583,6 +583,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $value = $this->fetchVersionValue($this->getVersionedClassMetadata(), $id);
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
+
+        // If a force-increment flag is present, ensure it is reset to false
+        if(isset($this->class->reflVersionUpdateProperty)){
+            $this->class->reflVersionUpdateProperty->setValue($entity, false);
+        }
     }
 
     /**

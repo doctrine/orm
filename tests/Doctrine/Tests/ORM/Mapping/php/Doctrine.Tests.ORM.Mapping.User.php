@@ -38,6 +38,7 @@ $metadata->mapField(array(
   ));
 $mapping = array('fieldName' => 'version', 'type' => 'integer');
 $metadata->setVersionMapping($mapping);
+$metadata->setVersionUpdateProperty("bflag");
 $metadata->mapField($mapping);
 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapOneToOne(array(

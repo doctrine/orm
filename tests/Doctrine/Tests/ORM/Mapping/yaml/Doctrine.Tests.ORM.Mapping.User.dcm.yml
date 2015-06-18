@@ -35,6 +35,8 @@ Doctrine\Tests\ORM\Mapping\User:
     version:
       type: integer
       version: true
+  specialProperties:
+    bflag: versionBump
   oneToOne:
     address:
       targetEntity: Address

@@ -176,6 +176,14 @@ class UnitOfWork implements PropertyChangedListener
     private $extraUpdates = array();
 
     /**
+     * Versioned entities whose versions must be updated even if no other,
+     * "real" updates are necessary. Applies only to managed entities.
+     *
+     * @var array
+     */
+    private $entityUpdateVersions = array();
+
+    /**
      * A list of all pending entity deletions.
      *
      * @var array
@@ -349,6 +357,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
                 $this->entityUpdates ||
+                $this->entityUpdateVersions ||
                 $this->collectionUpdates ||
                 $this->collectionDeletions ||
                 $this->orphanRemovals)) {
@@ -382,6 +391,12 @@ class UnitOfWork implements PropertyChangedListener
             if ($this->entityUpdates) {
                 foreach ($commitOrder as $class) {
                     $this->executeUpdates($class);
+                }
+            }
+
+            if ($this->entityUpdateVersions) {
+                foreach ($commitOrder as $class) {
+                    $this->executeUpdateVersions($class);
                 }
             }
 
@@ -431,6 +446,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityUpdates =
         $this->entityDeletions =
         $this->extraUpdates =
+        $this->entityUpdateVersions =
         $this->entityChangeSets =
         $this->collectionUpdates =
         $this->collectionDeletions =
@@ -535,6 +551,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Checks if the entity is scheduled for a forced version increment
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    public function isEntityVersionBumped($entity){
+        $oid = spl_object_hash($entity);
+        return array_key_exists($oid,$this->entityUpdateVersions);
+    }
+
+    /**
      * Computes the changes that happened to a single entity.
      *
      * Modifies/populates the following properties:
@@ -558,6 +586,8 @@ class UnitOfWork implements PropertyChangedListener
      * {@link _collectionDeletions}
      * If a PersistentCollection has been de-referenced in a fully MANAGED entity,
      * then this collection is marked for deletion.
+     *
+     * {@link _entityUpdateVersions}
      *
      * @ignore
      *
@@ -728,6 +758,10 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityChangeSets[$oid]   = $changeSet;
                 $this->originalEntityData[$oid] = $actualData;
                 $this->entityUpdates[$oid]      = $entity;
+            }
+
+            if($class->isVersioned && isset($class->reflVersionUpdateProperty) && ((bool)$class->reflVersionUpdateProperty->getValue($entity))){
+                $this->entityUpdateVersions[$oid] = $entity;
             }
         }
 
@@ -1118,6 +1152,55 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Updates the versions for entities who had the force-update flag set,
+     * excluding those which should already be getting updated due to normal
+     * changes.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     *
+     * @return void
+     */
+    private function executeUpdateVersions($class)
+    {
+        $className          = $class->name;
+        $persister          = $this->getEntityPersister($className);
+        $preUpdateInvoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
+        $postUpdateInvoke   = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
+
+        foreach ($this->entityUpdateVersions as $oid => $entity) {
+
+            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+                continue;
+            }
+
+            if(!$class->reflVersionUpdateProperty->getValue($entity)){
+                /*
+                 * This entity was on the list to update earlier, but now its
+                 * flag has gone back to false. This is most likely because it
+                 * was already updated as part of a normal "real" update, so we
+                 * should be able to safely skip it.
+                 */
+                unset($this->entityUpdateVersions[$oid]);
+                continue;
+            }
+
+            if ($preUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
+                $blankArray = array(); //TODO document that "no-change" events are a new thing
+                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $blankArray), $preUpdateInvoke);
+                $this->recomputeSingleEntityChangeSet($class, $entity);
+            }
+
+            $persister->update($entity);
+
+            unset($this->entityUpdateVersions[$oid]);
+
+            if ($postUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
+                $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new LifecycleEventArgs($entity, $this->em), $postUpdateInvoke);
+            }
+        }
+    }
+
+    /**
      * Gets the commit order.
      *
      * @param array|null $entityChangeSet
@@ -1378,6 +1461,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether an entity is scheduled for insertion, update or deletion.
+     *
+     * Does not include "forced" updates to version fields.
      *
      * @param object $entity
      *
@@ -2383,6 +2468,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->scheduledForSynchronization =
             $this->entityInsertions =
             $this->entityUpdates =
+            $this->entityUpdateVersions =
             $this->entityDeletions =
             $this->collectionDeletions =
             $this->collectionUpdates =

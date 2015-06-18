@@ -608,6 +608,17 @@ class ClassMetadataInfo implements ClassMetadata
     public $versionField;
 
     /**
+     * READ-ONLY: The name of the PHP property, which signals that the entity's
+     * version must be updated regardless of whether other changes occurred.
+     *
+     * This is primarily used for optimistic locking and does not, itself,
+     * correspond to any field in the database.
+     *
+     * @var mixed
+     */
+    public $versionUpdateProperty;
+
+    /**
      * @var array
      */
     public $cache = null;
@@ -643,6 +654,13 @@ class ClassMetadataInfo implements ClassMetadata
      * @var \ReflectionProperty[]
      */
     public $reflFields = array();
+
+    /**
+     * A single ReflectionProperty pointing to the mapped class' version-update
+     * property, if any. (Needed since the property may be private.)
+     * @var \ReflectionProperty | null
+     */
+    public $reflVersionUpdateProperty;
 
     /**
      * @var \Doctrine\Instantiator\InstantiatorInterface|null
@@ -864,6 +882,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isVersioned) {
             $serialized[] = 'isVersioned';
             $serialized[] = 'versionField';
+            $serialized[] = 'versionUpdateProperty';
         }
 
         if ($this->lifecycleCallbacks) {
@@ -963,6 +982,10 @@ class ClassMetadataInfo implements ClassMetadata
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
+        }
+
+        if($this->isVersioned && isset($this->versionUpdateProperty)){
+            $this->reflVersionUpdateProperty = $reflService->getAccessibleProperty($this->name, $this->versionUpdateProperty);
         }
     }
 
@@ -2980,6 +3003,18 @@ class ClassMetadataInfo implements ClassMetadata
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
             }
         }
+    }
+
+    /**
+     * Sets the property-name that will be checked on the entity to determine if
+     * its version must forcibly be incremented. Use null to disable.
+     *
+     * @param string $propName
+     *
+     * @return void
+     */
+    public function setVersionUpdateProperty($propName){
+        $this->versionUpdateProperty = $propName;
     }
 
     /**

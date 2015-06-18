@@ -28,6 +28,7 @@ require_once __DIR__.'/../DiscriminatorMap.php';
 require_once __DIR__.'/../Id.php';
 require_once __DIR__.'/../GeneratedValue.php';
 require_once __DIR__.'/../Version.php';
+require_once __DIR__.'/../VersionBump.php';
 require_once __DIR__.'/../JoinColumn.php';
 require_once __DIR__.'/../JoinColumns.php';
 require_once __DIR__.'/../Column.php';

@@ -114,6 +114,65 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * Tests that the version-code can be forcibly updated even if the entity
+     * has no direct changes.
+     */
+    public function testForceVersionUpdate()
+    {
+
+        $test = new OptimisticStandard();
+        $test->name = 'test';
+        $this->_em->persist($test);
+        $this->_em->flush();
+
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+        $this->assertEquals(1, $test->getVersion());
+
+        /*
+         * Check that our flag forces an update and resets the flag
+         */
+        $test->setVersionBump(true);
+        $this->_em->flush();
+        $this->assertEquals(2, $test->getVersion());
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
+
+        /*
+         * Check that further flushes don't do anything with our flag set to
+         * false (preserving the usual behavior)
+         */
+        $this->_em->flush();
+        $this->assertEquals(2, $test->getVersion());
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
+        /*
+         * Check that using the flag AND making a change still results in only
+         * a single increment to the version.
+         */
+        $test->setVersionBump(true);
+        $test->name = "test2";
+        $this->_em->flush();
+        $this->assertEquals(3, $test->getVersion());
+        $this->assertFalse($test->getVersionBump(),"Should always be false after flushing");
+
+        /*
+         * With another entity, ensure that using the flag doesn't cause the
+         * version number to jump to 2 on initial insert, and that it is
+         * properly reset to false after an insert.
+         */
+
+        $test2 = new OptimisticStandard();
+        $test2->name = 'insert_checks';
+        $test2->setVersionBump(true);
+        $this->_em->persist($test2);
+        $this->_em->flush();
+
+        $this->assertFalse($test2->getVersionBump(),"Should always be false after flushing");
+        $this->assertEquals(1, $test2->getVersion());
+
+    }
+
     public function testStandardInsertSetsInitialVersionValue()
     {
         $test = new OptimisticStandard();
@@ -294,7 +353,21 @@ class OptimisticStandard
      */
     private $version;
 
-    function getVersion() {return $this->version;}
+    /**
+     * @VersionBump
+     * @var bool
+     */
+    private $bflag = false;
+
+    public function setVersionBump($val){
+        $this->bflag = (bool)$val;
+    }
+
+    public function getVersionBump(){
+        return $this->bflag;
+    }
+
+    public function getVersion() {return $this->version;}
 }
 
 /**

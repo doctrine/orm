@@ -56,6 +56,10 @@
 
         <field name="version" type="integer" version="true" />
 
+        <special-properties>
+            <property type="VERSION_BUMP" target="bflag"/>
+        </special-properties>
+
         <one-to-one field="address" target-entity="Address" inversed-by="user">
             <cascade><cascade-remove /></cascade>
             <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" />

@@ -397,6 +397,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->mapEmbedded($mapping);
             }
 
+            // Look for special properties to indicate version must be updated
+            if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\VersionBump')) {
+                $metadata->setVersionUpdateProperty($property->name);
+            }
+
             // Evaluate @Cache annotation
             if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Cache')) !== null) {
                 $metadata->enableAssociationCache($mapping['fieldName'], array(
