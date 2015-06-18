@@ -601,5 +601,5 @@ Querying for the staffs without getting any technicians can be achieved by this 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery("SELECT staff FROM MyProject\Model\Staff staff WHERE staff INSTANCE OF MyProject\Model\Staff");
+    $query = $em->createQuery("SELECT staff FROM MyProject\Model\Staff staff WHERE staff NOT INSTANCE OF MyProject\Model\Technician");
     $staffs = $query->getResult();
