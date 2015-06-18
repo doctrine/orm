@@ -1,9 +1,9 @@
 What is new in Doctrine ORM 2.5?
 ================================
 
-This document describes changes between Doctrine ORM 2.4 and 2.5 (currently in
-Beta). It contains a description of all the new features and sections
-about behavioral changes and potential backwards compatibility breaks.
+This document describes changes between Doctrine ORM 2.4 and 2.5.
+It contains a description of all the new features and sections about
+behavioral changes and potential backwards compatibility breaks.
 Please review this document carefully when updating to Doctrine 2.5.
 
 First note, that with the ORM 2.5 release we are dropping support
@@ -58,11 +58,11 @@ metadata generation:
         }
     }
 
-Embeddedable Objects
-~~~~~~~~~~~~~~~~~~~~
+Embeddable Objects
+~~~~~~~~~~~~~~~~~~
 
 Doctrine now supports creating multiple PHP objects from one database table
-implementing a feature called "Embeddedable Objects". Next to an ``@Entity``
+implementing a feature called "Embeddable Objects". Next to an ``@Entity``
 class you can now define a class that is embeddable into a database table of an
 entity using the ``@Embeddable`` annotation. Embeddable objects can never be
 saved, updated or deleted on their own, only as part of an entity (called
@@ -418,8 +418,8 @@ This feature was contributed by `Michael Perrin
 - `Pull Request <https://github.com/doctrine/doctrine2/pull/590>`_
 - `DDC-2319 <http://doctrine-project.org/jira/browse/DDC-2319>`_
 
-Query API: Add suport for default Query Hints
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Query API: Add support for default Query Hints
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To configure multiple different features such as custom AST Walker, fetch modes,
 locking and other features affecting DQL generation we have had a feature
@@ -486,8 +486,8 @@ EntityGenerator Command: Avoid backups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When calling the EntityGenerator for an existing entity, Doctrine would
-create a backup file every time to avoid loosing changes to the code.
-You can now skip generating the backup file by passing the ``--no-backup``
+create a backup file every time to avoid losing changes to the code. You
+can now skip generating the backup file by passing the ``--no-backup``
 flag:
 
 ::

@@ -239,7 +239,7 @@ By providing a cache logger you should be able to get information about all cach
 
     <?php
     /* @var $config \Doctrine\ORM\Configuration */
-    $logger = \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
+    $logger = new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
     // Cache logger
     $config->setSecondLevelCacheEnabled(true);

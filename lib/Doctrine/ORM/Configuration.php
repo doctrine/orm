@@ -364,6 +364,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getNamedNativeQuery($name)
     {
+        throw ORMException::notSupported();
+        // dead code stays as a reminder
         if ( ! isset($this->_attributes['namedNativeQueries'][$name])) {
             throw ORMException::namedNativeQueryNotFound($name);
         }
@@ -664,7 +666,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
+     * @return string The class name of the filter, or null if it is not
      *  defined.
      */
     public function getFilterClassName($name)
