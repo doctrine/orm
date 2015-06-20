@@ -234,14 +234,6 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 
-        if ($class->containsForeignIdentifier) {
-            foreach ($class->associationMappings as $name => $assoc) {
-                if (!empty($assoc['id']) && !isset($assoc['cache'])) {
-                    throw CacheException::nonCacheableEntityAssociation($class->name, $name);
-                }
-            }
-        }
-
         $entry  = $this->hydrator->buildCacheEntry($class, $key, $entity);
         $cached = $this->region->put($key, $entry);
 
