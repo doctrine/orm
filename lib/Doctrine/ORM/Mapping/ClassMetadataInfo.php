@@ -1079,17 +1079,28 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function enableAssociationCache($fieldName, array $cache)
     {
+        $this->associationMappings[$fieldName]['cache'] = $this->getAssociationCacheDefaults ($fieldName, $cache);
+    }
+
+    /**
+     * @param string $fieldName
+     * @param array  $cache
+     *
+     * @return array
+     */
+    public function getAssociationCacheDefaults ($fieldName, array $cache)
+    {
         if ( ! isset($cache['usage'])) {
             $cache['usage'] = isset($this->cache['usage'])
-                ? $this->cache['usage']
-                : self::CACHE_USAGE_READ_ONLY;
+            ? $this->cache['usage']
+            : self::CACHE_USAGE_READ_ONLY;
         }
 
         if ( ! isset($cache['region'])) {
             $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
         }
 
-        $this->associationMappings[$fieldName]['cache'] = $cache;
+        return $cache;
     }
 
     /**
