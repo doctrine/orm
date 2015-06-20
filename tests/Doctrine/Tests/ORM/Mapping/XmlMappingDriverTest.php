@@ -32,6 +32,19 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals($expectedMap, $class->discriminatorMap);
     }
 
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.
+     */
+    public function testFailingSecondLevelCacheAssociation()
+    {
+        $className = 'Doctrine\Tests\ORM\Mapping\XMLSLC';
+        $mappingDriver = $this->_loadDriver();
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
+    }
+
     public function testIdentifierWithAssociationKey()
     {
         $driver  = $this->_loadDriver();
@@ -176,3 +189,12 @@ class CTI
 class CTIFoo extends CTI {}
 class CTIBar extends CTI {}
 class CTIBaz extends CTI {}
+
+class XMLSLC
+{
+    public $foo;
+}
+class XMLSLCFoo
+{
+    public $id;
+}
