@@ -403,7 +403,7 @@ class BasicEntityPersister implements EntityPersister
 
                     if (isset($this->class->fieldMappings[$fieldName]['requireSQLConversion'])) {
                         $type        = Type::getType($this->columnTypes[$columnName]);
-                        $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
+                        $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform, $column);
                     }
 
                     break;
