@@ -86,7 +86,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
         }
 
-        $this->_getQuery()->setHint(self::IDENTIFIER_TYPE, Type::getType($rootClass->fieldMappings[$identifier]['type']));
+        $this->_getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->fieldMappings[$identifier]['type']);
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,

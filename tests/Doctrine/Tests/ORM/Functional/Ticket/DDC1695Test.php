@@ -115,9 +115,9 @@ class DDC1695News
     private $publishDate;
 
     /**
-     * @var tsvector $idxNews
+     * @var array $idxNews
      *
-     * @Column(name="`IdxNews`", type="tsvector", nullable=true)
+     * @Column(name="`IdxNews`", type="json_array", nullable=true)
      */
     private $idxNews;
 

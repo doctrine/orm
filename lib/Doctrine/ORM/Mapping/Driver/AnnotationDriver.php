@@ -226,17 +226,19 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Annotation\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Annotation\InheritanceType'];
+
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
 
             if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations['Doctrine\ORM\Annotation\DiscriminatorColumn'])) {
                     $discrColumnAnnot = $classAnnotations['Doctrine\ORM\Annotation\DiscriminatorColumn'];
+
                     $metadata->setDiscriminatorColumn(array(
-                        'name' => $discrColumnAnnot->name,
-                        'type' => $discrColumnAnnot->type,
-                        'length' => $discrColumnAnnot->length,
-                        'columnDefinition'    => $discrColumnAnnot->columnDefinition
+                        'name'             => $discrColumnAnnot->name,
+                        'type'             => $discrColumnAnnot->type,
+                        'length'           => $discrColumnAnnot->length,
+                        'columnDefinition' => $discrColumnAnnot->columnDefinition
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
@@ -245,6 +247,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations['Doctrine\ORM\Annotation\DiscriminatorMap'])) {
                     $discrMapAnnot = $classAnnotations['Doctrine\ORM\Annotation\DiscriminatorMap'];
+
                     $metadata->setDiscriminatorMap($discrMapAnnot->value);
                 }
             }

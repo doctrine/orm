@@ -42,7 +42,9 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 
         // Populate the discriminator column
         $discColumn = $this->class->discriminatorColumn;
+
         $this->columnTypes[$discColumn['name']] = $discColumn['type'];
+
         $data[$this->getDiscriminatorColumnTableName()][$discColumn['name']] = $this->class->discriminatorValue;
 
         return $data;
@@ -62,7 +64,6 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     {
         $tableAlias   = $alias == 'r' ? '' : $alias;
         $fieldMapping = $class->fieldMappings[$field];
-        $type         = Type::getType($fieldMapping['type']);
         $sql          = sprintf(
             '%s.%s',
             $this->getSQLTableAlias($class->name, $tableAlias),
@@ -73,14 +74,14 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
+        return $fieldMapping['type']->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 
     /**
      * @param string $tableAlias
      * @param string $joinColumnName
      * @param string $className
-     * @param string $type
+     * @param Type   $type
      *
      * @return string
      */

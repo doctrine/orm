@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
@@ -249,7 +250,7 @@ class Paginator implements \Countable, \IteratorAggregate
             $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
 
             $rsm = new ResultSetMapping();
-            $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count');
+            $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count', Type::getType('integer'));
 
             $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
             $countQuery->setResultSetMapping($rsm);

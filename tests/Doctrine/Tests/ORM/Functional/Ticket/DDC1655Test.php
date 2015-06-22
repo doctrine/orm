@@ -19,8 +19,25 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Baz'),
             ));
         } catch(\Exception $e) {
-
+            $this->fail($e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
+    }
+
+    protected function tearDown()
+    {
+        $conn = static::$_sharedConn;
+
+        // In case test is skipped, tearDown is called, but no setup may have run
+        if (!$conn) {
+            return;
+        }
+
+        $this->_sqlLoggerStack->enabled = false;
+
+        $conn->executeUpdate('DROP TABLE DDC1655Baz');
+        $conn->executeUpdate('DROP TABLE DDC1655Foo');
+
+        $this->_em->clear();
     }
 
     public function testPostLoadOneToManyInheritance()

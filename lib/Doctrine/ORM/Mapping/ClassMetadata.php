@@ -1348,9 +1348,12 @@ class ClassMetadata implements PersistenceClassMetadata
             throw MappingException::missingFieldName($this->name);
         }
 
-        if ( ! isset($mapping['type'])) {
-            // Default to string
-            $mapping['type'] = 'string';
+        $type = isset($mapping['type'])
+            ? $mapping['type']
+            : 'string';
+
+        if ( ! ($type instanceof Type)) {
+            $mapping['type'] = Type::getType($type);
         }
 
         // Complete fieldName and columnName mapping
@@ -1385,9 +1388,13 @@ class ClassMetadata implements PersistenceClassMetadata
             }
         }
 
-        if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
+        if ($mapping['type']->canRequireSQLConversion()) {
             if (isset($mapping['id']) && $mapping['id'] === true) {
-                throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
+                throw MappingException::sqlConversionNotAllowedForIdentifiers(
+                    $this->name,
+                    $mapping['fieldName'],
+                    $mapping['type']->getName()
+                );
             }
         }
     }
@@ -2142,9 +2149,15 @@ class ClassMetadata implements PersistenceClassMetadata
             $overrideMapping['id'] = $mapping['id'];
         }
 
-        if ( ! isset($overrideMapping['type']) || $overrideMapping['type'] === null) {
-            $overrideMapping['type'] = $mapping['type'];
+        $type = isset($overrideMapping['type'])
+            ? $overrideMapping['type']
+            : $mapping['type'];
+
+        if ( ! ($type instanceof Type)) {
+            $type = Type::getType($type);
         }
+
+        $overrideMapping['type'] = $type;
 
         if ( ! isset($overrideMapping['fieldName']) || $overrideMapping['fieldName'] === null) {
             $overrideMapping['fieldName'] = $mapping['fieldName'];
@@ -2692,12 +2705,16 @@ class ClassMetadata implements PersistenceClassMetadata
                 $columnDef['fieldName'] = $columnDef['name'];
             }
 
-            if ( ! isset($columnDef['type'])) {
-                $columnDef['type'] = "string";
+            $type = isset($columnDef['type'])
+                ? $columnDef['type']
+                : 'string';
+
+            if ( ! ($type instanceof Type)) {
+                $columnDef['type'] = Type::getType($type);
             }
 
-            if (in_array($columnDef['type'], array("boolean", "array", "object", "datetime", "time", "date"))) {
-                throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
+            if (in_array($columnDef['type']->getName(), array("boolean", "array", "object", "datetime", "time", "date"))) {
+                throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']->getName());
             }
 
             $this->discriminatorColumn = $columnDef;

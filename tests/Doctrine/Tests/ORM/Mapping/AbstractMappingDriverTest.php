@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -191,7 +192,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testStringFieldMappings($class)
     {
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertEquals('string', $class->fieldMappings['name']['type']->getName());
         $this->assertEquals(50, $class->fieldMappings['name']['length']);
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
@@ -229,7 +230,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testIdentifier($class)
     {
         $this->assertEquals(array('id'), $class->identifier);
-        $this->assertEquals('integer', $class->fieldMappings['id']['type']);
+        $this->assertEquals('integer', $class->fieldMappings['id']['type']->getName());
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
         return $class;
@@ -379,7 +380,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
 
         $this->assertEquals(
-            array('name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null),
+            array('name' => 'discr', 'type' => DBALType::getType('string'), 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null),
             $class->discriminatorColumn
         );
     }
@@ -432,8 +433,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertArrayHasKey('type', $class->fieldMappings['id']);
         $this->assertArrayHasKey('type', $class->fieldMappings['name']);
 
-        $this->assertEquals('string', $class->fieldMappings['id']['type']);
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertEquals('string', $class->fieldMappings['id']['type']->getName());
+        $this->assertEquals('string', $class->fieldMappings['name']['type']->getName());
 
 
 

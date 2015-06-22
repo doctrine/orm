@@ -732,18 +732,18 @@ public function __construct(<params>)
         }
 
         foreach ($fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) &&
-                isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-            ) {
+            if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }
 
-            $paramTypes[] = $this->getType($fieldMapping['type']) . (!empty($fieldMapping['nullable']) ? '|null' : '');
+            $fieldType = $fieldMapping['type']->getName();
+
+            $paramTypes[] = $this->getType($fieldType) . (!empty($fieldMapping['nullable']) ? '|null' : '');
             $param = '$' . $fieldMapping['fieldName'];
             $paramVariables[] = $param;
 
-            if ($fieldMapping['type'] === 'datetime') {
-                $param = $this->getType($fieldMapping['type']) . ' ' . $param;
+            if ($fieldType === 'datetime') {
+                $param = $this->getType($fieldType) . ' ' . $param;
             }
 
             if (!empty($fieldMapping['nullable'])) {
@@ -1166,12 +1166,12 @@ public function __construct(<params>)
                     $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE
                 ) && (! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)
             ) {
-                if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type']->getName())) {
                     $methods[] = $code;
                 }
             }
 
-            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type']->getName())) {
                 $methods[] = $code;
             }
         }
@@ -1618,9 +1618,11 @@ public function __construct(<params>)
      */
     protected function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadata $metadata)
     {
+        $fieldType = $fieldMapping['type']->getName();
+
         $lines = array();
         $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']);
+        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldType);
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
@@ -1630,9 +1632,7 @@ public function __construct(<params>)
                 $column[] = 'name="' . $fieldMapping['columnName'] . '"';
             }
 
-            if (isset($fieldMapping['type'])) {
-                $column[] = 'type="' . $fieldMapping['type'] . '"';
-            }
+            $column[] = 'type="' . $fieldType . '"';
 
             if (isset($fieldMapping['length'])) {
                 $column[] = 'length=' . $fieldMapping['length'];
@@ -1800,6 +1800,8 @@ public function __construct(<params>)
      * Exports (nested) option elements.
      *
      * @param array $options
+     *
+     * @return string
      */
     private function exportTableOptions(array $options)
     {

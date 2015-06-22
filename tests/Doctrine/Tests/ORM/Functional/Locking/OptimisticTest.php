@@ -26,6 +26,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
+
         $this->_conn = $this->_em->getConnection();
     }
 
@@ -48,7 +49,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child)
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
+
         $q->setParameter('id', $child->id);
+
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same

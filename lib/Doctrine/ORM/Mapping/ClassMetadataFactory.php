@@ -649,7 +649,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         ->getSequenceName($definition, $class, $this->getTargetPlatform());
                 }
 
-                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')
+                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type']->getName() === 'bigint')
                     ? new BigIntegerIdentityGenerator($sequenceName)
                     : new IdentityGenerator($sequenceName);
 

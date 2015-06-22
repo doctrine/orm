@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -69,27 +70,25 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFluentInterface()
     {
-        $rms = $this->_rsm;
-
-        $rms->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser','u')
-            ->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber','p','u','phonenumbers')
-            ->addFieldResult('u', 'id', 'id')
-            ->addFieldResult('u', 'name', 'name')
-            ->setDiscriminatorColumn('name', 'name')
-            ->addIndexByColumn('id', 'id')
-            ->addIndexBy('username', 'username')
-            ->addIndexByScalar('sclr0')
-            ->addScalarResult('sclr0', 'numPhones')
-            ->addMetaResult('a', 'user_id', 'user_id');
+        $this->_rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser','u');
+        $this->_rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber','p','u','phonenumbers');
+        $this->_rsm->addFieldResult('u', 'id', 'id');
+        $this->_rsm->addFieldResult('u', 'name', 'name');
+        $this->_rsm->setDiscriminatorColumn('name', 'name');
+        $this->_rsm->addIndexByColumn('id', 'id');
+        $this->_rsm->addIndexBy('username', 'username');
+        $this->_rsm->addIndexByScalar('sclr0');
+        $this->_rsm->addScalarResult('sclr0', 'numPhones', Type::getType('integer'));
+        $this->_rsm->addMetaResult('a', 'user_id', 'user_id', false, Type::getType('integer'));
 
 
-        $this->assertTrue($rms->hasIndexBy('id'));
-        $this->assertTrue($rms->isFieldResult('id'));
-        $this->assertTrue($rms->isFieldResult('name'));
-        $this->assertTrue($rms->isScalarResult('sclr0'));
-        $this->assertTrue($rms->isRelation('p'));
-        $this->assertTrue($rms->hasParentAlias('p'));
-        $this->assertTrue($rms->isMixedResult());
+        $this->assertTrue($this->_rsm->hasIndexBy('id'));
+        $this->assertTrue($this->_rsm->isFieldResult('id'));
+        $this->assertTrue($this->_rsm->isFieldResult('name'));
+        $this->assertTrue($this->_rsm->isScalarResult('sclr0'));
+        $this->assertTrue($this->_rsm->isRelation('p'));
+        $this->assertTrue($this->_rsm->hasParentAlias('p'));
+        $this->assertTrue($this->_rsm->isMixedResult());
     }
 
     /**
@@ -242,7 +241,6 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $rsm = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);
         $rsm->addNamedNativeQueryMapping($cm, $queryMapping);
 
-
         $this->assertEquals('c0', $rsm->getEntityAlias('id'));
         $this->assertEquals('c0', $rsm->getEntityAlias('name'));
         $this->assertEquals('c0', $rsm->getEntityAlias('status'));
@@ -259,9 +257,9 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testIndexByMetadataColumn()
     {
         $this->_rsm->addEntityResult('Doctrine\Tests\Models\Legacy\LegacyUser', 'u');
-        $this->_rsm->addJoinedEntityResult('Doctrine\Tests\Models\Legacy', 'lu', 'u', '_references');
-        $this->_rsm->addMetaResult('lu', '_source',  '_source', true);
-        $this->_rsm->addMetaResult('lu', '_target',  '_target', true);
+        $this->_rsm->addJoinedEntityResult('Doctrine\Tests\Models\LegacyUserReference', 'lu', 'u', '_references');
+        $this->_rsm->addMetaResult('lu', '_source',  '_source', true, Type::getType('integer'));
+        $this->_rsm->addMetaResult('lu', '_target',  '_target', true, Type::getType('integer'));
         $this->_rsm->addIndexBy('lu', '_source');
 
         $this->assertTrue($this->_rsm->hasIndexBy('lu'));

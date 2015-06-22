@@ -332,25 +332,24 @@ class SchemaTool
      */
     private function addDiscriminatorColumnDefinition($class, Table $table)
     {
-        $discrColumn = $class->discriminatorColumn;
-
-        if ( ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)
-        ) {
-            $discrColumn['type'] = 'string';
-            $discrColumn['length'] = 255;
-        }
-
-        $options = array(
-            'length'    => isset($discrColumn['length']) ? $discrColumn['length'] : null,
-            'notnull'   => true
+        $discrColumn     = $class->discriminatorColumn;
+        $discrColumnType = $discrColumn['type']->getName();
+        $options         = array(
+            'notnull' => isset($discrColumn['notnull']) ? $discrColumn['notnull'] : true,
         );
+
+        if ($discrColumnType === "string" && isset($discrColumn['length'])) {
+            $options['length'] = $discrColumn['length'];
+        } elseif ($discrColumnType === "decimal") {
+            $options['scale'] = $discrColumn['scale'];
+            $options['precision'] = $discrColumn['precision'];
+        }
 
         if (isset($discrColumn['columnDefinition'])) {
             $options['columnDefinition'] = $discrColumn['columnDefinition'];
         }
 
-        $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+        $table->addColumn($discrColumn['name'], $discrColumnType, $options);
     }
 
     /**
@@ -379,7 +378,7 @@ class SchemaTool
         }
 
         // For now, this is a hack required for single table inheritence, since this method is called
-        // twice by single table inheritence relations
+        // twice by single table inheritance relations
         if (!$table->hasIndex('primary')) {
             //$table->setPrimaryKey($pkColumns);
         }
@@ -397,11 +396,12 @@ class SchemaTool
     private function gatherColumn($class, array $mapping, Table $table)
     {
         $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
-        $columnType = $mapping['type'];
+        $columnType = $mapping['type']->getName();
 
         $options = array();
         $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
+
         if ($class->isInheritanceTypeSingleTable() && count($class->parentClasses) > 0) {
             $options['notnull'] = false;
         }
@@ -635,10 +635,9 @@ class SchemaTool
                 // Only add the column to the table if it does not exist already.
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
-
                 $fieldMapping = $definingClass->getFieldMapping($referencedFieldName);
+                $columnDef    = null;
 
-                $columnDef = null;
                 if (isset($joinColumn['columnDefinition'])) {
                     $columnDef = $joinColumn['columnDefinition'];
                 } elseif (isset($fieldMapping['columnDefinition'])) {
@@ -646,6 +645,7 @@ class SchemaTool
                 }
 
                 $columnOptions = array('notnull' => false, 'columnDefinition' => $columnDef);
+                $columnType    = $fieldMapping['type']->getName();
 
                 if (isset($joinColumn['nullable'])) {
                     $columnOptions['notnull'] = !$joinColumn['nullable'];
@@ -655,14 +655,14 @@ class SchemaTool
                     $columnOptions['options'] = $fieldMapping['options'];
                 }
 
-                if ($fieldMapping['type'] == "string" && isset($fieldMapping['length'])) {
+                if ($columnType === "string" && isset($fieldMapping['length'])) {
                     $columnOptions['length'] = $fieldMapping['length'];
-                } elseif ($fieldMapping['type'] == "decimal") {
+                } elseif ($columnType === "decimal") {
                     $columnOptions['scale'] = $fieldMapping['scale'];
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }
 
-                $theJoinTable->addColumn($quotedColumnName, $fieldMapping['type'], $columnOptions);
+                $theJoinTable->addColumn($quotedColumnName, $columnType, $columnOptions);
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {

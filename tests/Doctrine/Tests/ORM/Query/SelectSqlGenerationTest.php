@@ -1889,18 +1889,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testStripNonAlphanumericCharactersFromAlias()
     {
         $this->assertSqlGeneration(
-            'SELECT e FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity e',
-            'SELECT d0_."simple-entity-id" AS simpleentityid_0, d0_."simple-entity-value" AS simpleentityvalue_1 FROM "ddc-1719-simple-entity" d0_'
+            'SELECT e FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e',
+            'SELECT n0_."simple-entity-id" AS simpleentityid_0, n0_."simple-entity-value" AS simpleentityvalue_1 FROM "not-a-simple-entity" n0_'
         );
 
         $this->assertSqlGeneration(
-            'SELECT e.value FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity e ORDER BY e.value',
-            'SELECT d0_."simple-entity-value" AS simpleentityvalue_0 FROM "ddc-1719-simple-entity" d0_ ORDER BY d0_."simple-entity-value" ASC'
+            'SELECT e.value FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e ORDER BY e.value',
+            'SELECT n0_."simple-entity-value" AS simpleentityvalue_0 FROM "not-a-simple-entity" n0_ ORDER BY n0_."simple-entity-value" ASC'
         );
 
         $this->assertSqlGeneration(
-            'SELECT TRIM(e.value) FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity e ORDER BY e.value',
-            'SELECT TRIM(d0_."simple-entity-value") AS sclr_0 FROM "ddc-1719-simple-entity" d0_ ORDER BY d0_."simple-entity-value" ASC'
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e ORDER BY e.value',
+            'SELECT TRIM(n0_."simple-entity-value") AS sclr_0 FROM "not-a-simple-entity" n0_ ORDER BY n0_."simple-entity-value" ASC'
         );
     }
 
