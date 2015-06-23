@@ -78,7 +78,7 @@ class XmlExporter extends AbstractExporter
         if ($metadata->discriminatorColumn) {
             $discriminatorColumnXml = $root->addChild('discriminator-column');
             $discriminatorColumnXml->addAttribute('name', $metadata->discriminatorColumn['name']);
-            $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']);
+            $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']->getName());
 
             if (isset($metadata->discriminatorColumn['length'])) {
                 $discriminatorColumnXml->addAttribute('length', $metadata->discriminatorColumn['length']);
@@ -153,7 +153,7 @@ class XmlExporter extends AbstractExporter
                 $idXml->addAttribute('name', $field['fieldName']);
 
                 if (isset($field['type'])) {
-                    $idXml->addAttribute('type', $field['type']);
+                    $idXml->addAttribute('type', $field['type']->getName());
                 }
 
                 if (isset($field['columnName'])) {
@@ -181,7 +181,7 @@ class XmlExporter extends AbstractExporter
             foreach ($fields as $field) {
                 $fieldXml = $root->addChild('field');
                 $fieldXml->addAttribute('name', $field['fieldName']);
-                $fieldXml->addAttribute('type', $field['type']);
+                $fieldXml->addAttribute('type', $field['type']->getName());
 
                 if (isset($field['columnName'])) {
                     $fieldXml->addAttribute('column', $field['columnName']);

@@ -101,6 +101,8 @@ class YamlExporter extends AbstractExporter
                 unset($fieldMapping['column']);
             }
 
+            $fieldMapping['type'] = $fieldMapping['type']->getName();
+
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                 $ids[$name] = $fieldMapping;
                 unset($fieldMappings[$name]);

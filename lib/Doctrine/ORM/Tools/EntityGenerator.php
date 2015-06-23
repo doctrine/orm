@@ -1119,9 +1119,13 @@ public function __construct(<params>)
     {
         if ($metadata->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumn = $metadata->discriminatorColumn;
-            $columnDefinition = 'name="' . $discrColumn['name']
-                . '", type="' . $discrColumn['type']
-                . '", length=' . $discrColumn['length'];
+
+            $columnDefinition = sprintf(
+                'name="%s", type="%s", length=%d',
+                $discrColumn['name'],
+                $discrColumn['type']->getName(),
+                $discrColumn['length']
+            );
 
             return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
         }

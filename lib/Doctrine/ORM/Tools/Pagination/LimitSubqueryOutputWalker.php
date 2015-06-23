@@ -18,6 +18,7 @@ use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
 use Doctrine\ORM\Query\AST\ArithmeticFactor;
 use Doctrine\ORM\Query\AST\ArithmeticTerm;
@@ -116,8 +117,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $this->maxResults = $query->getMaxResults();
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->em               = $query->getEntityManager();
-        $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();
+        $this->em            = $query->getEntityManager();
+        $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
 
         parent::__construct($query, $parserResult, $queryComponents);
     }
@@ -159,6 +160,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 $orderByItem->expression = $selectAliasToExpressionMap[$orderByItem->expression];
             }
         }
+
         $func = new RowNumberOverFunction('dctrn_rownum');
         $func->orderByClause = $AST->orderByClause;
         $AST->selectClause->selectExpressions[] = new SelectExpression($func, 'dctrn_rownum', true);
@@ -181,6 +183,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         if ($this->platformSupportsRowNumber()) {
             return $this->walkSelectStatementWithRowNumber($AST);
         }
+
         return $this->walkSelectStatementWithoutRowNumber($AST);
     }
 
@@ -199,24 +202,32 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $hasOrderBy = false;
         $outerOrderBy = ' ORDER BY dctrn_minrownum ASC';
         $orderGroupBy = '';
+
         if ($AST->orderByClause instanceof OrderByClause) {
             $hasOrderBy = true;
             $this->rebuildOrderByForRowNumber($AST);
         }
 
         $innerSql = $this->getInnerSQL($AST);
-
         $sqlIdentifier = $this->getSQLIdentifier($AST);
+        $sqlAliasIdentifier = array_map(function ($info) { return $info['alias']; }, $sqlIdentifier);
 
         if ($hasOrderBy) {
-            $orderGroupBy = ' GROUP BY ' . implode(', ', $sqlIdentifier);
-            $sqlIdentifier[] = 'MIN(' . $this->walkResultVariable('dctrn_rownum') . ') AS dctrn_minrownum';
+            $orderGroupBy = ' GROUP BY ' . implode(', ', $sqlAliasIdentifier);
+
+            $sqlPiece = 'MIN(' . $this->walkResultVariable('dctrn_rownum') . ') AS dctrn_minrownum';
+
+            $sqlAliasIdentifier[] = $sqlPiece;
+            $sqlIdentifier[] = array(
+                'alias' => $sqlPiece,
+                'type'  => Type::getType('integer'),
+            );
         }
 
         // Build the counter query
         $sql = sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result',
-            implode(', ', $sqlIdentifier),
+            implode(', ', $sqlAliasIdentifier),
             $innerSql
         );
 
@@ -274,8 +285,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sqlAliasIdentifier = array_map(function ($info) { return $info['alias']; }, $sqlIdentifier);
 
         // Build the counter query
-        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
-            implode(', ', $sqlAliasIdentifier), $innerSql);
+        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result', implode(', ', $sqlAliasIdentifier), $innerSql);
 
         // http://www.doctrine-project.org/jira/browse/DDC-1958
         $sql = $this->preserveSqlOrdering($sqlAliasIdentifier, $innerSql, $sql, $orderByClause);
