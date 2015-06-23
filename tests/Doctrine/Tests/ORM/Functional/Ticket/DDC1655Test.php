@@ -32,10 +32,17 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
             return;
         }
 
+        $platform = $conn->getDatabasePlatform();
+
         $this->_sqlLoggerStack->enabled = false;
 
         $conn->executeUpdate('DROP TABLE DDC1655Foo');
         $conn->executeUpdate('DROP TABLE DDC1655Baz');
+
+        // Some drivers require sequence dropping (ie. PostgreSQL)
+        if ($platform->prefersSequences()) {
+            $conn->executeUpdate('DROP SEQUENCE DDC1655Foo_id_seq');
+        }
 
         $this->_em->clear();
     }
