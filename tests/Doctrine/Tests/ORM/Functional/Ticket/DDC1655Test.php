@@ -42,6 +42,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Some drivers require sequence dropping (ie. PostgreSQL)
         if ($platform->prefersSequences()) {
             $conn->executeUpdate('DROP SEQUENCE DDC1655Foo_id_seq');
+            $conn->executeUpdate('DROP SEQUENCE DDC1655Baz_id_seq');
         }
 
         $this->_em->clear();
