@@ -48,6 +48,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return; // ignore inverse side
         }
 
+        $types = [];
+        $class = $this->em->getClassMetadata($mapping['sourceEntity']);
+
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $class, $this->em);
+        }
+
         $this->conn->executeUpdate($this->getDeleteSQL($collection), $this->getDeleteSQLParameters($collection));
     }
 
