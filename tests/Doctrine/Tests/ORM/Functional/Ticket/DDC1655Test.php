@@ -34,8 +34,8 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_sqlLoggerStack->enabled = false;
 
-        $conn->executeUpdate('DROP TABLE DDC1655Baz');
         $conn->executeUpdate('DROP TABLE DDC1655Foo');
+        $conn->executeUpdate('DROP TABLE DDC1655Baz');
 
         $this->_em->clear();
     }
