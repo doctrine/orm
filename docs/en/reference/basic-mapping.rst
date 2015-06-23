@@ -327,32 +327,32 @@ you wish. Here is an example skeleton of such a custom type class:
 
     <?php
     namespace My\Project\Types;
-    
+
     use Doctrine\DBAL\Types\Type;
     use Doctrine\DBAL\Platforms\AbstractPlatform;
-    
+
     /**
      * My custom datatype.
      */
     class MyType extends Type
     {
         const MYTYPE = 'mytype'; // modify to match your type name
-    
+
         public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
             // return the SQL used to create your column type. To create a portable column type, use the $platform.
         }
-    
+
         public function convertToPHPValue($value, AbstractPlatform $platform)
         {
             // This is executed when the value is read from the database. Make your conversions here, optionally using the $platform.
         }
-    
+
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
             // This is executed when the value is written to the database. Make your conversions here, optionally using the $platform.
         }
-    
+
         public function getName()
         {
             return self::MYTYPE; // modify to match your constant name
@@ -376,13 +376,13 @@ method. See the following example:
 
     <?php
     // in bootstrapping code
-    
+
     // ...
-    
+
     use Doctrine\DBAL\Types\Type;
-    
+
     // ...
-    
+
     // Register my type
     Type::addType('mytype', 'My\Project\Types\MyType');
 
@@ -544,6 +544,8 @@ Here is the list of possible generation strategies:
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
+-  ``UUID``: Tells Doctrine to use the built-in Universally Unique Identifier
+   generator. This strategy provides full portability.
 -  ``TABLE``: Tells Doctrine to use a separate table for ID
    generation. This strategy provides full portability.
    ***This strategy is not yet implemented!***
@@ -584,7 +586,7 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
- 
+
     .. code-block:: yaml
 
         MyPersistentClass:
