@@ -79,36 +79,8 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     protected function hydrateRowData(array $sqlResult, array &$result)
     {
-        $entityName = $this->class->name;
+        $entityName = $this->getEntityName($sqlResult);
         $data       = array();
-
-        // We need to find the correct entity class name if we have inheritance in resultset
-        if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-            $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
-
-            // Find mapped discriminator column from the result set.
-            if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
-                $discrColumnName = $metaMappingDiscrColumnName;
-            }
-
-            if ( ! isset($sqlResult[$discrColumnName])) {
-                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
-            }
-
-            if ($sqlResult[$discrColumnName] === '') {
-                throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
-            }
-
-            $discrMap = $this->class->discriminatorMap;
-
-            if ( ! isset($discrMap[$sqlResult[$discrColumnName]])) {
-                throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
-            }
-
-            $entityName = $discrMap[$sqlResult[$discrColumnName]];
-
-            unset($sqlResult[$discrColumnName]);
-        }
 
         foreach ($sqlResult as $column => $value) {
             // An ObjectHydrator should be used instead of SimpleObjectHydrator
@@ -148,5 +120,40 @@ class SimpleObjectHydrator extends AbstractHydrator
         if (isset($this->_hints[Query::HINT_INTERNAL_ITERATION]) && $this->_hints[Query::HINT_INTERNAL_ITERATION]) {
             $this->_uow->hydrationComplete();
         }
+    }
+
+    protected function getEntityName(array &$sqlResult)
+    {
+        $entityName = $this->class->name;
+
+        // We need to find the correct entity class name if we have inheritance in resultset
+        if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
+            $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
+
+            // Find mapped discriminator column from the result set.
+            if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
+                $discrColumnName = $metaMappingDiscrColumnName;
+            }
+
+            if ( ! isset($sqlResult[$discrColumnName])) {
+                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
+            }
+
+            if ($sqlResult[$discrColumnName] === '') {
+                throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
+            }
+
+            $discrMap = $this->class->discriminatorMap;
+
+            if ( ! isset($discrMap[$sqlResult[$discrColumnName]])) {
+                throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
+            }
+
+            $entityName = $discrMap[$sqlResult[$discrColumnName]];
+
+            unset($sqlResult[$discrColumnName]);
+        }
+
+        return $entityName;
     }
 }

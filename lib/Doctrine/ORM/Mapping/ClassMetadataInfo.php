@@ -160,6 +160,8 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const FETCH_EXTRA_LAZY = 4;
 
+    const FETCH_USE_PROXY = 5;
+
     /**
      * Identifies a one-to-one association.
      */

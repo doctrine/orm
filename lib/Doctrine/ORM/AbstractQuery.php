@@ -70,6 +70,8 @@ abstract class AbstractQuery
      */
     const HYDRATE_SIMPLEOBJECT = 5;
 
+    const HYDRATE_PROXY = 6;
+
     /**
      * The parameter map of this query.
      *
