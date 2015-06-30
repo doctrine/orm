@@ -23,6 +23,11 @@ class User
     public $email;
 
     /**
+     * @Column(type="integer", options={"unsigned"=true})
+     */
+    public $age;
+
+    /**
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", inversedBy="user", cascade={"persist"}, orphanRemoval=true, fetch="EAGER")
      * @JoinColumn(name="address_id", onDelete="CASCADE")
      */
@@ -48,7 +53,6 @@ class User
      * )
      */
     public $groups;
-
 
     /**
      * @PrePersist

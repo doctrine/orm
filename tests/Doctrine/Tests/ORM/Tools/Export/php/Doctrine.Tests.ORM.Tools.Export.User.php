@@ -31,6 +31,11 @@ $metadata->mapField(array(
    'columnName' => 'user_email',
    'columnDefinition' => 'CHAR(32) NOT NULL',
   ));
+$metadata->mapField(array(
+   'fieldName' => 'age',
+   'type' => 'integer',
+   'options' => array("unsigned"=>true),
+  ));
 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(array(
     'fieldName' => 'mainGroup',
