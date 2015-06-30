@@ -476,7 +476,7 @@ To include a new command on Doctrine Console, you need to do modify the
 
     <?php
     // doctrine.php
-    use Symfony\Component\Console\Helper\Application;
+    use Symfony\Component\Console\Application;
 
     // as before ...
 
