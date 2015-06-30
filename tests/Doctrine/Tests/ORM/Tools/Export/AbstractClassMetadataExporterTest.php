@@ -211,6 +211,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
         $this->assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
 
+        $this->assertEquals(array('default' => '0'), $class->fieldMappings['deleted']['options']);
         return $class;
     }
 

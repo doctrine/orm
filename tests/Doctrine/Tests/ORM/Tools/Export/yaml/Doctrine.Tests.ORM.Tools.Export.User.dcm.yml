@@ -23,6 +23,10 @@ Doctrine\Tests\ORM\Tools\Export\User:
       type: integer
       options:
         unsigned: true
+    deleted:
+      type: integer
+      options:
+        default: 0
   oneToOne:
     address:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Address

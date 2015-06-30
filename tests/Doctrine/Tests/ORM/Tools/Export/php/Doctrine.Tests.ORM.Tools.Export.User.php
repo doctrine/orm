@@ -36,6 +36,11 @@ $metadata->mapField(array(
    'type' => 'integer',
    'options' => array("unsigned"=>true),
   ));
+$metadata->mapField(array(
+   'fieldName' => 'deleted',
+   'type' => 'integer',
+   'options' => array('default' => '0')
+  ));
 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(array(
     'fieldName' => 'mainGroup',

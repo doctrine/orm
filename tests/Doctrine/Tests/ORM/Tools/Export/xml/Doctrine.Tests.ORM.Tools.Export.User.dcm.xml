@@ -29,6 +29,11 @@
                 <option name="unsigned">1</option>
             </options>
         </field>
+        <field name="deleted" type="integer">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
 
         <one-to-one field="address" target-entity="Doctrine\Tests\ORM\Tools\Export\Address" inversed-by="user" orphan-removal="true" fetch="EAGER">
             <cascade><cascade-persist /></cascade>

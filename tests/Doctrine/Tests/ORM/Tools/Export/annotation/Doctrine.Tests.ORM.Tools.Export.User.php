@@ -55,6 +55,12 @@ class User
     public $groups;
 
     /**
+     * @Column(type="integer", options={"default":"0"})
+     */
+    public $deleted = 0;
+
+
+    /**
      * @PrePersist
      */
     public function doStuffOnPrePersist()

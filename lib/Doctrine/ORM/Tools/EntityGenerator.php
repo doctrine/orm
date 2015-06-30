@@ -1661,6 +1661,10 @@ public function __construct(<params>)
                 $options[] = '"unsigned"=true';
             }
 
+            if (isset($fieldMapping['options']['default'])) {
+                $options[] = '"default"="'.$fieldMapping['options']['default'].'"';
+            }
+
             if ($options) {
                 $column[] = 'options={'.implode(',', $options).'}';
             }
