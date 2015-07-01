@@ -456,7 +456,7 @@ abstract class AbstractQuery
      *
      * @return \Doctrine\ORM\Query\ResultSetMapping
      */
-    protected function getResultSetMapping()
+    public function getResultSetMapping()
     {
         return $this->_resultSetMapping;
     }
