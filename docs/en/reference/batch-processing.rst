@@ -82,6 +82,7 @@ with the batching strategy that was already used for bulk inserts:
         $user = $row[0];
         $user->increaseCredit();
         $user->calculateNewBonuses();
+        $em->persist($user);
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all updates.
             $em->clear(); // Detaches all objects from Doctrine!
