@@ -215,7 +215,7 @@ class QueryBuilder
     /**
     * Obtain the name of the second level query cache region in which query results will be stored
     *
-    * @return The cache region name; NULL indicates the default region.
+    * @return string The cache region name; NULL indicates the default region.
     */
     public function getCacheRegion()
     {
@@ -411,7 +411,7 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
-     * @throws RuntimeException
+     * @throws \RuntimeException
      *
      * @return string
      */
