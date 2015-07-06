@@ -259,7 +259,8 @@ class DefaultQueryCache implements QueryCache
             }
 
             // @TODO - move to cache hydration components
-            foreach ($rsm->relationMap as $name) {
+            foreach ($rsm->relationMap as $alias => $name) {
+                $metadata = $this->em->getClassMetadata($rsm->aliasMap[$rsm->parentAliasMap[$alias]]);
                 $assoc = $metadata->associationMappings[$name];
 
                 if (($assocValue = $metadata->getFieldValue($entity, $name)) === null || $assocValue instanceof Proxy) {
