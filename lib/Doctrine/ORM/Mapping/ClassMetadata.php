@@ -44,6 +44,7 @@ use Doctrine\Common\ClassLoader;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
@@ -678,6 +679,7 @@ class ClassMetadata implements PersistenceClassMetadata
         if ($this->isIdentifierComposite) {
             throw new BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
+
         return $this->reflFields[$this->identifier[0]];
     }
 

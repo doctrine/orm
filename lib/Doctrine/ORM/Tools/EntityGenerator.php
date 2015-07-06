@@ -1159,17 +1159,12 @@ public function __construct(<params>)
         $methods = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) &&
-                isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-            ) {
+            if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }
 
-            if (( ! isset($fieldMapping['id']) ||
-                    ! $fieldMapping['id'] ||
-                    $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE
-                ) && (! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)
-            ) {
+            if (( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] || $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) &&
+                ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)) {
                 if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type']->getName())) {
                     $methods[] = $code;
                 }
