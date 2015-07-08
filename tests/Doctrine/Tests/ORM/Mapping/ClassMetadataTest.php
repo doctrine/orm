@@ -1125,6 +1125,23 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
+
+    public function testCanPropertyReturnAllMappedProperties()
+    {
+        $classMetadata      = new ClassMetadata(__NAMESPACE__.'\\EmbeddedMappedEntity');
+
+        $classMetadata->mapField(array('fieldName'=>'id'));
+        $classMetadata->mapField(array('fieldName'=>'embedded.foo', 'declaredField' => 'embedded'));
+        $classMetadata->mapField(array('fieldName'=>'embedded.bar', 'declaredField' => 'embedded'));
+
+        $this->assertSame(
+            array(
+                'id',
+                'embedded'
+            ),
+            $classMetadata->getMappedPropertyNames()
+        );
+    }
 }
 
 /**
@@ -1164,4 +1181,38 @@ class MyPrefixNamingStrategy extends DefaultNamingStrategy
 
 class MyArrayObjectEntity extends \ArrayObject
 {
+}
+
+/**
+ * @Embeddable
+ */
+class EmbeddableObject
+{
+    /**
+     * @Column(type = "string")
+     */
+    protected $foo;
+
+    /**
+     * @Column(type = "string")
+     */
+    protected $bar;
+
+}
+
+/**
+ * @Entity
+ */
+class EmbeddedMappedEntity
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     */
+    protected $id;
+
+    /**
+     * @Embedded(class = "Doctrine\Tests\ORM\Mapping\EmbeddableObject")
+     */
+    protected $embedded;
 }

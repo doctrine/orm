@@ -12,11 +12,21 @@
         {"name": "Jonathan Wage", "email": "jonwage@gmail.com"}
     ],
     "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/fabiocarneiro/common"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/fabiocarneiro/dbal"
+        }
+    ],
     "require": {
         "php": ">=5.4",
         "ext-pdo": "*",
         "doctrine/collections": "~1.2",
-        "doctrine/dbal": ">=2.5-dev,<2.6-dev",
+        "doctrine/dbal": "dev-temporary-doctrine-common-fork-import",
         "doctrine/instantiator": "~1.0.1",
         "doctrine/common": ">=2.5-dev,<2.6-dev",
         "doctrine/cache": "~1.4",

@@ -28,6 +28,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
+use Doctrine\Common\Persistence\Mapping\PropertyNamesAware;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -47,7 +48,7 @@ use Doctrine\Common\ClassLoader;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class ClassMetadataInfo implements ClassMetadata
+class ClassMetadataInfo implements ClassMetadata, PropertyNamesAware
 {
     /* The inheritance mapping types */
     /**
@@ -3031,6 +3032,23 @@ class ClassMetadataInfo implements ClassMetadata
     public function getAssociationNames()
     {
         return array_keys($this->associationMappings);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function getMappedPropertyNames()
+    {
+        return array_merge(
+            array_keys(
+                array_flip(
+                    array_map(function ($value) {
+                        return isset($value['declaredField'] ) ? $value['declaredField'] : $value['fieldName'];
+                    }, $this->fieldMappings)
+                )
+            ),
+            array_keys($this->associationMappings)
+        );
     }
 
     /**
