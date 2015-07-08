@@ -24,12 +24,13 @@ use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
 use Doctrine\ORM\Query\Filter\FilterFactoryInterface;
 use Doctrine\Tests\OrmTestCase;
 
-
-const DUMMY_FILTER_CLASS = 'Doctrine\Tests\Models\Filter\DummyFilter';
-
-
 class DefaultFilterFactoryTest extends OrmTestCase
 {
+    /**
+     * @var string
+     */
+    const DUMMY_FILTER_CLASS = 'Doctrine\Tests\Models\Filter\DummyFilter';
+
     /**
      * @var FilterFactoryInterface
      */
@@ -39,7 +40,7 @@ class DefaultFilterFactoryTest extends OrmTestCase
     {
         $ormConfigurationMock = $this->prophesize('Doctrine\ORM\Configuration');
         $ormConfigurationMock->getFilterClassName('someFilter')->will(function () {
-            return DUMMY_FILTER_CLASS;
+            return self::DUMMY_FILTER_CLASS;
         });
         $this->defaultFilterFactory = new DefaultFilterFactory($ormConfigurationMock->reveal());
     }
@@ -47,6 +48,6 @@ class DefaultFilterFactoryTest extends OrmTestCase
     public function testCreateFromName()
     {
         $filter = $this->defaultFilterFactory->createFromName('someFilter');
-        $this->assertInstanceOf(DUMMY_FILTER_CLASS, $filter);
+        $this->assertInstanceOf(self::DUMMY_FILTER_CLASS, $filter);
     }
 }

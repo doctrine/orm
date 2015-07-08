@@ -77,7 +77,6 @@ class FilterCollection
      */
     private $filterFactory;
 
-
     /**
      * Constructor.
      *

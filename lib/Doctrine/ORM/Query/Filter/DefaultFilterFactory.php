@@ -24,32 +24,32 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DefaultFilterFactory implements FilterFactoryInterface
 {
-	/**
-	 * @var EntityManagerInterface
-	 */
-	private $entityManager;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
 
-	/**
-	 * @var Configuration
-	 */
-	private $ormConfiguration;
+    /**
+     * @var Configuration
+     */
+    private $ormConfiguration;
 
-	public function __construct(Configuration $ormConfiguration)
-	{
-		$this->ormConfiguration = $ormConfiguration;
-	}
+    public function __construct(Configuration $ormConfiguration)
+    {
+        $this->ormConfiguration = $ormConfiguration;
+    }
 
-	public function setEntityManager(EntityManagerInterface $entityManager)
-	{
-		$this->entityManager = $entityManager;
-	}
+    public function setEntityManager(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function createFromName($name)
-	{
-		$filterClass = $this->ormConfiguration->getFilterClassName($name);
-		return new $filterClass($this->entityManager);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function createFromName($name)
+    {
+        $filterClass = $this->ormConfiguration->getFilterClassName($name);
+        return new $filterClass($this->entityManager);
+    }
 }

@@ -28,30 +28,30 @@ class FiltersConfiguration implements FiltersConfigurationInterface
      */
     private $filterFactory;
 
-	/**
-	 * @var Configuration
-	 */
-	private $ormConfiguration;
+    /**
+     * @var Configuration
+     */
+    private $ormConfiguration;
 
-	public function __construct(Configuration $ormConfiguration)
-	{
-		$this->ormConfiguration = $ormConfiguration;
-	}
+    public function __construct(Configuration $ormConfiguration)
+    {
+        $this->ormConfiguration = $ormConfiguration;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
+    /**
+     * {@inheritdoc}
+     */
     public function getFilterFactory()
     {
-	    if ($this->filterFactory === NULL) {
-		    $this->filterFactory = new DefaultFilterFactory($this->ormConfiguration);
-	    }
+        if (null === $this->filterFactory) {
+            $this->filterFactory = new DefaultFilterFactory($this->ormConfiguration);
+        }
         return $this->filterFactory;
     }
 
-	/**
-	 * {@inheritdoc}
-	 */
+    /**
+     * {@inheritdoc}
+     */
     public function setFilterFactory(FilterFactoryInterface $filterFactory)
     {
         $this->filterFactory = $filterFactory;

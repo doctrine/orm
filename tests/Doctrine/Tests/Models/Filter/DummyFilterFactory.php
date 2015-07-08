@@ -6,10 +6,10 @@ use Doctrine\ORM\Query\Filter\FilterFactoryInterface;
 
 class DummyFilterFactory implements FilterFactoryInterface
 {
-	/**
-	 * {@inheritdoc}
-	 */
-	public function createFromName($name)
-	{
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function createFromName($name)
+    {
+    }
 }
