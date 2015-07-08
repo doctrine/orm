@@ -17,13 +17,36 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Query\Filter;
+namespace Doctrine\Tests\ORM\Query\Filter;
 
-interface FilterFactoryInterface
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
+use Doctrine\ORM\Query\Filter\FilterFactoryInterface;
+use Doctrine\Tests\OrmTestCase;
+
+
+const DUMMY_FILTER_CLASS = 'Doctrine\Tests\Models\Filter\DummyFilter';
+
+
+class DefaultFilterFactoryTest extends OrmTestCase
 {
     /**
-     * @param string $name
-     * @return object
+     * @var FilterFactoryInterface
      */
-    public function createFromName($name);
+    private $defaultFilterFactory;
+
+    protected function setUp()
+    {
+        $ormConfigurationMock = $this->prophesize('Doctrine\ORM\Configuration');
+        $ormConfigurationMock->getFilterClassName('someFilter')->will(function () {
+            return DUMMY_FILTER_CLASS;
+        });
+        $this->defaultFilterFactory = new DefaultFilterFactory($ormConfigurationMock->reveal());
+    }
+
+    public function testCreateFromName()
+    {
+        $filter = $this->defaultFilterFactory->createFromName('someFilter');
+        $this->assertInstanceOf(DUMMY_FILTER_CLASS, $filter);
+    }
 }
