@@ -54,9 +54,11 @@ class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
      */
     public function getEntityManager()
     {
-        $em = $this->getObjectManager();
-        assert($em instanceof EntityManager);
-        return $em;
+        /*
+        We can safely assume our ObjectManager is also an EventManager due to
+        our restrictions in the constructor.
+        */
+        return $this->getObjectManager();
     }
 
     /**
