@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 
@@ -19,7 +20,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p ', 'discr', 'discr');
+        $rsm->addMetaResult('p ', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
         $resultSet = array(
               array(
@@ -71,7 +72,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
 
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'discr', 'discr');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = array(

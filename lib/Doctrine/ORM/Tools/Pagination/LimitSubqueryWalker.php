@@ -19,8 +19,7 @@
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
@@ -87,16 +86,14 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
         }
 
-        $this->_getQuery()->setHint(
-            self::IDENTIFIER_TYPE,
-            Type::getType($rootClass->getTypeOfField($identifier))
-        );
+        $this->_getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->fieldMappings[$identifier]['type']);
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
             $rootAlias,
             $identifier
         );
+
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
         array_unshift($selectExpressions, new SelectExpression($pathExpression, '_dctrn_id'));
@@ -145,7 +142,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     && isset($queryComponents[$expression->identificationVariable])) {
                     $queryComponent = $queryComponents[$expression->identificationVariable];
                     if (isset($queryComponent['parent'])
-                        && $queryComponent['relation']['type'] & ClassMetadataInfo::TO_MANY) {
+                        && $queryComponent['relation']['type'] & ClassMetadata::TO_MANY) {
                         throw new \RuntimeException("Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
                     }
                 }

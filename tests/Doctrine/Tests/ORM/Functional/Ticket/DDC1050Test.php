@@ -3,16 +3,19 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1050
  */
-class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1050Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         $this->markTestSkipped('performance skipped');
+
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

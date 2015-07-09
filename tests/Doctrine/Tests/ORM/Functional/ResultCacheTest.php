@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Common\Cache\ArrayCache;
@@ -87,7 +88,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testUseResultCache()
     {
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $cache = new ArrayCache();
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->useResultCache(true);
@@ -105,7 +106,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testUseResultCacheParams()
     {
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $cache = new ArrayCache();
 
         $sqlCount = count($this->_sqlLoggerStack->queries);
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
@@ -132,7 +133,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testNativeQueryResultCaching()
     {
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
-        $rsm->addScalarResult('id', 'u');
+        $rsm->addScalarResult('id', 'u', DBALType::getType('integer'));
         $query = $this->_em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
         $query->setParameter(1, 10);
 

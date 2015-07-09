@@ -2,13 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\Tests\Models\Company\CompanyFixContract;
-use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 
@@ -195,7 +192,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testStringFieldMappings($class)
     {
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertEquals('string', $class->fieldMappings['name']['type']->getName());
         $this->assertEquals(50, $class->fieldMappings['name']['length']);
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
@@ -233,7 +230,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testIdentifier($class)
     {
         $this->assertEquals(array('id'), $class->identifier);
-        $this->assertEquals('integer', $class->fieldMappings['id']['type']);
+        $this->assertEquals('integer', $class->fieldMappings['id']['type']->getName());
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
         return $class;
@@ -383,7 +380,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
 
         $this->assertEquals(
-            array('name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null),
+            array('name' => 'discr', 'type' => DBALType::getType('string'), 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null),
             $class->discriminatorColumn
         );
     }
@@ -436,8 +433,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertArrayHasKey('type', $class->fieldMappings['id']);
         $this->assertArrayHasKey('type', $class->fieldMappings['name']);
 
-        $this->assertEquals('string', $class->fieldMappings['id']['type']);
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertEquals('string', $class->fieldMappings['id']['type']->getName());
+        $this->assertEquals('string', $class->fieldMappings['name']['type']->getName());
 
 
 
@@ -455,7 +452,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
         $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
 
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
 
     /**
@@ -491,8 +488,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
 
-        $this->assertEquals('ID', $class->columnNames['id']);
-        $this->assertEquals('NAME', $class->columnNames['name']);
+        $this->assertEquals('ID', $class->getColumnName('id'));
+        $this->assertEquals('NAME', $class->getColumnName('name'));
         $this->assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
     }
 
@@ -761,7 +758,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals(array('user_id'=>'id','user_name'=>'name'), $adminMetadata->fieldNames);
-        $this->assertEquals(array('id'=>'user_id','name'=>'user_name'), $adminMetadata->columnNames);
         $this->assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
 
 
@@ -776,7 +772,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
         $this->assertEquals(array('guest_id'=>'id','guest_name'=>'name'), $guestMetadata->fieldNames);
-        $this->assertEquals(array('id'=>'guest_id','name'=>'guest_name'), $guestMetadata->columnNames);
         $this->assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
 
         $this->assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);
@@ -1042,14 +1037,14 @@ class User
 
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',
            'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
           ));
-        $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
@@ -1078,7 +1073,7 @@ class User
         $mapping = array('fieldName' => 'version', 'type' => 'integer');
         $metadata->setVersionMapping($mapping);
         $metadata->mapField($mapping);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(
            'fieldName' => 'address',
            'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',
@@ -1182,9 +1177,9 @@ abstract class Animal
      */
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
     }
 }
@@ -1192,7 +1187,7 @@ abstract class Animal
 /** @Entity */
 class Cat extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
 
     }
@@ -1201,7 +1196,7 @@ class Cat extends Animal
 /** @Entity */
 class Dog extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
 
     }
@@ -1250,7 +1245,7 @@ class DDC1170Entity
         return $this->value;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
         $metadata->mapField(array(
            'id'                 => true,
@@ -1263,7 +1258,7 @@ class DDC1170Entity
             'columnDefinition'  => 'VARCHAR(255) NOT NULL'
         ));
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 
 }
@@ -1283,7 +1278,7 @@ class DDC807Entity
      **/
    public $id;
 
-   public static function loadMetadata(ClassMetadataInfo $metadata)
+   public static function loadMetadata(ClassMetadata $metadata)
     {
          $metadata->mapField(array(
            'id'                 => true,
@@ -1296,7 +1291,7 @@ class DDC807Entity
             'columnDefinition'  => "ENUM('ONE','TWO')"
         ));
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1319,9 +1314,9 @@ class Comment
      */
     private $content;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
             'indexes' => array(
                 array('columns' => array('content'), 'flags' => array('fulltext'), 'options' => array('where' => 'content IS NOT NULL'))

@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
 class DatabaseDriverTest extends DatabaseDriverTestCase
@@ -64,16 +64,16 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->assertArrayHasKey('DbdriverFoo', $metadatas);
         $metadata = $metadatas['DbdriverFoo'];
 
-        $this->assertArrayHasKey('id',          $metadata->fieldMappings);
-        $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
-        $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
+        $this->assertArrayHasKey('id', $metadata->fieldMappings);
+        $this->assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
+        $this->assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
 
-        $this->assertArrayHasKey('bar',         $metadata->fieldMappings);
-        $this->assertEquals('bar',              $metadata->fieldMappings['bar']['fieldName']);
-        $this->assertEquals('bar',              strtolower($metadata->fieldMappings['bar']['columnName']));
-        $this->assertEquals('string',           (string)$metadata->fieldMappings['bar']['type']);
-        $this->assertEquals(200,                $metadata->fieldMappings['bar']['length']);
+        $this->assertArrayHasKey('bar', $metadata->fieldMappings);
+        $this->assertEquals('bar', $metadata->fieldMappings['bar']['fieldName']);
+        $this->assertEquals('bar', strtolower($metadata->fieldMappings['bar']['columnName']));
+        $this->assertEquals('string', $metadata->fieldMappings['bar']['type']->getName());
+        $this->assertEquals(200, $metadata->fieldMappings['bar']['length']);
         $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 
@@ -108,7 +108,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
 
         $this->assertArrayHasKey('bar', $bazMetadata->associationMappings);
-        $this->assertEquals(ClassMetadataInfo::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
+        $this->assertEquals(ClassMetadata::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
     }
 
     public function testDetectManyToManyTables()
@@ -182,7 +182,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->assertArrayHasKey('id', $metadata->fieldMappings);
         $this->assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        $this->assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
+        $this->assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
 
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer

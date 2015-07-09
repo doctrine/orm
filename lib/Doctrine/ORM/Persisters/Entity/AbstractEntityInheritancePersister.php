@@ -42,7 +42,9 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 
         // Populate the discriminator column
         $discColumn = $this->class->discriminatorColumn;
+
         $this->columnTypes[$discColumn['name']] = $discColumn['type'];
+
         $data[$this->getDiscriminatorColumnTableName()][$discColumn['name']] = $this->class->discriminatorValue;
 
         return $data;
@@ -60,27 +62,26 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $tableAlias  = $alias == 'r' ? '' : $alias;
-        $columnName  = $class->columnNames[$field];
-        $columnAlias = $this->getSQLColumnAlias($columnName);
-        $sql         = $this->getSQLTableAlias($class->name, $tableAlias) . '.'
-                            . $this->quoteStrategy->getColumnName($field, $class, $this->platform);
+        $tableAlias   = $alias == 'r' ? '' : $alias;
+        $fieldMapping = $class->fieldMappings[$field];
+        $sql          = sprintf(
+            '%s.%s',
+            $this->getSQLTableAlias($class->name, $tableAlias),
+            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
+        );
+
+        $columnAlias = $this->getSQLColumnAlias($fieldMapping['columnName']);
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
-            $type   = Type::getType($class->getTypeOfField($field));
-            $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
-        }
-
-        return $sql . ' AS ' . $columnAlias;
+        return $fieldMapping['type']->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 
     /**
      * @param string $tableAlias
      * @param string $joinColumnName
      * @param string $className
-     * @param string $type
+     * @param Type   $type
      *
      * @return string
      */

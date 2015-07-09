@@ -251,7 +251,7 @@ class CmsUser
         }
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',

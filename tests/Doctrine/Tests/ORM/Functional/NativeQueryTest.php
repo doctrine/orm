@@ -4,16 +4,14 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Query\Parameter;
-
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 
@@ -85,7 +83,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
-        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id');
+        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, DBALType::getType('integer'));
 
         $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
         $query->setParameter(1, $addr->id);

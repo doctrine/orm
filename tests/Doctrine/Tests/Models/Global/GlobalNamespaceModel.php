@@ -1,24 +1,24 @@
 <?php
 
 /**
- * @entity
- * @table(name="articles")
+ * @Entity
+ * @Table(name="articles")
  */
 class DoctrineGlobal_Article
 {
     /**
-     * @id
-     * @column(type="int")
+     * @Id
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @column(type="string")
+     * @Column(type="string")
      */
     protected $headline;
 
     /**
-     * @column(type="text")
+     * @Column(type="text")
      */
     protected $text;
 
@@ -49,19 +49,22 @@ class DoctrineGlobal_User
 {
     /**
      * @Id
-     * @column(type="integer")
+     * @Column(type="integer")
+     *
      * @var int
      */
     private $id;
 
     /**
-     * @column(type="string", length=64)
+     * @Column(type="string", length=64)
+     *
      * @var string
      */
     private $username;
 
     /**
-     * @column(type="string", length=128)
+     * @Column(type="string", length=128)
+     *
      * @var string
      */
     private $email;

@@ -254,7 +254,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $cm1->setPrimaryTable(array('name' => '`group`'));
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
+        $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
         // Add a mapped field
         $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         // and a mapped association

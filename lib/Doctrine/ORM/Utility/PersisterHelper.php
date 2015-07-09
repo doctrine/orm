@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Utility;
 
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\QueryException;
@@ -81,7 +81,7 @@ class PersisterHelper
      * @param ClassMetadata          $class
      * @param EntityManagerInterface $em
      *
-     * @return string
+     * @return Type
      *
      * @throws \RuntimeException
      */

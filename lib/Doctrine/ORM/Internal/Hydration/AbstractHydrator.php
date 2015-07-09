@@ -371,7 +371,7 @@ abstract class AbstractHydrator
                 return $this->_cache[$key] = array(
                     'isIdentifier' => in_array($fieldName, $classMetadata->identifier),
                     'fieldName'    => $fieldName,
-                    'type'         => Type::getType($fieldMapping['type']),
+                    'type'         => $fieldMapping['type'],
                     'dqlAlias'     => $this->_rsm->columnOwnerMap[$key],
                 );
 
@@ -383,7 +383,7 @@ abstract class AbstractHydrator
                     'isScalar'             => true,
                     'isNewObjectParameter' => true,
                     'fieldName'            => $this->_rsm->scalarMappings[$key],
-                    'type'                 => Type::getType($this->_rsm->typeMappings[$key]),
+                    'type'                 => $this->_rsm->typeMappings[$key],
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
                     'class'                => new \ReflectionClass($mapping['className']),
@@ -393,23 +393,22 @@ abstract class AbstractHydrator
                 return $this->_cache[$key] = array(
                     'isScalar'  => true,
                     'fieldName' => $this->_rsm->scalarMappings[$key],
-                    'type'      => Type::getType($this->_rsm->typeMappings[$key]),
+                    'type'      => $this->_rsm->typeMappings[$key],
                 );
 
             case (isset($this->_rsm->metaMappings[$key])):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
-                $fieldName     = $this->_rsm->metaMappings[$key];
-                $dqlAlias      = $this->_rsm->columnOwnerMap[$key];
-                $classMetadata = $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
-                $type          = isset($this->_rsm->typeMappings[$key])
-                    ? Type::getType($this->_rsm->typeMappings[$key])
-                    : null;
+                $fieldName = $this->_rsm->metaMappings[$key];
+                $dqlAlias  = $this->_rsm->columnOwnerMap[$key];
+
+                // Cache metadata fetch
+                $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
 
                 return $this->_cache[$key] = array(
                     'isIdentifier' => isset($this->_rsm->isIdentifierColumn[$dqlAlias][$key]),
                     'isMetaColumn' => true,
                     'fieldName'    => $fieldName,
-                    'type'         => $type,
+                    'type'         => $this->_rsm->typeMappings[$key],
                     'dqlAlias'     => $dqlAlias,
                 );
         }

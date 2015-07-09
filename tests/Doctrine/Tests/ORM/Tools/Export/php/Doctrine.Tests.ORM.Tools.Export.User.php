@@ -1,13 +1,13 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'name' => 'cms_users',
    'options' => array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
   ));
-$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
 $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
@@ -31,7 +31,7 @@ $metadata->mapField(array(
    'columnName' => 'user_email',
    'columnDefinition' => 'CHAR(32) NOT NULL',
   ));
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(array(
     'fieldName' => 'mainGroup',
     'targetEntity' => 'Doctrine\\Tests\\ORM\Tools\\Export\\Group',
@@ -55,7 +55,7 @@ $metadata->mapOneToOne(array(
    ),
    ),
    'orphanRemoval' => true,
-   'fetch' => ClassMetadataInfo::FETCH_EAGER,
+   'fetch' => ClassMetadata::FETCH_EAGER,
   ));
 $metadata->mapOneToMany(array(
    'fieldName' => 'phonenumbers',
@@ -67,7 +67,7 @@ $metadata->mapOneToMany(array(
    ),
    'mappedBy' => 'user',
    'orphanRemoval' => true,
-   'fetch' => ClassMetadataInfo::FETCH_LAZY,
+   'fetch' => ClassMetadata::FETCH_LAZY,
    'orderBy' =>
    array(
    'number' => 'ASC',
@@ -76,7 +76,7 @@ $metadata->mapOneToMany(array(
 $metadata->mapManyToMany(array(
    'fieldName' => 'groups',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Group',
-   'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
+   'fetch' => ClassMetadata::FETCH_EXTRA_LAZY,
    'cascade' =>
    array(
    0 => 'remove',

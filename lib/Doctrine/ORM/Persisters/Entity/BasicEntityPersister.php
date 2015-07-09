@@ -343,9 +343,10 @@ class BasicEntityPersister implements EntityPersister
 
         $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
 
-        $value = $this->conn->fetchColumn($sql, array_values($flatId));
+        $fieldMapping = $versionedClass->fieldMappings[$versionField];
+        $value        = $this->conn->fetchColumn($sql, array_values($flatId));
 
-        return Type::getType($versionedClass->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->platform);
+        return $fieldMapping['type']->convertToPHPValue($value, $this->platform);
     }
 
     /**
@@ -398,13 +399,11 @@ class BasicEntityPersister implements EntityPersister
 
             switch (true) {
                 case isset($this->class->fieldNames[$columnName]):
-                    $fieldName  = $this->class->fieldNames[$columnName];
-                    $column     = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
-
-                    if (isset($this->class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                        $type        = Type::getType($this->columnTypes[$columnName]);
-                        $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
-                    }
+                    $fieldName    = $this->class->fieldNames[$columnName];
+                    $fieldMapping = $this->class->fieldMappings[$fieldName];
+                    $column       = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
+                    $type         = $fieldMapping['type'];
+                    $placeholder  = $type->convertToDatabaseValueSQL('?', $this->platform);
 
                     break;
 
@@ -460,7 +459,7 @@ class BasicEntityPersister implements EntityPersister
             $types[]    = $this->class->fieldMappings[$versionField]['type'];
             $params[]   = $this->class->reflFields[$versionField]->getValue($entity);
 
-            switch ($versionFieldType) {
+            switch ($versionFieldType->getName()) {
                 case Type::SMALLINT:
                 case Type::INTEGER:
                 case Type::BIGINT:
@@ -550,18 +549,19 @@ class BasicEntityPersister implements EntityPersister
      */
     public function delete($entity)
     {
+        $self       = $this;
         $class      = $this->class;
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
-        $types      = array_map(function ($identifier) use ($class) {
+        $types      = array_map(function ($identifier) use ($class, $self) {
 
             if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
 
-            $targetMapping = $this->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+            $targetMapping = $self->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
 
             if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
                 return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
@@ -623,8 +623,11 @@ class BasicEntityPersister implements EntityPersister
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
-                $columnName = $this->class->columnNames[$field];
-                $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
+                $fieldMapping = $this->class->fieldMappings[$field];
+                $columnName   = $fieldMapping['columnName'];
+
+                $this->columnTypes[$columnName] = $fieldMapping['type'];
+
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
                 continue;
@@ -1314,19 +1317,19 @@ class BasicEntityPersister implements EntityPersister
             return '';
         }
 
-        $columnList  = array();
-        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+        $columnList    = array();
+        $targetClass   = $this->em->getClassMetadata($assoc['targetEntity']);
+        $isIdentifier  = isset($assoc['id']) && $assoc['id'] === true;
+        $sqlTableAlias = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias));
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
-            $type             = null;
-            $isIdentifier     = isset($assoc['id']) && $assoc['id'] === true;
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
-            $columnList[]     = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
-                                . '.' . $quotedColumn . ' AS ' . $resultColumnName;
             $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
             $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
+
+            $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
         }
 
         return implode(', ', $columnList);
@@ -1390,12 +1393,10 @@ class BasicEntityPersister implements EntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldNames[$column])
-                && isset($this->columnTypes[$this->class->fieldNames[$column]])
-                && isset($this->class->fieldMappings[$this->class->fieldNames[$column]]['requireSQLConversion'])) {
-
-                $type        = Type::getType($this->columnTypes[$this->class->fieldNames[$column]]);
-                $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
+            if (isset($this->class->fieldNames[$column])) {
+                $fieldName    = $this->class->fieldNames[$column];
+                $fieldMapping = $this->class->fieldMappings[$fieldName];
+                $placeholder  = $fieldMapping['type']->convertToDatabaseValueSQL('?', $this->platform);
             }
 
             $values[] = $placeholder;
@@ -1462,20 +1463,19 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $root           = $alias == 'r' ? '' : $alias ;
-        $tableAlias     = $this->getSQLTableAlias($class->name, $root);
-        $columnName     = $this->quoteStrategy->getColumnName($field, $class, $this->platform);
-        $sql            = $tableAlias . '.' . $columnName;
-        $columnAlias    = $this->getSQLColumnAlias($class->columnNames[$field]);
+        $root         = $alias == 'r' ? '' : $alias ;
+        $fieldMapping = $class->fieldMappings[$field];
+        $sql          = sprintf(
+            '%s.%s',
+            $this->getSQLTableAlias($class->name, $root),
+            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
+        );
+
+        $columnAlias = $this->getSQLColumnAlias($fieldMapping['columnName']);
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
 
-        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
-            $type   = Type::getType($class->getTypeOfField($field));
-            $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
-        }
-
-        return $sql . ' AS ' . $columnAlias;
+        return $fieldMapping['type']->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 
     /**
@@ -1592,8 +1592,9 @@ class BasicEntityPersister implements EntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldMappings[$field]['requireSQLConversion'])) {
-                $placeholder = Type::getType($this->class->getTypeOfField($field))->convertToDatabaseValueSQL($placeholder, $this->platform);
+            if (isset($this->class->fieldMappings[$field])) {
+                $fieldMapping = $this->class->fieldMappings[$field];
+                $placeholder  = $fieldMapping['type']->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
             if (null !== $comparison) {
@@ -1647,7 +1648,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
-        if (isset($this->class->columnNames[$field])) {
+        if (isset($this->class->fieldMappings[$field])) {
             $className = (isset($this->class->fieldMappings[$field]['inherited']))
                 ? $this->class->fieldMappings[$field]['inherited']
                 : $this->class->name;
@@ -1873,7 +1874,7 @@ class BasicEntityPersister implements EntityPersister
 
         switch (true) {
             case (isset($class->fieldMappings[$field])):
-                $types = array_merge($types, PersisterHelper::getTypeOfField($field, $class, $this->em));
+                $types = array_merge($types, array($class->fieldMappings[$field]['type']));
                 break;
 
             case (isset($class->associationMappings[$field])):
@@ -1900,12 +1901,9 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (is_array($value)) {
-            return array_map(
-                function ($type) {
-                    return Type::getType($type)->getBindingType() + Connection::ARRAY_PARAM_OFFSET;
-                },
-                $types
-            );
+            return array_map(function (Type $type) {
+                return $type->getBindingType() + Connection::ARRAY_PARAM_OFFSET;
+            }, $types);
         }
 
         return $types;

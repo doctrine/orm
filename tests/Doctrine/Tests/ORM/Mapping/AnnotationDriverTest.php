@@ -33,7 +33,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
-        $this->assertEquals('string', $cm->fieldMappings['id']['type']);
+        $this->assertEquals('string', $cm->fieldMappings['id']['type']->getName());
     }
 
     /**
@@ -212,7 +212,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $this->setExpectedException('Doctrine\Common\Annotations\AnnotationException',
-            '[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
+            '[Enum Error] Attribute "fetch" of @Doctrine\ORM\Annotation\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
         $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
 

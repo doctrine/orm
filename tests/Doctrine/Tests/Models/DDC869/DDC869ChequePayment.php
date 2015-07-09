@@ -26,10 +26,10 @@ namespace Doctrine\Tests\Models\DDC869;
 class DDC869ChequePayment extends DDC869Payment
 {
 
-    /** @column(type="string") */
+    /** @Column(type="string") */
     protected $serialNumber;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->mapField(array(
            'fieldName'  => 'serialNumber',
