@@ -90,9 +90,9 @@ class PaginatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, true);
         $this->assertEquals(1, count($paginator), 'Expecting one row to match in Paginator');
 
-        //xdebug_start_trace('/tmp/test');
         $results = $paginator->getIterator()->getArrayCopy();
-        //xdebug_stop_trace();
+
+        // If bug #DDC-3818 is present, next call will fail and will find only one department in object (instead of 3)
         $this->checkCompany($results[0]);
 
         $this->assertEquals('name5', $results[0]->name, 'expecting company returned to be named "name0"');
