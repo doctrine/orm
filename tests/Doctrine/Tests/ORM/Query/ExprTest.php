@@ -71,6 +71,11 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertEquals('COUNT(DISTINCT u.id)', (string) $this->_expr->countDistinct('u.id'));
     }
+    
+    public function testCountDistinctExprMulti()
+    {
+        $this->assertEquals('COUNT(DISTINCT u.id, u.name)', (string) $this->_expr->countDistinct('u.id', 'u.name'));
+    }
 
     public function testExistsExpr()
     {
