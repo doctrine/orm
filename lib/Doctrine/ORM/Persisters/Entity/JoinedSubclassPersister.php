@@ -239,12 +239,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return;
         }
 
-        $versionedClass  = $this->getVersionedClassMetadata();
-        $versionedTable  = $versionedClass->getTableName();
-
         if ( !$updateData && (!$isVersioned || !$this->em->getUnitOfWork()->isScheduledForVersionBump($entity)) ) {
             return;
         }
+
+        $versionedClass  = $this->getVersionedClassMetadata();
+        $versionedTable  = $versionedClass->getTableName();
 
         foreach ($updateData as $tableName => $data) {
             $tableName = $this->quotedTableMap[$tableName];
