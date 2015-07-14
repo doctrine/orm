@@ -121,21 +121,27 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testForceVersionUpdate()
     {
 
+        /*
+         * Accessing UOW is ugly on an API level, but it's the only way to
+         * test the core-behavior until DDC-3781 provides another mechanism.
+         */
+        $uow = $this->_em->getUnitOfWork();
+
         $test = new OptimisticStandard();
         $test->name = 'test';
         $this->_em->persist($test);
         $this->_em->flush();
         
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertFalse($uow->isScheduledForVersionBump($test));
         $this->assertEquals(1, $test->getVersion());
 
         /*
          * Check that our flag forces an update and resets the flag
          */
-        $this->_em->getUnitOfWork()->scheduleForVersionBump($test);
+        $uow->scheduleForVersionBump($test);
         $this->_em->flush();
         $this->assertEquals(2, $test->getVersion());
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertFalse($uow->isScheduledForVersionBump($test));
 
 
         /*
@@ -144,17 +150,17 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
          */
         $this->_em->flush();
         $this->assertEquals(2, $test->getVersion());
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertFalse($uow->isScheduledForVersionBump($test));
 
         /*
          * Check that using the flag AND making a change still results in only
          * a single increment to the version.
          */
-        $this->_em->getUnitOfWork()->scheduleForVersionBump($test);
+        $uow->scheduleForVersionBump($test);
         $test->name = "test2";
         $this->_em->flush();
         $this->assertEquals(3, $test->getVersion());
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertFalse($uow->isScheduledForVersionBump($test));
 
         /*
          * With another entity, ensure that using the flag doesn't cause the
@@ -164,11 +170,11 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $test2 = new OptimisticStandard();
         $test2->name = 'insert_checks';
-        $this->_em->getUnitOfWork()->scheduleForVersionBump($test);
+        $uow->scheduleForVersionBump($test);
         $this->_em->persist($test2);
         $this->_em->flush();
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertFalse($uow->isScheduledForVersionBump($test));
         $this->assertEquals(1, $test2->getVersion());
 
     }

@@ -500,6 +500,12 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $raffle = new CompanyRaffle();
         $raffle->setData("foo");
 
+        /*
+         * Accessing UOW is ugly on an API level, but it's the only way to
+         * test the core-behavior until DDC-3781 provides another mechanism.
+         */
+        $uow = $this->_em->getUnitOfWork();
+
 
         $this->_em->persist($raffle);
         $this->_em->flush();
@@ -523,24 +529,24 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /*
          * Check that forcing a version increase works in the absence of other changes
          */
-        $this->_em->getUnitOfWork()->scheduleForVersionBump($raffle);
+        $uow->scheduleForVersionBump($raffle);
 
-        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+        $this->assertTrue($uow->isScheduledForVersionBump($raffle));
         $this->_em->flush();
         $this->assertEquals(3,$raffle->getVersion());
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+        $this->assertFalse($uow->isScheduledForVersionBump($raffle));
 
         /*
          * Check that versions are not double-incremented when both situations demand
          * a version change.
          */
         $raffle->setData("baz");
-        $this->_em->getUnitOfWork()->scheduleForVersionBump($raffle);
+        $uow->scheduleForVersionBump($raffle);
 
-        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+        $this->assertTrue($uow->isScheduledForVersionBump($raffle));
         $this->_em->flush();
         $this->assertEquals(4,$raffle->getVersion());
-        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+        $this->assertFalse($uow->isScheduledForVersionBump($raffle));
 
     }
 }
