@@ -9,7 +9,7 @@ namespace Doctrine\Tests\Models\Company;
  * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
  */
 abstract class CompanyEvent {
-   /**
+    /**
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
@@ -21,16 +21,26 @@ abstract class CompanyEvent {
      */
      private $organization;
 
-     public function getId() {
-         return $this->id;
-     }
+    /**
+     * @Version @Column(type="integer")
+     * @var int
+     */
+    protected $version;
 
-     public function getOrganization() {
-         return $this->organization;
-     }
+    public function getId() {
+        return $this->id;
+    }
 
-     public function setOrganization(CompanyOrganization $org) {
-         $this->organization = $org;
-     }
+    public function getOrganization() {
+        return $this->organization;
+    }
+
+    public function setOrganization(CompanyOrganization $org) {
+        $this->organization = $org;
+    }
+
+    public function getVersion() {
+        return $this->version;
+    }
 
 }

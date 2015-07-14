@@ -494,4 +494,53 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
         $this->assertEquals(1, count($users));
     }
+
+    public function testVersioning()
+    {
+        $raffle = new CompanyRaffle();
+        $raffle->setData("foo");
+
+
+        $this->_em->persist($raffle);
+        $this->_em->flush();
+
+        $this->assertEquals(1,$raffle->getVersion());
+
+
+        /*
+         * No changes, version should be stable
+         */
+        $this->_em->flush();
+        $this->assertEquals(1,$raffle->getVersion());
+
+        /*
+         * Real changes, version should increment
+         */
+        $raffle->setData("bar");
+        $this->_em->flush();
+        $this->assertEquals(2,$raffle->getVersion());
+
+        /*
+         * Check that forcing a version increase works in the absence of other changes
+         */
+        $this->_em->getUnitOfWork()->scheduleForVersionBump($raffle);
+
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+        $this->_em->flush();
+        $this->assertEquals(3,$raffle->getVersion());
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+
+        /*
+         * Check that versions are not double-incremented when both situations demand
+         * a version change.
+         */
+        $raffle->setData("baz");
+        $this->_em->getUnitOfWork()->scheduleForVersionBump($raffle);
+
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+        $this->_em->flush();
+        $this->assertEquals(4,$raffle->getVersion());
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($raffle));
+
+    }
 }

@@ -319,6 +319,9 @@ class BasicEntityPersister implements EntityPersister
         $value = $this->fetchVersionValue($this->class, $id);
 
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
+
+        // Forced version-bump unnecessary, just occurred during normal update/insert
+        $this->em->getUnitOfWork()->scheduleForVersionBump($entity,false);
     }
 
     /**
@@ -355,12 +358,17 @@ class BasicEntityPersister implements EntityPersister
     {
         $tableName  = $this->class->getTableName();
         $updateData = $this->prepareUpdateData($entity);
+        $isVersioned     = $this->class->isVersioned;
 
         if ( ! isset($updateData[$tableName]) || ! ($data = $updateData[$tableName])) {
-            return;
+            if($isVersioned && $this->em->getUnitOfWork()->isScheduledForVersionBump($entity)){
+                $data = array();
+            }else{
+                return;
+            }
+
         }
 
-        $isVersioned     = $this->class->isVersioned;
         $quotedTableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);

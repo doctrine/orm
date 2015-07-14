@@ -114,6 +114,65 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * Tests that the version-code can be forcibly updated even if the entity
+     * has no direct changes.
+     */
+    public function testForceVersionUpdate()
+    {
+
+        $test = new OptimisticStandard();
+        $test->name = 'test';
+        $this->_em->persist($test);
+        $this->_em->flush();
+        
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertEquals(1, $test->getVersion());
+
+        /*
+         * Check that our flag forces an update and resets the flag
+         */
+        $this->_em->getUnitOfWork()->scheduleForVersionBump($test);
+        $this->_em->flush();
+        $this->assertEquals(2, $test->getVersion());
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+
+
+        /*
+         * Check that further flushes don't do anything with our flag set to
+         * false (preserving the usual behavior)
+         */
+        $this->_em->flush();
+        $this->assertEquals(2, $test->getVersion());
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+
+        /*
+         * Check that using the flag AND making a change still results in only
+         * a single increment to the version.
+         */
+        $this->_em->getUnitOfWork()->scheduleForVersionBump($test);
+        $test->name = "test2";
+        $this->_em->flush();
+        $this->assertEquals(3, $test->getVersion());
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+
+        /*
+         * With another entity, ensure that using the flag doesn't cause the
+         * version number to jump to 2 on initial insert, and that it is
+         * properly reset to false after an insert.
+         */
+
+        $test2 = new OptimisticStandard();
+        $test2->name = 'insert_checks';
+        $this->_em->getUnitOfWork()->scheduleForVersionBump($test);
+        $this->_em->persist($test2);
+        $this->_em->flush();
+
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForVersionBump($test));
+        $this->assertEquals(1, $test2->getVersion());
+
+    }
+
     public function testStandardInsertSetsInitialVersionValue()
     {
         $test = new OptimisticStandard();
@@ -293,8 +352,8 @@ class OptimisticStandard
      * @Version @Column(type="integer")
      */
     private $version;
-
-    function getVersion() {return $this->version;}
+    
+    public function getVersion() {return $this->version;}
 }
 
 /**
