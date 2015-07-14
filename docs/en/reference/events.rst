@@ -654,7 +654,8 @@ preUpdate
 PreUpdate is the most restrictive to use event, since it is called
 right before an update statement is called for an entity inside the
 ``EntityManager#flush()`` method. Note that this event is not
-triggered when the computed changeset is empty.
+normally triggered if the computed changeset is empty. (One
+exception is when a version-column is being forcibly updated.)
 
 Changes to associations of the updated entity are never allowed in
 this event, since Doctrine cannot guarantee to correctly handle

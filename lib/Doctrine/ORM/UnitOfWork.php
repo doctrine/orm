@@ -1157,11 +1157,9 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            //TODO ensure any entities already given a "real" update/insert don't get bumped again from being on both lists
-
             if ($preUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
-                $blankArray = array(); //TODO document that "no-change" events are a new thing
-                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $blankArray), $preUpdateInvoke);
+                $blankChangeSet = array();
+                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $blankChangeSet), $preUpdateInvoke);
                 $this->recomputeSingleEntityChangeSet($class, $entity);
             }
 
