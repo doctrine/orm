@@ -576,6 +576,7 @@ entities and their associations have been computed. This means, the
 
 -  Entities scheduled for insert
 -  Entities scheduled for update
+-  Entities scheduled for version-bumping
 -  Entities scheduled for removal
 -  Collections scheduled for update
 -  Collections scheduled for removal
@@ -599,6 +600,10 @@ mentioned sets. See this example:
             }
 
             foreach ($uow->getScheduledEntityUpdates() as $entity) {
+
+            }
+
+            foreach ($uow->getScheduledEntityVersionBumps() as $entity){
 
             }
 

@@ -3257,6 +3257,15 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Gets the currently scheduled entity version-bumps in this UnitOfWork.
+     *
+     * @return array
+     */
+    public function getScheduledEntityVersionBumps(){
+        return $this->entityUpdateVersions;
+    }
+
+    /**
      * Gets the currently scheduled entity deletions in this UnitOfWork.
      *
      * @return array
