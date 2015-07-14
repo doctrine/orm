@@ -58,7 +58,7 @@ class DDC3033Product
     public $changeSet = array();
 
     /**
-     * @var integer $id
+     * @var int $id
      *
      * @Column(name="id", type="integer")
      * @Id
@@ -120,7 +120,7 @@ class DDC3033Product
 class DDC3033User
 {
     /**
-     * @var integer
+     * @var int
      *
      * @Column(name="id", type="integer")
      * @Id

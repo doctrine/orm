@@ -13,7 +13,7 @@ use Doctrine\DBAL\DriverManager;
 class TestUtil
 {
     /**
-     * @var boolean Whether the database schema is initialized.
+     * @var bool Whether the database schema is initialized.
      */
     private static $initialized = false;
 

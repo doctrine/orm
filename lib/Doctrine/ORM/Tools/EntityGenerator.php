@@ -157,13 +157,15 @@ class EntityGenerator
         Type::DATE          => '\DateTime',
         Type::TIME          => '\DateTime',
         Type::OBJECT        => '\stdClass',
-        Type::BIGINT        => 'integer',
-        Type::SMALLINT      => 'integer',
+        Type::INTEGER       => 'int',
+        Type::BIGINT        => 'int',
+        Type::SMALLINT      => 'int',
         Type::TEXT          => 'string',
         Type::BLOB          => 'string',
         Type::DECIMAL       => 'string',
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
+        Type::BOOLEAN       => 'bool',
     );
 
     /**

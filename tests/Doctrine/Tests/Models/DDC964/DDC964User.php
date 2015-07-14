@@ -51,7 +51,7 @@ class DDC964User
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

@@ -993,13 +993,13 @@ class EntityGeneratorTest extends OrmTestCase
             )),
             array(array(
                 'fieldName' => 'bigint',
-                'phpType' => 'integer',
+                'phpType' => 'int',
                 'dbType' => 'bigint',
                 'value' => 11
             )),
             array(array(
                 'fieldName' => 'smallint',
-                'phpType' => 'integer',
+                'phpType' => 'int',
                 'dbType' => 'smallint',
                 'value' => 22
             )),
