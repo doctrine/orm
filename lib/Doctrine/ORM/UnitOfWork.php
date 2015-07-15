@@ -1808,6 +1808,7 @@ class UnitOfWork implements PropertyChangedListener
     private function doMerge($entity, array &$visited, $prevManagedCopy = null, $assoc = null)
     {
         $oid = spl_object_hash($entity);
+        $isKnown = $this->isKnowEntity($entity);
 
         if (isset($visited[$oid])) {
             $managedCopy = $visited[$oid];
@@ -1905,7 +1906,56 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->cascadeMerge($entity, $managedCopy, $visited);
 
+        // Restore previous state (where the given entity was previously managed)
+        if(!$isKnown){
+            $this->forgetEntity($entity);
+        }
+
         return $managedCopy;
+    }
+
+    /**
+     * Remove UOW reference to this entity.
+     *
+     * WARNING: could cause some issue, created to fix MergeSplHashConflict
+     *
+     * @param object $entity
+     */
+    private function forgetEntity($entity)
+    {
+        $oid = spl_object_hash($entity);
+
+        if ($this->isInIdentityMap($entity)) {
+            $this->removeFromIdentityMap($entity);
+        }
+
+        unset(
+            $this->entityInsertions[$oid],
+            $this->entityUpdates[$oid],
+            $this->entityDeletions[$oid],
+            $this->entityIdentifiers[$oid],
+            $this->entityStates[$oid],
+            $this->originalEntityData[$oid]
+        );
+    }
+
+    /**
+     * Check if an entity is known, i.e. it's object identifier is used by UOW
+     *
+     * @param object $entity
+     * @return bool
+     */
+    private function isKnowEntity($entity)
+    {
+        $oid = spl_object_hash($entity);
+
+        return $this->isInIdentityMap($entity)
+            || isset($this->entityInsertions[$oid])
+            || isset($this->entityUpdates[$oid])
+            || isset($this->entityDeletions[$oid])
+            || isset($this->entityIdentifiers[$oid])
+            || isset($this->entityStates[$oid])
+            || isset($this->originalEntityData[$oid]);
     }
 
     /**
@@ -2868,6 +2918,25 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
+        if (isset($this->originalEntityData[$oid])) {
+            return $this->originalEntityData[$oid];
+        }
+
+        return array();
+    }
+
+    /**
+     * Gets the original data of an entity by it's oid. The original data is the data that was
+     * present at the time the entity was reconstituted from the database.
+     *
+     * Note: Used to test MergeSplHashConflict
+     *
+     * @param string $oid
+     *
+     * @return array
+     */
+    public function getOriginalEntityDataByOid($oid)
+    {
         if (isset($this->originalEntityData[$oid])) {
             return $this->originalEntityData[$oid];
         }
