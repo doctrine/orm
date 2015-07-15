@@ -10,35 +10,9 @@ class DDC3699RelationMany
 {
     const CLASSNAME = __CLASS__;
 
-    /**
-     * @Id
-     * @Column(type="integer")
-     */
-    protected $id;
+    /** @Id @Column(type="integer") */
+    public $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3699Child", inversedBy="relations")
-     * @JoinColumn(name="child", referencedColumnName="id")
-     */
-    protected $child;
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getChild()
-    {
-        return $this->child;
-    }
-
-    public function setChild($child)
-    {
-        $this->child = $child;
-    }
+    /** @ManyToOne(targetEntity="DDC3699Child", inversedBy="relations") */
+    public $child;
 }

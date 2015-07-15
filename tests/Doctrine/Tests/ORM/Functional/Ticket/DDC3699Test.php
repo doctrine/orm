@@ -26,71 +26,87 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    private function createChild($id, $relationClass, $relationMethod)
+    /**
+     * @group DDC-3699
+     */
+    public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToOneUninitializedAssociations()
     {
-        // element in DB
-        $child = new DDC3699Child();
-        $child->setId($id);
-        $child->setChildField('childValue');
-        $child->setParentField('parentValue');
+        $id = 1;
 
-        $relation = new $relationClass();
-        $relation->setId($id);
-        $relation->setChild($child);
-        $child->$relationMethod($relation);
+        $child = new DDC3699Child();
+
+        $child->id          = $id;
+        $child->childField  = 'childValue';
+        $child->parentField = 'parentValue';
+
+        $relation = new DDC3699RelationOne();
+
+        $relation->id       = $id;
+        $relation->child    = $child ;
+        $child->oneRelation = $relation;
 
         $this->_em->persist($relation);
         $this->_em->persist($child);
         $this->_em->flush();
+        $this->_em->clear();
 
-        // detach
-        $this->_em->detach($relation);
-        $this->_em->detach($child);
-    }
+        // fixtures loaded
+        /* @var $unManagedChild DDC3699Child */
+        $unManagedChild = $this->_em->find(DDC3699Child::CLASSNAME, $id);
 
-    /**
-     * @group DDC-3699
-     */
-    public function testMergeParentEntityFieldsOne()
-    {
-        $id = 1;
-        $this->createChild($id, DDC3699RelationOne::CLASSNAME, 'setOneRelation');
-
-        $unmanagedChild = $this->_em->find(DDC3699Child::CLASSNAME, $id);
-        $this->_em->detach($unmanagedChild);
+        $this->_em->detach($unManagedChild);
 
         // make it managed again
         $this->_em->find(DDC3699Child::CLASSNAME, $id);
 
-        $unmanagedChild->setChildField('modifiedChildValue');
-        $unmanagedChild->setParentField('modifiedParentValue');
+        $unManagedChild->childField  = 'modifiedChildValue';
+        $unManagedChild->parentField = 'modifiedParentValue';
 
-        $mergedChild = $this->_em->merge($unmanagedChild);
+        /* @var $mergedChild DDC3699Child */
+        $mergedChild = $this->_em->merge($unManagedChild);
 
-        $this->assertEquals($mergedChild->getChildField(), 'modifiedChildValue');
-        $this->assertEquals($mergedChild->getParentField(), 'modifiedParentValue');
+        $this->assertSame($mergedChild->childField, 'modifiedChildValue');
+        $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 
     /**
      * @group DDC-3699
      */
-    public function testMergeParentEntityFieldsMany()
+    public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToManyUninitializedAssociations()
     {
         $id = 2;
-        $this->createChild($id, DDC3699RelationMany::CLASSNAME, 'addRelation');
 
+        $child = new DDC3699Child();
+
+        $child->id          = $id;
+        $child->childField  = 'childValue';
+        $child->parentField = 'parentValue';
+
+        $relation = new DDC3699RelationMany();
+
+        $relation->id       = $id;
+        $relation->child    = $child ;
+        $child->relations[] = $relation;
+
+        $this->_em->persist($relation);
+        $this->_em->persist($child);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        /* @var $unmanagedChild DDC3699Child */
         $unmanagedChild = $this->_em->find(DDC3699Child::CLASSNAME, $id);
         $this->_em->detach($unmanagedChild);
 
         // make it managed again
         $this->_em->find(DDC3699Child::CLASSNAME, $id);
 
-        $unmanagedChild->setChildField('modifiedChildValue');
-        $unmanagedChild->setParentField('modifiedParentValue');
+        $unmanagedChild->childField  = 'modifiedChildValue';
+        $unmanagedChild->parentField = 'modifiedParentValue';
 
+        /* @var $mergedChild DDC3699Child */
         $mergedChild = $this->_em->merge($unmanagedChild);
 
-        $this->assertEquals($mergedChild->getChildField(), 'modifiedChildValue');
-        $this->assertEquals($mergedChild->getParentField(), 'modifiedParentValue');
+        $this->assertSame($mergedChild->childField, 'modifiedChildValue');
+        $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 }

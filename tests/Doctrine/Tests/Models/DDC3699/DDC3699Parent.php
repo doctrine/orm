@@ -2,25 +2,11 @@
 
 namespace Doctrine\Tests\Models\DDC3699;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class DDC3699Parent
 {
     const CLASSNAME = __CLASS__;
 
-    /**
-     * @Column(type="string")
-     */
-    protected $parentField;
-
-    public function getParentField()
-    {
-        return $this->parentField;
-    }
-
-    public function setParentField($parentField)
-    {
-        $this->parentField = $parentField;
-    }
+    /** @Column(type="string") */
+    public $parentField;
 }
