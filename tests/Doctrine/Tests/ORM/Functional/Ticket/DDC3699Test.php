@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\Tests\Models\DDC3699\DDC3699Parent;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
@@ -21,7 +22,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(DDC3699RelationMany::CLASSNAME),
                 $this->_em->getClassMetadata(DDC3699Child::CLASSNAME),
             ));
-        } catch (\Exception $e) {
+        } catch (SchemaException $e) {
             // should throw error on second because schema is already created
         }
     }
