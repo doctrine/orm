@@ -31,10 +31,10 @@
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
-        "psr-0": { "Doctrine\\ORM\\": "lib/" }
+        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
     },
     "autoload-dev": {
-        "psr-0": { "Doctrine\\Tests\\": "tests/" }
+        "psr-4": { "Doctrine\\Tests\\": "tests/Doctrine/Tests" }
     },
     "bin": ["bin/doctrine", "bin/doctrine.php"],
     "extra": {
