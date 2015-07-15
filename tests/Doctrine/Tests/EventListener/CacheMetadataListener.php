@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\EventListener;
 
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -38,16 +37,19 @@ class CacheMetadataListener
 
     /**
      * @param ClassMetadata $metadata
+     *
      * @return bool
      */
-    private function isVisited(ClassMetaData $metadata) {
+    private function isVisited(ClassMetaData $metadata)
+    {
         return isset($this->enabledItems[$metadata->getName()]);
     }
 
     /**
      * @param ClassMetadata $metadata
      */
-    private function recordVisit(ClassMetaData $metadata) {
+    private function recordVisit(ClassMetaData $metadata)
+    {
         $this->enabledItems[$metadata->getName()] = true;
     }
 
@@ -55,8 +57,8 @@ class CacheMetadataListener
      * @param ClassMetadata $metadata
      * @param EntityManager $em
      */
-    protected function enableCaching(ClassMetadata $metadata, EntityManager $em) {
-
+    protected function enableCaching(ClassMetadata $metadata, EntityManager $em)
+    {
         if ($this->isVisited($metadata)) {
             return; // Already handled in the past
         }
@@ -73,12 +75,9 @@ class CacheMetadataListener
 
         $this->recordVisit($metadata);
 
-        /*
-         * Only enable association-caching when the target has already been
-         * given caching settings
-         */
+        // only enable association-caching when the target has already been
+        // given caching settings
         foreach ($metadata->associationMappings as $mapping) {
-
             $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
             $this->enableCaching($targetMeta, $em);
 
