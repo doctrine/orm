@@ -139,6 +139,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC117\DDC117Editor',
             'Doctrine\Tests\Models\DDC117\DDC117Link',
         ),
+        'ddc3699' => array(
+            'Doctrine\Tests\Models\DDC3699\DDC3699Parent',
+            'Doctrine\Tests\Models\DDC3699\DDC3699RelationOne',
+            'Doctrine\Tests\Models\DDC3699\DDC3699RelationMany',
+            'Doctrine\Tests\Models\DDC3699\DDC3699Child',
+        ),
         'stockexchange' => array(
             'Doctrine\Tests\Models\StockExchange\Bond',
             'Doctrine\Tests\Models\StockExchange\Stock',

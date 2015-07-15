@@ -13,18 +13,9 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
-        parent::setUp();
+        $this->useModelSet('ddc3699');
 
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(DDC3699Parent::CLASSNAME),
-                $this->_em->getClassMetadata(DDC3699RelationOne::CLASSNAME),
-                $this->_em->getClassMetadata(DDC3699RelationMany::CLASSNAME),
-                $this->_em->getClassMetadata(DDC3699Child::CLASSNAME),
-            ));
-        } catch (SchemaException $e) {
-            // should throw error on second because schema is already created
-        }
+        parent::setUp();
     }
 
     /**
