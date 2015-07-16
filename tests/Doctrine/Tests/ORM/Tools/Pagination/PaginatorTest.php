@@ -68,8 +68,8 @@ class PaginatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $query = $this->_em->createQuery(
             'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c LEFT JOIN c.departments d '.
-            ' WHERE c.name = \'name0\''
-        )->setFirstResult(0)->setMaxResults(1);
+            ' WHERE c.name = :name'
+        )->setParameter('name', 'name0')->setFirstResult(0)->setMaxResults(1);
 
         $paginator = new Paginator($query, true);
         $this->assertEquals(1, count($paginator), 'Expecting one row to match in Paginator');
@@ -84,8 +84,8 @@ class PaginatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $query = $this->_em->createQuery(
             'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c LEFT JOIN c.departments d '.
-            ' WHERE d.name = \'namedep5-0\''
-        )->setFirstResult(0)->setMaxResults(1);
+            ' WHERE d.name = :name'
+        )->setParameter('name', 'namedep5-0')->setFirstResult(0)->setMaxResults(1);
         
         $paginator = new Paginator($query, true);
         $this->assertEquals(1, count($paginator), 'Expecting one row to match in Paginator');
