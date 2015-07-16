@@ -1089,12 +1089,12 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return array
      */
-    public function getAssociationCacheDefaults ($fieldName, array $cache)
+    public function getAssociationCacheDefaults($fieldName, array $cache)
     {
         if ( ! isset($cache['usage'])) {
             $cache['usage'] = isset($this->cache['usage'])
-            ? $this->cache['usage']
-            : self::CACHE_USAGE_READ_ONLY;
+                ? $this->cache['usage']
+                : self::CACHE_USAGE_READ_ONLY;
         }
 
         if ( ! isset($cache['region'])) {
