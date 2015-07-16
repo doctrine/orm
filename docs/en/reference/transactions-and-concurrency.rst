@@ -98,6 +98,13 @@ functionally equivalent to the previously shown code looks as follows:
         $em->persist($user);
     });
 
+.. warning::
+
+    For historical reasons, ``EntityManager#transactional($func)`` will return
+    ``false`` whenever the return value of ``$func`` is loosely false.
+    Some examples of this include ``array()``, ``"0"``, ``""``, ``0``, and
+    ``null``.
+
 The difference between ``Connection#transactional($func)`` and
 ``EntityManager#transactional($func)`` is that the latter
 abstraction flushes the ``EntityManager`` prior to transaction
