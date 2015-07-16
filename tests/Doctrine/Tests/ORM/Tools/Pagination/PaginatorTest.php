@@ -46,7 +46,7 @@ class PaginatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         // Test simple test
         $query = $this->_em->createQuery(
-            'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c LEFT JOIN c.departments d'
+            'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c LEFT JOIN c.departments d ORDER BY c.id ASC'
         )->setFirstResult(5)->setMaxResults(2);
 
         $paginator = new Paginator($query, true);
