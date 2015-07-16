@@ -25,6 +25,21 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        $this->_schemaTool->dropSchema(array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3609Order'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3609SimpleOrder'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3609ComplexOrder'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3609DeliveryLocation'),
+        ));
+
+        parent::tearDown();
+    }
+
+    /**
      * Verifies that class table inheritance joins work correctly when additional
      * restrictions are placed on the joins for child tables.
      *

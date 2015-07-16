@@ -158,7 +158,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
-            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id ON (c0_.id = c3_.id)'
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id AND (c0_.id = c3_.id)'
         );
     }
 
@@ -2165,7 +2165,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         // the where clause when not joining onto that table
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c LEFT JOIN Doctrine\Tests\Models\Company\CompanyEmployee e WITH e.id = c.salesPerson WHERE c.completed = true',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ LEFT JOIN company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id ON (c2_.id = c0_.salesPerson_id) WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ LEFT JOIN company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id AND (c2_.id = c0_.salesPerson_id) WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
         );
     }
 
