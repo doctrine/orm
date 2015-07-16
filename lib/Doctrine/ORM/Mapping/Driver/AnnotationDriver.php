@@ -273,7 +273,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
-
+            // Evaluate @Cache annotation
+            if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Cache')) !== null) {
+                $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], array(
+                        'usage'         => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
+                        'region'        => $cacheAnnot->region,
+                ));
+            }
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = array();
 
@@ -395,14 +401,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['class'] = $embeddedAnnot->class;
                 $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
                 $metadata->mapEmbedded($mapping);
-            }
-
-            // Evaluate @Cache annotation
-            if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Cache')) !== null) {
-                $metadata->enableAssociationCache($mapping['fieldName'], array(
-                    'usage'         => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
-                    'region'        => $cacheAnnot->region,
-                ));
             }
         }
 

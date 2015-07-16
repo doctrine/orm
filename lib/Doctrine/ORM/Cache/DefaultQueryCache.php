@@ -267,10 +267,6 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                if ( ! isset($assoc['cache'])) {
-                    throw CacheException::nonCacheableEntityAssociation($entityName, $name);
-                }
-
                 $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
                 $assocRegion     = $assocPersister->getCacheRegion();
                 $assocMetadata   = $assocPersister->getClassMetadata();

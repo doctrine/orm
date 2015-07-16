@@ -33,4 +33,17 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
     {
         $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
     }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\PHPSLC#foo" not configured as part of the second-level cache.
+     */
+    public function testFailingSecondLevelCacheAssociation()
+    {
+        $className = 'Doctrine\Tests\ORM\Mapping\PHPSLC';
+        $mappingDriver = $this->_loadDriver();
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
+    }
 }
