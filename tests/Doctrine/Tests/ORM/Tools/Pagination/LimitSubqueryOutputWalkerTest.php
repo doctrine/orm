@@ -369,5 +369,80 @@ ORDER BY b.id DESC'
             $query->getSQL()
         );
     }
+
+    /**
+     * Tests order by on a subselect expression (mysql).
+     */
+    public function testLimitSubqueryOrderBySubSelectOrderByExpression()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new MysqlPlatform());
+
+        $query = $this->entityManager->createQuery(
+            'SELECT a,
+                (
+                    SELECT MIN(bp.title)
+                    FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost bp
+                    WHERE bp.author = a
+                ) AS HIDDEN first_blog_post
+            FROM Doctrine\Tests\ORM\Tools\Pagination\Author a
+            ORDER BY first_blog_post DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0 FROM (SELECT a0_.id AS id_0, a0_.name AS name_1, (SELECT MIN(m1_.title) AS dctrn__1 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) AS sclr_2 FROM Author a0_) dctrn_result ORDER BY sclr_2 DESC',
+            $query->getSQL()
+        );
+    }
+
+    /**
+     * Tests order by on a subselect expression invoking RowNumberOverFunction (postgres).
+     */
+    public function testLimitSubqueryOrderBySubSelectOrderByExpressionPg()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+
+        $query = $this->entityManager->createQuery(
+            'SELECT a,
+                (
+                    SELECT MIN(bp.title)
+                    FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost bp
+                    WHERE bp.author = a
+                ) AS HIDDEN first_blog_post
+            FROM Doctrine\Tests\ORM\Tools\Pagination\Author a
+            ORDER BY first_blog_post DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT a0_.id AS id_0, a0_.name AS name_1, (SELECT MIN(m1_.title) AS dctrn__1 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) AS sclr_2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(m1_.title) AS dctrn__2 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) DESC) AS sclr_3 FROM Author a0_) dctrn_result GROUP BY id_0 ORDER BY dctrn_minrownum ASC',
+            $query->getSQL()
+        );
+    }
+
+    /**
+     * Tests order by on a subselect expression invoking RowNumberOverFunction (oracle).
+     */
+    public function testLimitSubqueryOrderBySubSelectOrderByExpressionOracle()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+
+        $query = $this->entityManager->createQuery(
+            'SELECT a,
+                (
+                    SELECT MIN(bp.title)
+                    FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost bp
+                    WHERE bp.author = a
+                ) AS HIDDEN first_blog_post
+            FROM Doctrine\Tests\ORM\Tools\Pagination\Author a
+            ORDER BY first_blog_post DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT ID_0, MIN(SCLR_3) AS dctrn_minrownum FROM (SELECT a0_.id AS ID_0, a0_.name AS NAME_1, (SELECT MIN(m1_.title) AS dctrn__1 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) AS SCLR_2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(m1_.title) AS dctrn__2 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) DESC) AS SCLR_3 FROM Author a0_) dctrn_result GROUP BY ID_0 ORDER BY dctrn_minrownum ASC',
+            $query->getSQL()
+        );
+    }
 }
 
