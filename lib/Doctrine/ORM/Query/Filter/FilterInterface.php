@@ -19,11 +19,20 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-interface FilterFactoryInterface
+use Doctrine\ORM\Mapping\ClassMetadata;
+
+/**
+ * The base interface that user defined filters should implement.
+ */
+interface FilterInterface
 {
     /**
-     * @param string $name
-     * @return FilterInterface
+     * Gets the SQL query part to add to a query.
+     *
+     * @param ClassMetaData $targetEntity
+     * @param string        $targetTableAlias
+     *
+     * @return string The constraint SQL if there is available, empty string otherwise.
      */
-    public function createFromName($name);
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }
