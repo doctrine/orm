@@ -19,6 +19,7 @@ before_install:
 install: travis_retry composer update --prefer-dist
 
 script:
+  - ./vendor/bin/phpcs --standard=./vendor/doctrine/coding-standard/Doctrine/ --extensions=php . -v
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
   - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
