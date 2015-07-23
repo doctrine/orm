@@ -20,6 +20,8 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\AttributeOverride;
+use Doctrine\ORM\Mapping\AttributeRemove;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Column;
@@ -465,9 +467,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $attributeOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'];
 
             foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
-                $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
-
-                $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);
+                if ($attributeOverrideAnnot instanceof AttributeOverride){
+                    $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
+                    $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);
+                }elseif($attributeOverrideAnnot instanceof AttributeRemove){
+                    $metadata->unsetAttribute($attributeOverrideAnnot->name);
+                }
             }
         }
 

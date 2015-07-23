@@ -20,20 +20,20 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * This annotation is used to override the mapping of a entity property.
+ * This annotation is used to remove the mapping of a entity property.
+ * @author Vasil coylOne Kulakov <iam@vasiliy.pro>
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
+ * @since   2.4
  *
  * @Annotation
- * @Target("CLASS")
+ * @Target("ANNOTATION")
  */
-final class AttributeOverrides implements Annotation
+class AttributeRemove implements Annotation
 {
     /**
-     * One or more field or property mapping overrides.
+     * The name of the property to remove.
      *
-     * @var mixed
+     * @var string
      */
-    public $value;
+    public $name;
 }

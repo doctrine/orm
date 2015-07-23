@@ -2230,6 +2230,32 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Unsets a mapped field.
+     *
+     * @param string $fieldName
+     * @param array  $overrideMapping
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    public function unsetAttribute($fieldName)
+    {
+        if ( ! isset($this->fieldMappings[$fieldName])) {
+            throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
+        }
+
+        $mapping = $this->fieldMappings[$fieldName];
+
+        unset(
+            $this->fieldMappings[$fieldName],
+            $this->fieldNames[$mapping['columnName']],
+            $this->columnNames[$mapping['fieldName']],
+            $this->reflFields[$mapping['fieldName']]
+        );
+    }
+
+    /**
      * Checks whether a mapped field is inherited from an entity superclass.
      *
      * @param string $fieldName
