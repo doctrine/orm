@@ -20,7 +20,6 @@
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache\EntityCacheKey;
 
 /**
