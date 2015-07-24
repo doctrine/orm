@@ -86,7 +86,7 @@ driver by itself.
     $cacheDriver->save('cache_id', 'my_data');
 
 Memcached
-~~~~~~~~
+~~~~~~~~~
 
 Memcached is a more recent and complete alternative extension to
 Memcache.

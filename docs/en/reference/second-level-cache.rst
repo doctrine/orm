@@ -149,7 +149,7 @@ Caching mode
 
 
 Built-in cached persisters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Cached persisters are responsible to access cache regions.
 
@@ -619,7 +619,7 @@ Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache
     $em->getCache()->evictEntity('Entity\Country', 1);
 
 Using the repository query cache
----------------------
+--------------------------------
 
 As well as ``Query Cache`` all persister queries store only identifier values for an individual query.
 All persister use a single timestamps cache region keeps track of the last update for each persister,
