@@ -21,7 +21,7 @@ defined then Doctrine would trigger listeners after the fields were
 loaded, but before assocations are available.
 
 - `DDC-54 <http://doctrine-project.org/jira/browse/DDC-54>`_
-- `Commit <https://github.com/doctrine/doctrine2/commit/a906295c65f1516737458fbee2f6fa96254f27a5>`_
+- `Commit #a90629 <https://github.com/doctrine/doctrine2/commit/a906295c65f1516737458fbee2f6fa96254f27a5>`_
 
 Events: Add API to programatically add event listeners to Entity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,7 +102,7 @@ This feature was developed by external contributor `Johannes Schmitt
 <https://twitter.com/schmittjoh>`_
 
 - `DDC-93 <http://doctrine-project.org/jira/browse/DDC-93>`_
-- `Pull Request <https://github.com/doctrine/doctrine2/pull/835>`_
+- `Pull Request #835 <https://github.com/doctrine/doctrine2/pull/835>`_
 
 Second-Level-Cache
 ~~~~~~~~~~~~~~~~~~
@@ -160,7 +160,7 @@ instead of the database.
 
 - `Documentation
   <http://docs.doctrine-project.org/en/latest/reference/second-level-cache.html>`_
-- `Pull Request <https://github.com/doctrine/doctrine2/pull/808>`_
+- `Pull Request #808 <https://github.com/doctrine/doctrine2/pull/808>`_
 
 Criteria API: Support for ManyToMany assocations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -217,8 +217,8 @@ trigger a full load of the collection.
 
 This feature was contributed by `Michaël Gallego <https://github.com/bakura10>`_.
 
-- `Pull Request #1 <https://github.com/doctrine/doctrine2/pull/882>`_
-- `Pull Request #2 <https://github.com/doctrine/doctrine2/pull/1032>`_
+- `Pull Request #882 <https://github.com/doctrine/doctrine2/pull/882>`_
+- `Pull Request #1032 <https://github.com/doctrine/doctrine2/pull/1032>`_
 
 Mapping: Allow configuring Index flags
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -241,7 +241,7 @@ only with a schema event listener before.
 
 This feature was contributed by `Adrian Olek <https://github.com/adrianolek>`_.
 
-- `Pull Request <https://github.com/doctrine/doctrine2/pull/973>`_
+- `Pull Request #973 <https://github.com/doctrine/doctrine2/pull/973>`_
 
 SQLFilter API: Check if a parameter is set
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -272,7 +272,7 @@ Extending on the locale example of the documentation:
 
 This feature was contributed by `Miroslav Demovic <https://github.com/mdemo>`_
 
-- `Pull Request <https://github.com/doctrine/doctrine2/pull/963>`_
+- `Pull Request #963 <https://github.com/doctrine/doctrine2/pull/963>`_
 
 
 EXTRA_LAZY Improvements
@@ -301,7 +301,7 @@ EXTRA_LAZY Improvements
 
     This feature was contributed by `Asmir Mustafic <https://github.com/goetas>`_
 
-    - `Pull Request <https://github.com/doctrine/doctrine2/pull/937>`_
+    - `Pull Request #937 <https://github.com/doctrine/doctrine2/pull/937>`_
 
 2. Add EXTRA_LAZY Support for get() for owning and inverse many-to-many 
 
@@ -415,7 +415,7 @@ object:
 This feature was contributed by `Michael Perrin
 <https://github.com/michaelperrin>`_.
 
-- `Pull Request <https://github.com/doctrine/doctrine2/pull/590>`_
+- `Pull Request #590 <https://github.com/doctrine/doctrine2/pull/590>`_
 - `DDC-2319 <http://doctrine-project.org/jira/browse/DDC-2319>`_
 
 Query API: Add support for default Query Hints
@@ -439,7 +439,7 @@ It is now possible to add query hints that are always enabled for every Query:
 This feature was contributed by `Artur Eshenbrener
 <https://github.com/Strate>`_.
 
-- `Pull Request <https://github.com/doctrine/doctrine2/pull/863>`_
+- `Pull Request #863 <https://github.com/doctrine/doctrine2/pull/863>`_
 
 ResultSetMappingBuilder: Add support for Single-Table Inheritance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -708,3 +708,4 @@ From now on, the resultset will look like this:
         ),
         ...
     )
+
