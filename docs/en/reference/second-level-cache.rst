@@ -149,7 +149,7 @@ Caching mode
 
 
 Built-in cached persisters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Cached persisters are responsible to access cache regions.
 
@@ -239,7 +239,7 @@ By providing a cache logger you should be able to get information about all cach
 
     <?php
     /* @var $config \Doctrine\ORM\Configuration */
-    $logger = \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
+    $logger = new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
     // Cache logger
     $config->setSecondLevelCacheEnabled(true);
@@ -619,7 +619,7 @@ Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache
     $em->getCache()->evictEntity('Entity\Country', 1);
 
 Using the repository query cache
----------------------
+--------------------------------
 
 As well as ``Query Cache`` all persister queries store only identifier values for an individual query.
 All persister use a single timestamps cache region keeps track of the last update for each persister,

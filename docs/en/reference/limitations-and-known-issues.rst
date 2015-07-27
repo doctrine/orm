@@ -83,10 +83,8 @@ Currently there is no way to overwrite the persister implementation
 for a given entity, however there are several use-cases that can
 benefit from custom persister implementations:
 
-
 -  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
 -  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
--  The previous Filter Rules Feature Request
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,3 +180,27 @@ MySQL with MyISAM tables
 Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
 of the tables involved uses the storage engine MyISAM. You must use InnoDB or
 other storage engines that support transactions if you need integrity.
+
+Entities, Proxies and Reflection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using methods for Reflection on entities can be prone to error, when the entity
+is actually a proxy the following methods will not work correctly:
+
+- ``new ReflectionClass``
+- ``new ReflectionObject``
+- ``get_class()``
+- ``get_parent_class()``
+
+This is why ``Doctrine\Common\Util\ClassUtils`` class exists that has similar
+methods, which resolve the proxy problem beforehand.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\Common\Util\ClassUtils;
+
+    $bookProxy = $entityManager->getReference('Acme\Book');
+
+    $reflection = ClassUtils::newReflectionClass($bookProxy);
+    $class = ClassUtils::getClass($bookProxy)¸

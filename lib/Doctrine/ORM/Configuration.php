@@ -664,7 +664,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
+     * @return string The class name of the filter, or null if it is not
      *  defined.
      */
     public function getFilterClassName($name)

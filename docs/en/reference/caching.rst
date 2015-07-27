@@ -41,6 +41,10 @@ drivers do the raw interaction with the cache implementation and
 the ``AbstractCache`` can build custom functionality on top of
 these methods.
 
+This documentation does not cover every single cache driver included
+with Doctrine. For an up-to-date-list, see the
+`cache directory on GitHub <https://github.com/doctrine/cache/tree/master/lib/Doctrine/Common/Cache>`.
+
 APC
 ~~~
 
@@ -82,7 +86,7 @@ driver by itself.
     $cacheDriver->save('cache_id', 'my_data');
 
 Memcached
-~~~~~~~~
+~~~~~~~~~
 
 Memcached is a more recent and complete alternative extension to
 Memcache.
@@ -400,6 +404,39 @@ To clear the result cache use the ``orm:clear-cache:result`` task.
 
 All these tasks accept a ``--flush`` option to flush the entire
 contents of the cache instead of invalidating the entries.
+
+Cache Chaining
+--------------
+
+A common pattern is to use a static cache to store data that is
+requested many times in a single PHP request. Even though this data
+may be stored in a fast memory cache, often that cache is over a
+network link leading to sizable network traffic.
+
+The ChainCache class allows multiple caches to be registered at once.
+For example, a per-request ArrayCache can be used first, followed by
+a (relatively) slower MemcacheCache if the ArrayCache misses.
+ChainCache automatically handles pushing data up to faster caches in
+the chain and clearing data in the entire stack when it is deleted.
+
+A ChainCache takes a simple array of CacheProviders in the order that
+they should be used.
+
+.. code-block:: php
+
+    $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
+    $memcache = new Memcache();
+    $memcache->connect('memcache_host', 11211);
+    $chainCache = new \Doctrine\Common\Cache\ChainCache([
+        $arrayCache,
+        $memcache,
+    ]);
+
+ChainCache itself extends the CacheProvider interface, so it is
+possible to create chains of chains. While this may seem like an easy
+way to build a simple high-availability cache, ChainCache does not
+implement any exception handling so using it as a high-availability
+mechanism is not recommended.
 
 Cache Slams
 -----------

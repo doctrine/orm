@@ -169,3 +169,22 @@ class Avatar
     /** @Column(type="string", length=255) */
     public $image_alt_desc;
 }
+
+/** @MappedSuperclass */
+abstract class Identified
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    private $id;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+
+/** @Entity */
+class Banner extends Identified
+{
+    /** @Column(type="string") */
+    public $name;
+}

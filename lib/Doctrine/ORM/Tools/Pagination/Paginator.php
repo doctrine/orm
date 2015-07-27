@@ -67,7 +67,7 @@ class Paginator implements \Countable, \IteratorAggregate
         }
 
         $this->query = $query;
-        $this->fetchJoinCollection = (Boolean) $fetchJoinCollection;
+        $this->fetchJoinCollection = (bool) $fetchJoinCollection;
     }
 
     /**
@@ -152,7 +152,7 @@ class Paginator implements \Countable, \IteratorAggregate
 
             $whereInQuery = $this->cloneQuery($this->query);
             // don't do this for an empty id array
-            if (count($ids) == 0) {
+            if (count($ids) === 0) {
                 return new \ArrayIterator(array());
             }
 
@@ -207,7 +207,7 @@ class Paginator implements \Countable, \IteratorAggregate
     private function useOutputWalker(Query $query)
     {
         if ($this->useOutputWalkers === null) {
-            return (Boolean) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) == false;
+            return (bool) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) === false;
         }
 
         return $this->useOutputWalkers;

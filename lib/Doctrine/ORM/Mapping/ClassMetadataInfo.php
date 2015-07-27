@@ -28,6 +28,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
+use Doctrine\ORM\Cache\CacheException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -1079,6 +1080,17 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function enableAssociationCache($fieldName, array $cache)
     {
+        $this->associationMappings[$fieldName]['cache'] = $this->getAssociationCacheDefaults ($fieldName, $cache);
+    }
+
+    /**
+     * @param string $fieldName
+     * @param array  $cache
+     *
+     * @return array
+     */
+    public function getAssociationCacheDefaults($fieldName, array $cache)
+    {
         if ( ! isset($cache['usage'])) {
             $cache['usage'] = isset($this->cache['usage'])
                 ? $this->cache['usage']
@@ -1089,7 +1101,7 @@ class ClassMetadataInfo implements ClassMetadata
             $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
         }
 
-        $this->associationMappings[$fieldName]['cache'] = $cache;
+        return $cache;
     }
 
     /**
@@ -1474,6 +1486,10 @@ class ClassMetadataInfo implements ClassMetadata
             // Check for composite key
             if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
+            }
+
+            if ($this->cache && !isset($mapping['cache'])) {
+                throw CacheException::nonCacheableEntityAssociation($this->name, $mapping['fieldName']);
             }
         }
 

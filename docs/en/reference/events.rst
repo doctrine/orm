@@ -164,7 +164,8 @@ the life-time of their registered entities.
    database insert operations. Generated primary key values are
    available in the postPersist event.
 -  preUpdate - The preUpdate event occurs before the database
-   update operations to entity data. It is not called for a DQL UPDATE statement.
+   update operations to entity data. It is not called for a DQL UPDATE statement
+   nor when the computed changeset is empty.
 -  postUpdate - The postUpdate event occurs after the database
    update operations to entity data. It is not called for a DQL UPDATE statement.
 -  postLoad - The postLoad event occurs for an entity after the
@@ -652,7 +653,8 @@ preUpdate
 
 PreUpdate is the most restrictive to use event, since it is called
 right before an update statement is called for an entity inside the
-``EntityManager#flush()`` method.
+``EntityManager#flush()`` method. Note that this event is not
+triggered when the computed changeset is empty.
 
 Changes to associations of the updated entity are never allowed in
 this event, since Doctrine cannot guarantee to correctly handle

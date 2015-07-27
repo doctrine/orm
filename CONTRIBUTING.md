@@ -41,16 +41,29 @@ Please try to add a test for your pull-request.
 * If you want to contribute new functionality add unit- or functional tests
   depending on the scope of the feature.
 
-You can run the unit-tests by calling ``phpunit`` from the root of the project.
+You can run the unit-tests by calling ``vendor/bin/phpunit`` from the root of the project.
 It will run all the tests with an in memory SQLite database.
+
+In order to do that, you will need a fresh copy of doctrine2, and you
+will have to run a composer installation in the project:
+
+```sh
+git clone git@github.com:doctrine/doctrine2.git
+cd doctrine2
+curl -sS https://getcomposer.org/installer | php --
+./composer.phar install
+```
 
 To run the testsuite against another database, copy the ``phpunit.xml.dist``
 to for example ``mysql.phpunit.xml`` and edit the parameters. You can
 take a look at the ``tests/travis`` folder for some examples. Then run:
 
-    phpunit -c mysql.phpunit.xml
+    vendor/bin/phpunit -c mysql.phpunit.xml
+    
+If you do not provide these parameters, the test suite will use an in-memory
+sqlite database.
 
-Tips for creating unittests:
+Tips for creating unit tests:
 
 1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
    See `https://github.com/doctrine/doctrine2/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an

@@ -388,12 +388,12 @@ class YamlDriver extends FileDriver
                     $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphanRemoval'];
                 }
 
-                $metadata->mapOneToOne($mapping);
-
                 // Evaluate second level cache
                 if (isset($oneToOneElement['cache'])) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToOneElement['cache']));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($oneToOneElement['cache']));
                 }
+
+                $metadata->mapOneToOne($mapping);
             }
         }
 
@@ -426,12 +426,13 @@ class YamlDriver extends FileDriver
                     $mapping['indexBy'] = $oneToManyElement['indexBy'];
                 }
 
-                $metadata->mapOneToMany($mapping);
 
                 // Evaluate second level cache
                 if (isset($oneToManyElement['cache'])) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToManyElement['cache']));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($oneToManyElement['cache']));
                 }
+
+                $metadata->mapOneToMany($mapping);
             }
         }
 
@@ -475,12 +476,12 @@ class YamlDriver extends FileDriver
                     $mapping['cascade'] = $manyToOneElement['cascade'];
                 }
 
-                $metadata->mapManyToOne($mapping);
-
                 // Evaluate second level cache
                 if (isset($manyToOneElement['cache'])) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToOneElement['cache']));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($manyToOneElement['cache']));
                 }
+
+                $metadata->mapManyToOne($mapping);
             }
         }
 
@@ -552,12 +553,12 @@ class YamlDriver extends FileDriver
                     $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphanRemoval'];
                 }
 
-                $metadata->mapManyToMany($mapping);
-
                 // Evaluate second level cache
                 if (isset($manyToManyElement['cache'])) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToManyElement['cache']));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($manyToManyElement['cache']));
                 }
+
+                $metadata->mapManyToMany($mapping);
             }
         }
 
@@ -616,8 +617,11 @@ class YamlDriver extends FileDriver
 
         // Evaluate associationOverride
         if (isset($element['attributeOverride']) && is_array($element['attributeOverride'])) {
-
             foreach ($element['attributeOverride'] as $fieldName => $attributeOverrideElement) {
+                if ($metadata->isMappedSuperclass && !$metadata->hasField($fieldName)) {
+                    continue;
+                }
+
                 $mapping = $this->columnToArray($fieldName, $attributeOverrideElement);
                 $metadata->setAttributeOverride($fieldName, $mapping);
             }
