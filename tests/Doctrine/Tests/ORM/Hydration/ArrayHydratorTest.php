@@ -634,7 +634,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
-                'a__topic' => 'PHP6'
+                'a__topic' => 'PHP7'
             ),
         );
 
@@ -662,7 +662,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $this->assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
         $this->assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
         $this->assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
-        $this->assertEquals('PHP6', $result[1][0]['articles'][1]['topic']);
+        $this->assertEquals('PHP7', $result[1][0]['articles'][1]['topic']);
     }
 
     /**
@@ -771,7 +771,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
-                'a__topic' => 'PHP6',
+                'a__topic' => 'PHP7',
                 'c__id' => null,
                 'c__topic' => null
             ),
@@ -803,7 +803,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $this->assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
         $this->assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
         $this->assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
-        $this->assertEquals('PHP6', $result[1][0]['articles'][1]['topic']);
+        $this->assertEquals('PHP7', $result[1][0]['articles'][1]['topic']);
 
         $this->assertEquals('First!', $result[0][0]['articles'][0]['comments'][0]['topic']);
 
