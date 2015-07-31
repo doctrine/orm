@@ -29,15 +29,16 @@ class NoResultException extends UnexpectedResultException
 {
     /**
      * Constructor.
+     *
      * @param string     $message  [optional] The Exception message to throw.
      * @param integer    $code     [optional] The Exception code.
      * @param \Exception $previous [optional] The previous exception used for the exception chaining. Since 5.3.0
      */
-    public function __construct($message = '', $code = 0, \Exception $previous = null)
-    {
-        if (empty($message)) {
-            $message = 'No result was found for query although at least one row was expected.';
-        }
+    public function __construct(
+        $message = 'No result was found for query although at least one row was expected.',
+        $code = 0,
+        \Exception $previous = null
+    ) {
         parent::__construct($message, $code, $previous);
     }
 }
