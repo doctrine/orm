@@ -1,6 +1,11 @@
 Inheritance Mapping
 ===================
 
+In some cases, entity inheritance may be a valid solution to your needs.
+However, most of the times, inheritance does more harm than good, specially
+to the performance of the application. You are encouraged to avoid using
+inheritance as much as possible.
+
 Mapped Superclasses
 -------------------
 
