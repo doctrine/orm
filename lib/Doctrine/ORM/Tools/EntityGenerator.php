@@ -215,7 +215,8 @@ class EntityGenerator
 <entityAnnotation>
 <entityClassName>
 {
-<entityBody>
+<entityProperties>
+<entityMethods>
 }
 ';
 
@@ -405,7 +406,8 @@ public function __construct(<params>)
             '<useStatement>',
             '<entityAnnotation>',
             '<entityClassName>',
-            '<entityBody>'
+            '<entityProperties>',
+            '<entityMethods>',
         );
 
         $replacements = array(
@@ -413,7 +415,8 @@ public function __construct(<params>)
             $this->generateEntityUse(),
             $this->generateEntityDocBlock($metadata),
             $this->generateEntityClassName($metadata),
-            $this->generateEntityBody($metadata)
+            $this->generateEntityProperties($metadata),
+            $this->generateEntityMethods($metadata),
         );
 
         $code = str_replace($placeHolders, $replacements, static::$classTemplate) . "\n";
@@ -433,11 +436,27 @@ public function __construct(<params>)
     {
         $currentCode = file_get_contents($path);
 
-        $body = $this->generateEntityBody($metadata);
-        $body = str_replace('<spaces>', $this->spaces, $body);
-        $last = strrpos($currentCode, '}');
+        $bodyProperties = $this->generateEntityProperties($metadata);
+        $bodyMethods = $this->generateEntityMethods($metadata);
 
-        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : '') . "}\n";
+        if (strlen($bodyProperties) > 0) {
+            $bodyProperties = str_replace('<spaces>', $this->spaces, $bodyProperties);
+
+            $propsInsertPosition = $this->getPropertiesInsertionPosition($currentCode, $metadata);
+
+            $currentCode = substr($currentCode, 0, $propsInsertPosition) . "\n" . $bodyProperties
+                . substr($currentCode, $propsInsertPosition);
+        }
+
+        if (strlen($bodyMethods) > 0) {
+            $bodyMethods = str_replace('<spaces>', $this->spaces, $bodyMethods);
+
+            $lastBrace = strrpos($currentCode, '}');
+
+            $currentCode = substr($currentCode, 0, $lastBrace) . $bodyMethods . "\n}\n";
+        }
+
+        return $currentCode;
     }
 
     /**
@@ -630,11 +649,24 @@ public function __construct(<params>)
      */
     protected function generateEntityBody(ClassMetadataInfo $metadata)
     {
+        $properties = $this->generateEntityProperties($metadata);
+        $methods = $this->generateEntityMethods($metadata);
+
+        return $properties . (strlen($properties) > 0 && strlen($methods) > 0 ? "\n" : "") . $methods;
+    }
+
+    /**
+     * Generate section with properties for given ClassMetadataInfo
+     *
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return string
+     */
+    private function generateEntityProperties(ClassMetadataInfo $metadata)
+    {
         $fieldMappingProperties = $this->generateEntityFieldMappingProperties($metadata);
         $embeddedProperties = $this->generateEntityEmbeddedProperties($metadata);
         $associationMappingProperties = $this->generateEntityAssociationMappingProperties($metadata);
-        $stubMethods = $this->generateEntityStubMethods ? $this->generateEntityStubMethods($metadata) : null;
-        $lifecycleCallbackMethods = $this->generateEntityLifecycleCallbackMethods($metadata);
 
         $code = array();
 
@@ -650,7 +682,22 @@ public function __construct(<params>)
             $code[] = $associationMappingProperties;
         }
 
-        $code[] = $this->generateEntityConstructor($metadata);
+        return implode("\n", $code);
+    }
+
+    /**
+     * Generate section with methods for given ClassMetadataInfo
+     *
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return string
+     */
+    private function generateEntityMethods(ClassMetadataInfo $metadata)
+    {
+        $stubMethods = $this->generateEntityStubMethods ? $this->generateEntityStubMethods($metadata) : null;
+        $lifecycleCallbackMethods = $this->generateEntityLifecycleCallbackMethods($metadata);
+
+        $code = array($this->generateEntityConstructor($metadata));
 
         if ($stubMethods) {
             $code[] = $stubMethods;
@@ -1814,5 +1861,51 @@ public function __construct(<params>)
         }
 
         return implode(',', $optionsStr);
+    }
+
+    /**
+     * Find position in source code for insertion new properties
+     *
+     * @param string $code
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return int
+     *
+     * @throws \LogicException When unable to find a position for insertion.
+     */
+    private function getPropertiesInsertionPosition($code, ClassMetadataInfo $metadata)
+    {
+        $position = 0;
+
+        if ($this->staticReflection[$metadata->name]['properties']) {
+            $lastProperty = array_slice($this->staticReflection[$metadata->name]['properties'], -1, 1)[0];
+
+            if ( ! preg_match("/(?:public|protected|private)\s+[$]{$lastProperty}.*?;(\n)/", $code, $matches, PREG_OFFSET_CAPTURE)) {
+                throw new \LogicException("Couldn't find position for properties insertion");
+            }
+
+            $position = $matches[1][1] + 1;
+        } elseif ($this->staticReflection[$metadata->name]['methods']) {
+            $firstMethod = array_slice($this->staticReflection[$metadata->name]['methods'], 0, 1)[0];
+
+            if ( ! preg_match(
+                "/(\n)(?:\s+\/\*\*\n(?:\s+\*.+\n)*\s+\*\/\n)?\s+(?:public|protected|private)\s+function\s+{$firstMethod}/",
+                $code,
+                $matches,
+                PREG_OFFSET_CAPTURE
+            )) {
+                throw new \LogicException("Couldn't find position for properties insertion");
+            }
+
+            $position = $matches[1][1] + 1;
+        } else {
+            $position = strrpos($code, '}');
+
+            if ($position === false) {
+                throw new \LogicException("Couldn't find position for properties insertion");
+            }
+        }
+
+        return $position;
     }
 }
