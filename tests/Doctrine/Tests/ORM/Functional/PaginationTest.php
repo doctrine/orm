@@ -669,6 +669,28 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(9, $paginator);
     }
 
+    /**
+     * @dataProvider useOutputWalkersAndFetchJoinCollection
+     */
+    public function testPaginationWithSubSelectOrderByExpression($useOutputWalker, $fetchJoinCollection)
+    {
+        $query = $this->_em->createQuery(
+            "SELECT u, 
+                (
+                    SELECT MAX(a.version)
+                    FROM Doctrine\\Tests\\Models\\CMS\\CmsArticle a
+                    WHERE a.user = u
+                ) AS HIDDEN max_version
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
+            ORDER BY max_version DESC"
+        );
+
+        $paginator = new Paginator($query, $fetchJoinCollection);
+        $paginator->setUseOutputWalkers($useOutputWalker);
+
+        $this->assertCount(9, $paginator->getIterator());
+    }
+
     public function populate()
     {
         $groups = array();

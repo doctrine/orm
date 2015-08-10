@@ -1093,6 +1093,10 @@ class SqlWalker implements TreeWalker
 
         $this->orderedColumnsMap[$sql] = $type;
 
+        if ($expr instanceof AST\Subselect) {
+            return '(' . $sql . ') ' . $type;
+        }
+
         return $sql . ' ' . $type;
     }
 
