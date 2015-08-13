@@ -24,6 +24,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\VarDumper\Dumper\CliDumper,
+use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Doctrine\Common\Util\Debug;
 
 /**
@@ -128,6 +130,18 @@ EOT
 
         $resultSet = $query->execute(array(), constant($hydrationMode));
 
-        $output->writeln(Debug::dump($resultSet, $input->getOption('depth'), true, false));
+        if (class_exists('Symfony\Component\VarDumper\Dumper\CliDumper')) {
+            $cloner = new VarCloner();
+            $data = $cloner->cloneVar($resultSet)->withMaxDepth($input->getOption('depth'));
+
+            $dumper = new CliDumper();
+            $dumper->dump($data, function ($line, $depth) use ($output) {
+                if ($depth >= 0) {
+                    $output->writeln(str_repeat('  ', $depth).$line, $output::OUTPUT_RAW);
+                }
+            });
+        } else {
+            $output->writeln(Debug::dump($resultSet, $input->getOption('depth'), true, false));
+        }
     }
 }
