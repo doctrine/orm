@@ -840,8 +840,8 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->update('User', 'u')
-     *         ->set('u.password', md5('password'))
-     *         ->where('u.id = ?');
+     *         ->set('u.password', '?1')
+     *         ->where('u.id = ?2');
      * </code>
      *
      * @param string $update The class/type whose instances are subject to the update.
@@ -1027,8 +1027,8 @@ class QueryBuilder
      * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->update('User', 'u')
-     *         ->set('u.password', md5('password'))
-     *         ->where('u.id = ?');
+     *         ->set('u.password', '?1')
+     *         ->where('u.id = ?2');
      * </code>
      *
      * @param string $key   The key/field to set.
@@ -1059,7 +1059,7 @@ class QueryBuilder
      *     $or->add($qb->expr()->eq('u.id', 2));
      *
      *     $qb->update('User', 'u')
-     *         ->set('u.password', md5('password'))
+     *         ->set('u.password', '?')
      *         ->where($or);
      * </code>
      *
