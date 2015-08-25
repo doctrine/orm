@@ -1311,6 +1311,19 @@ public function __construct(<params>)
             }
 
             $lines[] = $this->generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
+            switch($fieldMapping['type']){
+                case 'boolean':
+                    $fieldMapping['options']['default'] = (boolean) $fieldMapping['options']['default'];
+                    break;
+                case 'integer':
+                    $fieldMapping['options']['default'] = (integer) $fieldMapping['options']['default'];
+                    break;
+                case 'text':
+                case 'string':
+                default:
+                    $fieldMapping['options']['default'] = (string) $fieldMapping['options']['default'];
+                    break;
+            }
             $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldMapping['fieldName']
                      . (isset($fieldMapping['options']['default']) ? ' = ' . var_export($fieldMapping['options']['default'], true) : null) . ";\n";
         }
