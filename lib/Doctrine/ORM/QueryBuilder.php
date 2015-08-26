@@ -183,7 +183,7 @@ class QueryBuilder
      *
      * @param boolean $cacheable
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return QueryBuilder
      */
     public function setCacheable($cacheable)
     {
@@ -203,7 +203,7 @@ class QueryBuilder
     /**
      * @param string $cacheRegion
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return QueryBuilder
      */
     public function setCacheRegion($cacheRegion)
     {
@@ -234,7 +234,8 @@ class QueryBuilder
      * Sets the life-time for this query into second level cache.
      *
      * @param integer $lifetime
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     *
+     * @return QueryBuilder
      */
     public function setLifetime($lifetime)
     {
@@ -253,7 +254,8 @@ class QueryBuilder
 
     /**
      * @param integer $cacheMode
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     *
+     * @return QueryBuilder
      */
     public function setCacheMode($cacheMode)
     {
