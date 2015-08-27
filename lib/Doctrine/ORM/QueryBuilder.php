@@ -183,7 +183,7 @@ class QueryBuilder
      *
      * @param boolean $cacheable
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function setCacheable($cacheable)
     {
@@ -203,7 +203,7 @@ class QueryBuilder
     /**
      * @param string $cacheRegion
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function setCacheRegion($cacheRegion)
     {
@@ -235,7 +235,7 @@ class QueryBuilder
      *
      * @param integer $lifetime
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function setLifetime($lifetime)
     {
@@ -255,7 +255,7 @@ class QueryBuilder
     /**
      * @param integer $cacheMode
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function setCacheMode($cacheMode)
     {
@@ -527,7 +527,7 @@ class QueryBuilder
      * @param mixed          $value The parameter value.
      * @param string|null    $type  PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function setParameter($key, $value, $type = null)
     {
@@ -569,7 +569,7 @@ class QueryBuilder
      *
      * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters The query parameters to set.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function setParameters($parameters)
     {
@@ -626,7 +626,7 @@ class QueryBuilder
      *
      * @param integer $firstResult The first result to return.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function setFirstResult($firstResult)
     {
@@ -651,7 +651,7 @@ class QueryBuilder
      *
      * @param integer $maxResults The maximum number of results to retrieve.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function setMaxResults($maxResults)
     {
@@ -681,7 +681,7 @@ class QueryBuilder
      * @param Expr\Base $dqlPart
      * @param bool      $append
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
@@ -744,7 +744,7 @@ class QueryBuilder
      *
      * @param mixed $select The selection expressions.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function select($select = null)
     {
@@ -771,7 +771,7 @@ class QueryBuilder
      *
      * @param bool $flag
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function distinct($flag = true)
     {
@@ -793,7 +793,7 @@ class QueryBuilder
      *
      * @param mixed $select The selection expression.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function addSelect($select = null)
     {
@@ -822,7 +822,7 @@ class QueryBuilder
      * @param string $delete The class/type whose instances are subject to the deletion.
      * @param string $alias  The class/type alias used in the constructed query.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function delete($delete = null, $alias = null)
     {
@@ -849,7 +849,7 @@ class QueryBuilder
      * @param string $update The class/type whose instances are subject to the update.
      * @param string $alias  The class/type alias used in the constructed query.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function update($update = null, $alias = null)
     {
@@ -876,7 +876,7 @@ class QueryBuilder
      * @param string $alias   The alias of the class.
      * @param string $indexBy The index for the from.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function from($from, $alias, $indexBy = null)
     {
@@ -902,7 +902,7 @@ class QueryBuilder
      * @param string $alias   The root alias of the class.
      * @param string $indexBy The index for the from.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      *
      * @throws Query\QueryException
      */
@@ -947,7 +947,7 @@ class QueryBuilder
      * @param string|null $condition     The condition for the join.
      * @param string|null $indexBy       The index for the join.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function join($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
@@ -973,7 +973,7 @@ class QueryBuilder
      * @param string|null $condition     The condition for the join.
      * @param string|null $indexBy       The index for the join.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
@@ -1008,7 +1008,7 @@ class QueryBuilder
      * @param string|null $condition     The condition for the join.
      * @param string|null $indexBy       The index for the join.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
@@ -1036,7 +1036,7 @@ class QueryBuilder
      * @param string $key   The key/field to set.
      * @param string $value The value, expression, placeholder, etc.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function set($key, $value)
     {
@@ -1067,7 +1067,7 @@ class QueryBuilder
      *
      * @param mixed $predicates The restriction predicates.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function where($predicates)
     {
@@ -1092,7 +1092,7 @@ class QueryBuilder
      *
      * @param mixed $where The query restrictions.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      *
      * @see where()
      */
@@ -1125,7 +1125,7 @@ class QueryBuilder
      *
      * @param mixed $where The WHERE statement.
      *
-     * @return QueryBuilder
+     * @return $this
      *
      * @see where()
      */
@@ -1157,7 +1157,7 @@ class QueryBuilder
      *
      * @param string $groupBy The grouping expression.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function groupBy($groupBy)
     {
@@ -1177,7 +1177,7 @@ class QueryBuilder
      *
      * @param string $groupBy The grouping expression.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function addGroupBy($groupBy)
     {
@@ -1190,7 +1190,7 @@ class QueryBuilder
      *
      * @param mixed $having The restriction over the groups.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function having($having)
     {
@@ -1207,7 +1207,7 @@ class QueryBuilder
      *
      * @param mixed $having The restriction to append.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function andHaving($having)
     {
@@ -1230,7 +1230,7 @@ class QueryBuilder
      *
      * @param mixed $having The restriction to add.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function orHaving($having)
     {
@@ -1254,7 +1254,7 @@ class QueryBuilder
      * @param string|Expr\OrderBy $sort  The ordering expression.
      * @param string              $order The ordering direction.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function orderBy($sort, $order = null)
     {
@@ -1269,7 +1269,7 @@ class QueryBuilder
      * @param string|Expr\OrderBy $sort  The ordering expression.
      * @param string              $order The ordering direction.
      *
-     * @return QueryBuilder This QueryBuilder instance.
+     * @return $this This QueryBuilder instance.
      */
     public function addOrderBy($sort, $order = null)
     {
@@ -1286,7 +1286,7 @@ class QueryBuilder
      * Overrides firstResult and maxResults if they're set.
      *
      * @param Criteria $criteria
-     * @return QueryBuilder
+     * @return $this
      * @throws Query\QueryException
      */
     public function addCriteria(Criteria $criteria)
@@ -1447,7 +1447,7 @@ class QueryBuilder
      *
      * @param array|null $parts
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function resetDQLParts($parts = null)
     {
@@ -1467,7 +1467,7 @@ class QueryBuilder
      *
      * @param string $part
      *
-     * @return QueryBuilder
+     * @return $this
      */
     public function resetDQLPart($part)
     {
