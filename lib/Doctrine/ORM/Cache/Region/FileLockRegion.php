@@ -61,7 +61,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function __construct(Region $region, $directory, $lockLifetime)
     {
-        if ( ! is_dir($directory) && ! @mkdir($directory, 0777, true)) {
+        if ( ! is_dir($directory) && ! @mkdir($directory, 0775, true)) {
             throw new \InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));
         }
 
@@ -242,6 +242,7 @@ class FileLockRegion implements ConcurrentRegion
         if ( ! @file_put_contents($filename, $lock->value, LOCK_EX)) {
             return null;
         }
+        chmod($filename, 0664);
 
         return $lock;
     }
