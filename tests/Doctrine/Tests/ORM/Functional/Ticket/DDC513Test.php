@@ -67,7 +67,3 @@ class DDC513Price {
     /** @Column(type="string") */
     public $data;
 }
-
-
-
-

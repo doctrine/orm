@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\Mocks;
 
-
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\LockException;

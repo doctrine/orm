@@ -23,7 +23,6 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 
-
 /**
  * RowNumberOverFunction
  *

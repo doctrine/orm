@@ -90,7 +90,6 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
         return key($this->walkers) !== null;
     }
 
-
     /**
      * {@inheritdoc}
      */

@@ -86,7 +86,3 @@ class DDC512Item
      */
     public $id;
 }
-
-
-
-
