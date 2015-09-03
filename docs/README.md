@@ -1,6 +1,7 @@
 # Doctrine ORM Documentation
 
-## How to Generate
+## How to Generate:
+Using Ubuntu 14.04 LTS:
 
 1. Run ./bin/install-dependencies.sh
 2. Run ./bin/generate-docs.sh
