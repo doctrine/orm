@@ -65,7 +65,3 @@ class DDC493Contact
     /** @Column(type="string") */
     public $data;
 }
-
-
-
-

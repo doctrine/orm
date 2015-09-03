@@ -60,5 +60,3 @@ class DDC1515Bar
      */
     public $foo;
 }
-
-
