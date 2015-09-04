@@ -20,7 +20,6 @@
 
 namespace Doctrine\ORM\Utility;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\QueryException;
