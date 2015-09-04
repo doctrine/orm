@@ -424,8 +424,6 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
-        $this->dispatchPostFlushEvent();
-
         // Clear up
         $this->entityInsertions =
         $this->entityUpdates =
@@ -437,6 +435,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForSynchronization =
         $this->orphanRemovals = array();
+        
+        $this->dispatchPostFlushEvent();
     }
 
     /**
