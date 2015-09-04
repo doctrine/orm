@@ -4,8 +4,8 @@ Separating Concerns using Embeddables
 Embeddables are classes which are not entities themself, but are embedded
 in entities and can also be queried in DQL. You'll mostly want to use them
 to reduce duplication or separating concerns. Value objects such as date range
-or address are the primary use case for this feature. Embeddables can only
-contain properties with basic ``@Column`` mapping.
+or address are the primary use case for this feature. Embeddables can contain
+properties with basic ``@Column`` mapping or any association mapping.
 
 For the purposes of this tutorial, we will assume that you have a ``User``
 class in your application and you would like to store an address in
@@ -34,10 +34,10 @@ instead of simply adding the respective columns to the ``User`` class.
             /** @Column(type = "string") */
             private $postalCode;
 
-            /** @Column(type = "string") */
+            /** @ManyToOne(targetEntity="City") */
             private $city;
 
-            /** @Column(type = "string") */
+            /** @ManyToOne(targetEntity="Country") */
             private $country;
         }
 
@@ -51,8 +51,8 @@ instead of simply adding the respective columns to the ``User`` class.
             <embeddable name="Address">
                 <field name="street" type="string" />
                 <field name="postalCode" type="string" />
-                <field name="city" type="string" />
-                <field name="country" type="string" />
+                <many-to-one target-entity="City" field="city" />
+                <many-to-one target-entity="Country" field="country" />
             </embeddable>
         </doctrine-mapping>
 
@@ -69,8 +69,12 @@ instead of simply adding the respective columns to the ``User`` class.
           fields:
             street: { type: string }
             postalCode: { type: string }
-            city: { type: string }
-            country: { type: string }
+            manyToOne:
+              city:
+                targetEntity: City
+            manyToOne:
+              country:
+                targetEntity: Country
 
 In terms of your database schema, Doctrine will automatically inline all
 columns from the ``Address`` class into the table of the ``User`` class,
@@ -149,6 +153,8 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
             <embedded name="address" class="Address" use-column-prefix="false" />
         </entity>
 
+Columns in ``OneToOne`` on owning side, ``ManyToOne`` also prefixed like simple column. ``ManyToMany``, ``OneToMany``,
+non-owning side ``OneToOne`` has no real database columns and cannot be prefixed.
 
 DQL
 ---
@@ -160,3 +166,7 @@ as if they were declared in the ``User`` class:
 
     SELECT u FROM User u WHERE u.address.city = :myCity
 
+    //Joining association from embedded also works
+    SELECT u, city FROM User u
+    INNER JOIN u.address.city city
+    WHERE u.address.city = :myCity
