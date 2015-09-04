@@ -961,6 +961,15 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
+            if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
+                $this->reflFields[$field] = new ReflectionEmbeddedProperty(
+                    $parentReflFields[$mapping['declaredField']],
+                    $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
+                    $mapping['originalClass']
+                );
+                continue;
+            }
+
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
@@ -3272,6 +3281,82 @@ class ClassMetadataInfo implements ClassMetadata
 
             $this->mapField($fieldMapping);
         }
+
+        foreach ($embeddable->associationMappings as $associationMapping) {
+            $associationMapping['originalClass'] = isset($associationMapping['originalClass'])
+                ? $associationMapping['originalClass']
+                : $embeddable->name;
+            $associationMapping['declaredField'] = isset($associationMapping['declaredField'])
+                ? $property . '.' . $associationMapping['declaredField']
+                : $property;
+            $associationMapping['originalField'] = isset($associationMapping['originalField'])
+                ? $associationMapping['originalField']
+                : $associationMapping['fieldName'];
+            $associationMapping['fieldName'] = $property . "." . $associationMapping['fieldName'];
+            $associationMapping['sourceEntity'] = $this->name;
+
+            if ($associationMapping['type'] === self::MANY_TO_ONE) {
+                $associationMapping = $this->prefixJoinColumns($embeddable, $property, $associationMapping);
+                $this->mapManyToOne($associationMapping);
+            } else if ($associationMapping['type'] === self::ONE_TO_MANY) {
+                $this->assertEmbeddableMappedOnce($embeddable, $property);
+                $this->mapOneToMany($associationMapping);
+            } else if ($associationMapping['type'] === self::MANY_TO_MANY) {
+                $this->assertEmbeddableMappedOnce($embeddable, $property);
+                $this->mapManyToMany($associationMapping);
+            } else if ($associationMapping['type'] === self::ONE_TO_ONE) {
+                if ($associationMapping['isOwningSide']) {
+                    $associationMapping = $this->prefixJoinColumns($embeddable, $property, $associationMapping);
+                } else {
+                    $this->assertEmbeddableMappedOnce($embeddable, $property);
+                }
+                $this->mapOneToOne($associationMapping);
+            }
+        }
+    }
+
+    /**
+     * @param ClassMetadataInfo $embeddable
+     * @throws MappingException
+     */
+    private function assertEmbeddableMappedOnce(ClassMetadataInfo $embeddable, $property)
+    {
+        $embeddableDuplicates = [];
+        foreach ($this->embeddedClasses as $embeddableConfig) {
+            if ($embeddableConfig['class'] === $embeddable->name) {
+                $embeddableDuplicates[] = $embeddableConfig;
+            }
+        }
+
+        if (count($embeddableDuplicates) > 1) {
+            throw MappingException::duplicateEmbeddedMapping($this->name, $property);
+        }
+    }
+
+    /**
+     * @param ClassMetadataInfo $embeddable
+     * @param string $property
+     * @param array $associationMapping
+     * @return array $associationMapping
+     */
+    private function prefixJoinColumns(ClassMetadataInfo $embeddable, $property, array $associationMapping)
+    {
+        if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
+            foreach($associationMapping['joinColumns'] as $i => $columnMapping) {
+                $associationMapping['joinColumns'][$i]['name'] = $this->embeddedClasses[$property]['columnPrefix'] . $columnMapping['name'];
+            }
+        } elseif ($this->embeddedClasses[$property]['columnPrefix'] !== false) {
+            foreach($associationMapping['joinColumns'] as $i => $columnMapping) {
+                $associationMapping['joinColumns'][$i]['name'] = $this->namingStrategy
+                    ->embeddedFieldToColumnName(
+                        $property,
+                        $columnMapping['name'],
+                        $this->reflClass->name,
+                        $embeddable->reflClass->name
+                    );
+            }
+        }
+        return $associationMapping;
     }
 
     /**

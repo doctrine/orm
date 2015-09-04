@@ -1034,6 +1034,12 @@ class Parser
 
         $field = $this->lexer->token['value'];
 
+        while ($this->lexer->isNextToken(Lexer::T_DOT)) {
+            $this->match(Lexer::T_DOT);
+            $this->match(Lexer::T_IDENTIFIER);
+            $field .= '.'.$this->lexer->token['value'];
+        }
+
         // Validate association field
         $qComp = $this->queryComponents[$identVariable];
         $class = $qComp['metadata'];
