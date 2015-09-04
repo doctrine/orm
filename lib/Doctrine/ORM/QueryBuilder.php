@@ -1054,7 +1054,7 @@ class QueryBuilder
      *     // You can optionally programatically build and/or expressions
      *     $qb = $em->createQueryBuilder();
      *
-     *     $or = $qb->expr()->orx();
+     *     $or = $qb->expr()->orX();
      *     $or->add($qb->expr()->eq('u.id', 1));
      *     $or->add($qb->expr()->eq('u.id', 2));
      *
