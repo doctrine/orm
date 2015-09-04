@@ -645,7 +645,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
-                'a__topic' => 'PHP6'
+                'a__topic' => 'PHP7'
             ),
         );
 
@@ -773,7 +773,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
-                'a__topic' => 'PHP6',
+                'a__topic' => 'PHP7',
                 'c__id' => null,
                 'c__topic' => null
             ),

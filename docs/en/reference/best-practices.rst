@@ -54,7 +54,7 @@ Don't use special characters
 
 Avoid using any non-ASCII characters in class, field, table or
 column names. Doctrine itself is not unicode-safe in many places
-and will not be until PHP itself is fully unicode-aware (PHP6).
+and will not be until PHP itself is fully unicode-aware.
 
 Don't use identifier quoting
 ----------------------------
