@@ -41,7 +41,7 @@ class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC144FlowElement {
     /**
      * @Id @Column(type="integer") @GeneratedValue
-     * @var integer
+     * @var int
      */
     public $id;
     /** @Column */

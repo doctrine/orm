@@ -77,7 +77,7 @@ abstract class DDC1595BaseInheritance
      * @Id @GeneratedValue
      * @Column(type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 }

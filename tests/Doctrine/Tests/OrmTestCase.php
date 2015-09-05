@@ -25,12 +25,12 @@ abstract class OrmTestCase extends DoctrineTestCase
     private static $_queryCacheImpl = null;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isSecondLevelCacheEnabled = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isSecondLevelCacheLogEnabled = false;
 

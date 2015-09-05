@@ -1235,7 +1235,7 @@ class DDC1170Entity
     private $value;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

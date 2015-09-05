@@ -49,7 +49,7 @@ class DDC964Address
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

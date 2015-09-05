@@ -81,7 +81,7 @@ class DDC742User
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
-     * @var integer
+     * @var int
      */
     public $id;
     /**
@@ -114,7 +114,7 @@ class DDC742Comment
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
-     * @var integer
+     * @var int
      */
     public $id;
     /**

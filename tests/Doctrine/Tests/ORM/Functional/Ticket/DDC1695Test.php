@@ -29,7 +29,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1695News
 {
     /**
-     * @var integer $idNews
+     * @var int $idNews
      *
      * @Column(name="`IdNews`", type="integer", nullable=false)
      * @Id
@@ -45,42 +45,42 @@ class DDC1695News
     private $idUser;
 
     /**
-     * @var integer $idLanguage
+     * @var int $idLanguage
      *
      * @Column(name="`IdLanguage`", type="integer", nullable=false)
      */
     private $idLanguage;
 
     /**
-     * @var integer $idCondition
+     * @var int $idCondition
      *
      * @Column(name="`IdCondition`", type="integer", nullable=true)
      */
     private $idCondition;
 
     /**
-     * @var integer $idHealthProvider
+     * @var int $idHealthProvider
      *
      * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
      */
     private $idHealthProvider;
 
     /**
-     * @var integer $idSpeciality
+     * @var int $idSpeciality
      *
      * @Column(name="`IdSpeciality`", type="integer", nullable=true)
      */
     private $idSpeciality;
 
     /**
-     * @var integer $idMedicineType
+     * @var int $idMedicineType
      *
      * @Column(name="`IdMedicineType`", type="integer", nullable=true)
      */
     private $idMedicineType;
 
     /**
-     * @var integer $idTreatment
+     * @var int $idTreatment
      *
      * @Column(name="`IdTreatment`", type="integer", nullable=true)
      */
@@ -122,35 +122,35 @@ class DDC1695News
     private $idxNews;
 
     /**
-     * @var boolean $highlight
+     * @var bool $highlight
      *
      * @Column(name="`Highlight`", type="boolean", nullable=false)
      */
     private $highlight;
 
     /**
-     * @var integer $order
+     * @var int $order
      *
      * @Column(name="`Order`", type="integer", nullable=false)
      */
     private $order;
 
     /**
-     * @var boolean $deleted
+     * @var bool $deleted
      *
      * @Column(name="`Deleted`", type="boolean", nullable=false)
      */
     private $deleted;
 
     /**
-     * @var boolean $active
+     * @var bool $active
      *
      * @Column(name="`Active`", type="boolean", nullable=false)
      */
     private $active;
 
     /**
-     * @var boolean $updateToHighlighted
+     * @var bool $updateToHighlighted
      *
      * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
      */

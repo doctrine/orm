@@ -37,7 +37,7 @@ class DDC1476EntityWithDefaultFieldType
     protected $name;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
