@@ -354,6 +354,8 @@ Here is the list of possible generation strategies:
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite/SQL Anywhere
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
+-  ``UUID``: Tells Doctrine to use the built-in Universally Unique Identifier
+   generator. This strategy provides full portability.
 -  ``TABLE``: Tells Doctrine to use a separate table for ID
    generation. This strategy provides full portability.
    ***This strategy is not yet implemented!***
