@@ -617,8 +617,11 @@ class YamlDriver extends FileDriver
 
         // Evaluate associationOverride
         if (isset($element['attributeOverride']) && is_array($element['attributeOverride'])) {
-
             foreach ($element['attributeOverride'] as $fieldName => $attributeOverrideElement) {
+                if ($metadata->isMappedSuperclass && !$metadata->hasField($fieldName)) {
+                    continue;
+                }
+
                 $mapping = $this->columnToArray($fieldName, $attributeOverrideElement);
                 $metadata->setAttributeOverride($fieldName, $mapping);
             }
