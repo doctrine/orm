@@ -215,7 +215,7 @@ abstract class AbstractQuery
     /**
     * Obtain the name of the second level query cache region in which query results will be stored
     *
-    * @return The cache region name; NULL indicates the default region.
+    * @return string|null The cache region name; NULL indicates the default region.
     */
     public function getCacheRegion()
     {
@@ -398,7 +398,7 @@ abstract class AbstractQuery
      *
      * @param mixed $value
      *
-     * @return array
+     * @return array|string
      *
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
      */
