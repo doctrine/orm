@@ -682,6 +682,10 @@ class YamlDriver extends FileDriver
             $joinColumn['nullable'] = (bool) $joinColumnElement['nullable'];
         }
 
+        if (isset($joinColumnElement['quoted'])) {
+            $joinColumn['quoted'] = (bool) $joinColumnElement['quoted'];
+        }
+
         if (isset($joinColumnElement['onDelete'])) {
             $joinColumn['onDelete'] = $joinColumnElement['onDelete'];
         }
@@ -742,7 +746,12 @@ class YamlDriver extends FileDriver
         }
 
         if (isset($column['nullable'])) {
-            $mapping['nullable'] = $column['nullable'];
+
+            $mapping['nullable'] = (bool) $column['nullable'];
+        }
+
+        if (isset($column['quoted'])) {
+            $mapping['quoted'] = (bool) $column['quoted'];
         }
 
         if (isset($column['version']) && $column['version']) {
