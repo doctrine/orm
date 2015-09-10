@@ -225,7 +225,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
      * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
-     * as {@link $entityName}.
+     * as {@link $name}.
      *
      * @var string
      */
