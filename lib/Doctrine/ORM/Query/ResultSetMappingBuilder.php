@@ -438,8 +438,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $sql  .= $class->fieldMappings[$this->fieldMappings[$columnName]]['columnName'];
             } else if (isset($this->metaMappings[$columnName])) {
                 $sql .= $this->metaMappings[$columnName];
-            } else if (isset($this->discriminatorColumn[$columnName])) {
-                $sql .= $this->discriminatorColumn[$columnName];
+            } else if (isset($this->discriminatorColumns[$columnName])) {
+                $sql .= $this->discriminatorColumns[$columnName];
             }
 
             $sql .= " AS " . $columnName;
