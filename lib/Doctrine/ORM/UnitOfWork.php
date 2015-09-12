@@ -2400,12 +2400,12 @@ class UnitOfWork implements PropertyChangedListener
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
-            case LockMode::OPTIMISTIC_FORCE_UPDATE === $lockMode:
+            case LockMode::OPTIMISTIC_FORCE_INCREMENT === $lockMode:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
 
-                if(LockMode::OPTIMISTIC_FORCE_UPDATE === $lockMode){
+                if(LockMode::OPTIMISTIC_FORCE_INCREMENT === $lockMode){
                     $this->scheduleForVersionBump($entity);
                 }
 

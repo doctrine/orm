@@ -554,7 +554,7 @@ class SqlWalker implements TreeWalker
             return $sql . ' ' . $this->platform->getWriteLockSQL();
         }
 
-        if ($lockMode !== LockMode::OPTIMISTIC && $lockMode !== LockMode::OPTIMISTIC_FORCE_UPDATE) {
+        if ($lockMode !== LockMode::OPTIMISTIC && $lockMode !== LockMode::OPTIMISTIC_FORCE_INCREMENT) {
             throw QueryException::invalidLockMode();
         }
 

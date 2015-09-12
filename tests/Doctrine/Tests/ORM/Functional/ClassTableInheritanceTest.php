@@ -530,7 +530,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /*
          * Check that forcing a version increase works in the absence of other changes
          */
-        $this->_em->lock($raffle,LockMode::OPTIMISTIC_FORCE_UPDATE);
+        $this->_em->lock($raffle,LockMode::OPTIMISTIC_FORCE_INCREMENT);
 
         $this->assertTrue($uow->isScheduledForVersionBump($raffle));
         $this->_em->flush();
@@ -542,7 +542,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
          * a version change.
          */
         $raffle->setData("baz");
-        $this->_em->lock($raffle,LockMode::OPTIMISTIC_FORCE_UPDATE);
+        $this->_em->lock($raffle,LockMode::OPTIMISTIC_FORCE_INCREMENT);
 
         $this->assertTrue($uow->isScheduledForVersionBump($raffle));
         $this->_em->flush();

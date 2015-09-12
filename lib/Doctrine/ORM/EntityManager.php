@@ -421,7 +421,7 @@ use Doctrine\Common\Util\ClassUtils;
 
             switch (true) {
                 case LockMode::OPTIMISTIC === $lockMode:
-                case LockMode::OPTIMISTIC_FORCE_UPDATE === $lockMode:
+                case LockMode::OPTIMISTIC_FORCE_INCREMENT === $lockMode:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
@@ -440,7 +440,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
-            case LockMode::OPTIMISTIC_FORCE_UPDATE === $lockMode:
+            case LockMode::OPTIMISTIC_FORCE_INCREMENT === $lockMode:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
