@@ -16,12 +16,25 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         parent::setUp();
         $this->handles = array();
     }
+    /**
+     * We return the two types here that should (in most cases) behave
+     * identically, at least when the underlying entity is being
+     * modified regardless.
+     */
+    public function optimisticLockTypes(){
+        return array(
+            array(LockMode::OPTIMISTIC),
+            array(LockMode::OPTIMISTIC_FORCE_INCREMENT),
+        );
+    }
 
     /**
+     * @dataProvider optimisticLockTypes
      * @group DDC-178
      * @group locking
+     * @param int $mode
      */
-    public function testLockVersionedEntity() {
+    public function testLockVersionedEntity($mode) {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";
@@ -29,14 +42,16 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version);
+        $this->_em->lock($article, $mode, $article->version);
     }
 
     /**
+     * @dataProvider optimisticLockTypes
      * @group DDC-178
      * @group locking
+     * @param int $mode
      */
-    public function testLockVersionedEntity_MismatchThrowsException() {
+    public function testLockVersionedEntity_MismatchThrowsException($mode) {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";
@@ -45,14 +60,16 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->flush();
 
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
+        $this->_em->lock($article, $mode, $article->version + 1);
     }
 
     /**
+     * @dataProvider optimisticLockTypes
      * @group DDC-178
      * @group locking
+     * @param int $mode
      */
-    public function testLockUnversionedEntity_ThrowsException() {
+    public function testLockUnversionedEntity_ThrowsException($mode) {
         $user = new CmsUser();
         $user->name = "foo";
         $user->status = "active";
@@ -62,18 +79,20 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->flush();
 
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
-        $this->_em->lock($user, LockMode::OPTIMISTIC);
+        $this->_em->lock($user, $mode);
     }
 
     /**
+     * @dataProvider optimisticLockTypes
      * @group DDC-178
      * @group locking
+     * @param int $mode
      */
-    public function testLockUnmanagedEntity_ThrowsException() {
+    public function testLockUnmanagedEntity_ThrowsException($mode) {
         $article = new CmsArticle();
 
         $this->setExpectedException('InvalidArgumentException', 'Entity Doctrine\Tests\Models\CMS\CmsArticle');
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
+        $this->_em->lock($article, $mode, $article->version + 1);
     }
 
     /**
@@ -170,15 +189,17 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     }
 
     /**
+     * @dataProvider optimisticLockTypes
      * @group DDC-1693
+     * @param int $mode
      */
-    public function testLockOptimisticNonVersionedThrowsExceptionInDQL()
+    public function testLockOptimisticNonVersionedThrowsExceptionInDQL($mode)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'";
 
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException', 'The optimistic lock on an entity failed.');
         $sql = $this->_em->createQuery($dql)->setHint(
-            \Doctrine\ORM\Query::HINT_LOCK_MODE, \Doctrine\DBAL\LockMode::OPTIMISTIC
+            \Doctrine\ORM\Query::HINT_LOCK_MODE, $mode
         )->getSQL();
     }
 }
