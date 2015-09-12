@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\LockMode;
 use Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
@@ -501,8 +502,8 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $raffle->setData("foo");
 
         /*
-         * Accessing UOW is ugly on an API level, but it's the only way to
-         * test the core-behavior until DDC-3781 provides another mechanism.
+         * Accessing UOW like this is ugly on an API level, but we're only
+         * doing it to verify some state
          */
         $uow = $this->_em->getUnitOfWork();
 
@@ -529,7 +530,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /*
          * Check that forcing a version increase works in the absence of other changes
          */
-        $uow->scheduleForVersionBump($raffle);
+        $this->_em->lock($raffle,LockMode::OPTIMISTIC_FORCE_UPDATE);
 
         $this->assertTrue($uow->isScheduledForVersionBump($raffle));
         $this->_em->flush();
@@ -541,7 +542,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
          * a version change.
          */
         $raffle->setData("baz");
-        $uow->scheduleForVersionBump($raffle);
+        $this->_em->lock($raffle,LockMode::OPTIMISTIC_FORCE_UPDATE);
 
         $this->assertTrue($uow->isScheduledForVersionBump($raffle));
         $this->_em->flush();

@@ -138,7 +138,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /*
          * Check that our flag forces an update and resets the flag
          */
-        $uow->scheduleForVersionBump($test);
+        $this->_em->lock($test,LockMode::OPTIMISTIC_FORCE_UPDATE);
         $this->_em->flush();
         $this->assertEquals(2, $test->getVersion());
         $this->assertFalse($uow->isScheduledForVersionBump($test));
@@ -156,7 +156,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
          * Check that using the flag AND making a change still results in only
          * a single increment to the version.
          */
-        $uow->scheduleForVersionBump($test);
+        $this->_em->lock($test,LockMode::OPTIMISTIC_FORCE_UPDATE);
         $test->name = "test2";
         $this->_em->flush();
         $this->assertEquals(3, $test->getVersion());
@@ -170,7 +170,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $test2 = new OptimisticStandard();
         $test2->name = 'insert_checks';
-        $uow->scheduleForVersionBump($test);
+        $this->_em->lock($test,LockMode::OPTIMISTIC_FORCE_UPDATE);
         $this->_em->persist($test2);
         $this->_em->flush();
 

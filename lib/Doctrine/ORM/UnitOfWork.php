@@ -1354,9 +1354,13 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * INTERNAL:
      * Schedules (or de-schedules) an entity for a "forced" version bump, which
      * should occur even if no other update/insert activity is needed. If such
      * activity is also present, the version will only be bumped once.
+     *
+     * User-level code that needs to increment a version number should instead
+     * use lock($entity,LockMode::OPTIMISTIC_FORCE_INCREMENT)
      *
      * @param object $entity
      * @param boolean $enable Defaults to true, false will remove from schedule if present
@@ -2396,8 +2400,13 @@ class UnitOfWork implements PropertyChangedListener
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
+            case LockMode::OPTIMISTIC_FORCE_UPDATE === $lockMode:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
+                }
+
+                if(LockMode::OPTIMISTIC_FORCE_UPDATE === $lockMode){
+                    $this->scheduleForVersionBump($entity);
                 }
 
                 if ($lockVersion === null) {
