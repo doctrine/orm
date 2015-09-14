@@ -9,6 +9,7 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -83,4 +84,30 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
     }
+
+    /**
+     * Test that PersistentCollection::add() and ::set() ignores non-objects.
+     *
+     * @group DDC-3382
+     */
+    public function testNonObjects()
+    {
+        $this->setUpPersistentCollection();
+        $this->assertEmpty($this->collection);
+
+        $this->collection->add("dummy");
+        $this->assertEmpty($this->collection);
+
+        $this->collection->add(null);
+        $this->assertEmpty($this->collection);
+
+        $product = new ECommerceProduct();
+        $this->collection->set(1, $product);
+
+        // Trying to overwrite the element will not work.
+        $this->collection->set(1, "dummy");
+        $this->collection->set(1, null);
+        $this->assertSame($product, $this->collection->get(1));
+    }
 }
+

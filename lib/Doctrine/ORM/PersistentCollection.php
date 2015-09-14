@@ -467,6 +467,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function set($key, $value)
     {
+        if (!is_object($value)) {
+            return true;
+        }
+
         parent::set($key, $value);
 
         $this->changed();
@@ -481,6 +485,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function add($value)
     {
+        if (!is_object($value)) {
+            return true;
+        }
+
         $this->collection->add($value);
 
         $this->changed();
