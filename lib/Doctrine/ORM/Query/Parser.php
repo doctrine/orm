@@ -312,10 +312,9 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
 
         // short-circuit on first condition, usually types match
-        if ($lookaheadType !== $token && $token !== Lexer::T_IDENTIFIER && $lookaheadType <= Lexer::T_IDENTIFIER) {
+        if ($lookaheadType !== $token && ($token !== Lexer::T_IDENTIFIER || $lookaheadType <= Lexer::T_IDENTIFIER)) {
             $this->syntaxError($this->lexer->getLiteral($token));
         }
-
         $this->lexer->moveNext();
     }
 
