@@ -45,12 +45,12 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        $this->assertEquals(1, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(3, $this->getCacheSize($cache));
+        $this->assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -112,7 +112,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users = $query->getResult();
 
         $data = $this->cacheDataReflection->getValue($cache);
-        $this->assertEquals(2, count($data));
+        $this->assertEquals(1, count($data));
 
         $this->assertInstanceOf('Doctrine\ORM\Query\ParserResult', array_pop($data));
     }
