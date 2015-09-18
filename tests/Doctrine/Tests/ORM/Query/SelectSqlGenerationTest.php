@@ -2259,6 +2259,43 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT COUNT(c0_.name) AS sclr_0 FROM cms_users c0_ HAVING sclr_0 IS NULL'
         );
     }
+
+    /**
+     * @group DDC-3701
+     */
+    public function testFROMClauseAcceptsFQCNWithLeadingBackslash()
+    {
+        $this->_em->createQuery(
+            'SELECT c FROM \Doctrine\Tests\Models\Company\CompanyContract c'
+        )->getSQL();
+    }
+
+    /**
+     * @group DDC-3701
+     * @expectedException \Doctrine\ORM\Query\QueryException
+     */
+    public function testParserDoesNotAcceptWHEREWhenWITHIsExpected()
+    {
+        $this->_em->createQuery('
+            SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c
+            JOIN Doctrine\Tests\Models\Company\CompanyEmployee e
+            WHERE e.id = c.salesPerson
+            WHERE c.completed = true
+        ')->getSQL();
+    }
+
+    /**
+     * @group DDC-3701
+     */
+    public function testParserAcceptsJoinWithRangeVariableDeclatationAndNoWITHClause()
+    {
+        $this->_em->createQuery('
+            SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c
+            JOIN Doctrine\Tests\Models\Company\CompanyEmployee e
+            WHERE e.id = c.salesPerson
+        ')->getSQL();
+    }
+
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
