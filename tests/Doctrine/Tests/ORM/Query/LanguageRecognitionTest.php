@@ -73,6 +73,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
+    public function testSelectSingleComponentWithLeadingBackslashOnFQCN()
+    {
+        $this->assertValidDQL('SELECT u FROM \Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
     public function testSelectSingleComponentWithMultipleColumns()
     {
         $this->assertValidDQL('SELECT u.name, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
@@ -209,9 +214,25 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDQL('SELECT u.name, a.topic, p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a LEFT JOIN u.phonenumbers p');
     }
 
-    public function testJoinClassPath()
+    public function testJoinClassPathUsingWITH()
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a WITH a.user = u.id');
+    }
+
+    /**
+     * @group DDC-3701
+     */
+    public function testJoinClassPathUsingWHERE()
+    {
+        $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = u.id');
+    }
+
+    /**
+     * @group DDC-3701
+     */
+    public function testDDC3701WHEREIsNotWITH()
+    {
+        $this->assertInvalidDQL('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN Doctrine\Tests\Models\Company\CompanyEmployee e WHERE e.id = c.salesPerson WHERE c.completed = true');
     }
 
     public function testOrderBySingleColumn()
