@@ -2289,11 +2289,13 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testParserAcceptsJoinWithRangeVariableDeclatationAndNoWITHClause()
     {
-        $this->_em->createQuery('
+        $sql = $this->_em->createQuery('
             SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c
             JOIN Doctrine\Tests\Models\Company\CompanyEmployee e
             WHERE e.id = c.salesPerson
         ')->getSQL();
+
+        $this->assertInternalType('string', $sql);
     }
 
 }
