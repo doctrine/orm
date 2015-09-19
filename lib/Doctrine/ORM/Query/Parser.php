@@ -311,7 +311,12 @@ class Parser
     {
         $lookaheadType = $this->lexer->lookahead['type'];
 
-        // short-circuit on first condition, usually types match
+        /*
+         * The following condition means:
+         * - If next token matches expectation -> ok.
+         * - If expectation is to get T_IDENTIFIER and we find one of the tokens that are reserved words *but* would work as identifiers as well (e. g. "FROM", DDC-505) -> ok.
+         * - Else fail.
+         */
         if ($lookaheadType !== $token && ($token !== Lexer::T_IDENTIFIER || $lookaheadType <= Lexer::T_IDENTIFIER)) {
             $this->syntaxError($this->lexer->getLiteral($token));
         }
