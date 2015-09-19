@@ -13,7 +13,7 @@ Cache Drivers
 
 The cache drivers follow a simple interface that is defined in
 ``Doctrine\Common\Cache\Cache``. All the cache drivers extend a
-base class ``Doctrine\Common\Cache\AbstractCache`` which implements
+base class ``Doctrine\Common\Cache\CacheProvider`` which implements
 this interface.
 
 The interface defines the following public methods for you to implement:
@@ -24,7 +24,7 @@ The interface defines the following public methods for you to implement:
 -  save($id, $data, $lifeTime = false) - Puts data into the cache
 -  delete($id) - Deletes a cache entry
 
-Each driver extends the ``AbstractCache`` class which defines a few
+Each driver extends the ``CacheProvider`` class which defines a few
 abstract protected methods that each of the drivers must
 implement:
 
@@ -38,7 +38,7 @@ The public methods ``fetch()``, ``contains()`` etc. use the
 above protected methods which are implemented by the drivers. The
 code is organized this way so that the protected methods in the
 drivers do the raw interaction with the cache implementation and
-the ``AbstractCache`` can build custom functionality on top of
+the ``CacheProvider`` can build custom functionality on top of
 these methods.
 
 This documentation does not cover every single cache driver included
