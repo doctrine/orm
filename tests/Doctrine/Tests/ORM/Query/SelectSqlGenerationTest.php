@@ -87,7 +87,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testDDC3697WithPartialLoad()
     {
         $this->assertSqlGeneration(
-            'SELECT c.id FROM \Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
+            'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ INNER JOIN company_persons c1_ WHERE c0_.spouse_id = c1_.id AND c1_.id = 42',
             array(Query::HINT_FORCE_PARTIAL_LOAD => true)
         );
@@ -96,7 +96,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testDDC3697WithoutPartialLoad()
     {
         $this->assertSqlGeneration(
-            'SELECT c.id FROM \Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
+            'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id WHERE c0_.spouse_id = c3_.id AND c3_.id = 42',
             array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
@@ -479,7 +479,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsInstanceOfExpressionInWherePartWithMultipleValues()
     {
         $this->assertSqlGeneration(
-            "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF (Doctrine\Tests\Models\Company\CompanyEmployee, \Doctrine\Tests\Models\Company\CompanyManager)",
+            "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF (Doctrine\Tests\Models\Company\CompanyEmployee, Doctrine\Tests\Models\Company\CompanyManager)",
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('employee', 'manager')"
         );
     }
@@ -490,7 +490,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsInstanceOfExpressionsInWherePartPrefixedSlash()
     {
         $this->assertSqlGeneration(
-            "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\Company\CompanyEmployee",
+            "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee",
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('employee')"
         );
     }
@@ -501,7 +501,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsInstanceOfExpressionsInWherePartWithUnrelatedClass()
     {
         $this->assertInvalidSqlGeneration(
-            "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\CMS\CmsUser",
+            "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\CMS\CmsUser",
             "Doctrine\ORM\Query\QueryException"
         );
     }
