@@ -11,44 +11,34 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp() {
     }
 
-    public function testScannerRecognizesIdentifierWithLengthOfOneCharacter()
+    /**
+     * @dataProvider validIdentifiers
+     */
+    public function testScannerRecognizesIdentifier($value)
     {
-        $lexer = new Lexer('u');
+        $lexer = new Lexer($value);
 
         $lexer->moveNext();
         $token = $lexer->lookahead;
 
         $this->assertEquals(Lexer::T_IDENTIFIER, $token['type']);
-        $this->assertEquals('u', $token['value']);
+        $this->assertEquals($value, $token['value']);
     }
 
-    public function testScannerRecognizesIdentifierConsistingOfLetters()
+    public function testScannerRecognizesTerminalString()
     {
-        $lexer = new Lexer('someIdentifier');
+        /*
+         * "all" looks like an identifier, but in fact it's a reserved word
+         * (a terminal string). It's up to the parser to accept it as an identifier
+         * (with its literal value) when appropriate.
+         */
+
+        $lexer = new Lexer('all');
 
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_IDENTIFIER, $token['type']);
-        $this->assertEquals('someIdentifier', $token['value']);
-    }
 
-    public function testScannerRecognizesIdentifierIncludingDigits()
-    {
-        $lexer = new Lexer('s0m31d3nt1f13r');
-
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_IDENTIFIER, $token['type']);
-        $this->assertEquals('s0m31d3nt1f13r', $token['value']);
-    }
-
-    public function testScannerRecognizesIdentifierIncludingUnderscore()
-    {
-        $lexer = new Lexer('some_identifier');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_IDENTIFIER, $token['type']);
-        $this->assertEquals('some_identifier', $token['value']);
+        $this->assertEquals(Lexer::T_ALL, $token['type']);
     }
 
     public function testScannerRecognizesDecimalInteger()
@@ -237,5 +227,19 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         }
 
         $this->assertFalse($lexer->moveNext());
+    }
+
+    public function validIdentifiers()
+    {
+        return array(
+            array('u'), // one char
+            array('someIdentifier'),
+            array('s0m31d3nt1f13r'), // including digits
+            array('some_identifier'), // including underscore
+            array('_some_identifier'), // starts with underscore
+            array('Some\Class'), // DQL class reference
+            array('\Some\Class'), // DQL class reference with leading \
+            array('comma') // name of a token class with value < 100 (whitebox test)
+        );
     }
 }
