@@ -2272,10 +2272,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
     /**
      * @group DDC-3701
-     * @expectedException \Doctrine\ORM\Query\QueryException
      */
     public function testParserDoesNotAcceptWHEREWhenWITHIsExpected()
     {
+        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+
         $this->_em->createQuery('
             SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c
             JOIN Doctrine\Tests\Models\Company\CompanyEmployee e
