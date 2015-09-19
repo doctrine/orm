@@ -84,7 +84,10 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->fail($sql);
     }
 
-    public function testDDC3697WithPartialLoad()
+    /**
+     * @group DDC-3697
+     */
+    public function testJoinWithRangeVariablePutsConditionIntoSqlWhereClause()
     {
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
@@ -93,8 +96,16 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testDDC3697WithoutPartialLoad()
+    /**
+     * @group DDC-3697
+     */
+    public function testJoinWithRangeVariableAndInheritancePutsConditionIntoSqlWhereClause()
     {
+        /*
+         * Basically like the previous test, but this time load data for the inherited objects as well.
+         * The important thing is that the ON clauses in LEFT JOINs only contain the conditions necessary to join the appropriate inheritance table
+         * whereas the filtering condition must remain in the SQL WHERE clause.
+         */
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id WHERE c0_.spouse_id = c3_.id AND c3_.id = 42',
