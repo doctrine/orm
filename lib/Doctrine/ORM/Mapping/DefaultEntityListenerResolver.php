@@ -58,7 +58,13 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
             throw new \InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
         }
 
-        $this->instances[get_class($object)] = $object;
+        if ($object instanceof \ProxyManager\Proxy\VirtualProxyInterface) {
+            $className = get_parent_class($object);
+        } else {
+            $className = get_class($object);
+        }
+
+        $this->instances[$className] = $object;
     }
 
     /**
