@@ -40,6 +40,24 @@ class EntityListenerResolverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame($object, $this->resolver->resolve($className));
     }
 
+    public function testLazyRegisterAndResolve()
+    {
+        $className  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory();
+        $proxy = $factory->createProxy(
+            $className,
+            function (& $wrappedObject, $proxy, $method, $parameters, & $initializer) {
+                $wrappedObject = new HeavyComplexObject(); // instantiation logic here
+                $initializer   = null; // turning off further lazy initialization
+            }
+        );
+
+        $this->resolver->register($proxy);
+
+        $this->assertSame($proxy, $this->resolver->resolve($className));
+    }
+
     public function testClearOne()
     {
         $className1  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
@@ -73,7 +91,7 @@ class EntityListenerResolverTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf($className1, $obj1);
         $this->assertInstanceOf($className2, $obj2);
-        
+
         $this->assertSame($obj1, $this->resolver->resolve($className1));
         $this->assertSame($obj2, $this->resolver->resolve($className2));
 
@@ -81,7 +99,7 @@ class EntityListenerResolverTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertInstanceOf($className1, $this->resolver->resolve($className1));
         $this->assertInstanceOf($className2, $this->resolver->resolve($className2));
-        
+
         $this->assertNotSame($obj1, $this->resolver->resolve($className1));
         $this->assertNotSame($obj2, $this->resolver->resolve($className2));
     }
