@@ -13,7 +13,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaName()
+    public function testAbstractSchemaNameSupportsFQCN()
     {
         $parser = $this->createParser('Doctrine\Tests\Models\CMS\CmsUser');
 
@@ -28,6 +28,49 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
     {
         $parser = $this->createParser('\Doctrine\Tests\Models\CMS\CmsUser');
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+    }
+
+    /**
+     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
+     * @group DDC-3715
+     */
+    public function testAbstractSchemaNameSupportsIdentifier()
+    {
+        $parser = $this->createParser('stdClass');
+        $this->assertEquals('stdClass', $parser->AbstractSchemaName());
+    }
+
+    /**
+     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
+     * @group DDC-3715
+     */
+    public function testAbstractSchemaNameSupportsNamespaceAlias()
+    {
+        $parser = $this->createParser('CMS:CmsUser');
+        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
+
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+    }
+
+    /**
+     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
+     * @group DDC-3715
+     */
+    public function testAbstractSchemaNameFailsIfClassDoesNotExist()
+    {
+        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+        $parser = $this->createParser('Foo\Bar');
+        $parser->AbstractSchemaName();
+    }
+
+    /**
+     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
+     * @group DDC-3715
+     */
+    public function testAbstractSchemaNameCanSkipClassCheck()
+    {
+        $parser = $this->createParser('Foo\Bar');
+        $this->assertEquals('Foo\Bar', $parser->AbstractSchemaName(false));
     }
 
     /**
@@ -57,16 +100,18 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
 
     public function validMatches()
     {
+        /*
+         * This only covers the special case handling in the Parser that some
+         * tokens that are *not* T_IDENTIFIER are accepted as well when matching
+         * identifiers.
+         *
+         * The basic checks that tokens are classified correctly do not belong here
+         * but in LexerTest.
+         */
         return array(
             array(Lexer::T_WHERE, 'where'), // keyword
             array(Lexer::T_DOT, '.'), // token that cannot be an identifier
-            array(Lexer::T_IDENTIFIER, 'u'), // one char
             array(Lexer::T_IDENTIFIER, 'someIdentifier'),
-            array(Lexer::T_IDENTIFIER, 's0m31d3nt1f13r'), // including digits
-            array(Lexer::T_IDENTIFIER, 'some_identifier'), // including underscore
-            array(Lexer::T_IDENTIFIER, '_some_identifier'), // starts with underscore
-            array(Lexer::T_IDENTIFIER, 'Some\Class'), // DQL class reference
-            array(Lexer::T_IDENTIFIER, '\Some\Class'), // DQL class reference with leading \
             array(Lexer::T_IDENTIFIER, 'from'), // also a terminal string (the "FROM" keyword) as in DDC-505
             array(Lexer::T_IDENTIFIER, 'comma') // not even a terminal string, but the name of a constant in the Lexer (whitebox test)
         );
@@ -78,7 +123,12 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
             array(Lexer::T_DOT, 'ALL'), // ALL is a terminal string (reserved keyword) and also possibly an identifier
             array(Lexer::T_DOT, ','), // "," is a token on its own, but cannot be used as identifier
             array(Lexer::T_WHERE, 'WITH'), // as in DDC-3697
-            array(Lexer::T_WHERE, '.')
+            array(Lexer::T_WHERE, '.'),
+
+            // The following are qualified or aliased names and must not be accepted where only an Identifier is expected
+            array(Lexer::T_IDENTIFIER, '\\Some\\Class'),
+            array(Lexer::T_IDENTIFIER, 'Some\\Class'),
+            array(Lexer::T_IDENTIFIER, 'Some:Name'),
         );
     }
 

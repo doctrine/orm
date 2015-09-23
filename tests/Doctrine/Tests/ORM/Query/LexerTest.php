@@ -12,16 +12,16 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @dataProvider validIdentifiers
+     * @dataProvider provideTokens
      */
-    public function testScannerRecognizesIdentifier($value)
+    public function testScannerRecognizesTokens($type, $value)
     {
         $lexer = new Lexer($value);
 
         $lexer->moveNext();
         $token = $lexer->lookahead;
 
-        $this->assertEquals(Lexer::T_IDENTIFIER, $token['type']);
+        $this->assertEquals($type, $token['type']);
         $this->assertEquals($value, $token['value']);
     }
 
@@ -178,7 +178,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
             ),
             array(
                 'value' => 'My\Namespace\User',
-                'type'  => Lexer::T_IDENTIFIER,
+                'type'  => Lexer::T_QUALIFIED_NAME,
                 'position' => 14
             ),
             array(
@@ -229,17 +229,18 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($lexer->moveNext());
     }
 
-    public function validIdentifiers()
+    public function provideTokens()
     {
         return array(
-            array('u'), // one char
-            array('someIdentifier'),
-            array('s0m31d3nt1f13r'), // including digits
-            array('some_identifier'), // including underscore
-            array('_some_identifier'), // starts with underscore
-            array('Some\Class'), // DQL class reference
-            array('\Some\Class'), // DQL class reference with leading \
-            array('comma') // name of a token class with value < 100 (whitebox test)
+            array(Lexer::T_IDENTIFIER, 'u'), // one char
+            array(Lexer::T_IDENTIFIER, 'someIdentifier'),
+            array(Lexer::T_IDENTIFIER, 's0m31d3nt1f13r'), // including digits
+            array(Lexer::T_IDENTIFIER, 'some_identifier'), // including underscore
+            array(Lexer::T_IDENTIFIER, '_some_identifier'), // starts with underscore
+            array(Lexer::T_IDENTIFIER, 'comma'), // name of a token class with value < 100 (whitebox test)
+            array(Lexer::T_QUALIFIED_NAME, 'Some\Class'), // DQL class reference
+            array(Lexer::T_QUALIFIED_NAME, '\Some\Class'), // DQL class reference with leading \
+            array(Lexer::T_ALIASED_NAME, 'Some:Name')
         );
     }
 }

@@ -49,6 +49,8 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_PLUS                = 17;
     const T_OPEN_CURLY_BRACE    = 18;
     const T_CLOSE_CURLY_BRACE   = 19;
+    const T_ALIASED_NAME        = 20;
+    const T_QUALIFIED_NAME      = 21;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -126,10 +128,11 @@ class Lexer extends \Doctrine\Common\Lexer
     protected function getCatchablePatterns()
     {
         return array(
-            '[a-z_\\\][a-z0-9_\:\\\]*[a-z0-9_]{1}',
-            '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
-            "'(?:[^']|'')*'",
-            '\?[0-9]*|:[a-z_][a-z0-9_]*'
+            '[a-z_][a-z0-9_]*\:[a-z_][a-z0-9_]*', // aliased name
+            '\\\?[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // identifier or qualified name
+            '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?', // numbers
+            "'(?:[^']|'')*'", // quoted strings
+            '\?[0-9]*|:[a-z_][a-z0-9_]*' // parameters
         );
     }
 
@@ -163,7 +166,7 @@ class Lexer extends \Doctrine\Common\Lexer
 
                 return self::T_STRING;
 
-            // Recognize identifiers
+            // Recognize identifiers, aliased or qualified names
             case (ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\'):
                 $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
 
@@ -175,7 +178,13 @@ class Lexer extends \Doctrine\Common\Lexer
                     }
                 }
 
-                return self::T_IDENTIFIER;
+                if (strpos($value, '\\') !== false) {
+                    return self::T_QUALIFIED_NAME;
+                } else if (strpos($value, ':') !== false) {
+                    return self::T_ALIASED_NAME;
+                } else {
+                    return self::T_IDENTIFIER;
+                }
 
             // Recognize input parameters
             case ($value[0] === '?' || $value[0] === ':'):
@@ -196,6 +205,9 @@ class Lexer extends \Doctrine\Common\Lexer
             case ($value === '!'): return self::T_NEGATE;
             case ($value === '{'): return self::T_OPEN_CURLY_BRACE;
             case ($value === '}'): return self::T_CLOSE_CURLY_BRACE;
+
+            case (strrpos($value, ':') !== false):
+                return self::T_ALIASED_NAME;
 
             // Default
             default:

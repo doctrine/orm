@@ -1,11 +1,15 @@
 <?php
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException;
 
 class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 {
+    /**
+     * @var EntityManagerInterface
+     */
     private $_em;
 
     protected function setUp()
@@ -71,6 +75,63 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testSelectSingleComponentWithAsterisk()
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    /**
+     * @group DDC-675, also see https://github.com/doctrine/doctrine2/commit/0424d870999c9fb0a044a8b5773f250376d2368f
+     */
+    public function testAbstractSchemaNameWithLeadingBackslash()
+    {
+        $this->assertValidDQL('SELECT u FROM \Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    /**
+     * @dataProvider invalidDQL
+     */
+    public function testRejectsInvalidDQL($dql)
+    {
+        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+
+        $this->_em->getConfiguration()->setEntityNamespaces(array('Unknown' => 'Unknown', 'CMS' => 'Doctrine\Tests\Models\CMS'));
+        $this->parseDql($dql);
+    }
+
+    public function invalidDQL()
+    {
+        return array(
+
+            /* Checks for invalid IdentificationVariables and AliasIdentificationVariables */
+            array('SELECT \foo FROM Doctrine\Tests\Models\CMS\CmsUser \foo'),
+            array('SELECT foo\ FROM Doctrine\Tests\Models\CMS\CmsUser foo\\'),
+            array('SELECT foo\bar FROM Doctrine\Tests\Models\CMS\CmsUser foo\bar'),
+            array('SELECT foo:bar FROM Doctrine\Tests\Models\CMS\CmsUser foo:bar'),
+            array('SELECT foo: FROM Doctrine\Tests\Models\CMS\CmsUser foo:'),
+
+            /* Checks for invalid AbstractSchemaName */
+            array('SELECT u FROM UnknownClass u'),  // unknown
+            array('SELECT u FROM Unknown\Class u'), // unknown with namespace
+            array('SELECT u FROM \Unknown\Class u'), // unknown, leading backslash
+            array('SELECT u FROM Unknown\\\\Class u'), // unknown, syntactically bogus (duplicate \\)
+            array('SELECT u FROM Unknown\Class\ u'), // unknown, syntactically bogus (trailing \)
+            array('SELECT u FROM Unknown:Class u'), // unknown, with namespace alias
+            array('SELECT u FROM Unknown::Class u'), // unknown, with PAAMAYIM_NEKUDOTAYIM
+            array('SELECT u FROM Unknown:Class:Name u'), // unknown, with invalid namespace alias
+            array('SELECT u FROM UnknownClass: u'), // unknown, with invalid namespace alias
+            array('SELECT u FROM Unknown:Class: u'), // unknown, with invalid namespace alias
+            array('SELECT u FROM Doctrine\Tests\Models\CMS\\\\CmsUser u'), // syntactically bogus (duplicate \\)array('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser\ u'), // syntactically bogus (trailing \)
+            array('SELECT u FROM CMS::User u'),
+            array('SELECT u FROM CMS:User: u'),
+            array('SELECT u FROM CMS:User:Foo u'),
+
+            /* Checks for invalid AliasResultVariable */
+            array('SELECT \'foo\' AS \foo FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+            array('SELECT \'foo\' AS \foo\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+            array('SELECT \'foo\' AS foo\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+            array('SELECT \'foo\' AS foo\ FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+            array('SELECT \'foo\' AS foo\\\\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+            array('SELECT \'foo\' AS foo: FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+            array('SELECT \'foo\' AS foo:bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
+        );
     }
 
     public function testSelectSingleComponentWithLeadingBackslashOnFQCN()

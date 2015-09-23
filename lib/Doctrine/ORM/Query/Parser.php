@@ -953,26 +953,34 @@ class Parser
     }
 
     /**
-     * AbstractSchemaName ::= identifier
+     * AbstractSchemaName ::= qualified_name | aliased_name | identifier
+     *
+     * @param bool $validateName Whether to validate that the parsed name refers to an existing class.
      *
      * @return string
      */
-    public function AbstractSchemaName()
+    public function AbstractSchemaName($validateName = true)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-
-        $schemaName = ltrim($this->lexer->token['value'], '\\');
-
-        if (strrpos($schemaName, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $schemaName);
-
-            $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        if ($this->lexer->isNextToken(Lexer::T_QUALIFIED_NAME)) {
+            $this->match(Lexer::T_QUALIFIED_NAME);
+            $schemaName = ltrim($this->lexer->token['value'], '\\');
+        } else {
+            if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+                $this->match(Lexer::T_IDENTIFIER);
+                $schemaName = $this->lexer->token['value'];
+            } else {
+                $this->match(Lexer::T_ALIASED_NAME);
+                list($namespaceAlias, $simpleClassName) = explode(':', $this->lexer->token['value']);
+                $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+            }
         }
 
-        $exists = class_exists($schemaName, true);
+        if ($validateName) {
+            $exists = class_exists($schemaName, true);
 
-        if ( ! $exists) {
-            $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
+            if (! $exists) {
+                $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
+            }
         }
 
         return $schemaName;
@@ -1813,24 +1821,16 @@ class Parser
     }
 
     /**
-     * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
+     * NewObjectExpression ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
      *
      * @return \Doctrine\ORM\Query\AST\NewObjectExpression
      */
     public function NewObjectExpression()
     {
         $this->match(Lexer::T_NEW);
-        $this->match(Lexer::T_IDENTIFIER);
 
-        $token      = $this->lexer->token;
-        $className  = $token['value'];
-
-        if (strrpos($className, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $className);
-
-            $className = $this->em->getConfiguration()
-                ->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
-        }
+        $className = $this->AbstractSchemaName(false);
+        $token = $this->lexer->token;
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
@@ -3140,7 +3140,7 @@ class Parser
             return new AST\InputParameter($this->lexer->token['value']);
         }
 
-        return $this->AliasIdentificationVariable();
+        return $this->AbstractSchemaName();
     }
 
     /**

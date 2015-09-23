@@ -1046,7 +1046,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\InvalidClass(u.name)': Error: Class "\InvalidClass" is not defined.
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\InvalidClass(u.name)': Error: Class "InvalidClass" is not defined.
      */
     public function testInvalidClassException()
     {
@@ -1056,7 +1056,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\stdClass(u.name)': Error: Class "\stdClass" has not a valid constructor.
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\stdClass(u.name)': Error: Class "stdClass" has not a valid constructor.
      */
     public function testInvalidClassConstructorException()
     {
