@@ -103,4 +103,28 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(array($foo), $this->lazyCriteriaCollection->matching($criteria)->toArray());
     }
+
+    public function testIsEmptyUsesCountWhenNotInitialized()
+    {
+        $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(0));
+
+        $this->assertTrue($this->lazyCriteriaCollection->isEmpty());
+    }
+
+    public function testIsEmptyUsesWrappedCollectionWhenInitialized()
+    {
+        $this
+            ->persister
+            ->expects($this->once())
+            ->method('loadCriteria')
+            ->with($this->criteria)
+            ->will($this->returnValue(array('foo', 'bar', 'baz')));
+
+        // should never call the persister's count
+        $this->persister->expects($this->never())->method('count');
+
+        $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
+
+        $this->assertFalse($this->lazyCriteriaCollection->isEmpty());
+    }
 }
