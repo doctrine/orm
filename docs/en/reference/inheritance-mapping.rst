@@ -125,9 +125,8 @@ Example:
 Things to note:
 
 
--  The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap
-   must be specified on the topmost class that is part of the mapped
-   entity hierarchy.
+-  The @InheritanceType and @DiscriminatorColumn must be specified 
+   on the topmost class that is part of the mapped entity hierarchy.
 -  The @DiscriminatorMap specifies which values of the
    discriminator column identify a row as being of a certain type. In
    the case above a value of "person" identifies a row as being of
