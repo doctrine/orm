@@ -111,6 +111,13 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->lazyCriteriaCollection->isEmpty());
     }
 
+    public function testIsEmptyIsFalseIfCountIsNotZero()
+    {
+        $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(1));
+
+        $this->assertFalse($this->lazyCriteriaCollection->isEmpty());
+    }
+
     public function testIsEmptyUsesWrappedCollectionWhenInitialized()
     {
         $this

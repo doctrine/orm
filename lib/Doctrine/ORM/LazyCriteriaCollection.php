@@ -93,7 +93,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             return $this->collection->isEmpty();
         }
 
-        return $this->count() == 0;
+        return !$this->count();
     }
 
     /**
