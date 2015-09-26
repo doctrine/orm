@@ -3389,6 +3389,7 @@ class UnitOfWork implements PropertyChangedListener
                             if ($this->getEntityState($other) === self::STATE_DETACHED) {
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId   = $targetClass->getIdentifierValues($other);
+                                $relatedId   = $this->identifierFlattener->flattenIdentifier($targetClass, $relatedId);
 
                                 if ($targetClass->subClasses) {
                                     $other = $this->em->find($targetClass->name, $relatedId);
