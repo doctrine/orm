@@ -19,29 +19,64 @@ class DDC2922Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * Unlike next test, this one demonstrates that the problem does
+     * not necessarily reproduce if all the pieces are being flushed together.
+     *
      * @group DDC-2922
      */
-    public function testNewAssociatedEntityWorksWithJustOnePath()
+    public function testNewAssociatedEntityWorksWithJustOnePathIfAllPartsNew()
     {
-
-        /**
-         * First we persist and flush an e-mail with no user. This seems
-         * Save an un-owned email with no user. This seems to
-         * matter for reproducing the bug
-         */
-        $mail = new CmsEmail();
-        $mail->email = "nobody@example.com";
-        $mail->user = null;
-
-        $this->_em->persist($mail);
-        $this->_em->flush();
 
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
         $user->status = 'active';
 
-        $mail->user = $user;
+        $email = new CmsEmail();
+        $email->email = "nobody@example.com";
+        $email->user = $user;
+
+        $address = new CmsAddress();
+        $address->city = "Bonn";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "somestreet";
+        $address->user = $user;
+
+        $this->_em->persist($email);
+        $this->_em->persist($address);
+
+        $this->_em->flush();
+
+    }
+
+    /**
+     * This test exhibits the bug describe in the ticket, where an object that
+     * ought to be reachable causes errors.
+     *
+     * @group DDC-2922
+     */
+    public function testNewAssociatedEntityWorksWithJustOnePath()
+    {
+
+        /**
+         * First we persist and flush an e-mail with no user. Having the
+         * "cascading path" involve a non-new object seems to be important to
+         * reproducing the bug.
+         */
+        $email = new CmsEmail();
+        $email->email = "nobody@example.com";
+        $email->user = null;
+
+        $this->_em->persist($email);
+        $this->_em->flush(); // Flush before introducing CmsUser
+
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $email->user = $user;
 
         /**
          * Note that we have NOT directly persisted the CmsUser, and CmsAddress
@@ -58,15 +93,13 @@ class DDC2922Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->user = $user;
 
         $this->_em->persist($address);
-        try{
+        try {
             $this->_em->flush();
-        }catch(ORMInvalidArgumentException $e){
-            if(strpos($e->getMessage(),'not configured to cascade persist operations') !== FALSE) {
+        } catch (ORMInvalidArgumentException $e) {
+            if (strpos($e->getMessage(), 'not configured to cascade persist operations') !== FALSE) {
                 $this->fail($e);
             }
             throw $e;
         }
-
-
     }
 }
