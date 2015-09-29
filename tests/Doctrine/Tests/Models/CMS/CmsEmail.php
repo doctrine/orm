@@ -22,7 +22,7 @@ class CmsEmail
     public $email;
 
     /**
-     * @OneToOne(targetEntity="CmsUser", mappedBy="email")
+     * @OneToOne(targetEntity="CmsUser", mappedBy="email", cascade={"persist"})
      */
     public $user;
 
