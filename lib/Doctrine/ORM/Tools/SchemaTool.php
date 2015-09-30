@@ -262,6 +262,16 @@ class SchemaTool
                 $table->setPrimaryKey($pkColumns);
             }
 
+            // there can be unique indexes automatically created for join column
+            // if join column is also primary key we should keep only primary key on this column
+            // so, remove indexes overruled by primary key
+            $primaryKey = $table->getIndex('primary');
+            foreach ($table->getIndexes() as $idxKey => $existingIndex) {
+                if ($primaryKey->overrules($existingIndex)) {
+                    $table->dropIndex($idxKey);
+                }
+            }
+
             if (isset($class->table['indexes'])) {
                 foreach ($class->table['indexes'] as $indexName => $indexData) {
                     if( ! isset($indexData['flags'])) {
