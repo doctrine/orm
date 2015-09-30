@@ -128,7 +128,7 @@ class Lexer extends \Doctrine\Common\Lexer
     protected function getCatchablePatterns()
     {
         return array(
-            '[a-z_][a-z0-9_]*\:[a-z_][a-z0-9_]*', // aliased name
+            '[a-z_][a-z0-9_]*\:[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // aliased name
             '\\\?[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // identifier or qualified name
             '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?', // numbers
             "'(?:[^']|'')*'", // quoted strings
@@ -178,11 +178,11 @@ class Lexer extends \Doctrine\Common\Lexer
                     }
                 }
 
-                if (strpos($value, '\\') !== false) {
-                    return self::T_FULLY_QUALIFIED_NAME;
-                }
                 if (strpos($value, ':') !== false) {
                     return self::T_ALIASED_NAME;
+                }
+                if (strpos($value, '\\') !== false) {
+                    return self::T_FULLY_QUALIFIED_NAME;
                 }
                 return self::T_IDENTIFIER;
 
