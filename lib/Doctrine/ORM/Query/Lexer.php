@@ -30,27 +30,27 @@ namespace Doctrine\ORM\Query;
 class Lexer extends \Doctrine\Common\Lexer
 {
     // All tokens that are not valid identifiers must be < 100
-    const T_NONE                = 1;
-    const T_INTEGER             = 2;
-    const T_STRING              = 3;
-    const T_INPUT_PARAMETER     = 4;
-    const T_FLOAT               = 5;
-    const T_CLOSE_PARENTHESIS   = 6;
-    const T_OPEN_PARENTHESIS    = 7;
-    const T_COMMA               = 8;
-    const T_DIVIDE              = 9;
-    const T_DOT                 = 10;
-    const T_EQUALS              = 11;
-    const T_GREATER_THAN        = 12;
-    const T_LOWER_THAN          = 13;
-    const T_MINUS               = 14;
-    const T_MULTIPLY            = 15;
-    const T_NEGATE              = 16;
-    const T_PLUS                = 17;
-    const T_OPEN_CURLY_BRACE    = 18;
-    const T_CLOSE_CURLY_BRACE   = 19;
-    const T_ALIASED_NAME        = 20;
-    const T_QUALIFIED_NAME      = 21;
+    const T_NONE                 = 1;
+    const T_INTEGER              = 2;
+    const T_STRING               = 3;
+    const T_INPUT_PARAMETER      = 4;
+    const T_FLOAT                = 5;
+    const T_CLOSE_PARENTHESIS    = 6;
+    const T_OPEN_PARENTHESIS     = 7;
+    const T_COMMA                = 8;
+    const T_DIVIDE               = 9;
+    const T_DOT                  = 10;
+    const T_EQUALS               = 11;
+    const T_GREATER_THAN         = 12;
+    const T_LOWER_THAN           = 13;
+    const T_MINUS                = 14;
+    const T_MULTIPLY             = 15;
+    const T_NEGATE               = 16;
+    const T_PLUS                 = 17;
+    const T_OPEN_CURLY_BRACE     = 18;
+    const T_CLOSE_CURLY_BRACE    = 19;
+    const T_ALIASED_NAME         = 20;
+    const T_FULLY_QUALIFIED_NAME = 21;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -179,7 +179,7 @@ class Lexer extends \Doctrine\Common\Lexer
                 }
 
                 if (strpos($value, '\\') !== false) {
-                    return self::T_QUALIFIED_NAME;
+                    return self::T_FULLY_QUALIFIED_NAME;
                 }
                 if (strpos($value, ':') !== false) {
                     return self::T_ALIASED_NAME;

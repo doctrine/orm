@@ -962,8 +962,8 @@ class Parser
      */
     public function AbstractSchemaName($validateName = true)
     {
-        if ($this->lexer->isNextToken(Lexer::T_QUALIFIED_NAME)) {
-            $this->match(Lexer::T_QUALIFIED_NAME);
+        if ($this->lexer->isNextToken(Lexer::T_FULLY_QUALIFIED_NAME)) {
+            $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
             $schemaName = ltrim($this->lexer->token['value'], '\\');
         } else {
             if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
