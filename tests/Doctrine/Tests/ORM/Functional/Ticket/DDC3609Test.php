@@ -53,21 +53,21 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
           BaseOrder
 
         FROM
-          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
-          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
-          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder ComplexOrder WITH ComplexOrder.id = BaseOrder.id
+          Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+          LEFT JOIN Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
+          LEFT JOIN Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder ComplexOrder WITH ComplexOrder.id = BaseOrder.id
 
           LEFT JOIN ComplexOrder.deliveryLocations ComplexDeliveryLocation
 
         WHERE
           (
-            BaseOrder INSTANCE OF \Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder
+            BaseOrder INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder
             AND
             SimpleOrder.fulfiller = 'FulfillerUser'
           )
           OR
           (
-            BaseOrder INSTANCE OF \Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder
+            BaseOrder INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder
             AND
             ComplexDeliveryLocation.fulfiller = 'FulfillerUser'
           )
@@ -111,7 +111,7 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
           BaseOrder
 
         FROM
-          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+          Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
 
         WHERE
           BaseOrder.requester = 'RequesterUser'
@@ -147,8 +147,8 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
           BaseOrder
 
         FROM
-          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
-          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
+          Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+          LEFT JOIN Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
 
         WHERE
           SimpleOrder.fulfiller = 'FulfillerUser'
@@ -186,14 +186,14 @@ class DDC3609Test extends \Doctrine\Tests\OrmFunctionalTestCase
           BaseOrder
 
         FROM
-          \Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
-          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
-          LEFT JOIN \Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder ComplexOrder WITH ComplexOrder.id = BaseOrder.id
+          Doctrine\Tests\ORM\Functional\Ticket\DDC3609Order BaseOrder
+          LEFT JOIN Doctrine\Tests\ORM\Functional\Ticket\DDC3609SimpleOrder SimpleOrder WITH SimpleOrder.id = BaseOrder.id
+          LEFT JOIN Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder ComplexOrder WITH ComplexOrder.id = BaseOrder.id
 
           LEFT JOIN ComplexOrder.deliveryLocations ComplexDeliveryLocation
 
         WHERE
-          BaseOrder INSTANCE OF \Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder
+          BaseOrder INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\DDC3609ComplexOrder
           AND
           ComplexDeliveryLocation.fulfiller = 'FulfillerUser'
         ";
