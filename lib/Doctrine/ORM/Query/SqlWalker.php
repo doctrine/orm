@@ -1125,7 +1125,7 @@ class SqlWalker implements TreeWalker
                 $class      = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
                 $dqlAlias   = $joinDeclaration->aliasIdentificationVariable;
                 $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
-                $conditions = array();
+                $conditions = [];
 
                 if ($join->conditionalExpression) {
                     $conditions[] = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';

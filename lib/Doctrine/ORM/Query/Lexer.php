@@ -180,11 +180,11 @@ class Lexer extends \Doctrine\Common\Lexer
 
                 if (strpos($value, '\\') !== false) {
                     return self::T_QUALIFIED_NAME;
-                } else if (strpos($value, ':') !== false) {
-                    return self::T_ALIASED_NAME;
-                } else {
-                    return self::T_IDENTIFIER;
                 }
+                if (strpos($value, ':') !== false) {
+                    return self::T_ALIASED_NAME;
+                }
+                return self::T_IDENTIFIER;
 
             // Recognize input parameters
             case ($value[0] === '?' || $value[0] === ':'):

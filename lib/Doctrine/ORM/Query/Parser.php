@@ -320,6 +320,7 @@ class Parser
         if ($lookaheadType !== $token && ($token !== Lexer::T_IDENTIFIER || $lookaheadType <= Lexer::T_IDENTIFIER)) {
             $this->syntaxError($this->lexer->getLiteral($token));
         }
+
         $this->lexer->moveNext();
     }
 
