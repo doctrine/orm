@@ -53,27 +53,6 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameFailsIfClassDoesNotExist()
-    {
-        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
-        $parser = $this->createParser('Foo\Bar');
-        $parser->AbstractSchemaName();
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameCanSkipClassCheck()
-    {
-        $parser = $this->createParser('Foo\Bar');
-        $this->assertEquals('Foo\Bar', $parser->AbstractSchemaName(false));
-    }
-
-    /**
      * @dataProvider validMatches
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
