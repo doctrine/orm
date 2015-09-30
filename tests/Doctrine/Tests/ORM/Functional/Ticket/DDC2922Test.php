@@ -48,6 +48,11 @@ class DDC2922Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
+        // Verify the flush succeeded
+        $this->assertEquals($email, $this->_em->find(get_class($email),$email->id));
+        $this->assertEquals($address, $this->_em->find(get_class($address),$address->id));
+        $this->assertEquals($user, $this->_em->find(get_class($user),$user->id));
+
     }
 
     /**
@@ -101,5 +106,11 @@ class DDC2922Test extends \Doctrine\Tests\OrmFunctionalTestCase
             }
             throw $e;
         }
+
+        // Verify the flushes succeeded
+        $this->assertEquals($email, $this->_em->find(get_class($email),$email->id));
+        $this->assertEquals($address, $this->_em->find(get_class($address),$address->id));
+        $this->assertEquals($user, $this->_em->find(get_class($user),$user->id));
+
     }
 }
