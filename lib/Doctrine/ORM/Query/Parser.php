@@ -956,11 +956,9 @@ class Parser
     /**
      * AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
      *
-     * @param bool $validateName Whether to validate that the parsed name refers to an existing class.
-     *
      * @return string
      */
-    public function AbstractSchemaName($validateName = true)
+    public function AbstractSchemaName()
     {
         if ($this->lexer->isNextToken(Lexer::T_FULLY_QUALIFIED_NAME)) {
             $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
@@ -976,15 +974,23 @@ class Parser
             }
         }
 
-        if ($validateName) {
-            $exists = class_exists($schemaName, true);
-
-            if (! $exists) {
-                $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
-            }
-        }
-
         return $schemaName;
+    }
+
+    /**
+     * Validates an AbstractSchemaName, making sure the class exists.
+     *
+     * @param string $schemaName The name to validate.
+     *
+     * @throws QueryException if the name does not exist.
+     */
+    private function validateAbstractSchemaName($schemaName)
+    {
+        $exists = class_exists($schemaName, true);
+
+        if (! $exists) {
+            $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
+        }
     }
 
     /**
@@ -1214,6 +1220,7 @@ class Parser
         $this->match(Lexer::T_UPDATE);
         $token = $this->lexer->lookahead;
         $abstractSchemaName = $this->AbstractSchemaName();
+        $this->validateAbstractSchemaName($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1266,7 +1273,9 @@ class Parser
         }
 
         $token = $this->lexer->lookahead;
-        $deleteClause = new AST\DeleteClause($this->AbstractSchemaName());
+        $abstractSchemaName = $this->AbstractSchemaName();
+        $this->validateAbstractSchemaName($abstractSchemaName);
+        $deleteClause = new AST\DeleteClause($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1711,6 +1720,7 @@ class Parser
     public function RangeVariableDeclaration()
     {
         $abstractSchemaName = $this->AbstractSchemaName();
+        $this->validateAbstractSchemaName($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1830,7 +1840,7 @@ class Parser
     {
         $this->match(Lexer::T_NEW);
 
-        $className = $this->AbstractSchemaName(false);
+        $className = $this->AbstractSchemaName(); // note that this is not yet validated
         $token = $this->lexer->token;
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
@@ -3141,7 +3151,10 @@ class Parser
             return new AST\InputParameter($this->lexer->token['value']);
         }
 
-        return $this->AbstractSchemaName();
+        $abstractSchemaName = $this->AbstractSchemaName();
+        $this->validateAbstractSchemaName($abstractSchemaName);
+
+        return $abstractSchemaName;
     }
 
     /**
