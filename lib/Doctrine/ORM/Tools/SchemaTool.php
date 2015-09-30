@@ -247,12 +247,14 @@ class SchemaTool
             }
 
             $pkColumns = array();
+
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
+
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
@@ -261,6 +263,17 @@ class SchemaTool
 
             if ( ! $table->hasIndex('primary')) {
                 $table->setPrimaryKey($pkColumns);
+            }
+
+            // there can be unique indexes automatically created for join column
+            // if join column is also primary key we should keep only primary key on this column
+            // so, remove indexes overruled by primary key
+            $primaryKey = $table->getIndex('primary');
+
+            foreach ($table->getIndexes() as $idxKey => $existingIndex) {
+                if ($primaryKey->overrules($existingIndex)) {
+                    $table->dropIndex($idxKey);
+                }
             }
 
             if (isset($class->table['indexes'])) {
