@@ -954,7 +954,7 @@ class Parser
     }
 
     /**
-     * AbstractSchemaName ::= qualified_name | aliased_name | identifier
+     * AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
      *
      * @param bool $validateName Whether to validate that the parsed name refers to an existing class.
      *
