@@ -78,14 +78,6 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @group DDC-675, also see https://github.com/doctrine/doctrine2/commit/0424d870999c9fb0a044a8b5773f250376d2368f
-     */
-    public function testAbstractSchemaNameWithLeadingBackslash()
-    {
-        $this->assertValidDQL('SELECT u FROM \Doctrine\Tests\Models\CMS\CmsUser u');
-    }
-
-    /**
      * @dataProvider invalidDQL
      */
     public function testRejectsInvalidDQL($dql)
@@ -132,11 +124,6 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
             array('SELECT \'foo\' AS foo: FROM Doctrine\Tests\Models\CMS\CmsUser u'),
             array('SELECT \'foo\' AS foo:bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
         );
-    }
-
-    public function testSelectSingleComponentWithLeadingBackslashOnFQCN()
-    {
-        $this->assertValidDQL('SELECT u FROM \Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testSelectSingleComponentWithMultipleColumns()

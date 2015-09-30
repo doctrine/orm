@@ -239,7 +239,6 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
             array(Lexer::T_IDENTIFIER, '_some_identifier'), // starts with underscore
             array(Lexer::T_IDENTIFIER, 'comma'), // name of a token class with value < 100 (whitebox test)
             array(Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'), // DQL class reference
-            array(Lexer::T_FULLY_QUALIFIED_NAME, '\Some\Class'), // DQL class reference with leading \
             array(Lexer::T_ALIASED_NAME, 'Some:Name'),
             array(Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name')
         );

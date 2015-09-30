@@ -129,7 +129,7 @@ class Lexer extends \Doctrine\Common\Lexer
     {
         return array(
             '[a-z_][a-z0-9_]*\:[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // aliased name
-            '\\\?[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // identifier or qualified name
+            '[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // identifier or qualified name
             '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?', // numbers
             "'(?:[^']|'')*'", // quoted strings
             '\?[0-9]*|:[a-z_][a-z0-9_]*' // parameters
@@ -167,7 +167,7 @@ class Lexer extends \Doctrine\Common\Lexer
                 return self::T_STRING;
 
             // Recognize identifiers, aliased or qualified names
-            case (ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\'):
+            case (ctype_alpha($value[0]) || $value[0] === '_'):
                 $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
 
                 if (defined($name)) {

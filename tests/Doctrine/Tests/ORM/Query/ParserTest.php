@@ -24,10 +24,12 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameTrimsLeadingBackslash()
+    public function testAbstractSchemaNameFailsOnClassnamesWithLeadingBackslash()
     {
+        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+
         $parser = $this->createParser('\Doctrine\Tests\Models\CMS\CmsUser');
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        $parser->AbstractSchemaName();
     }
 
     /**

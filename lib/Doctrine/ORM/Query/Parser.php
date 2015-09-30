@@ -962,16 +962,14 @@ class Parser
     {
         if ($this->lexer->isNextToken(Lexer::T_FULLY_QUALIFIED_NAME)) {
             $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
-            $schemaName = ltrim($this->lexer->token['value'], '\\');
+            $schemaName = $this->lexer->token['value'];
+        } else if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            $this->match(Lexer::T_IDENTIFIER);
+            $schemaName = $this->lexer->token['value'];
         } else {
-            if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $this->match(Lexer::T_IDENTIFIER);
-                $schemaName = $this->lexer->token['value'];
-            } else {
-                $this->match(Lexer::T_ALIASED_NAME);
-                list($namespaceAlias, $simpleClassName) = explode(':', $this->lexer->token['value']);
-                $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
-            }
+            $this->match(Lexer::T_ALIASED_NAME);
+            list($namespaceAlias, $simpleClassName) = explode(':', $this->lexer->token['value']);
+            $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
         }
 
         return $schemaName;
