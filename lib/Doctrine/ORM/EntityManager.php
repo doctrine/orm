@@ -571,7 +571,7 @@ use Doctrine\Common\Util\ClassUtils;
     public function persist($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
         }
 
         $this->errorIfClosed();
@@ -594,7 +594,7 @@ use Doctrine\Common\Util\ClassUtils;
     public function remove($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
         }
 
         $this->errorIfClosed();
@@ -615,7 +615,7 @@ use Doctrine\Common\Util\ClassUtils;
     public function refresh($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
         }
 
         $this->errorIfClosed();
@@ -639,7 +639,7 @@ use Doctrine\Common\Util\ClassUtils;
     public function detach($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
         }
 
         $this->unitOfWork->detach($entity);
@@ -659,7 +659,7 @@ use Doctrine\Common\Util\ClassUtils;
     public function merge($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
         }
 
         $this->errorIfClosed();

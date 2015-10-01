@@ -248,7 +248,7 @@ class DatabaseDriver implements MappingDriver
                 }
 
                 $metadata->mapManyToMany($associationMapping);
-                
+
                 break;
             }
         }
@@ -319,7 +319,7 @@ class DatabaseDriver implements MappingDriver
         $tableName = $metadata->table['name'];
         $indexes   = $this->tables[$tableName]->getIndexes();
 
-        foreach($indexes as $index){
+        foreach ($indexes as $index) {
             if ($index->isPrimary()) {
                 continue;
             }
@@ -506,7 +506,7 @@ class DatabaseDriver implements MappingDriver
     {
         try {
             return $table->getPrimaryKey()->getColumns();
-        } catch(SchemaException $e) {
+        } catch (SchemaException $e) {
             // Do nothing
         }
 
@@ -550,6 +550,7 @@ class DatabaseDriver implements MappingDriver
         if ($fk) {
             $columnName = str_replace('_id', '', $columnName);
         }
+
         return Inflector::camelize($columnName);
     }
 }

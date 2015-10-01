@@ -38,10 +38,10 @@ class AttachEntityListenersListener
     /**
      * Adds a entity listener for a specific entity.
      *
-     * @param string $entityClass           The entity to attach the listener.
-     * @param string $listenerClass         The listener class.
-     * @param string $eventName             The entity lifecycle event.
-     * @param string $listenerCallback|null The listener callback method or NULL to use $eventName.
+     * @param string      $entityClass      The entity to attach the listener.
+     * @param string      $listenerClass    The listener class.
+     * @param string      $eventName        The entity lifecycle event.
+     * @param string|null $listenerCallback The listener callback method or NULL to use $eventName.
      *
      * @return void
      */

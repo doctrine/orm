@@ -178,7 +178,6 @@ abstract class AbstractQuery
     }
 
     /**
-     *
      * Enable/disable second level query (result) caching for this query.
      *
      * @param boolean $cacheable
@@ -243,7 +242,7 @@ abstract class AbstractQuery
      *
      * @param integer $lifetime
      *
-     * @return static This query instance.
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -263,7 +262,7 @@ abstract class AbstractQuery
     /**
      * @param integer $cacheMode
      *
-     * @return static This query instance.
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setCacheMode($cacheMode)
     {
@@ -863,7 +862,7 @@ abstract class AbstractQuery
     /**
      * Check if the query has a hint
      *
-     * @param  string $name The name of the hint
+     * @param string $name The name of the hint
      *
      * @return bool False if the query does not have any hint
      */

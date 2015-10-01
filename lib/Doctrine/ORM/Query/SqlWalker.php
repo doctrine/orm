@@ -913,7 +913,7 @@ class SqlWalker implements TreeWalker
         $relation        = $this->queryComponents[$joinedDqlAlias]['relation'];
         $targetClass     = $this->em->getClassMetadata($relation['targetEntity']);
         $sourceClass     = $this->em->getClassMetadata($relation['sourceEntity']);
-        $targetTableName = $this->quoteStrategy->getTableName($targetClass,$this->platform);
+        $targetTableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
 
         $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $joinedDqlAlias);
         $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $associationPathExpression->identificationVariable);

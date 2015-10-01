@@ -1098,6 +1098,7 @@ public function __construct(<params>)
             }
             $annotations[] = '@' . $this->annotationsPrefix . $constraintName . '(name="' . $name . '", columns={' . implode(', ', $columns) . '})';
         }
+
         return implode(', ', $annotations);
     }
 
@@ -1239,7 +1240,7 @@ public function __construct(<params>)
         }
 
         foreach ($joinColumns as $joinColumn) {
-            if(isset($joinColumn['nullable']) && !$joinColumn['nullable']) {
+            if (isset($joinColumn['nullable']) && !$joinColumn['nullable']) {
                 return false;
             }
         }
@@ -1803,12 +1804,14 @@ public function __construct(<params>)
      * Exports (nested) option elements.
      *
      * @param array $options
+     *
+     * @return string
      */
     private function exportTableOptions(array $options)
     {
         $optionsStr = array();
 
-        foreach($options as $name => $option) {
+        foreach ($options as $name => $option) {
             if (is_array($option)) {
                 $optionsStr[] = '"' . $name . '"={' . $this->exportTableOptions($option) . '}';
             } else {

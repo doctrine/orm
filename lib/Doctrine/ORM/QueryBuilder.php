@@ -234,6 +234,7 @@ class QueryBuilder
      * Sets the life-time for this query into second level cache.
      *
      * @param integer $lifetime
+     *
      * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setLifetime($lifetime)
@@ -253,6 +254,7 @@ class QueryBuilder
 
     /**
      * @param integer $cacheMode
+     *
      * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setCacheMode($cacheMode)

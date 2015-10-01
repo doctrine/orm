@@ -81,6 +81,7 @@ class DebugUnitOfWorkListener
         $fh = fopen($this->file, "x+");
         if (count($identityMap) == 0) {
             fwrite($fh, "Flush Operation [".$this->context."] - Empty identity map.\n");
+
             return;
         }
 

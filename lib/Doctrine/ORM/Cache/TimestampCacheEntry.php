@@ -40,7 +40,7 @@ class TimestampCacheEntry implements CacheEntry
      */
     public function __construct($time = null)
     {
-        $this->time = $time ? (float)$time : microtime(true);
+        $this->time = $time ? (float) $time : microtime(true);
     }
 
     /**
@@ -49,6 +49,8 @@ class TimestampCacheEntry implements CacheEntry
      * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
      *
      * @param array $values array containing property values
+     *
+     * @return TimestampCacheEntry
      */
     public static function __set_state(array $values)
     {
