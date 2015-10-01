@@ -116,6 +116,24 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSame(array(), $customSchemaOptions);
     }
+
+    public function testRemoveUniqueIndexOverruledByPrimaryKey()
+    {
+        $em = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $classes = array(
+            $em->getClassMetadata('Doctrine\Tests\Models\OneToOne\FirstEntity'),
+            $em->getClassMetadata('Doctrine\Tests\Models\OneToOne\SecondEntity')
+        );
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        self::assertTrue($schema->hasTable('first_entity'), "Table first_entity should exist.");
+        $indexes = $schema->getTable('first_entity')->getIndexes();
+        self::assertCount(1, $indexes, "there should be only one index");
+        self::assertTrue(current($indexes)->isPrimary(), "index should be primary");
+    }
 }
 
 /**
