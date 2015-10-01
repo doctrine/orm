@@ -215,7 +215,7 @@ class QueryBuilder
     /**
     * Obtain the name of the second level query cache region in which query results will be stored
     *
-    * @return The cache region name; NULL indicates the default region.
+    * @return string|null The cache region name; NULL indicates the default region.
     */
     public function getCacheRegion()
     {
@@ -411,7 +411,7 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
-     * @throws RuntimeException
+     * @throws \RuntimeException
      *
      * @return string
      */
@@ -532,12 +532,14 @@ class QueryBuilder
         $filteredParameters = $this->parameters->filter(
             function ($parameter) use ($key)
             {
+                /* @var Query\Parameter $parameter */
                 // Must not be identical because of string to integer conversion
                 return ($key == $parameter->getName());
             }
         );
 
         if (count($filteredParameters)) {
+            /* @var Query\Parameter $parameter */
             $parameter = $filteredParameters->first();
             $parameter->setValue($value, $type);
 
@@ -611,6 +613,7 @@ class QueryBuilder
         $filteredParameters = $this->parameters->filter(
             function ($parameter) use ($key)
             {
+                /* @var Query\Parameter $parameter */
                 // Must not be identical because of string to integer conversion
                 return ($key == $parameter->getName());
             }
@@ -675,9 +678,9 @@ class QueryBuilder
      * The available parts are: 'select', 'from', 'join', 'set', 'where',
      * 'groupBy', 'having' and 'orderBy'.
      *
-     * @param string    $dqlPartName
-     * @param Expr\Base $dqlPart
-     * @param bool      $append
+     * @param string       $dqlPartName The DQL part name.
+     * @param object|array $dqlPart     An Expr object.
+     * @param bool         $append      Whether to append (true) or replace (false).
      *
      * @return QueryBuilder This QueryBuilder instance.
      */
@@ -915,6 +918,7 @@ class QueryBuilder
         }
 
         foreach ($this->_dqlParts['from'] as &$fromClause) {
+            /* @var Expr\From $fromClause */
             if ($fromClause->getAlias() !== $alias) {
                 continue;
             }
@@ -1130,7 +1134,7 @@ class QueryBuilder
     public function orWhere()
     {
         $args  = func_get_args();
-        $where = $this->getDqlPart('where');
+        $where = $this->getDQLPart('where');
 
         if ($where instanceof Expr\Orx) {
             $where->addMultiple($args);
@@ -1210,7 +1214,7 @@ class QueryBuilder
     public function andHaving($having)
     {
         $args   = func_get_args();
-        $having = $this->getDqlPart('having');
+        $having = $this->getDQLPart('having');
 
         if ($having instanceof Expr\Andx) {
             $having->addMultiple($args);
@@ -1233,7 +1237,7 @@ class QueryBuilder
     public function orHaving($having)
     {
         $args   = func_get_args();
-        $having = $this->getDqlPart('having');
+        $having = $this->getDQLPart('having');
 
         if ($having instanceof Expr\Orx) {
             $having->addMultiple($args);
