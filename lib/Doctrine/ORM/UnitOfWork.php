@@ -359,6 +359,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        $this->assertNoCascadingGaps();
+
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
                 $this->entityUpdates ||
@@ -817,16 +819,6 @@ class UnitOfWork implements PropertyChangedListener
                     $this->computeChangeSet($class, $entity);
                 }
             }
-        }
-
-        /**
-         * Filter out any entities that we (successfully) managed to schedule
-         * for insertion.
-         */
-        $entitiesNeedingCascadePersist = array_diff_key($this->newEntitiesWithoutCascade, $this->entityInsertions);
-        if(count($entitiesNeedingCascadePersist) > 0){
-            list($assoc,$entity) = array_values($entitiesNeedingCascadePersist)[0];
-            throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entity);
         }
     }
 
@@ -3391,6 +3383,26 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+    }
+
+    /**
+     * Checks that there are no new entities found through non-cascade-persist
+     * paths which are not also scheduled for insertion through valid paths.
+     *
+     * @return void
+     * @throws ORMInvalidArgumentException
+     */
+    private function assertNoCascadingGaps()
+    {
+        /**
+         * Filter out any entities that we (successfully) managed to schedule
+         * for insertion.
+         */
+        $entitiesNeedingCascadePersist = array_diff_key($this->newEntitiesWithoutCascade, $this->entityInsertions);
+        if(count($entitiesNeedingCascadePersist) > 0){
+            list($assoc,$entity) = array_values($entitiesNeedingCascadePersist)[0];
+            throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entity);
+        }
     }
 
     /**
