@@ -293,4 +293,12 @@ interface EntityManagerInterface extends ObjectManager
      * @return boolean True, if the EM has a filter collection.
      */
     public function hasFilters();
+    
+    /**
+     * Flushes all changes scheduled in the UnitOfWork in the database.
+     * If an entity is passed as argument, only this entity and its cascades will be flushed.
+     * 
+     * @param null|object|array $entity
+     */
+    public function flush($entity = null);
 }
