@@ -55,6 +55,11 @@ class FieldBuilder
     private $sequenceDef;
 
     /**
+     * @var string|null
+     */
+    private $customIdGenerator;
+
+    /**
      * @param ClassMetadataBuilder $builder
      * @param array                $mapping
      */
@@ -233,6 +238,21 @@ class FieldBuilder
     }
 
     /**
+     * Set the FQCN of the custom ID generator.
+     * This class must extend \Doctrine\ORM\Id\AbstractIdGenerator.
+     *
+     * @param string $customIdGenerator
+     *
+     * @return $this
+     */
+    public function setCustomIdGenerator($customIdGenerator)
+    {
+        $this->customIdGenerator = (string) $customIdGenerator;
+
+        return $this;
+    }
+
+    /**
      * Finalizes this field and attach it to the ClassMetadata.
      *
      * Without this call a FieldBuilder has no effect on the ClassMetadata.
@@ -245,13 +265,20 @@ class FieldBuilder
         if ($this->generatedValue) {
             $cm->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue));
         }
+
         if ($this->version) {
             $cm->setVersionMapping($this->mapping);
         }
+
         $cm->mapField($this->mapping);
         if ($this->sequenceDef) {
             $cm->setSequenceGeneratorDefinition($this->sequenceDef);
         }
+        
+        if ($this->customIdGenerator) {
+            $cm->setCustomGeneratorDefinition(['class' => $this->customIdGenerator]);
+        }
+
         return $this->builder;
     }
 }
