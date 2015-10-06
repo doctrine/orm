@@ -1,3 +1,9 @@
+# Upgrade to 2.5.1
+
+## Minor BC BREAK: added second parameter $indexBy in EntityRepository#createQueryBuilder method signature
+
+Added way to access the underlying QueryBuilder#from() method's 'indexBy' parameter when using EntityRepository#createQueryBuilder()
+
 # Upgrade to 2.5
 
 ## Minor BC BREAK: discriminator map must now include all non-transient classes
