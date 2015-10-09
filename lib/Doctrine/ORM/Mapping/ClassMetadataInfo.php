@@ -2660,6 +2660,23 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->lifecycleCallbacks = $callbacks;
     }
+    
+    /**
+     * Removes a lifecycle callback for entities of this class.
+     *
+     * @param string $callback
+     * @param string $lifecycleEvent
+     *
+     * @return void
+     */
+    public function removeLifecycleCallback($callback, $lifecycleEvent)
+    {
+        if (isset($this->lifecycleCallbacks[$lifecycleEvent])) {
+            if($key = array_search($callback, $this->lifecycleCallbacks[$lifecycleEvent]) !== false) {
+                unset($this->lifecycleCallbacks[$lifecycleEvent][$key]);
+            }
+        }
+    }
 
     /**
      * Adds a entity listener for entities of this class.
