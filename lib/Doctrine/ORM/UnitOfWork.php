@@ -2344,6 +2344,7 @@ class UnitOfWork implements PropertyChangedListener
                     array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
                     $lockMode
                 );
+                $this->refresh($entity);
                 break;
 
             default:
