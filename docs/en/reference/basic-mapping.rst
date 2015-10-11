@@ -448,7 +448,7 @@ need to access the sequence once to generate the identifiers for
 Composite Keys
 ~~~~~~~~~~~~~~
 
-with Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
+With Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
 one column. Some restrictions exist opposed to using a single identifier in
 this case: The use of the ``@GeneratedValue`` annotation is not supported,
 which means you can only use composite keys if you generate the primary key
