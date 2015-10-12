@@ -6,13 +6,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 {
-    private $product;
 
-    public function setUp()
-    {
-        $this->product = new Product();
-    }
-    
     /**
      * @group DDC-3944
      */
