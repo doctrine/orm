@@ -24,22 +24,22 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     
     
     /**
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
- */
-class Product
-{
-    protected $id;
-    protected $name;
-    protacted $updatedAt;
-    
-  /**
-   * @ORM\PrePersist
-   */
-  public function setUpdatedAtValue()
-  {
-      $this->updatedAt = new \DateTime();
-  }
+     * @ORM\Entity()
+     * @ORM\HasLifecycleCallbacks()
+     */
+    class Product
+    {
+        protected $id;
+        protected $name;
+        protacted $updatedAt;
+        
+      /**
+       * @ORM\PrePersist
+       */
+      public function setUpdatedAtValue()
+      {
+          $this->updatedAt = new \DateTime();
+    }
 }
 
 
