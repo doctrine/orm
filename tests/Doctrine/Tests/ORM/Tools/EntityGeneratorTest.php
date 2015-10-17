@@ -82,6 +82,8 @@ class EntityGeneratorTest extends OrmTestCase
         ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
+        $metadata->addLifecycleCallback('updateDate', 'preUpdate');
+        $metadata->addLifecycleCallback('updateDate', 'prePersist');
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
@@ -243,7 +245,7 @@ class EntityGeneratorTest extends OrmTestCase
         $reflClass = new \ReflectionClass($metadata->name);
 
         $this->assertCount(6, $reflClass->getProperties());
-        $this->assertCount(15, $reflClass->getMethods());
+        $this->assertCount(16, $reflClass->getMethods());
 
         $this->assertEquals('published', $book->getStatus());
 
