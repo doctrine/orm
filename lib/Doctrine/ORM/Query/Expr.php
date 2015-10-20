@@ -389,7 +389,7 @@ class Expr
      *
      *     [php]
      *     // u.numChildren + 1
-     *     $q->expr()->diff('u.numChildren', '1')
+     *     $q->expr()->sum('u.numChildren', '1')
      *
      * @param mixed $x Left expression.
      * @param mixed $y Right expression.
