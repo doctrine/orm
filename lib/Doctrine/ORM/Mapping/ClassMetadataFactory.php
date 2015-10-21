@@ -21,9 +21,9 @@ namespace Doctrine\ORM\Mapping;
 
 use ReflectionException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\ORM\Events;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
@@ -45,7 +45,7 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
     /**
-     * @var EntityManager
+     * @var ObjectManager
      */
     private $em;
 
@@ -65,9 +65,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $evm;
 
     /**
-     * @param EntityManager $em
+     * @param ObjectManager $em
      */
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(ObjectManager $em)
     {
         $this->em = $em;
     }
