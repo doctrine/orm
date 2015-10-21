@@ -259,9 +259,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        if ($criteria->getOrderings()) {
+        $orderings = $criteria->getOrderings();
+        if ($orderings) {
             $orderBy = [];
-            foreach ($criteria->getOrderings() as $field => $direction) {
+            foreach ($orderings as $field => $direction) {
                 $orderBy[] = $field . ' ' . $direction;
             }
 
