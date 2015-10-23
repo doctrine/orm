@@ -101,7 +101,7 @@ class SqlWalker implements TreeWalker
     private $conn;
 
     /**
-     * @var \Doctrine\ORM\AbstractQuery
+     * @var \Doctrine\ORM\Query
      */
     private $query;
 
@@ -175,7 +175,9 @@ class SqlWalker implements TreeWalker
     private $quoteStrategy;
 
     /**
-     * {@inheritDoc}
+     * @param \Doctrine\ORM\Query              $query           The parsed Query.
+     * @param \Doctrine\ORM\Query\ParserResult $parserResult    The result of the parsing process.
+     * @param array                            $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -517,7 +519,7 @@ class SqlWalker implements TreeWalker
     {
         $limit    = $this->query->getMaxResults();
         $offset   = $this->query->getFirstResult();
-        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE);
+        $lockMode = $this->getQueryLockMode();
         $sql      = $this->walkSelectClause($AST->selectClause)
             . $this->walkFromClause($AST->fromClause)
             . $this->walkWhereClause($AST->whereClause);
@@ -881,7 +883,7 @@ class SqlWalker implements TreeWalker
         $sql = $this->platform->appendLockHint(
             $this->quoteStrategy->getTableName($class, $this->platform) . ' ' .
             $this->getSQLTableAlias($class->getTableName(), $dqlAlias),
-            $this->query->getHint(Query::HINT_LOCK_MODE)
+            $this->getQueryLockMode()
         );
 
         if ($class->isInheritanceTypeJoined()) {
@@ -2320,5 +2322,23 @@ class SqlWalker implements TreeWalker
         }
 
         return $resultAlias;
+    }
+
+    /**
+     * Returns the lock mode to use for the given query.
+     *
+     * If no lock mode is specified on the query, the default lock mode is returned instead.
+     *
+     * @return integer|null The lock mode, or null if not specified.
+     */
+    private function getQueryLockMode()
+    {
+        $lockMode = $this->query->getLockMode();
+
+        if ($lockMode === null) {
+            return $this->em->getConfiguration()->getDefaultLockMode();
+        }
+
+        return $lockMode;
     }
 }

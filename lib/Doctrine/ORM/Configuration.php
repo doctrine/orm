@@ -924,4 +924,29 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['defaultQueryHints'][$name] = $value;
     }
+
+    /**
+     * Sets the default lock mode for all queries that do not specify one.
+     *
+     * Note that it does not make sense to use LockMode::OPTIMISTIC as a default, as it requires a lock version.
+     * Also note that native queries are not affected by this setting.
+     *
+     * @param integer|null $lockMode One of the Doctrine\DBAL\LockMode constants, or null to remove the default.
+     *
+     * @return void
+     */
+    public function setDefaultLockMode($lockMode)
+    {
+        $this->_attributes['defaultLockMode'] = $lockMode;
+    }
+
+    /**
+     * Returns the default lock mode for all queries that do not specify one.
+     *
+     * @return integer|null The lock mode, or null if no default is specified.
+     */
+    public function getDefaultLockMode()
+    {
+        return isset($this->_attributes['defaultLockMode']) ? $this->_attributes['defaultLockMode'] : null;
+    }
 }

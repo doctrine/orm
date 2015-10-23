@@ -8,11 +8,18 @@ namespace Doctrine\Tests\Mocks;
 class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
 {
     /**
+     * @var string
+     */
+    private $lastPreparedStatementSql = '';
+
+    /**
      * {@inheritdoc}
      */
     public function prepare($prepareString)
     {
-        return new StatementMock();
+        $this->lastPreparedStatementSql = $prepareString;
+
+        return new StatementMock;
     }
 
     /**
@@ -77,5 +84,15 @@ class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
      */
     public function errorInfo()
     {
+    }
+
+    /* Mock API */
+
+    /**
+     * @return string
+     */
+    public function getLastPreparedStatementSql()
+    {
+        return $this->lastPreparedStatementSql;
     }
 }
