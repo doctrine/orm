@@ -216,6 +216,12 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($persister->isExistsCalled());
     }
 
+    public function testNoUndefinedIndexNoticeInGetEntityIdentifier()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $this->_unitOfWork->getEntityIdentifier(new \stdClass());
+    }
+
     /**
      * DDC-2086 [GH-484] Prevented 'Undefined index' notice when updating.
      */

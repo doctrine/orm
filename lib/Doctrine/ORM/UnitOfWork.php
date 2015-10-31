@@ -2914,10 +2914,18 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity
      *
      * @return array The identifier values.
+     *
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)];
+        $oid = spl_object_hash($entity);
+
+        if ( ! isset($this->entityIdentifiers[$oid])) {
+            throw ORMInvalidArgumentException::entityNotManaged($entity);
+        }
+
+        return $this->entityIdentifiers[$oid];
     }
 
     /**
