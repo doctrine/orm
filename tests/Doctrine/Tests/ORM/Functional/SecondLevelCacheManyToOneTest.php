@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\ComplexAction;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
@@ -96,6 +97,28 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($this->states[1]->getCountry()->getId(), $c4->getCountry()->getId());
         $this->assertEquals($this->states[1]->getCountry()->getName(), $c4->getCountry()->getName());
+
+        //evict collection on add
+        /** @var State $c3 */
+        $prev = $c3->getCities();
+        $count = $prev->count();
+
+        $city = new City("Buenos Aires", $c3);
+        $c3->addCity($city);
+        $this->_em->persist($city);
+        $this->_em->persist($c3);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        /** @var State $state */
+        $state = $this->_em->find(State::CLASSNAME, $c3->getId());
+
+        // Association was cleared from EM
+        $this->assertNotEquals($prev, $state->getCities());
+
+        // New association has one more item (cache was evicted)
+        $this->assertEquals($count + 1, $state->getCities()->count());
     }
 
     public function testShouldNotReloadWhenAssociationIsMissing()
