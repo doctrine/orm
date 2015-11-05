@@ -373,6 +373,11 @@ class UnitOfWork implements PropertyChangedListener
         $conn->beginTransaction();
 
         try {
+            // Collection deletions (deletions of complete collections)
+            foreach ($this->collectionDeletions as $collectionToDelete) {
+                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+            }
+
             if ($this->entityInsertions) {
                 foreach ($commitOrder as $class) {
                     $this->executeInserts($class);
@@ -388,11 +393,6 @@ class UnitOfWork implements PropertyChangedListener
             // Extra updates that were requested by persisters.
             if ($this->extraUpdates) {
                 $this->executeExtraUpdates();
-            }
-
-            // Collection deletions (deletions of complete collections)
-            foreach ($this->collectionDeletions as $collectionToDelete) {
-                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
             }
 
             // Collection updates (deleteRows, updateRows, insertRows)
