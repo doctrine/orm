@@ -209,8 +209,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-        $columns     = array();
-        $parameters  = array();
+        $columns     = [];
+        $parameters  = [];
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
             $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
@@ -246,7 +246,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $tempTable         = $this->platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumnNames     = $rootClass->getIdentifierColumnNames();
         $idColumnList      = implode(', ', $idColumnNames);
-        $columnDefinitions = array();
+        $columnDefinitions = [];
 
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = array(
