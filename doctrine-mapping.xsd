@@ -563,8 +563,13 @@
     <xs:sequence>
       <xs:element name="join-table" type="orm:join-table" minOccurs="0" />
       <xs:element name="join-columns" type="orm:join-columns" minOccurs="0" />
+      <xs:element name="inversed-by" type="orm:inversed-by-override" minOccurs="0" maxOccurs="1" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="inversed-by-override">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
 

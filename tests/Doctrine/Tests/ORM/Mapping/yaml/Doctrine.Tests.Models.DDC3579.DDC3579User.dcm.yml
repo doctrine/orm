@@ -1,0 +1,19 @@
+Doctrine\Tests\Models\DDC3579\DDC3579User:
+  type: mappedSuperclass
+  id:
+    id:
+      type: integer
+      column: user_id
+      length: 150
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      type: string
+      column: user_name
+      length: 250
+      nullable: true
+      unique: false
+  manyToMany:
+    groups:
+      targetEntity: DDC3579Group

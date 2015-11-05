@@ -2126,6 +2126,10 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];
         }
 
+        if (isset($overrideMapping['inversedBy'])) {
+            $mapping['inversedBy'] = $overrideMapping['inversedBy'];
+        }
+
         if (isset($overrideMapping['joinTable'])) {
             $mapping['joinTable'] = $overrideMapping['joinTable'];
         }
