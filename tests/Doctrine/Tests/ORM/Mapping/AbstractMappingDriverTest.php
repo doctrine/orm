@@ -664,7 +664,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($personMetadata->name,                      $mapping['entities'][0]['entityClass']);
     }
 
-     /*
+    /*
      * @group DDC-964
      */
     public function testAssociationOverridesMapping()
@@ -745,6 +745,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('adminaddress_id'=>'id'), $adminAddress['sourceToTargetKeyColumns']);
         $this->assertEquals(array('adminaddress_id'=>'adminaddress_id'), $adminAddress['joinColumnFieldNames']);
         $this->assertEquals(array('id'=>'adminaddress_id'), $adminAddress['targetToSourceKeyColumns']);
+    }
+
+    /*
+     * @group DDC-3579
+     */
+    public function testInversedByOverrideMapping()
+    {
+
+        $factory        = $this->createClassMetadataFactory();
+        $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3579\DDC3579Admin');
+
+        // assert groups association mappings
+        $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
+        $adminGroups = $adminMetadata->associationMappings['groups'];
+
+        // assert override
+        $this->assertEquals('admins', $adminGroups['inversedBy']);
     }
 
     /**

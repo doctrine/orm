@@ -605,6 +605,11 @@ class XmlDriver extends FileDriver
                     $override['joinTable'] = $joinTable;
                 }
 
+                // Check for inversed-by
+                if (isset($overrideElement->{'inversed-by'})) {
+                    $override['inversedBy'] = (string) $overrideElement->{'inversed-by'}['name'];
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }

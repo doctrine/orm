@@ -1,0 +1,5 @@
+Doctrine\Tests\Models\DDC3579\DDC3579Admin:
+  type: entity
+  associationOverride:
+    groups:
+      inversedBy: admins
