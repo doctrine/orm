@@ -203,7 +203,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    protected function deleteEntityCollection(PersistentCollection $collection)
+    private function deleteEntityCollection(PersistentCollection $collection)
     {
         $mapping     = $collection->getMapping();
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
@@ -235,7 +235,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    protected function deleteJoinedEntityCollection(PersistentCollection $collection)
+    private function deleteJoinedEntityCollection(PersistentCollection $collection)
     {
         $mapping     = $collection->getMapping();
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
