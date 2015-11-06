@@ -280,6 +280,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Pagination\User',
             'Doctrine\Tests\Models\Pagination\User1',
         ),
+        'timestampable_user' => array(
+            'Doctrine\Tests\Models\Timestampable\User',
+        ),
     );
 
     /**
