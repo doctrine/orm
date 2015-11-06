@@ -19,7 +19,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p ', 'discr', 'discr');
+        $rsm->addMetaResult('p ', 'discr', 'discr', false, 'string');
         $rsm->setDiscriminatorColumn('p', 'discr');
         $resultSet = array(
               array(
@@ -71,7 +71,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
 
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'discr', 'discr');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = array(

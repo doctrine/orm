@@ -58,12 +58,16 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($user);
         $this->_em->flush();
+
         $this->assertTrue($this->_em->contains($user));
         $this->assertTrue($user->phonenumbers->isInitialized());
 
         $serialized = serialize($user);
+
         $this->_em->clear();
+
         $this->assertFalse($this->_em->contains($user));
+
         unset($user);
 
         $user = unserialize($serialized);
@@ -71,9 +75,12 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($user->getPhonenumbers()), "Pre-Condition: 1 Phonenumber");
 
         $ph2 = new CmsPhonenumber;
+
         $ph2->phonenumber = "56789";
         $user->addPhonenumber($ph2);
+
         $oldPhonenumbers = $user->getPhonenumbers();
+
         $this->assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
         $this->assertFalse($this->_em->contains($user));
 

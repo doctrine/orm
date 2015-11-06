@@ -492,7 +492,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
 
-        $rsm->addScalarResult('id', 'u');
+        $rsm->addScalarResult('id', 'u', 'integer');
 
         $this->queryCache->put($key, $rsm, $result);
     }

@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -408,7 +407,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflectionService = new RuntimeReflectionService();
 
-        $cm = new ClassMetadata($metadata->name);
+        $cm = new ClassMetadataInfo($metadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver = $this->createAnnotationDriver();
@@ -427,7 +426,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $isbn = $this->newInstance($embeddedMetadata);
 
-        $cm = new ClassMetadata($embeddedMetadata->name);
+        $cm = new ClassMetadataInfo($embeddedMetadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -450,7 +449,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflectionService = new RuntimeReflectionService();
 
-        $cm = new ClassMetadata($metadata->name);
+        $cm = new ClassMetadataInfo($metadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -464,7 +463,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $isbn = $this->newInstance($embeddedMetadata);
 
-        $cm = new ClassMetadata($embeddedMetadata->name);
+        $cm = new ClassMetadataInfo($embeddedMetadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -488,7 +487,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
 
         $driver = new AnnotationDriver(new AnnotationReader(), array());
-        $cm     = new ClassMetadata($metadata->name);
+        $cm     = new ClassMetadataInfo($metadata->name);
 
         $cm->initializeReflection(new RuntimeReflectionService);
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -593,7 +592,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGetInheritanceTypeString()
     {
-        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
         $method     = new \ReflectionMethod($this->_generator, 'getInheritanceTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^INHERITANCE_TYPE_/';
@@ -647,7 +646,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGetIdGeneratorTypeString()
     {
-        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
         $method     = new \ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^GENERATOR_TYPE_/';

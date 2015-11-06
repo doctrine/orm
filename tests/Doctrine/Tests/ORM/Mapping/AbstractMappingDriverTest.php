@@ -491,8 +491,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
 
-        $this->assertEquals('ID', $class->columnNames['id']);
-        $this->assertEquals('NAME', $class->columnNames['name']);
+        $this->assertEquals('ID', $class->getColumnName('id'));
+        $this->assertEquals('NAME', $class->getColumnName('name'));
         $this->assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
     }
 

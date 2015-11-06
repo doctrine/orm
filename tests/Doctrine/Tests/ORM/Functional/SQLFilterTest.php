@@ -10,15 +10,12 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsComment;
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyManager;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 

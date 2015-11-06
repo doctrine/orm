@@ -26,7 +26,7 @@ namespace Doctrine\Tests\Models\DDC869;
 class DDC869CreditCardPayment extends DDC869Payment
 {
 
-    /** @column(type="string") */
+    /** @Column(type="string") */
     protected $creditCardNumber;
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)

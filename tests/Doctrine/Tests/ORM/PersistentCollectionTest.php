@@ -9,6 +9,7 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -82,5 +83,29 @@ class PersistentCollectionTest extends OrmTestCase
         $this->setUpPersistentCollection();
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
+    }
+
+    /**
+     * @group DDC-3382
+     */
+    public function testNonObjects()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->assertEmpty($this->collection);
+
+        $this->collection->add("dummy");
+
+        $this->assertNotEmpty($this->collection);
+
+        $product = new ECommerceProduct();
+
+        $this->collection->set(1, $product);
+        $this->collection->set(2, "dummy");
+        $this->collection->set(3, null);
+
+        $this->assertSame($product, $this->collection->get(1));
+        $this->assertSame("dummy", $this->collection->get(2));
+        $this->assertSame(null, $this->collection->get(3));
     }
 }

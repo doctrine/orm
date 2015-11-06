@@ -92,7 +92,7 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL()
     {
-        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity'));
+        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity'));
         $method     = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
@@ -143,16 +143,16 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCountCondition()
     {
-        $persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity'));
+        $persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity'));
 
         // Using a criteria as array
         $statement = $persister->getCountSQL(array('value' => 'bar'));
-        $this->assertEquals('SELECT COUNT(*) FROM "ddc-1719-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
+        $this->assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
 
         // Using a criteria object
         $criteria = new Criteria(Criteria::expr()->eq('value', 'bar'));
         $statement = $persister->getCountSQL($criteria);
-        $this->assertEquals('SELECT COUNT(*) FROM "ddc-1719-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
+        $this->assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
     }
 
     public function testCountEntities()

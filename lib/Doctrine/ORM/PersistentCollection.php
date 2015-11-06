@@ -471,7 +471,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if ($this->em) {
+        if (is_object($value) && $this->em) {
             $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
         }
     }
@@ -485,7 +485,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if ($this->em) {
+        if (is_object($value) && $this->em) {
             $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
         }
 
