@@ -435,27 +435,31 @@ class ObjectHydrator extends AbstractHydrator
                         // we refresh the entity or its an unitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->getEntity($data, $dqlAlias);
-                            $reflField->setValue($parentObject, $element);
-                            $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_metadataCache[$relation['targetEntity']];
 
-                            if ($relation['isOwningSide']) {
-                                // TODO: Just check hints['fetched'] here?
-                                // If there is an inverse mapping on the target class its bidirectional
-                                if ($relation['inversedBy']) {
-                                    $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
-                                    if ($inverseAssoc['type'] & ClassMetadata::TO_ONE) {
-                                        $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
-                                        $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc['fieldName'], $parentObject);
+                            // don't use strict comparison given order of keys doesn't matter
+                            if ( ! $reflFieldValue instanceof Proxy || $targetClass->getIdentifierValues($reflFieldValue) == $targetClass->getIdentifierValues($element)) {
+                                $reflField->setValue($parentObject, $element);
+                                $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
+
+                                if ($relation['isOwningSide']) {
+                                    // TODO: Just check hints['fetched'] here?
+                                    // If there is an inverse mapping on the target class its bidirectional
+                                    if ($relation['inversedBy']) {
+                                        $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
+                                        if ($inverseAssoc['type'] & ClassMetadata::TO_ONE) {
+                                            $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
+                                            $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc['fieldName'], $parentObject);
+                                        }
+                                    } else if ($parentClass === $targetClass && $relation['mappedBy']) {
+                                        // Special case: bi-directional self-referencing one-one on the same class
+                                        $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
                                     }
-                                } else if ($parentClass === $targetClass && $relation['mappedBy']) {
-                                    // Special case: bi-directional self-referencing one-one on the same class
-                                    $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
+                                } else {
+                                    // For sure bidirectional, as there is no inverse side in unidirectional mappings
+                                    $targetClass->reflFields[$relation['mappedBy']]->setValue($element, $parentObject);
+                                    $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $relation['mappedBy'], $parentObject);
                                 }
-                            } else {
-                                // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                $targetClass->reflFields[$relation['mappedBy']]->setValue($element, $parentObject);
-                                $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $relation['mappedBy'], $parentObject);
                             }
                             // Update result pointer
                             $this->resultPointers[$dqlAlias] = $element;
