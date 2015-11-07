@@ -24,6 +24,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -45,7 +46,6 @@ class ArrayHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
-
         $this->assertTrue(is_array($result));
 
         $this->assertEquals(1, $result[0]['id']);
@@ -64,12 +64,12 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleEntityWithScalarQuery($userEntityKey)
     {
         $alias = $userEntityKey ?: 'u';
+        $rsm   = new ResultSetMapping;
 
-        $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', $alias);
         $rsm->addFieldResult($alias, 's__id', 'id');
         $rsm->addFieldResult($alias, 's__name', 'name');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
 
         // Faked result set
         $resultSet = array(
@@ -90,7 +90,6 @@ class ArrayHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
-
         $this->assertTrue(is_array($result));
 
         $this->assertArrayHasKey('nameUpper', $result[0]);
@@ -117,6 +116,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -138,7 +138,6 @@ class ArrayHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
-
         $this->assertTrue(is_array($result));
 
         $this->assertArrayHasKey('user', $result[0]);
@@ -157,6 +156,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQuery()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -206,6 +206,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -259,6 +260,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -312,6 +314,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -369,10 +372,11 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testMixedQueryNormalJoin($userEntityKey)
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'numPhones');
+        $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
 
         // Faked result set
         $resultSet = array(
@@ -417,6 +421,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testMixedQueryFetchJoin($userEntityKey)
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
@@ -426,7 +431,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
@@ -487,6 +492,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testMixedQueryFetchJoinCustomIndex($userEntityKey)
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
@@ -496,7 +502,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addIndexBy('u', 'id');
         $rsm->addIndexBy('p', 'phonenumber');
@@ -565,6 +571,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testMixedQueryMultipleFetchJoin()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
@@ -580,7 +587,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -682,8 +689,8 @@ class ArrayHydratorTest extends HydrationTestCase
      */
     public function testMixedQueryMultipleDeepMixedFetchJoin()
     {
-
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
@@ -705,7 +712,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -840,6 +847,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testEntityQueryCustomResultSetOrder()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\Forum\ForumCategory', 'c');
         $rsm->addJoinedEntityResult(
             'Doctrine\Tests\Models\Forum\ForumBoard',
@@ -915,13 +923,14 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testChainedJoinWithScalars($entityKey)
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $entityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('a__id', 'id');
-        $rsm->addScalarResult('a__topic', 'topic');
-        $rsm->addScalarResult('c__id', 'cid');
-        $rsm->addScalarResult('c__topic', 'ctopic');
+        $rsm->addScalarResult('a__id', 'id', 'integer');
+        $rsm->addScalarResult('a__topic', 'topic', 'string');
+        $rsm->addScalarResult('c__id', 'cid', 'integer');
+        $rsm->addScalarResult('c__topic', 'ctopic', 'string');
 
         // Faked result set
         $resultSet = array(
@@ -984,6 +993,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testResultIteration()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1028,6 +1038,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testResultIterationWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1075,6 +1086,7 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testSkipUnknownColumns()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1108,10 +1120,11 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testMissingIdForRootEntity($userEntityKey)
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
 
         // Faked result set
         $resultSet = array(
@@ -1166,10 +1179,11 @@ class ArrayHydratorTest extends HydrationTestCase
     public function testIndexByAndMixedResult($userEntityKey)
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addIndexBy('u', 'id');
 
         // Faked result set

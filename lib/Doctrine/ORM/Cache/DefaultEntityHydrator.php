@@ -76,7 +76,6 @@ class DefaultEntityHydrator implements EntityHydrator
         $data = array_merge($data, $key->identifier); // why update has no identifier values ?
 
         foreach ($metadata->associationMappings as $name => $assoc) {
-
             if ( ! isset($data[$name])) {
                 continue;
             }
@@ -92,18 +91,16 @@ class DefaultEntityHydrator implements EntityHydrator
                 unset($data[$name]);
 
                 foreach ($associationIds as $fieldName => $fieldValue) {
-
                     if (isset($targetClassMetadata->associationMappings[$fieldName])){
                         $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
 
                         foreach($assoc['targetToSourceKeyColumns'] as $referencedColumn => $localColumn) {
-
                             if (isset($targetAssoc['sourceToTargetKeyColumns'][$referencedColumn])) {
                                 $data[$localColumn] = $fieldValue;
                             }
                         }
-                    }else{
-                        $data[$assoc['targetToSourceKeyColumns'][$targetClassMetadata->columnNames[$fieldName]]] = $fieldValue;
+                    } else {
+                        $data[$assoc['targetToSourceKeyColumns'][$targetClassMetadata->fieldMappings[$fieldName]['columnName']]] = $fieldValue;
                     }
                 }
 
@@ -126,7 +123,6 @@ class DefaultEntityHydrator implements EntityHydrator
             // @TODO - fix it !
             // handle UnitOfWork#createEntity hash generation
             if ( ! is_array($targetId)) {
-
                 $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
 
                 $targetEntity = $this->em->getClassMetadata($assoc['targetEntity']);

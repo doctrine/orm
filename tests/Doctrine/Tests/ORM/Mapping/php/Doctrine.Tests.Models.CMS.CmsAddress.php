@@ -1,7 +1,5 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-
 $metadata->setPrimaryTable(array(
    'name' => 'company_person',
 ));

@@ -12,7 +12,9 @@ class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->markTestSkipped('performance skipped');
+
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

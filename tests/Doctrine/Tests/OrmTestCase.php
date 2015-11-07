@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\Annotations;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Version;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 
 /**
@@ -57,40 +59,41 @@ abstract class OrmTestCase extends DoctrineTestCase
      */
     protected function createAnnotationDriver($paths = array(), $alias = null)
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0', '>=')) {
-            $reader = new \Doctrine\Common\Annotations\CachedReader(
-                new \Doctrine\Common\Annotations\AnnotationReader(), new ArrayCache()
-            );
-        }
-        else if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
+        if (version_compare(Version::VERSION, '3.0.0', '>=')) {
+            $reader = new Annotations\CachedReader(new Annotations\AnnotationReader(), new ArrayCache());
+        } else if (version_compare(Version::VERSION, '2.2.0-DEV', '>=')) {
             // Register the ORM Annotations in the AnnotationRegistry
-            $reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
+            $reader = new Annotations\SimpleAnnotationReader();
+
             $reader->addNamespace('Doctrine\ORM\Mapping');
-            $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
-        }
-        else if (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
-            $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+
+            $reader = new Annotations\CachedReader($reader, new ArrayCache());
+        } else if (version_compare(Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
+            $reader = new Annotations\AnnotationReader();
+
             $reader->setIgnoreNotImportedAnnotations(true);
             $reader->setEnableParsePhpImports(false);
+
             if ($alias) {
                 $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
             } else {
                 $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             }
-            $reader = new \Doctrine\Common\Annotations\CachedReader(
-                new \Doctrine\Common\Annotations\IndexedReader($reader), new ArrayCache()
-            );
+
+            $reader = new Annotations\CachedReader(new Annotations\IndexedReader($reader), new ArrayCache());
         } else {
-            $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+            $reader = new Annotations\AnnotationReader();
+
             if ($alias) {
                 $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
             } else {
                 $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             }
         }
-        \Doctrine\Common\Annotations\AnnotationRegistry::registerFile(
-            __DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
-        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array)$paths);
+
+        Annotations\AnnotationRegistry::registerFile(__DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
+
+        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }
 
     /**
@@ -112,7 +115,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
-            : new \Doctrine\Common\Cache\ArrayCache;
+            : new ArrayCache();
 
         $config = new \Doctrine\ORM\Configuration();
 
@@ -166,7 +169,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     private static function getSharedMetadataCacheImpl()
     {
         if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            self::$_metadataCacheImpl = new ArrayCache();
         }
 
         return self::$_metadataCacheImpl;
@@ -178,7 +181,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     private static function getSharedQueryCacheImpl()
     {
         if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            self::$_queryCacheImpl = new ArrayCache();
         }
 
         return self::$_queryCacheImpl;
@@ -190,7 +193,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function getSharedSecondLevelCacheDriverImpl()
     {
         if ($this->secondLevelCacheDriverImpl === null) {
-            $this->secondLevelCacheDriverImpl = new \Doctrine\Common\Cache\ArrayCache();
+            $this->secondLevelCacheDriverImpl = new ArrayCache();
         }
 
         return $this->secondLevelCacheDriverImpl;

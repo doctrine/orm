@@ -29,7 +29,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1695News
 {
     /**
-     * @var int $idNews
+     * @var int
      *
      * @Column(name="`IdNews`", type="integer", nullable=false)
      * @Id
@@ -38,119 +38,119 @@ class DDC1695News
     private $idNews;
 
     /**
-     * @var bigint $iduser
+     * @var int
      *
      * @Column(name="`IdUser`", type="bigint", nullable=false)
      */
     private $idUser;
 
     /**
-     * @var int $idLanguage
+     * @var int
      *
      * @Column(name="`IdLanguage`", type="integer", nullable=false)
      */
     private $idLanguage;
 
     /**
-     * @var int $idCondition
+     * @var int
      *
      * @Column(name="`IdCondition`", type="integer", nullable=true)
      */
     private $idCondition;
 
     /**
-     * @var int $idHealthProvider
+     * @var int
      *
      * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
      */
     private $idHealthProvider;
 
     /**
-     * @var int $idSpeciality
+     * @var int
      *
      * @Column(name="`IdSpeciality`", type="integer", nullable=true)
      */
     private $idSpeciality;
 
     /**
-     * @var int $idMedicineType
+     * @var int
      *
      * @Column(name="`IdMedicineType`", type="integer", nullable=true)
      */
     private $idMedicineType;
 
     /**
-     * @var int $idTreatment
+     * @var int
      *
      * @Column(name="`IdTreatment`", type="integer", nullable=true)
      */
     private $idTreatment;
 
     /**
-     * @var string $title
+     * @var string
      *
      * @Column(name="`Title`", type="string", nullable=true)
      */
     private $title;
 
     /**
-     * @var string $smallText
+     * @var string
      *
      * @Column(name="`SmallText`", type="string", nullable=true)
      */
     private $smallText;
 
     /**
-     * @var string $longText
+     * @var string
      *
      * @Column(name="`LongText`", type="string", nullable=true)
      */
     private $longText;
 
     /**
-     * @var datetimetz $publishDate
+     * @var DateTimeZone
      *
      * @Column(name="`PublishDate`", type="datetimetz", nullable=true)
      */
     private $publishDate;
 
     /**
-     * @var tsvector $idxNews
+     * @var array
      *
-     * @Column(name="`IdxNews`", type="tsvector", nullable=true)
+     * @Column(name="`IdxNews`", type="json_array", nullable=true)
      */
     private $idxNews;
 
     /**
-     * @var bool $highlight
+     * @var bool
      *
      * @Column(name="`Highlight`", type="boolean", nullable=false)
      */
     private $highlight;
 
     /**
-     * @var int $order
+     * @var int
      *
      * @Column(name="`Order`", type="integer", nullable=false)
      */
     private $order;
 
     /**
-     * @var bool $deleted
+     * @var bool
      *
      * @Column(name="`Deleted`", type="boolean", nullable=false)
      */
     private $deleted;
 
     /**
-     * @var bool $active
+     * @var bool
      *
      * @Column(name="`Active`", type="boolean", nullable=false)
      */
     private $active;
 
     /**
-     * @var bool $updateToHighlighted
+     * @var bool
      *
      * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
      */

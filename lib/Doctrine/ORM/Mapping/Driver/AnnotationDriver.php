@@ -54,6 +54,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         $class = $metadata->getReflectionClass();
+
         if ( ! $class) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
@@ -78,11 +79,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($entityAnnot->repositoryClass !== null) {
                 $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
             }
+
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
+
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
@@ -227,17 +230,21 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
-            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+
+            $metadata->setInheritanceType(
+                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value)
+            );
 
             if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'])) {
                     $discrColumnAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'];
+
                     $metadata->setDiscriminatorColumn(array(
-                        'name' => $discrColumnAnnot->name,
-                        'type' => $discrColumnAnnot->type,
-                        'length' => $discrColumnAnnot->length,
-                        'columnDefinition'    => $discrColumnAnnot->columnDefinition
+                        'name'             => $discrColumnAnnot->name,
+                        'type'             => $discrColumnAnnot->type,
+                        'length'           => $discrColumnAnnot->length,
+                        'columnDefinition' => $discrColumnAnnot->columnDefinition,
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
@@ -273,6 +280,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
+
             // Evaluate @Cache annotation
             if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Cache')) !== null) {
                 $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], array(
@@ -400,6 +408,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
                 $mapping['class'] = $embeddedAnnot->class;
                 $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
+
                 $metadata->mapEmbedded($mapping);
             }
         }
@@ -415,9 +424,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 // Check for JoinColumn/JoinColumns annotations
                 if ($associationOverride->joinColumns) {
                     $joinColumns = array();
+
                     foreach ($associationOverride->joinColumns as $joinColumn) {
                         $joinColumns[] = $this->joinColumnToArray($joinColumn);
                     }
+
                     $override['joinColumns'] = $joinColumns;
                 }
 
@@ -452,8 +463,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate AttributeOverrides annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'])) {
             $attributeOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'];
+
             foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
                 $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
+
                 $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);
             }
         }
@@ -471,6 +484,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 $hasMapping     = false;
                 $listenerClass  = new \ReflectionClass($listenerClassName);
+
                 /* @var $method \ReflectionMethod */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     // find method callbacks.
@@ -481,6 +495,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata->addEntityListener($value[1], $listenerClassName, $value[0]);
                     }
                 }
+
                 // Evaluate the listener using naming convention.
                 if ( ! $hasMapping ) {
                     EntityListenerBuilder::bindEntityListener($metadata, $listenerClassName);
@@ -492,9 +507,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
             /* @var $method \ReflectionMethod */
             foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-
                 foreach ($this->getMethodCallbacks($method) as $value) {
-
                     $metadata->addLifecycleCallback($value[0], $value[1]);
                 }
             }

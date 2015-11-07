@@ -257,11 +257,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // table were affected.
         if ($isVersioned) {
             if ( ! isset($updateData[$versionedTable])) {
-                $tableName   = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+                $tableName = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+
                 $this->updateTable($entity, $tableName, array(), true);
             }
 
             $identifiers = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+
             $this->assignDefaultVersionValue($entity, $identifiers);
         }
     }
@@ -434,12 +436,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $columnList         = array();
         $discrColumn        = $this->class->discriminatorColumn['name'];
+        $discrColumnType    = $this->class->discriminatorColumn['type'];
         $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
 
         $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
 
         // Add regular columns
         foreach ($this->class->fieldMappings as $fieldName => $mapping) {
