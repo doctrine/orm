@@ -262,10 +262,10 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertEquals($author, $book->getAuthor());
 
         $comment = new EntityGeneratorComment();
-        $book->addComment($comment);
+        $this->assertInstanceOf($metadata->name, $book->addComment($comment));
         $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
         $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array($comment)), $book->getComments());
-        $book->removeComment($comment);
+        $this->assertInternalType('boolean', $book->removeComment($comment));
         $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array()), $book->getComments());
 
         $this->newInstance($isbnMetadata);
@@ -362,7 +362,9 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertPhpDocVarType('\Doctrine\Common\Collections\Collection', new \ReflectionProperty($book, 'comments'));
         $this->assertPhpDocReturnType('\Doctrine\Common\Collections\Collection', new \ReflectionMethod($book, 'getComments'));
         $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new \ReflectionMethod($book, 'addComment'));
+        $this->assertPhpDocReturnType('EntityGeneratorBook', new \ReflectionMethod($book, 'addComment'));
         $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new \ReflectionMethod($book, 'removeComment'));
+        $this->assertPhpDocReturnType('boolean', new \ReflectionMethod($book, 'removeComment'));
 
         $this->assertPhpDocVarType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionProperty($book, 'author'));
         $this->assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'getAuthor'));
