@@ -3464,7 +3464,7 @@ class Parser
 
     /**
      * FunctionsReturningStrings ::=
-     *   "CONCAT" "(" StringPrimary "," StringPrimary ")" |
+     *   "CONCAT" "(" StringPrimary "," StringPrimary {"," StringPrimary}* ")" |
      *   "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
      *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
      *   "LOWER" "(" StringPrimary ")" |
