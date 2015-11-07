@@ -788,4 +788,20 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string)$rsm);
     }
+
+    /**
+     * @group DDC-3899
+     */
+    public function testGenerateSelectClauseWithDiscriminatorColumn()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addEntityResult('Doctrine\Tests\Models\DDC3899\DDC3899User', 'u');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\DDC3899\DDC3899FixContract', 'c', 'u', 'contracts');
+        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
+        $rsm->setDiscriminatorColumn('c', $this->platform->getSQLResultCasing('discr'));
+
+        $selectClause = $rsm->generateSelectClause(array('u' => 'u1', 'c' => 'c1'));
+
+        $this->assertSQLEquals('u1.id as id, c1.discr as discr', $selectClause);
+    }
 }
