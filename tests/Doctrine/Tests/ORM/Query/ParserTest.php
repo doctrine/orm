@@ -24,12 +24,11 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameFailsOnClassnamesWithLeadingBackslash()
+    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash()
     {
-        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
-
         $parser = $this->createParser('\Doctrine\Tests\Models\CMS\CmsUser');
-        $parser->AbstractSchemaName();
+
+        $this->assertEquals('\Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
     }
 
     /**
@@ -39,6 +38,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
     public function testAbstractSchemaNameSupportsIdentifier()
     {
         $parser = $this->createParser('stdClass');
+
         $this->assertEquals('stdClass', $parser->AbstractSchemaName());
     }
 
@@ -49,6 +49,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
     public function testAbstractSchemaNameSupportsNamespaceAlias()
     {
         $parser = $this->createParser('CMS:CmsUser');
+
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
 
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
@@ -61,6 +62,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
     public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname()
     {
         $parser = $this->createParser('Model:CMS\CmsUser');
+
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
 
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
@@ -74,7 +76,9 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
     public function testMatch($expectedToken, $inputString)
     {
         $parser = $this->createParser($inputString);
+
         $parser->match($expectedToken); // throws exception if not matched
+
         $this->addToAssertionCount(1);
     }
 
@@ -88,6 +92,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
 
         $parser = $this->createParser($inputString);
+
         $parser->match($expectedToken);
     }
 

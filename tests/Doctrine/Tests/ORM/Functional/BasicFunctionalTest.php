@@ -129,7 +129,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user2 = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id=?1')
+        $user2 = $this->_em->createQuery('select u from \Doctrine\Tests\Models\CMS\CmsUser u where u.id=?1')
                 ->setParameter(1, $userId)
                 ->getSingleResult();
 

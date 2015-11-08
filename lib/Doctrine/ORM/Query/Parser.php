@@ -311,14 +311,22 @@ class Parser
     {
         $lookaheadType = $this->lexer->lookahead['type'];
 
-        /*
-         * The following condition means:
-         * - If next token matches expectation -> ok.
-         * - If expectation is to get T_IDENTIFIER and we find one of the tokens that are reserved words *but* would work as identifiers as well (e. g. "FROM", DDC-505) -> ok.
-         * - Else fail.
-         */
-        if ($lookaheadType !== $token && ($token !== Lexer::T_IDENTIFIER || $lookaheadType <= Lexer::T_IDENTIFIER)) {
-            $this->syntaxError($this->lexer->getLiteral($token));
+        // Short-circuit on first condition, usually types match
+        if ($lookaheadType !== $token) {
+            // If parameter is not identifier (1-99) must be exact match
+            if ($token < Lexer::T_IDENTIFIER) {
+                $this->syntaxError($this->lexer->getLiteral($token));
+            }
+
+            // If parameter is keyword (200+) must be exact match
+            if ($token > Lexer::T_IDENTIFIER) {
+                $this->syntaxError($this->lexer->getLiteral($token));
+            }
+
+            // If parameter is T_IDENTIFIER, then matches T_IDENTIFIER (100) and keywords (200+)
+            if ($token === Lexer::T_IDENTIFIER && $lookaheadType < Lexer::T_IDENTIFIER) {
+                $this->syntaxError($this->lexer->getLiteral($token));
+            }
         }
 
         $this->lexer->moveNext();
@@ -962,13 +970,17 @@ class Parser
     {
         if ($this->lexer->isNextToken(Lexer::T_FULLY_QUALIFIED_NAME)) {
             $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
+
             $schemaName = $this->lexer->token['value'];
         } else if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $this->match(Lexer::T_IDENTIFIER);
+
             $schemaName = $this->lexer->token['value'];
         } else {
             $this->match(Lexer::T_ALIASED_NAME);
+
             list($namespaceAlias, $simpleClassName) = explode(':', $this->lexer->token['value']);
+
             $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
         }
 
@@ -1216,8 +1228,10 @@ class Parser
     public function UpdateClause()
     {
         $this->match(Lexer::T_UPDATE);
+
         $token = $this->lexer->lookahead;
         $abstractSchemaName = $this->AbstractSchemaName();
+
         $this->validateAbstractSchemaName($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
@@ -1272,7 +1286,9 @@ class Parser
 
         $token = $this->lexer->lookahead;
         $abstractSchemaName = $this->AbstractSchemaName();
+
         $this->validateAbstractSchemaName($abstractSchemaName);
+
         $deleteClause = new AST\DeleteClause($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
@@ -1718,6 +1734,7 @@ class Parser
     public function RangeVariableDeclaration()
     {
         $abstractSchemaName = $this->AbstractSchemaName();
+
         $this->validateAbstractSchemaName($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
@@ -2242,9 +2259,12 @@ class Parser
         }
 
         // [["AS"] ["HIDDEN"] AliasResultVariable]
+        $mustHaveAliasResultVariable = false;
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
+
+            $mustHaveAliasResultVariable = true;
         }
 
         $hiddenAliasResultVariable = false;
@@ -2257,7 +2277,7 @@ class Parser
 
         $aliasResultVariable = null;
 
-        if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+        if ($mustHaveAliasResultVariable || $this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $token = $this->lexer->lookahead;
             $aliasResultVariable = $this->AliasResultVariable();
 
@@ -3150,6 +3170,7 @@ class Parser
         }
 
         $abstractSchemaName = $this->AbstractSchemaName();
+
         $this->validateAbstractSchemaName($abstractSchemaName);
 
         return $abstractSchemaName;

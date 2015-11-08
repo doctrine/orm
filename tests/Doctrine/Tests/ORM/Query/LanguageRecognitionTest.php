@@ -84,7 +84,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
 
-        $this->_em->getConfiguration()->setEntityNamespaces(array('Unknown' => 'Unknown', 'CMS' => 'Doctrine\Tests\Models\CMS'));
+        $this->_em->getConfiguration()->setEntityNamespaces(array(
+            'Unknown' => 'Unknown',
+            'CMS' => 'Doctrine\Tests\Models\CMS'
+        ));
+
         $this->parseDql($dql);
     }
 
@@ -92,6 +96,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         return array(
 
+            array('SELECT \'foo\' AS foo\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
             /* Checks for invalid IdentificationVariables and AliasIdentificationVariables */
             array('SELECT \foo FROM Doctrine\Tests\Models\CMS\CmsUser \foo'),
             array('SELECT foo\ FROM Doctrine\Tests\Models\CMS\CmsUser foo\\'),
@@ -118,7 +123,6 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
             /* Checks for invalid AliasResultVariable */
             array('SELECT \'foo\' AS \foo FROM Doctrine\Tests\Models\CMS\CmsUser u'),
             array('SELECT \'foo\' AS \foo\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
-            array('SELECT \'foo\' AS foo\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
             array('SELECT \'foo\' AS foo\ FROM Doctrine\Tests\Models\CMS\CmsUser u'),
             array('SELECT \'foo\' AS foo\\\\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'),
             array('SELECT \'foo\' AS foo: FROM Doctrine\Tests\Models\CMS\CmsUser u'),
