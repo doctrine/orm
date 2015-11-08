@@ -721,7 +721,7 @@ class BasicEntityPersister implements EntityPersister
         $hydrator = $this->em->newHydrator($this->currentPersisterContext->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
         $entities = $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, $hints);
 
-        return $entities ? $entities[0] : null;
+        return $entities && isset($entities[0]) ? $entities[0] : null;
     }
 
     /**
