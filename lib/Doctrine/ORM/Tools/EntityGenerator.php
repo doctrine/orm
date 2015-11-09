@@ -1070,7 +1070,7 @@ public function __construct(<params>)
         }
 
         if (isset($metadata->table['options']) && $metadata->table['options']) {
-            $table[] = 'options={' . $this->exportTableOptions((array) $metadata->table['options']) . '}';
+            $table[] = 'options=' . json_encode((array) $metadata->table['options'], JSON_UNESCAPED_UNICODE|JSON_HEX_QUOT|JSON_HEX_APOS);
         }
 
         if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
@@ -1659,22 +1659,12 @@ public function __construct(<params>)
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
 
-            $options = [];
-
-            if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
-                $options[] = '"unsigned"=true';
-            }
-
-            if ($options) {
-                $column[] = 'options={'.implode(',', $options).'}';
-            }
-
             if (isset($fieldMapping['columnDefinition'])) {
                 $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
             }
 
-            if (isset($fieldMapping['unique'])) {
-                $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
+            if (isset($fieldMapping['options']) && $fieldMapping['options']) {
+                $column[] = 'options=' . json_encode($fieldMapping['options'], JSON_UNESCAPED_UNICODE|JSON_HEX_QUOT|JSON_HEX_APOS);
             }
 
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Column(' . implode(', ', $column) . ')';
@@ -1823,27 +1813,5 @@ public function __construct(<params>)
         }
 
         return null;
-    }
-
-    /**
-     * Exports (nested) option elements.
-     *
-     * @param array $options
-     *
-     * @return string
-     */
-    private function exportTableOptions(array $options)
-    {
-        $optionsStr = [];
-
-        foreach ($options as $name => $option) {
-            if (is_array($option)) {
-                $optionsStr[] = '"' . $name . '"={' . $this->exportTableOptions($option) . '}';
-            } else {
-                $optionsStr[] = '"' . $name . '"="' . (string) $option . '"';
-            }
-        }
-
-        return implode(',', $optionsStr);
     }
 }
