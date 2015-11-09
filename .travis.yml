@@ -31,3 +31,7 @@ matrix:
       env: DB=pgsql  # driver for PostgreSQL currently unsupported by HHVM, requires 3rd party dependency
 
 sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
