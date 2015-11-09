@@ -449,7 +449,6 @@ use Doctrine\Common\Util\ClassUtils;
 
                 return $entity;
 
-            case LockMode::NONE === $lockMode:
             case LockMode::PESSIMISTIC_READ === $lockMode:
             case LockMode::PESSIMISTIC_WRITE === $lockMode:
                 if ( ! $this->getConnection()->isTransactionActive()) {
