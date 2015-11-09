@@ -311,9 +311,22 @@ class Parser
     {
         $lookaheadType = $this->lexer->lookahead['type'];
 
-        // short-circuit on first condition, usually types match
-        if ($lookaheadType !== $token && $token !== Lexer::T_IDENTIFIER && $lookaheadType <= Lexer::T_IDENTIFIER) {
-            $this->syntaxError($this->lexer->getLiteral($token));
+        // Short-circuit on first condition, usually types match
+        if ($lookaheadType !== $token) {
+            // If parameter is not identifier (1-99) must be exact match
+            if ($token < Lexer::T_IDENTIFIER) {
+                $this->syntaxError($this->lexer->getLiteral($token));
+            }
+
+            // If parameter is keyword (200+) must be exact match
+            if ($token > Lexer::T_IDENTIFIER) {
+                $this->syntaxError($this->lexer->getLiteral($token));
+            }
+
+            // If parameter is T_IDENTIFIER, then matches T_IDENTIFIER (100) and keywords (200+)
+            if ($token === Lexer::T_IDENTIFIER && $lookaheadType < Lexer::T_IDENTIFIER) {
+                $this->syntaxError($this->lexer->getLiteral($token));
+            }
         }
 
         $this->lexer->moveNext();
@@ -949,29 +962,45 @@ class Parser
     }
 
     /**
-     * AbstractSchemaName ::= identifier
+     * AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
      *
      * @return string
      */
     public function AbstractSchemaName()
     {
-        $this->match(Lexer::T_IDENTIFIER);
+        if ($this->lexer->isNextToken(Lexer::T_FULLY_QUALIFIED_NAME)) {
+            $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
 
-        $schemaName = ltrim($this->lexer->token['value'], '\\');
+            $schemaName = $this->lexer->token['value'];
+        } else if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            $this->match(Lexer::T_IDENTIFIER);
 
-        if (strrpos($schemaName, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $schemaName);
+            $schemaName = $this->lexer->token['value'];
+        } else {
+            $this->match(Lexer::T_ALIASED_NAME);
+
+            list($namespaceAlias, $simpleClassName) = explode(':', $this->lexer->token['value']);
 
             $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
         }
 
+        return $schemaName;
+    }
+
+    /**
+     * Validates an AbstractSchemaName, making sure the class exists.
+     *
+     * @param string $schemaName The name to validate.
+     *
+     * @throws QueryException if the name does not exist.
+     */
+    private function validateAbstractSchemaName($schemaName)
+    {
         $exists = class_exists($schemaName, true);
 
-        if ( ! $exists) {
+        if (! $exists) {
             $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
         }
-
-        return $schemaName;
     }
 
     /**
@@ -1199,8 +1228,11 @@ class Parser
     public function UpdateClause()
     {
         $this->match(Lexer::T_UPDATE);
+
         $token = $this->lexer->lookahead;
         $abstractSchemaName = $this->AbstractSchemaName();
+
+        $this->validateAbstractSchemaName($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1253,7 +1285,11 @@ class Parser
         }
 
         $token = $this->lexer->lookahead;
-        $deleteClause = new AST\DeleteClause($this->AbstractSchemaName());
+        $abstractSchemaName = $this->AbstractSchemaName();
+
+        $this->validateAbstractSchemaName($abstractSchemaName);
+
+        $deleteClause = new AST\DeleteClause($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1678,8 +1714,6 @@ class Parser
         // Describe non-root join declaration
         if ($joinDeclaration instanceof AST\RangeVariableDeclaration) {
             $joinDeclaration->isRoot = false;
-
-            $adhocConditions = true;
         }
 
         // Check for ad-hoc Join conditions
@@ -1700,6 +1734,8 @@ class Parser
     public function RangeVariableDeclaration()
     {
         $abstractSchemaName = $this->AbstractSchemaName();
+
+        $this->validateAbstractSchemaName($abstractSchemaName);
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1811,24 +1847,16 @@ class Parser
     }
 
     /**
-     * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
+     * NewObjectExpression ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
      *
      * @return \Doctrine\ORM\Query\AST\NewObjectExpression
      */
     public function NewObjectExpression()
     {
         $this->match(Lexer::T_NEW);
-        $this->match(Lexer::T_IDENTIFIER);
 
-        $token      = $this->lexer->token;
-        $className  = $token['value'];
-
-        if (strrpos($className, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $className);
-
-            $className = $this->em->getConfiguration()
-                ->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
-        }
+        $className = $this->AbstractSchemaName(); // note that this is not yet validated
+        $token = $this->lexer->token;
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
@@ -2231,9 +2259,12 @@ class Parser
         }
 
         // [["AS"] ["HIDDEN"] AliasResultVariable]
+        $mustHaveAliasResultVariable = false;
 
         if ($this->lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
+
+            $mustHaveAliasResultVariable = true;
         }
 
         $hiddenAliasResultVariable = false;
@@ -2246,7 +2277,7 @@ class Parser
 
         $aliasResultVariable = null;
 
-        if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+        if ($mustHaveAliasResultVariable || $this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $token = $this->lexer->lookahead;
             $aliasResultVariable = $this->AliasResultVariable();
 
@@ -3138,7 +3169,11 @@ class Parser
             return new AST\InputParameter($this->lexer->token['value']);
         }
 
-        return $this->AliasIdentificationVariable();
+        $abstractSchemaName = $this->AbstractSchemaName();
+
+        $this->validateAbstractSchemaName($abstractSchemaName);
+
+        return $abstractSchemaName;
     }
 
     /**
