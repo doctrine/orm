@@ -27,6 +27,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
  * Specific non-strict read/write cached entity persister
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since  2.5
  */
 class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
@@ -78,13 +79,16 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function delete($entity)
     {
-        $key = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $key     = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $deleted = $this->persister->delete($entity);
 
-        if ($this->persister->delete($entity)) {
+        if ($deleted) {
             $this->region->evict($key);
         }
 
         $this->queuedCache['delete'][] = $key;
+
+        return $deleted;
     }
 
     /**

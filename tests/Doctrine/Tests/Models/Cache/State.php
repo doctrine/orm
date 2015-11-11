@@ -33,7 +33,7 @@ class State
     protected $country;
 
     /**
-     * @Cache
+     * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="City", mappedBy="state")
      */
     protected $cities;

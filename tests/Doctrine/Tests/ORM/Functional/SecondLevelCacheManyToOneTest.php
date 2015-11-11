@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\ComplexAction;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Action;
 
@@ -96,6 +96,40 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($this->states[1]->getCountry()->getId(), $c4->getCountry()->getId());
         $this->assertEquals($this->states[1]->getCountry()->getName(), $c4->getCountry()->getName());
+    }
+
+    public function testInverseSidePutShouldEvictCollection()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+
+        $this->_em->clear();
+
+        $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->cache->evictEntityRegion(Country::CLASSNAME);
+
+        //evict collection on add
+        $c3    = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+        $prev  = $c3->getCities();
+        $count = $prev->count();
+        $city  = new City("Buenos Aires", $c3);
+
+        $c3->addCity($city);
+
+        $this->_em->persist($city);
+        $this->_em->persist($c3);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $state      = $this->_em->find(State::CLASSNAME, $c3->getId());
+        $queryCount = $this->getCurrentQueryCount();
+
+        // Association was cleared from EM
+        $this->assertNotEquals($prev, $state->getCities());
+
+        // New association has one more item (cache was evicted)
+        $this->assertEquals($count + 1, $state->getCities()->count());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
     public function testShouldNotReloadWhenAssociationIsMissing()
