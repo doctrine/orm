@@ -553,7 +553,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
         if ($hasCache) {
             $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
-            $key     = new CollectionCacheKey($assoc['sourceEntity'], $assoc['fieldName'], $ownerId);
+            $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
             $list    = $persister->loadCollectionCache($coll, $key);
 
             if ($list !== null) {
@@ -588,7 +588,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
         if ($hasCache) {
             $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
-            $key     = new CollectionCacheKey($assoc['sourceEntity'], $assoc['fieldName'], $ownerId);
+            $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
             $list    = $persister->loadCollectionCache($coll, $key);
 
             if ($list !== null) {
@@ -637,4 +637,17 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->persister->refresh($id, $entity, $lockMode);
     }
 
+    /**
+     * @param array $association
+     * @param array $ownerId
+     *
+     * @return CollectionCacheKey
+     */
+    protected function buildCollectionCacheKey(array $association, $ownerId)
+    {
+        /** @var ClassMetadata $metadata */
+        $metadata = $this->metadataFactory->getMetadataFor($association['sourceEntity']);
+
+        return new CollectionCacheKey($metadata->rootEntityName, $association['fieldName'], $ownerId);
+    }
 }
