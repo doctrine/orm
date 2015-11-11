@@ -733,7 +733,6 @@ class UnitOfWork implements PropertyChangedListener
 
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $field => $assoc) {
-
             if (($val = $class->reflFields[$field]->getValue($entity)) === null) {
                 continue;
             }
@@ -799,7 +798,7 @@ class UnitOfWork implements PropertyChangedListener
                 // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION OR DELETION are processed here.
                 $oid = spl_object_hash($entity);
 
-                if ( ! isset($this->entityInsertions[$oid]) &&  ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
+                if ( ! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
                     $this->computeChangeSet($class, $entity);
                 }
             }
@@ -826,10 +825,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($value instanceof PersistentCollection && $value->isDirty()) {
             $coid = spl_object_hash($value);
 
-            if ($assoc['isOwningSide']) {
-                $this->collectionUpdates[$coid] = $value;
-            }
-
+            $this->collectionUpdates[$coid] = $value;
             $this->visitedCollections[$coid] = $value;
         }
 
