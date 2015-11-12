@@ -29,7 +29,7 @@ A many-to-one association is the most common association between objects.
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class User
         {
             // ...
@@ -37,11 +37,11 @@ A many-to-one association is the most common association between objects.
             /**
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
-             **/
+             */
             private $address;
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Address
         {
             // ...
@@ -105,7 +105,7 @@ direction only.
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class Product
         {
             // ...
@@ -113,13 +113,13 @@ direction only.
             /**
              * @OneToOne(targetEntity="Shipping")
              * @JoinColumn(name="shipping_id", referencedColumnName="id")
-             **/
+             */
             private $shipping;
 
             // ...
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Shipping
         {
             // ...
@@ -177,20 +177,20 @@ it is bidirectional.
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class Customer
         {
             // ...
 
             /**
              * @OneToOne(targetEntity="Cart", mappedBy="customer")
-             **/
+             */
             private $cart;
 
             // ...
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Cart
         {
             // ...
@@ -198,7 +198,7 @@ it is bidirectional.
             /**
              * @OneToOne(targetEntity="Customer", inversedBy="cart")
              * @JoinColumn(name="customer_id", referencedColumnName="id")
-             **/
+             */
             private $customer;
 
             // ...
@@ -263,7 +263,7 @@ below.
 .. code-block:: php
 
     <?php
-    /** @Entity **/
+    /** @Entity */
     class Student
     {
         // ...
@@ -271,7 +271,7 @@ below.
         /**
          * @OneToOne(targetEntity="Student")
          * @JoinColumn(name="mentor_id", referencedColumnName="id")
-         **/
+         */
         private $mentor;
 
         // ...
@@ -311,13 +311,13 @@ association.
         <?php
         use Doctrine\Common\Collections\ArrayCollection;
 
-        /** @Entity **/
+        /** @Entity */
         class Product
         {
             // ...
             /**
              * @OneToMany(targetEntity="Feature", mappedBy="product")
-             **/
+             */
             private $features;
             // ...
 
@@ -326,14 +326,14 @@ association.
             }
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Feature
         {
             // ...
             /**
              * @ManyToOne(targetEntity="Product", inversedBy="features")
              * @JoinColumn(name="product_id", referencedColumnName="id")
-             **/
+             */
             private $product;
             // ...
         }
@@ -402,7 +402,7 @@ The following example sets up such a unidirectional one-to-many association:
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class User
         {
             // ...
@@ -413,7 +413,7 @@ The following example sets up such a unidirectional one-to-many association:
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
              *      )
-             **/
+             */
             private $phonenumbers;
 
             public function __construct()
@@ -424,7 +424,7 @@ The following example sets up such a unidirectional one-to-many association:
             // ...
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Phonenumber
         {
             // ...
@@ -503,19 +503,19 @@ database perspective is known as an adjacency list approach.
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class Category
         {
             // ...
             /**
              * @OneToMany(targetEntity="Category", mappedBy="parent")
-             **/
+             */
             private $children;
 
             /**
              * @ManyToOne(targetEntity="Category", inversedBy="children")
              * @JoinColumn(name="parent_id", referencedColumnName="id")
-             **/
+             */
             private $parent;
             // ...
 
@@ -572,7 +572,7 @@ entities:
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class User
         {
             // ...
@@ -583,7 +583,7 @@ entities:
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
              *      )
-             **/
+             */
             private $groups;
 
             // ...
@@ -593,7 +593,7 @@ entities:
             }
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Group
         {
             // ...
@@ -672,7 +672,7 @@ one is bidirectional.
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+        /** @Entity */
         class User
         {
             // ...
@@ -680,7 +680,7 @@ one is bidirectional.
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")
              * @JoinTable(name="users_groups")
-             **/
+             */
             private $groups;
 
             public function __construct() {
@@ -690,13 +690,13 @@ one is bidirectional.
             // ...
         }
 
-        /** @Entity **/
+        /** @Entity */
         class Group
         {
             // ...
             /**
              * @ManyToMany(targetEntity="User", mappedBy="groups")
-             **/
+             */
             private $users;
 
             public function __construct() {
@@ -819,14 +819,14 @@ field named ``$friendsWithMe`` and ``$myFriends``.
 .. code-block:: php
 
     <?php
-    /** @Entity **/
+    /** @Entity */
     class User
     {
         // ...
 
         /**
          * @ManyToMany(targetEntity="User", mappedBy="myFriends")
-         **/
+         */
         private $friendsWithMe;
 
         /**
@@ -835,7 +835,7 @@ field named ``$friendsWithMe`` and ``$myFriends``.
          *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
          *      inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
          *      )
-         **/
+         */
         private $myFriends;
 
         public function __construct() {
@@ -883,7 +883,7 @@ As an example, consider this mapping:
     .. code-block:: php
 
         <?php
-        /** @OneToOne(targetEntity="Shipping") **/
+        /** @OneToOne(targetEntity="Shipping") */
         private $shipping;
 
     .. code-block:: xml
@@ -913,7 +913,7 @@ mapping:
         /**
          * @OneToOne(targetEntity="Shipping")
          * @JoinColumn(name="shipping_id", referencedColumnName="id")
-         **/
+         */
         private $shipping;
 
     .. code-block:: xml
@@ -948,7 +948,7 @@ similar defaults. As an example, consider this mapping:
         class User
         {
             //...
-            /** @ManyToMany(targetEntity="Group") **/
+            /** @ManyToMany(targetEntity="Group") */
             private $groups;
             //...
         }
@@ -985,7 +985,7 @@ This is essentially the same as the following, more verbose, mapping:
              *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
              *      )
-             **/
+             */
             private $groups;
             //...
         }
@@ -1066,10 +1066,10 @@ and ``@ManyToMany`` associations in the constructor of your entities:
     <?php
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Entity **/
+    /** @Entity */
     class User
     {
-        /** @ManyToMany(targetEntity="Group") **/
+        /** @ManyToMany(targetEntity="Group") */
         private $groups;
 
         public function __construct()
