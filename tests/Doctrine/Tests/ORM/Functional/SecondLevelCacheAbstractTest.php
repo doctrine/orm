@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\Cache\Address;
+use Doctrine\Tests\Models\Cache\Person;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use Doctrine\Tests\Models\Cache\Country;
@@ -25,6 +27,8 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
  */
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
+    protected $people               = array();
+    protected $addresses            = array();
     protected $countries            = array();
     protected $states               = array();
     protected $cities               = array();
@@ -219,6 +223,37 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         foreach ($this->attractionsInfo as $info) {
             $this->_em->persist($info);
+        }
+
+        $this->_em->flush();
+    }
+
+    protected function loadFixturesPersonWithAddress()
+    {
+        $person1  = new Person('Guilherme Blanco');
+        $address1 = new Address('Canada');
+
+        $person1->address = $address1;
+        $address1->person = $person1;
+
+        $person2  = new Person('Marco Pivetta');
+        $address2 = new Address('Germany');
+
+        $person2->address = $address2;
+        $address2->person = $person2;
+
+        $this->people[] = $person1;
+        $this->people[] = $person2;
+
+        $this->addresses[] = $address1;
+        $this->addresses[] = $address2;
+
+        foreach ($this->people as $person) {
+            $this->_em->persist($person);
+        }
+
+        foreach ($this->addresses as $address) {
+            $this->_em->persist($address);
         }
 
         $this->_em->flush();

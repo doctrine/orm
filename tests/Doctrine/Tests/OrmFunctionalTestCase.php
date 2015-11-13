@@ -189,6 +189,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\Token',
             'Doctrine\Tests\Models\Cache\Login',
             'Doctrine\Tests\Models\Cache\Client',
+            'Doctrine\Tests\Models\Cache\Person',
+            'Doctrine\Tests\Models\Cache\Address',
             'Doctrine\Tests\Models\Cache\Action',
             'Doctrine\Tests\Models\Cache\ComplexAction',
             'Doctrine\Tests\Models\Cache\AttractionInfo',
