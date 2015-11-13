@@ -101,7 +101,7 @@ functionally equivalent to the previously shown code looks as follows:
 .. warning::
 
     For historical reasons, ``EntityManager#transactional($func)`` will return
-    ``false`` whenever the return value of ``$func`` is loosely false.
+    ``true`` whenever the return value of ``$func`` is loosely false.
     Some examples of this include ``array()``, ``"0"``, ``""``, ``0``, and
     ``null``.
 
