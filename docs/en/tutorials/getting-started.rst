@@ -51,7 +51,7 @@ Entities are PHP Objects that can be identified over many requests
 by a unique identifier or primary key. These classes don't need to extend any
 abstract base class or interface. An entity class must not be final
 or contain final methods. Additionally it must not implement
-**clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
+**clone** nor **wakeup**, unless it :doc:`does so safely <../cookbook/implementing-wakeup-or-clone>`.
 
 An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
