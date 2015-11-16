@@ -1212,12 +1212,13 @@ Example with partial indexes:
 .. _annref_version:
 
 @Version
-~~~~~~~~~~~~~~
+~~~~~~~~
 
-Marker annotation that defines a specified column as version
-attribute used in an optimistic locking scenario. It only works on
-:ref:`@Column <annref_column>` annotations that have the type integer or
-datetime. Combining @Version with :ref:`@Id <annref_id>` is not supported.
+Marker annotation that defines a specified column as version attribute used in
+an :ref:`optimistic locking <transactions-and-concurrency_optimistic-locking>`
+scenario. It only works on :ref:`@Column <annref_column>` annotations that have
+the type ``integer`` or ``datetime``. Combining ``@Version`` with
+:ref:`@Id <annref_id>` is not supported.
 
 Example:
 
