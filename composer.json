@@ -36,7 +36,7 @@
     "autoload-dev": {
         "psr-4": { "Doctrine\\Tests\\": "tests/Doctrine/Tests" }
     },
-    "bin": ["bin/doctrine", "bin/doctrine.php"],
+    "bin": ["bin/doctrine"],
     "extra": {
         "branch-alias": {
             "dev-master": "2.6.x-dev"
