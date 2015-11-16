@@ -1655,8 +1655,14 @@ public function __construct(<params>)
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
 
-            if (isset($fieldMapping['unsigned']) && $fieldMapping['unsigned']) {
-                $column[] = 'options={"unsigned"=true}';
+            $options = [];
+
+            if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
+                $options[] = '"unsigned"=true';
+            }
+
+            if ($options) {
+                $column[] = 'options={'.implode(',', $options).'}';
             }
 
             if (isset($fieldMapping['columnDefinition'])) {

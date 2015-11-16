@@ -209,6 +209,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user_email', $class->fieldMappings['email']['columnName']);
         $this->assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
 
+        $this->assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
+
         return $class;
     }
 

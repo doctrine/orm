@@ -19,6 +19,10 @@ Doctrine\Tests\ORM\Tools\Export\User:
       type: string
       column: user_email
       columnDefinition: CHAR(32) NOT NULL
+    age:
+      type: integer
+      options:
+        unsigned: true
   oneToOne:
     address:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Address
