@@ -1815,7 +1815,16 @@ class Parser
         $this->match(Lexer::T_OPEN_CURLY_BRACE);
         $this->match(Lexer::T_IDENTIFIER);
 
-        $partialFieldSet[] = $this->lexer->token['value'];
+        $field = $this->lexer->token['value']; 
+
+        // First field in partial expression might be embeddable property
+        while ($this->lexer->isNextToken(Lexer::T_DOT)) {
+            $this->match(Lexer::T_DOT);
+            $this->match(Lexer::T_IDENTIFIER);
+            $field .= '.'.$this->lexer->token['value'];
+        }
+
+        $partialFieldSet[] = $field;
 
         while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
