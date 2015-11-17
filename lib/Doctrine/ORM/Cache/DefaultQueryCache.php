@@ -111,10 +111,11 @@ class DefaultQueryCache implements QueryCache
         $region      = $persister->getCacheRegion();
         $regionName  = $region->getName();
 
+        $cm = $this->em->getClassMetadata($entityName);
         // @TODO - move to cache hydration component
         foreach ($entry->result as $index => $entry) {
 
-            if (($entityEntry = $region->get($entityKey = new EntityCacheKey($entityName, $entry['identifier']))) === null) {
+            if (($entityEntry = $region->get($entityKey = new EntityCacheKey($cm->rootEntityName, $entry['identifier']))) === null) {
 
                 if ($this->cacheLogger !== null) {
                     $this->cacheLogger->entityCacheMiss($regionName, $entityKey);
