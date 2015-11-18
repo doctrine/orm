@@ -161,6 +161,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const FETCH_EXTRA_LAZY = 4;
 
+	/**
+	 * Specifies that an association is to be fetched eagerly, but loaded though a single query.
+	 */
+	const FETCH_EAGER_BATCHED = 5;
+
     /**
      * Identifies a one-to-one association.
      */

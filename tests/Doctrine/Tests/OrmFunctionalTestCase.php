@@ -282,6 +282,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Pagination\User',
             'Doctrine\Tests\Models\Pagination\User1',
         ),
+        'eager_batched' => Array(
+            'Doctrine\Tests\Models\EagerBatched\Article',
+            'Doctrine\Tests\Models\EagerBatched\Tag'
+        )
     );
 
     /**
@@ -543,6 +547,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM pagination_user');
         }
 
+        if (isset($this->_usedModelSets['eager_batched'])) {
+            $conn->executeUpdate('DELETE FROM eager_batched_tag');
+            $conn->executeUpdate('DELETE FROM eager_batched_article');
+        }
         $this->_em->clear();
     }
 

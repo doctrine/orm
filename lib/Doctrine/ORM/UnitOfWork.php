@@ -293,6 +293,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $reflectionPropertiesGetter;
 
+	/** @var PersistentCollection[] */
+	private $batchedEagerLoadingEntities = Array();
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
@@ -2774,6 +2777,8 @@ class UnitOfWork implements PropertyChangedListener
                     if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
                         $this->loadCollection($pColl);
                         $pColl->takeSnapshot();
+                    } elseif ($assoc['fetch'] == ClassMetadata::FETCH_EAGER_BATCHED) {
+	                    $this->scheduleCollectionForBatchLoading($pColl);
                     }
 
                     $this->originalEntityData[$oid][$field] = $pColl;
@@ -2794,7 +2799,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function triggerEagerLoads()
     {
-        if ( ! $this->eagerLoadingEntities) {
+        if ( ! $this->eagerLoadingEntities && ! $this->batchedEagerLoadingEntities) {
             return;
         }
 
@@ -2813,7 +2818,62 @@ class UnitOfWork implements PropertyChangedListener
                 array_combine($class->identifier, array(array_values($ids)))
             );
         }
+
+	    // also here; avoid recursion
+	    $batchedEagerLoading = $this->batchedEagerLoadingEntities;
+	    $this->batchedEagerLoadingEntities = Array();
+	    foreach($batchedEagerLoading as $group) {
+		    $this->batchLoadCollection($group['items'], $group['mapping']);
+	    }
     }
+
+	/**
+	 * Load all data into the given collections, according to the specified mapping
+	 *
+	 * @param PersistentCollection[] $collections
+	 * @param array $mapping
+	 */
+	private function batchLoadCollection(array $collections, array $mapping) {
+
+		$targetEntity = $mapping['targetEntity'];
+		$class = $this->em->getClassMetadata($mapping['sourceEntity']);
+		$mappedBy = $mapping['mappedBy'];
+
+		$entities = Array();
+
+		/** @var PersistentCollection[] $index */
+		$index = array_reduce($collections, function($index, PersistentCollection $collection) use ($class, &$entities) {
+
+			$entity = $collection->getOwner();
+			$id = join('-', $class->getIdentifierValues($entity));
+			$index[$id] = $collection;
+
+			$entities[] = $entity;
+
+			return $index;
+
+		}, Array());
+
+		$em = $this->em;
+		$found = $em->getRepository($targetEntity)->findBy(Array(
+			$mappedBy => $entities
+		));
+
+		$targetClass = $this->em->getClassMetadata($targetEntity);
+		$targetProperty = $targetClass->getReflectionProperty($mappedBy);
+
+		foreach($found as $targetValue) {
+			$sourceEntity = $targetProperty->getValue($targetValue);
+			$id = join('-', $class->getIdentifierValues($sourceEntity));
+			$index[$id]->add($targetValue);
+
+		}
+
+		foreach($index as $association) {
+			$association->setInitialized(true);
+			$association->takeSnapshot();
+		}
+	}
 
     /**
      * Initializes (loads) an uninitialized persistent collection of an entity.
@@ -2841,6 +2901,20 @@ class UnitOfWork implements PropertyChangedListener
 
         $collection->setInitialized(true);
     }
+
+	public function scheduleCollectionForBatchLoading(PersistentCollection $collection) {
+		$mapping = $collection->getMapping();
+		$name = $mapping['sourceEntity'].$mapping['fieldName'];
+
+		if (!isset($this->batchedEagerLoadingEntities[$name])) {
+			$this->batchedEagerLoadingEntities[$name] = Array(
+				'items'     => Array(),
+				'mapping'   => $mapping,
+			);
+		}
+
+		$this->batchedEagerLoadingEntities[$name]['items'][] = $collection;
+	}
 
     /**
      * Gets the identity map of the UnitOfWork.
