@@ -185,7 +185,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
                 }
 
-                if (! empty($embeddableMetadata->getIdentifier())) {
+                $identifier = $embeddableMetadata->getIdentifier();
+
+                if (! empty($identifier)) {
                     $this->inheritIdGeneratorMapping($class, $embeddableMetadata);
                 }
 
