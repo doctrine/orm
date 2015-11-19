@@ -309,7 +309,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('parent-id', $user['joinColumns'][0]['name']);
         $this->assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
 
-        
+
         // Address Class Metadata
         $this->assertTrue($addressMetadata->fieldMappings['id']['quoted']);
         $this->assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
@@ -327,11 +327,11 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // User Class Metadata
         $this->assertTrue($userMetadata->fieldMappings['id']['quoted']);
         $this->assertTrue($userMetadata->fieldMappings['name']['quoted']);
-        
+
         $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
-        
+
         $address = $userMetadata->associationMappings['address'];
         $this->assertTrue($address['joinColumns'][0]['quoted']);
         $this->assertEquals('address-id', $address['joinColumns'][0]['name']);
@@ -422,6 +422,21 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         );
 
         $cmf->getMetadataFor($metadata->name);
+    }
+
+    /**
+     * @group DDC-4006
+     */
+    public function testInheritsIdGeneratorMappingFromEmbeddable()
+    {
+        $cmf = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/DDC4006/'));
+        $em = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $userMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\DDC4006\DDC4006User');
+
+        $this->assertTrue($userMetadata->isIdGeneratorIdentity());
     }
 }
 
