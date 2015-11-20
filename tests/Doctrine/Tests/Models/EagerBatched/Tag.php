@@ -15,7 +15,8 @@ namespace Doctrine\Tests\Models\EagerBatched;
  * @Entity()
  * @Table(name="eager_batched_tag")
  */
-class Tag {
+class Tag
+{
 
 	/**
 	 * @Column(type="string")

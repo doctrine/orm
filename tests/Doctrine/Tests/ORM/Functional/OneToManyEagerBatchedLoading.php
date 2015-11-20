@@ -14,10 +14,8 @@ use Doctrine\Tests\Models\EagerBatched\Article;
 use Doctrine\Tests\Models\EagerBatched\Tag;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class OneToManyEagerBatchedLoading extends OrmFunctionalTestCase {
-
-	private $lazyLoadingTime;
-	private $batchedLoadingTime;
+class OneToManyEagerBatchedLoading extends OrmFunctionalTestCase
+{
 
 	protected function setUp() {
 

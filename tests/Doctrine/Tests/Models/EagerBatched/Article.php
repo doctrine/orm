@@ -16,7 +16,8 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity()
  * @Table(name="eager_batched_article")
  */
-class Article {
+class Article
+{
 
 	/**
 	 * @Id @Column(type="integer", name="id") @GeneratedValue
