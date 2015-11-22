@@ -266,7 +266,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-<spaces>$this-><fieldName>[] = $<variableName>;
+<spaces>$this-><fieldName>->add($<variableName>);
 
 <spaces>return $this;
 }';
