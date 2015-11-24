@@ -486,9 +486,9 @@ You use the partial syntax when joining as well:
 Using the ``NEW`` operator you can construct Data Transfer Objects (DTOs) directly from DQL queries.
 
 - When using ``SELECT NEW`` you don't need to specify a mapped entity.
-- You can specify any PHP class, it's only require that the constructor of this class matches the ``NEW`` statement.
+- You can specify any PHP class, it only requires that the constructor of this class matches the ``NEW`` statement.
 - This approach involves determining exactly which columns you really need,
-  and instantiating data-transfer object that containing a constructor with those arguments.
+  and instantiating a data-transfer object that contains a constructor with those arguments.
 
 If you want to select data-transfer objects you should create a class:
 
