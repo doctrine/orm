@@ -282,7 +282,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Pagination\User',
             'Doctrine\Tests\Models\Pagination\User1',
         ),
-        'eager_batched' => Array(
+        'eager_batched' => array(
             'Doctrine\Tests\Models\EagerBatched\Article',
             'Doctrine\Tests\Models\EagerBatched\Tag'
         )

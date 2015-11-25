@@ -7,7 +7,10 @@
  */
 
 namespace Doctrine\Tests\Models\EagerBatched;
+
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\Models\EagerBatched\Tag;
 
 /**
  * Class Article
@@ -19,82 +22,91 @@ use Doctrine\ORM\Mapping\Table;
 class Article
 {
 
-	/**
-	 * @Id @Column(type="integer", name="id") @GeneratedValue
-	 */
-	protected $id;
+    /**
+     * @Id @Column(type="integer", name="id") @GeneratedValue
+     * @var int
+     */
+    protected $id;
 
-	/**
-	 * @Column(type="string")
-	 */
-	protected $title;
+    /**
+     * @Column(type="string")
+     * @var string|null
+     */
+    protected $title;
 
-	/**
-	 * @OneToMany(targetEntity="Tag",mappedBy="article",cascade={"persist"},fetch="EAGER_BATCHED")
-	 */
-	protected $tags;
+    /**
+     * @OneToMany(targetEntity="Tag",mappedBy="article",cascade={"persist"},fetch="EAGER_BATCHED")
+     * @var Tag[]|Collection
+     */
+    protected $tags;
 
-	/**
-	 * Get id
-	 *
-	 * @return mixed
-	 */
-	public function getId() {
-		return $this->id;
-	}
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * Set id
-	 *
-	 * @param mixed $id
-	 * @return $this
-	 */
-	public function setId($id) {
-		$this->id = $id;
+    /**
+     * Set id
+     *
+     * @param integer $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get title
-	 *
-	 * @return mixed
-	 */
-	public function getTitle() {
-		return $this->title;
-	}
+    /**
+     * Get title
+     *
+     * @return string|null
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-	/**
-	 * Set title
-	 *
-	 * @param mixed $title
-	 * @return $this
-	 */
-	public function setTitle($title) {
-		$this->title = $title;
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get tags
-	 *
-	 * @return mixed
-	 */
-	public function getTags() {
-		return $this->tags;
-	}
+    /**
+     * Get tags
+     *
+     * @return Collection|Tag[]
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
 
-	/**
-	 * Set tags
-	 *
-	 * @param mixed $tags
-	 * @return $this
-	 */
-	public function setTags($tags) {
-		$this->tags = $tags;
+    /**
+     * Set tags
+     *
+     * @param Collection|Tag[] $tags
+     * @return $this
+     */
+    public function setTags($tags)
+    {
+        $this->tags = $tags;
 
-		return $this;
-	}
+        return $this;
+    }
 
 }

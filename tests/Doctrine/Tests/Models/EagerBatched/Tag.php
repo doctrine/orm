@@ -18,70 +18,86 @@ namespace Doctrine\Tests\Models\EagerBatched;
 class Tag
 {
 
-	/**
-	 * @Column(type="string")
-	 * @Id()
-	 */
-	protected $name;
+    /**
+     * @Column(type="string")
+     * @Id()
+     * @var string
+     */
+    protected $name;
 
-	public static function factory(Article $a, $tag) {
-		$me = new static();
-		$me->setArticle($a);
-		$me->setName($tag);
-		return $me;
-	}
+    /**
+     * @ManyToOne(targetEntity="Article",cascade={"persist"},fetch="LAZY",inversedBy="tags")
+     * @Id()
+     * @var Article
+     */
+    protected $article;
 
-	/**
-	 * @ManyToOne(targetEntity="Article",cascade={"persist"},fetch="LAZY",inversedBy="tags")
-	 * @Id()
-	 */
-	protected $article;
+    /**
+     * Factor a tag for an article
+     *
+     * @param Article $a
+     * @param $tag
+     *
+     * @return static
+     */
+    public static function factory(Article $a, $tag)
+    {
+        $me = new static();
+        $me->setArticle($a);
+        $me->setName($tag);
+        return $me;
+    }
 
-	public function __toString() {
-		return $this->name;
-	}
+    public function __toString()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * Get name
-	 *
-	 * @return mixed
-	 */
-	public function getName() {
-		return $this->name;
-	}
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * Set name
-	 *
-	 * @param mixed $name
-	 * @return $this
-	 */
-	public function setName($name) {
-		$this->name = $name;
+    /**
+     * Set name
+     *
+     * @param mixed $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get article
-	 *
-	 * @return Article
-	 */
-	public function getArticle() {
-		return $this->article;
-	}
+    /**
+     * Get article
+     *
+     * @return Article
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
 
-	/**
-	 * Set article
-	 *
-	 * @param mixed $article
-	 * @return $this
-	 */
-	public function setArticle($article) {
-		$this->article = $article;
+    /**
+     * Set article
+     *
+     * @param mixed $article
+     * @return $this
+     */
+    public function setArticle($article)
+    {
+        $this->article = $article;
 
-		return $this;
-	}
+        return $this;
+    }
 
 
 }
