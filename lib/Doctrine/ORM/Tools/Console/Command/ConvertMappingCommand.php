@@ -137,7 +137,7 @@ EOT
 
         // Process destination directory
         if ( ! is_dir($destPath = $input->getArgument('dest-path'))) {
-            mkdir($destPath, 0777, true);
+            mkdir($destPath, 0775, true);
         }
         $destPath = realpath($destPath);
 

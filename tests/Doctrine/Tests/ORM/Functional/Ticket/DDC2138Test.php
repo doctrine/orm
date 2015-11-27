@@ -75,7 +75,7 @@ class DDC2138Structure
 abstract class DDC2138UserFollowedObject
 {
     /**
-     * @var integer $id
+     * @var int $id
      *
      * @Column(name="id", type="integer")
      * @Id
@@ -86,7 +86,7 @@ abstract class DDC2138UserFollowedObject
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {

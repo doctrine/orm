@@ -73,37 +73,46 @@ class DefaultEntityHydrator implements EntityHydrator
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
     {
         $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $key->identifier); // why update has no identifier values ?
+        $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
 
         foreach ($metadata->associationMappings as $name => $assoc) {
-
             if ( ! isset($data[$name])) {
                 continue;
             }
 
-            if (! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if ( ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
                 unset($data[$name]);
+
                 continue;
             }
 
             if ( ! isset($assoc['cache'])) {
                 $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
-                $associationIds = $this->identifierFlattener->flattenIdentifier($targetClassMetadata, $targetClassMetadata->getIdentifierValues($data[$name]));
+                $owningAssociation   = ( ! $assoc['isOwningSide'])
+                    ? $targetClassMetadata->associationMappings[$assoc['mappedBy']]
+                    : $assoc;
+                $associationIds      = $this->identifierFlattener->flattenIdentifier(
+                    $targetClassMetadata,
+                    $targetClassMetadata->getIdentifierValues($data[$name])
+                );
+
                 unset($data[$name]);
 
                 foreach ($associationIds as $fieldName => $fieldValue) {
+                    if (isset($targetClassMetadata->fieldMappings[$fieldName])) {
+                        $fieldMapping = $targetClassMetadata->fieldMappings[$fieldName];
 
-                    if (isset($targetClassMetadata->associationMappings[$fieldName])){
-                        $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
+                        $data[$owningAssociation['targetToSourceKeyColumns'][$fieldMapping['columnName']]] = $fieldValue;
 
-                        foreach($assoc['targetToSourceKeyColumns'] as $referencedColumn => $localColumn) {
+                        continue;
+                    }
 
-                            if (isset($targetAssoc['sourceToTargetKeyColumns'][$referencedColumn])) {
-                                $data[$localColumn] = $fieldValue;
-                            }
+                    $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
+
+                    foreach($assoc['targetToSourceKeyColumns'] as $referencedColumn => $localColumn) {
+                        if (isset($targetAssoc['sourceToTargetKeyColumns'][$referencedColumn])) {
+                            $data[$localColumn] = $fieldValue;
                         }
-                    }else{
-                        $data[$assoc['targetToSourceKeyColumns'][$targetClassMetadata->columnNames[$fieldName]]] = $fieldValue;
                     }
                 }
 
@@ -126,7 +135,6 @@ class DefaultEntityHydrator implements EntityHydrator
             // @TODO - fix it !
             // handle UnitOfWork#createEntity hash generation
             if ( ! is_array($targetId)) {
-
                 $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
 
                 $targetEntity = $this->em->getClassMetadata($assoc['targetEntity']);

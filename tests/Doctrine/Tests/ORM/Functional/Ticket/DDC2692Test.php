@@ -59,5 +59,3 @@ class DDC2692Listener implements EventSubscriber {
     public function preFlush(PreFlushEventArgs $args) {
     }
 }
-
-

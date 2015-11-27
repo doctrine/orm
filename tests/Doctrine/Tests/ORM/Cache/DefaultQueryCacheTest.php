@@ -484,30 +484,6 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     /**
      * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\Models\Cache\City#travels" not configured as part of the second-level cache.
-     */
-    public function testQueryNotCacheableAssociationException()
-    {
-        $uow        = $this->em->getUnitOfWork();
-        $key        = new QueryCacheKey('query.key1', 0);
-        $rsm        = new ResultSetMappingBuilder($this->em);
-        $cityClass  = $this->em->getClassMetadata(City::CLASSNAME);
-        $city       = new City("City 1", null);
-        $result     = array(
-            $city
-        );
-
-        $cityClass->setFieldValue($city, 'id', 1);
-
-        $rsm->addRootEntityFromClassMetadata(City::CLASSNAME, 'c');
-        $rsm->addJoinedEntityFromClassMetadata(Travel::CLASSNAME, 't', 'c', 'travels', array('id' => 't_id'));
-        $uow->registerManaged($city, array('id' => $city->getId()), array('name' => $city->getName(), 'state' => null));
-
-        $this->queryCache->put($key, $rsm, $result);
-    }
-
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Second level cache does not support scalar results.
      */
     public function testScalarResultException()
@@ -516,7 +492,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
 
-        $rsm->addScalarResult('id', 'u');
+        $rsm->addScalarResult('id', 'u', 'integer');
 
         $this->queryCache->put($key, $rsm, $result);
     }

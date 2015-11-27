@@ -354,6 +354,8 @@ Here is the list of possible generation strategies:
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite/SQL Anywhere
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
+-  ``UUID``: Tells Doctrine to use the built-in Universally Unique Identifier
+   generator. This strategy provides full portability.
 -  ``TABLE``: Tells Doctrine to use a separate table for ID
    generation. This strategy provides full portability.
    ***This strategy is not yet implemented!***
@@ -446,7 +448,7 @@ need to access the sequence once to generate the identifiers for
 Composite Keys
 ~~~~~~~~~~~~~~
 
-with Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
+With Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
 one column. Some restrictions exist opposed to using a single identifier in
 this case: The use of the ``@GeneratedValue`` annotation is not supported,
 which means you can only use composite keys if you generate the primary key

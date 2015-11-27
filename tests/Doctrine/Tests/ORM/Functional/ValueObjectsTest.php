@@ -207,6 +207,22 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNull($person->address->zip);
         $this->assertNull($person->address->country);
         $this->assertNull($person->name);
+
+        // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
+        $this->_em->clear();
+    
+        $dql = "SELECT PARTIAL p.{address.city, id} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
+    
+        $person = $this->_em->createQuery($dql)
+            ->setParameter('name', 'Karl')
+            ->getSingleResult();
+        
+        // Selected field must be equal, all other fields must be null.
+        $this->assertEquals('Gosport', $person->address->city);
+        $this->assertNull($person->address->street);
+        $this->assertNull($person->address->zip);
+        $this->assertNull($person->address->country);
+        $this->assertNull($person->name);
     }
 
     public function testDqlWithNonExistentEmbeddableField()

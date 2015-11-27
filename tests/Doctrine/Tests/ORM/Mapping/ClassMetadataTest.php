@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -1124,6 +1125,30 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $classMetadata->wakeupReflection(new RuntimeReflectionService());
 
         $this->assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
+    }
+
+    public function testWakeupReflectionWithEmbeddableAndStaticReflectionService()
+    {
+        $classMetadata = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+
+        $classMetadata->mapEmbedded(array(
+            'fieldName'    => 'test',
+            'class'        => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'columnPrefix' => false,
+        ));
+
+        $field = array(
+            'fieldName' => 'test.embeddedProperty',
+            'type' => 'string',
+            'originalClass' => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'declaredField' => 'test',
+            'originalField' => 'embeddedProperty'
+        );
+
+        $classMetadata->mapField($field);
+        $classMetadata->wakeupReflection(new StaticReflectionService());
+
+        $this->assertEquals(array('test' => null, 'test.embeddedProperty' => null), $classMetadata->getReflectionProperties());
     }
 }
 

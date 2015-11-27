@@ -8,7 +8,6 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 
-
 /**
  * @group DDC-2183
  */

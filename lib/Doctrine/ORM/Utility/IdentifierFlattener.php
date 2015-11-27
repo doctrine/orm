@@ -17,7 +17,6 @@
  * <http://www.doctrine-project.org>.
  */
 
-
 namespace Doctrine\ORM\Utility;
 
 use Doctrine\ORM\UnitOfWork;

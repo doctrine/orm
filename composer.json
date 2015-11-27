@@ -20,10 +20,10 @@
         "doctrine/instantiator": "~1.0.1",
         "doctrine/common": ">=2.5-dev,<2.6-dev",
         "doctrine/cache": "~1.4",
-        "symfony/console": "~2.5"
+        "symfony/console": "~2.5|~3.0"
     },
     "require-dev": {
-        "symfony/yaml": "~2.1",
+        "symfony/yaml": "~2.3|~3.0",
         "phpunit/phpunit": "~4.0",
         "satooshi/php-coveralls": "dev-master"
     },
@@ -31,12 +31,12 @@
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
-        "psr-0": { "Doctrine\\ORM\\": "lib/" }
+        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
     },
     "autoload-dev": {
-        "psr-0": { "Doctrine\\Tests\\": "tests/" }
+        "psr-4": { "Doctrine\\Tests\\": "tests/Doctrine/Tests" }
     },
-    "bin": ["bin/doctrine", "bin/doctrine.php"],
+    "bin": ["bin/doctrine"],
     "extra": {
         "branch-alias": {
             "dev-master": "2.6.x-dev"

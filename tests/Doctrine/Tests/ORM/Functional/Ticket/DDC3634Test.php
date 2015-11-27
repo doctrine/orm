@@ -18,7 +18,7 @@ class DDC3634Test extends OrmFunctionalTestCase {
 
         $metadata = $this->_em->getClassMetadata(DDC3634Entity::CLASSNAME);
 
-        if (! $metadata->idGenerator->isPostInsertGenerator()) {
+        if ( ! $metadata->idGenerator->isPostInsertGenerator()) {
             $this->markTestSkipped('Need a post-insert ID generator in order to make this test work correctly');
         }
 

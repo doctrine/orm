@@ -139,6 +139,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC117\DDC117Editor',
             'Doctrine\Tests\Models\DDC117\DDC117Link',
         ),
+        'ddc3699' => array(
+            'Doctrine\Tests\Models\DDC3699\DDC3699Parent',
+            'Doctrine\Tests\Models\DDC3699\DDC3699RelationOne',
+            'Doctrine\Tests\Models\DDC3699\DDC3699RelationMany',
+            'Doctrine\Tests\Models\DDC3699\DDC3699Child',
+        ),
         'stockexchange' => array(
             'Doctrine\Tests\Models\StockExchange\Bond',
             'Doctrine\Tests\Models\StockExchange\Stock',
@@ -183,6 +189,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\Token',
             'Doctrine\Tests\Models\Cache\Login',
             'Doctrine\Tests\Models\Cache\Client',
+            'Doctrine\Tests\Models\Cache\Person',
+            'Doctrine\Tests\Models\Cache\Address',
             'Doctrine\Tests\Models\Cache\Action',
             'Doctrine\Tests\Models\Cache\ComplexAction',
             'Doctrine\Tests\Models\Cache\AttractionInfo',
@@ -293,7 +301,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function tearDown()
     {
-        $conn     = static::$_sharedConn;
+        $conn = static::$_sharedConn;
+
+        // In case test is skipped, tearDown is called, but no setup may have run
+        if ( ! $conn) {
+            return;
+        }
+
         $platform = $conn->getDatabasePlatform();
 
         $this->_sqlLoggerStack->enabled = false;

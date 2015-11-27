@@ -157,13 +157,15 @@ class EntityGenerator
         Type::DATE          => '\DateTime',
         Type::TIME          => '\DateTime',
         Type::OBJECT        => '\stdClass',
-        Type::BIGINT        => 'integer',
-        Type::SMALLINT      => 'integer',
+        Type::INTEGER       => 'int',
+        Type::BIGINT        => 'int',
+        Type::SMALLINT      => 'int',
         Type::TEXT          => 'string',
         Type::BLOB          => 'string',
         Type::DECIMAL       => 'string',
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
+        Type::BOOLEAN       => 'bool',
     );
 
     /**
@@ -277,10 +279,12 @@ public function <methodName>(<methodTypeHint>$<variableName>)
  * <description>
  *
  * @param <variableType> $<variableName>
+ *
+ * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-<spaces>$this-><fieldName>->removeElement($<variableName>);
+<spaces>return $this-><fieldName>->removeElement($<variableName>);
 }';
 
     /**
@@ -364,7 +368,7 @@ public function __construct(<params>)
         $dir = dirname($path);
 
         if ( ! is_dir($dir)) {
-            mkdir($dir, 0777, true);
+            mkdir($dir, 0775, true);
         }
 
         $this->isNew = !file_exists($path) || (file_exists($path) && $this->regenerateEntityIfExists);
@@ -389,6 +393,7 @@ public function __construct(<params>)
         } elseif ( ! $this->isNew && $this->updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
         }
+        chmod($path, 0664);
     }
 
     /**
@@ -1650,8 +1655,14 @@ public function __construct(<params>)
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
 
-            if (isset($fieldMapping['unsigned']) && $fieldMapping['unsigned']) {
-                $column[] = 'options={"unsigned"=true}';
+            $options = [];
+
+            if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
+                $options[] = '"unsigned"=true';
+            }
+
+            if ($options) {
+                $column[] = 'options={'.implode(',', $options).'}';
             }
 
             if (isset($fieldMapping['columnDefinition'])) {

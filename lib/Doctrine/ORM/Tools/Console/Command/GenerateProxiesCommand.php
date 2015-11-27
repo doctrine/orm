@@ -79,7 +79,7 @@ EOT
         }
 
         if ( ! is_dir($destPath)) {
-            mkdir($destPath, 0777, true);
+            mkdir($destPath, 0775, true);
         }
 
         $destPath = realpath($destPath);

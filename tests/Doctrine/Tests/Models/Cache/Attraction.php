@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Models\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @Cache
+ * @Cache("NONSTRICT_READ_WRITE")
  * @Entity
  * @Table("cache_attraction")
  * @InheritanceType("SINGLE_TABLE")

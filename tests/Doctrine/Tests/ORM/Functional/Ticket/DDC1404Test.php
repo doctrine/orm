@@ -75,7 +75,7 @@ class DDC1404ParentEntity
     protected $id;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

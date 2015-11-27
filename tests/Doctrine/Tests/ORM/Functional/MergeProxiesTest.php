@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Doctrine\Tests\ORM\Functional;
-
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Logging\DebugStack;

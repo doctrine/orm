@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\ORMException;
 use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
@@ -246,12 +247,14 @@ class SchemaTool
             }
 
             $pkColumns = array();
+
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
+
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
@@ -260,6 +263,17 @@ class SchemaTool
 
             if ( ! $table->hasIndex('primary')) {
                 $table->setPrimaryKey($pkColumns);
+            }
+
+            // there can be unique indexes automatically created for join column
+            // if join column is also primary key we should keep only primary key on this column
+            // so, remove indexes overruled by primary key
+            $primaryKey = $table->getIndex('primary');
+
+            foreach ($table->getIndexes() as $idxKey => $existingIndex) {
+                if ($primaryKey->overrules($existingIndex)) {
+                    $table->dropIndex($idxKey);
+                }
             }
 
             if (isset($class->table['indexes'])) {
@@ -274,6 +288,15 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
+                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], isset($indexData['options']) ? $indexData['options'] : []);
+
+                    foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
+                        if ($tableIndex->isFullfilledBy($uniqIndex)) {
+                            $table->dropIndex($tableIndexName);
+                            break;
+                        }
+                    }
+
                     $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, isset($indexData['options']) ? $indexData['options'] : array());
                 }
             }

@@ -7,13 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Query\Parameter;
-
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 
@@ -85,7 +82,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
-        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id');
+        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, 'integer');
 
         $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
         $query->setParameter(1, $addr->id);
@@ -790,5 +787,21 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
         $this->assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string)$rsm);
+    }
+
+    /**
+     * @group DDC-3899
+     */
+    public function testGenerateSelectClauseWithDiscriminatorColumn()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addEntityResult('Doctrine\Tests\Models\DDC3899\DDC3899User', 'u');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\DDC3899\DDC3899FixContract', 'c', 'u', 'contracts');
+        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
+        $rsm->setDiscriminatorColumn('c', $this->platform->getSQLResultCasing('discr'));
+
+        $selectClause = $rsm->generateSelectClause(array('u' => 'u1', 'c' => 'c1'));
+
+        $this->assertSQLEquals('u1.id as id, c1.discr as discr', $selectClause);
     }
 }

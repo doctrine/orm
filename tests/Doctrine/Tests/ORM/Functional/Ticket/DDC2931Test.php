@@ -103,7 +103,7 @@ class DDC2931User
     /**
      * Return Rank recursively
      * My rank is 1 + rank of my parent
-     * @return integer
+     * @return int
      */
     public function getRank()
     {

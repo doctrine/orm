@@ -64,6 +64,16 @@ abstract class AbstractSqlExecutor
     }
 
     /**
+     * Do not use query cache
+     *
+     * @return void
+     */
+    public function removeQueryCacheProfile()
+    {
+        $this->queryCacheProfile = null;
+    }
+
+    /**
      * Executes all sql statements.
      *
      * @param Connection $conn   The database connection that is used to execute the queries.

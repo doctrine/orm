@@ -84,6 +84,34 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->fail($sql);
     }
 
+    /**
+     * @group DDC-3697
+     */
+    public function testJoinWithRangeVariablePutsConditionIntoSqlWhereClause()
+    {
+        $this->assertSqlGeneration(
+            'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
+            'SELECT c0_.id AS id_0 FROM company_persons c0_ INNER JOIN company_persons c1_ WHERE c0_.spouse_id = c1_.id AND c1_.id = 42',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+
+    /**
+     * @group DDC-3697
+     */
+    public function testJoinWithRangeVariableAndInheritancePutsConditionIntoSqlWhereClause()
+    {
+        /*
+         * Basically like the previous test, but this time load data for the inherited objects as well.
+         * The important thing is that the ON clauses in LEFT JOINs only contain the conditions necessary to join the appropriate inheritance table
+         * whereas the filtering condition must remain in the SQL WHERE clause.
+         */
+        $this->assertSqlGeneration(
+            'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
+            'SELECT c0_.id AS id_0 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id WHERE c0_.spouse_id = c3_.id AND c3_.id = 42',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
 
     public function testSupportsSelectForAllFields()
     {
@@ -461,6 +489,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsInstanceOfExpressionInWherePartWithMultipleValues()
     {
+        // This also uses FQCNs starting with or without a backslash in the INSTANCE OF parameter
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF (Doctrine\Tests\Models\Company\CompanyEmployee, \Doctrine\Tests\Models\Company\CompanyManager)",
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('employee', 'manager')"
@@ -1889,18 +1918,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testStripNonAlphanumericCharactersFromAlias()
     {
         $this->assertSqlGeneration(
-            'SELECT e FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity e',
-            'SELECT d0_."simple-entity-id" AS simpleentityid_0, d0_."simple-entity-value" AS simpleentityvalue_1 FROM "ddc-1719-simple-entity" d0_'
+            'SELECT e FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e',
+            'SELECT n0_."simple-entity-id" AS simpleentityid_0, n0_."simple-entity-value" AS simpleentityvalue_1 FROM "not-a-simple-entity" n0_'
         );
 
         $this->assertSqlGeneration(
-            'SELECT e.value FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity e ORDER BY e.value',
-            'SELECT d0_."simple-entity-value" AS simpleentityvalue_0 FROM "ddc-1719-simple-entity" d0_ ORDER BY d0_."simple-entity-value" ASC'
+            'SELECT e.value FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e ORDER BY e.value',
+            'SELECT n0_."simple-entity-value" AS simpleentityvalue_0 FROM "not-a-simple-entity" n0_ ORDER BY n0_."simple-entity-value" ASC'
         );
 
         $this->assertSqlGeneration(
-            'SELECT TRIM(e.value) FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1719SimpleEntity e ORDER BY e.value',
-            'SELECT TRIM(d0_."simple-entity-value") AS sclr_0 FROM "ddc-1719-simple-entity" d0_ ORDER BY d0_."simple-entity-value" ASC'
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e ORDER BY e.value',
+            'SELECT TRIM(n0_."simple-entity-value") AS sclr_0 FROM "not-a-simple-entity" n0_ ORDER BY n0_."simple-entity-value" ASC'
         );
     }
 
@@ -2312,7 +2341,7 @@ class DDC1474Entity
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

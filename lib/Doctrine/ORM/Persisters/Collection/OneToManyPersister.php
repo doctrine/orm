@@ -21,7 +21,9 @@ namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for one-to-many collections.
@@ -38,10 +40,23 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function delete(PersistentCollection $collection)
     {
-        // This can never happen. One to many can only be inverse side.
-        // For owning side one to many, it is required to have a join table,
-        // then classifying it as a ManyToManyPersister.
-        return;
+        // The only valid case here is when you have weak entities. In this
+        // scenario, you have @OneToMany with orphanRemoval=true, and replacing
+        // the entire collection with a new would trigger this operation.
+        $mapping = $collection->getMapping();
+
+        if ( ! $mapping['orphanRemoval']) {
+            // Handling non-orphan removal should never happen, as @OneToMany
+            // can only be inverse side. For owning side one to many, it is
+            // required to have a join table, which would classify as a ManyToManyPersister.
+            return;
+        }
+
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+
+        return $targetClass->isInheritanceTypeJoined()
+            ? $this->deleteJoinedEntityCollection($collection)
+            : $this->deleteEntityCollection($collection);
     }
 
     /**
@@ -180,5 +195,98 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     *
+     * @return int
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function deleteEntityCollection(PersistentCollection $collection)
+    {
+        $mapping     = $collection->getMapping();
+        $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
+        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $columns     = [];
+        $parameters  = [];
+
+        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
+            $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+        }
+
+        $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
+            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+
+        return $this->conn->executeUpdate($statement, $parameters);
+    }
+
+    /**
+     * Delete Class Table Inheritance entities.
+     * A temporary table is needed to keep IDs to be deleted in both parent and child class' tables.
+     *
+     * Thanks Steve Ebersole (Hibernate) for idea on how to tackle reliably this scenario, we owe him a beer! =)
+     *
+     * @param PersistentCollection $collection
+     *
+     * @return int
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function deleteJoinedEntityCollection(PersistentCollection $collection)
+    {
+        $mapping     = $collection->getMapping();
+        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
+
+        // 1) Build temporary table DDL
+        $tempTable         = $this->platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
+        $idColumnNames     = $rootClass->getIdentifierColumnNames();
+        $idColumnList      = implode(', ', $idColumnNames);
+        $columnDefinitions = [];
+
+        foreach ($idColumnNames as $idColumnName) {
+            $columnDefinitions[$idColumnName] = array(
+                'notnull' => true,
+                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
+            );
+        }
+
+        $statement = $this->platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable
+            . ' (' . $this->platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
+
+        $this->conn->executeUpdate($statement);
+
+        // 2) Build insert table records into temporary table
+        $query = $this->em->createQuery(
+            ' SELECT t0.' . implode(', t0.', $rootClass->getIdentifierFieldNames())
+            . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
+        )->setParameter('owner', $collection->getOwner());
+
+        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $query->getSQL();
+        $parameters = array_values($sourceClass->getIdentifierValues($collection->getOwner()));
+        $numDeleted = $this->conn->executeUpdate($statement, $parameters);
+
+        // 3) Delete records on each table in the hierarchy
+        $classNames = array_merge($targetClass->parentClasses, array($targetClass->name), $targetClass->subClasses);
+
+        foreach (array_reverse($classNames) as $className) {
+            $tableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($className), $this->platform);
+            $statement = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnList . ')'
+                . ' IN (SELECT ' . $idColumnList . ' FROM ' . $tempTable . ')';
+
+            $this->conn->executeUpdate($statement);
+        }
+
+        // 4) Drop temporary table
+        $statement = $this->platform->getDropTemporaryTableSQL($tempTable);
+
+        $this->conn->executeUpdate($statement);
+
+        return $numDeleted;
     }
 }

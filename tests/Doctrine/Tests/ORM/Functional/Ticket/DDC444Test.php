@@ -71,5 +71,3 @@ class DDC444User
      */
     public $name;
 }
-
-

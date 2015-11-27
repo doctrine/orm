@@ -120,6 +120,7 @@ abstract class AbstractHydrator
         $this->_hints = $hints;
 
         $evm = $this->_em->getEventManager();
+
         $evm->addEventListener(array(Events::onClear), $this);
 
         $this->prepare();
@@ -398,12 +399,14 @@ abstract class AbstractHydrator
 
             case (isset($this->_rsm->metaMappings[$key])):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
-                $fieldName     = $this->_rsm->metaMappings[$key];
-                $dqlAlias      = $this->_rsm->columnOwnerMap[$key];
-                $classMetadata = $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
-                $type          = isset($this->_rsm->typeMappings[$key])
+                $fieldName = $this->_rsm->metaMappings[$key];
+                $dqlAlias  = $this->_rsm->columnOwnerMap[$key];
+                $type      = isset($this->_rsm->typeMappings[$key])
                     ? Type::getType($this->_rsm->typeMappings[$key])
                     : null;
+
+                // Cache metadata fetch
+                $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
 
                 return $this->_cache[$key] = array(
                     'isIdentifier' => isset($this->_rsm->isIdentifierColumn[$dqlAlias][$key]),

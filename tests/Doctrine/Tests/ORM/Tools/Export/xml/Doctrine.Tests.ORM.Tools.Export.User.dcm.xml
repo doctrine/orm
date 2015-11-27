@@ -24,6 +24,11 @@
 
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
+        <field name="age" type="integer">
+            <options>
+                <option name="unsigned">1</option>
+            </options>
+        </field>
 
         <one-to-one field="address" target-entity="Doctrine\Tests\ORM\Tools\Export\Address" inversed-by="user" orphan-removal="true" fetch="EAGER">
             <cascade><cascade-persist /></cascade>

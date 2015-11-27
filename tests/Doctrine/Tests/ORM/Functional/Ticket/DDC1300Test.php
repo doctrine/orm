@@ -45,7 +45,7 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1300Foo
 {
     /**
-     * @var integer fooID
+     * @var int fooID
      * @Column(name="fooID", type="integer", nullable=false)
      * @GeneratedValue(strategy="AUTO")
      * @Id

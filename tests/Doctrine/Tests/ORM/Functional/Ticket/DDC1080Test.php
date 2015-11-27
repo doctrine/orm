@@ -240,7 +240,7 @@ class DDC1080FooBar
      */
     protected $_bar = null;
     /**
-     * @var integer orderNr
+     * @var int orderNr
      * @Column(name="orderNr", type="integer", nullable=false)
      */
     protected $_orderNr = null;
@@ -292,7 +292,7 @@ class DDC1080FooBar
     /**
      * Retrieve the orderNr property
      *
-     * @return integer|null
+     * @return int|null
      */
     public function getOrderNr()
     {

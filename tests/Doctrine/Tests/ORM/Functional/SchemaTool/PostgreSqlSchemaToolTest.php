@@ -137,7 +137,7 @@ class DDC1657Screen
 {
     /**
      * Identifier
-     * @var integer
+     * @var int
      *
      * @Id
      * @GeneratedValue(strategy="IDENTITY")
@@ -187,7 +187,7 @@ class DDC1657Avatar
 {
     /**
      * Identifier
-     * @var integer
+     * @var int
      *
      * @Id
      * @GeneratedValue(strategy="IDENTITY")

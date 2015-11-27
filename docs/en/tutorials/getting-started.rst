@@ -51,7 +51,7 @@ Entities are PHP Objects that can be identified over many requests
 by a unique identifier or primary key. These classes don't need to extend any
 abstract base class or interface. An entity class must not be final
 or contain final methods. Additionally it must not implement
-**clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
+**clone** nor **wakeup**, unless it `does so safely <../cookbook/implementing-wakeup-or-clone.rst>`_.
 
 An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
@@ -157,7 +157,7 @@ The second block consists of the instantiation of the ORM
 ``Configuration`` object using the Setup helper. It assumes a bunch
 of defaults that you don't have to bother about for now. You can
 read up on the configuration details in the
-:doc:`reference chapter on configuration <../reference/configuration>`.
+`reference chapter on configuration <../reference/configuration.rst>`_.
 
 The third block shows the configuration options required to connect
 to a database, in my case a file-based sqlite database. All the

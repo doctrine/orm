@@ -83,6 +83,20 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     }
 
     /**
+     * check if collection is empty without loading it
+     *
+     * @return boolean TRUE if the collection is empty, FALSE otherwise.
+     */
+    public function isEmpty()
+    {
+        if ($this->isInitialized()) {
+            return $this->collection->isEmpty();
+        }
+
+        return !$this->count();
+    }
+
+    /**
      * Do an optimized search of an element
      *
      * @param  object $element

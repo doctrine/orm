@@ -71,25 +71,25 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             'xml'        => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
             'yaml'       => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
         );
-        $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
-        $class = $mappingDriver[$type];
 
-        if ($type === 'annotation') {
-            $driver = $this->createAnnotationDriver(array($path));
-        } else {
-            $driver = new $class($path);
-        }
+        $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
+
+        $class  = $mappingDriver[$type];
+        $driver = ($type === 'annotation')
+            ? $this->createAnnotationDriver(array($path))
+            : new $class($path);
+
         return $driver;
     }
 
     protected function _createClassMetadataFactory($em, $type)
     {
-        if ($type === 'annotation') {
-            $factory = new ClassMetadataFactory();
-        } else {
-            $factory = new DisconnectedClassMetadataFactory();
-        }
+        $factory = ($type === 'annotation')
+            ? new ClassMetadataFactory()
+            : new DisconnectedClassMetadataFactory();
+
         $factory->setEntityManager($em);
+
         return $factory;
     }
 
@@ -110,11 +110,14 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $type = $this->_getType();
         $cme = new ClassMetadataExporter();
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
+
         if ($type === 'annotation') {
             $entityGenerator = new EntityGenerator();
+
             $entityGenerator->setAnnotationPrefix("");
             $exporter->setEntityGenerator($entityGenerator);
         }
+
         $this->_extension = $exporter->getExtension();
 
         $exporter->setMetadata($metadata);
@@ -206,6 +209,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user_email', $class->fieldMappings['email']['columnName']);
         $this->assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
 
+        $this->assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
+
         return $class;
     }
 
@@ -215,6 +220,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testFieldsAreProperlySerialized()
     {
         $type = $this->_getType();
+
         if ($type == 'xml') {
             $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
 
@@ -224,8 +230,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @unique='true']");
             $this->assertEquals(1, count($nodes));
-        }
-        else {
+        } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }
     }
@@ -361,6 +366,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testCascadeAllCollapsed()
     {
         $type = $this->_getType();
+
         if ($type == 'xml') {
             $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
 
@@ -369,19 +375,18 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             $this->assertEquals(1, count($nodes));
 
             $this->assertEquals('cascade-all', $nodes[0]->getName());
-        } elseif ($type == 'yaml') {
-
+        } else if ($type == 'yaml') {
             $yaml = new \Symfony\Component\Yaml\Parser();
             $value = $yaml->parse(file_get_contents(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
 
             $this->assertTrue(isset($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
             $this->assertEquals(1, count($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
             $this->assertEquals('all', $value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade'][0]);
-
         } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }
     }
+
     public function __destruct()
     {
 #        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
@@ -393,11 +398,13 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             return unlink($path);
         } else if (is_dir($path)) {
             $files = glob(rtrim($path,'/').'/*');
+
             if (is_array($files)) {
                 foreach ($files as $file){
                     $this->_deleteDirectory($file);
                 }
             }
+
             return rmdir($path);
         }
     }

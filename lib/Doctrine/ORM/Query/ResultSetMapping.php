@@ -558,6 +558,8 @@ class ResultSetMapping
      * @param string $type                  The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
+     *
+     * @todo Make all methods of this class require all parameters and not infer anything
      */
     public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
     {

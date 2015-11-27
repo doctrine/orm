@@ -51,7 +51,7 @@ class DDC964User
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -107,7 +107,7 @@ class DDC964User
         $this->address = $address;
     }
 
-    public static function loadMetadata($metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
         $metadata->mapField(array(
            'id'         => true,

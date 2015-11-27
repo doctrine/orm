@@ -157,19 +157,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // However this is only true if the hierarchy of parents contains the root entity,
         // if it consists of mapped superclasses these don't necessarily include the id field.
         if ($parent && $rootEntityFound) {
-            if ($parent->isIdGeneratorSequence()) {
-                $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-            } else if ($parent->isIdGeneratorTable()) {
-                $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
-            }
-
-            if ($parent->generatorType) {
-                $class->setIdGeneratorType($parent->generatorType);
-            }
-
-            if ($parent->idGenerator) {
-                $class->setIdGenerator($parent->idGenerator);
-            }
+            $this->inheritIdGeneratorMapping($class, $parent);
         } else {
             $this->completeIdGeneratorMapping($class);
         }
@@ -195,6 +183,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 if ($embeddableMetadata->isEmbeddedClass) {
                     $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
+                }
+
+                $identifier = $embeddableMetadata->getIdentifier();
+
+                if (! empty($identifier)) {
+                    $this->inheritIdGeneratorMapping($class, $embeddableMetadata);
                 }
 
                 $class->inlineEmbeddable($property, $embeddableMetadata);
@@ -709,6 +703,29 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
+        }
+    }
+
+    /**
+     * Inherits the ID generator mapping from a parent class.
+     *
+     * @param ClassMetadataInfo $class
+     * @param ClassMetadataInfo $parent
+     */
+    private function inheritIdGeneratorMapping(ClassMetadataInfo $class, ClassMetadataInfo $parent)
+    {
+        if ($parent->isIdGeneratorSequence()) {
+            $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
+        } elseif ($parent->isIdGeneratorTable()) {
+            $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
+        }
+
+        if ($parent->generatorType) {
+            $class->setIdGeneratorType($parent->generatorType);
+        }
+
+        if ($parent->idGenerator) {
+            $class->setIdGenerator($parent->idGenerator);
         }
     }
 

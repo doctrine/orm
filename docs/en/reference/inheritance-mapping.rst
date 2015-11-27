@@ -125,9 +125,8 @@ Example:
 Things to note:
 
 
--  The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap
-   must be specified on the topmost class that is part of the mapped
-   entity hierarchy.
+-  The @InheritanceType and @DiscriminatorColumn must be specified 
+   on the topmost class that is part of the mapped entity hierarchy.
 -  The @DiscriminatorMap specifies which values of the
    discriminator column identify a row as being of a certain type. In
    the case above a value of "person" identifies a row as being of
@@ -455,6 +454,7 @@ Things to note:
 -  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
+-  The override could redefine inversedBy to reference more than one extended entity.
 
 Attribute Override
 ~~~~~~~~~~~~~~~~~~~~

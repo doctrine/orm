@@ -26,7 +26,7 @@ class Traveler
     protected $name;
 
     /**
-     * @Cache()
+     * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var \Doctrine\Common\Collections\Collection

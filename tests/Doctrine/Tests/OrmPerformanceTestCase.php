@@ -10,7 +10,7 @@ namespace Doctrine\Tests;
 class OrmPerformanceTestCase extends OrmFunctionalTestCase
 {
     /**
-     * @var integer
+     * @var int
      */
     protected $maxRunningTime = 0;
 
@@ -54,7 +54,7 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
     }
 
     /**
-     * @return integer
+     * @return int
      *
      * @since Method available since Release 2.3.0
      */

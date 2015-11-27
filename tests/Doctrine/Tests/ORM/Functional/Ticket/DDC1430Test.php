@@ -163,7 +163,7 @@ class DDC1430Order
     private $products;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -253,7 +253,7 @@ class DDC1430OrderProduct
     }
 
      /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

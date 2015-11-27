@@ -33,7 +33,7 @@ class DDC869Payment
      */
     protected $id;
 
-    /** @column(type="float") */
+    /** @Column(type="float") */
     protected $value;
 
 

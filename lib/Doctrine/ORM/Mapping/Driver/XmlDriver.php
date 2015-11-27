@@ -384,12 +384,12 @@ class XmlDriver extends FileDriver
                     $mapping['orphanRemoval'] = $this->evaluateBoolean($oneToOneElement['orphan-removal']);
                 }
 
-                $metadata->mapOneToOne($mapping);
-
                 // Evaluate second level cache
                 if (isset($oneToOneElement->cache)) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToOneElement->cache));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($oneToOneElement->cache));
                 }
+
+                $metadata->mapOneToOne($mapping);
             }
         }
 
@@ -428,12 +428,12 @@ class XmlDriver extends FileDriver
                     throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
-                $metadata->mapOneToMany($mapping);
-
                 // Evaluate second level cache
                 if (isset($oneToManyElement->cache)) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($oneToManyElement->cache));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($oneToManyElement->cache));
                 }
+
+                $metadata->mapOneToMany($mapping);
             }
         }
 
@@ -473,12 +473,13 @@ class XmlDriver extends FileDriver
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement->cascade);
                 }
 
-                $metadata->mapManyToOne($mapping);
-
                 // Evaluate second level cache
                 if (isset($manyToOneElement->cache)) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToOneElement->cache));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($manyToOneElement->cache));
                 }
+
+                $metadata->mapManyToOne($mapping);
+
             }
         }
 
@@ -543,12 +544,12 @@ class XmlDriver extends FileDriver
                     throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
-                $metadata->mapManyToMany($mapping);
-
                 // Evaluate second level cache
                 if (isset($manyToManyElement->cache)) {
-                    $metadata->enableAssociationCache($mapping['fieldName'], $this->cacheToArray($manyToManyElement->cache));
+                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($manyToManyElement->cache));
                 }
+
+                $metadata->mapManyToMany($mapping);
             }
         }
 
@@ -602,6 +603,11 @@ class XmlDriver extends FileDriver
                     }
 
                     $override['joinTable'] = $joinTable;
+                }
+
+                // Check for inversed-by
+                if (isset($overrideElement->{'inversed-by'})) {
+                    $override['inversedBy'] = (string) $overrideElement->{'inversed-by'}['name'];
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);

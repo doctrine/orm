@@ -89,7 +89,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $this->_getQuery()->setHint(
             self::IDENTIFIER_TYPE,
-            Type::getType($rootClass->getTypeOfField($identifier))
+            Type::getType($rootClass->fieldMappings[$identifier]['type'])
         );
 
         $pathExpression = new PathExpression(
@@ -97,9 +97,11 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             $rootAlias,
             $identifier
         );
+
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
         array_unshift($selectExpressions, new SelectExpression($pathExpression, '_dctrn_id'));
+
         $AST->selectClause->selectExpressions = $selectExpressions;
 
         if (isset($AST->orderByClause)) {
