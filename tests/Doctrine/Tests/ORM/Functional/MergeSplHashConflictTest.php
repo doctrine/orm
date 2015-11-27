@@ -4,8 +4,9 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class MergeSplHashConflict extends \Doctrine\Tests\OrmFunctionalTestCase
+class MergeSplHashConflictTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -25,9 +26,13 @@ class MergeSplHashConflict extends \Doctrine\Tests\OrmFunctionalTestCase
         $mergedUser = $this->_em->merge($user);
         unset($user);
 
-        $this->assertTrue(false);
+        $uow = $this->_em->getUnitOfWork();
+        $reflexion = new \ReflectionClass(get_class($uow));
+        $property = $reflexion->getProperty('originalEntityData');
+        $property->setAccessible(true);
+        $originalEntityData = $property->getValue($uow);
 
         // As $user is unset, $hash could be reused by spl_object_hash
-        $this->assertEquals(["gdhs"], $this->_em->getUnitOfWork()->getOriginalEntityDataByOid($hash));
+        $this->assertArrayNotHasKey($hash, $originalEntityData);
     }
 }
