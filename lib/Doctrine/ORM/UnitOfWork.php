@@ -1866,7 +1866,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($class->isVersioned) {
+            if ($class->isVersioned && !($this->isNotInitializedProxy($managedCopy) || $this->isNotInitializedProxy($entity))) {
                 $reflField          = $class->reflFields[$class->versionField];
                 $managedCopyVersion = $reflField->getValue($managedCopy);
                 $entityVersion      = $reflField->getValue($entity);
@@ -1902,6 +1902,18 @@ class UnitOfWork implements PropertyChangedListener
         $this->cascadeMerge($entity, $managedCopy, $visited);
 
         return $managedCopy;
+    }
+
+    /**
+     * Tests if an entity is a non initialized proxy class
+     *
+     * @param $entity
+     *
+     * @return bool
+     */
+    private function isNotInitializedProxy($entity)
+    {
+        return $entity instanceof Proxy && !$entity->__isInitialized();
     }
 
     /**
