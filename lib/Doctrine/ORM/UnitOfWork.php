@@ -3273,16 +3273,18 @@ class UnitOfWork implements PropertyChangedListener
             $persister->afterTransactionRolledBack();
         });
     }
-    
+
     /**
      * Performs an action after the transaction.
+     *
+     * @param callable $callback
      */
     private function doAfterTransaction(callable $callback)
     {
-        if (!$this->hasCache) {
+        if ( ! $this->hasCache) {
             return;
         }
-        
+
         foreach (array_merge($this->persisters, $this->collectionPersisters) as $persister) {
             if ($persister instanceof CachedPersister) {
                 call_user_func($callback, $persister);
