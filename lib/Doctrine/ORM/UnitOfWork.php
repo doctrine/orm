@@ -3259,7 +3259,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionComplete()
     {
-        $this->doAfterTransaction(function (CachedPersister $persister) {
+        $this->performCallbackOnCachedPersister(function (CachedPersister $persister) {
             $persister->afterTransactionComplete();
         });
     }
@@ -3269,7 +3269,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionRolledBack()
     {
-        $this->doAfterTransaction(function (CachedPersister $persister) {
+        $this->performCallbackOnCachedPersister(function (CachedPersister $persister) {
             $persister->afterTransactionRolledBack();
         });
     }
@@ -3279,7 +3279,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param callable $callback
      */
-    private function doAfterTransaction(callable $callback)
+    private function performCallbackOnCachedPersister(callable $callback)
     {
         if ( ! $this->hasCache) {
             return;
