@@ -3259,21 +3259,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionComplete()
     {
-        if ( ! $this->hasCache) {
-            return;
-        }
-
-        foreach ($this->persisters as $persister) {
-            if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionComplete();
-            }
-        }
-
-        foreach ($this->collectionPersisters as $persister) {
-            if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionComplete();
-            }
-        }
+        $this->doAfterTransaction(function (CachedPersister $persister) {
+            $persister->afterTransactionComplete();
+        });
     }
 
     /**
@@ -3281,19 +3269,23 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionRolledBack()
     {
-        if ( ! $this->hasCache) {
+        $this->doAfterTransaction(function (CachedPersister $persister) {
+            $persister->afterTransactionRolledBack();
+        });
+    }
+    
+    /**
+     * Performs an action after the transaction.
+     */
+    private function doAfterTransaction(callable $callback)
+    {
+        if (!$this->hasCache) {
             return;
         }
-
-        foreach ($this->persisters as $persister) {
+        
+        foreach (array_merge($this->persisters, $this->collectionPersisters) as $persister) {
             if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionRolledBack();
-            }
-        }
-
-        foreach ($this->collectionPersisters as $persister) {
-            if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionRolledBack();
+                call_user_func($callback, $persister);
             }
         }
     }
