@@ -213,14 +213,6 @@ class UnitOfWork implements PropertyChangedListener
     private $em;
 
     /**
-     * The calculator used to calculate the order in which changes to
-     * entities need to be written to the database.
-     *
-     * @var \Doctrine\ORM\Internal\CommitOrderCalculator
-     */
-    private $commitOrderCalculator;
-
-    /**
      * The entity persister instances used to persist entity instances.
      *
      * @var array
@@ -1138,11 +1130,11 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($entityChangeSet as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
-            if ($calc->hasClass($class->name)) {
+            if ($calc->hasNode($class->name)) {
                 continue;
             }
 
-            $calc->addClass($class);
+            $calc->addNode($class->name, $class);
 
             $newNodes[] = $class;
         }
@@ -1156,13 +1148,16 @@ class UnitOfWork implements PropertyChangedListener
 
                 $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
-                if ( ! $calc->hasClass($targetClass->name)) {
-                    $calc->addClass($targetClass);
+                if ( ! $calc->hasNode($targetClass->name)) {
+                    $calc->addNode($targetClass->name, $targetClass);
 
                     $newNodes[] = $targetClass;
                 }
 
-                $calc->addDependency($targetClass, $class);
+                $joinColumns = reset($assoc['joinColumns']);
+                $isNullable  = isset($joinColumns['nullable']) ? $joinColumns['nullable'] : false;
+
+                $calc->addDependency($targetClass->name, $class->name, $isNullable ? 0 : 1);
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
@@ -1172,18 +1167,18 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($targetClass->subClasses as $subClassName) {
                     $targetSubClass = $this->em->getClassMetadata($subClassName);
 
-                    if ( ! $calc->hasClass($subClassName)) {
-                        $calc->addClass($targetSubClass);
+                    if ( ! $calc->hasNode($subClassName)) {
+                        $calc->addNode($targetSubClass->name, $targetSubClass);
 
                         $newNodes[] = $targetSubClass;
                     }
 
-                    $calc->addDependency($targetSubClass, $class);
+                    $calc->addDependency($targetSubClass->name, $class->name, 1);
                 }
             }
         }
 
-        return $calc->getCommitOrder();
+        return $calc->sort();
     }
 
     /**
@@ -2354,11 +2349,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getCommitOrderCalculator()
     {
-        if ($this->commitOrderCalculator === null) {
-            $this->commitOrderCalculator = new Internal\CommitOrderCalculator;
-        }
-
-        return $this->commitOrderCalculator;
+        return new Internal\CommitOrderCalculator();
     }
 
     /**
@@ -2386,10 +2377,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->readOnlyObjects =
             $this->visitedCollections =
             $this->orphanRemovals = array();
-
-            if ($this->commitOrderCalculator !== null) {
-                $this->commitOrderCalculator->clear();
-            }
         } else {
             $visited = array();
 
