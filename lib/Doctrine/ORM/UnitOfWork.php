@@ -3287,7 +3287,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach (array_merge($this->persisters, $this->collectionPersisters) as $persister) {
             if ($persister instanceof CachedPersister) {
-                call_user_func($callback, $persister);
+                $callback($persister);
             }
         }
     }
