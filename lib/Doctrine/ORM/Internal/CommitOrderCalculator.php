@@ -162,7 +162,8 @@ class CommitOrderCalculator
                     break;
 
                 case self::IN_PROGRESS:
-                    if ($adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
+                    if (isset($adjacentVertex->dependencyList[$vertex->hash]) && 
+                        $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
                         $adjacentVertex->state = self::VISITED;
 
                         $this->sortedNodeList[] = $adjacentVertex->value;
