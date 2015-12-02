@@ -487,45 +487,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals(4, $gblanco2->getPhonenumbers()->count());
     }
 
-    public function testSetSetAssociationWithGetReference()
-    {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
-        $user->username = 'gblanco';
-        $user->status = 'developer';
-        $this->em->persist($user);
-
-        $address = new CmsAddress;
-        $address->country = 'Germany';
-        $address->city = 'Berlin';
-        $address->zip = '12345';
-        $this->em->persist($address);
-
-        $this->em->flush();
-        $this->em->detach($address);
-
-        self::assertFalse($this->em->contains($address));
-        self::assertTrue($this->em->contains($user));
-
-        // Assume we only got the identifier of the address and now want to attach
-        // that address to the user without actually loading it, using getReference().
-        $addressRef = $this->em->getReference(CmsAddress::class, $address->getId());
-
-        $user->setAddress($addressRef); // Ugh! Initializes address 'cause of $address->setUser($user)!
-
-        $this->em->flush();
-        $this->em->clear();
-
-        // Check with a fresh load that the association is indeed there
-        $query = $this->em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a where u.username='gblanco'");
-        $gblanco = $query->getSingleResult();
-
-        self::assertInstanceOf(CmsUser::class, $gblanco);
-        self::assertInstanceOf(CmsAddress::class, $gblanco->getAddress());
-        self::assertEquals('Berlin', $gblanco->getAddress()->getCity());
-
-    }
-
     public function testOneToManyCascadeRemove()
     {
         $user = new CmsUser;
