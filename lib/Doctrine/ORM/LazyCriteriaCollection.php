@@ -116,9 +116,27 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      */
     public function matching(Criteria $criteria)
     {
-        $this->initialize();
+        if ($this->isInitialized()) {
+            return $this->collection->matching($criteria);
+        }
 
-        return $this->collection->matching($criteria);
+        $mergedCriteria = clone $this->criteria;
+
+        if (null !== $criteria->getWhereExpression()) {
+            $mergedCriteria->andWhere($criteria->getWhereExpression());
+        }
+
+        if (null !== $criteria->getFirstResult()) {
+            $mergedCriteria->setFirstResult($criteria->getFirstResult());
+        }
+
+        if (null !== $criteria->getMaxResults()) {
+            $mergedCriteria->setMaxResults($criteria->getMaxResults());
+        }
+
+        $mergedCriteria->orderBy($criteria->getOrderings());
+
+        return new self($this->entityPersister, $mergedCriteria);
     }
 
     /**

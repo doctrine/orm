@@ -78,30 +78,25 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
     public function testMatchingUsesThePersisterOnlyOnce()
     {
         $foo = new stdClass();
-        $bar = new stdClass();
-        $baz = new stdClass();
 
         $foo->val = 'foo';
-        $bar->val = 'bar';
-        $baz->val = 'baz';
-
-        $this
-            ->persister
-            ->expects($this->once())
-            ->method('loadCriteria')
-            ->with($this->criteria)
-            ->will($this->returnValue(array($foo, $bar, $baz)));
 
         $criteria = new Criteria();
 
         $criteria->andWhere($criteria->expr()->eq('val', 'foo'));
 
+        $this
+            ->persister
+            ->expects($this->once())
+            ->method('loadCriteria')
+            ->with($criteria)
+            ->will($this->returnValue(array($foo)));
+
         $filtered = $this->lazyCriteriaCollection->matching($criteria);
 
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $filtered);
         $this->assertEquals(array($foo), $filtered->toArray());
-
-        $this->assertEquals(array($foo), $this->lazyCriteriaCollection->matching($criteria)->toArray());
+        $this->assertEquals(array($foo), $filtered->matching($criteria)->toArray());
     }
 
     public function testIsEmptyUsesCountWhenNotInitialized()
@@ -133,5 +128,92 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
 
         $this->assertFalse($this->lazyCriteriaCollection->isEmpty());
+    }
+
+    public function testCanMatchTwiceWithoutInitializing()
+    {
+        $foo = new stdClass();
+
+        $foo->val = 'foo';
+
+        $criteria = new Criteria();
+
+        $criteria->andWhere($criteria->expr()->eq('val', 'foo'));
+
+        $this
+            ->persister
+            ->expects($this->never())
+            ->method('loadCriteria');
+
+        $filtered1 = $this->lazyCriteriaCollection->matching($criteria);
+        $filtered2 = $filtered1->matching($criteria);
+
+        $this->assertFalse($filtered1->isInitialized());
+        $this->assertFalse($filtered2->isInitialized());
+        $this->assertNotSame($filtered1, $filtered2);
+    }
+
+    public function testSetsFirstResultFromProvidedCriteria()
+    {
+        $criteria = $this->getMock('Doctrine\Common\Collections\Criteria');
+
+        $criteria
+            ->expects($this->exactly(2))
+            ->method('getFirstResult')
+            ->willReturn(1);
+
+        $criteria
+            ->expects($this->any())
+            ->method('setFirstResult')
+            ->with(1);
+
+        $criteria
+            ->expects($this->once())
+            ->method('getOrderings')
+            ->willReturn([]);
+
+        $criteria
+            ->expects($this->any())
+            ->method('orderBy')
+            ->with([]);
+
+        $this
+            ->persister
+            ->expects($this->never())
+            ->method('loadCriteria');
+
+        $this->lazyCriteriaCollection->matching($criteria);
+    }
+
+    public function testSetsMaxResultsFromProvidedCriteria()
+    {
+        $criteria = $this->getMock('Doctrine\Common\Collections\Criteria');
+
+        $criteria
+            ->expects($this->exactly(2))
+            ->method('getMaxResults')
+            ->willReturn(1);
+
+        $criteria
+            ->expects($this->any())
+            ->method('setMaxResults')
+            ->with(1);
+
+        $criteria
+            ->expects($this->once())
+            ->method('getOrderings')
+            ->willReturn([]);
+
+        $criteria
+            ->expects($this->any())
+            ->method('orderBy')
+            ->with([]);
+
+        $this
+            ->persister
+            ->expects($this->never())
+            ->method('loadCriteria');
+
+        $this->lazyCriteriaCollection->matching($criteria);
     }
 }
