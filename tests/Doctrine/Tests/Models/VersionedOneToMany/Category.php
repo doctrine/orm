@@ -5,7 +5,6 @@ namespace Doctrine\Tests\Models\VersionedOneToMany;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- *
  * @Entity
  * @Table(name="category")
  */
@@ -38,12 +37,9 @@ class Category
 
     /**
      * Category constructor.
-     *
      */
     public function __construct()
     {
         $this->articles = new ArrayCollection();
     }
-
-
 }
