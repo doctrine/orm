@@ -159,6 +159,7 @@ The following example shows how to do this:
 Iterating Large Results for Data-Processing
 -------------------------------------------
 
+@TODO - we probably want to suggest complete clear() operations (or rely on L2 cache instead)
 You can use the ``iterate()`` method just to iterate over a large
 result and no UPDATE or DELETE intention. The ``IterableResult``
 instance returned from ``$query->iterate()`` implements the
