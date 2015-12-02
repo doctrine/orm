@@ -1696,65 +1696,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Detaches an entity from the persistence management. It's persistence will
-     * no longer be managed by Doctrine.
-     *
-     * @param object $entity The entity to detach.
-     *
-     * @return void
-     */
-    public function detach($entity)
-    {
-        $visited = [];
-
-        $this->doDetach($entity, $visited);
-    }
-
-    /**
-     * Executes a detach operation on the given entity.
-     *
-     * @param object  $entity
-     * @param array   $visited
-     * @param boolean $noCascade if true, don't cascade detach operation.
-     *
-     * @return void
-     */
-    private function doDetach($entity, array &$visited, $noCascade = false)
-    {
-        $oid = spl_object_hash($entity);
-
-        if (isset($visited[$oid])) {
-            return; // Prevent infinite recursion
-        }
-
-        $visited[$oid] = $entity; // mark visited
-
-        switch ($this->getEntityState($entity, self::STATE_DETACHED)) {
-            case self::STATE_MANAGED:
-                if ($this->isInIdentityMap($entity)) {
-                    $this->removeFromIdentityMap($entity);
-                }
-
-                unset(
-                    $this->entityInsertions[$oid],
-                    $this->entityUpdates[$oid],
-                    $this->entityDeletions[$oid],
-                    $this->entityIdentifiers[$oid],
-                    $this->entityStates[$oid],
-                    $this->originalEntityData[$oid]
-                );
-                break;
-            case self::STATE_NEW:
-            case self::STATE_DETACHED:
-                return;
-        }
-
-        if ( ! $noCascade) {
-            $this->cascadeDetach($entity, $visited);
-        }
-    }
-
-    /**
      * Refreshes the state of the given entity from the database, overwriting
      * any local, unpersisted changes.
      *
@@ -1839,48 +1780,6 @@ class UnitOfWork implements PropertyChangedListener
 
                 case ($relatedEntities !== null):
                     $this->doRefresh($relatedEntities, $visited);
-                    break;
-
-                default:
-                    // Do nothing
-            }
-        }
-    }
-
-    /**
-     * Cascades a detach operation to associated entities.
-     *
-     * @param object $entity
-     * @param array  $visited
-     *
-     * @return void
-     */
-    private function cascadeDetach($entity, array &$visited)
-    {
-        $class = $this->em->getClassMetadata(get_class($entity));
-
-        foreach ($class->getDeclaredPropertiesIterator() as $association) {
-            if (! ($association instanceof AssociationMetadata && in_array('detach', $association->getCascade()))) {
-                continue;
-            }
-
-            $relatedEntities = $association->getValue($entity);
-
-            switch (true) {
-                case ($relatedEntities instanceof PersistentCollection):
-                    // Unwrap so that foreach() does not initialize
-                    $relatedEntities = $relatedEntities->unwrap();
-                    // break; is commented intentionally!
-
-                case ($relatedEntities instanceof Collection):
-                case (is_array($relatedEntities)):
-                    foreach ($relatedEntities as $relatedEntity) {
-                        $this->doDetach($relatedEntity, $visited);
-                    }
-                    break;
-
-                case ($relatedEntities !== null):
-                    $this->doDetach($relatedEntities, $visited);
                     break;
 
                 default:
