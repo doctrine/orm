@@ -43,6 +43,7 @@ the session into a managed Doctrine object looks like this:
 Serializing entity into the session
 -----------------------------------
 
+@TODO: this section needs clarification/removal (or be moved to known limitations)
 Entities that are serialized into the session normally contain references to
 other entities as well. Think of the user entity has a reference to his
 articles, groups, photos or many other different entities. If you serialize
