@@ -698,29 +698,6 @@ final class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * Merges the state of a detached entity into the persistence context
-     * of this EntityManager and returns the managed copy of the entity.
-     * The entity passed to merge will not become associated/managed with this EntityManager.
-     *
-     * @param object $entity The detached entity to merge into the persistence context.
-     *
-     * @return object The managed copy of the entity.
-     *
-     * @throws ORMInvalidArgumentException
-     * @throws ORMException
-     */
-    public function merge($entity)
-    {
-        if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
-        }
-
-        $this->errorIfClosed();
-
-        return $this->unitOfWork->merge($entity);
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
