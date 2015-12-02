@@ -326,6 +326,7 @@ in multiple ways with very different performance impacts.
 Detaching entities
 ------------------
 
+@TODO section needs removal/rework
 An entity is detached from an EntityManager and thus no longer
 managed by invoking the ``EntityManager#detach($entity)`` method on
 it or by cascading the detach operation to it. Changes made to the
