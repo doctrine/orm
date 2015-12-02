@@ -29,8 +29,8 @@ class MergeVersionedOneToManyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * This test case tests that a versionable entity, that has a oneToOne relationship as it's id can be created
-     *  without this bug fix (DDC-3318), you could not do this
+     * This test case asserts that a detached and unmodified entity could be merge without firing
+     * OptimisticLockException.
      */
     public function testSetVersionOnCreate()
     {

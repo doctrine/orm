@@ -5,7 +5,6 @@ namespace Doctrine\Tests\Models\VersionedOneToMany;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- *
  * @Entity
  * @Table(name="article")
  */
@@ -38,7 +37,6 @@ class Article
 
     /**
      * Category constructor.
-     *
      */
     public function __construct()
     {
