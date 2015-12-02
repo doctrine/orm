@@ -676,28 +676,6 @@ final class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * Detaches an entity from the EntityManager, causing a managed entity to
-     * become detached.  Unflushed changes made to the entity if any
-     * (including removal of the entity), will not be synchronized to the database.
-     * Entities which previously referenced the detached entity will continue to
-     * reference it.
-     *
-     * @param object $entity The entity to detach.
-     *
-     * @return void
-     *
-     * @throws ORMInvalidArgumentException
-     */
-    public function detach($entity)
-    {
-        if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
-        }
-
-        $this->unitOfWork->detach($entity);
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
