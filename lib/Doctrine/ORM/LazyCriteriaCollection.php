@@ -134,7 +134,10 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             $mergedCriteria->setMaxResults($criteria->getMaxResults());
         }
 
-        $mergedCriteria->orderBy($criteria->getOrderings());
+        $mergedCriteria->orderBy(array_merge(
+            $this->criteria->getOrderings(),
+            $criteria->getOrderings()
+        ));
 
         return new self($this->entityPersister, $mergedCriteria);
     }
