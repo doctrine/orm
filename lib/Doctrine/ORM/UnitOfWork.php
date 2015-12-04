@@ -1866,7 +1866,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($class->isVersioned && !($this->isNotInitializedProxy($managedCopy) || $this->isNotInitializedProxy($entity))) {
+            if ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
                 $reflField          = $class->reflFields[$class->versionField];
                 $managedCopyVersion = $reflField->getValue($managedCopy);
                 $entityVersion      = $reflField->getValue($entity);
@@ -1879,7 +1879,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $visited[$oid] = $managedCopy; // mark visited
 
-            if (!($entity instanceof Proxy && ! $entity->__isInitialized())) {
+            if ($this->isLoaded($entity)) {
                 if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized()) {
                     $managedCopy->__load();
                 }
@@ -1905,15 +1905,15 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Tests if an entity is a non initialized proxy class
+     * Tests if an entity is loaded (Not a proxy or a non initialized proxy)
      *
      * @param $entity
      *
      * @return bool
      */
-    private function isNotInitializedProxy($entity)
+    private function isLoaded($entity)
     {
-        return $entity instanceof Proxy && !$entity->__isInitialized();
+        return !($entity instanceof Proxy) || $entity->__isInitialized();
     }
 
     /**
