@@ -123,45 +123,9 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
-        if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
-                $initializer = $proxy->__getInitializer();
-                $cloner      = $proxy->__getCloner();
+        $wakeupProxy = $classMetadata->getReflectionClass()->hasMethod('__wakeup');
 
-                $proxy->__setInitializer(null);
-                $proxy->__setCloner(null);
-
-                if ($proxy->__isInitialized()) {
-                    return;
-                }
-
-                $properties = $proxy->__getLazyProperties();
-
-                foreach ($properties as $propertyName => $property) {
-                    if ( ! isset($proxy->$propertyName)) {
-                        $proxy->$propertyName = $properties[$propertyName];
-                    }
-                }
-
-                $proxy->__setInitialized(true);
-                $proxy->__wakeup();
-
-                $identifier = $classMetadata->getIdentifierValues($proxy);
-
-                if (null === $entityPersister->loadById($identifier, $proxy)) {
-                    $proxy->__setInitializer($initializer);
-                    $proxy->__setCloner($cloner);
-                    $proxy->__setInitialized(false);
-
-                    throw EntityNotFoundException::fromClassNameAndIdentifier(
-                        $classMetadata->getName(),
-                        $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
-                    );
-                }
-            };
-        }
-
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $wakeupProxy) {
             $initializer = $proxy->__getInitializer();
             $cloner      = $proxy->__getCloner();
 
@@ -175,12 +139,16 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if (!isset($proxy->$propertyName)) {
+                if ( ! isset($proxy->$propertyName)) {
                     $proxy->$propertyName = $properties[$propertyName];
                 }
             }
 
             $proxy->__setInitialized(true);
+
+            if ($wakeupProxy) {
+                $proxy->__wakeup();
+            }
 
             $identifier = $classMetadata->getIdentifierValues($proxy);
 
