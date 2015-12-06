@@ -102,9 +102,9 @@ class ConvertDoctrine1SchemaCommand extends Command
     {
         $this
         ->setName('orm:convert-d1-schema')
-        ->setAliases(array('orm:convert:d1-schema'))
+        ->setAliases(['orm:convert:d1-schema'])
         ->setDescription('Converts Doctrine 1.X schema into a Doctrine 2.X schema.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputArgument(
                 'from-path', InputArgument::REQUIRED, 'The path of Doctrine 1.X schema information.'
             ),
@@ -118,7 +118,7 @@ class ConvertDoctrine1SchemaCommand extends Command
             new InputOption(
                 'from', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Optional paths of Doctrine 1.X schema information.',
-                array()
+                []
             ),
             new InputOption(
                 'extend', null, InputOption::VALUE_OPTIONAL,
@@ -128,7 +128,7 @@ class ConvertDoctrine1SchemaCommand extends Command
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
             )
-        ))
+        ])
         ->setHelp(<<<EOT
 Converts Doctrine 1.X schema into a Doctrine 2.X schema.
 EOT
@@ -141,7 +141,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Process source directories
-        $fromPaths = array_merge(array($input->getArgument('from-path')), $input->getOption('from'));
+        $fromPaths = array_merge([$input->getArgument('from-path')], $input->getOption('from'));
 
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));

@@ -48,5 +48,5 @@ final class Table implements Annotation
     /**
      * @var array
      */
-    public $options = array();
+    public $options = [];
 }

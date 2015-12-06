@@ -27,7 +27,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * @var TreeWalker[]
      */
-    private $walkers = array();
+    private $walkers = [];
     /**
      * @var TreeWalkerChain
      */

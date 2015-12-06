@@ -35,7 +35,7 @@ class CoalesceExpression extends Node
     /**
      * @var array
      */
-    public $scalarExpressions = array();
+    public $scalarExpressions = [];
 
     /**
      * @param array $scalarExpressions

@@ -47,9 +47,9 @@ class GenerateEntitiesCommand extends Command
     {
         $this
         ->setName('orm:generate-entities')
-        ->setAliases(array('orm:generate:entities'))
+        ->setAliases(['orm:generate:entities'])
         ->setDescription('Generate entity classes and method stubs from your mapping information.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match entities that should be processed.'
@@ -85,7 +85,7 @@ class GenerateEntitiesCommand extends Command
                 'no-backup', null, InputOption::VALUE_NONE,
                 'Flag to define if generator should avoid backuping existing entity file if it exists.'
             )
-        ))
+        ])
         ->setHelp(<<<EOT
 Generate entity classes and method stubs from your mapping information.
 

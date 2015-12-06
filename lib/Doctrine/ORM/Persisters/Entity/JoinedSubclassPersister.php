@@ -46,14 +46,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @var array
      */
-    private $owningTableMap = array();
+    private $owningTableMap = [];
 
     /**
      * Map of table to quoted table names.
      *
      * @var array
      */
-    private $quotedTableMap = array();
+    private $quotedTableMap = [];
 
     /**
      * {@inheritdoc}
@@ -128,10 +128,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function executeInserts()
     {
         if ( ! $this->queuedInserts) {
-            return array();
+            return [];
         }
 
-        $postInsertIds  = array();
+        $postInsertIds  = [];
         $idGenerator    = $this->class->idGenerator;
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
         $rootClass      = ($this->class->name !== $this->class->rootEntityName)
@@ -144,7 +144,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $rootTableStmt = $this->conn->prepare($rootPersister->getInsertSQL());
 
         // Prepare statements for sub tables.
-        $subTableStmts = array();
+        $subTableStmts = [];
 
         if ($rootClass !== $this->class) {
             $subTableStmts[$this->class->getTableName()] = $this->conn->prepare($this->getInsertSQL());
@@ -177,13 +177,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if ($isPostInsertId) {
                 $generatedId = $idGenerator->generate($this->em, $entity);
-                $id = array(
+                $id = [
                     $this->class->identifier[0] => $generatedId
-                );
-                $postInsertIds[] = array(
+                ];
+                $postInsertIds[] = [
                     'generatedId' => $generatedId,
                     'entity' => $entity,
-                );
+                ];
             } else {
                 $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
             }
@@ -199,7 +199,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $paramIndex = 1;
                 $data       = isset($insertData[$tableName])
                     ? $insertData[$tableName]
-                    : array();
+                    : [];
 
                 foreach ((array) $id as $idName => $idVal) {
                     $type = isset($this->columnTypes[$idName]) ? $this->columnTypes[$idName] : Type::STRING;
@@ -223,7 +223,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $stmt->closeCursor();
         }
 
-        $this->queuedInserts = array();
+        $this->queuedInserts = [];
 
         return $postInsertIds;
     }
@@ -259,7 +259,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if ( ! isset($updateData[$versionedTable])) {
                 $tableName = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
 
-                $this->updateTable($entity, $tableName, array(), true);
+                $this->updateTable($entity, $tableName, [], true);
             }
 
             $identifiers = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
@@ -370,7 +370,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritDoc}
      */
-    public function getCountSQL($criteria = array())
+    public function getCountSQL($criteria = [])
     {
         $tableName      = $this->quoteStrategy->getTableName($this->class, $this->platform);
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
@@ -407,7 +407,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
-            $conditions     = array();
+            $conditions     = [];
             $tableAlias     = $this->getSQLTableAlias($parentClassName);
             $parentClass    = $this->em->getClassMetadata($parentClassName);
             $joinSql       .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
@@ -434,7 +434,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
-        $columnList         = array();
+        $columnList         = [];
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $discrColumnType    = $this->class->discriminatorColumn['type'];
         $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
@@ -546,7 +546,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Identifier columns must always come first in the column list of subclasses.
         $columns = $this->class->parentClasses
             ? $this->class->getIdentifierColumnNames()
-            : array();
+            : [];
 
         foreach ($this->class->reflFields as $name => $field) {
             if (isset($this->class->fieldMappings[$name]['inherited'])
@@ -599,7 +599,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
-            $conditions   = array();
+            $conditions   = [];
             $parentClass  = $this->em->getClassMetadata($parentClassName);
             $tableAlias   = $this->getSQLTableAlias($parentClassName);
             $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
@@ -614,7 +614,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // OUTER JOIN sub tables
         foreach ($this->class->subClasses as $subClassName) {
-            $conditions  = array();
+            $conditions  = [];
             $subClass    = $this->em->getClassMetadata($subClassName);
             $tableAlias  = $this->getSQLTableAlias($subClassName);
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';

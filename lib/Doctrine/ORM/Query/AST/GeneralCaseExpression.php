@@ -35,7 +35,7 @@ class GeneralCaseExpression extends Node
     /**
      * @var array
      */
-    public $whenClauses = array();
+    public $whenClauses = [];
 
     /**
      * @var mixed

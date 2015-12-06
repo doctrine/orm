@@ -126,7 +126,7 @@ class XmlExporter extends AbstractExporter
 
         $fields = $metadata->fieldMappings;
 
-        $id = array();
+        $id = [];
         foreach ($fields as $name => $field) {
             if (isset($field['id']) && $field['id']) {
                 $id[$name] = $field;
@@ -136,10 +136,10 @@ class XmlExporter extends AbstractExporter
 
         foreach ($metadata->associationMappings as $name => $assoc) {
             if (isset($assoc['id']) && $assoc['id']) {
-                $id[$name] = array(
+                $id[$name] = [
                     'fieldName' => $name,
                     'associationKey' => true
-                );
+                ];
             }
         }
 
@@ -225,12 +225,12 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        $orderMap = array(
+        $orderMap = [
             ClassMetadataInfo::ONE_TO_ONE,
             ClassMetadataInfo::ONE_TO_MANY,
             ClassMetadataInfo::MANY_TO_ONE,
             ClassMetadataInfo::MANY_TO_MANY,
-        );
+        ];
 
         uasort($metadata->associationMappings, function($m1, $m2) use (&$orderMap){
             $a1 = array_search($m1['type'], $orderMap);
@@ -273,7 +273,7 @@ class XmlExporter extends AbstractExporter
                 $associationMappingXml->addAttribute('fetch', $this->_getFetchModeString($associationMapping['fetch']));
             }
 
-            $cascade = array();
+            $cascade = [];
             if ($associationMapping['isCascadeRemove']) {
                 $cascade[] = 'cascade-remove';
             }
@@ -295,7 +295,7 @@ class XmlExporter extends AbstractExporter
             }
 
             if (count($cascade) === 5) {
-                $cascade  = array('cascade-all');
+                $cascade  = ['cascade-all'];
             }
 
             if ($cascade) {

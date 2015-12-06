@@ -43,12 +43,12 @@ final class SqlResultSetMapping implements Annotation
      * 
      * @var array<\Doctrine\ORM\Mapping\EntityResult>
      */
-    public $entities = array();
+    public $entities = [];
 
     /**
      * Specifies the result set mapping to scalar values.
      *
      * @var array<\Doctrine\ORM\Mapping\ColumnResult>
      */
-    public $columns = array();
+    public $columns = [];
 }

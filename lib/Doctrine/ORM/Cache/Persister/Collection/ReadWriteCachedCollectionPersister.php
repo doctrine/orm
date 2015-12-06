@@ -60,7 +60,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             }
         }
 
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -80,7 +80,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             }
         }
 
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -98,10 +98,10 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = array(
+        $this->queuedCache['delete'][spl_object_hash($collection)] = [
             'key'   => $key,
             'lock'  => $lock
-        );
+        ];
     }
 
     /**
@@ -126,9 +126,9 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = array(
+        $this->queuedCache['update'][spl_object_hash($collection)] = [
             'key'   => $key,
             'lock'  => $lock
-        );
+        ];
     }
 }

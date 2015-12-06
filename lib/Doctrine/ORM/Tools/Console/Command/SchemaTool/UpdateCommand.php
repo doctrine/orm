@@ -53,7 +53,7 @@ class UpdateCommand extends AbstractCommand
         ->setDescription(
             'Executes (or dumps) the SQL needed to update the database schema to match the current mapping metadata.'
         )
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'complete', null, InputOption::VALUE_NONE,
                 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.'
@@ -67,7 +67,7 @@ class UpdateCommand extends AbstractCommand
                 'force', 'f', InputOption::VALUE_NONE,
                 'Causes the generated SQL statements to be physically executed against your database.'
             ),
-        ));
+        ]);
 
         $this->setHelp(<<<EOT
 The <info>%command.name%</info> command generates the SQL needed to

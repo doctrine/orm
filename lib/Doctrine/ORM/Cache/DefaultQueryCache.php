@@ -66,7 +66,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * @var array
      */
-    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
+    private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em     The entity manager.
@@ -86,7 +86,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = array())
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = [])
     {
         if ( ! ($key->cacheMode & Cache::MODE_GET)) {
             return null;
@@ -104,7 +104,7 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        $result      = array();
+        $result      = [];
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
         $persister   = $this->uow->getEntityPersister($entityName);
@@ -209,7 +209,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = array())
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = [])
     {
         if ($rsm->scalarMappings) {
             throw new CacheException("Second level cache does not support scalar results.");
@@ -231,7 +231,7 @@ class DefaultQueryCache implements QueryCache
             return false;
         }
 
-        $data        = array();
+        $data        = [];
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
         $metadata    = $this->em->getClassMetadata($entityName);
@@ -246,7 +246,7 @@ class DefaultQueryCache implements QueryCache
         foreach ($result as $index => $entity) {
             $identifier                     = $this->uow->getEntityIdentifier($entity);
             $data[$index]['identifier']     = $identifier;
-            $data[$index]['associations']   = array();
+            $data[$index]['associations']   = [];
 
             if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
                 // Cancel put result if entity put fail
@@ -285,17 +285,17 @@ class DefaultQueryCache implements QueryCache
                         }
                     }
 
-                    $data[$index]['associations'][$name] = array(
+                    $data[$index]['associations'][$name] = [
                         'targetEntity'  => $assocMetadata->rootEntityName,
                         'identifier'    => $assocIdentifier,
                         'type'          => $assoc['type']
-                    );
+                    ];
 
                     continue;
                 }
 
                 // Handle *-to-many associations
-                $list = array();
+                $list = [];
 
                 foreach ($assocValue as $assocItemIndex => $assocItem) {
                     $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
@@ -311,11 +311,11 @@ class DefaultQueryCache implements QueryCache
                     $list[$assocItemIndex] = $assocIdentifier;
                 }
 
-                $data[$index]['associations'][$name] = array(
+                $data[$index]['associations'][$name] = [
                     'targetEntity'  => $assocMetadata->rootEntityName,
                     'type'          => $assoc['type'],
                     'list'          => $list,
-                );
+                ];
             }
         }
 

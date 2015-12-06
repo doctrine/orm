@@ -46,12 +46,12 @@ class ResultCommand extends Command
         $this
         ->setName('orm:clear-cache:result')
         ->setDescription('Clear all result cache of the various cache drivers.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'flush', null, InputOption::VALUE_NONE,
                 'If defined, cache entries will be flushed instead of deleted/invalidated.'
             )
-        ));
+        ]);
 
         $this->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear the result cache of associated Entity Manager.
