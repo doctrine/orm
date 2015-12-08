@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -104,13 +105,6 @@ use Doctrine\Common\Util\ClassUtils;
     private $proxyFactory;
 
     /**
-     * The repository factory used to create dynamic repositories.
-     *
-     * @var \Doctrine\ORM\Repository\RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    /**
      * The expression builder instance used to generate query expressions.
      *
      * @var \Doctrine\ORM\Query\Expr
@@ -146,30 +140,9 @@ use Doctrine\Common\Util\ClassUtils;
      */
     protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
-        $this->conn              = $conn;
-        $this->config            = $config;
-        $this->eventManager      = $eventManager;
-
-        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
-
-        $this->metadataFactory = new $metadataFactoryClassName;
-        $this->metadataFactory->setEntityManager($this);
-        $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
-
-        $this->repositoryFactory = $config->getRepositoryFactory();
-        $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
-        );
-
-        if ($config->isSecondLevelCacheEnabled()) {
-            $cacheConfig    = $config->getSecondLevelCacheConfiguration();
-            $cacheFactory   = $cacheConfig->getCacheFactory();
-            $this->cache    = $cacheFactory->createCache($this);
-        }
+        $this->conn         = $conn;
+        $this->config       = $config;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -187,6 +160,14 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getMetadataFactory()
     {
+        if (null === $this->metadataFactory) {
+            $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
+
+            $this->metadataFactory = new $metadataFactoryClassName;
+            $this->metadataFactory->setEntityManager($this);
+            $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
+        }
+
         return $this->metadataFactory;
     }
 
@@ -205,17 +186,23 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function beginTransaction()
+    public function getCache()
     {
-        $this->conn->beginTransaction();
+        if (null === $this->cache && $this->config->isSecondLevelCacheEnabled()) {
+            $cacheConfig = $this->config->getSecondLevelCacheConfiguration();
+            $cacheFactory = $cacheConfig->getCacheFactory();
+            $this->cache = $cacheFactory->createCache($this);
+        }
+
+        return $this->cache;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getCache()
+    public function beginTransaction()
     {
-        return $this->cache;
+        $this->conn->beginTransaction();
     }
 
     /**
@@ -278,7 +265,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getClassMetadata($className)
     {
-        return $this->metadataFactory->getMetadataFor($className);
+        return $this->getMetadataFactory()->getMetadataFor($className);
     }
 
     /**
@@ -353,7 +340,7 @@ use Doctrine\Common\Util\ClassUtils;
     {
         $this->errorIfClosed();
 
-        $this->unitOfWork->commit($entity);
+        $this->getUnitOfWork()->commit($entity);
     }
 
     /**
@@ -376,7 +363,8 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        /** @var ClassMetadata $class */
+        $class = $this->getMetadataFactory()->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
             if ($class->isIdentifierComposite) {
@@ -386,9 +374,11 @@ use Doctrine\Common\Util\ClassUtils;
             $id = array($class->identifier[0] => $id);
         }
 
+        $unitOfWork = $this->getUnitOfWork();
+
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (is_object($value) && $this->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+                $id[$i] = $unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
                     throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
@@ -410,8 +400,6 @@ use Doctrine\Common\Util\ClassUtils;
         if ($id) {
             throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
-
-        $unitOfWork = $this->getUnitOfWork();
 
         // Check identity map first
         if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
@@ -467,7 +455,8 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getReference($entityName, $id)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        /** @var ClassMetadata $class */
+        $class = $this->getMetadataFactory()->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
             $id = array($class->identifier[0] => $id);
@@ -489,7 +478,7 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+        if (($entity = $this->getUnitOfWork()->tryGetById($sortedId, $class->rootEntityName)) !== false) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
 
@@ -497,9 +486,9 @@ use Doctrine\Common\Util\ClassUtils;
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $entity = $this->getProxyFactory()->getProxy($class->name, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, array());
+        $this->getUnitOfWork()->registerManaged($entity, $sortedId, array());
 
         return $entity;
     }
@@ -509,10 +498,11 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getPartialReference($entityName, $identifier)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        /** @var ClassMetadata $class */
+        $class = $this->getMetadataFactory()->getMetadataFor(ltrim($entityName, '\\'));
 
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
+        if (($entity = $this->getUnitOfWork()->tryGetById($identifier, $class->rootEntityName)) !== false) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
 
@@ -524,8 +514,8 @@ use Doctrine\Common\Util\ClassUtils;
 
         $class->setIdentifierValues($entity, $identifier);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
-        $this->unitOfWork->markReadOnly($entity);
+        $this->getUnitOfWork()->registerManaged($entity, $identifier, array());
+        $this->getUnitOfWork()->markReadOnly($entity);
 
         return $entity;
     }
@@ -540,7 +530,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function clear($entityName = null)
     {
-        $this->unitOfWork->clear($entityName);
+        $this->getUnitOfWork()->clear($entityName);
     }
 
     /**
@@ -576,7 +566,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $this->errorIfClosed();
 
-        $this->unitOfWork->persist($entity);
+        $this->getUnitOfWork()->persist($entity);
     }
 
     /**
@@ -599,7 +589,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $this->errorIfClosed();
 
-        $this->unitOfWork->remove($entity);
+        $this->getUnitOfWork()->remove($entity);
     }
 
     /**
@@ -620,7 +610,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $this->errorIfClosed();
 
-        $this->unitOfWork->refresh($entity);
+        $this->getUnitOfWork()->refresh($entity);
     }
 
     /**
@@ -642,7 +632,7 @@ use Doctrine\Common\Util\ClassUtils;
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()' , $entity);
         }
 
-        $this->unitOfWork->detach($entity);
+        $this->getUnitOfWork()->detach($entity);
     }
 
     /**
@@ -664,7 +654,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $this->errorIfClosed();
 
-        return $this->unitOfWork->merge($entity);
+        return $this->getUnitOfWork()->merge($entity);
     }
 
     /**
@@ -683,7 +673,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
+        $this->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
     }
 
     /**
@@ -695,7 +685,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getRepository($entityName)
     {
-        return $this->repositoryFactory->getRepository($this, $entityName);
+        return $this->config->getRepositoryFactory()->getRepository($this, $entityName);
     }
 
     /**
@@ -707,9 +697,9 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function contains($entity)
     {
-        return $this->unitOfWork->isScheduledForInsert($entity)
-            || $this->unitOfWork->isInIdentityMap($entity)
-            && ! $this->unitOfWork->isScheduledForDelete($entity);
+        return $this->getUnitOfWork()->isScheduledForInsert($entity)
+            || $this->getUnitOfWork()->isInIdentityMap($entity)
+            && ! $this->getUnitOfWork()->isScheduledForDelete($entity);
     }
 
     /**
@@ -755,6 +745,10 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getUnitOfWork()
     {
+        if (null === $this->unitOfWork) {
+            $this->unitOfWork = new UnitOfWork($this);
+        }
+
         return $this->unitOfWork;
     }
 
@@ -801,6 +795,15 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function getProxyFactory()
     {
+        if (null === $this->proxyFactory) {
+            $this->proxyFactory = new ProxyFactory(
+                $this,
+                $this->config->getProxyDir(),
+                $this->config->getProxyNamespace(),
+                $this->config->getAutoGenerateProxyClasses()
+            );
+        }
+
         return $this->proxyFactory;
     }
 
@@ -809,7 +812,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function initializeObject($obj)
     {
-        $this->unitOfWork->initializeObject($obj);
+        $this->getUnitOfWork()->initializeObject($obj);
     }
 
     /**
