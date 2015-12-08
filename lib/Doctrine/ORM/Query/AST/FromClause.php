@@ -34,7 +34,7 @@ class FromClause extends Node
     /**
      * @var array
      */
-    public $identificationVariableDeclarations = array();
+    public $identificationVariableDeclarations = [];
 
     /**
      * @param array $identificationVariableDeclarations

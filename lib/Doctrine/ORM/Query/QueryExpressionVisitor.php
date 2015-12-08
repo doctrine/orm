@@ -37,12 +37,12 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /**
      * @var array
      */
-    private static $operatorMap = array(
+    private static $operatorMap = [
         Comparison::GT => Expr\Comparison::GT,
         Comparison::GTE => Expr\Comparison::GTE,
         Comparison::LT  => Expr\Comparison::LT,
         Comparison::LTE => Expr\Comparison::LTE
-    );
+    ];
 
     /**
      * @var array
@@ -57,7 +57,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /**
      * @var array
      */
-    private $parameters = array();
+    private $parameters = [];
 
     /**
      * Constructor
@@ -88,7 +88,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function clearParameters()
     {
-        $this->parameters = array();
+        $this->parameters = [];
     }
 
     /**
@@ -108,7 +108,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
-        $expressionList = array();
+        $expressionList = [];
 
         foreach ($expr->getExpressionList() as $child) {
             $expressionList[] = $this->dispatch($child);

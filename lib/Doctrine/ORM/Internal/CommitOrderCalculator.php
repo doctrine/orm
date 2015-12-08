@@ -54,14 +54,14 @@ class CommitOrderCalculator
      *
      * @var array<stdClass>
      */
-    private $nodeList = array();
+    private $nodeList = [];
 
     /**
      * Volatile variable holding calculated nodes during sorting process.
      *
      * @var array
      */
-    private $sortedNodeList = array();
+    private $sortedNodeList = [];
 
     /**
      * Checks for node (vertex) existence in graph.
@@ -90,7 +90,7 @@ class CommitOrderCalculator
         $vertex->hash           = $hash;
         $vertex->state          = self::NOT_VISITED;
         $vertex->value          = $node;
-        $vertex->dependencyList = array();
+        $vertex->dependencyList = [];
 
         $this->nodeList[$hash] = $vertex;
     }
@@ -136,8 +136,8 @@ class CommitOrderCalculator
 
         $sortedList = $this->sortedNodeList;
 
-        $this->nodeList       = array();
-        $this->sortedNodeList = array();
+        $this->nodeList       = [];
+        $this->sortedNodeList = [];
 
         return array_reverse($sortedList);
     }

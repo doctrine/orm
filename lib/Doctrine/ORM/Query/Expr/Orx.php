@@ -38,12 +38,12 @@ class Orx extends Composite
     /**
      * @var array
      */
-    protected $allowedClasses = array(
+    protected $allowedClasses = [
         'Doctrine\ORM\Query\Expr\Comparison',
         'Doctrine\ORM\Query\Expr\Func',
         'Doctrine\ORM\Query\Expr\Andx',
         'Doctrine\ORM\Query\Expr\Orx',
-    );
+    ];
 
     /**
      * @return array

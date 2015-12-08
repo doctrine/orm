@@ -40,7 +40,7 @@ class SimpleCaseExpression extends Node
     /**
      * @var array
      */
-    public $simpleWhenClauses = array();
+    public $simpleWhenClauses = [];
 
     /**
      * @var mixed

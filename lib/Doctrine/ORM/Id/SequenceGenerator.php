@@ -108,10 +108,10 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'allocationSize' => $this->_allocationSize,
             'sequenceName'   => $this->_sequenceName
-        ));
+        ]);
     }
 
     /**

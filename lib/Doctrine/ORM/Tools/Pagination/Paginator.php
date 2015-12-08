@@ -153,7 +153,7 @@ class Paginator implements \Countable, \IteratorAggregate
             $whereInQuery = $this->cloneQuery($this->query);
             // don't do this for an empty id array
             if (count($ids) === 0) {
-                return new \ArrayIterator(array());
+                return new \ArrayIterator([]);
             }
 
             $this->appendTreeWalker($whereInQuery, 'Doctrine\ORM\Tools\Pagination\WhereInWalker');
@@ -224,7 +224,7 @@ class Paginator implements \Countable, \IteratorAggregate
         $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
 
         if ($hints === false) {
-            $hints = array();
+            $hints = [];
         }
 
         $hints[] = $walkerClass;

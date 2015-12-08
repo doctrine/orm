@@ -64,7 +64,7 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * @var \Doctrine\ORM\Cache\Region[]
      */
-    private $regions = array();
+    private $regions = [];
 
     /**
      * @var string|null
@@ -167,10 +167,10 @@ class DefaultCacheFactory implements CacheFactory
         return new DefaultQueryCache(
             $em,
             $this->getRegion(
-                array(
+                [
                     'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
                     'usage'  => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
-                )
+                ]
             )
         );
     }

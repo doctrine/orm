@@ -36,5 +36,5 @@ final class SqlResultSetMappings implements Annotation
      *
      * @var array<\Doctrine\ORM\Mapping\SqlResultSetMapping>
      */
-    public $value = array();
+    public $value = [];
 }

@@ -69,7 +69,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
-        $selectExpressions = array();
+        $selectExpressions = [];
 
         $this->validate($AST);
 

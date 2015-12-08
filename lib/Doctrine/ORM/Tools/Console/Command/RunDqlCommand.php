@@ -46,7 +46,7 @@ class RunDqlCommand extends Command
         $this
         ->setName('orm:run-dql')
         ->setDescription('Executes arbitrary DQL directly from the command line.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.'),
             new InputOption(
                 'hydrate', null, InputOption::VALUE_REQUIRED,
@@ -69,7 +69,7 @@ class RunDqlCommand extends Command
                 'show-sql', null, InputOption::VALUE_NONE,
                 'Dump generated SQL instead of executing query'
             )
-        ))
+        ])
         ->setHelp(<<<EOT
 Executes arbitrary DQL directly from the command line.
 EOT
@@ -126,7 +126,7 @@ EOT
             return;
         }
 
-        $resultSet = $query->execute(array(), constant($hydrationMode));
+        $resultSet = $query->execute([], constant($hydrationMode));
 
         $output->writeln(Debug::dump($resultSet, $input->getOption('depth'), true, false));
     }
