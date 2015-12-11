@@ -670,4 +670,25 @@ class Expr
     {
         return new Expr\Comparison($x, 'INSTANCE OF', $y);
     }
+
+    /**
+     * Creates an ORX composite of LIKE comparison expressions matching the
+     * given arguments as a value within a CSV list with a given separator.
+     *
+     * @param string $x Field in string format to be inspected by LIKE() comparisons.
+     * @param string $y Argument to be used in LIKE() comparisons.
+     * @param string $z Separator used in list field.
+     *
+     * @return Expr\Orx
+     */
+    public function inList($x, $y, $z = ',')
+    {
+        $y = (string) $y;
+        return new Expr\Orx(array(
+            new Expr\Comparison($x, 'LIKE', $this->literal($y)), // only
+            new Expr\Comparison($x, 'LIKE', $this->literal($y . $z . '%')), // first
+            new Expr\Comparison($x, 'LIKE', $this->literal('%' . $z . $y)), // last
+            new Expr\Comparison($x, 'LIKE', $this->literal('%' . $z . $y . $z . '%')), // middle
+        ));
+    }
 }
