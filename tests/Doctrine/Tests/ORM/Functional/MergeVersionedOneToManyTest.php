@@ -8,7 +8,6 @@ use Doctrine\Tests\Models\VersionedOneToMany\Article;
 use Doctrine\Tests\Models\VersionedOneToMany\Category;
 
 /**
- *
  * @group MergeVersionedOneToMany
  */
 class MergeVersionedOneToManyTest extends \Doctrine\Tests\OrmFunctionalTestCase
