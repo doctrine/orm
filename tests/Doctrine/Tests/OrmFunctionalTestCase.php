@@ -282,6 +282,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Pagination\User',
             'Doctrine\Tests\Models\Pagination\User1',
         ),
+        'versioned_many_to_one' => array(
+            'Doctrine\Tests\Models\VersionedManyToOne\Category',
+            'Doctrine\Tests\Models\VersionedManyToOne\Article',
+        ),
     );
 
     /**
@@ -541,6 +545,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM pagination_department');
             $conn->executeUpdate('DELETE FROM pagination_company');
             $conn->executeUpdate('DELETE FROM pagination_user');
+        }
+
+        if (isset($this->_usedModelSets['versioned_many_to_one'])) {
+            $conn->executeUpdate('DELETE FROM versioned_many_to_one_article');
+            $conn->executeUpdate('DELETE FROM versioned_many_to_one_category');
         }
 
         $this->_em->clear();

@@ -1,13 +1,15 @@
 <?php
 
-namespace Doctrine\Tests\Models\VersionedOneToMany;
+namespace Doctrine\Tests\Models\VersionedManyToOne;
 
 /**
  * @Entity
- * @Table(name="article")
+ * @Table(name="versioned_many_to_one_article")
  */
 class Article
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @Column(name="id", type="integer")

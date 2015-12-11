@@ -4,27 +4,19 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\Tests\Models\VersionedOneToMany\Article;
-use Doctrine\Tests\Models\VersionedOneToMany\Category;
+use Doctrine\Tests\Models\VersionedManyToOne\Article;
+use Doctrine\Tests\Models\VersionedManyToOne\Category;
 
 /**
  * @group MergeVersionedOneToMany
  */
-class MergeVersionedOneToManyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class MergeVersionedManyToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
-        parent::setUp();
+        $this->useModelSet('versioned_many_to_one');
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToMany\Category'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToMany\Article'),
-                ]
-            );
-        } catch (ORMException $e) {
-        }
+        parent::setUp();
     }
 
     /**
@@ -34,10 +26,9 @@ class MergeVersionedOneToManyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testSetVersionOnCreate()
     {
         $category = new Category();
-        $category->name = 'Category';
+        $article  = new Article();
 
-        $article = new Article();
-        $article->name = 'Article';
+        $article->name     = 'Article';
         $article->category = $category;
 
         $this->_em->persist($article);
