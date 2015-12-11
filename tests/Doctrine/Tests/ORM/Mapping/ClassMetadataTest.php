@@ -1150,6 +1150,18 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array('test' => null, 'test.embeddedProperty' => null), $classMetadata->getReflectionProperties());
     }
+
+    public function testGetColumnNamesWithGivenFieldNames()
+    {
+        $metadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $metadata->initializeReflection(new RuntimeReflectionService());
+
+        $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'columnName' => 'foo'));
+        $metadata->mapField(array('fieldName' => 'username', 'type' => 'string', 'columnName' => 'bar'));
+        $metadata->mapField(array('fieldName' => 'name', 'type' => 'string', 'columnName' => 'baz'));
+
+        self::assertSame(['foo', 'baz'], $metadata->getColumnNames(['status', 'name']));
+    }
 }
 
 /**
