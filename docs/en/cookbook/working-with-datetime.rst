@@ -127,16 +127,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
     }
 
 This database type makes sure that every DateTime instance is always saved in UTC, relative
-to the current timezone that the passed DateTime instance has. To actually use that new type, configure it in ``config.yml`` like so:
-
-.. code-block:: yml
-
-    doctrine:
-        dbal:
-            types: 
-                datetime: DoctrineExtensions\DBAL\Types\UTCDateTimeType
-                datetimetz: DoctrineExtensions\DBAL\Types\UTCDateTimeType
-
+to the current timezone that the passed DateTime instance has.
 
 To be able to transform these values
 back into their real timezone you have to save the timezone in a separate field of the entity
