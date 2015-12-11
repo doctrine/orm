@@ -106,6 +106,22 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
         $this->assertEquals(array('resolvetargetentity_id', 'targetinterface_id'), $meta['joinTableColumns']);
     }
+    
+    /**
+     * @group DDC-4015
+     */
+    public function testInterfaceInDQL(){
+        $this->listener->addResolveTargetEntity(
+            'Doctrine\Tests\ORM\Tools\TargetInterface',
+            'Doctrine\Tests\ORM\Tools\TargetEntity',
+            array()
+        );
+        
+        $this->em->getEventManager()->addEventSubscriber($this->listener);
+                                                                                  
+        $query = $this->em->createQuery('SELECT rti FROM Doctrine\Tests\ORM\Tools\TargetInterface rti');
+        $this->assertEquals('SELECT t0_.id AS id_0 FROM TargetEntity t0_', $query->getSQL());
+    }
 }
 
 interface ResolveTargetInterface

@@ -996,7 +996,7 @@ class Parser
      */
     private function validateAbstractSchemaName($schemaName)
     {
-        $exists = class_exists($schemaName, true);
+        $exists = class_exists($schemaName, true) || interface_exists($schemaName, true);
 
         if (! $exists) {
             $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
