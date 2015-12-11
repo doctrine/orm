@@ -1905,9 +1905,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Tests if an entity is loaded (Not a proxy or a non initialized proxy)
+     * Tests if an entity is loaded - must either be a loaded proxy or not a proxy
      *
-     * @param $entity
+     * @param object $entity
      *
      * @return bool
      */
