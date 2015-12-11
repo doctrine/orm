@@ -89,7 +89,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
     class UTCDateTimeType extends DateTimeType
     {
-        static private $utc = null;
+        static private $utc;
 
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
@@ -122,7 +122,6 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
             return $converted;
         }
-
     }
 
 This database type makes sure that every DateTime instance is always saved in UTC, relative
