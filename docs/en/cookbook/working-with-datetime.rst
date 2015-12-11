@@ -91,18 +91,9 @@ the UTC time at the time of the booking and the timezone the event happened in.
     {
         static private $utc = null;
 
-        private static function getUtc()
-        {
-            if (!self::$utc) {
-                self::$utc = new \DateTimeZone('UTC');
-            }
-
-            return self::$utc;
-        }
-
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
-            if ($value) {
+            if ($value instanceof \DateTime) {
                 $value->setTimezone(self::getUtc());
             }
 
@@ -111,17 +102,25 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
         {
-            if ($value === null || $value instanceof \DateTime) {
+            if (null === $value || $value instanceof \DateTime) {
                 return $value;
             }
 
-            $val = \DateTime::createFromFormat($platform->getDateTimeFormatString(), $value, self::getUtc());
+            $converted = \DateTime::createFromFormat(
+                $platform->getDateTimeFormatString(),
+                $value,
+                self::$utc ? self::$utc : self::$utc = new \DateTimeZone('UTC')
+            );
 
-            if (!$val) {
-                throw ConversionException::conversionFailedFormat($value, $this->getName(), $platform->getDateTimeFormatString());
+            if (! $converted) {
+                throw ConversionException::conversionFailedFormat(
+                    $value,
+                    $this->getName(),
+                    $platform->getDateTimeFormatString()
+                );
             }
 
-            return $val;
+            return $converted;
         }
 
     }
