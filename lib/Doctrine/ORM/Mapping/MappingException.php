@@ -745,9 +745,9 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    public static function compositeKeyAssignedIdGeneratorRequired($className)
+    public static function compositeKeyAssignedOrCustomIdGeneratorRequired($className)
     {
-        return new self("Entity '". $className . "' has a composite identifier but uses an ID generator other than manually assigning (Identity, Sequence). This is not supported.");
+        return new self("Entity '". $className . "' has a composite identifier but uses an ID generation strategy other than custom or manually assigning (Identity, Sequence). This is not supported.");
     }
 
     /**

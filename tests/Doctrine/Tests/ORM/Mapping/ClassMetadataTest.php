@@ -1150,6 +1150,59 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array('test' => null, 'test.embeddedProperty' => null), $classMetadata->getReflectionProperties());
     }
+
+    /**
+     * Test if it works to use the CUSTOM id generation strategy for composite keys
+     *
+     * @group DDC-3853
+     */
+    public function testItAllowsCustomIdGenerationStrategyForCompositeKeys()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm->setIdentifier(array(
+            'username', 'email'
+        ));
+
+        $cm->validateIdentifier();
+    }
+
+    /**
+     * Test if it works to use the NONE id generation strategy for composite keys
+     *
+     * @group DDC-3853
+     */
+    public function testItAllowsNoneIdGenerationStrategyForCompositeKeys()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+        $cm->setIdentifier(array(
+            'username', 'email'
+        ));
+
+        $cm->validateIdentifier();
+    }
+
+    /**
+     * Test if an exception is thrown if a unsupported id generation strategy is used for composite keys
+     *
+     * @group DDC-3853
+     */
+    public function testItDoesNotAllowUnsupportedIdGenerationStrategiesForCompositeKeys()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cm->setIdentifier(array(
+            'username', 'email'
+        ));
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+
+        $cm->validateIdentifier();
+    }
 }
 
 /**
