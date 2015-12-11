@@ -996,9 +996,7 @@ class Parser
      */
     private function validateAbstractSchemaName($schemaName)
     {
-        $exists = class_exists($schemaName, true);
-
-        if (! $exists) {
+        if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
             $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
         }
     }
@@ -1814,7 +1812,7 @@ class Parser
         $this->match(Lexer::T_OPEN_CURLY_BRACE);
         $this->match(Lexer::T_IDENTIFIER);
 
-        $field = $this->lexer->token['value']; 
+        $field = $this->lexer->token['value'];
 
         // First field in partial expression might be embeddable property
         while ($this->lexer->isNextToken(Lexer::T_DOT)) {

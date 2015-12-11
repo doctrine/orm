@@ -9,19 +9,19 @@ use Doctrine\ORM\Events;
 class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
-     * @var EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
-    private $em = null;
+    private $em;
 
     /**
      * @var ResolveTargetEntityListener
      */
-    private $listener = null;
+    private $listener;
 
     /**
      * @var ClassMetadataFactory
      */
-    private $factory = null;
+    private $factory;
 
     public function setUp()
     {
@@ -105,6 +105,32 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
         $this->assertEquals(array('resolvetargetentity_id', 'targetinterface_id'), $meta['joinTableColumns']);
+    }
+
+    /**
+     * @group 1572
+     * @group functional
+     *
+     * @coversNothing
+     */
+    public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces()
+    {
+        $evm = $this->em->getEventManager();
+        $this->listener->addResolveTargetEntity(
+            'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
+            'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
+            array()
+        );
+
+        $evm->addEventSubscriber($this->listener);
+
+        $this->assertStringMatchesFormat(
+            'SELECT%AFROM ResolveTargetEntity%A',
+            $this
+                ->em
+                ->createQuery('SELECT f FROM Doctrine\Tests\ORM\Tools\ResolveTargetInterface f')
+                ->getSQL()
+        );
     }
 }
 
