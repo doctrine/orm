@@ -129,6 +129,20 @@ the UTC time at the time of the booking and the timezone the event happened in.
 This database type makes sure that every DateTime instance is always saved in UTC, relative
 to the current timezone that the passed DateTime instance has.
 
+To actually use this new type instead of the default ``datetime`` type, you need to run following
+code before bootstrapping the ORM:
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\DBAL\Types\Type;
+    use DoctrineExtensions\DBAL\Types\UTCDateTimeType;
+
+    Type::overrideType('datetime', UTCDateTimeType::class);
+    Type::overrideType('datetimetz', UTCDateTimeType::class);
+
+
 To be able to transform these values
 back into their real timezone you have to save the timezone in a separate field of the entity
 requiring timezoned datetimes:
