@@ -1,24 +1,21 @@
 <?php
 
-namespace Doctrine\Tests\Models\VersionedOneToMany;
+namespace Doctrine\Tests\Models\VersionedManyToOne;
 
 /**
  * @Entity
- * @Table(name="category")
+ * @Table(name="versioned_many_to_one_category")
  */
 class Category
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-
-    /**
-     * @Column(name="name")
-     */
-    public $name;
 
     /**
      * Version column
