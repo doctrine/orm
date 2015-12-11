@@ -1873,17 +1873,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getColumnNames(array $fieldNames = null)
     {
-        if ($fieldNames === null) {
+        if (null === $fieldNames) {
             return array_keys($this->fieldNames);
         }
 
-        $columnNames = array();
-
-        foreach ($fieldNames as $fieldName) {
-            $columnNames[] = $this->getColumnName($fieldName);
-        }
-
-        return $columnNames;
+        return array_values(array_map([$this, 'getColumnName'], $fieldNames));
     }
 
     /**
