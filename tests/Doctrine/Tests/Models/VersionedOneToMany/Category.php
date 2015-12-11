@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\Models\VersionedOneToMany;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 /**
  * @Entity
  * @Table(name="category")
@@ -18,11 +16,6 @@ class Category
     public $id;
 
     /**
-     * @OneToMany(targetEntity="Article", mappedBy="category", cascade={"merge", "persist"})
-     */
-    public $articles;
-
-    /**
      * @Column(name="name")
      */
     public $name;
@@ -34,12 +27,4 @@ class Category
      * @Version
      */
     public $version;
-
-    /**
-     * Category constructor.
-     */
-    public function __construct()
-    {
-        $this->articles = new ArrayCollection();
-    }
 }
