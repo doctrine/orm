@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 /**
- * 
+ *
  */
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {
@@ -51,7 +51,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    function rewind()
+    public function rewind()
     {
         return reset($this->walkers);
     }
@@ -59,7 +59,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    function current()
+    public function current()
     {
         return $this->offsetGet(key($this->walkers));
     }
@@ -67,7 +67,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    function key()
+    public function key()
     {
         return key($this->walkers);
     }
@@ -75,7 +75,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    function next()
+    public function next()
     {
         next($this->walkers);
 
@@ -85,7 +85,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    function valid()
+    public function valid()
     {
         return key($this->walkers) !== null;
     }

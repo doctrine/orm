@@ -589,7 +589,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * @param  string $baseTableAlias
+     * @param string $baseTableAlias
+     *
      * @return string
      */
     private function getJoinSql($baseTableAlias)

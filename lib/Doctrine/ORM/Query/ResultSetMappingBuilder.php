@@ -367,7 +367,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the entity result mapping of the results of native SQL queries to the result set.
-     * 
+     *
      * @param ClassMetadataInfo $classMetadata
      * @param array             $entityMapping
      * @param string            $alias
@@ -408,7 +408,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                         $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
                     }
                 } else {
-                    if( ! isset($classMetadata->fieldMappings[$fieldName])) {
+                    if ( ! isset($classMetadata->fieldMappings[$fieldName])) {
                         throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
                     }
 

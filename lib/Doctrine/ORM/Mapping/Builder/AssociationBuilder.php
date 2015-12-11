@@ -63,6 +63,7 @@ class AssociationBuilder
     public function mappedBy($fieldName)
     {
         $this->mapping['mappedBy'] = $fieldName;
+
         return $this;
     }
 
@@ -74,6 +75,7 @@ class AssociationBuilder
     public function inversedBy($fieldName)
     {
         $this->mapping['inversedBy'] = $fieldName;
+
         return $this;
     }
 
@@ -83,6 +85,7 @@ class AssociationBuilder
     public function cascadeAll()
     {
         $this->mapping['cascade'] = array("ALL");
+
         return $this;
     }
 
@@ -92,6 +95,7 @@ class AssociationBuilder
     public function cascadePersist()
     {
         $this->mapping['cascade'][] = "persist";
+
         return $this;
     }
 
@@ -101,6 +105,7 @@ class AssociationBuilder
     public function cascadeRemove()
     {
         $this->mapping['cascade'][] = "remove";
+
         return $this;
     }
 
@@ -110,6 +115,7 @@ class AssociationBuilder
     public function cascadeMerge()
     {
         $this->mapping['cascade'][] = "merge";
+
         return $this;
     }
 
@@ -119,6 +125,7 @@ class AssociationBuilder
     public function cascadeDetach()
     {
         $this->mapping['cascade'][] = "detach";
+
         return $this;
     }
 
@@ -128,6 +135,7 @@ class AssociationBuilder
     public function cascadeRefresh()
     {
         $this->mapping['cascade'][] = "refresh";
+
         return $this;
     }
 
@@ -137,6 +145,7 @@ class AssociationBuilder
     public function fetchExtraLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+
         return $this;
     }
 
@@ -146,6 +155,7 @@ class AssociationBuilder
     public function fetchEager()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EAGER;
+
         return $this;
     }
 
@@ -155,6 +165,7 @@ class AssociationBuilder
     public function fetchLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_LAZY;
+
         return $this;
     }
 
@@ -180,6 +191,7 @@ class AssociationBuilder
             'onDelete' => $onDelete,
             'columnDefinition' => $columnDef,
         );
+
         return $this;
     }
 
@@ -226,6 +238,7 @@ class AssociationBuilder
         } else {
             throw new \InvalidArgumentException("Type should be a ToOne Association here");
         }
+
         return $this->builder;
     }
 }

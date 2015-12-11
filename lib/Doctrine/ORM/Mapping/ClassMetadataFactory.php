@@ -386,6 +386,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $parts = explode("\\", $className);
+
         return strtolower(end($parts));
     }
 

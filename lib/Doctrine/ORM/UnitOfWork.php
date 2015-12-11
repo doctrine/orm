@@ -555,8 +555,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @internal Don't call from the outside.
      *
-     * @param ClassMetadata $class The class descriptor of the entity.
-     * @param object $entity The entity for which to compute the changes.
+     * @param ClassMetadata $class  The class descriptor of the entity.
+     * @param object        $entity The entity for which to compute the changes.
      *
      * @return void
      */
@@ -800,8 +800,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changes of an association.
      *
-     * @param array $assoc  The association mapping.
-     * @param mixed $value  The value of the association.
+     * @param array $assoc The association mapping.
+     * @param mixed $value The value of the association.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -871,7 +871,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
-     * @param object        $entity
+     * @param object                              $entity
      *
      * @return void
      */
@@ -1391,7 +1391,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @ignore
      *
-     * @param object $entity  The entity to register.
+     * @param object $entity The entity to register.
      *
      * @return boolean TRUE if the registration was successful, FALSE if the identity of
      *                 the entity in question is already managed.
@@ -3224,7 +3224,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private static function objToStr($obj)
     {
-        return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);
+        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj).'@'.spl_object_hash($obj);
     }
 
     /**

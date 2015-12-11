@@ -126,9 +126,9 @@ EOT
         }
 
         if ($force) {
-        	if ($dumpSql) {
+            if ($dumpSql) {
                 $output->writeln('');
-        	}
+            }
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
 

@@ -80,6 +80,7 @@ class IterableResult implements \Iterator
     {
         $this->_current = $this->_hydrator->hydrateRow();
         $this->_key++;
+
         return $this->_current;
     }
 

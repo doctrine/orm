@@ -109,6 +109,7 @@ class SchemaTool
     public function getCreateSchemaSql(array $classes)
     {
         $schema = $this->getSchemaFromMetadata($classes);
+
         return $schema->toSql($this->platform);
     }
 
@@ -278,11 +279,11 @@ class SchemaTool
 
             if (isset($class->table['indexes'])) {
                 foreach ($class->table['indexes'] as $indexName => $indexData) {
-                    if( ! isset($indexData['flags'])) {
+                    if ( ! isset($indexData['flags'])) {
                         $indexData['flags'] = array();
                     }
 
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array)$indexData['flags'], isset($indexData['options']) ? $indexData['options'] : array());
+                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], isset($indexData['options']) ? $indexData['options'] : array());
                 }
             }
 
@@ -622,7 +623,8 @@ class SchemaTool
         &$primaryKeyColumns,
         &$addedFks,
         &$blacklistedFks
-    ) {
+    )
+    {
         $localColumns       = array();
         $foreignColumns     = array();
         $fkOptions          = array();
