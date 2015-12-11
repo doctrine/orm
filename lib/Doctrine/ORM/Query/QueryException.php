@@ -247,8 +247,7 @@ class QueryException extends \Doctrine\ORM\ORMException
      */
     public static function instanceOfUnrelatedClass($className, $rootClass)
     {
-        return new self("Cannot check if a child of '" . $rootClass . "' is instanceof '" . $className . "', " .
-                "inheritance hierarchy does not exists between these two classes.");
+        return new self("'" . $className . "' is not a sub class of '" . $rootClass . "'");
     }
 
     /**
