@@ -77,6 +77,25 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 
+    public function testLoadMetadataWithoutPrimaryKeyFromDatabase()
+    {
+        $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
+        $table->addColumn('id', 'integer');
+        $table->addColumn('bar', 'string', array('notnull' => false, 'length' => 200));
+
+        $this->_sm->dropAndCreateTable($table);
+
+        try {
+            $this->extractClassMetadata(array("DbdriverFoo"));
+        } catch (\Exception $e) {
+            $this->assertInstanceOf('Doctrine\ORM\Mapping\MappingException', $e);
+            $this->_sm->dropTable('dbdriver_foo');
+            return;
+        }
+
+        $this->fail('Doctrine\ORM\Mapping\MappingException was not thrown.');
+    }
+
     public function testLoadMetadataWithForeignKeyFromDatabase()
     {
         if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
