@@ -213,14 +213,6 @@ class UnitOfWork implements PropertyChangedListener
     private $em;
 
     /**
-     * The calculator used to calculate the order in which changes to
-     * entities need to be written to the database.
-     *
-     * @var \Doctrine\ORM\Internal\CommitOrderCalculator
-     */
-    private $commitOrderCalculator;
-
-    /**
      * The entity persister instances used to persist entity instances.
      *
      * @var array
@@ -563,8 +555,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @internal Don't call from the outside.
      *
-     * @param ClassMetadata $class The class descriptor of the entity.
-     * @param object $entity The entity for which to compute the changes.
+     * @param ClassMetadata $class  The class descriptor of the entity.
+     * @param object        $entity The entity for which to compute the changes.
      *
      * @return void
      */
@@ -808,8 +800,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changes of an association.
      *
-     * @param array $assoc  The association mapping.
-     * @param mixed $value  The value of the association.
+     * @param array $assoc The association mapping.
+     * @param mixed $value The value of the association.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -879,7 +871,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
-     * @param object        $entity
+     * @param object                              $entity
      *
      * @return void
      */
@@ -1138,11 +1130,11 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($entityChangeSet as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
-            if ($calc->hasClass($class->name)) {
+            if ($calc->hasNode($class->name)) {
                 continue;
             }
 
-            $calc->addClass($class);
+            $calc->addNode($class->name, $class);
 
             $newNodes[] = $class;
         }
@@ -1156,13 +1148,16 @@ class UnitOfWork implements PropertyChangedListener
 
                 $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
-                if ( ! $calc->hasClass($targetClass->name)) {
-                    $calc->addClass($targetClass);
+                if ( ! $calc->hasNode($targetClass->name)) {
+                    $calc->addNode($targetClass->name, $targetClass);
 
                     $newNodes[] = $targetClass;
                 }
 
-                $calc->addDependency($targetClass, $class);
+                $joinColumns = reset($assoc['joinColumns']);
+                $isNullable  = isset($joinColumns['nullable']) ? $joinColumns['nullable'] : false;
+
+                $calc->addDependency($targetClass->name, $class->name, $isNullable ? 0 : 1);
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
@@ -1172,18 +1167,18 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($targetClass->subClasses as $subClassName) {
                     $targetSubClass = $this->em->getClassMetadata($subClassName);
 
-                    if ( ! $calc->hasClass($subClassName)) {
-                        $calc->addClass($targetSubClass);
+                    if ( ! $calc->hasNode($subClassName)) {
+                        $calc->addNode($targetSubClass->name, $targetSubClass);
 
                         $newNodes[] = $targetSubClass;
                     }
 
-                    $calc->addDependency($targetSubClass, $class);
+                    $calc->addDependency($targetSubClass->name, $class->name, 1);
                 }
             }
         }
 
-        return $calc->getCommitOrder();
+        return $calc->sort();
     }
 
     /**
@@ -1396,7 +1391,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @ignore
      *
-     * @param object $entity  The entity to register.
+     * @param object $entity The entity to register.
      *
      * @return boolean TRUE if the registration was successful, FALSE if the identity of
      *                 the entity in question is already managed.
@@ -1867,7 +1862,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($class->isVersioned) {
+            if ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
                 $reflField          = $class->reflFields[$class->versionField];
                 $managedCopyVersion = $reflField->getValue($managedCopy);
                 $entityVersion      = $reflField->getValue($entity);
@@ -1880,7 +1875,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $visited[$oid] = $managedCopy; // mark visited
 
-            if (!($entity instanceof Proxy && ! $entity->__isInitialized())) {
+            if ($this->isLoaded($entity)) {
                 if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized()) {
                     $managedCopy->__load();
                 }
@@ -1953,6 +1948,18 @@ class UnitOfWork implements PropertyChangedListener
         || isset($this->entityIdentifiers[$oid])
         || isset($this->entityStates[$oid])
         || isset($this->originalEntityData[$oid]);
+    }
+
+    /**
+     * Tests if an entity is loaded - must either be a loaded proxy or not a proxy
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    private function isLoaded($entity)
+    {
+        return !($entity instanceof Proxy) || $entity->__isInitialized();
     }
 
     /**
@@ -2405,11 +2412,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getCommitOrderCalculator()
     {
-        if ($this->commitOrderCalculator === null) {
-            $this->commitOrderCalculator = new Internal\CommitOrderCalculator;
-        }
-
-        return $this->commitOrderCalculator;
+        return new Internal\CommitOrderCalculator();
     }
 
     /**
@@ -2437,10 +2440,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->readOnlyObjects =
             $this->visitedCollections =
             $this->orphanRemovals = array();
-
-            if ($this->commitOrderCalculator !== null) {
-                $this->commitOrderCalculator->clear();
-            }
         } else {
             $visited = array();
 
@@ -3276,7 +3275,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private static function objToStr($obj)
     {
-        return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);
+        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj).'@'.spl_object_hash($obj);
     }
 
     /**
@@ -3323,21 +3322,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionComplete()
     {
-        if ( ! $this->hasCache) {
-            return;
-        }
-
-        foreach ($this->persisters as $persister) {
-            if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionComplete();
-            }
-        }
-
-        foreach ($this->collectionPersisters as $persister) {
-            if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionComplete();
-            }
-        }
+        $this->performCallbackOnCachedPersister(function (CachedPersister $persister) {
+            $persister->afterTransactionComplete();
+        });
     }
 
     /**
@@ -3345,19 +3332,25 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionRolledBack()
     {
+        $this->performCallbackOnCachedPersister(function (CachedPersister $persister) {
+            $persister->afterTransactionRolledBack();
+        });
+    }
+
+    /**
+     * Performs an action after the transaction.
+     *
+     * @param callable $callback
+     */
+    private function performCallbackOnCachedPersister(callable $callback)
+    {
         if ( ! $this->hasCache) {
             return;
         }
 
-        foreach ($this->persisters as $persister) {
+        foreach (array_merge($this->persisters, $this->collectionPersisters) as $persister) {
             if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionRolledBack();
-            }
-        }
-
-        foreach ($this->collectionPersisters as $persister) {
-            if ($persister instanceof CachedPersister) {
-                $persister->afterTransactionRolledBack();
+                $callback($persister);
             }
         }
     }

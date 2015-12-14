@@ -257,7 +257,7 @@ EOT
     /**
      * Format the association mappings
      *
-     * @param array
+     * @param array $propertyMappings
      *
      * @return array
      */

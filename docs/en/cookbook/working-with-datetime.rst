@@ -85,43 +85,63 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
     use Doctrine\DBAL\Platforms\AbstractPlatform;
     use Doctrine\DBAL\Types\ConversionException;
+    use Doctrine\DBAL\Types\DateTimeType;
 
     class UTCDateTimeType extends DateTimeType
     {
-        static private $utc = null;
+        static private $utc;
 
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
-            if ($value === null) {
-                return null;
+            if ($value instanceof \DateTime) {
+                $value->setTimezone(self::getUtc());
             }
 
-
-            return $value->format($platform->getDateTimeFormatString(),
-                (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone('UTC'))
-            );
+            return parent::convertToDatabaseValue($value, $platform);
         }
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
         {
-            if ($value === null) {
-                return null;
+            if (null === $value || $value instanceof \DateTime) {
+                return $value;
             }
 
-            $val = \DateTime::createFromFormat(
+            $converted = \DateTime::createFromFormat(
                 $platform->getDateTimeFormatString(),
                 $value,
-                (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone('UTC'))
+                self::$utc ? self::$utc : self::$utc = new \DateTimeZone('UTC')
             );
-            if (!$val) {
-                throw ConversionException::conversionFailed($value, $this->getName());
+
+            if (! $converted) {
+                throw ConversionException::conversionFailedFormat(
+                    $value,
+                    $this->getName(),
+                    $platform->getDateTimeFormatString()
+                );
             }
-            return $val;
+
+            return $converted;
         }
     }
 
 This database type makes sure that every DateTime instance is always saved in UTC, relative
-to the current timezone that the passed DateTime instance has. To be able to transform these values
+to the current timezone that the passed DateTime instance has.
+
+To actually use this new type instead of the default ``datetime`` type, you need to run following
+code before bootstrapping the ORM:
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\DBAL\Types\Type;
+    use DoctrineExtensions\DBAL\Types\UTCDateTimeType;
+
+    Type::overrideType('datetime', UTCDateTimeType::class);
+    Type::overrideType('datetimetz', UTCDateTimeType::class);
+
+
+To be able to transform these values
 back into their real timezone you have to save the timezone in a separate field of the entity
 requiring timezoned datetimes:
 

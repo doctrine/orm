@@ -178,7 +178,6 @@ abstract class AbstractQuery
     }
 
     /**
-     *
      * Enable/disable second level query (result) caching for this query.
      *
      * @param boolean $cacheable
@@ -215,7 +214,7 @@ abstract class AbstractQuery
     /**
     * Obtain the name of the second level query cache region in which query results will be stored
     *
-    * @return The cache region name; NULL indicates the default region.
+    * @return string|null The cache region name; NULL indicates the default region.
     */
     public function getCacheRegion()
     {
@@ -243,7 +242,7 @@ abstract class AbstractQuery
      *
      * @param integer $lifetime
      *
-     * @return static This query instance.
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -263,7 +262,7 @@ abstract class AbstractQuery
     /**
      * @param integer $cacheMode
      *
-     * @return static This query instance.
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
     public function setCacheMode($cacheMode)
     {
@@ -398,7 +397,7 @@ abstract class AbstractQuery
      *
      * @param mixed $value
      *
-     * @return array
+     * @return array|string
      *
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
      */
@@ -863,7 +862,7 @@ abstract class AbstractQuery
     /**
      * Check if the query has a hint
      *
-     * @param  string $name The name of the hint
+     * @param string $name The name of the hint
      *
      * @return bool False if the query does not have any hint
      */

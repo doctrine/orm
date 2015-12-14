@@ -108,7 +108,7 @@ class XmlExporter extends AbstractExporter
                 $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
                 $indexXml->addAttribute('columns', implode(',', $index['columns']));
-                if(isset($index['flags'])) {
+                if (isset($index['flags'])) {
                     $indexXml->addAttribute('flags', implode(',', $index['flags']));
                 }
             }
@@ -396,7 +396,7 @@ class XmlExporter extends AbstractExporter
      * Exports (nested) option elements.
      *
      * @param \SimpleXMLElement $parentXml
-     * @param array $options
+     * @param array             $options
      */
     private function exportTableOptions(\SimpleXMLElement $parentXml, array $options)
     {

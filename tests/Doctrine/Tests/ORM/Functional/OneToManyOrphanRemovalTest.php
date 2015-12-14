@@ -98,6 +98,27 @@ class OneToManyOrphanRemovalTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-2524
+     */
+    public function testOrphanRemovalClearCollectionAndAddNew()
+    {
+        $user     = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $newPhone = new CmsPhonenumber();
+
+        $newPhone->phonenumber = '654321';
+
+        $user->getPhonenumbers()->clear();
+        $user->addPhonenumber($newPhone);
+
+        $this->_em->flush();
+
+        $query  = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p');
+        $result = $query->getResult();
+
+        $this->assertEquals(1, count($result), 'Old CmsPhonenumbers should be removed by orphanRemoval and new one added');
+    }
+
+    /**
      * @group DDC-1496
      */
     public function testOrphanRemovalUnitializedCollection()

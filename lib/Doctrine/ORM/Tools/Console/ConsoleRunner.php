@@ -65,7 +65,7 @@ class ConsoleRunner
      * optional commands.
      *
      * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
-     * @param array $commands
+     * @param array                                       $commands
      *
      * @return \Symfony\Component\Console\Application
      */

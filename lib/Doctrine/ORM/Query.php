@@ -657,7 +657,7 @@ final class Query extends AbstractQuery
      *
      * @see \Doctrine\DBAL\LockMode
      *
-     * @param  int $lockMode
+     * @param int $lockMode
      *
      * @return Query
      *

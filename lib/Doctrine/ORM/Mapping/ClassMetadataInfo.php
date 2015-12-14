@@ -698,6 +698,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isIdentifierComposite) {
             throw new BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
+
         return $this->reflFields[$this->identifier[0]];
     }
 
@@ -1551,11 +1552,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['cascade'] = $cascades;
-        $mapping['isCascadeRemove'] = in_array('remove',  $cascades);
-        $mapping['isCascadePersist'] = in_array('persist',  $cascades);
-        $mapping['isCascadeRefresh'] = in_array('refresh',  $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge',  $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach',  $cascades);
+        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadePersist'] = in_array('persist', $cascades);
+        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
+        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
+        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
         return $mapping;
     }
@@ -1872,17 +1873,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getColumnNames(array $fieldNames = null)
     {
-        if ($fieldNames === null) {
+        if (null === $fieldNames) {
             return array_keys($this->fieldNames);
         }
 
-        $columnNames = array();
-
-        foreach ($fieldNames as $fieldName) {
-            $columnNames[] = $this->getColumnName($fieldName);
-        }
-
-        return $columnNames;
+        return array_values(array_map([$this, 'getColumnName'], $fieldNames));
     }
 
     /**
@@ -3248,6 +3243,7 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @param  string|null $className
+     *
      * @return string|null null if the input value is null
      */
     public function fullyQualifiedClassName($className)
@@ -3268,7 +3264,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return mixed
      */
-    public function getMetadataValue($name) {
+    public function getMetadataValue($name)
+    {
 
         if (isset($this->$name)) {
             return $this->$name;
@@ -3281,6 +3278,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Map Embedded Class
      *
      * @param array $mapping
+     *
      * @throws MappingException
      * @return void
      */
@@ -3299,7 +3297,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Inline the embeddable class
      *
-     * @param string $property
+     * @param string            $property
      * @param ClassMetadataInfo $embeddable
      */
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)

@@ -439,8 +439,8 @@ class Parser
     /**
      * Generates a new syntax error.
      *
-     * @param string      $expected Expected string.
-     * @param array|null  $token    Got token.
+     * @param string     $expected Expected string.
+     * @param array|null $token    Got token.
      *
      * @return void
      *
@@ -637,7 +637,7 @@ class Parser
 
             // If the namespace is not given then assumes the first FROM entity namespace
             if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {
-                $namespace  = substr($fromClassName, 0 , strrpos($fromClassName, '\\'));
+                $namespace  = substr($fromClassName, 0, strrpos($fromClassName, '\\'));
                 $fqcn       = $namespace . '\\' . $className;
 
                 if (class_exists($fqcn)) {
@@ -996,9 +996,7 @@ class Parser
      */
     private function validateAbstractSchemaName($schemaName)
     {
-        $exists = class_exists($schemaName, true);
-
-        if (! $exists) {
+        if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
             $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
         }
     }
@@ -1611,7 +1609,6 @@ class Parser
     }
 
     /**
-     *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
      *
      * {Internal note: WARNING: Solution is harder than a bare implementation.
@@ -1815,7 +1812,7 @@ class Parser
         $this->match(Lexer::T_OPEN_CURLY_BRACE);
         $this->match(Lexer::T_IDENTIFIER);
 
-        $field = $this->lexer->token['value']; 
+        $field = $this->lexer->token['value'];
 
         // First field in partial expression might be embeddable property
         while ($this->lexer->isNextToken(Lexer::T_DOT)) {
@@ -1960,10 +1957,9 @@ class Parser
 
             case ($lookahead === Lexer::T_INPUT_PARAMETER):
                 switch (true) {
-                     case $this->isMathOperator($peek):
+                    case $this->isMathOperator($peek):
                         // :param + u.value
                         return $this->SimpleArithmeticExpression();
-
                     default:
                         return $this->InputParameter();
                 }
@@ -2669,22 +2665,22 @@ class Parser
         switch ($this->lexer->lookahead['type']) {
             case Lexer::T_STRING:
                 $this->match(Lexer::T_STRING);
-                return new AST\Literal(AST\Literal::STRING, $this->lexer->token['value']);
 
+                return new AST\Literal(AST\Literal::STRING, $this->lexer->token['value']);
             case Lexer::T_INTEGER:
             case Lexer::T_FLOAT:
                 $this->match(
                     $this->lexer->isNextToken(Lexer::T_INTEGER) ? Lexer::T_INTEGER : Lexer::T_FLOAT
                 );
-                return new AST\Literal(AST\Literal::NUMERIC, $this->lexer->token['value']);
 
+                return new AST\Literal(AST\Literal::NUMERIC, $this->lexer->token['value']);
             case Lexer::T_TRUE:
             case Lexer::T_FALSE:
                 $this->match(
                     $this->lexer->isNextToken(Lexer::T_TRUE) ? Lexer::T_TRUE : Lexer::T_FALSE
                 );
-                return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token['value']);
 
+                return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token['value']);
             default:
                 $this->syntaxError('Literal');
         }

@@ -171,8 +171,8 @@ class ResultSetMapping
     /**
      * Adds an entity result to this ResultSetMapping.
      *
-     * @param string $class            The class name of the entity.
-     * @param string $alias            The alias for the class. The alias must be unique among all entity
+     * @param string      $class       The class name of the entity.
+     * @param string      $alias       The alias for the class. The alias must be unique among all entity
      *                                 results or joined entity results within this ResultSetMapping.
      * @param string|null $resultAlias The result alias with which the entity result should be
      *                                 placed in the result structure.
@@ -389,8 +389,8 @@ class ResultSetMapping
     /**
      * Adds a metadata parameter mappings.
      *
-     * @param mixed $parameter      The parameter name in the SQL result set.
-     * @param string $attribute     The metadata attribute.
+     * @param mixed  $parameter The parameter name in the SQL result set.
+     * @param string $attribute The metadata attribute.
      */
     public function addMetadataParameterMapping($parameter, $attribute)
     {
@@ -551,11 +551,11 @@ class ResultSetMapping
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
      *
-     * @param string $alias                 The result alias with which the meta result should be placed in the result structure.
-     * @param string $columnName            The name of the column in the SQL result set.
-     * @param string $fieldName             The name of the field on the declaring class.
+     * @param string $alias              The result alias with which the meta result should be placed in the result structure.
+     * @param string $columnName         The name of the column in the SQL result set.
+     * @param string $fieldName          The name of the field on the declaring class.
      * @param bool   $isIdentifierColumn
-     * @param string $type                  The column type
+     * @param string $type               The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      *

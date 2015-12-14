@@ -2047,6 +2047,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $sql = implode(' AND ', $filterClauses);
+
         return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 

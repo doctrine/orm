@@ -46,7 +46,7 @@ class EntityRegionCommand extends Command
         ->addArgument('entity-class', InputArgument::OPTIONAL, 'The entity name.')
         ->addArgument('entity-id', InputArgument::OPTIONAL, 'The entity identifier.')
         ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
-        ->addOption('flush', null, InputOption::VALUE_NONE,'If defined, all cache entries will be flushed.');
+        ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.');
 
 
         $this->setHelp(<<<EOT
