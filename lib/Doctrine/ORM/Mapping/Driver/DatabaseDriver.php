@@ -504,6 +504,10 @@ class DatabaseDriver implements MappingDriver
      */
     private function getTablePrimaryKeys(Table $table)
     {
+        if ( ! $table->hasPrimaryKey()) {
+            return array();
+        }
+
         try {
             return $table->getPrimaryKey()->getColumns();
         } catch(SchemaException $e) {
