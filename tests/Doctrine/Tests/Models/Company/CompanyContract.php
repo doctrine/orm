@@ -130,7 +130,7 @@ abstract class CompanyContract
 
     abstract public function calculatePrice();
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
         $metadata->setTableName( 'company_contracts');

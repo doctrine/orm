@@ -1,6 +1,6 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->mapField(array(
    'id'         => true,
@@ -24,4 +24,4 @@ $metadata->mapManyToMany(array(
    'targetEntity'   => 'DDC3579Group'
 ));
 
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
