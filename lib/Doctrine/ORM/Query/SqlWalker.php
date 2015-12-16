@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -1708,7 +1707,7 @@ class SqlWalker implements TreeWalker
         }
 
         foreach ($this->queryComponents[$groupByItem]['metadata']->associationMappings as $mapping) {
-            if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
 

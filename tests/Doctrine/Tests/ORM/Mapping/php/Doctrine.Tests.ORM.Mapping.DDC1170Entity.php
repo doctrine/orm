@@ -1,6 +1,6 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->mapField(array(
    'id'                 => true,
@@ -13,4 +13,4 @@ $metadata->mapField(array(
     'columnDefinition'  => 'VARCHAR(255) NOT NULL'
 ));
 
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

@@ -20,7 +20,6 @@
  */
 
 namespace Doctrine\Tests\ORM\Tools\Export;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
@@ -55,7 +54,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
             "id" => true,
         ));
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
         $metadata->setSequenceGeneratorDefinition(array(
             'sequenceName' => 'seq_entity_test_id',
             'allocationSize' => 5,

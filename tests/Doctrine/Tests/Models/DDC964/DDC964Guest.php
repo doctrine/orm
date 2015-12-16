@@ -26,7 +26,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class DDC964Guest extends DDC964User
 {
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->setAttributeOverride('id', array(
             'columnName'    => 'guest_id',
