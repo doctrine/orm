@@ -229,6 +229,110 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($lexer->moveNext());
     }
 
+    /**
+     * @dataProvider provideLocales
+     */
+    public function testScannerTokenizesAJoinQueryCorrectlyWithLocale($locale)
+    {
+        setlocale(LC_ALL, $locale);
+
+        $dql = 'SELECT u FROM My\Namespace\User u INNER JOIN u.other WHERE u.name = ' . "'Jack O''Neil'";
+        $lexer = new Lexer($dql);
+
+        $tokens = array(
+            array(
+                'value' => 'SELECT',
+                'type' => Lexer::T_SELECT,
+                'position' => 0
+            ),
+            array(
+                'value' => 'u',
+                'type' => Lexer::T_IDENTIFIER,
+                'position' => 7
+            ),
+            array(
+                'value' => 'FROM',
+                'type' => Lexer::T_FROM,
+                'position' => 9
+            ),
+            array(
+                'value' => 'My\Namespace\User',
+                'type' => Lexer::T_FULLY_QUALIFIED_NAME,
+                'position' => 14
+            ),
+            array(
+                'value' => 'u',
+                'type' => Lexer::T_IDENTIFIER,
+                'position' => 32
+            ),
+            array(
+                'value' => 'INNER',
+                'type' => Lexer::T_INNER,
+                'position' => 34
+            ),
+            array(
+                'value' => 'JOIN',
+                'type' => Lexer::T_JOIN,
+                'position' => 40
+            ),
+            array(
+                'value' => 'u',
+                'type' => Lexer::T_IDENTIFIER,
+                'position' => 45
+            ),
+            array(
+                'value' => '.',
+                'type' => Lexer::T_DOT,
+                'position' => 46
+            ),
+            array(
+                'value' => 'other',
+                'type' => Lexer::T_IDENTIFIER,
+                'position' => 47
+            ),
+            array(
+                'value' => 'WHERE',
+                'type' => Lexer::T_WHERE,
+                'position' => 53
+            ),
+            array(
+                'value' => 'u',
+                'type' => Lexer::T_IDENTIFIER,
+                'position' => 59
+            ),
+            array(
+                'value' => '.',
+                'type' => Lexer::T_DOT,
+                'position' => 60
+            ),
+            array(
+                'value' => 'name',
+                'type' => Lexer::T_IDENTIFIER,
+                'position' => 61
+            ),
+            array(
+                'value' => '=',
+                'type' => Lexer::T_EQUALS,
+                'position' => 66
+            ),
+            array(
+                'value' => "Jack O'Neil",
+                'type' => Lexer::T_STRING,
+                'position' => 68
+            )
+        );
+
+        foreach ($tokens as $expected) {
+            $lexer->moveNext();
+            $actual = $lexer->lookahead;
+            $this->assertEquals($expected['value'], $actual['value']);
+            $this->assertEquals($expected['type'], $actual['type']);
+            $this->assertEquals($expected['position'], $actual['position']);
+        }
+
+        $this->assertFalse($lexer->moveNext());
+    }
+
     public function provideTokens()
     {
         return array(
@@ -241,6 +345,35 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
             array(Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'), // DQL class reference
             array(Lexer::T_ALIASED_NAME, 'Some:Name'),
             array(Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name')
+        );
+    }
+
+    public function provideLocales()
+    {
+        return array(
+            // 10 fairly tame locales
+            array('en-us'),
+            array('en-gb'),
+            array('en'),
+            array('fr'),
+            array('de'),
+            array('pl'),
+            array('nl'),
+            array('ru'),
+            array('cs'),
+            array('pt-br'),
+            // 10 fairly exotic locales
+            array('tr_TR'),
+            array('ja'),
+            array('ko'),
+            array('th'),
+            array('sr'),
+            array('zh-hk'),
+            array('ar-eg'),
+            array('Nshu'),
+            array('id'),
+            array('ku'),
+            array(null)
         );
     }
 }
