@@ -33,6 +33,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setStrictTypes(false);
+        $this->_generator->setGenerateMethodsTypeHinting(false);
         $this->_generator->setUpdateEntityIfExists(true);
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
@@ -967,6 +968,117 @@ class EntityGeneratorTest extends OrmTestCase
         }
 
         $this->_generator->setStrictTypes(true);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testGenerateMethodsTypeHintingWithNonCompatiblePHP()
+    {
+        if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
+            $this->markTestSkipped('Scalar type hinting and method return types are available in PHP >= 7.0.0');
+        }
+
+        $this->_generator->setGenerateMethodsTypeHinting(true);
+    }
+
+    public function testGenerateMethodsTypeHinting()
+    {
+        if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+            $this->markTestSkipped('Scalar type hinting and method return types are available in PHP >= 7.0.0');
+        }
+
+        $this->_generator->setGenerateMethodsTypeHinting(true);
+
+        $metadata = $this->generateBookEntityFixture();
+        $this->loadEntityClass($metadata);
+
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        $this->assertCount(5, $reflClass->getProperties());
+        $this->assertCount(13, $reflClass->getMethods());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'getId');
+        $this->assertEquals('int', $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'setName');
+        $parameters = $reflMethod->getParameters();
+        $this->assertEquals(1, count($parameters));
+        $this->assertEquals('string', $parameters[0]->getType());
+        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'getName');
+        $this->assertEquals('string', $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'setStatus');
+        $parameters = $reflMethod->getParameters();
+        $this->assertEquals(1, count($parameters));
+        $this->assertEquals('string', $parameters[0]->getType());
+        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'getStatus');
+        $this->assertEquals('string', $reflMethod->getReturnType());
+
+        $authorClass = get_class(new EntityGeneratorAuthor());
+        $reflMethod = new \ReflectionMethod($metadata->name, 'setAuthor');
+        $parameters = $reflMethod->getParameters();
+        $this->assertEquals(1, count($parameters));
+        $this->assertEquals($authorClass, (string) $parameters[0]->getType());
+        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'getAuthor');
+        $this->assertEquals($authorClass, $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'addComment');
+        $this->assertEquals($metadata->name, $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'removeComment');
+        $this->assertEquals('bool', $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'getComments');
+        $this->assertEquals('Doctrine\Common\Collections\Collection', $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'loading');
+        $this->assertNull($reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, 'willBeRemoved');
+        $this->assertNull($reflMethod->getReturnType());
+    }
+
+    /**
+     * @dataProvider getEntityTypeAliasDataProvider
+     */
+    public function testEntityMethodTypeHintingAlias(array $field)
+    {
+        if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+            $this->markTestSkipped('Scalar type hinting and method return types are available in PHP >= 7.0.0');
+        }
+
+        $this->_generator->setGenerateMethodsTypeHinting(true);
+
+        $metadata   = $this->generateEntityTypeFixture($field);
+        $path       = $this->_tmpDir . '/'. $this->_namespace . '/EntityType.php';
+
+        $this->assertFileExists($path);
+        require_once $path;
+
+        $type   = $field['phpType'];
+        if ('\\' === $type[0]) {
+            $type = substr($type, 1);
+        }
+
+        $name   = $field['fieldName'];
+        $getter = "get" . ucfirst($name);
+        $setter = "set" . ucfirst($name);
+
+        $reflMethod = new \ReflectionMethod($metadata->name, $setter);
+        $parameters = $reflMethod->getParameters();
+        $this->assertEquals(1, count($parameters));
+        $this->assertEquals($type, $parameters[0]->getType());
+        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+
+        $reflMethod = new \ReflectionMethod($metadata->name, $getter);
+        $this->assertEquals($type, (string) $reflMethod->getReturnType());
     }
 
     /**
