@@ -148,6 +148,13 @@ class EntityGenerator
     protected $embeddablesImmutable = false;
 
     /**
+     * Whether or not to add PHP strict types.
+     *
+     * @var boolean
+     */
+    protected $strictTypes = false;
+
+    /**
      * Hash-map for handle types.
      *
      * @var array
@@ -212,7 +219,7 @@ class EntityGenerator
      */
     protected static $classTemplate =
 '<?php
-
+<strictTypes>
 <namespace>
 <useStatement>
 <entityAnnotation>
@@ -407,6 +414,7 @@ public function __construct(<params>)
     public function generateEntityClass(ClassMetadataInfo $metadata)
     {
         $placeHolders = [
+            '<strictTypes>',
             '<namespace>',
             '<useStatement>',
             '<entityAnnotation>',
@@ -415,6 +423,7 @@ public function __construct(<params>)
         ];
 
         $replacements = [
+            $this->generateEntityStrictTypes(),
             $this->generateEntityNamespace($metadata),
             $this->generateEntityUse(),
             $this->generateEntityDocBlock($metadata),
@@ -584,6 +593,22 @@ public function __construct(<params>)
     }
 
     /**
+     * Set whether or not to add PHP strict types.
+     *
+     * @param bool $bool
+     *
+     * @return void
+     */
+    public function setStrictTypes($bool)
+    {
+        if ($bool && version_compare(PHP_VERSION, '7.0.0', '<')) {
+            throw new \InvalidArgumentException('Strict types mode is only available for PHP >= 7.0.0');
+        }
+
+        $this->strictTypes = $bool;
+    }
+
+    /**
      * @param string $type
      *
      * @return string
@@ -595,6 +620,16 @@ public function __construct(<params>)
         }
 
         return $type;
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateEntityStrictTypes()
+    {
+        if ($this->strictTypes) {
+            return "\n".'declare(strict_types=1);'."\n";
+        }
     }
 
     /**
