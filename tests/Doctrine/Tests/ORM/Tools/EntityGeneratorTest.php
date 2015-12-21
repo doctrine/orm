@@ -32,6 +32,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->setGenerateAnnotations(true);
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
+        $this->_generator->setStrictTypes(false);
         $this->_generator->setUpdateEntityIfExists(true);
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
@@ -954,6 +955,18 @@ class EntityGeneratorTest extends OrmTestCase
         $classNew = file_get_contents($path);
 
         $this->assertSame($classTest,$classNew);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testStrictTypesGenerationClassWithNonCompatiblePHP()
+    {
+        if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
+            $this->markTestSkipped('Strict mode is available in PHP > 7.0.0');
+        }
+
+        $this->_generator->setStrictTypes(true);
     }
 
     /**
