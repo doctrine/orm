@@ -1826,6 +1826,9 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $id) {
                 $managedCopy = $this->newInstance($class);
 
+                $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
+                // The managedCopy is identical to entity
+                // So we can persist, as the listeners will has good values !
                 $this->persistNew($class, $managedCopy);
             } else {
                 $flatId = ($class->containsForeignIdentifier)
@@ -1857,6 +1860,9 @@ class UnitOfWork implements PropertyChangedListener
                     $managedCopy = $this->newInstance($class);
                     $class->setIdentifierValues($managedCopy, $id);
 
+                    $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
+                    // The managedCopy is identical to entity
+                    // So we can persist, as the listeners will has good values !
                     $this->persistNew($class, $managedCopy);
                 }
             }
