@@ -56,7 +56,8 @@ on all this systems.
 Handling different Timezones with the DateTime Type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you first come across the requirement to save different you are still optimistic to manage this mess,
+If you first come across the requirement to save different timezones you may be still optimistic about how
+to manage this mess,
 however let me crush your expectations fast. There is not a single database out there (supported by Doctrine 2)
 that supports timezones correctly. Correctly here means that you can cover all the use-cases that
 can come up with timezones. If you don't believe me you should read up on `Storing DateTime
