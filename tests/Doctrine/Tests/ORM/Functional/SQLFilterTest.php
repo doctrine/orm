@@ -328,6 +328,36 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->assertEquals("'en'", $filter->getParameter('locale'));
     }
 
+    public function testSQLFilterSetArrayParameterInfersType(): void
+    {
+        // Setup mock connection
+        $conn = $this->getMockConnection();
+        $conn->expects($this->at(0))
+            ->method('quote')
+            ->with($this->equalTo('en'))
+            ->will($this->returnValue("'en'"));
+        $conn->expects($this->at(1))
+            ->method('quote')
+            ->with($this->equalTo('es'))
+            ->will($this->returnValue("'es'"));
+
+        $em = $this->getMockEntityManager();
+        $em->expects($this->once())
+            ->method('getConnection')
+            ->will($this->returnValue($conn));
+
+        $filterCollection = $this->addMockFilterCollection($em);
+        $filterCollection
+            ->expects($this->once())
+            ->method('setFiltersStateDirty');
+
+        $filter = new MyLocaleFilter($em);
+
+        $filter->setParameter('locale', ['en', 'es']);
+
+        $this->assertEquals("'en','es'", $filter->getParameter('locale'));
+    }
+
     public function testSQLFilterAddConstraint(): void
     {
         // Set up metadata mock
