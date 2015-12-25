@@ -49,7 +49,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'Doctrine\Common\Persistence\Mapping\MappingException',
-            "No mapping file found named '".$this->dir."/Foo".$this->getFileExtension()."' for class 'MyNamespace\MySubnamespace\Entity\Foo'."
+            "No mapping file found named"
         );
 
         $driver = $this->getDriver(array(

@@ -105,16 +105,16 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
 
         $query->setQueryCacheDriver($cache);
 
-        $users = $query->getResult();
+        $cache
+            ->expects(self::once())
+            ->method('save')
+            ->with(self::isType('string'), self::isInstanceOf('Doctrine\ORM\Query\ParserResult'));
 
-        $data = $this->cacheDataReflection->getValue($cache);
-        $this->assertEquals(1, count($data));
-
-        $this->assertInstanceOf('Doctrine\ORM\Query\ParserResult', array_pop($data));
+        $query->getResult();
     }
 
     public function testQueryCache_HitDoesNotSaveParserResult()
