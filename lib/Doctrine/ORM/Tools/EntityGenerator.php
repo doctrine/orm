@@ -1456,7 +1456,7 @@ public function __construct(<params>)
 
         $methodReturnType = null;
         if ($this->generateMethodsTypeHinting) {
-            $methodReturnType = $this->getMethodReturnType($metadata, $type, $variableType);
+            $methodReturnType = $this->getMethodReturnType($metadata, $type, $fieldName, $variableType);
 
             if (null === $methodTypeHint) {
                 $type = isset($this->typeHintingAlias[$variableType]) ? $this->typeHintingAlias[$variableType] : $variableType;
@@ -1918,16 +1918,24 @@ public function __construct(<params>)
     /**
      * @param ClassMetadataInfo $metadata
      * @param string            $type
+     * @param string            $fieldName
      * @param string            $variableType
      * @return string
      */
-    private function getMethodReturnType(ClassMetadataInfo $metadata, $type, $variableType)
+    private function getMethodReturnType(ClassMetadataInfo $metadata, $type, $fieldName, $variableType)
     {
         if (in_array($type, array('set', 'add'))) {
             return sprintf(': %s', $this->getClassName($metadata));
         }
 
         if ('get' === $type) {
+            if (
+                $metadata->isSingleValuedAssociation($fieldName) ||
+                (!$metadata->hasAssociation($fieldName) && $metadata->isNullable($fieldName))
+            ) {
+                return null;
+            }
+
             $type = isset($this->typeHintingAlias[$variableType]) ? $this->typeHintingAlias[$variableType] : $variableType;
             return sprintf(': %s', $type);
         }

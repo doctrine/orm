@@ -1027,7 +1027,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'getAuthor');
-        $this->assertEquals($authorClass, $reflMethod->getReturnType());
+        $this->assertNull($reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'addComment');
         $this->assertEquals($metadata->name, $reflMethod->getReturnType());
