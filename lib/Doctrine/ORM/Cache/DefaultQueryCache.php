@@ -198,6 +198,33 @@ class DefaultQueryCache implements QueryCache
                 $collection->setInitialized(true);
             }
 
+            foreach ($cm->associationMappings as $name => $assoc) {
+                if ( ! isset($assoc['cache']) ||  ! isset($data[$name]) || ! $data[$name] instanceof AssociationCacheEntry) {
+                    continue;
+                }
+
+                $assocClass     = $data[$name]->class;
+                $assocId        = $data[$name]->identifier;
+                $isEagerLoad    = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
+
+                if ( ! $isEagerLoad) {
+                    $data[$name] = $this->em->getReference($assocClass, $assocId);
+
+                    continue;
+                }
+
+                $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
+                $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+                $assocRegion    = $assocPersister->getCacheRegion();
+                $assocEntry     = $assocRegion->get($assocKey);
+
+                if ($assocEntry === null) {
+                    return null;
+                }
+
+                $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), $hints);
+            }
+
             $result[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
         }
 
