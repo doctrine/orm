@@ -23,7 +23,8 @@ script:
   - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
 after_script:
-  - php vendor/bin/coveralls -v
+  - if [[ $TRAVIS_PHP_VERSION = '5.6' && $DB = 'sqlite' ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
+  - if [[ $TRAVIS_PHP_VERSION = '5.6' && $DB = 'sqlite' ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
 
 matrix:
   include:
