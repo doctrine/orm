@@ -9,23 +9,23 @@
         {"name": "Guilherme Blanco", "email": "guilhermeblanco@gmail.com"},
         {"name": "Roman Borschel", "email": "roman@code-factory.org"},
         {"name": "Benjamin Eberlei", "email": "kontakt@beberlei.de"},
-        {"name": "Jonathan Wage", "email": "jonwage@gmail.com"}
+        {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
+        {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.4",
         "ext-pdo": "*",
         "doctrine/collections": "~1.2",
-        "doctrine/dbal": ">=2.5-dev,<2.6-dev",
+        "doctrine/dbal": ">=2.5-dev,<2.7-dev",
         "doctrine/instantiator": "~1.0.1",
-        "doctrine/common": ">=2.5-dev,<2.6-dev",
+        "doctrine/common": ">=2.5-dev,<2.7-dev",
         "doctrine/cache": "~1.4",
         "symfony/console": "~2.5|~3.0"
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0",
-        "phpunit/phpunit": "~4.0",
-        "satooshi/php-coveralls": "dev-master"
+        "phpunit/phpunit": "~4.0"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
