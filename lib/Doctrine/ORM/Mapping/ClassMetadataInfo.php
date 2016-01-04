@@ -257,6 +257,14 @@ class ClassMetadataInfo implements ClassMetadata
     public $customRepositoryClassName;
 
     /**
+     * The name of the custom persister class used for the entity class.
+     * (Optional).
+     *
+     * @var string
+     */
+    public $customPersisterClassName;
+
+    /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
      *
      * @var boolean
@@ -832,6 +840,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->customRepositoryClassName) {
             $serialized[] = 'customRepositoryClassName';
+        }
+
+        if ($this->customPersisterClassName) {
+            $serialized[] = 'customPersisterClassName';
         }
 
         if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
@@ -2629,6 +2641,18 @@ class ClassMetadataInfo implements ClassMetadata
     public function setCustomRepositoryClass($repositoryClassName)
     {
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
+    }
+
+    /**
+     * Registers a custom persister class for the entity class.
+     *
+     * @param string $persisterClassName The class name of the custom mapper.
+     *
+     * @return void
+     */
+    public function setCustomPersisterClass($persisterClassName)
+    {
+        $this->customPersisterClassName = $this->fullyQualifiedClassName($persisterClassName);
     }
 
     /**

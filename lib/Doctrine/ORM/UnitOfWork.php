@@ -3014,7 +3014,14 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata($entityName);
 
+        $class->customRepositoryClassName;
+
         switch (true) {
+            case ($class->customPersisterClassName !== null):
+                $persister = $class->customPersisterClassName;
+                $persister = new $persister($this->em, $class);
+                break;
+
             case ($class->isInheritanceTypeNone()):
                 $persister = new BasicEntityPersister($this->em, $class);
                 break;

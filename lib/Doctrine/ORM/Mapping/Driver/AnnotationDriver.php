@@ -80,6 +80,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
             }
 
+            if ($entityAnnot->persisterClass !== null) {
+                $metadata->setCustomPersisterClass($entityAnnot->persisterClass);
+            }
+
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
@@ -87,6 +91,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
 
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+            $metadata->setCustomPersisterClass($mappedSuperclassAnnot->persisterClass);
             $metadata->isMappedSuperclass = true;
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
             $metadata->isEmbeddedClass = true;
