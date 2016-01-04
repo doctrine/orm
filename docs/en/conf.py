@@ -11,7 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -38,7 +38,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Doctrine 2 ORM'
-copyright = u'2010-12, Doctrine Project Team'
+copyright = u'2010-%y, Doctrine Project Team'.format(datetime.date.today)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
