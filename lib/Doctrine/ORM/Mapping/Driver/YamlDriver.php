@@ -416,6 +416,10 @@ class YamlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['persister'])) {
+                    $mapping['persister'] = $oneToManyElement['persister'];
+                }
+
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $oneToManyElement['cascade'];
                 }
@@ -501,6 +505,10 @@ class YamlDriver extends FileDriver
 
                 if (isset($manyToManyElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToManyElement['fetch']);
+                }
+
+                if (isset($manyToManyElement['persister'])) {
+                    $mapping['persister'] = $manyToManyElement['persister'];
                 }
 
                 if (isset($manyToManyElement['mappedBy'])) {
