@@ -236,10 +236,13 @@ Example:
 @DiscriminatorColumn
 ~~~~~~~~~~~~~~~~~~~~~
 
-This annotation is a required annotation for the topmost/super
+This annotation is an optional annotation for the topmost/super
 class of an inheritance hierarchy. It specifies the details of the
 column which saves the name of the class, which the entity is
 actually instantiated as.
+
+If this annotation is not specified, the discriminator column defaults
+to a string column of length 255 called ``dtype``.
 
 Required attributes:
 

@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Cache\City;
@@ -977,6 +979,52 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame('implicit_schema', $metadata->getSchemaName());
         $this->assertSame('implicit_table', $metadata->getTableName());
     }
+
+    /**
+     * @group DDC-514
+     * @group DDC-1015
+     */
+    public function testDiscriminatorColumnDefaultLength()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $this->assertEquals(255, $class->discriminatorColumn['length']);
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $this->assertEquals(255, $class->discriminatorColumn['length']);
+    }
+
+    /**
+     * @group DDC-514
+     * @group DDC-1015
+     */
+    public function testDiscriminatorColumnDefaultType()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $this->assertEquals('string', $class->discriminatorColumn['type']);
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $this->assertEquals('string', $class->discriminatorColumn['type']);
+    }
+
+    /**
+     * @group DDC-514
+     * @group DDC-1015
+     */
+    public function testDiscriminatorColumnDefaultName()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $this->assertEquals('dtype', $class->discriminatorColumn['name']);
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $this->assertEquals('dtype', $class->discriminatorColumn['name']);
+    }
+
 }
 
 /**
@@ -1317,7 +1365,6 @@ class DDC807Entity
     }
 }
 
-
 class DDC807SubClasse1 {}
 class DDC807SubClasse2 {}
 
@@ -1357,3 +1404,68 @@ class Comment
         ));
     }
 }
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({
+ *     "ONE" = "SingleTableEntityNoDiscriminatorColumnMappingSub1",
+ *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
+ * })
+ */
+class SingleTableEntityNoDiscriminatorColumnMapping
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     */
+    public $id;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->mapField(array(
+            'id' => true,
+            'fieldName' => 'id',
+        ));
+
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+}
+
+class SingleTableEntityNoDiscriminatorColumnMappingSub1 extends SingleTableEntityNoDiscriminatorColumnMapping {}
+class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntityNoDiscriminatorColumnMapping {}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({
+ *     "ONE" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub1",
+ *     "TWO" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub2"
+ * })
+ * @DiscriminatorColumn(name="dtype")
+ */
+class SingleTableEntityIncompleteDiscriminatorColumnMapping
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     */
+    public $id;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->mapField(array(
+            'id' => true,
+            'fieldName' => 'id',
+        ));
+
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+}
+
+class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1
+    extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}
+class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2
+    extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}

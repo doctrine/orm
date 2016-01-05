@@ -1,0 +1,12 @@
+Doctrine\Tests\ORM\Mapping\SingleTableEntityIncompleteDiscriminatorColumnMapping:
+  type: entity
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    ONE: SingleTableEntityIncompleteDiscriminatorColumnMappingSub1
+    TWO: SingleTableEntityIncompleteDiscriminatorColumnMappingSub2
+  discriminatorColumn:
+    name: dtype
+  id:
+    id: 
+      generator:
+        strategy: NONE
