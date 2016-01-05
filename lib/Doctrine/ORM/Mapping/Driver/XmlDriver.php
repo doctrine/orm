@@ -165,8 +165,8 @@ class XmlDriver extends FileDriver
                     $discrColumn = $xmlRoot->{'discriminator-column'};
                     $metadata->setDiscriminatorColumn(array(
                         'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                        'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : null,
-                        'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : null,
+                        'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                        'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
                         'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null
                     ));
                 } else {
