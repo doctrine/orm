@@ -23,9 +23,6 @@ script:
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
   - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
-after_script:
-  - php vendor/bin/coveralls -v
-
 matrix:
   exclude:
     - php: hhvm

@@ -24,8 +24,7 @@
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0",
-        "phpunit/phpunit": "~4.0",
-        "satooshi/php-coveralls": "dev-master"
+        "phpunit/phpunit": "~4.0"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
