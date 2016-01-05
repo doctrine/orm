@@ -119,7 +119,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $this->assertArrayHasKey('name', $cache->data);
         $this->assertArrayHasKey('country', $cache->data);
         $this->assertEquals(array(
-            'id'        => 11,
+            'id'        => 12,
             'name'      => 'Bar',
             'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
         ), $cache->data);
@@ -147,9 +147,39 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $this->assertArrayHasKey('name', $cache->data);
         $this->assertArrayHasKey('country', $cache->data);
         $this->assertEquals(array(
-            'id'        => 11,
+            'id'        => 12,
             'name'      => 'Bar',
             'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
         ), $cache->data);
     }
+
+    public function testCacheEntryWithWrongIdentifierType()
+    {
+        $proxy          = $this->em->getReference(Country::CLASSNAME, 11);
+        $entity         = new State('Bat', $proxy);
+        $uow            = $this->em->getUnitOfWork();
+        $entityData     = array('id'=> 12, 'name'=>'Bar', 'country' => $proxy);
+        $metadata       = $this->em->getClassMetadata(State::CLASSNAME);
+        $key            = new EntityCacheKey($metadata->name, array('id'=>'12'));
+
+        $entity->setId(12);
+
+        $uow->registerManaged($entity, array('id'=>12), $entityData);
+
+        $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
+
+        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+
+        $this->assertArrayHasKey('id', $cache->data);
+        $this->assertArrayHasKey('name', $cache->data);
+        $this->assertArrayHasKey('country', $cache->data);
+        $this->assertSame($entity->getId(), $cache->data['id']);
+        $this->assertEquals(array(
+            'id'        => 12,
+            'name'      => 'Bar',
+            'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
+        ), $cache->data);
+    }
+
 }
