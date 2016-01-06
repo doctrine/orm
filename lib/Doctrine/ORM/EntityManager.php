@@ -238,7 +238,7 @@ use Doctrine\Common\Util\ClassUtils;
             return $return ?: true;
         } catch (Exception $e) {
             $this->close();
-            $this->conn->rollback();
+            $this->conn->rollBack();
 
             throw $e;
         }
@@ -257,7 +257,7 @@ use Doctrine\Common\Util\ClassUtils;
      */
     public function rollback()
     {
-        $this->conn->rollback();
+        $this->conn->rollBack();
     }
 
     /**
