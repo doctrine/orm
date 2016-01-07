@@ -194,6 +194,7 @@
     <xs:attribute name="table" type="xs:NMTOKEN" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
     <xs:attribute name="repository-class" type="xs:string"/>
+    <xs:attribute name="persister-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="orm:change-tracking-policy" />
     <xs:attribute name="read-only" type="xs:boolean" default="false" />
@@ -493,6 +494,7 @@
     <xs:attribute name="index-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="persister" type="xs:string"/>
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
@@ -528,6 +530,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="persister" type="xs:string"/>
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
