@@ -1170,33 +1170,6 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * Walks down a CaseExpression AST node and generates the corresponding SQL.
-     *
-     * @param AST\CoalesceExpression|AST\NullIfExpression|AST\GeneralCaseExpression|AST\SimpleCaseExpression $expression
-     *
-     * @return string The SQL.
-     */
-    public function walkCaseExpression($expression)
-    {
-        switch (true) {
-            case ($expression instanceof AST\CoalesceExpression):
-                return $this->walkCoalesceExpression($expression);
-
-            case ($expression instanceof AST\NullIfExpression):
-                return $this->walkNullIfExpression($expression);
-
-            case ($expression instanceof AST\GeneralCaseExpression):
-                return $this->walkGeneralCaseExpression($expression);
-
-            case ($expression instanceof AST\SimpleCaseExpression):
-                return $this->walkSimpleCaseExpression($expression);
-
-            default:
-                return '';
-        }
-    }
-
-    /**
      * Walks down a CoalesceExpression AST node and generates the corresponding SQL.
      *
      * @param AST\CoalesceExpression $coalesceExpression
