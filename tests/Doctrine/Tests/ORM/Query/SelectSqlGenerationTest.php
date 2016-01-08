@@ -2271,6 +2271,27 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT COUNT(c0_.name) AS sclr_0 FROM cms_users c0_ HAVING sclr_0 IS NULL'
         );
     }
+
+    /**
+     * GitHub issue #4764: https://github.com/doctrine/doctrine2/issues/4764
+     * @group DDC-3907
+     * @dataProvider mathematicOperatorsProvider
+     */
+    public function testHavingRegressionUsingVariableWithMathOperatorsExpression($operator)
+    {
+        $this->assertSqlGeneration(
+            'SELECT COUNT(u.name) AS countName FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING 1 ' . $operator . ' countName > 0',
+            'SELECT COUNT(c0_.name) AS sclr_0 FROM cms_users c0_ HAVING 1 ' . $operator . ' sclr_0 > 0'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function mathematicOperatorsProvider()
+    {
+        return [['+'], ['-'], ['*'], ['/']];
+    }
 }
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
