@@ -841,11 +841,11 @@ class SchemaTool
 
     /**
      * Updates the database schema of the given classes by comparing the ClassMetadata
-     * instances to the current database schema that is inspected. If $saveMode is set
-     * to true the command is executed in the Database, else SQL is returned.
+     * instances to the current database schema that is inspected.
      *
      * @param array   $classes
-     * @param boolean $saveMode
+     * @param boolean $saveMode If TRUE, only performs a partial update
+     *                          without dropping assets which are scheduled for deletion.
      *
      * @return void
      */
@@ -862,11 +862,10 @@ class SchemaTool
     /**
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
-     * If $saveMode is set to true the command is executed in the Database,
-     * else SQL is returned.
      *
      * @param array   $classes  The classes to consider.
-     * @param boolean $saveMode True for writing to DB, false for SQL string.
+     * @param boolean $saveMode If TRUE, only generates SQL for a partial update
+     *                          that does not include SQL for dropping assets which are scheduled for deletion.
      *
      * @return array The sequence of SQL statements.
      */
