@@ -163,7 +163,8 @@ use Doctrine\Common\Util\ClassUtils;
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
+            $config->getAutoGenerateProxyClasses(),
+            $config->getProxyUmask()
         );
 
         if ($config->isSecondLevelCacheEnabled()) {

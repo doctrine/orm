@@ -126,6 +126,33 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Returns the umask that controls file permissions for generated proxies.
+     *
+     * @return int
+     */
+    public function getProxyUmask()
+    {
+        return isset($this->_attributes['proxyUmask']) ?
+            $this->_attributes['proxyUmask'] : 0002;
+    }
+
+    /**
+     * @since 2.5.6
+     *
+     * @param int $umask The umask that controls file permissions for generated proxies.
+     *
+     * @throws ORMException
+     */
+    public function setProxyUmask($umask)
+    {
+        if ( ! is_int($umask)) {
+            throw ORMException::invalidProxyUmask($umask);
+        }
+
+        $this->_attributes['proxyUmask'] = $umask;
+    }
+
+    /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
      * @param MappingDriver $driverImpl

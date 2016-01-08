@@ -34,6 +34,17 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration = new Configuration();
     }
 
+    public function testSetGetProxyUmask()
+    {
+        $this->assertSame(0002, $this->configuration->getProxyUmask()); // defaults
+
+        $this->configuration->setProxyUmask(0077);
+        $this->assertSame(0077, $this->configuration->getProxyUmask());
+
+        $this->setExpectedException('Doctrine\ORM\ORMException');
+        $this->configuration->setProxyUmask('foobar');
+    }
+
     public function testSetGetProxyDir()
     {
         $this->assertSame(null, $this->configuration->getProxyDir()); // defaults

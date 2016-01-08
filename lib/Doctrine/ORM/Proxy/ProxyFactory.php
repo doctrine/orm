@@ -63,6 +63,11 @@ class ProxyFactory extends AbstractProxyFactory
     private $identifierFlattener;
 
     /**
+     * @var int
+     */
+    private $umask;
+
+    /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
@@ -71,10 +76,11 @@ class ProxyFactory extends AbstractProxyFactory
      * @param string                 $proxyNs      The namespace to use for the proxy classes.
      * @param boolean|int            $autoGenerate The strategy for automatically generating proxy classes. Possible
      *                                             values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @param int                    $umask        The umask that controls file permissions.
      */
-    public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
+    public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER, $umask = 0002)
     {
-        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
+        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs, $umask);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);

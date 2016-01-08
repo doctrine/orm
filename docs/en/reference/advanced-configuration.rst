@@ -11,15 +11,15 @@ steps of configuration.
     <?php
     use Doctrine\ORM\EntityManager,
         Doctrine\ORM\Configuration;
-    
+
     // ...
-    
+
     if ($applicationMode == "development") {
         $cache = new \Doctrine\Common\Cache\ArrayCache;
     } else {
         $cache = new \Doctrine\Common\Cache\ApcCache;
     }
-    
+
     $config = new Configuration;
     $config->setMetadataCacheImpl($cache);
     $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
@@ -27,18 +27,18 @@ steps of configuration.
     $config->setQueryCacheImpl($cache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
     $config->setProxyNamespace('MyProject\Proxies');
-    
+
     if ($applicationMode == "development") {
         $config->setAutoGenerateProxyClasses(true);
     } else {
         $config->setAutoGenerateProxyClasses(false);
     }
-    
+
     $connectionOptions = array(
         'driver' => 'pdo_sqlite',
         'path' => 'database.sqlite'
     );
-    
+
     $em = EntityManager::create($connectionOptions, $config);
 
 .. note::
@@ -260,6 +260,14 @@ options are interesting in development environment.
 Before v2.4, ``setAutoGenerateProxyClasses`` would accept a boolean
 value. This is still possible, ``FALSE`` being equivalent to
 AUTOGENERATE_NEVER and ``TRUE`` to AUTOGENERATE_ALWAYS.
+
+Set Proxy umask (***OPTIONAL***)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+    $config->setProxyUmask($umask);
 
 Development vs Production Configuration
 ---------------------------------------

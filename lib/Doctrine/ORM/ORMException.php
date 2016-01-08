@@ -340,4 +340,17 @@ class ORMException extends Exception
     {
         return new self("Can't use IN operator on entities that have composite keys.");
     }
+
+    /**
+     * @param $umask
+     *
+     * @return ORMException
+     */
+    public static function invalidProxyUmask($umask)
+    {
+        return new self(sprintf(
+            'The proxy umask must be an integer, was: %s',
+            gettype($umask)
+        ));
+    }
 }
