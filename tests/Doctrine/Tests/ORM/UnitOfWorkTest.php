@@ -150,7 +150,8 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork->persist($entity);
 
         $this->_unitOfWork->commit();
-        $this->assertEquals(1, count($persister->getInserts()));
+        $this->assertCount(1, $persister->getInserts());
+
         $persister->reset();
 
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
@@ -319,6 +320,34 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+    }
+
+    /**
+     * @group 5579
+     */
+    public function testEntityChangeSetNotClearAfterFlushOnEntityOrArrayOfEntity()
+    {
+        // Create and Set first entity
+        $entity1 = new NotifyChangedEntity;
+        $entity1->setData('thedata');
+        $this->_unitOfWork->persist($entity1);
+
+        // Create and Set second entity
+        $entity2 = new NotifyChangedEntity;
+        $entity2->setData('thedata');
+        $this->_unitOfWork->persist($entity2);
+
+        $this->_unitOfWork->commit($entity1);
+        $this->assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
+
+        // Create and Set third entity
+        $entity3 = new NotifyChangedEntity;
+        $entity3->setData('thedata');
+        $this->_unitOfWork->persist($entity3);
+
+        $this->_unitOfWork->commit([$entity1,$entity2]);
+        $this->assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity3));
+
     }
 
     /**
