@@ -11,7 +11,7 @@ The Second Level Cache is designed to reduce the amount of necessary database ac
 It sits between your application and the database to avoid the number of database hits as much as possible.
 
 When turned on, entities will be first searched in cache and if they are not found,
-a database query will be fired an then the entity result will be stored in a cache provider.
+a database query will be fired and then the entity result will be stored in a cache provider.
 
 There are some flavors of caching available, but is better to cache read-only data.
 
