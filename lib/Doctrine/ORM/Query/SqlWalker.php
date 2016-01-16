@@ -2272,7 +2272,9 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticFactor($factor)
     {
         if (is_string($factor)) {
-            return $factor;
+            return (isset($this->queryComponents[$factor]))
+                ? $this->walkResultVariable($this->queryComponents[$factor]['token']['value'])
+                : $factor;
         }
 
         // Phase 2 AST optimization: Skip processing of ArithmeticFactor
