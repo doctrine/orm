@@ -1,0 +1,259 @@
+<?php
+
+namespace Shitty\Tests\ORM\Cache\Persister\Collection;
+
+use Shitty\Tests\OrmTestCase;
+
+use Shitty\ORM\Cache\Region;
+use Shitty\ORM\EntityManager;
+use Shitty\ORM\Persisters\Collection\CollectionPersister;
+
+use Shitty\Tests\Models\Cache\State;
+use Shitty\Common\Collections\ArrayCollection;
+
+/**
+ * @group DDC-2183
+ */
+abstract class AbstractCollectionPersisterTest extends OrmTestCase
+{
+    /**
+     * @var \Shitty\ORM\Cache\Region
+     */
+    protected $region;
+
+    /**
+     * @var \Shitty\ORM\Persisters\Collection\CollectionPersister
+     */
+    protected $collectionPersister;
+
+    /**
+     * @var \Shitty\ORM\EntityManager
+     */
+    protected $em;
+
+    /**
+     * @var array
+     */
+    protected $regionMockMethods = array(
+        'getName',
+        'contains',
+        'get',
+        'getMultiple',
+        'put',
+        'evict',
+        'evictAll'
+    );
+
+    /**
+     * @var array
+     */
+    protected $collectionPersisterMockMethods = array(
+        'delete',
+        'update',
+        'count',
+        'slice',
+        'contains',
+        'containsKey',
+        'removeElement',
+        'removeKey',
+        'get',
+        'getMultiple',
+        'loadCriteria'
+    );
+
+    /**
+     * @param \Shitty\ORM\EntityManager                             $em
+     * @param \Shitty\ORM\Persisters\Collection\CollectionPersister $persister
+     * @param \Shitty\ORM\Cache\Region                              $region
+     * @param array                                                   $mapping
+     *
+     * @return \Shitty\ORM\Cache\Persister\Collection\AbstractCollectionPersister
+     */
+    abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping);
+
+    protected function setUp()
+    {
+        $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
+        $this->enableSecondLevelCache();
+        parent::setUp();
+
+        $this->em                   = $this->_getTestEntityManager();
+        $this->region               = $this->createRegion();
+        $this->collectionPersister  = $this->getMock(
+            'Doctrine\ORM\Persisters\Collection\CollectionPersister',
+            $this->collectionPersisterMockMethods
+        );
+    }
+
+    /**
+     * @return \Shitty\ORM\Cache\Region
+     */
+    protected function createRegion()
+    {
+        return $this->getMock('Doctrine\ORM\Cache\Region', $this->regionMockMethods);
+    }
+
+    /**
+     * @return \Shitty\ORM\PersistentCollection
+     */
+    protected function createCollection($owner, $assoc = null, $class = null, $elements = null)
+    {
+        $em    = $this->em;
+        $class = $class ?: $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\State');
+        $assoc = $assoc ?: $class->associationMappings['cities'];
+        $coll  = new \Shitty\ORM\PersistentCollection($em, $class, $elements ?: new ArrayCollection);
+
+        $coll->setOwner($owner, $assoc);
+        $coll->setInitialized(true);
+
+        return $coll;
+    }
+
+    protected function createPersisterDefault()
+    {
+        $assoc = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\State')->associationMappings['cities'];
+
+        return $this->createPersister($this->em, $this->collectionPersister, $this->region, $assoc);
+    }
+
+    public function testImplementsEntityPersister()
+    {
+        $persister = $this->createPersisterDefault();
+
+        $this->assertInstanceOf('Doctrine\ORM\Persisters\Collection\CollectionPersister', $persister);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedPersister', $persister);
+        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $persister);
+    }
+
+    public function testInvokeDelete()
+    {
+        $entity     = new State("Foo");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('delete')
+            ->with($this->equalTo($collection));
+
+        $this->assertNull($persister->delete($collection));
+    }
+
+    public function testInvokeUpdate()
+    {
+        $entity     = new State("Foo");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $collection->setDirty(true);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('update')
+            ->with($this->equalTo($collection));
+
+        $this->assertNull($persister->update($collection));
+    }
+
+    public function testInvokeCount()
+    {
+        $entity     = new State("Foo");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('count')
+            ->with($this->equalTo($collection))
+            ->will($this->returnValue(0));
+
+        $this->assertEquals(0, $persister->count($collection));
+    }
+
+    public function testInvokeSlice()
+    {
+        $entity     = new State("Foo");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+        $slice      = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('slice')
+            ->with($this->equalTo($collection), $this->equalTo(1), $this->equalTo(2))
+            ->will($this->returnValue($slice));
+
+        $this->assertEquals($slice, $persister->slice($collection, 1 , 2));
+    }
+
+    public function testInvokeContains()
+    {
+        $entity     = new State("Foo");
+        $element    = new State("Bar");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('contains')
+            ->with($this->equalTo($collection), $this->equalTo($element))
+            ->will($this->returnValue(false));
+
+        $this->assertFalse($persister->contains($collection,$element));
+    }
+
+    public function testInvokeContainsKey()
+    {
+        $entity     = new State("Foo");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('containsKey')
+            ->with($this->equalTo($collection), $this->equalTo(0))
+            ->will($this->returnValue(false));
+
+        $this->assertFalse($persister->containsKey($collection, 0));
+    }
+
+    public function testInvokeRemoveElement()
+    {
+        $entity     = new State("Foo");
+        $element    = new State("Bar");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('removeElement')
+            ->with($this->equalTo($collection), $this->equalTo($element))
+            ->will($this->returnValue(false));
+
+        $this->assertFalse($persister->removeElement($collection, $element));
+    }
+
+    public function testInvokeGet()
+    {
+        $entity     = new State("Foo");
+        $element    = new State("Bar");
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+
+        $this->collectionPersister->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo($collection), $this->equalTo(0))
+            ->will($this->returnValue($element));
+
+        $this->assertEquals($element, $persister->get($collection, 0));
+    }
+}

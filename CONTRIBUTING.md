@@ -1,6 +1,6 @@
-# Contribute to Doctrine
+# Contribute to Shitty
 
-Thank you for contributing to Doctrine!
+Thank you for contributing to Shitty!
 
 Before we can merge your Pull-Request here are some guidelines that you need to follow.
 These guidelines exist not to annoy you, but to keep the code base clean,
@@ -36,7 +36,7 @@ with some exceptions/differences:
 Please try to add a test for your pull-request.
 
 * If you want to fix a bug or provide a reproduce case, create a test file in
-  ``tests/Doctrine/Tests/ORM/Functional/Ticket`` with the name of the ticket,
+  ``tests/Shitty/Tests/ORM/Functional/Ticket`` with the name of the ticket,
   ``DDC1234Test.php`` for example.
 * If you want to contribute new functionality add unit- or functional tests
   depending on the scope of the feature.
@@ -66,7 +66,7 @@ sqlite database.
 Tips for creating unit tests:
 
 1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
-   See `https://github.com/doctrine/doctrine2/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
+   See `https://github.com/doctrine/doctrine2/tree/master/tests/Shitty/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
    example.
 
 ## Travis

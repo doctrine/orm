@@ -1,0 +1,54 @@
+<?php
+
+namespace Shitty\Tests\ORM\Mapping;
+
+use Shitty\ORM\Mapping\ClassMetadata;
+use Shitty\ORM\Events;
+
+class ClassMetadataLoadEventTest extends \Shitty\Tests\OrmTestCase
+{
+    /**
+     * @group DDC-1610
+     */
+    public function testEvent()
+    {
+        $em = $this->_getTestEntityManager();
+        $metadataFactory = $em->getMetadataFactory();
+        $evm = $em->getEventManager();
+        $evm->addEventListener(Events::loadClassMetadata, $this);
+        $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\ORM\Mapping\LoadEventTestEntity');
+        $this->assertTrue($classMetadata->hasField('about'));
+        $this->assertArrayHasKey('about', $classMetadata->reflFields);
+        $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
+    }
+
+    public function loadClassMetadata(\Shitty\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
+    {
+        $classMetadata = $eventArgs->getClassMetadata();
+        $field = array(
+            'fieldName' => 'about',
+            'type' => 'string',
+            'length' => 255
+        );
+        $classMetadata->mapField($field);
+    }
+}
+
+/**
+ * @Entity
+ * @Table(name="load_event_test_entity")
+ */
+class LoadEventTestEntity
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    /**
+     * @Column(type="string", length=255)
+     */
+    private $name;
+
+    private $about;
+}
