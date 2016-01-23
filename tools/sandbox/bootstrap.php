@@ -1,7 +1,7 @@
 <?php
 
-use Doctrine\Common\Cache;
-use Doctrine\ORM\EntityManager;
+use Shitty\Common\Cache;
+use Shitty\ORM\EntityManager;
 
 // Path to composer autoloader. You can use different provided by your favorite framework,
 // if you want to.
@@ -16,7 +16,7 @@ $loader->add('Entities', __DIR__);
 $loader->add('Proxies', __DIR__);
 
 $debug = true;
-$config = new \Doctrine\ORM\Configuration();
+$config = new \Shitty\ORM\Configuration();
 
 // Set up Metadata Drivers
 $driverImpl = $config->newDefaultAnnotationDriver(array(__DIR__ . "/Entities"));
@@ -39,10 +39,10 @@ $connectionOptions = array(
 );
 
 // Enable second-level cache
-$cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+$cacheConfig    = new \Shitty\ORM\Cache\CacheConfiguration();
 $cacheDriver    = $debug ? new Cache\ArrayCache : new Cache\ApcCache;
-$cacheLogger    = new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
-$factory        = new \Doctrine\ORM\Cache\DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cacheDriver);
+$cacheLogger    = new \Shitty\ORM\Cache\Logging\StatisticsCacheLogger();
+$factory        = new \Shitty\ORM\Cache\DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cacheDriver);
 
 if ($debug) {
     $cacheConfig->setCacheLogger($cacheLogger);

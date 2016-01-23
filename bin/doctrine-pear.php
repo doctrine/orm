@@ -19,10 +19,10 @@
 
 require_once 'Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
+$classLoader = new \Shitty\Common\ClassLoader('Doctrine');
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony');
+$classLoader = new \Shitty\Common\ClassLoader('Symfony');
 $classLoader->register();
 
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
@@ -47,4 +47,4 @@ if (file_exists($configFile)) {
 
 $helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
 
-\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);
+\Shitty\ORM\Tools\Console\ConsoleRunner::run($helperSet);

@@ -1,4 +1,4 @@
-# Doctrine ORM Documentation
+# Shitty ORM Documentation
 
 ## How to Generate:
 Using Ubuntu 14.04 LTS:

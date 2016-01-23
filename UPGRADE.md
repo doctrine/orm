@@ -23,8 +23,8 @@ an ``EntityManagerInterface`` instead.
 If you are extending any of the following classes, then you need to check following
 signatures:
 
-- ``Doctrine\ORM\Tools\DebugUnitOfWorkListener#dumpIdentityMap(EntityManagerInterface $em)``
-- ``Doctrine\ORM\Mapping\ClassMetadataFactory#setEntityManager(EntityManagerInterface $em)``
+- ``Shitty\ORM\Tools\DebugUnitOfWorkListener#dumpIdentityMap(EntityManagerInterface $em)``
+- ``Shitty\ORM\Mapping\ClassMetadataFactory#setEntityManager(EntityManagerInterface $em)``
 
 ## Minor BC BREAK: Custom Hydrators API change
 
@@ -32,7 +32,7 @@ As of 2.5, `AbstractHydrator` does not enforce the usage of cache as part of
 API, and now provides you a clean API for column information through the method
 `hydrateColumnInfo($column)`.
 Cache variable being passed around by reference is no longer needed since
-Hydrators are per query instantiated since Doctrine 2.4.
+Hydrators are per query instantiated since Shitty 2.4.
 
 ## Minor BC BREAK: Entity based ``EntityManager#clear()`` calls follow cascade detach
 
@@ -53,7 +53,7 @@ now also need to implement this new method.
 
 ## Updates on entities scheduled for deletion are no longer processed
 
-In Doctrine 2.4, if you modified properties of an entity scheduled for deletion, UnitOfWork would
+In Shitty 2.4, if you modified properties of an entity scheduled for deletion, UnitOfWork would
 produce an UPDATE statement to be executed right before the DELETE statement. The entity in question
 was therefore present in ``UnitOfWork#entityUpdates``, which means that ``preUpdate`` and ``postUpdate``
 listeners were (quite pointlessly) called. In ``preFlush`` listeners, it used to be possible to undo
@@ -70,22 +70,22 @@ queries by default. This could result in unpredictable results because an explic
 table hint tells SQL Server to run a specific query in transaction isolation level READ UNCOMMITTED
 instead of the default READ COMMITTED transaction isolation level.
 Therefore there now is a distinction between ``LockMode::NONE`` and ``null`` to be able to tell
-Doctrine whether to add table lock hints to queries by intention or not. To achieve this, the following
+Shitty whether to add table lock hints to queries by intention or not. To achieve this, the following
 method signatures have been changed to declare ``$lockMode = null`` instead of ``$lockMode = LockMode::NONE``:
 
-- ``Doctrine\ORM\Cache\Persister\AbstractEntityPersister#getSelectSQL()``
-- ``Doctrine\ORM\Cache\Persister\AbstractEntityPersister#load()``
-- ``Doctrine\ORM\Cache\Persister\AbstractEntityPersister#refresh()``
-- ``Doctrine\ORM\Decorator\EntityManagerDecorator#find()``
-- ``Doctrine\ORM\EntityManager#find()``
-- ``Doctrine\ORM\EntityRepository#find()``
-- ``Doctrine\ORM\Persisters\BasicEntityPersister#getSelectSQL()``
-- ``Doctrine\ORM\Persisters\BasicEntityPersister#load()``
-- ``Doctrine\ORM\Persisters\BasicEntityPersister#refresh()``
-- ``Doctrine\ORM\Persisters\EntityPersister#getSelectSQL()``
-- ``Doctrine\ORM\Persisters\EntityPersister#load()``
-- ``Doctrine\ORM\Persisters\EntityPersister#refresh()``
-- ``Doctrine\ORM\Persisters\JoinedSubclassPersister#getSelectSQL()``
+- ``Shitty\ORM\Cache\Persister\AbstractEntityPersister#getSelectSQL()``
+- ``Shitty\ORM\Cache\Persister\AbstractEntityPersister#load()``
+- ``Shitty\ORM\Cache\Persister\AbstractEntityPersister#refresh()``
+- ``Shitty\ORM\Decorator\EntityManagerDecorator#find()``
+- ``Shitty\ORM\EntityManager#find()``
+- ``Shitty\ORM\EntityRepository#find()``
+- ``Shitty\ORM\Persisters\BasicEntityPersister#getSelectSQL()``
+- ``Shitty\ORM\Persisters\BasicEntityPersister#load()``
+- ``Shitty\ORM\Persisters\BasicEntityPersister#refresh()``
+- ``Shitty\ORM\Persisters\EntityPersister#getSelectSQL()``
+- ``Shitty\ORM\Persisters\EntityPersister#load()``
+- ``Shitty\ORM\Persisters\EntityPersister#refresh()``
+- ``Shitty\ORM\Persisters\JoinedSubclassPersister#getSelectSQL()``
 
 You should update signatures for these methods if you have subclassed one of the above classes.
 Please also check the calling code of these methods in your application and update if necessary.
@@ -101,10 +101,10 @@ As of PHP 5.6, instantiation of new entities is deferred to the
 [`doctrine/instantiator`](https://github.com/doctrine/instantiator) library, which will avoid calling `__clone`
 or any public API on instantiated objects.
 
-## BC BREAK: `Doctrine\ORM\Repository\DefaultRepositoryFactory` is now `final`
+## BC BREAK: `Shitty\ORM\Repository\DefaultRepositoryFactory` is now `final`
 
-Please implement the `Doctrine\ORM\Repository\RepositoryFactory` interface instead of extending
-the `Doctrine\ORM\Repository\DefaultRepositoryFactory`.
+Please implement the `Shitty\ORM\Repository\RepositoryFactory` interface instead of extending
+the `Shitty\ORM\Repository\DefaultRepositoryFactory`.
 
 ## BC BREAK: New object expression DQL queries now respects user provided aliasing and not return consumed fields
 
@@ -146,7 +146,7 @@ Added way to access the underlying QueryBuilder#from() method's 'indexBy' parame
 
 ## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
 
-In Doctrine 2.3 it was possible to use the new ``matching($criteria)``
+In Shitty 2.3 it was possible to use the new ``matching($criteria)``
 functionality by adding constraints for assocations based on ID:
 
     Criteria::expr()->eq('association', $assocation->getId());
@@ -198,7 +198,7 @@ listener in ``loadClassMetadata`` event.
 
 Previous to 2.3, calling ``EntityManager#find()`` would be delegated to
 ``EntityRepository#find()``.  This has lead to some unexpected behavior in the
-core of Doctrine when people have overwritten the find method in their
+core of Shitty when people have overwritten the find method in their
 repositories. That is why this behavior has been reversed in 2.3, and
 ``EntityRepository#find()`` calls ``EntityManager#find()`` instead.
 
@@ -243,17 +243,17 @@ above you must implement these new methods.
 
 ## Metadata Drivers
 
-Metadata drivers have been rewritten to reuse code from Doctrine\Common. Anyone who is using the
-`Doctrine\ORM\Mapping\Driver\Driver` interface should instead refer to
-`Doctrine\Common\Persistence\Mapping\Driver\MappingDriver`. Same applies to
-`Doctrine\ORM\Mapping\Driver\AbstractFileDriver`: you should now refer to
-`Doctrine\Common\Persistence\Mapping\Driver\FileDriver`.
+Metadata drivers have been rewritten to reuse code from Shitty\Common. Anyone who is using the
+`Shitty\ORM\Mapping\Driver\Driver` interface should instead refer to
+`Shitty\Common\Persistence\Mapping\Driver\MappingDriver`. Same applies to
+`Shitty\ORM\Mapping\Driver\AbstractFileDriver`: you should now refer to
+`Shitty\Common\Persistence\Mapping\Driver\FileDriver`.
 
-Also, following mapping drivers have been deprecated, please use their replacements in Doctrine\Common as listed:
+Also, following mapping drivers have been deprecated, please use their replacements in Shitty\Common as listed:
 
- *  `Doctrine\ORM\Mapping\Driver\DriverChain`       => `Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain`
- *  `Doctrine\ORM\Mapping\Driver\PHPDriver`         => `Doctrine\Common\Persistence\Mapping\Driver\PHPDriver`
- *  `Doctrine\ORM\Mapping\Driver\StaticPHPDriver`   => `Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver`
+ *  `Shitty\ORM\Mapping\Driver\DriverChain`       => `Shitty\Common\Persistence\Mapping\Driver\MappingDriverChain`
+ *  `Shitty\ORM\Mapping\Driver\PHPDriver`         => `Shitty\Common\Persistence\Mapping\Driver\PHPDriver`
+ *  `Shitty\ORM\Mapping\Driver\StaticPHPDriver`   => `Shitty\Common\Persistence\Mapping\Driver\StaticPHPDriver`
 
 # Upgrade to 2.2
 
@@ -268,7 +268,7 @@ the hydration mode. Affected areas are:
 2. Affects the array hydrator which now includes the overhead of hydration compared to caching the final result.
 
 The API is backwards compatible however most of the getter methods on the `AbstractQuery` object are now
-deprecated in favor of calling AbstractQuery#getQueryCacheProfile(). This method returns a `Doctrine\DBAL\Cache\QueryCacheProfile`
+deprecated in favor of calling AbstractQuery#getQueryCacheProfile(). This method returns a `Shitty\DBAL\Cache\QueryCacheProfile`
 instance with access to result cache driver, lifetime and cache key.
 
 
@@ -296,11 +296,11 @@ There have been some changes to the annotation handling in Common 2.2 again, tha
 from 2.0 have to configure the annotation driver if they don't use `Configuration::newDefaultAnnotationDriver()`:
 
     // Register the ORM Annotations in the AnnotationRegistry
-    AnnotationRegistry::registerFile('path/to/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+    AnnotationRegistry::registerFile('path/to/Shitty/ORM/Mapping/Driver/DoctrineAnnotations.php');
 
-    $reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-    $reader->addNamespace('Doctrine\ORM\Mapping');
-    $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
+    $reader = new \Shitty\Common\Annotations\SimpleAnnotationReader();
+    $reader->addNamespace('Shitty\ORM\Mapping');
+    $reader = new \Shitty\Common\Annotations\CachedReader($reader, new ArrayCache());
 
     $driver = new AnnotationDriver($reader, (array)$paths);
 
@@ -331,8 +331,8 @@ Will now return a collection of arrays with index "user" pointing to the User ob
 ## Performance optimizations
 
 Thousands of lines were completely reviewed and optimized for best performance.
-Removed redundancy and improved code readability made now internal Doctrine code easier to understand.
-Also, Doctrine 2.2 now is around 10-15% faster than 2.1.
+Removed redundancy and improved code readability made now internal Shitty code easier to understand.
+Also, Shitty 2.2 now is around 10-15% faster than 2.1.
 
 ## EntityManager#find(null)
 
@@ -342,22 +342,22 @@ Previously EntityManager#find(null) returned null. It now throws an exception.
 
 ## Interface for EntityRepository
 
-The EntityRepository now has an interface Doctrine\Common\Persistence\ObjectRepository. This means that your classes that override EntityRepository and extend find(), findOneBy() or findBy() must be adjusted to follow this interface.
+The EntityRepository now has an interface Shitty\Common\Persistence\ObjectRepository. This means that your classes that override EntityRepository and extend find(), findOneBy() or findBy() must be adjusted to follow this interface.
 
 ## AnnotationReader changes
 
 The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory the operation of the new reader should be backwards compatible, but it has to be setup differently to work that way:
 
     // new call to the AnnotationRegistry
-    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+    \Shitty\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Shitty/ORM/Mapping/Driver/DoctrineAnnotations.php');
 
-    $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+    $reader = new \Shitty\Common\Annotations\AnnotationReader();
+    $reader->setDefaultAnnotationNamespace('Shitty\ORM\Mapping\\');
     // new code necessary starting here
     $reader->setIgnoreNotImportedAnnotations(true);
     $reader->setEnableParsePhpImports(false);
-    $reader = new \Doctrine\Common\Annotations\CachedReader(
-        new \Doctrine\Common\Annotations\IndexedReader($reader), new ArrayCache()
+    $reader = new \Shitty\Common\Annotations\CachedReader(
+        new \Shitty\Common\Annotations\IndexedReader($reader), new ArrayCache()
     );
 
 This is already done inside the ``$config->newDefaultAnnotationDriver``, so everything should automatically work if you are using this method. You can verify if everything still works by executing a console command such as schema-validate that loads all metadata into memory.
@@ -453,7 +453,7 @@ changed to private!
 
 ## Console migrated to Symfony Console
 
-The Doctrine CLI has been replaced by Symfony Console Configuration
+The Shitty CLI has been replaced by Symfony Console Configuration
 
 Instead of having to specify:
 
@@ -465,8 +465,8 @@ You now have to configure the script like:
 
     [php]
     $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
-        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
-        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
+        'db' => new \Shitty\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
+        'em' => new \Shitty\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
 
 ## Console: No need for Mapping Paths anymore
@@ -606,8 +606,8 @@ implementations need to be updated to adhere to the updated interface.
 
 ## CLI Controller changes
 
-CLI main object changed its name and namespace. Renamed from Doctrine\ORM\Tools\Cli to Doctrine\Common\Cli\CliController.
-Doctrine\Common\Cli\CliController now only deals with namespaces. Ready to go, Core, Dbal and Orm are available and you can subscribe new tasks by retrieving the namespace and including new task. Example:
+CLI main object changed its name and namespace. Renamed from Shitty\ORM\Tools\Cli to Shitty\Common\Cli\CliController.
+Shitty\Common\Cli\CliController now only deals with namespaces. Ready to go, Core, Dbal and Orm are available and you can subscribe new tasks by retrieving the namespace and including new task. Example:
 
     [php]
     $cli->getNamespace('Core')->addTask('my-example', '\MyProject\Tools\Cli\Tasks\MyExampleTask');
@@ -620,13 +620,13 @@ With new required method AbstractTask::buildDocumentation, its implementation de
 
 ## Changes in Method Signatures
 
-    * A bunch of Methods on both Doctrine\DBAL\Platforms\AbstractPlatform and Doctrine\DBAL\Schema\AbstractSchemaManager
+    * A bunch of Methods on both Shitty\DBAL\Platforms\AbstractPlatform and Shitty\DBAL\Schema\AbstractSchemaManager
       have changed quite significantly by adopting the new Schema instance objects.
 
 ## Renamed Methods
 
-    * Doctrine\ORM\AbstractQuery::setExpireResultCache() -> expireResultCache()
-    * Doctrine\ORM\Query::setExpireQueryCache() -> expireQueryCache()
+    * Shitty\ORM\AbstractQuery::setExpireResultCache() -> expireResultCache()
+    * Shitty\ORM\Query::setExpireQueryCache() -> expireQueryCache()
 
 ## SchemaTool Changes
 
@@ -640,12 +640,12 @@ With new required method AbstractTask::buildDocumentation, its implementation de
     your schema.
 # Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
 
-This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you
+This section details the changes made to Shitty 2.0-ALPHA3 to make it easier for you
 to upgrade your projects to use this version.
 
 ## CLI Changes
 
-The $args variable used in the cli-config.php for configuring the Doctrine CLI has been renamed to $globalArguments.
+The $args variable used in the cli-config.php for configuring the Shitty CLI has been renamed to $globalArguments.
 
 ## Proxy class changes
 
@@ -653,7 +653,7 @@ You are now required to make supply some minimalist configuration with regards t
 
     [php]
     // step 1: configure directory for proxy classes
-    // $config instanceof Doctrine\ORM\Configuration
+    // $config instanceof Shitty\ORM\Configuration
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Generated/Proxies');
     $config->setProxyNamespace('MyProject\Generated\Proxies');
 
@@ -671,5 +671,5 @@ The new behavior is as if the option were set to FALSE all the time, basically d
 
 ## Renamed Methods
 
-* Doctrine\ORM\Configuration#getCacheDir() to getProxyDir()
-* Doctrine\ORM\Configuration#setCacheDir($dir) to setProxyDir($dir)
+* Shitty\ORM\Configuration#getCacheDir() to getProxyDir()
+* Shitty\ORM\Configuration#setCacheDir($dir) to setProxyDir($dir)

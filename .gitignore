@@ -4,8 +4,8 @@ reports/
 dist/
 download/
 lib/api/
-lib/Doctrine/Common
-lib/Doctrine/DBAL
+lib/Shitty/Common
+lib/Shitty/DBAL
 /.settings/
 .buildpath
 .project

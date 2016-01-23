@@ -1,0 +1,67 @@
+<?php
+
+namespace Shitty\Tests\ORM\Functional\Ticket;
+
+use Shitty\ORM\UnitOfWork;
+
+/**
+ * @group DDC-1454
+ */
+class DDC1454Test extends \Shitty\Tests\OrmFunctionalTestCase
+{
+    protected function setUp()
+    {
+        parent::setUp();
+
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1454File'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1454Picture'),
+            ));
+        } catch (\Exception $ignored) {
+
+        }
+    }
+
+    public function testFailingCase()
+    {
+        $pic = new DDC1454Picture();
+        $this->_em->getUnitOfWork()->getEntityState($pic);
+    }
+
+}
+
+/**
+ * @Entity
+ */
+class DDC1454Picture extends DDC1454File
+{
+
+}
+
+/**
+ * @Entity
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
+ */
+class DDC1454File
+{
+    /**
+     * @Column(name="file_id", type="integer")
+     * @Id
+     */
+    public $fileId;
+
+    public function __construct() {
+        $this->fileId = rand();
+    }
+
+    /**
+     * Get fileId
+     */
+    public function getFileId() {
+        return $this->fileId;
+    }
+
+}
