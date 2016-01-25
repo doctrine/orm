@@ -71,6 +71,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $embeddablesActiveNesting = array();
 
     /**
+     * @var string
+     */
+    protected $metadataClass = 'Doctrine\ORM\Mapping\ClassMetadata';
+
+    /**
+     * @param $className string
+     * @throws \Exception
+     */
+    public function setMetadataClass($className)
+    {
+        if ( ! in_array('Doctrine\Common\Persistence\Mapping\ClassMetadata', class_implements($className))) {
+            throw new \Exception('Metadata class must implement \'Doctrine\Common\Persistence\Mapping\ClassMetadata\' interface');
+        }
+        $this->metadataClass = $className;
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected function loadMetadata($name)
@@ -287,7 +304,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function newClassMetadataInstance($className)
     {
-        return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+        return new $this->metadataClass($className, $this->em->getConfiguration()->getNamingStrategy());
     }
 
     /**
