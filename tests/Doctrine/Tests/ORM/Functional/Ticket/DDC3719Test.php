@@ -24,10 +24,10 @@ class DDC3719Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCriteriaOnNotOwningSide()
     {
         $manager = new CompanyManager();
-		$manager->setName('Gandalf');
-		$manager->setSalary(666);
-		$manager->setTitle('Boss');
-		$manager->setDepartment('Marketing');
+        $manager->setName('Gandalf');
+        $manager->setSalary(666);
+        $manager->setTitle('Boss');
+        $manager->setDepartment('Marketing');
         $this->_em->persist($manager);
 
         $contractA = new CompanyFlexContract();
@@ -43,12 +43,12 @@ class DDC3719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->refresh($manager);
 
         $contracts = $manager->managedContracts;
-		static::assertCount(2, $contracts);
+        static::assertCount(2, $contracts);
 
-		$criteria = Criteria::create();
-		$criteria->where(Criteria::expr()->eq("completed", true));
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->eq("completed", true));
 
-		$completedContracts = $contracts->matching($criteria);
-		static::assertCount(1, $completedContracts);
+        $completedContracts = $contracts->matching($criteria);
+        static::assertCount(1, $completedContracts);
     }
 }
