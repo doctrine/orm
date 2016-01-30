@@ -146,13 +146,13 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $address2 = $this->_em->find(get_class($address), $address->id);
         $this->assertInstanceOf(GhostObjectInterface::class, $address2->user);
         $this->assertFalse($address2->user->isProxyInitialized());
-        $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertInstanceOf(GhostObjectInterface::class, $detachedAddress2->user);
-        $this->assertFalse($detachedAddress2->user->isProxyInitialized());
+        $this->_em->detach($address2);
+        $this->assertInstanceOf(GhostObjectInterface::class, $address2->user);
+        $this->assertFalse($address2->user->isProxyInitialized());
 
-        $managedAddress2 = $this->_em->merge($detachedAddress2);
+        $managedAddress2 = $this->_em->merge($address2);
         $this->assertInstanceOf(GhostObjectInterface::class, $managedAddress2->user);
-        $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
+        $this->assertSame($managedAddress2->user, $address2->user);
         $this->assertFalse($managedAddress2->user->isProxyInitialized());
     }
 
