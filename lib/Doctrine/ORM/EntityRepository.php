@@ -225,7 +225,7 @@ class EntityRepository implements ObjectRepository, Selectable
 
             default:
                 throw new \BadMethodCallException(
-                    "In " . $this->_entityName . 
+                    "In Repository for Entity " . $this->_entityName . 
                     " Undefined method '$method'. The method name must start with ".
                     "either findBy or findOneBy!"
                 );
