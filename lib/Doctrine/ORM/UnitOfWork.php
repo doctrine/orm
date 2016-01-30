@@ -1884,8 +1884,8 @@ class UnitOfWork implements PropertyChangedListener
             $visited[$oid] = $managedCopy; // mark visited
 
             if ($this->isLoaded($entity)) {
-                if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized()) {
-                    $managedCopy->__load();
+                if ($managedCopy instanceof GhostObjectInterface) {
+                    $managedCopy->initializeProxy();
                 }
 
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
@@ -1917,7 +1917,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function isLoaded($entity)
     {
-        return !($entity instanceof Proxy) || $entity->__isInitialized();
+        return !($entity instanceof GhostObjectInterface) || $entity->isProxyInitialized();
     }
 
     /**
