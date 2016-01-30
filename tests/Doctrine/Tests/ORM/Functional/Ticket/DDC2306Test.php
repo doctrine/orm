@@ -55,7 +55,7 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /* @var $address DDC2306Address */
         $address = $this->_em->find(__NAMESPACE__ . '\\DDC2306Address', $address->id);
-        /* @var $user DDC2306User|\Doctrine\ORM\Proxy\Proxy */
+        /* @var $user DDC2306User|GhostObjectInterface */
         $user    = $address->users->first()->user;
 
         $this->assertInstanceOf(GhostObjectInterface::class, $user);

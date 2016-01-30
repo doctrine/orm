@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\UnitOfWork;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1452
@@ -46,7 +47,7 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
 
         $this->assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
-        $this->assertFalse( $results[0]->entitiesB[0]->entityATo instanceof \Doctrine\ORM\Proxy\Proxy );
+        $this->assertFalse($results[0]->entitiesB[0]->entityATo instanceof GhostObjectInterface);
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
@@ -74,12 +75,12 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $data = $this->_em->createQuery($dql)->getResult();
         $this->_em->clear();
 
-        $this->assertFalse($data[0]->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($data[0]->user instanceof GhostObjectInterface);
 
         $dql = "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a";
         $data = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertFalse($data[0]->address instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($data[0]->address instanceof GhostObjectInterface);
     }
 }
 
