@@ -24,9 +24,6 @@ use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use Doctrine\Common\Proxy\Exception\OutOfBoundsException;
 use Doctrine\Common\Proxy\ProxyDefinition;
-use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Proxy\Proxy as BaseProxy;
-use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -194,7 +191,8 @@ class ProxyFactory extends AbstractProxyFactory
             $classMetadata->getIdentifierFieldNames(),
             $classMetadata->getReflectionProperties(),
             $this->createInitializer($classMetadata, $entityPersister),
-            $this->createCloner($classMetadata, $entityPersister)
+            function () {
+            }
         );
     }
 
@@ -210,26 +208,15 @@ class ProxyFactory extends AbstractProxyFactory
      */
     private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
-        if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (GhostObjectInterface $proxy, $method, $parameters, & $initializer) use ($entityPersister, $classMetadata) {
-                $initializerBkp = $initializer;
-                $initializer    = null;
-
-                if (! $initializerBkp) {
-                    return;
-                }
-
-                $proxy->__wakeup();
-
-                if (null === $entityPersister->loadById($classMetadata->getIdentifierValues($proxy), $proxy)) {
-                    $initializer = $initializerBkp;
-
-                    throw new EntityNotFoundException($classMetadata->getName());
-                }
-            };
-        }
-
-        return function (GhostObjectInterface $proxy, $method, $parameters, & $initializer) use ($entityPersister, $classMetadata) {
+        return function (
+            GhostObjectInterface $proxy,
+            $method,
+            $parameters,
+            & $initializer
+        ) use (
+            $entityPersister,
+            $classMetadata
+        ) {
             $initializerBkp = $initializer;
             $initializer    = null;
 
@@ -243,49 +230,6 @@ class ProxyFactory extends AbstractProxyFactory
                 throw new EntityNotFoundException($classMetadata->getName());
             }
         };
-    }
-
-    /**
-     * Creates a closure capable of finalizing state a cloned proxy
-     *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
-     *
-     * @return \Closure
-     *
-     * @throws \Doctrine\ORM\EntityNotFoundException
-     */
-    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
-    {
-        return function () {};
-        /*return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
-            if ($proxy->__isInitialized()) {
-                return;
-            }
-
-            $proxy->__setInitialized(true);
-            $proxy->__setInitializer(null);
-
-            $class      = $entityPersister->getClassMetadata();
-            $identifier = $classMetadata->getIdentifierValues($proxy);
-            $original   = $entityPersister->loadById($identifier);
-
-            if (null === $original) {
-                throw EntityNotFoundException::fromClassNameAndIdentifier(
-                    $classMetadata->getName(),
-                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
-                );
-            }
-
-            foreach ($class->getReflectionClass()->getProperties() as $property) {
-                if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
-                    continue;
-                }
-
-                $property->setAccessible(true);
-                $property->setValue($proxy, $property->getValue($original));
-            }
-        };*/
     }
 
     /**
