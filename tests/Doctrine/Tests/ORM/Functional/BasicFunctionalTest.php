@@ -690,8 +690,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getSingleResult();
 
         $this->assertInstanceOf(GhostObjectInterface::class, $address2->getUser());
+        $this->assertFalse($userRef->isProxyInitialized());
         $this->assertTrue($userRef === $address2->getUser());
         $this->assertFalse($userRef->isProxyInitialized());
+        $this->assertSame($userRef, $address2->getUser());
         $this->assertEquals('Germany', $address2->country);
         $this->assertEquals('Berlin', $address2->city);
         $this->assertEquals('12345', $address2->zip);
