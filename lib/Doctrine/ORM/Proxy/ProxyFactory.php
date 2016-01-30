@@ -29,6 +29,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 use ProxyManager\Generator\ClassGenerator;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -83,12 +84,13 @@ class ProxyFactory extends AbstractProxyFactory
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
-        $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+        $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
-        $this->em      = $em;
-        $this->uow     = $em->getUnitOfWork();
-        $this->proxyNs = $proxyNs;
+        $this->em                  = $em;
+        $this->uow                 = $em->getUnitOfWork();
+        $this->proxyNs             = $proxyNs;
+        $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
     }
 
     /**
@@ -185,14 +187,14 @@ class ProxyFactory extends AbstractProxyFactory
     {
         $classMetadata   = $this->em->getClassMetadata($className);
         $entityPersister = $this->uow->getEntityPersister($className);
+        $cloner          = $this->createCloner($classMetadata, $entityPersister);
 
         return new ProxyDefinition(
             ClassUtils::generateProxyClassName($className, $this->proxyNs),
             $classMetadata->getIdentifierFieldNames(),
             $classMetadata->getReflectionProperties(),
-            $this->createInitializer($classMetadata, $entityPersister),
-            function () {
-            }
+            $this->createInitializer($classMetadata, $entityPersister, $cloner),
+            $this->createCloner($classMetadata, $entityPersister)
         );
     }
 
@@ -201,12 +203,13 @@ class ProxyFactory extends AbstractProxyFactory
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
      * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
+     * @param \Closure                                           $cloner
      *
      * @return \Closure
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, \Closure $cloner)
     {
         return function (
             GhostObjectInterface $proxy,
@@ -215,19 +218,69 @@ class ProxyFactory extends AbstractProxyFactory
             & $initializer
         ) use (
             $entityPersister,
-            $classMetadata
+            $classMetadata,
+            $cloner
         ) {
+            if (! $initializer) {
+                return false;
+            }
+
+            if ('__clone' === strtolower($method)) {
+                $cloner($proxy, $initializer);
+
+                return true;
+            }
+
             $initializerBkp = $initializer;
             $initializer    = null;
-
-            if (! $initializerBkp) {
-                return;
-            }
 
             if (null === $entityPersister->loadById($classMetadata->getIdentifierValues($proxy), $proxy)) {
                 $initializer = $initializerBkp;
 
                 throw new EntityNotFoundException($classMetadata->getName());
+            }
+
+            return true;
+        };
+    }
+
+    /**
+     * Creates a closure capable of finalizing state a cloned proxy
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
+     *
+     * @return \Closure
+     *
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     */
+    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    {
+        return function (GhostObjectInterface $proxy, & $initializer) use ($entityPersister, $classMetadata) {
+            if ($proxy->isProxyInitialized()) {
+                return;
+            }
+
+            $initializer = null;
+
+            $class      = $entityPersister->getClassMetadata();
+            $identifier = $classMetadata->getIdentifierValues($proxy);
+            $original   = $entityPersister->loadById($identifier);
+
+            if (null === $original) {
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $classMetadata->getName(),
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                );
+            }
+
+            foreach ($class->getReflectionClass()->getProperties() as $property) {
+                if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                    continue;
+                }
+
+                $property->setAccessible(true);
+                $property->setValue($proxy, $property->getValue($original));
             }
         };
     }
