@@ -36,7 +36,7 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sqlCount = count($sql);
 
         $this->assertEquals("CREATE TABLE cms_addresses (id INT NOT NULL, user_id INT DEFAULT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, PRIMARY KEY(id))", array_shift($sql));
-        $this->assertEquals("CREATE UNIQUE INDEX UNIQ_ACAC157BA76ED395 ON cms_addresses (user_id)", array_shift($sql));
+        $this->assertEquals("CREATE INDEX IDX_ACAC157BA76ED395 ON cms_addresses (user_id)", array_shift($sql));
         $this->assertEquals("CREATE TABLE cms_users (id INT NOT NULL, email_id INT DEFAULT NULL, status VARCHAR(50) DEFAULT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))", array_shift($sql));
         $this->assertEquals("CREATE UNIQUE INDEX UNIQ_3AF03EC5F85E0677 ON cms_users (username)", array_shift($sql));
         $this->assertEquals("CREATE UNIQUE INDEX UNIQ_3AF03EC5A832C1C9 ON cms_users (email_id)", array_shift($sql));

@@ -1595,8 +1595,8 @@ class ClassMetadataInfo implements ClassMetadata
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
                     if (count($mapping['joinColumns']) == 1) {
-                        if ( ! isset($mapping['id']) || ! $mapping['id']) {
-                            $joinColumn['unique'] = true;
+                        if (! isset($mapping['id']) || ! $mapping['id']) {
+                            $joinColumn['unique'] = isset($joinColumn['unique']) ? $joinColumn['unique'] : true ;
                         }
                     } else {
                         $uniqueConstraintColumns[] = $joinColumn['name'];
