@@ -27,6 +27,7 @@ use Doctrine\ORM\Tools\ConvertDoctrine1Schema;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -140,6 +141,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+
         // Process source directories
         $fromPaths = array_merge(array($input->getArgument('from-path')), $input->getOption('from'));
 
@@ -150,7 +153,7 @@ EOT
         $extend = $input->getOption('extend');
         $numSpaces = $input->getOption('num-spaces');
 
-        $this->convertDoctrine1Schema($fromPaths, $destPath, $toType, $numSpaces, $extend, $output);
+        $this->convertDoctrine1Schema($fromPaths, $destPath, $toType, $numSpaces, $extend, $io);
     }
 
     /**
@@ -159,11 +162,11 @@ EOT
      * @param string          $toType
      * @param int             $numSpaces
      * @param string|null     $extend
-     * @param OutputInterface $output
+     * @param SymfonyStyle    $io
      *
      * @throws \InvalidArgumentException
      */
-    public function convertDoctrine1Schema(array $fromPaths, $destPath, $toType, $numSpaces, $extend, OutputInterface $output)
+    public function convertDoctrine1Schema(array $fromPaths, $destPath, $toType, $numSpaces, $extend, SymfonyStyle $io)
     {
         foreach ($fromPaths as &$dirName) {
             $dirName = realpath($dirName);
@@ -211,20 +214,20 @@ EOT
         $metadata = $converter->getMetadata();
 
         if ($metadata) {
-            $output->writeln('');
+            $io->newLine();
 
             foreach ($metadata as $class) {
-                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->name));
+                $io->comment(sprintf('Processing entity "<info>%s</info>"', $class->name));
             }
 
             $exporter->setMetadata($metadata);
             $exporter->export();
 
-            $output->writeln(PHP_EOL . sprintf(
+            $io->text(PHP_EOL . sprintf(
                 'Converting Doctrine 1.X schema to "<info>%s</info>" mapping type in "<info>%s</info>"', $toType, $destPath
             ));
         } else {
-            $output->writeln('No Metadata Classes to process.');
+            $io->text('No Metadata Classes to process.');
         }
     }
 }

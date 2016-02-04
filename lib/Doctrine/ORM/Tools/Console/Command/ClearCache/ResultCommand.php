@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\XcacheCache;
 
@@ -78,6 +79,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $em = $this->getHelper('em')->getEntityManager();
         $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
 
@@ -92,8 +94,8 @@ EOT
         if ($cacheDriver instanceof XcacheCache) {
             throw new \LogicException("Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
         }
-        
-        $output->writeln('Clearing ALL Result cache entries');
+
+        $io->comment('Clearing ALL Result cache entries');
 
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
@@ -103,6 +105,10 @@ EOT
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }
 
-        $output->writeln($message);
+        if ($result) {
+            $io->success($message);
+        } else {
+            $io->error($message);
+        }
     }
 }

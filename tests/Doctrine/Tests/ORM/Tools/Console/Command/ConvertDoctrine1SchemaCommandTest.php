@@ -12,9 +12,11 @@ class ConvertDoctrine1SchemaCommandTest extends \Doctrine\Tests\OrmTestCase
         $command = new ConvertDoctrine1SchemaCommand();
         $command->setEntityGenerator($entityGenerator);
 
-        $output = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+        $output = $this->getMockBuilder('Symfony\Component\Console\Style\SymfonyStyle')
+                       ->disableOriginalConstructor()
+                       ->getMock();
         $output->expects($this->once())
-               ->method('writeln')
+               ->method('text')
                ->with($this->equalTo('No Metadata Classes to process.'));
 
         $command->convertDoctrine1Schema(array(), sys_get_temp_dir(), 'annotation', 4, null, $output);

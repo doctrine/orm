@@ -20,8 +20,7 @@
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\Tools\SchemaTool;
 
 /**
@@ -105,7 +104,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
+    protected function executeSchemaCommand(SymfonyStyle $io, SchemaTool $schemaTool, array $metadatas)
     {
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
         $saveMode = ! $input->getOption('complete');
@@ -113,7 +112,7 @@ EOT
         $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
 
         if (0 === count($sqls)) {
-            $output->writeln('Nothing to update - your database is already in sync with the current entity metadata.');
+            $io->text('Nothing to update - your database is already in sync with the current entity metadata.');
 
             return 0;
         }
@@ -122,35 +121,35 @@ EOT
         $force   = true === $input->getOption('force');
 
         if ($dumpSql) {
-            $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
+            $io->text(implode(';' . PHP_EOL, $sqls) . ';');
         }
 
         if ($force) {
             if ($dumpSql) {
-                $output->writeln('');
+                $io->newLine();
             }
-            $output->writeln('Updating database schema...');
+            $io->comment('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
 
             $pluralization = (1 === count($sqls)) ? 'query was' : 'queries were';
 
-            $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" %s executed', count($sqls), $pluralization));
+            $io->success(sprintf('Database schema updated successfully! "<info>%s</info>" %s executed', count($sqls), $pluralization));
         }
 
         if ($dumpSql || $force) {
             return 0;
         }
 
-        $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
-        $output->writeln('           Use the incremental update to detect changes during development and use');
-        $output->writeln('           the SQL DDL provided to manually update your database in production.');
-        $output->writeln('');
-
-        $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
-        $output->writeln('Please run the operation by passing one - or both - of the following options:');
-
-        $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
-        $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
+        $io->text(array(
+            '<comment>ATTENTION</comment>: This operation should not be executed in a production environment.',
+            '           Use the incremental update to detect changes during development and use',
+            '           the SQL DDL provided to manually update your database in production.',
+            '',
+            sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)),
+            'Please run the operation by passing one - or both - of the following options:',
+            sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
+            sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
+        ));
 
         return 1;
     }

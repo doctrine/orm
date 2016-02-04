@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -68,6 +69,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $em = $this->getHelper('em')->getEntityManager();
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
@@ -96,9 +98,9 @@ EOT
             );
         }
 
-        if ( count($metadatas)) {
+        if (count($metadatas)) {
             foreach ($metadatas as $metadata) {
-                $output->writeln(
+                $io->comment(
                     sprintf('Processing entity "<info>%s</info>"', $metadata->name)
                 );
             }
@@ -107,9 +109,9 @@ EOT
             $em->getProxyFactory()->generateProxyClasses($metadatas, $destPath);
 
             // Outputting information message
-            $output->writeln(PHP_EOL . sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath));
+            $io->success(sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath));
         } else {
-            $output->writeln('No Metadata Classes to process.');
+            $io->text('No Metadata Classes to process.');
         }
     }
 }

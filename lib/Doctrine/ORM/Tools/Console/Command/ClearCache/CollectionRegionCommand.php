@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache;
 
@@ -82,6 +83,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io          = new SymfonyStyle($input, $output);
         $em          = $this->getHelper('em')->getEntityManager();
         $ownerClass  = $input->getArgument('owner-class');
         $assoc       = $input->getArgument('association');
@@ -108,13 +110,13 @@ EOT
 
             $collectionRegion->getCache()->flushAll();
 
-            $output->writeln(sprintf('Flushing cache provider configured for <info>"%s#%s"</info>', $ownerClass, $assoc));
+            $io->comment(sprintf('Flushing cache provider configured for <info>"%s#%s"</info>', $ownerClass, $assoc));
 
             return;
         }
 
         if ($input->getOption('all')) {
-            $output->writeln('Clearing <info>all</info> second-level cache collection regions');
+            $io->comment('Clearing <info>all</info> second-level cache collection regions');
 
             $cache->evictEntityRegions();
 
@@ -122,13 +124,13 @@ EOT
         }
 
         if ($ownerId) {
-            $output->writeln(sprintf('Clearing second-level cache entry for collection <info>"%s#%s"</info> owner entity identified by <info>"%s"</info>', $ownerClass, $assoc, $ownerId));
+            $io->comment(sprintf('Clearing second-level cache entry for collection <info>"%s#%s"</info> owner entity identified by <info>"%s"</info>', $ownerClass, $assoc, $ownerId));
             $cache->evictCollection($ownerClass, $assoc, $ownerId);
 
             return;
         }
 
-        $output->writeln(sprintf('Clearing second-level cache for collection <info>"%s#%s"</info>', $ownerClass, $assoc));
+        $io->comment(sprintf('Clearing second-level cache for collection <info>"%s#%s"</info>', $ownerClass, $assoc));
         $cache->evictCollectionRegion($ownerClass, $assoc);
     }
 }

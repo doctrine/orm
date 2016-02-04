@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 use Doctrine\ORM\Tools\SchemaTool;
 
@@ -37,20 +38,20 @@ use Doctrine\ORM\Tools\SchemaTool;
 abstract class AbstractCommand extends Command
 {
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @param SymfonyStyle    $io
      * @param SchemaTool      $schemaTool
-     * @param array           $metadatas
+     * @param array           $metadatass
      *
      * @return null|int Null or 0 if everything went fine, or an error code.
      */
-    abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas);
+    abstract protected function executeSchemaCommand(SymfonyStyle $io, SchemaTool $schemaTool, array $metadatas);
 
     /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io       = new SymfonyStyle($input, $output);
         $emHelper = $this->getHelper('em');
 
         /* @var $em \Doctrine\ORM\EntityManager */
@@ -62,10 +63,9 @@ abstract class AbstractCommand extends Command
             // Create SchemaTool
             $tool = new SchemaTool($em);
 
-            return $this->executeSchemaCommand($input, $output, $tool, $metadatas);
+            return $this->executeSchemaCommand($io, $tool, $metadatas);
         } else {
-            $output->writeln('No Metadata Classes to process.');
-
+            $io->text('No Metadata Classes to process.');
             return 0;
         }
     }

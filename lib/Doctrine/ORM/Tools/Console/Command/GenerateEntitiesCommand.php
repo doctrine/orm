@@ -26,6 +26,7 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -152,7 +153,7 @@ EOT
             }
 
             foreach ($metadatas as $metadata) {
-                $output->writeln(
+                $io->comment(
                     sprintf('Processing entity "<info>%s</info>"', $metadata->name)
                 );
             }
@@ -161,9 +162,9 @@ EOT
             $entityGenerator->generate($metadatas, $destPath);
 
             // Outputting information message
-            $output->writeln(PHP_EOL . sprintf('Entity classes generated to "<info>%s</INFO>"', $destPath));
+            $io->success(sprintf('Entity classes generated to "<info>%s</info>"', $destPath));
         } else {
-            $output->writeln('No Metadata Classes to process.');
+            $io->text('No Metadata Classes to process.');
         }
     }
 }

@@ -25,6 +25,7 @@ use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\EntityRepositoryGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -68,6 +69,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $em = $this->getHelper('em')->getEntityManager();
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
@@ -98,7 +100,7 @@ EOT
 
             foreach ($metadatas as $metadata) {
                 if ($metadata->customRepositoryClassName) {
-                    $output->writeln(
+                    $io->comment(
                         sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName)
                     );
 
@@ -110,12 +112,12 @@ EOT
 
             if ($numRepositories) {
                 // Outputting information message
-                $output->writeln(PHP_EOL . sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath));
+                $io->success(PHP_EOL . sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath));
             } else {
-                $output->writeln('No Repository classes were found to be processed.');
+                $io->text('No Repository classes were found to be processed.');
             }
         } else {
-            $output->writeln('No Metadata Classes to process.');
+            $io->text('No Metadata Classes to process.');
         }
     }
 }
