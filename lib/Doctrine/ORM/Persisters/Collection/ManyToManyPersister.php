@@ -266,6 +266,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
+        $limit  = $criteria->getMaxResults();
+        $offset = $criteria->getFirstResult();
+        if ($limit !== null || $offset !== null) {
+            $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
+        }
+
+
         $stmt = $this->conn->executeQuery($sql, $params);
 
         return $this
