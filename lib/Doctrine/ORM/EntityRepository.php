@@ -158,11 +158,13 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds all entities in the repository.
      *
+     * @param array|null $orderBy
+     *
      * @return array The entities.
      */
-    public function findAll()
+    public function findAll(array $orderBy = null)
     {
-        return $this->findBy(array());
+        return $this->findBy(array(), $orderBy);
     }
 
     /**
