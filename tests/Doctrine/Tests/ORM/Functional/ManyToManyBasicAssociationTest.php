@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsGroup,
     Doctrine\Common\Collections\ArrayCollection;
@@ -413,6 +414,50 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
                 ->matching($criteria)
                 ->map(function (CmsGroup $group) {
                     return $group->getName();
+                })
+                ->toArray()
+        );
+    }
+
+    /**
+     * @group DDC-3952
+     */
+    public function testManyToManyOrderByHonorsFieldNameColumnNameAliases()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $tag1 = new CmsTag;
+        $tag2 = new CmsTag;
+        $tag3 = new CmsTag;
+
+        $tag1->name = 'C';
+        $tag2->name = 'A';
+        $tag3->name = 'B';
+
+        $user->addTag($tag1);
+        $user->addTag($tag2);
+        $user->addTag($tag3);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $criteria = Criteria::create()
+            ->orderBy(['name' => Criteria::ASC]);
+
+        $this->assertEquals(
+            ['A', 'B', 'C'],
+            $user
+                ->getTags()
+                ->matching($criteria)
+                ->map(function (CmsTag $tag) {
+                    return $tag->getName();
                 })
                 ->toArray()
         );

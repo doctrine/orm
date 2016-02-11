@@ -162,6 +162,14 @@ class CmsUser
      *      )
      */
     public $groups;
+    /**
+     * @ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"persist", "merge", "detach"})
+     * @JoinTable(name="cms_users_tags",
+     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+     *      )
+     */
+    public $tags;
 
     public $nonPersistedProperty;
 
@@ -171,6 +179,7 @@ class CmsUser
         $this->phonenumbers = new ArrayCollection;
         $this->articles = new ArrayCollection;
         $this->groups = new ArrayCollection;
+        $this->tags = new ArrayCollection;
     }
 
     public function getId() {
@@ -215,6 +224,15 @@ class CmsUser
 
     public function getGroups() {
         return $this->groups;
+    }
+
+    public function addTag(CmsTag $tag) {
+        $this->tags[] = $tag;
+        $tag->addUser($this);
+    }
+
+    public function getTags() {
+        return $this->tags;
     }
 
     public function removePhonenumber($index) {

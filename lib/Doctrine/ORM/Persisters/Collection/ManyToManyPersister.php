@@ -278,7 +278,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        $sql .= $this->getOrderingSql($criteria);
+        $sql .= $this->getOrderingSql($criteria, $targetClass);
 
         $sql .= $this->getLimitSql($criteria);
 
@@ -747,14 +747,20 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * @param Criteria $criteria
+     * @param ClassMetadata $targetClass
      * @return string
      */
-    private function getOrderingSql(Criteria $criteria)
+    private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass)
     {
         $orderings = $criteria->getOrderings();
         if ($orderings) {
             $orderBy = [];
-            foreach ($orderings as $field => $direction) {
+            foreach ($orderings as $name => $direction) {
+                $field = $this->quoteStrategy->getColumnName(
+                    $name,
+                    $targetClass,
+                    $this->platform
+                );
                 $orderBy[] = $field . ' ' . $direction;
             }
 
