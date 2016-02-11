@@ -384,17 +384,17 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
 
-        $group = new CmsGroup;
-        $group->name = 'C';
-        $user->addGroup($group);
+        $group1 = new CmsGroup;
+        $group2 = new CmsGroup;
+        $group3 = new CmsGroup;
 
-        $group = new CmsGroup;
-        $group->name = 'A';
-        $user->addGroup($group);
+        $group1->name = 'C';
+        $group2->name = 'A';
+        $group3->name = 'B';
 
-        $group = new CmsGroup;
-        $group->name = 'B';
-        $user->addGroup($group);
+        $user->addGroup($group1);
+        $user->addGroup($group2);
+        $user->addGroup($group3);
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -405,14 +405,17 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
 
         $criteria = Criteria::create()
             ->orderBy(['name' => Criteria::ASC]);
-        $groups   = $user->getGroups()->matching($criteria);
 
-        $existingOrder = [];
-        foreach ($groups as $group) {
-            $existingOrder[] = $group->getName();
-        }
-
-        $this->assertEquals(['A', 'B', 'C', 'Developers_0'], $existingOrder);
+        $this->assertEquals(
+            ['A', 'B', 'C', 'Developers_0'],
+            $user
+                ->getGroups()
+                ->matching($criteria)
+                ->map(function (CmsGroup $group) {
+                    return $group->getName();
+                })
+                ->toArray()
+        );
     }
 
     public function testMatchingWithLimit()
