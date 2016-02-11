@@ -377,6 +377,44 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals(0, count($user->groups));
     }
 
+    /**
+     * @group DDC-3952
+     */
+    public function testManyToManyOrderByIsNotIgnored()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(1);
+
+        $group = new CmsGroup;
+        $group->name = 'C';
+        $user->addGroup($group);
+
+        $group = new CmsGroup;
+        $group->name = 'A';
+        $user->addGroup($group);
+
+        $group = new CmsGroup;
+        $group->name = 'B';
+        $user->addGroup($group);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $criteria = Criteria::create()
+            ->orderBy(['name' => Criteria::ASC]);
+        $groups   = $user->getGroups()->matching($criteria);
+
+        $existingOrder = [];
+        foreach ($groups as $group) {
+            $existingOrder[] = $group->getName();
+        }
+
+        $this->assertEquals(['A', 'B', 'C', 'Developers_0'], $existingOrder);
+    }
+
     public function testMatching()
     {
         $user = $this->addCmsUserGblancoWithGroups(2);

@@ -278,6 +278,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . implode(' AND ', $onConditions)
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
+        $sql .= $this->getOrderingSql($criteria);
+
         $stmt = $this->conn->executeQuery($sql, $params);
 
         return $this
@@ -739,5 +741,23 @@ class ManyToManyPersister extends AbstractCollectionPersister
         list($values, $types) = $valueVisitor->getParamsAndTypes();
 
         return $types;
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @return string
+     */
+    private function getOrderingSql(Criteria $criteria)
+    {
+        $orderings = $criteria->getOrderings();
+        if ($orderings) {
+            $orderBy = [];
+            foreach ($orderings as $field => $direction) {
+                $orderBy[] = $field . ' ' . $direction;
+            }
+
+            return ' ORDER BY ' . implode(', ', $orderBy);
+        }
+        return '';
     }
 }
