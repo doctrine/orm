@@ -43,6 +43,9 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("CREATE TABLE cms_users_groups (user_id INT NOT NULL, group_id INT NOT NULL, PRIMARY KEY(user_id, group_id))", array_shift($sql));
         $this->assertEquals("CREATE INDEX IDX_7EA9409AA76ED395 ON cms_users_groups (user_id)", array_shift($sql));
         $this->assertEquals("CREATE INDEX IDX_7EA9409AFE54D947 ON cms_users_groups (group_id)", array_shift($sql));
+        $this->assertEquals("CREATE TABLE cms_users_tags (user_id INT NOT NULL, tag_id INT NOT NULL, PRIMARY KEY(user_id, tag_id))", array_shift($sql));
+        $this->assertEquals("CREATE INDEX IDX_93F5A1ADA76ED395 ON cms_users_tags (user_id)", array_shift($sql));
+        $this->assertEquals("CREATE INDEX IDX_93F5A1ADBAD26311 ON cms_users_tags (tag_id)", array_shift($sql));
         $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber))", array_shift($sql));
         $this->assertEquals("CREATE INDEX IDX_F21F790FA76ED395 ON cms_phonenumbers (user_id)", array_shift($sql));
         $this->assertEquals("CREATE SEQUENCE cms_addresses_id_seq INCREMENT BY 1 MINVALUE 1 START 1", array_shift($sql));
@@ -51,10 +54,12 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("ALTER TABLE cms_users ADD CONSTRAINT FK_3AF03EC5A832C1C9 FOREIGN KEY (email_id) REFERENCES cms_emails (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
         $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
         $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AFE54D947 FOREIGN KEY (group_id) REFERENCES cms_groups (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
+        $this->assertEquals("ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
+        $this->assertEquals("ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADBAD26311 FOREIGN KEY (tag_id) REFERENCES cms_tags (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
         $this->assertEquals("ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
 
         $this->assertEquals(array(), $sql, "SQL Array should be empty now.");
-        $this->assertEquals(17, $sqlCount, "Total of 17 queries should be executed");
+        $this->assertEquals(22, $sqlCount, "Total of 22 queries should be executed");
     }
 
     public function testGetCreateSchemaSql2()
@@ -97,7 +102,7 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getDropSchemaSQL($classes);
 
-        $this->assertEquals(14, count($sql));
+        $this->assertEquals(17, count($sql));
 
         $dropSequenceSQLs = 0;
 
