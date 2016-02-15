@@ -320,6 +320,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
             $conn->executeUpdate('DELETE FROM cms_groups');
+            $conn->executeUpdate('DELETE FROM cms_tags');
             $conn->executeUpdate('DELETE FROM cms_addresses');
             $conn->executeUpdate('DELETE FROM cms_phonenumbers');
             $conn->executeUpdate('DELETE FROM cms_comments');
