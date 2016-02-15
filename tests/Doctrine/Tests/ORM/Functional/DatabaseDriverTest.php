@@ -117,14 +117,17 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $metadatas = $this->extractClassMetadata(array("CmsUsers", "CmsGroups"));
+        $metadatas = $this->extractClassMetadata(array("CmsUsers", "CmsGroups", "CmsTags"));
 
         $this->assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
         $this->assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
+        $this->assertArrayHasKey('CmsTags', $metadatas, 'CmsTags entity was not detected.');
 
-        $this->assertEquals(2, count($metadatas['CmsUsers']->associationMappings));
+        $this->assertEquals(3, count($metadatas['CmsUsers']->associationMappings));
         $this->assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
         $this->assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
+        $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
+        $this->assertEquals(1, count($metadatas['CmsTags']->associationMappings));
         $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
     }
 
