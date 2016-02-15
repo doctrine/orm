@@ -83,6 +83,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsAddress',
             'Doctrine\Tests\Models\CMS\CmsEmail',
             'Doctrine\Tests\Models\CMS\CmsGroup',
+            'Doctrine\Tests\Models\CMS\CmsTag',
             'Doctrine\Tests\Models\CMS\CmsArticle',
             'Doctrine\Tests\Models\CMS\CmsComment',
         ),
@@ -319,6 +320,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
             $conn->executeUpdate('DELETE FROM cms_groups');
+            $conn->executeUpdate('DELETE FROM cms_users_tags');
+            $conn->executeUpdate('DELETE FROM cms_tags');
             $conn->executeUpdate('DELETE FROM cms_addresses');
             $conn->executeUpdate('DELETE FROM cms_phonenumbers');
             $conn->executeUpdate('DELETE FROM cms_comments');
