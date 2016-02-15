@@ -166,7 +166,7 @@ class CmsUser
      * @ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="cms_users_tags",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@JoinColumn(name="tag_id", referencedColumnName="id")}
      *      )
      */
     public $tags;
