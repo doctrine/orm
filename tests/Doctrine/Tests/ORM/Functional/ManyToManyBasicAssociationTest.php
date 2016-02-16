@@ -548,6 +548,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     }
 
     /**
+     * @group DDC-3890
      * @dataProvider matchingWithComparisonsProvider
      * @param string $method
      * @param string $field
@@ -631,6 +632,9 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         ];
     }
 
+    /**
+     * @group DDC-3890
+     */
     public function testMatchingWithIsNull()
     {
         $user = new CmsUser;
