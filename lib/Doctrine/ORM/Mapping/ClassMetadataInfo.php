@@ -257,6 +257,14 @@ class ClassMetadataInfo implements ClassMetadata
     public $customRepositoryClassName;
 
     /**
+     * The name of the custom persister class used for the entity class.
+     * (Optional).
+     *
+     * @var string
+     */
+    public $customPersisterClassName;
+
+    /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
      *
      * @var boolean
@@ -832,6 +840,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->customRepositoryClassName) {
             $serialized[] = 'customRepositoryClassName';
+        }
+
+        if ($this->customPersisterClassName) {
+            $serialized[] = 'customPersisterClassName';
         }
 
         if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
@@ -1472,6 +1484,11 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($mapping['targetEntity'])) {
             $mapping['targetEntity'] = $this->fullyQualifiedClassName($mapping['targetEntity']);
             $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
+        }
+
+        if (isset($mapping['persister'])) {
+            $mapping['persister'] = $this->fullyQualifiedClassName($mapping['persister']);
+            $mapping['persister'] = ltrim($mapping['persister'], '\\');
         }
 
         if (($mapping['type'] & self::MANY_TO_ONE) > 0 && isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'] == true) {
@@ -2629,6 +2646,18 @@ class ClassMetadataInfo implements ClassMetadata
     public function setCustomRepositoryClass($repositoryClassName)
     {
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
+    }
+
+    /**
+     * Registers a custom persister class for the entity class.
+     *
+     * @param string $persisterClassName The class name of the custom mapper.
+     *
+     * @return void
+     */
+    public function setCustomPersisterClass($persisterClassName)
+    {
+        $this->customPersisterClassName = $this->fullyQualifiedClassName($persisterClassName);
     }
 
     /**

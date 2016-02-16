@@ -61,12 +61,18 @@ class XmlDriver extends FileDriver
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
+            if (isset($xmlRoot['persister-class'])) {
+                $metadata->setCustomPersisterClass((string)$xmlRoot['persister-class']);
+            }
             if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
                 $metadata->markReadOnly();
             }
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
+            );
+            $metadata->setCustomPersisterClass(
+                isset($xmlRoot['persister-class']) ? (string)$xmlRoot['persister-class'] : null
             );
             $metadata->isMappedSuperclass = true;
         } else if ($xmlRoot->getName() == 'embeddable') {
@@ -406,6 +412,10 @@ class XmlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string) $oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['persister'])) {
+                    $mapping['persister'] = $oneToManyElement['persister'];
+                }
+
                 if (isset($oneToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
@@ -493,6 +503,10 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToManyElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string) $manyToManyElement['fetch']);
+                }
+
+                if (isset($manyToManyElement['persister'])) {
+                    $mapping['persister'] = $manyToManyElement['persister'];
                 }
 
                 if (isset($manyToManyElement['orphan-removal'])) {

@@ -58,12 +58,18 @@ class YamlDriver extends FileDriver
             if (isset($element['repositoryClass'])) {
                 $metadata->setCustomRepositoryClass($element['repositoryClass']);
             }
+            if (isset($element['persisterClass'])) {
+                $metadata->setCustomPersisterClass($element['persisterClass']);
+            }
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
             }
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->setCustomRepositoryClass(
                 isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+            );
+            $metadata->setCustomPersisterClass(
+                isset($element['persisterClass']) ? $element['persisterClass'] : null
             );
             $metadata->isMappedSuperclass = true;
         } else if ($element['type'] == 'embeddable') {
@@ -410,6 +416,10 @@ class YamlDriver extends FileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyElement['fetch']);
                 }
 
+                if (isset($oneToManyElement['persister'])) {
+                    $mapping['persister'] = $oneToManyElement['persister'];
+                }
+
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $oneToManyElement['cascade'];
                 }
@@ -495,6 +505,10 @@ class YamlDriver extends FileDriver
 
                 if (isset($manyToManyElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToManyElement['fetch']);
+                }
+
+                if (isset($manyToManyElement['persister'])) {
+                    $mapping['persister'] = $manyToManyElement['persister'];
                 }
 
                 if (isset($manyToManyElement['mappedBy'])) {

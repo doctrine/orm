@@ -80,6 +80,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
             }
 
+            if ($entityAnnot->persisterClass !== null) {
+                $metadata->setCustomPersisterClass($entityAnnot->persisterClass);
+            }
+
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
@@ -87,6 +91,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
 
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+            $metadata->setCustomPersisterClass($mappedSuperclassAnnot->persisterClass);
             $metadata->isMappedSuperclass = true;
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\Embeddable'])) {
             $metadata->isEmbeddedClass = true;
@@ -356,6 +361,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['indexBy'] = $oneToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $oneToManyAnnot->fetch);
+                $mapping['persister'] = $oneToManyAnnot->persister;
 
                 if ($orderByAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;
@@ -399,6 +405,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
+                $mapping['persister'] = $manyToManyAnnot->persister;
 
                 if ($orderByAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;

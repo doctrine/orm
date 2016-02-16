@@ -58,4 +58,9 @@ final class OneToMany implements Annotation
      * @var string
      */
     public $indexBy;
+
+    /**
+     * @var string
+     */
+    public $persister;
 }

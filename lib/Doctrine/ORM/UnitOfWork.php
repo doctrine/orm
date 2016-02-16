@@ -46,8 +46,6 @@ use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
-use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Cache\AssociationCacheEntry;
 
@@ -3015,7 +3013,14 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata($entityName);
 
+        $class->customRepositoryClassName;
+
         switch (true) {
+            case ($class->customPersisterClassName !== null):
+                $persister = $class->customPersisterClassName;
+                $persister = new $persister($this->em, $class);
+                break;
+
             case ($class->isInheritanceTypeNone()):
                 $persister = new BasicEntityPersister($this->em, $class);
                 break;
@@ -3061,9 +3066,14 @@ class UnitOfWork implements PropertyChangedListener
             return $this->collectionPersisters[$role];
         }
 
-        $persister = ClassMetadata::ONE_TO_MANY === $association['type']
-            ? new OneToManyPersister($this->em)
-            : new ManyToManyPersister($this->em);
+        if (!isset($association['persister'])) {
+            $association['persister'] = (ClassMetadata::ONE_TO_MANY === $association['type'])
+                ? 'Doctrine\ORM\Persisters\Collection\OneToManyPersister'
+                : 'Doctrine\ORM\Persisters\Collection\ManyToManyPersister';
+        }
+
+        $persister = $association['persister'];
+        $persister = new $persister($this->em);
 
         if ($this->hasCache && isset($association['cache'])) {
             $persister = $this->em->getConfiguration()
