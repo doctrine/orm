@@ -348,6 +348,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
+     * @throws ORMException
      */
     public function flush($entity = null)
     {
@@ -567,6 +568,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @return void
      *
      * @throws ORMInvalidArgumentException
+     * @throws ORMException
      */
     public function persist($entity)
     {
@@ -590,6 +592,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @return void
      *
      * @throws ORMInvalidArgumentException
+     * @throws ORMException
      */
     public function remove($entity)
     {
@@ -611,6 +614,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @return void
      *
      * @throws ORMInvalidArgumentException
+     * @throws ORMException
      */
     public function refresh($entity)
     {
@@ -655,6 +659,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @return object The managed copy of the entity.
      *
      * @throws ORMInvalidArgumentException
+     * @throws ORMException
      */
     public function merge($entity)
     {
