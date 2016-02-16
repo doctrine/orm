@@ -515,15 +515,16 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return array
      */
-    public function getEntityChangeSet($entity)
+    public function & getEntityChangeSet($entity)
     {
-        $oid = spl_object_hash($entity);
+        $oid  = spl_object_hash($entity);
+        $data = array();
 
-        if (isset($this->entityChangeSets[$oid])) {
-            return $this->entityChangeSets[$oid];
+        if (!isset($this->entityChangeSets[$oid])) {
+            return $data;
         }
 
-        return array();
+        return $this->entityChangeSets[$oid];
     }
 
     /**
@@ -1048,9 +1049,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($preUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
-                $changeset = $this->getEntityChangeSet($entity);
-
-                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $changeset), $preUpdateInvoke);
+                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity)), $preUpdateInvoke);
 
                 $this->recomputeSingleEntityChangeSet($class, $entity);
             }
