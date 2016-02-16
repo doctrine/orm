@@ -19,13 +19,10 @@
 
 namespace Doctrine\ORM\Persisters\Collection;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\Expr\MappingVisitor;
-use Doctrine\ORM\Persisters\SqlExpressionVisitor;
-use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
@@ -239,75 +236,42 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         $mapping       = $collection->getMapping();
-        $owner         = $collection->getOwner();
-        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
-        $id            = $this->uow->getEntityIdentifier($owner);
         $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $onConditions  = $this->getOnConditionSQL($mapping);
-        $whereClauses  = array();
-        $params        = array();
-        $types         = array();
 
-        if ( ! $mapping['isOwningSide']) {
-            $associationSourceClass = $targetClass;
-            $mapping = $targetClass->associationMappings[$mapping['mappedBy']];
-            $sourceRelationMode = 'relationToTargetKeyColumns';
-        } else {
-            $associationSourceClass = $ownerMetadata;
-            $sourceRelationMode = 'relationToSourceKeyColumns';
-        }
-
-        foreach ($mapping[$sourceRelationMode] as $key => $value) {
-            $paramName = sprintf(':t%s', $key);
-            $whereClauses[] = sprintf('t.%s = %s', $key, $paramName);
-
-            $paramValue = $ownerMetadata->containsForeignIdentifier
-                ? $id[$ownerMetadata->getFieldForColumn($value)]
-                : $id[$ownerMetadata->fieldNames[$value]];
-
-            $params[] = new Parameter($paramName, $paramValue, $ownerMetadata->getTypeOfField($key));
-            $types[] = $ownerMetadata->getTypeOfField($key);
-        }
-
-        $mappingVisitor = new MappingVisitor(
-            $this->quoteStrategy,
-            $targetClass,
-            $this->platform
-        );
+        $queryBuilder = $this->createQueryBuilderForAssociation($collection);
 
         if ($whereExpr = $criteria->getWhereExpression()) {
+            $mappingVisitor = new MappingVisitor(
+                $this->quoteStrategy,
+                $targetClass,
+                $this->platform
+            );
+
             $mappedExpr = $mappingVisitor->dispatch($criteria->getWhereExpression());
 
             $whereClauseExpressionVisitor = new QueryExpressionVisitor(['te']);
             $whereExpr = $whereClauseExpressionVisitor->dispatch($mappedExpr);
-            $whereClauses[] = $whereExpr . '';
+            $queryBuilder->where($whereExpr . '');
 
             /** @var Parameter $parameter */
             foreach($whereClauseExpressionVisitor->getParameters() as $parameter) {
-                $params[] = $parameter;
-                $types[] = $parameter->getType();
+                $queryBuilder->setParameter($parameter->getName(), $parameter->getValue(), $parameter->getType());
             }
         }
 
-        $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
-        $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform);
+        $this->applyCriteriaOrdering($queryBuilder, $criteria, $targetClass);
+
+        $this->applyCriteriaLimit($queryBuilder, $criteria);
 
         $rsm = new Query\ResultSetMappingBuilder($this->em);
         $rsm->addRootEntityFromClassMetadata($targetClass->name, 'te');
 
-        $sql = 'SELECT ' . $rsm->generateSelectClause()
-            . ' FROM ' . $tableName . ' te'
-            . ' JOIN ' . $joinTable  . ' t ON'
-            . implode(' AND ', $onConditions)
-            . ' WHERE ' . implode(' AND ', $whereClauses);
+        $stmt = $queryBuilder->execute();
 
-        $sql .= $this->getOrderingSql($criteria, $targetClass);
-
-        $sql .= $this->getLimitSql($criteria);
-
-        $nativeQuery = $this->em->createNativeQuery($sql, $rsm);
-
-        return $nativeQuery->execute(new ArrayCollection($params));
+        return $this
+            ->em
+            ->newHydrator(Query::HYDRATE_OBJECT)
+            ->hydrateAll($stmt, $rsm);
     }
 
     /**
@@ -741,41 +705,79 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
+     * @param QueryBuilder $queryBuilder
      * @param Criteria $criteria
      * @param ClassMetadata $targetClass
-     * @return string
      */
-    private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass)
+    private function applyCriteriaOrdering(QueryBuilder $queryBuilder, Criteria $criteria, ClassMetadata $targetClass)
     {
         $orderings = $criteria->getOrderings();
         if ($orderings) {
-            $orderBy = [];
             foreach ($orderings as $name => $direction) {
                 $field = $this->quoteStrategy->getColumnName(
                     $name,
                     $targetClass,
                     $this->platform
                 );
-                $orderBy[] = $field . ' ' . $direction;
-            }
 
-            return ' ORDER BY ' . implode(', ', $orderBy);
+                $queryBuilder->addOrderBy($field, $direction);
+            }
         }
-        return '';
     }
 
     /**
+     * @param QueryBuilder $queryBuilder
      * @param Criteria $criteria
-     * @return string
-     * @throws \Doctrine\DBAL\DBALException
      */
-    private function getLimitSql(Criteria $criteria)
+    private function applyCriteriaLimit(QueryBuilder $queryBuilder, Criteria $criteria)
     {
-        $limit  = $criteria->getMaxResults();
-        $offset = $criteria->getFirstResult();
-        if ($limit !== null || $offset !== null) {
-            return $this->platform->modifyLimitQuery('', $limit, $offset);
+        $queryBuilder->setFirstResult($criteria->getFirstResult());
+        $queryBuilder->setMaxResults($criteria->getMaxResults());
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     * @return \Doctrine\DBAL\Query\QueryBuilder
+     */
+    private function createQueryBuilderForAssociation(PersistentCollection $collection)
+    {
+        $qb = $this->em->getConnection()->createQueryBuilder();
+
+        $mapping       = $collection->getMapping();
+        $owner         = $collection->getOwner();
+        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
+        $id            = $this->uow->getEntityIdentifier($owner);
+        $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
+        $onConditions  = $this->getOnConditionSQL($mapping);
+
+
+        if ( ! $mapping['isOwningSide']) {
+            $associationSourceClass = $targetClass;
+            $mapping = $targetClass->associationMappings[$mapping['mappedBy']];
+            $sourceRelationMode = 'relationToTargetKeyColumns';
+        } else {
+            $associationSourceClass = $ownerMetadata;
+            $sourceRelationMode = 'relationToSourceKeyColumns';
         }
-        return '';
+
+        foreach ($mapping[$sourceRelationMode] as $key => $value) {
+            $paramName = sprintf(':t%s', $key);
+            $qb->where(sprintf('t.%s = %s', $key, $paramName));
+
+            $paramValue = $ownerMetadata->containsForeignIdentifier
+                ? $id[$ownerMetadata->getFieldForColumn($value)]
+                : $id[$ownerMetadata->fieldNames[$value]];
+
+            $qb->setParameter($paramName, $paramValue, $ownerMetadata->getTypeOfField($key));
+        }
+
+        $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+        $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform);
+
+        $qb->select('te.*');
+        $qb->from($tableName, 'te');
+        $qb->join('te', $joinTable, 't', join(' AND ', $onConditions));
+
+        return $qb;
     }
 }
