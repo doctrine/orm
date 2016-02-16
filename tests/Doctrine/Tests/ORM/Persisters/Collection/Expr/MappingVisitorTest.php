@@ -24,16 +24,16 @@ class MappingVisitorTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         /** @var ClassMetadata $metadata */
-        $metadata = $this->getMockBuilder(ClassMetadata::class)
+        $metadata = $this->getMockBuilder('\Doctrine\ORM\Mapping\ClassMetadata')
             ->disableOriginalConstructor()
             ->getMock();
 
         /** @var AbstractPlatform $platform */
-        $platform = $this->getMockBuilder(AbstractPlatform::class)
+        $platform = $this->getMockBuilder('\Doctrine\DBAL\Platforms\AbstractPlatform')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->quoteStrategy = $this->getMockBuilder(QuoteStrategy::class)
+        $this->quoteStrategy = $this->getMockBuilder('\Doctrine\ORM\Mapping\QuoteStrategy')
             ->getMock();
 
         $this->quoteStrategy->expects($this->any())
@@ -54,7 +54,7 @@ class MappingVisitorTest extends \PHPUnit_Framework_TestCase
         $expr = new Comparison('field', Comparison::GT, 73);
         /** @var Comparison $mapped */
         $mapped = $this->sut->dispatch($expr);
-        static::assertInstanceOf(Comparison::class, $mapped);
+        static::assertInstanceOf('\Doctrine\Common\Collections\Expr\Comparison', $mapped);
         static::assertEquals('column', $mapped->getField());
         static::assertEquals($expr->getOperator(), $mapped->getOperator());
         static::assertEquals($expr->getValue(), $mapped->getValue());
@@ -77,14 +77,14 @@ class MappingVisitorTest extends \PHPUnit_Framework_TestCase
 
         /** @var CompositeExpression $mapped */
         $mapped = $this->sut->dispatch($composite);
-        static::assertInstanceOf(CompositeExpression::class, $mapped);
+        static::assertInstanceOf('\Doctrine\Common\Collections\Expr\CompositeExpression', $mapped);
         /** @var Comparison[]|Value[] $mappedExpressions */
         $mappedExpressions = $mapped->getExpressionList();
 
         static::assertCount(2, $mappedExpressions);
 
-        static::assertInstanceOf(Comparison::class, $mappedExpressions[0]);
-        static::assertInstanceOf(Comparison::class, $mappedExpressions[1]);
+        static::assertInstanceOf('\Doctrine\Common\Collections\Expr\Comparison', $mappedExpressions[0]);
+        static::assertInstanceOf('\Doctrine\Common\Collections\Expr\Comparison', $mappedExpressions[1]);
 
         static::assertEquals('column', $mappedExpressions[0]->getField());
         static::assertEquals('column', $mappedExpressions[1]->getField());
