@@ -60,7 +60,7 @@ class MappingVisitor extends ExpressionVisitor
      */
     public function walkValue(Value $value)
     {
-        return $value->getValue();
+        return $value;
     }
 
     /**
