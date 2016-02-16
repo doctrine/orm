@@ -642,7 +642,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $tag2 = new CmsTag;
         $tag3 = new CmsTag;
 
-        $tag1->name = '';
+        $tag1->name = null;
         $tag2->name = 'B';
         $tag3->name = 'C';
 

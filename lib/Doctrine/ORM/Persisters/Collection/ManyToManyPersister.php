@@ -19,12 +19,17 @@
 
 namespace Doctrine\ORM\Persisters\Collection;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\Collection\Expr\MappingVisitor;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryExpressionVisitor;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -239,7 +244,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $id            = $this->uow->getEntityIdentifier($owner);
         $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
         $onConditions  = $this->getOnConditionSQL($mapping);
-        $whereClauses  = $params = array();
+        $whereClauses  = array();
+        $params        = array();
+        $types         = array();
 
         if ( ! $mapping['isOwningSide']) {
             $associationSourceClass = $targetClass;
@@ -251,19 +258,35 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         foreach ($mapping[$sourceRelationMode] as $key => $value) {
-            $whereClauses[] = sprintf('t.%s = ?', $key);
-            $params[] = $ownerMetadata->containsForeignIdentifier
+            $paramName = sprintf(':t%s', $key);
+            $whereClauses[] = sprintf('t.%s = %s', $key, $paramName);
+
+            $paramValue = $ownerMetadata->containsForeignIdentifier
                 ? $id[$ownerMetadata->getFieldForColumn($value)]
                 : $id[$ownerMetadata->fieldNames[$value]];
+
+            $params[] = new Parameter($paramName, $paramValue, $ownerMetadata->getTypeOfField($key));
+            $types[] = $ownerMetadata->getTypeOfField($key);
         }
 
-        $parameters = $this->expandCriteriaParameters($criteria);
+        $mappingVisitor = new MappingVisitor(
+            $this->quoteStrategy,
+            $targetClass,
+            $this->platform
+        );
 
-        foreach ($parameters as $parameter) {
-            list($name, $value) = $parameter;
-            $field = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
-            $whereClauses[]     = sprintf('te.%s = ?', $field);
-            $params[]           = $value;
+        if ($whereExpr = $criteria->getWhereExpression()) {
+            $mappedExpr = $mappingVisitor->dispatch($criteria->getWhereExpression());
+
+            $whereClauseExpressionVisitor = new QueryExpressionVisitor(['te']);
+            $whereExpr = $whereClauseExpressionVisitor->dispatch($mappedExpr);
+            $whereClauses[] = $whereExpr . '';
+
+            /** @var Parameter $parameter */
+            foreach($whereClauseExpressionVisitor->getParameters() as $parameter) {
+                $params[] = $parameter;
+                $types[] = $parameter->getType();
+            }
         }
 
         $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
@@ -282,12 +305,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $sql .= $this->getLimitSql($criteria);
 
-        $stmt = $this->conn->executeQuery($sql, $params);
+        $nativeQuery = $this->em->createNativeQuery($sql, $rsm);
 
-        return $this
-            ->em
-            ->newHydrator(Query::HYDRATE_OBJECT)
-            ->hydrateAll($stmt, $rsm);
+        return $nativeQuery->execute(new ArrayCollection($params));
     }
 
     /**
@@ -718,31 +738,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return array($quotedJoinTable, $whereClauses, $params, $types);
-    }
-
-    /**
-     * Expands Criteria Parameters by walking the expressions and grabbing all
-     * parameters and types from it.
-     *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array
-     */
-    private function expandCriteriaParameters(Criteria $criteria)
-    {
-        $expression = $criteria->getWhereExpression();
-
-        if ($expression === null) {
-            return array();
-        }
-
-        $valueVisitor = new SqlValueVisitor();
-
-        $valueVisitor->dispatch($expression);
-
-        list($values, $types) = $valueVisitor->getParamsAndTypes();
-
-        return $types;
     }
 
     /**
