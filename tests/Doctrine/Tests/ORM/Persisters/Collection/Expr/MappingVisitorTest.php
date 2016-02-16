@@ -71,10 +71,9 @@ class MappingVisitorTest extends \PHPUnit_Framework_TestCase
     {
         $gtExpr = new Comparison('field', Comparison::GT, 73);
         $ltExpr = new Comparison('field', Comparison::LT, 53);
-        $valExpr = new Value('foo');
 
         $composite = new CompositeExpression(
-            CompositeExpression::TYPE_OR, [$gtExpr, $ltExpr, $valExpr]);
+            CompositeExpression::TYPE_OR, [$gtExpr, $ltExpr]);
 
         /** @var CompositeExpression $mapped */
         $mapped = $this->sut->dispatch($composite);
@@ -82,11 +81,10 @@ class MappingVisitorTest extends \PHPUnit_Framework_TestCase
         /** @var Comparison[]|Value[] $mappedExpressions */
         $mappedExpressions = $mapped->getExpressionList();
 
-        static::assertCount(3, $mappedExpressions);
+        static::assertCount(2, $mappedExpressions);
 
         static::assertInstanceOf(Comparison::class, $mappedExpressions[0]);
         static::assertInstanceOf(Comparison::class, $mappedExpressions[1]);
-        static::assertInstanceOf(Value::class, $mappedExpressions[2]);
 
         static::assertEquals('column', $mappedExpressions[0]->getField());
         static::assertEquals('column', $mappedExpressions[1]->getField());
@@ -96,6 +94,5 @@ class MappingVisitorTest extends \PHPUnit_Framework_TestCase
 
         static::assertEquals($gtExpr->getValue(), $mappedExpressions[0]->getValue());
         static::assertEquals($ltExpr->getValue(), $mappedExpressions[1]->getValue());
-        static::assertEquals($valExpr->getValue(), $mappedExpressions[2]->getValue());
     }
 }
