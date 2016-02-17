@@ -157,12 +157,12 @@ The second block consists of the instantiation of the ORM
 ``Configuration`` object using the Setup helper. It assumes a bunch
 of defaults that you don't have to bother about for now. You can
 read up on the configuration details in the
-`reference chapter on configuration <../reference/configuration.rst>`_.
+`reference chapter on configuration <http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html>`_.
 
 The third block shows the configuration options required to connect
 to a database, in my case a file-based sqlite database. All the
 configuration options for all the shipped drivers are given in the
-`DBAL Configuration section of the manual <http://www.doctrine-project.org/documentation/manual/2_0/en/dbal>`_.
+`DBAL Configuration section of the manual <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
 
 The last block shows how the ``EntityManager`` is obtained from a
 factory method.
