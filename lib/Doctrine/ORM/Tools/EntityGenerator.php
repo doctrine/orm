@@ -1806,6 +1806,8 @@ public function __construct(<params>)
      * Exports (nested) option elements.
      *
      * @param array $options
+     *
+     * @return string
      */
     private function exportTableOptions(array $options)
     {

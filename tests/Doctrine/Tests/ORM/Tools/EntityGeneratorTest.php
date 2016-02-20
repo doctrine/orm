@@ -23,7 +23,7 @@ class EntityGeneratorTest extends OrmTestCase
     private $_tmpDir;
     private $_namespace;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->_namespace = uniqid("doctrine_");
         $this->_tmpDir = \sys_get_temp_dir();
@@ -37,7 +37,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
         foreach ($ri AS $file) {
@@ -67,9 +67,6 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'options' => array('default' => 'published')));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
-        $joinColumns = array(
-            array('name' => 'author_id', 'referencedColumnName' => 'id')
-        );
         $metadata->mapManyToMany(array(
             'fieldName' => 'comments',
             'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
