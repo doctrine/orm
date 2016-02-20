@@ -158,11 +158,25 @@ class UnitOfWork implements PropertyChangedListener
     private $entityInsertions = [];
 
     /**
+     * A list of all inserted entities.
+     *
+     * @var array
+     */
+    private $insertedEntities = array();
+
+    /**
      * A list of all pending entity updates.
      *
      * @var array
      */
     private $entityUpdates = [];
+
+    /**
+     * A list of all updated entities.
+     *
+     * @var array
+     */
+    private $updatedEntities = array();
 
     /**
      * Any pending extra updates that have been scheduled by persisters.
@@ -177,6 +191,13 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $entityDeletions = [];
+
+    /**
+     * A list of all deleted entities.
+     *
+     * @var array
+     */
+    private $deletedEntities = array();
 
     /**
      * All pending collection deletions.
@@ -416,8 +437,11 @@ class UnitOfWork implements PropertyChangedListener
 
         // Clear up
         $this->entityInsertions =
+        $this->insertedEntities =
         $this->entityUpdates =
+        $this->updatedEntities =
         $this->entityDeletions =
+        $this->deletedEntities =
         $this->extraUpdates =
         $this->entityChangeSets =
         $this->collectionUpdates =
@@ -993,6 +1017,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $persister->addInsert($entity);
 
+            $this->insertedEntities[$oid] = $entity;
             unset($this->entityInsertions[$oid]);
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
@@ -1055,6 +1080,7 @@ class UnitOfWork implements PropertyChangedListener
                 $persister->update($entity);
             }
 
+            $this->updatedEntities[$oid] = $entity;
             unset($this->entityUpdates[$oid]);
 
             if ($postUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
@@ -1083,6 +1109,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $persister->delete($entity);
 
+	    $this->deletedEntities[$oid] = $entity;
             unset(
                 $this->entityDeletions[$oid],
                 $this->entityIdentifiers[$oid],
@@ -2386,8 +2413,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityStates =
             $this->scheduledForSynchronization =
             $this->entityInsertions =
+            $this->insertedEntities =
             $this->entityUpdates =
+            $this->updatedEntities =
             $this->entityDeletions =
+            $this->deletedEntities =
             $this->collectionDeletions =
             $this->collectionUpdates =
             $this->extraUpdates =
@@ -3146,6 +3176,16 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Gets the entities inserted in this UnitOfWork
+     *
+     * @return array
+     */
+    public function getInsertedEntities()
+    {
+        return $this->insertedEntities;
+    }
+
+    /**
      * Gets the currently scheduled entity updates in this UnitOfWork.
      *
      * @return array
@@ -3156,6 +3196,16 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Gets the entities updated in this UnitOfWork
+     *
+     * @return array
+     */
+    public function getUpdatedEntities()
+    {
+        return $this->updatedEntities;
+    }
+
+    /**
      * Gets the currently scheduled entity deletions in this UnitOfWork.
      *
      * @return array
@@ -3163,6 +3213,16 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledEntityDeletions()
     {
         return $this->entityDeletions;
+    }
+
+    /**
+     * Gets the entities deleted in this UnitOfWork
+     *
+     * @return array
+     */
+    public function getDeletedEntities()
+    {
+        return $this->deletedEntities;
     }
 
     /**
