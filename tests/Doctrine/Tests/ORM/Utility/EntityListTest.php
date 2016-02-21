@@ -1,11 +1,20 @@
 <?php
 /*
- * This file is part of the OpCart software.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * (c) 2016, OpticsPlanet, Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 namespace Doctrine\Tests\ORM\Utility;
 
@@ -19,13 +28,11 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 /**
- * class
+ * EntityList tests
  *
- * @copyright   2016 OpticsPlanet, Inc
- * @package
- * @author      Oleg Namaka <oleg.namaka@opticsplanet.com>
+ * @author Oleg Namaka <avantprogger@gmail.com>
  */
-class EntityListSorterTest extends DoctrineTestCase
+class EntityListTest extends DoctrineTestCase
 {
     /**
      * @var  ConnectionMock
@@ -136,15 +143,5 @@ class EntityListSorterTest extends DoctrineTestCase
     {
         $list = array(new \stdClass(), new \stdClass());
         EntityList::sort($list, array(true => 'DESC'), $this->_emMock->getMetadataFactory());
-    }
-
-    public function testEntityListSorterWithCompositeKey()
-    {
-        $entity1 = new \Doctrine\Tests\Models\MixedToOneIdentity\CompositeToOneKeyState();
-        $entity2 = new \Doctrine\Tests\Models\MixedToOneIdentity\CompositeToOneKeyState();
-
-        $list = array($entity1, $entity2);
-
-        EntityList::sort($list, array('state' => 'DESC'), $this->_emMock->getMetadataFactory());
     }
 }
