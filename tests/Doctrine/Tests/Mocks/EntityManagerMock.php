@@ -21,12 +21,14 @@
 
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\Common\EventManager;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Special EntityManager mock used for testing purposes.
  */
-class EntityManagerMock extends \Doctrine\ORM\EntityManager
+class EntityManagerMock extends EntityManager
 {
     /**
      * @var \Doctrine\ORM\UnitOfWork|null
@@ -82,18 +84,19 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
      * Mock factory method to create an EntityManager.
      *
      * {@inheritdoc}
+     *
+     * @return EntityManagerMock
      */
-    public static function create($conn, \Doctrine\ORM\Configuration $config = null,
-            \Doctrine\Common\EventManager $eventManager = null)
+    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
     {
         if (null === $config) {
-            $config = new \Doctrine\ORM\Configuration();
+            $config = new Configuration();
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
         }
         if (null === $eventManager) {
-            $eventManager = new \Doctrine\Common\EventManager();
+            $eventManager = new EventManager();
         }
 
         return new EntityManagerMock($conn, $config, $eventManager);
