@@ -21,7 +21,7 @@ The interface defines the following public methods for you to implement:
 
 -  fetch($id) - Fetches an entry from the cache
 -  contains($id) - Test if an entry exists in the cache
--  save($id, $data, $lifeTime = false) - Puts data into the cache
+-  save($id, $data, $lifeTime = false) - Puts data into the cache for x seconds. 0 = infinite time
 -  delete($id) - Deletes a cache entry
 
 Each driver extends the ``CacheProvider`` class which defines a few
