@@ -3264,6 +3264,12 @@ class Parser
                     $this->semanticalError('Cannot add having condition on undefined result variable.');
                 }
 
+                // Validate SingleValuedPathExpression (ie.: "product")
+                if (isset($this->queryComponents[$lookaheadValue]['metadata'])) {
+                    $expr = $this->SingleValuedPathExpression();
+                    break;
+                }
+
                 // Validating ResultVariable
                 if ( ! isset($this->queryComponents[$lookaheadValue]['resultVariable'])) {
                     $this->semanticalError('Cannot add having condition on a non result variable.');
