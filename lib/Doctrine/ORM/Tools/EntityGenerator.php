@@ -193,8 +193,6 @@ class EntityGenerator
         Type::SIMPLE_ARRAY  => 'array',
         Type::JSON_ARRAY    => 'array',
         Type::STRING        => 'string',
-        Type::BINARY        => 'resource',
-        Type::BLOB          => 'resource',
         Type::FLOAT         => 'float',
         Type::GUID          => 'string',
     );
@@ -661,6 +659,8 @@ public function __construct(<params>)
         if ($this->strictTypes) {
             return "\n".'declare(strict_types=1);'."\n";
         }
+
+        return '';
     }
 
     /**
