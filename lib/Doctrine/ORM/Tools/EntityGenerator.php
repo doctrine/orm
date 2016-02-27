@@ -1917,7 +1917,7 @@ public function __construct(<params>)
     private function getMethodReturnType(ClassMetadataInfo $metadata, $type, $fieldName, $variableType)
     {
         if (in_array($type, array('set', 'add'))) {
-            return sprintf(': %s', $this->getClassName($metadata));
+            return sprintf(': self', $this->getClassName($metadata));
         }
 
         if ('get' === $type) {

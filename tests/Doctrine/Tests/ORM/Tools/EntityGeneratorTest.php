@@ -981,7 +981,7 @@ class EntityGeneratorTest extends OrmTestCase
         $parameters = $reflMethod->getParameters();
         $this->assertEquals(1, count($parameters));
         $this->assertEquals('string', $parameters[0]->getType());
-        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+        $this->assertEquals('self', $reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'getName');
         $this->assertEquals('string', $reflMethod->getReturnType());
@@ -990,7 +990,7 @@ class EntityGeneratorTest extends OrmTestCase
         $parameters = $reflMethod->getParameters();
         $this->assertEquals(1, count($parameters));
         $this->assertEquals('string', $parameters[0]->getType());
-        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+        $this->assertEquals('self', $reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'getStatus');
         $this->assertEquals('string', $reflMethod->getReturnType());
@@ -1000,13 +1000,13 @@ class EntityGeneratorTest extends OrmTestCase
         $parameters = $reflMethod->getParameters();
         $this->assertEquals(1, count($parameters));
         $this->assertEquals($authorClass, (string) $parameters[0]->getType());
-        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+        $this->assertEquals('self', $reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'getAuthor');
         $this->assertNull($reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'addComment');
-        $this->assertEquals($metadata->name, $reflMethod->getReturnType());
+        $this->assertEquals('self', $reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'removeComment');
         $this->assertEquals('bool', $reflMethod->getReturnType());
@@ -1047,7 +1047,7 @@ class EntityGeneratorTest extends OrmTestCase
         $parameters = $reflMethod->getParameters();
         $this->assertEquals(1, count($parameters));
         $this->assertEquals($type, $parameters[0]->getType());
-        $this->assertEquals($metadata->getName(), $reflMethod->getReturnType());
+        $this->assertEquals('self', $reflMethod->getReturnType());
 
         $reflMethod = new \ReflectionMethod($metadata->name, $getter);
         $this->assertEquals($type, (string) $reflMethod->getReturnType());
