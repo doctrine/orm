@@ -958,30 +958,6 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertSame($classTest,$classNew);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testStrictTypesGenerationClassWithNonCompatiblePHP()
-    {
-        if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
-            $this->markTestSkipped('Strict mode is available in PHP > 7.0.0');
-        }
-
-        $this->_generator->setStrictTypes(true);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testGenerateMethodsTypeHintingWithNonCompatiblePHP()
-    {
-        if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
-            $this->markTestSkipped('Scalar type hinting and method return types are available in PHP >= 7.0.0');
-        }
-
-        $this->_generator->setGenerateMethodsTypeHinting(true);
-    }
-
     public function testGenerateMethodsTypeHinting()
     {
         if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -1050,10 +1026,6 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testEntityMethodTypeHintingAlias(array $field)
     {
-        if (version_compare(PHP_VERSION, '7.0.0', '<')) {
-            $this->markTestSkipped('Scalar type hinting and method return types are available in PHP >= 7.0.0');
-        }
-
         $this->_generator->setGenerateMethodsTypeHinting(true);
 
         $metadata   = $this->generateEntityTypeFixture($field);

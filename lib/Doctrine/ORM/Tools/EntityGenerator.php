@@ -623,10 +623,6 @@ public function __construct(<params>)
      */
     public function setStrictTypes($bool)
     {
-        if ($bool && version_compare(PHP_VERSION, '7.0.0', '<')) {
-            throw new \InvalidArgumentException('Strict types mode is only available for PHP >= 7.0.0');
-        }
-
         $this->strictTypes = $bool;
     }
 
@@ -639,10 +635,6 @@ public function __construct(<params>)
      */
     public function setGenerateMethodsTypeHinting($bool)
     {
-        if ($bool && version_compare(PHP_VERSION, '7.0.0', '<')) {
-            throw new \InvalidArgumentException('Scalar type hinting and method return types are only available for PHP >= 7.0.0');
-        }
-
         $this->generateMethodsTypeHinting = $bool;
     }
 
