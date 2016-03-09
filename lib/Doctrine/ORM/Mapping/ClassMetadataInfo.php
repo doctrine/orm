@@ -1051,6 +1051,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getReflectionClass()
     {
+        if ( ! $this->reflClass) {
+            $this->reflClass = new ReflectionClass($this->name);
+        }
+        
         return $this->reflClass;
     }
 
