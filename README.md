@@ -18,9 +18,9 @@ without requiring unnecessary code duplication.
 
   [Master image]: https://img.shields.io/travis/doctrine/doctrine2/master.svg?style=flat-square
   [Master]: https://travis-ci.org/doctrine/doctrine2
-  [Master coverage image]: https://img.shields.io/coveralls/doctrine/doctrine2/master.svg?style=flat-square
-  [Master coverage]: https://coveralls.io/r/doctrine/doctrine2?branch=master
+  [Master coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/doctrine2/master.svg?style=flat-square
+  [Master coverage]: https://scrutinizer-ci.com/g/doctrine/doctrine2/?branch=master
   [2.5 image]: https://img.shields.io/travis/doctrine/doctrine2/2.5.svg?style=flat-square
   [2.5]: https://github.com/doctrine/doctrine2/tree/2.5
-  [2.5 coverage image]: https://img.shields.io/coveralls/doctrine/doctrine2/2.5.svg?style=flat-square
-  [2.5 coverage]: https://coveralls.io/r/doctrine/doctrine2?branch=2.5
+  [2.5 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/doctrine2/2.5.svg?style=flat-square
+  [2.5 coverage]: https://scrutinizer-ci.com/g/doctrine/doctrine2/?branch=2.5
