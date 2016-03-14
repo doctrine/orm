@@ -1325,7 +1325,7 @@ class BasicEntityPersister implements EntityPersister
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
             $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
+            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName,  $joinColumn['name'], $isIdentifier, $type);
 
             $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
         }
