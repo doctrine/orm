@@ -39,6 +39,7 @@ final class Events
     /**
      * The preRemove event occurs for a given entity before the respective
      * EntityManager remove operation for that entity is executed.
+     * The event listener method receives a Doctrine\ORM\Event\LifecycleEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -49,6 +50,7 @@ final class Events
     /**
      * The postRemove event occurs for an entity after the entity has
      * been deleted. It will be invoked after the database delete operations.
+     * The event listener method receives a Doctrine\ORM\Event\LifecycleEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -59,6 +61,7 @@ final class Events
     /**
      * The prePersist event occurs for a given entity before the respective
      * EntityManager persist operation for that entity is executed.
+     * The event listener method receives a Doctrine\ORM\Event\LifecycleEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -70,6 +73,7 @@ final class Events
      * The postPersist event occurs for an entity after the entity has
      * been made persistent. It will be invoked after the database insert operations.
      * Generated primary key values are available in the postPersist event.
+     * The event listener method receives a Doctrine\ORM\Event\LifecycleEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -80,6 +84,7 @@ final class Events
     /**
      * The preUpdate event occurs before the database update operations to
      * entity data.
+     * The event listener method receives a Doctrine\ORM\Event\PreUpdateEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -90,6 +95,7 @@ final class Events
     /**
      * The postUpdate event occurs after the database update operations to
      * entity data.
+     * The event listener method receives a Doctrine\ORM\Event\LifecycleEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -105,6 +111,7 @@ final class Events
      * Note that the postLoad event occurs for an entity before any associations have been
      * initialized. Therefore it is not safe to access associations in a postLoad callback
      * or event handler.
+     * The event listener method receives a Doctrine\ORM\Event\LifecycleEventArgs instance.
      *
      * This is an entity lifecycle event.
      *
@@ -115,6 +122,7 @@ final class Events
     /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
      * has been loaded from a mapping source (annotations/xml/yaml).
+     * The event listener method receives a Doctrine\ORM\Event\LoadClassMetadataEventArgs instance.
      *
      * @var string
      */
@@ -123,6 +131,7 @@ final class Events
     /**
      * The onClassMetadataNotFound event occurs whenever loading metadata for a class
      * failed.
+     * The event listener method receives a Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs instance.
      *
      * @var string
      */
@@ -132,6 +141,7 @@ final class Events
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,
      * but before any changes to managed entities have been calculated. This event is
      * always raised right after EntityManager#flush() call.
+     * The event listener method receives a Doctrine\ORM\Event\PreFlushEventArgs instance.
      */
     const preFlush = 'preFlush';
 
@@ -141,6 +151,7 @@ final class Events
      * actual database operations are executed. The event is only raised if there is
      * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
      * the onFlush event is not raised.
+     * The event listener method receives a Doctrine\ORM\Event\OnFlushEventArgs instance.
      *
      * @var string
      */
@@ -152,6 +163,7 @@ final class Events
      * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
      * the postFlush event is not raised. The event won't be raised if an error occurs during the
      * flush operation.
+     * The event listener method receives a Doctrine\ORM\Event\PostFlushEventArgs instance.
      *
      * @var string
      */
@@ -160,6 +172,7 @@ final class Events
     /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
      * after all references to entities have been removed from the unit of work.
+     * The event listener method receives a Doctrine\ORM\Event\OnClearEventArgs instance.
      *
      * @var string
      */
