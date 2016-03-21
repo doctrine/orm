@@ -27,7 +27,7 @@ class BasicEntityPersisterReadOnlyColumnTest extends \Doctrine\Tests\OrmTestCase
 
         $this->_em = $this->_getTestEntityManager();
 
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Item::class));
+        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\ReadOnlyColumn\Item'));
     }
 
     public function testGetSelectSQLUsesReadOnlyColumn()
