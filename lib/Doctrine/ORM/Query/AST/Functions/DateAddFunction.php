@@ -51,6 +51,12 @@ class DateAddFunction extends FunctionNode
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
 
+            case 'minute':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddMinutesExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
+
             case 'hour':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddHourExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
