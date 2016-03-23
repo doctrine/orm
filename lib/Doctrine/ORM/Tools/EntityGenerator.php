@@ -1358,7 +1358,8 @@ public function __construct(<params>)
     {
         $methodName = $type . Inflector::classify($fieldName);
         $variableName = Inflector::camelize($fieldName);
-        if (in_array($type, array("add", "remove"))) {
+
+        if (in_array($type, array('add', 'remove')) && substr($typeHint, -1) !== 's') {
             $methodName = Inflector::singularize($methodName);
             $variableName = Inflector::singularize($variableName);
         }

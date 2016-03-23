@@ -66,6 +66,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'options' => array('default' => 'published')));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
+        $metadata->mapOneToMany(array('fieldName' => 'dnis', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorDnis', 'mappedBy' => 'book'));
         $joinColumns = array(
             array('name' => 'author_id', 'referencedColumnName' => 'id')
         );
@@ -236,13 +237,16 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getDnis'), "EntityGeneratorBook::getDnis() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addDnis'), "EntityGeneratorBook::addDnis() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeDnis'), "EntityGeneratorBook::removeDnis() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setIsbn'), "EntityGeneratorBook::setIsbn() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getIsbn'), "EntityGeneratorBook::getIsbn() missing.");
 
         $reflClass = new \ReflectionClass($metadata->name);
 
-        $this->assertCount(6, $reflClass->getProperties());
-        $this->assertCount(15, $reflClass->getMethods());
+        $this->assertCount(7, $reflClass->getProperties());
+        $this->assertCount(18, $reflClass->getMethods());
 
         $this->assertEquals('published', $book->getStatus());
 
@@ -1100,3 +1104,4 @@ class
 
 class EntityGeneratorAuthor {}
 class EntityGeneratorComment {}
+class EntityGeneratorDnis {}
