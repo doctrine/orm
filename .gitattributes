@@ -1,5 +1,6 @@
 /tests export-ignore
 /tools export-ignore
+.coveralls.yml
 .gitattributes export-ignore
 .gitignore export-ignore
 .gitmodules export-ignore
