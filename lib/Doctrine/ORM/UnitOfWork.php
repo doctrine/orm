@@ -3310,10 +3310,11 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(Events::onFlush)) {
             $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
         }
-        foreach($this->entityChangeSets as $oid => $entityChangeSet) {
+        foreach ($this->entityChangeSets as $oid => $entityChangeSet) {
             foreach ($this->identityMap as $className => $entities) {
-                if (!empty($this->entityIdentifiers[$oid]) && !empty($this->entityIdentifiers[$oid]['id']) && !empty($this->identityMap[$className][$this->entityIdentifiers[$oid]['id']])) {
-                    $entity = $this->identityMap[$className][$this->entityIdentifiers[$oid]['id']];
+                $hash = (isset($this->entityIdentifiers[$oid]) && isset($this->entityIdentifiers[$oid]['id'])) ? $this->entityIdentifiers[$oid]['id'] : null;
+                if ($hash && isset($this->identityMap[$className][$hash])) {
+                    $entity = $this->identityMap[$className][$hash];
                     if ($oid == spl_object_hash($entity)) {
                         $class = $this->em->getClassMetadata(ClassUtils::getClass($entity));
                         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::onFlush) & ~ListenersInvoker::INVOKE_MANAGER;
