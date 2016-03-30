@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
@@ -3310,11 +3311,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
         }
         foreach($this->entityChangeSets as $oid => $entityChangeSet) {
-            foreach($this->identityMap as $className => $entities) {
-                if(isset($this->identityMap[$className][$this->entityIdentifiers[$oid]['id']])) {
+            foreach ($this->identityMap as $className => $entities) {
+                if (!empty($this->entityIdentifiers[$oid]) && !empty($this->entityIdentifiers[$oid]['id']) && !empty($this->identityMap[$className][$this->entityIdentifiers[$oid]['id']])) {
                     $entity = $this->identityMap[$className][$this->entityIdentifiers[$oid]['id']];
                     if ($oid == spl_object_hash($entity)) {
-                        $class = $this->em->getClassMetadata(get_class($entity));
+                        $class = $this->em->getClassMetadata(ClassUtils::getClass($entity));
                         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::onFlush) & ~ListenersInvoker::INVOKE_MANAGER;
                         if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                             $this->listenersInvoker->invoke($class, Events::onFlush, $entity, new OnFlushEventArgs($this->em), $invoke);
