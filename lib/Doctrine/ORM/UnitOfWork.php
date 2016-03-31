@@ -20,7 +20,6 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
@@ -3316,7 +3315,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($hash && isset($this->identityMap[$className][$hash])) {
                     $entity = $this->identityMap[$className][$hash];
                     if ($oid == spl_object_hash($entity)) {
-                        $class = $this->em->getClassMetadata(ClassUtils::getClass($entity));
+                        $class = $this->em->getClassMetadata(get_class($entity));
                         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::onFlush) & ~ListenersInvoker::INVOKE_MANAGER;
                         if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                             $this->listenersInvoker->invoke($class, Events::onFlush, $entity, new OnFlushEventArgs($this->em), $invoke);
