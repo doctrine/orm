@@ -97,7 +97,7 @@ class OrderBy
     /**
      * @return string
      */
-    public function __tostring()
+    public function __toString()
     {
         return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;
     }
