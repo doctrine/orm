@@ -228,7 +228,7 @@ class ProxyFactory extends AbstractProxyFactory
                 );
             }
 
-            foreach ($class->getReflectionClass()->getProperties() as $property) {
+            foreach ($class->getReflectionProperties() as $property) {
                 if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
                     continue;
                 }
