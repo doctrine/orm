@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -131,6 +132,30 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         return array($user1, $user2, $user3);
+    }
+
+    public function loadUserWithGroupsFixture()
+    {
+        $user = new CmsUser();
+        $user->username = 'test_user';
+        $user->name = 'Test User';
+        $this->_em->persist($user);
+
+        $group1 = new CmsGroup();
+        $group1->name = 'Test Group 1';
+        $this->_em->persist($group1);
+
+        $group2 = new CmsGroup();
+        $group2->name = 'Test Group 2';
+        $this->_em->persist($group2);
+
+        $user->addGroup($group1);
+        $user->addGroup($group2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        return array($user->id, array($group1->id, $group2->id));
     }
 
     public function buildUser($name, $username, $status, $address)
@@ -389,6 +414,19 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group GH-5770
+     */
+    public function testFindOneByAssociationKeyManyToMany()
+    {
+        list($userId, $groupIds) = $this->loadUserWithGroupsFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $user = $repos->findOneBy(array('groups' => $groupIds[0]));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $user);
+        $this->assertEquals($userId, $user->id);
+    }
+
+    /**
      * @group DDC-1241
      */
     public function testFindOneByOrderBy()
@@ -414,6 +452,20 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsAddress', $addresses);
         $this->assertEquals(1, count($addresses));
         $this->assertEquals($addressId, $addresses[0]->id);
+    }
+
+    /**
+     * @group GH-5770
+     */
+    public function testFindByAssociationKeyManyToMany()
+    {
+        list($userId, $groupIds) = $this->loadUserWithGroupsFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $users = $repos->findBy(array('groups' => $groupIds[0]));
+
+        $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsUser', $users);
+        $this->assertEquals(1, count($users));
+        $this->assertEquals($userId, $users[0]->id);
     }
 
     /**
