@@ -61,7 +61,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->mapField(array('fieldName' => 'name', 'columnName' => '`name`'));
         $cm->mapField(array('fieldName' => 'id', 'columnName' => 'id'));
-        
+
         $this->assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
         $this->assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
     }
@@ -77,12 +77,34 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $cm->setPrimaryTable(array('name'=>'cms_user'));
         $this->assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
     }
-    
+
+    public function testGetTableNameWithSchema()
+    {
+        $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->setPrimaryTable(array('name'=>'`cms_user`', 'schema'=>'test'));
+        $this->assertEquals('"test"."cms_user"', $this->strategy->getTableName($cm, $this->platform));
+
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->setPrimaryTable(array('name'=>'cms_user', 'schema'=>'test'));
+        $this->assertEquals('test.cms_user' ,$this->strategy->getTableName($cm, $this->platform));
+
+        $platform = new \Doctrine\DBAL\Platforms\SqlitePlatform;
+
+        $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->setPrimaryTable(array('name'=>'`cms_user`', 'schema'=>'test'));
+        $this->assertEquals('"test__cms_user"', $this->strategy->getTableName($cm, $platform));
+
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->setPrimaryTable(array('name'=>'cms_user', 'schema'=>'test'));
+        $this->assertEquals('test__cms_user' ,$this->strategy->getTableName($cm, $platform));
+    }
+
     public function testJoinTableName()
     {
         $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        
         $cm1->mapManyToMany(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
@@ -91,7 +113,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
                 'name'  => '`cmsaddress_cmsuser`'
             )
         ));
-        
+
         $cm2->mapManyToMany(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
@@ -104,7 +126,39 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
         $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $this->platform));
-       
+    }
+
+    public function testJoinTableNameWithSchema()
+    {
+        $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm1->mapManyToMany(array(
+            'fieldName'     => 'user',
+            'targetEntity'  => 'CmsUser',
+            'inversedBy'    => 'users',
+            'joinTable'     => array(
+                'name'      => '`cmsaddress_cmsuser`',
+                'schema'    => 'test'
+            )
+        ));
+
+        $cm2->mapManyToMany(array(
+            'fieldName'     => 'user',
+            'targetEntity'  => 'CmsUser',
+            'inversedBy'    => 'users',
+            'joinTable'     => array(
+                'name'  => 'cmsaddress_cmsuser',
+                'schema'    => 'test'
+            )
+        ));
+
+        $this->assertEquals('"test"."cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
+        $this->assertEquals('test.cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $this->platform));
+
+        $platform = new \Doctrine\DBAL\Platforms\SqlitePlatform;
+
+        $this->assertEquals('"test__cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $platform));
+        $this->assertEquals('test__cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $platform));
     }
 
     public function testIdentifierColumnNames()

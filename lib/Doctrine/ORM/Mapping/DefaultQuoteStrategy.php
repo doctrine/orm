@@ -96,19 +96,21 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {
-        $schema = '';
+        $tableName = $association['joinTable']['name'];
 
         if (isset($association['joinTable']['schema'])) {
-            $schema = $association['joinTable']['schema'] . '.';
-        }
+            $tableName = $association['joinTable']['schema'] . '.' . $association['joinTable']['name'];
 
-        $tableName = $association['joinTable']['name'];
+            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
+                $tableName = $association['joinTable']['schema'] . '__' . $association['joinTable']['name'];
+            }
+        }
 
         if (isset($association['joinTable']['quoted'])) {
             $tableName = $platform->quoteIdentifier($tableName);
         }
 
-        return $schema . $tableName;
+        return $tableName;
     }
 
     /**
