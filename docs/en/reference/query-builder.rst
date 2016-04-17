@@ -113,7 +113,7 @@ suggested standard way to build queries:
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->orderBy('u.surname', 'ASC'));
+       ->orderBy('u.surname', 'ASC');
 
 Here is a complete list of helper methods available in ``QueryBuilder``:
 
@@ -126,7 +126,7 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->select(array('u', 'p'))
         // Example - $qb->select($qb->expr()->select('u', 'p'))
         public function select($select = null);
-        
+
         // addSelect does not override previous calls to select
         //
         // Example - $qb->select('u');
@@ -562,4 +562,3 @@ same query of example 6 written using
 Of course this is the hardest way to build a DQL query in Doctrine.
 To simplify some of these efforts, we introduce what we call as
 ``Expr`` helper class.
-
