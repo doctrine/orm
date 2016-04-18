@@ -79,7 +79,7 @@ class CountOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        if ($this->platform->getName() === "mssql") {
+        if ($this->platform->getName() === "mssql" || $this->platform->getName() === "ase") {
             $AST->orderByClause = null;
         }
 
