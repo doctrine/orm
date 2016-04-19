@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
  */
-final class PersistentCollection extends AbstractLazyCollection implements Selectable
+class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -103,7 +103,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @param ClassMetadata          $class      The class descriptor of the entity type of this collection.
      * @param Collection             $collection The collection elements.
      */
-    public function __construct(EntityManagerInterface $em, $class, Collection $collection)
+    public final function __construct(EntityManagerInterface $em, $class, Collection $collection)
     {
         $this->collection  = $collection;
         $this->em          = $em;

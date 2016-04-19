@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Models\StockExchange;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @Entity
+ * @Entity(collectionClass="Doctrine\Tests\Models\StockExchange\Collection\MarketCollection")
  * @Table(name="exchange_markets")
  */
 class Market

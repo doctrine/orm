@@ -31,6 +31,9 @@ use Doctrine\Common\Collections\Criteria;
  */
 interface EntityPersister
 {
+    const RESULT_ROOT_TYPE_ARRAY      = 'array';
+    const RESULT_ROOT_TYPE_COLLECTION = 'collection';
+
     /**
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */

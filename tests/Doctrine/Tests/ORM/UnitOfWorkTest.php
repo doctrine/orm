@@ -14,6 +14,9 @@ use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\StockExchange\Bond;
+use Doctrine\Tests\Models\StockExchange\Collection\StockCollection;
+use Doctrine\Tests\Models\StockExchange\Market;
 use stdClass;
 
 /**
@@ -63,6 +66,36 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
     }
 
+    /**
+     * @param string $className
+     * @param array  $data
+     * @param string $expectedCollectionClass
+     * @param string $expectedCollectionFieldName
+     *
+     * @dataProvider dataForTestToManyReturnsCollectionSpecificToEntity
+     * 
+     * @group custom-collections
+     */
+    public function testToManyReturnsCollectionSpecificToEntity(
+        $className,
+        $data,
+        $expectedCollectionClass,
+        $expectedCollectionFieldName
+    ) {
+        $hints = ['deferEagerLoad' => true];
+
+        $entity = $this->_unitOfWork->createEntity($className, $data, $hints);
+
+        $this->assertInstanceOf($expectedCollectionClass, $entity->$expectedCollectionFieldName);
+    }
+
+    public function dataForTestToManyReturnsCollectionSpecificToEntity()
+    {
+        return [
+            'MANY_TO_MANY' => [Bond::class, ['id'   => 1, 'name' => 'A_Bond'], StockCollection::class, 'stocks'],
+            'ONE_TO_MANY' => [Market::class, ['id' => 1, 'name' => 'A_Market'], StockCollection::class, 'stocks'],
+        ];
+    }
 
     /* Operational tests */
 

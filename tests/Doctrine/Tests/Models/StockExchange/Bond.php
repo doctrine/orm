@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Bonds have many stocks. This uses a many to many association and fails to model how many of a
  * particular stock a bond has. But i Need a many-to-many association, so please bear with my modelling skills ;)
  *
- * @Entity
+ * @Entity(collectionClass="Doctrine\Tests\Models\StockExchange\Collection\BondCollection")
  * @Table(name="exchange_bonds")
  */
 class Bond

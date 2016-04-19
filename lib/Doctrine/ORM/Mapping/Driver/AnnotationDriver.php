@@ -79,7 +79,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($entityAnnot->repositoryClass !== null) {
                 $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
             }
-
+            
+            if ($entityAnnot->collectionClass !== null) {
+                $metadata->setCustomCollectionClass($entityAnnot->collectionClass);
+            }
+            
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }

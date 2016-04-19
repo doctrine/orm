@@ -257,6 +257,14 @@ class ClassMetadataInfo implements ClassMetadata
     public $customRepositoryClassName;
 
     /**
+     * The name of the custom collection class used for the entity class.
+     * (Optional).
+     *
+     * @var string
+     */
+    public $customCollectionClassName;
+
+    /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
      *
      * @var boolean
@@ -2629,6 +2637,16 @@ class ClassMetadataInfo implements ClassMetadata
     public function setCustomRepositoryClass($repositoryClassName)
     {
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
+    }
+
+    /**
+     * @param string $collectionClassName
+     *
+     * @return void
+     */
+    public function setCustomCollectionClass($collectionClassName)
+    {
+        $this->customCollectionClassName = $this->fullyQualifiedClassName($collectionClassName);
     }
 
     /**
