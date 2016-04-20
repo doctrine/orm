@@ -1363,9 +1363,16 @@ public function __construct(<params>)
             $variableName = Inflector::singularize($variableName);
         }
 
+        // Don't generate a method if one already exists
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
         }
+
+        // Don't generate a 'get' method if there is an 'is' method
+        if ($type=='get' && $this->hasMethod('is'.Inflector::classify($fieldName), $metadata)) {
+            return '';
+        }
+
         $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
         $var = sprintf('%sMethodTemplate', $type);
