@@ -70,7 +70,11 @@ EOT
             if ($input->getOption('complete') !== null) {
                 $em->getConnection()->connect();
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+
+            return 1;
+        } catch (\Exception $e) { // PHP 5
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return 1;

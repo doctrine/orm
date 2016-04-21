@@ -92,7 +92,9 @@ class SchemaTool
         foreach ($createSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                throw ToolsException::schemaToolFailure($sql, $e);
+            } catch (\Exception $e) { // PHP 5
                 throw ToolsException::schemaToolFailure($sql, $e);
             }
         }
@@ -749,7 +751,9 @@ class SchemaTool
         foreach ($dropSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+
+            } catch (\Exception $e) { // PHP 5
 
             }
         }
