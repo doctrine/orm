@@ -19,18 +19,18 @@
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 abstract class AbstractIdGenerator
 {
     /**
      * Generates an identifier for an entity.
      *
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      * @param \Doctrine\ORM\Mapping\Entity $entity
      * @return mixed
      */
-    abstract public function generate(EntityManager $em, $entity);
+    abstract public function generate(EntityManagerInterface $em, $entity);
 
     /**
      * Gets whether this generator is a post-insert generator which means that
