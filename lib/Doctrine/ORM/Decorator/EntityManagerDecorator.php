@@ -275,4 +275,12 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     {
         return $this->wrapped->getCache();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findInEntityInsertions($entityName, array $criteria, array $orderBy = null)
+    {
+        return $this->wrapped->findInEntityInsertions($entityName, $criteria, $orderBy);
+    }
 }

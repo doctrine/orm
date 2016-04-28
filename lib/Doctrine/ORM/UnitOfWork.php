@@ -23,6 +23,7 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
+use Doctrine\ORM\Utility\EntityList;
 use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -3463,5 +3464,42 @@ class UnitOfWork implements PropertyChangedListener
     public function hydrationComplete()
     {
         $this->hydrationCompleteHandler->hydrationComplete();
+    }
+
+    /**
+     * Finds newly persisted entities in entityInsertions by a set of criteria
+     *
+     * @param string     $entityName
+     * @param array      $criteria
+     * @param array|null $orderBy
+     *
+     * @return array
+     */
+    public function findInEntityInsertions($entityName, array $criteria, array $orderBy = null)
+    {
+        $result = array();
+        $class = $this->em->getClassMetadata($entityName);
+        foreach ($this->entityInsertions as $entity) {
+            $matchedCount = 0;
+
+            if ( ! $entity instanceof $entityName) {
+                continue;
+            }
+
+            foreach ($criteria as $fieldName => $value) {
+                if ($class->getFieldValue($entity, $fieldName) !== $value) {
+                    continue;
+                }
+                $matchedCount++;
+
+            }
+            if ($matchedCount === count($criteria)) {
+                $result[] = $entity;
+            }
+        }
+        if (is_array($orderBy) && count($orderBy)) {
+            EntityList::sort($result, $orderBy, $this->em->getMetadataFactory());
+        }
+        return $result;
     }
 }

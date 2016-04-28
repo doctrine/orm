@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Decorator;
 
-use Doctrine\ORM\Decorator\EntityManagerDecorator;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
@@ -35,6 +33,12 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
                 $methods[] = array($method->getName(), array('name', new ResultSetMapping()));
                 continue;
             }
+            /** Special case EntityManager::findInEntityInsertions() because of its array parameters */
+            if ($method->getName() === 'findInEntityInsertions') {
+                $methods[] = array($method->getName(), array('name', array()));
+                $methods[] = array($method->getName(), array('name', array(), array()));
+                continue;
+            }
 
             if ($method->getNumberOfRequiredParameters() === 0) {
                 $methods[] = array($method->getName(), array());
@@ -51,6 +55,9 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getMethodParameters
+     *
+     * @param string $method     Method name
+     * @param array  $parameters Parameters
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {

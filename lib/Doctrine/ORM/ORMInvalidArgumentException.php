@@ -181,6 +181,16 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @return ORMInvalidArgumentException
      */
+    public static function invalidSortCompositeIdentifier()
+    {
+        return new self(
+            "Sorting an entity by an entity with a composite primary key is not supported."
+        );
+    }
+
+    /**
+     * @return ORMInvalidArgumentException
+     */
     public static function invalidIdentifierBindingEntity()
     {
         return new self("Binding entities to query parameters only allowed for entities that have an identifier.");

@@ -882,4 +882,18 @@ use Doctrine\Common\Util\ClassUtils;
     {
         return null !== $this->filterCollection;
     }
+
+    /**
+     * Finds inserted entities by a set of criteria
+     *
+     * @param string     $entityName
+     * @param array      $criteria
+     * @param array|null $orderBy
+     *
+     * @return array
+     */
+    public function findInEntityInsertions($entityName, array $criteria, array $orderBy = null)
+    {
+        return $this->getUnitOfWork()->findInEntityInsertions($entityName, $criteria, $orderBy);
+    }
 }

@@ -12,6 +12,8 @@ use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use stdClass;
@@ -336,6 +338,225 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
             [new stdClass()],
             [new ArrayCollection()],
         ];
+    }
+
+    /**
+     * Data Provider
+     *
+     * @return array
+     */
+    public function entityInsertionsDataProvider()
+    {
+        return array(
+            //#0
+            array(
+                'data'       => array(
+                    'pair1' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test1',
+                        'emailShared' => false//if shared, an email entity will be used in multiple user entities
+                    )
+                ),
+                'entityName' => 'Doctrine\Tests\Models\CMS\CmsUser',
+                'criteria'   => array(
+                    'criteria1' => array('name' => 'test1'),
+                    'criteria2' => array('name' => 'test2'),
+                    'criteria3' => array('name' => 'tests3')
+                ),
+                'orderBy'    => array(),
+                'expected'   => array(
+                    'count' => array(
+                        'criteria1' => 1,
+                        'criteria2' => 0,
+                        'criteria3' => 0
+                    )
+                )
+            ),
+            //#1
+            array(
+                'data'       => array(
+                    'pair1' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test1',
+                        'emailShared' => false//if shared, an email entity will be used in multiple user entities
+                    ),
+                    'pair2' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test2',
+                        'emailShared' => true//if shared, an email entity will be used in multiple user entities
+                    )
+                ),
+                'entityName' => 'Doctrine\Tests\Models\CMS\CmsUser',
+                'criteria'   => array(
+                    'criteria1' => array('name' =>  'test1'),
+                    'criteria2' => array('name' =>  'test2'),
+                    'criteria3' => array('email' => 'pair1'),
+                    'criteria4' => array('name' => 'test1', 'email' => 'pair1')
+                ),
+                'orderBy'    => array(),
+                'expected'   => array(
+                    'count' => array(
+                        'criteria1' => 1,
+                        'criteria2' => 1,
+                        'criteria3' => 1,
+                        'criteria4' => 1,
+                    )
+                )
+            ),
+            //#2
+            array(
+                'data'       => array(
+                    'pair1' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test1',
+                        'emailShared' => true//if shared, an email entity will be used in multiple user entities
+                    ),
+                    'pair2' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test2',
+                        'emailShared' => true//if shared, an email entity will be used in multiple user entities
+                    )
+                ),
+                'entityName' => 'Doctrine\Tests\Models\CMS\CmsUser',
+                'criteria'   => array(
+                    'criteria1' => array('name' => 'test1'),
+                    'criteria2' => array('name' => 'test2'),
+                    'criteria3' => array('email' => 'pair1'),
+                    'criteria4' => array('name' => 'test1', 'email' => 'pair1')
+                ),
+                'orderBy'    => array(),
+                'expected'   => array(
+                    'count' => array(
+                        'criteria1' => 1,
+                        'criteria2' => 1,
+                        'criteria3' => 2,
+                        'criteria4' => 1,
+                    )
+                )
+            ),
+            //#3
+            array(
+                'data'       => array(
+                    'pair1' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test1',
+                        'emailShared' => true//if shared, an email entity will be used in multiple user entities
+                    ),
+                    'pair2' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test2',
+                        'emailShared' => true//if shared, an email entity will be used in multiple user entities
+                    )
+                ),
+                'entityName' => 'Doctrine\Tests\Models\CMS\CmsEmail',
+                'criteria'   => array(
+                    'criteria3' => array('email' => 'test1@doctrine.com'),
+                    'criteria4' => array('email' => 'test2@doctrine.com')
+                ),
+                'orderBy'    => array(),
+                'expected'   => array(
+                    'count' => array(
+                        'criteria1' => 0,
+                        'criteria2' => 0,
+                        'criteria3' => 1,
+                        'criteria4' => 0,
+                    )
+                )
+            ),
+            //#4
+            array(
+                'data'       => array(
+                    'pair1' => array(
+                        'email'       => 'test1@doctrine.com',
+                        'userName'    => 'test1',
+                        'emailShared' => false//if shared, an email entity will be used in multiple user entities
+                    ),
+                    'pair2' => array(
+                        'email'       => 'test2@doctrine.com',
+                        'userName'    => 'test2',
+                        'emailShared' => false//if shared, an email entity will be used in multiple user entities
+                    )
+                ),
+                'entityName' => 'Doctrine\Tests\Models\CMS\CmsEmail',
+                'criteria'   => array(
+                    'criteria3' => array('email' => 'test1@doctrine.com'),
+                    'criteria4' => array('email' => 'test2@doctrine.com')
+                ),
+                'orderBy'    => array(),
+                'expected'   => array(
+                    'count' => array(
+                        'criteria1' => 0,
+                        'criteria2' => 0,
+                        'criteria3' => 1,
+                        'criteria4' => 1,
+                    )
+                )
+            ),
+
+        );
+    }
+
+    /**
+     * @group        GIT-5635
+     * @dataProvider entityInsertionsDataProvider
+     *
+     * @param array $data
+     * @param string $entityName
+     * @param array $multipleCriteria
+     * @param array $orderBy
+     * @param array $expected
+     */
+    public function testFindInEntityInsertions($data, $entityName, $multipleCriteria, $orderBy, $expected)
+    {
+        $emailCache = array();
+        foreach ($data as $pairName => $pair) {
+            $user       = new CmsUser();
+            $user->name = $pair['userName'];
+            $this->_unitOfWork->persist($user);
+
+            if ( ! $pair['emailShared']) {
+                $email = new CmsEmail();
+                $emailCache[$pairName] = $email;
+            } else if ( ! isset($emailCache[$pair['email']])) {
+                $email = new CmsEmail();
+                $emailCache[$pair['email']] = $email;
+            } else {
+                $email = $emailCache[$pair['email']];
+            }
+
+            $email->setEmail($pair['email']);
+            $user->email = $email;
+            $this->_unitOfWork->persist($email);
+        }
+        $class = $this->_emMock->getClassMetadata($entityName);
+
+        foreach ($multipleCriteria as $criteriaName => $criteria) {
+
+            //replace email value in criteria with a real email entity created for it
+            if (array_key_exists('email', $criteria) && $class->hasAssociation('email')) {
+                $pairData = $data[$criteria['email']];
+                if ($pairData['emailShared']) {
+                    $email = $emailCache[$pairData['email']];
+                } else {
+                    $email = $emailCache[$criteria['email']];
+                }
+                $criteria['email'] = $email;
+            }
+
+            $result = $this->_unitOfWork->findInEntityInsertions($entityName, $criteria);
+
+            $this->assertCount($expected['count'][$criteriaName], $result);
+
+            foreach ($result as $entity) {
+
+                $this->assertEquals($entityName, get_class($entity));
+
+                foreach ($criteria as $field => $value) {
+
+                    $this->assertEquals($value, $class->getFieldValue($entity, $field));
+                }
+            }
+        }
     }
 }
 
