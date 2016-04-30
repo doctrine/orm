@@ -151,7 +151,7 @@ class Paginator implements \Countable, \IteratorAggregate
 
             $ids = array_map('current', $subQuery->getScalarResult());
 
-            $whereInQuery = $this->cloneQuery($this->query);
+            $whereInQuery = $this->cloneQuery($this->query, false);
             // don't do this for an empty id array
             if (count($ids) === 0) {
                 return new \ArrayIterator(array());
@@ -180,15 +180,18 @@ class Paginator implements \Countable, \IteratorAggregate
      * Clones a query.
      *
      * @param Query $query The query.
+     * @param bool  $cloneParameters whether we need to clone parameters too
      *
      * @return Query The cloned query.
      */
-    private function cloneQuery(Query $query)
+    private function cloneQuery(Query $query, $cloneParameters = true)
     {
         /* @var $cloneQuery Query */
         $cloneQuery = clone $query;
 
-        $cloneQuery->setParameters(clone $query->getParameters());
+        if ($cloneParameters === true) {
+            $cloneQuery->setParameters(clone $query->getParameters());
+        }
         $cloneQuery->setCacheable(false);
 
         foreach ($query->getHints() as $name => $value) {
