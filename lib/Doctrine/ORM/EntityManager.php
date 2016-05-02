@@ -455,7 +455,9 @@ use Doctrine\Common\Util\ClassUtils;
                 if ( ! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
+                return $persister->load($sortedId, null, null, array(), $lockMode);
 
+            case LockMode::NONE === $lockMode:
                 return $persister->load($sortedId, null, null, array(), $lockMode);
 
             default:
