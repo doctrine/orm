@@ -29,7 +29,7 @@ class CompanyFlexUltraContract extends CompanyFlexContract
         $this->maxPrice = $maxPrice;
     }
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->mapField(
             [

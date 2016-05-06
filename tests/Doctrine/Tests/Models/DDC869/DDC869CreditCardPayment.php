@@ -11,7 +11,7 @@ class DDC869CreditCardPayment extends DDC869Payment
     /** @Column(type="string") */
     protected $creditCardNumber;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->mapField(
             [

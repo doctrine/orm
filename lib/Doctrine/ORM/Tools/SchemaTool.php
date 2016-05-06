@@ -253,7 +253,7 @@ class SchemaTool
                 if (isset($class->fieldMappings[$identifierField])) {
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
-                    /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
+                    /* @var $assoc \Doctrine\ORM\Annotation\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
