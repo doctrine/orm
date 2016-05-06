@@ -524,7 +524,7 @@ use Throwable;
 
         $entity = $class->newInstance();
 
-        $class->setIdentifierValues($entity, $identifier);
+        $class->assignIdentifier($entity, $identifier);
 
         $this->unitOfWork->registerManaged($entity, $identifier, []);
         $this->unitOfWork->markReadOnly($entity);
