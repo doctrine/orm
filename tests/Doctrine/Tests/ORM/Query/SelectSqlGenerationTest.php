@@ -715,7 +715,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
         $q = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
         $person = new CompanyPerson();
-        $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, ['id' => 101]);
+        $this->_em->getClassMetadata(get_class($person))->assignIdentifier($person, ['id' => 101]);
         $q->setParameter('param', $person);
         $this->assertEquals(
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id IN (?))',
