@@ -19,7 +19,7 @@ class DDC869Payment
     protected $value;
 
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->mapField(
             [
@@ -37,7 +37,7 @@ class DDC869Payment
         );
         $metadata->isMappedSuperclass = true;
         $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
     }
 
 }

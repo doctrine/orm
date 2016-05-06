@@ -1,16 +1,16 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Tools\Export;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
     [
    'name' => 'cms_users',
    'options' => ['engine' => 'MyISAM', 'foo' => ['bar' => 'baz']],
     ]
 );
-$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
 $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
@@ -47,7 +47,7 @@ $metadata->mapField(
    'options' => ["unsigned"=>true],
     ]
 );
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(
     [
     'fieldName' => 'mainGroup',
@@ -74,7 +74,7 @@ $metadata->mapOneToOne(
    ],
    ],
    'orphanRemoval' => true,
-   'fetch' => ClassMetadataInfo::FETCH_EAGER,
+   'fetch' => ClassMetadata::FETCH_EAGER,
     ]
 );
 $metadata->mapOneToOne(
@@ -88,7 +88,7 @@ $metadata->mapOneToOne(
         ],
     'inversedBy' => NULL,
     'orphanRemoval' => false,
-    'fetch' => ClassMetadataInfo::FETCH_EAGER,
+    'fetch' => ClassMetadata::FETCH_EAGER,
     ]
 );
 $metadata->mapOneToMany(
@@ -102,7 +102,7 @@ $metadata->mapOneToMany(
    ],
    'mappedBy' => 'user',
    'orphanRemoval' => true,
-   'fetch' => ClassMetadataInfo::FETCH_LAZY,
+   'fetch' => ClassMetadata::FETCH_LAZY,
    'orderBy' =>
    [
    'number' => 'ASC',
@@ -113,7 +113,7 @@ $metadata->mapManyToMany(
     [
    'fieldName' => 'groups',
    'targetEntity' => Export\Group::class,
-   'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
+   'fetch' => ClassMetadata::FETCH_EXTRA_LAZY,
    'cascade' =>
    [
    0 => 'remove',

@@ -52,7 +52,7 @@ class YamlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
+        /* @var \Doctrine\ORM\Mapping\ClassMetadata $metadata */
         $element = $this->getElement($className);
 
         if ($element['type'] == 'entity') {
