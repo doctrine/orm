@@ -7,19 +7,14 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Cache\ArrayCache;
-
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyAuction;
-
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -50,8 +45,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
-        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['groups']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_LAZY;
     }
 
     public function testConfigureFilter()
@@ -514,8 +509,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private function loadLazyFixtureData()
     {
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
-        $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
         $this->loadFixtureData();
     }
 

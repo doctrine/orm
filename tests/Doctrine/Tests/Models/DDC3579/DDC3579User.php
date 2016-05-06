@@ -103,6 +103,6 @@ class DDC3579User
            'targetEntity'   => 'DDC3579Group'
         ));
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
     }
 }

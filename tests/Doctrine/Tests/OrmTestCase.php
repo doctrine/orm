@@ -70,7 +70,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             // Register the ORM Annotations in the AnnotationRegistry
             $reader = new Annotations\SimpleAnnotationReader();
 
-            $reader->addNamespace('Doctrine\ORM\Mapping');
+            $reader->addNamespace('Doctrine\ORM\Annotation');
 
             $reader = new Annotations\CachedReader($reader, new ArrayCache());
         } else if (version_compare(Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
@@ -80,9 +80,9 @@ abstract class OrmTestCase extends DoctrineTestCase
             $reader->setEnableParsePhpImports(false);
 
             if ($alias) {
-                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
+                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Annotation\\', $alias);
             } else {
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Annotation\\');
             }
 
             $reader = new Annotations\CachedReader(new Annotations\IndexedReader($reader), new ArrayCache());
@@ -90,13 +90,13 @@ abstract class OrmTestCase extends DoctrineTestCase
             $reader = new Annotations\AnnotationReader();
 
             if ($alias) {
-                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
+                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Annotation\\', $alias);
             } else {
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Annotation\\');
             }
         }
 
-        Annotations\AnnotationRegistry::registerFile(__DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
+        Annotations\AnnotationRegistry::registerFile(__DIR__ . "/../../../lib/Doctrine/ORM/Annotation/DoctrineAnnotations.php");
 
         return new AnnotationDriver($reader, (array) $paths);
     }
