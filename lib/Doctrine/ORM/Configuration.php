@@ -153,12 +153,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
     {
-        AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
+        AnnotationRegistry::registerFile(__DIR__ . '/Annotation/DoctrineAnnotations.php');
 
         if ($useSimpleAnnotationReader) {
             // Register the ORM Annotations in the AnnotationRegistry
             $reader = new SimpleAnnotationReader();
-            $reader->addNamespace('Doctrine\ORM\Mapping');
+            $reader->addNamespace('Doctrine\ORM\Annotation');
             $cachedReader = new CachedReader($reader, new ArrayCache());
 
             return new AnnotationDriver($cachedReader, (array) $paths);

@@ -11,7 +11,7 @@ class DDC889SuperClass
     /** @Column() */
     protected $name;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->mapField(
             [
@@ -20,6 +20,6 @@ class DDC889SuperClass
         );
 
         $metadata->isMappedSuperclass = true;
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }

@@ -24,7 +24,7 @@ namespace Doctrine\Tests\Models\DDC964;
  */
 class DDC964Guest extends DDC964User
 {
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->setAttributeOverride('id', [
             'columnName'    => 'guest_id',

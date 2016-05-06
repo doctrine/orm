@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * ClassMetadata exporter for PHP code.
@@ -38,12 +38,12 @@ class PhpExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata)
+    public function exportClassMetadata(ClassMetadata $metadata)
     {
         $lines = [];
         $lines[] = '<?php';
         $lines[] = null;
-        $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadataInfo;';
+        $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadata;';
         $lines[] = null;
 
         if ($metadata->isMappedSuperclass) {
@@ -51,7 +51,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->inheritanceType) {
-            $lines[] = '$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
+            $lines[] = '$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
         }
 
         if ($metadata->customRepositoryClassName) {
@@ -71,7 +71,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->changeTrackingPolicy) {
-            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
+            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
         }
 
         if ($metadata->lifecycleCallbacks) {
@@ -87,7 +87,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ( ! $metadata->isIdentifierComposite && $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
+            $lines[] = '$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_' . $generatorType . ');';
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
@@ -112,7 +112,7 @@ class PhpExporter extends AbstractExporter
                 $associationMappingArray['fetch'] = $associationMapping['fetch'];
             }
 
-            if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['type'] & ClassMetadata::TO_ONE) {
                 $method = 'mapOneToOne';
                 $oneToOneMappingArray = [
                     'mappedBy'      => $associationMapping['mappedBy'],
@@ -122,7 +122,7 @@ class PhpExporter extends AbstractExporter
                 ];
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadata::ONE_TO_MANY) {
                 $method = 'mapOneToMany';
                 $potentialAssociationMappingIndexes = [
                     'mappedBy',
@@ -135,7 +135,7 @@ class PhpExporter extends AbstractExporter
                     }
                 }
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadata::MANY_TO_MANY) {
                 $method = 'mapManyToMany';
                 $potentialAssociationMappingIndexes = [
                     'mappedBy',

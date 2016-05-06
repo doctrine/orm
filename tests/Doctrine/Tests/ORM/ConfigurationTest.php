@@ -2,22 +2,24 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Annotation as AnnotationNamespace;
 use Doctrine\ORM\Cache\CacheConfiguration;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
-use ReflectionClass;
 use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 
 /**
  * Tests for the Configuration object
@@ -313,7 +315,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testSetGetClassMetadataFactoryName()
     {
-        $this->assertSame(AnnotationNamespace\ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
+        $this->assertSame(ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
         $this->configuration->setClassMetadataFactoryName(__CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getClassMetadataFactoryName());
     }
@@ -356,7 +358,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function testSetGetEntityListenerResolver()
     {
         $this->assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
-        $this->assertInstanceOf(AnnotationNamespace\DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
+        $this->assertInstanceOf(DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
         $resolver = $this->createMock(EntityListenerResolver::class);
         $this->configuration->setEntityListenerResolver($resolver);
         $this->assertSame($resolver, $this->configuration->getEntityListenerResolver());

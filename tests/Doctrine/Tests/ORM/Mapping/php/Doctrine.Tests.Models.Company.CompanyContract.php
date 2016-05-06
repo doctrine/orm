@@ -1,9 +1,9 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_JOINED);
-$metadata->setTableName( 'company_contracts');
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
+$metadata->setTableName('company_contracts');
 $metadata->setDiscriminatorColumn(
     [
     'name' => 'discr',

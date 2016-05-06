@@ -504,7 +504,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
         $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
 
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
 
     /**
@@ -1157,16 +1157,16 @@ class User
 
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
             [
-           'name' => 'cms_users',
-           'options' => ['foo' => 'bar', 'baz' => ['key' => 'val']],
+               'name' => 'cms_users',
+               'options' => ['foo' => 'bar', 'baz' => ['key' => 'val']],
             ]
         );
-        $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
@@ -1201,7 +1201,7 @@ class User
         $mapping = ['fieldName' => 'version', 'type' => 'integer'];
         $metadata->setVersionMapping($mapping);
         $metadata->mapField($mapping);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(
             [
            'fieldName' => 'address',
@@ -1315,9 +1315,9 @@ abstract class Animal
      */
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $metadata->setCustomGeneratorDefinition(["class" => "stdClass"]);
     }
 }
@@ -1325,7 +1325,7 @@ abstract class Animal
 /** @Entity */
 class Cat extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
 
     }
@@ -1334,7 +1334,7 @@ class Cat extends Animal
 /** @Entity */
 class Dog extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
 
     }
@@ -1383,7 +1383,7 @@ class DDC1170Entity
         return $this->value;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
         $metadata->mapField(
             [
@@ -1400,7 +1400,7 @@ class DDC1170Entity
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 
 }
@@ -1420,7 +1420,7 @@ class DDC807Entity
      **/
    public $id;
 
-   public static function loadMetadata(ClassMetadataInfo $metadata)
+   public static function loadMetadata(ClassMetadata $metadata)
     {
          $metadata->mapField(
              [
@@ -1437,7 +1437,7 @@ class DDC807Entity
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1459,14 +1459,14 @@ class Comment
      */
     private $content;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
             [
-            'indexes' => [
-                ['columns' => ['content'], 'flags' => ['fulltext'], 'options' => ['where' => 'content IS NOT NULL']]
-            ]
+                'indexes' => [
+                    ['columns' => ['content'], 'flags' => ['fulltext'], 'options' => ['where' => 'content IS NOT NULL']]
+                ]
             ]
         );
 
@@ -1502,7 +1502,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
      */
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
         $metadata->mapField(
             [
@@ -1511,7 +1511,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1536,7 +1536,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
      */
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
         $metadata->mapField(
             [
@@ -1545,7 +1545,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
