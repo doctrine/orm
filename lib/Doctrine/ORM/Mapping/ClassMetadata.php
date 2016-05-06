@@ -214,15 +214,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $name;
 
     /**
-     * READ-ONLY: The namespace the entity class is contained in.
-     *
-     * @var string
-     *
-     * @todo Not really needed. Usage could be localized.
-     */
-    public $namespace;
-
-    /**
      * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
      * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
      * as {@link $name}.
@@ -805,7 +796,6 @@ class ClassMetadata implements ClassMetadataInterface
             'identifier',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
-            'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
@@ -964,7 +954,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function initializeReflection($reflService)
     {
         $this->reflClass = $reflService->getClass($this->name);
-        $this->namespace = $reflService->getClassNamespace($this->name);
 
         if ($this->reflClass) {
             $this->name = $this->rootEntityName = $this->reflClass->getName();
@@ -3230,12 +3219,14 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function fullyQualifiedClassName($className)
     {
-        if (empty($className)) {
+        if (empty($className) || ! $this->reflClass) {
             return $className;
         }
 
-        if ($className !== null && strpos($className, '\\') === false && strlen($this->namespace) > 0) {
-            return $this->namespace . '\\' . $className;
+        $namespace = $this->reflClass->getNamespaceName();
+
+        if ($className !== null && strpos($className, '\\') === false && strlen($namespace) > 0) {
+            return $namespace . '\\' . $className;
         }
 
         return $className;
