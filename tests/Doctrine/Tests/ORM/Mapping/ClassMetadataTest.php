@@ -55,7 +55,6 @@ class ClassMetadataTest extends OrmTestCase
 
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
-        $this->assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
         $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
         $this->assertEquals(CMS\CmsUser::class, $cm->name);
         $this->assertEquals('UserParent', $cm->rootEntityName);
