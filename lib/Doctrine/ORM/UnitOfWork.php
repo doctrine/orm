@@ -889,7 +889,7 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
                 $idValue = [$class->getSingleIdentifierFieldName() => $this->convertSingleFieldIdentifierToPHPValue($class, $idValue)];
 
-                $class->setIdentifierValues($entity, $idValue);
+                $class->assignIdentifier($entity, $idValue);
             }
 
             $this->entityIdentifiers[$oid] = $idValue;
@@ -1845,7 +1845,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     $managedCopy = $this->newInstance($class);
-                    $class->setIdentifierValues($managedCopy, $id);
+                    $class->assignIdentifier($managedCopy, $id);
 
                     $this->persistNew($class, $managedCopy);
                 }
