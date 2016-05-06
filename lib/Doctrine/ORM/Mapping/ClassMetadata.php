@@ -405,17 +405,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $fieldNames = [];
 
     /**
-     * READ-ONLY: A map of field names to column names. Keys are field names and values column names.
-     * Used to look up column names from field names.
-     * This is the reverse lookup map of $_fieldNames.
-     *
-     * @var array
-     *
-     * @deprecated 3.0 Remove this.
-     */
-    public $columnNames = [];
-
-    /**
      * READ-ONLY: The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
@@ -810,7 +799,6 @@ class ClassMetadata implements ClassMetadataInterface
         // This metadata is always serialized/cached.
         $serialized = [
             'associationMappings',
-            'columnNames', //TODO: 3.0 Remove this. Can use fieldMappings[$fieldName]['columnName']
             'fieldMappings',
             'fieldNames',
             'embeddedClasses',
@@ -1209,8 +1197,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getColumnName($fieldName)
     {
-        return isset($this->columnNames[$fieldName])
-            ? $this->columnNames[$fieldName]
+        return isset($this->fieldMappings[$fieldName])
+            ? $this->fieldMappings[$fieldName]['columnName']
             : $fieldName;
     }
 
@@ -1399,8 +1387,6 @@ class ClassMetadata implements ClassMetadataInterface
             $mapping['columnName']  = trim($mapping['columnName'], '`');
             $mapping['quoted']      = true;
         }
-
-        $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
 
         if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping['columnName'])) {
             throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
@@ -2207,7 +2193,6 @@ class ClassMetadata implements ClassMetadataInterface
 
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
-        unset($this->columnNames[$mapping['fieldName']]);
 
         $this->_validateAndCompleteFieldMapping($overrideMapping);
 
@@ -2377,7 +2362,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        $this->columnNames[$fieldMapping['fieldName']] = $fieldMapping['columnName'];
         $this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
     }
 

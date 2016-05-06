@@ -834,7 +834,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals(['user_id'=>'id','user_name'=>'name'], $adminMetadata->fieldNames);
-        $this->assertEquals(['id'=>'user_id','name'=>'user_name'], $adminMetadata->columnNames);
         $this->assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
 
 
@@ -849,7 +848,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
         $this->assertEquals(['guest_id'=>'id','guest_name'=>'name'], $guestMetadata->fieldNames);
-        $this->assertEquals(['id'=>'guest_id','name'=>'guest_name'], $guestMetadata->columnNames);
         $this->assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
 
         $this->assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);

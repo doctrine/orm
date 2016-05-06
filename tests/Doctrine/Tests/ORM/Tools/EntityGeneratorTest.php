@@ -464,7 +464,6 @@ class EntityGeneratorTest extends OrmTestCase
         $driver = $this->createAnnotationDriver();
         $driver->loadMetadataForClass($cm->name, $cm);
 
-        $this->assertEquals($cm->columnNames, $metadata->columnNames);
         $this->assertEquals($cm->getTableName(), $metadata->getTableName());
         $this->assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         $this->assertEquals($cm->identifier, $metadata->identifier);
@@ -482,7 +481,6 @@ class EntityGeneratorTest extends OrmTestCase
 
         $driver->loadMetadataForClass($cm->name, $cm);
 
-        $this->assertEquals($cm->columnNames, $embeddedMetadata->columnNames);
         $this->assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
         $this->assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
     }
@@ -505,7 +503,6 @@ class EntityGeneratorTest extends OrmTestCase
 
         $driver->loadMetadataForClass($cm->name, $cm);
 
-        $this->assertEquals($cm->columnNames, $metadata->columnNames);
         $this->assertEquals($cm->getTableName(), $metadata->getTableName());
         $this->assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         $this->assertEquals($cm->identifier, $metadata->identifier);
@@ -519,7 +516,6 @@ class EntityGeneratorTest extends OrmTestCase
 
         $driver->loadMetadataForClass($cm->name, $cm);
 
-        $this->assertEquals($cm->columnNames, $embeddedMetadata->columnNames);
         $this->assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
         $this->assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
     }
