@@ -73,7 +73,7 @@ sample ``cli-config.php`` file looks as follows:
 
     // Any way to access the EntityManager from  your application
     $em = GetMyEntityManager();
-    
+
     $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
@@ -84,7 +84,7 @@ script will ultimately use. The Doctrine Binary will automatically
 find the first instance of HelperSet in the global variable
 namespace and use this.
 
-.. note:: 
+.. note::
 
     You have to adjust this snippet for your specific application or framework
     and use their facilities to access the Doctrine EntityManager and
@@ -173,7 +173,7 @@ When using the SchemaTool class directly, create your schema using
 the ``createSchema()`` method. First create an instance of the
 ``SchemaTool`` and pass it an instance of the ``EntityManager``
 that you want to use to create the schema. This method receives an
-array of ``ClassMetadataInfo`` instances.
+array of ``ClassMetadata`` instances.
 
 .. code-block:: php
 
@@ -204,8 +204,8 @@ tables of the current model to clean up with orphaned tables.
 
 You can also use database introspection to update your schema
 easily with the ``updateSchema()`` method. It will compare your
-existing database schema to the passed array of
-``ClassMetadataInfo`` instances.
+existing database schema to the passed array of ``ClassMetadata``
+instances.
 
 .. code-block:: php
 
@@ -361,8 +361,7 @@ Reverse Engineering
 -------------------
 
 You can use the ``DatabaseDriver`` to reverse engineer a database
-to an array of ``ClassMetadataInfo`` instances and generate YAML,
-XML, etc. from them.
+to an array of ``ClassMetadata`` instances and generate YAML, XML, etc. from them.
 
 .. note::
 
@@ -384,7 +383,7 @@ First you need to retrieve the metadata instances with the
             $em->getConnection()->getSchemaManager()
         )
     );
-    
+
     $cmf = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
     $cmf->setEntityManager($em);
     $metadata = $cmf->getAllMetadata();
