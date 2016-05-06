@@ -113,12 +113,12 @@ class ResolveTargetEntityListener implements EventSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
-     * @param array                                   $mapping
+     * @param ClassMetadata $classMetadata
+     * @param array         $mapping
      *
      * @return void
      */
-    private function remapAssociation($classMetadata, $mapping)
+    private function remapAssociation(ClassMetadata $classMetadata, $mapping)
     {
         $newMapping = $this->resolveTargetEntities[$mapping['targetEntity']];
         $newMapping = array_replace_recursive($mapping, $newMapping);

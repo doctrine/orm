@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use SimpleXMLElement;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use \SimpleXMLElement;
 
 /**
  * ClassMetadata exporter for Doctrine XML mapping files.
@@ -39,7 +39,7 @@ class XmlExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata)
+    public function exportClassMetadata(ClassMetadata $metadata)
     {
         $xml = new SimpleXmlElement('<?xml version="1.0" encoding="utf-8"?><doctrine-mapping ' .
             'xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" ' .
@@ -66,7 +66,7 @@ class XmlExporter extends AbstractExporter
             $root->addAttribute('schema', $metadata->table['schema']);
         }
 
-        if ($metadata->inheritanceType && $metadata->inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType && $metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $root->addAttribute('inheritance-type', $this->_getInheritanceTypeString($metadata->inheritanceType));
         }
 
@@ -227,10 +227,10 @@ class XmlExporter extends AbstractExporter
         }
 
         $orderMap = [
-            ClassMetadataInfo::ONE_TO_ONE,
-            ClassMetadataInfo::ONE_TO_MANY,
-            ClassMetadataInfo::MANY_TO_ONE,
-            ClassMetadataInfo::MANY_TO_MANY,
+            ClassMetadata::ONE_TO_ONE,
+            ClassMetadata::ONE_TO_MANY,
+            ClassMetadata::MANY_TO_ONE,
+            ClassMetadata::MANY_TO_MANY,
         ];
 
         uasort($metadata->associationMappings, function($m1, $m2) use (&$orderMap){
@@ -242,13 +242,13 @@ class XmlExporter extends AbstractExporter
 
         foreach ($metadata->associationMappings as $associationMapping) {
             $associationMappingXml = null;
-            if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_ONE) {
+            if ($associationMapping['type'] == ClassMetadata::ONE_TO_ONE) {
                 $associationMappingXml = $root->addChild('one-to-one');
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_ONE) {
+            } elseif ($associationMapping['type'] == ClassMetadata::MANY_TO_ONE) {
                 $associationMappingXml = $root->addChild('many-to-one');
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadata::ONE_TO_MANY) {
                 $associationMappingXml = $root->addChild('one-to-many');
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadata::MANY_TO_MANY) {
                 $associationMappingXml = $root->addChild('many-to-many');
             }
 
@@ -422,7 +422,7 @@ class XmlExporter extends AbstractExporter
      * Export sequence information (if available/configured) into the current identifier XML node
      *
      * @param SimpleXMLElement  $identifierXmlNode
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata     $metadata
      *
      * @return void
      */
@@ -430,7 +430,7 @@ class XmlExporter extends AbstractExporter
     {
         $sequenceDefinition = $metadata->sequenceGeneratorDefinition;
 
-        if (! ($metadata->generatorType === ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE && $sequenceDefinition)) {
+        if (! ($metadata->generatorType === ClassMetadata::GENERATOR_TYPE_SEQUENCE && $sequenceDefinition)) {
             return;
         }
 
@@ -444,6 +444,7 @@ class XmlExporter extends AbstractExporter
     private function _asXml(SimpleXMLElement $simpleXml) : string
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
+
         $dom->loadXML($simpleXml->asXML());
         $dom->formatOutput = true;
 

@@ -90,10 +90,8 @@ class ProxyFactory extends AbstractProxyFactory
      */
     protected function skipClass(ClassMetadata $metadata)
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
-        return $metadata->isMappedSuperclass
-            || $metadata->isEmbeddedClass
-            || $metadata->getReflectionClass()->isAbstract();
+        /* @var \Doctrine\ORM\Mapping\ClassMetadata $metadata */
+        return $metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract();
     }
 
     /**

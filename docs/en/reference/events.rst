@@ -960,7 +960,7 @@ Load ClassMetadata Event
 ------------------------
 
 When the mapping information for an entity is read, it is populated
-in to a ``ClassMetadataInfo`` instance. You can hook in to this
+in to a ``ClassMetadata`` instance. You can hook in to this
 process and manipulate the instance.
 
 .. code-block:: php
