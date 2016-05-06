@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
 
 class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
@@ -148,8 +148,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testGeneratedValueFromMappedSuperclass()
     {
+        /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
-        /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(
@@ -164,8 +164,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass()
     {
+        /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
-        /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(
@@ -180,8 +180,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMultipleMappedSuperclasses()
     {
+        /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\MediumSuperclassEntity');
-        /* @var $class ClassMetadataInfo */
 
         $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
         $this->assertEquals(
@@ -197,8 +197,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassIndex()
     {
+        /* @var $ClassMetadata class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\EntityIndexSubClass');
-        /* @var $class ClassMetadataInfo */
 
         $this->assertArrayHasKey('mapped1', $class->fieldMappings);
         $this->assertArrayHasKey('IDX_NAME_INDEX', $class->table['uniqueConstraints']);

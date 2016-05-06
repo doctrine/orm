@@ -1,6 +1,6 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->mapField(array(
    'id'         => true,
@@ -9,4 +9,4 @@ $metadata->mapField(array(
 $metadata->mapField(array(
    'fieldName'  => 'name'
 ));
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

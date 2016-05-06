@@ -20,13 +20,13 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 class FieldBuilderTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testCustomIdGeneratorCanBeSet()
     {
-        $cmBuilder = new ClassMetadataBuilder(new ClassMetadataInfo('Doctrine\Tests\Models\CMS\CmsUser'));
+        $cmBuilder = new ClassMetadataBuilder(new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'));
 
         $fieldBuilder = $cmBuilder->createField('aField', 'string');
 
@@ -35,7 +35,7 @@ class FieldBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $fieldBuilder->build();
 
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM, $cmBuilder->getClassMetadata()->generatorType);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $cmBuilder->getClassMetadata()->generatorType);
         $this->assertEquals(['class' => 'stdClass'], $cmBuilder->getClassMetadata()->customGeneratorDefinition);
     }
 }

@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\ORM\Mapping as AnnotationNamespace;
+use Doctrine\ORM\Annotation as AnnotationNamespace;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\ORMException;
 use ReflectionClass;
@@ -75,17 +75,17 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $reader = $annotationDriver->getReader();
         $annotation = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('namespacedAnnotationMethod'),
-            'Doctrine\ORM\Mapping\PrePersist'
+            AnnotationNamespace\PrePersist::class
         );
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\PrePersist', $annotation);
+        $this->assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
 
         $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
         $reader = $annotationDriver->getReader();
         $annotation = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('simpleAnnotationMethod'),
-            'Doctrine\ORM\Mapping\PrePersist'
+            AnnotationNamespace\PrePersist::class
         );
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\PrePersist', $annotation);
+        $this->assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
     }
 
     public function testSetGetEntityNamespace()
