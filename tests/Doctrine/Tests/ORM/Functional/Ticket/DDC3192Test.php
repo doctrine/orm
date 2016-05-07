@@ -50,7 +50,7 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $resultByPersister = $this->_em->find(DDC3192Transaction::class, $transaction->id);
 
         // This works: DDC2494 makes persister set type mapping info to ResultSetMapping
-        $this->assertEquals('BYR', $resultByPersister->currency->code);
+        self::assertEquals('BYR', $resultByPersister->currency->code);
 
         $this->_em->close();
 
@@ -62,7 +62,7 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // This is fixed here: before the fix it used to return 974.
         // because unlike the BasicEntityPersister, SQLWalker doesn't set type info
-        $this->assertEquals('BYR', $resultByQuery->currency->code);
+        self::assertEquals('BYR', $resultByQuery->currency->code);
     }
 }
 

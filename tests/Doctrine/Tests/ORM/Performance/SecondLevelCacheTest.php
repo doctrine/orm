@@ -50,7 +50,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntity($em, __FUNCTION__);
 
-        $this->assertEquals(6002, $this->countQuery($em));
+        self::assertEquals(6002, $this->countQuery($em));
     }
 
     public function testFindEntityWithCache()
@@ -61,7 +61,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntity($em, __FUNCTION__);
 
-        $this->assertEquals(502, $this->countQuery($em));
+        self::assertEquals(502, $this->countQuery($em));
     }
 
     public function testFindAllEntityWithoutCache()
@@ -70,7 +70,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findAllEntity($em, __FUNCTION__);
 
-        $this->assertEquals(153, $this->countQuery($em));
+        self::assertEquals(153, $this->countQuery($em));
     }
 
     public function testFindAllEntityWithCache()
@@ -81,7 +81,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findAllEntity($em, __FUNCTION__);
 
-        $this->assertEquals(53, $this->countQuery($em));
+        self::assertEquals(53, $this->countQuery($em));
     }
 
     public function testFindEntityOneToManyWithoutCache()
@@ -90,7 +90,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntityOneToMany($em, __FUNCTION__);
 
-        $this->assertEquals(502, $this->countQuery($em));
+        self::assertEquals(502, $this->countQuery($em));
     }
 
     public function testFindEntityOneToManyWithCache()
@@ -101,7 +101,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntityOneToMany($em, __FUNCTION__);
 
-        $this->assertEquals(472, $this->countQuery($em));
+        self::assertEquals(472, $this->countQuery($em));
     }
 
     public function testQueryEntityWithoutCache()
@@ -110,7 +110,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->queryEntity($em, __FUNCTION__);
 
-        $this->assertEquals(602, $this->countQuery($em));
+        self::assertEquals(602, $this->countQuery($em));
     }
 
     public function testQueryEntityWithCache()
@@ -121,7 +121,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->queryEntity($em, __FUNCTION__);
 
-        $this->assertEquals(503, $this->countQuery($em));
+        self::assertEquals(503, $this->countQuery($em));
     }
 
     private function queryEntity(EntityManagerInterface $em, $label)
@@ -273,7 +273,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
             $list = $rep->findAll();
             $em->clear();
 
-            $this->assertCount($size, $list);
+            self::assertCount($size, $list);
         }
 
         printf("\n[%s] find %s countries (%s times)", number_format(microtime(true) - $startFind, 6), $size, $times);

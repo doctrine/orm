@@ -32,10 +32,10 @@ class DDC949Test extends OrmFunctionalTestCase
         $true = $this->_em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => true]);
         $false = $this->_em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => false]);
 
-        $this->assertInstanceOf(BooleanModel::class, $true, "True model not found");
-        $this->assertTrue($true->booleanField, "True Boolean Model should be true.");
+        self::assertInstanceOf(BooleanModel::class, $true, "True model not found");
+        self::assertTrue($true->booleanField, "True Boolean Model should be true.");
 
-        $this->assertInstanceOf(BooleanModel::class, $false, "False model not found");
-        $this->assertFalse($false->booleanField, "False Boolean Model should be false.");
+        self::assertInstanceOf(BooleanModel::class, $false, "False model not found");
+        self::assertFalse($false->booleanField, "False Boolean Model should be false.");
     }
 }

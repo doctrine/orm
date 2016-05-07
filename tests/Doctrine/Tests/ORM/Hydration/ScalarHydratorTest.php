@@ -38,12 +38,12 @@ class ScalarHydratorTest extends HydrationTestCase
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
-        $this->assertEquals('romanb', $result[0]['u_name']);
-        $this->assertEquals(1, $result[0]['u_id']);
-        $this->assertEquals('jwage', $result[1]['u_name']);
-        $this->assertEquals(2, $result[1]['u_id']);
+        self::assertInternalType('array', $result);
+        self::assertCount(2, $result);
+        self::assertEquals('romanb', $result[0]['u_name']);
+        self::assertEquals(1, $result[0]['u_id']);
+        self::assertEquals('jwage', $result[1]['u_name']);
+        self::assertEquals(2, $result[1]['u_id']);
     }
 
     /**

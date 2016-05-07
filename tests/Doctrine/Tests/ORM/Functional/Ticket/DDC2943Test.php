@@ -40,12 +40,12 @@ class DDC2943Test extends OrmFunctionalTestCase
             ->setFirstResult(0)
             ->setMaxResults(2);
 
-        $this->assertPaginatorQueryPut(new Paginator(clone $query), $region->getName(), 4, 2);
+        self::assertPaginatorQueryPut(new Paginator(clone $query), $region->getName(), 4, 2);
 
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $this->assertPaginatorQueryHit(new Paginator(clone $query), $region->getName(), 4, 2);
+        self::assertPaginatorQueryHit(new Paginator(clone $query), $region->getName(), 4, 2);
     }
 
     public function testIssueNonFetchJoin()
@@ -59,33 +59,33 @@ class DDC2943Test extends OrmFunctionalTestCase
             ->setFirstResult(0)
             ->setMaxResults(2);
 
-        $this->assertPaginatorQueryPut(new Paginator(clone $query, false), $region->getName(), 4, 2);
+        self::assertPaginatorQueryPut(new Paginator(clone $query, false), $region->getName(), 4, 2);
 
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $this->assertPaginatorQueryHit(new Paginator(clone $query, false), $region->getName(), 4, 2);
+        self::assertPaginatorQueryHit(new Paginator(clone $query, false), $region->getName(), 4, 2);
     }
 
     public function assertPaginatorQueryPut(Paginator $paginator, $regionName, $count, $pageSize)
     {
-        $this->assertCount($count, $paginator);
-        $this->assertCount($pageSize, $paginator->getIterator());
+        self::assertCount($count, $paginator);
+        self::assertCount($pageSize, $paginator->getIterator());
 
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount(Cache::DEFAULT_QUERY_REGION_NAME));
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount(Cache::DEFAULT_QUERY_REGION_NAME));
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($regionName));
-        $this->assertEquals($count, $this->secondLevelCacheLogger->getRegionPutCount($regionName));
+        self::assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount(Cache::DEFAULT_QUERY_REGION_NAME));
+        self::assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount(Cache::DEFAULT_QUERY_REGION_NAME));
+        self::assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($regionName));
+        self::assertEquals($count, $this->secondLevelCacheLogger->getRegionPutCount($regionName));
     }
 
     public function assertPaginatorQueryHit(Paginator $paginator, $regionName, $count, $pageSize)
     {
-        $this->assertCount($count, $paginator);
-        $this->assertCount($pageSize, $paginator->getIterator());
+        self::assertCount($count, $paginator);
+        self::assertCount($pageSize, $paginator->getIterator());
 
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount(Cache::DEFAULT_QUERY_REGION_NAME));
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionPutCount(Cache::DEFAULT_QUERY_REGION_NAME));
-        $this->assertEquals($pageSize, $this->secondLevelCacheLogger->getRegionHitCount($regionName));
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionPutCount($regionName));
+        self::assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount(Cache::DEFAULT_QUERY_REGION_NAME));
+        self::assertEquals(0, $this->secondLevelCacheLogger->getRegionPutCount(Cache::DEFAULT_QUERY_REGION_NAME));
+        self::assertEquals($pageSize, $this->secondLevelCacheLogger->getRegionHitCount($regionName));
+        self::assertEquals(0, $this->secondLevelCacheLogger->getRegionPutCount($regionName));
     }
 }

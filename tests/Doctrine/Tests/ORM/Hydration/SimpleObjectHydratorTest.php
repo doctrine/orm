@@ -67,7 +67,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $hydrator = new SimpleObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals($result[0], $expectedEntity);
+        self::assertEquals($result[0], $expectedEntity);
     }
 
     /**

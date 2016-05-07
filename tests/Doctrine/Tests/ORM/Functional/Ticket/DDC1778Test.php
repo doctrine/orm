@@ -45,7 +45,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
 
-        $this->assertCount(1, $this->user->getPhonenumbers());
+        self::assertCount(1, $this->user->getPhonenumbers());
     }
 
     public function testRemove()
@@ -57,7 +57,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
 
-        $this->assertCount(1, $this->user->getPhonenumbers());
+        self::assertCount(1, $this->user->getPhonenumbers());
     }
 
     public function testRemoveElement()
@@ -69,6 +69,6 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
 
-        $this->assertCount(1, $this->user->getPhonenumbers());
+        self::assertCount(1, $this->user->getPhonenumbers());
     }
 }
