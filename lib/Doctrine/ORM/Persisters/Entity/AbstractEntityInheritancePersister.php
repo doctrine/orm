@@ -62,6 +62,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     {
         $tableAlias   = $alias == 'r' ? '' : $alias;
         $fieldMapping = $class->fieldMappings[$field];
+        $type         = Type::getType($fieldMapping['type']);
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
         $sql          = sprintf(
             '%s.%s',
@@ -71,15 +72,13 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        if (isset($fieldMapping['requireSQLConversion'])) {
-            $type   = Type::getType($fieldMapping['type']);
-            $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
-        }
-
-        return $sql . ' AS ' . $columnAlias;
+        return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 
     /**
+     * @todo Consider receiving fieldName, ClassMetadata and alias only and let this code handle the rest.
+     * This should minimize the need for PersisterHelper::getTypeOfColumn()
+     *
      * @param string $tableAlias
      * @param string $joinColumnName
      * @param string $quotedColumnName
