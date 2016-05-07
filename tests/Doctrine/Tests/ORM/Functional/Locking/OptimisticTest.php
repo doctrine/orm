@@ -26,6 +26,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
+        
         $this->_conn = $this->_em->getConnection();
     }
 

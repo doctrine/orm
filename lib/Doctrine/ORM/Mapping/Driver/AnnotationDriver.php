@@ -177,6 +177,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
                 $entities = array();
                 $columns  = array();
+
                 foreach ($resultSetMapping->entities as $entityResultAnnot) {
                     $entityResult = array(
                         'fields'                => array(),
@@ -220,6 +221,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 if ( ! ($namedQuery instanceof Annotation\NamedQuery)) {
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
+
                 $metadata->addNamedQuery(array(
                     'name'  => $namedQuery->name,
                     'query' => $namedQuery->query
@@ -253,6 +255,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
                     $discrMapAnnot = $classAnnotations[Annotation\DiscriminatorMap::class];
+
                     $metadata->setDiscriminatorMap($discrMapAnnot->value);
                 }
             }

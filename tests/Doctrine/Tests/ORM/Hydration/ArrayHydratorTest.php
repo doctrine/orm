@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 
@@ -69,7 +70,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', $alias);
         $rsm->addFieldResult($alias, 's__id', 'id');
         $rsm->addFieldResult($alias, 's__name', 'name');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
 
         // Faked result set
         $resultSet = array(
@@ -376,7 +377,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
+        $rsm->addScalarResult('sclr0', 'numPhones', Type::getType('integer'));
 
         // Faked result set
         $resultSet = array(
@@ -431,7 +432,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
@@ -502,7 +503,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addIndexBy('u', 'id');
         $rsm->addIndexBy('p', 'phonenumber');
@@ -587,7 +588,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -712,7 +713,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -927,10 +928,10 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $entityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('a__id', 'id', 'integer');
-        $rsm->addScalarResult('a__topic', 'topic', 'string');
-        $rsm->addScalarResult('c__id', 'cid', 'integer');
-        $rsm->addScalarResult('c__topic', 'ctopic', 'string');
+        $rsm->addScalarResult('a__id', 'id', Type::getType('integer'));
+        $rsm->addScalarResult('a__topic', 'topic', Type::getType('string'));
+        $rsm->addScalarResult('c__id', 'cid', Type::getType('integer'));
+        $rsm->addScalarResult('c__topic', 'ctopic', Type::getType('string'));
 
         // Faked result set
         $resultSet = array(
@@ -1124,7 +1125,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
 
         // Faked result set
         $resultSet = array(
@@ -1183,7 +1184,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addIndexBy('u', 'id');
 
         // Faked result set

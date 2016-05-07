@@ -5,7 +5,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Mapping\YamlMappingDriverTest;
 

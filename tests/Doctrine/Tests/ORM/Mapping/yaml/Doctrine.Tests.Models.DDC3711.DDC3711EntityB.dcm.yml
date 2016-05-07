@@ -3,6 +3,6 @@ Doctrine\Tests\Models\DDC3711\DDC3711EntityB:
   table: ddc3711.entityB
   id:
     id1:
-        type: int
+        type: integer
     id2:
-        type: int
+        type: integer
