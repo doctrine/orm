@@ -88,12 +88,6 @@ class SchemaValidator
         $ce = [];
         $cmf = $this->em->getMetadataFactory();
 
-        foreach ($class->fieldMappings as $fieldName => $mapping) {
-            if (!Type::hasType($mapping['type'])) {
-                $ce[] = "The field '" . $class->name . "#" . $fieldName."' uses a non-existent type '" . $mapping['type'] . "'.";
-            }
-        }
-
         foreach ($class->associationMappings as $fieldName => $assoc) {
             if (!class_exists($assoc['targetEntity']) || $cmf->isTransient($assoc['targetEntity'])) {
                 $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';

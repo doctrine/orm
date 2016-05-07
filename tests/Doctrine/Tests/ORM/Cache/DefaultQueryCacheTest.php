@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\QueryCache;
 use Doctrine\Tests\Mocks\TimestampRegionMock;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\Mocks\CacheRegionMock;
 use Doctrine\ORM\Cache\DefaultQueryCache;
@@ -584,7 +585,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
 
-        $rsm->addScalarResult('id', 'u', 'integer');
+        $rsm->addScalarResult('id', 'u', Type::getType('integer'));
 
         $this->queryCache->put($key, $rsm, $result);
     }

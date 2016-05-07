@@ -3499,9 +3499,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function convertSingleFieldIdentifierToPHPValue(ClassMetadata $class, $identifierValue)
     {
-        return $this->em->getConnection()->convertToPHPValue(
-            $identifierValue,
-            $class->getTypeOfField($class->getSingleIdentifierFieldName())
-        );
+        return $class->getTypeOfField($class->getSingleIdentifierFieldName())
+            ->convertToPHPValue($identifierValue, $this->em->getConnection()->getDatabasePlatform());
     }
 }

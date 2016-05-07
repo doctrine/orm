@@ -78,7 +78,7 @@ class XmlExporter extends AbstractExporter
         if ($metadata->discriminatorColumn) {
             $discriminatorColumnXml = $root->addChild('discriminator-column');
             $discriminatorColumnXml->addAttribute('name', $metadata->discriminatorColumn['name']);
-            $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']);
+            $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']->getName());
 
             if (isset($metadata->discriminatorColumn['length'])) {
                 $discriminatorColumnXml->addAttribute('length', $metadata->discriminatorColumn['length']);
@@ -108,6 +108,7 @@ class XmlExporter extends AbstractExporter
                 $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
                 $indexXml->addAttribute('columns', implode(',', $index['columns']));
+
                 if (isset($index['flags'])) {
                     $indexXml->addAttribute('flags', implode(',', $index['flags']));
                 }
@@ -119,17 +120,19 @@ class XmlExporter extends AbstractExporter
 
             foreach ($metadata->table['uniqueConstraints'] as $name => $unique) {
                 $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
+
                 $uniqueConstraintXml->addAttribute('name', $name);
                 $uniqueConstraintXml->addAttribute('columns', implode(',', $unique['columns']));
             }
         }
 
         $fields = $metadata->fieldMappings;
-
         $id = [];
+
         foreach ($fields as $name => $field) {
             if (isset($field['id']) && $field['id']) {
                 $id[$name] = $field;
+
                 unset($fields[$name]);
             }
         }
@@ -150,10 +153,11 @@ class XmlExporter extends AbstractExporter
         if ($id) {
             foreach ($id as $field) {
                 $idXml = $root->addChild('id');
+
                 $idXml->addAttribute('name', $field['fieldName']);
 
                 if (isset($field['type'])) {
-                    $idXml->addAttribute('type', $field['type']);
+                    $idXml->addAttribute('type', $field['type']->getName());
                 }
 
                 if (isset($field['columnName'])) {
@@ -170,6 +174,7 @@ class XmlExporter extends AbstractExporter
 
                 if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
                     $generatorXml = $idXml->addChild('generator');
+
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
 
                     $this->exportSequenceInformation($idXml, $metadata);
@@ -180,8 +185,9 @@ class XmlExporter extends AbstractExporter
         if ($fields) {
             foreach ($fields as $field) {
                 $fieldXml = $root->addChild('field');
+
                 $fieldXml->addAttribute('name', $field['fieldName']);
-                $fieldXml->addAttribute('type', $field['type']);
+                $fieldXml->addAttribute('type', $field['type']->getName());
 
                 if (isset($field['columnName'])) {
                     $fieldXml->addAttribute('column', $field['columnName']);
