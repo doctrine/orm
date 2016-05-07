@@ -46,6 +46,7 @@ use Doctrine\ORM\Cache\CacheException;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
 class ClassMetadata implements ClassMetadataInterface
@@ -353,9 +354,9 @@ class ClassMetadata implements ClassMetadataInterface
      * - <b>fieldName</b> (string)
      * The name of the field in the Entity.
      *
-     * - <b>type</b> (string)
-     * The type name of the mapped field. Can be one of Doctrine's mapping types
-     * or a custom mapping type.
+     * - <b>type</b> (Type)
+     * The type of the mapped field. Can be one of Doctrine's mapping types or a
+     * custom mapping type.
      *
      * - <b>columnName</b> (string, optional)
      * The column name. Optional. Defaults to the field name.
@@ -1358,7 +1359,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
-    protected function _validateAndCompleteFieldMapping(array &$mapping)
+    protected function validateAndCompleteFieldMapping(array &$mapping)
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
@@ -1419,7 +1420,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException If something is wrong with the mapping.
      */
-    protected function _validateAndCompleteAssociationMapping(array $mapping)
+    protected function validateAndCompleteAssociationMapping(array $mapping)
     {
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
@@ -1542,9 +1543,9 @@ class ClassMetadata implements ClassMetadataInterface
      * @throws RuntimeException
      * @throws MappingException
      */
-    protected function _validateAndCompleteOneToOneMapping(array $mapping)
+    protected function validateAndCompleteOneToOneMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
@@ -1635,9 +1636,9 @@ class ClassMetadata implements ClassMetadataInterface
      * @throws MappingException
      * @throws InvalidArgumentException
      */
-    protected function _validateAndCompleteOneToManyMapping(array $mapping)
+    protected function validateAndCompleteOneToManyMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         // OneToMany-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
@@ -1665,9 +1666,9 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws \InvalidArgumentException
      */
-    protected function _validateAndCompleteManyToManyMapping(array $mapping)
+    protected function validateAndCompleteManyToManyMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
@@ -2081,7 +2082,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function setInheritanceType($type)
     {
-        if ( ! $this->_isInheritanceType($type)) {
+        if ( ! $this->isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($this->name, $type);
         }
 
@@ -2126,16 +2127,16 @@ class ClassMetadata implements ClassMetadataInterface
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::ONE_TO_MANY:
-                $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
                 break;
             case self::MANY_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::MANY_TO_MANY:
-                $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+                $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
                 break;
         }
 
@@ -2179,7 +2180,7 @@ class ClassMetadata implements ClassMetadataInterface
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
 
-        $this->_validateAndCompleteFieldMapping($overrideMapping);
+        $this->validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
     }
@@ -2291,7 +2292,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @return boolean TRUE if the given type identifies an inheritance type, FALSe otherwise.
      */
-    private function _isInheritanceType($type)
+    private function isInheritanceType($type)
     {
         return $type == self::INHERITANCE_TYPE_NONE ||
         $type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
@@ -2310,7 +2311,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function mapField(array $mapping)
     {
-        $this->_validateAndCompleteFieldMapping($mapping);
+        $this->validateAndCompleteFieldMapping($mapping);
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
@@ -2501,9 +2502,9 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $mapping['type'] = self::ONE_TO_ONE;
 
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
 
-        $this->_storeAssociationMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2517,9 +2518,9 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $mapping['type'] = self::ONE_TO_MANY;
 
-        $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+        $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
 
-        $this->_storeAssociationMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2534,9 +2535,9 @@ class ClassMetadata implements ClassMetadataInterface
         $mapping['type'] = self::MANY_TO_ONE;
 
         // A many-to-one mapping is essentially a one-one backreference
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
 
-        $this->_storeAssociationMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2550,9 +2551,9 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $mapping['type'] = self::MANY_TO_MANY;
 
-        $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+        $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
 
-        $this->_storeAssociationMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2564,7 +2565,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
-    protected function _storeAssociationMapping(array $assocMapping)
+    protected function storeAssociationMapping(array $assocMapping)
     {
         $sourceFieldName = $assocMapping['fieldName'];
 
@@ -2825,7 +2826,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function isSingleValuedAssociation($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-        && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+            && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
     }
 
     /**
@@ -2834,7 +2835,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function isCollectionValuedAssociation($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-        && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+            && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
     }
 
     /**
@@ -2847,8 +2848,8 @@ class ClassMetadata implements ClassMetadataInterface
     public function isAssociationWithSingleJoinColumn($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-        && isset($this->associationMappings[$fieldName]['joinColumns'][0])
-        && ! isset($this->associationMappings[$fieldName]['joinColumns'][1]);
+            && isset($this->associationMappings[$fieldName]['joinColumns'][0])
+            && ! isset($this->associationMappings[$fieldName]['joinColumns'][1]);
     }
 
     /**
@@ -2902,17 +2903,17 @@ class ClassMetadata implements ClassMetadataInterface
     {
         if (isset($this->fieldNames[$columnName])) {
             return $this->fieldNames[$columnName];
-        } else {
-            foreach ($this->associationMappings as $assocName => $mapping) {
-                if ($this->isAssociationWithSingleJoinColumn($assocName) &&
-                    $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
-
-                    return $assocName;
-                }
-            }
-
-            throw MappingException::noFieldNameFoundForColumn($this->name, $columnName);
         }
+
+        foreach ($this->associationMappings as $assocName => $mapping) {
+            if ($this->isAssociationWithSingleJoinColumn($assocName) &&
+                $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
+
+                return $assocName;
+            }
+        }
+
+        throw MappingException::noFieldNameFoundForColumn($this->name, $columnName);
     }
 
     /**
