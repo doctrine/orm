@@ -401,13 +401,11 @@ class BasicEntityPersister implements EntityPersister
 
             switch (true) {
                 case isset($this->class->fieldNames[$columnName]):
-                    $fieldName  = $this->class->fieldNames[$columnName];
-                    $column     = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
-
-                    if (isset($this->class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                        $type        = Type::getType($this->columnTypes[$columnName]);
-                        $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
-                    }
+                    $fieldName    = $this->class->fieldNames[$columnName];
+                    $fieldMapping = $this->class->fieldMappings[$fieldName];
+                    $column       = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
+                    $type         = Type::getType($fieldMapping['type']);
+                    $placeholder  = $type->convertToDatabaseValueSQL('?', $this->platform);
 
                     break;
 
@@ -1158,7 +1156,6 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (isset($this->class->associationMappings[$fieldName])) {
-
                 if ( ! $this->class->associationMappings[$fieldName]['isOwningSide']) {
                     throw ORMException::invalidFindByInverseAssociation($this->class->name, $fieldName);
                 }
@@ -1395,11 +1392,11 @@ class BasicEntityPersister implements EntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldNames[$column])
-                && isset($this->columnTypes[$this->class->fieldNames[$column]])
-                && isset($this->class->fieldMappings[$this->class->fieldNames[$column]]['requireSQLConversion'])) {
-                $type        = Type::getType($this->columnTypes[$this->class->fieldNames[$column]]);
-                $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
+            if (isset($this->class->fieldNames[$column])) {
+                $fieldName    = $this->class->fieldNames[$column];
+                $fieldMapping = $this->class->fieldMappings[$fieldName];
+                $type         = Type::getType($fieldMapping['type']);
+                $placeholder  = $type->convertToDatabaseValueSQL('?', $this->platform);
             }
 
             $values[] = $placeholder;
@@ -1468,19 +1465,18 @@ class BasicEntityPersister implements EntityPersister
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
         $root         = $alias == 'r' ? '' : $alias ;
-        $tableAlias   = $this->getSQLTableAlias($class->name, $root);
         $fieldMapping = $class->fieldMappings[$field];
-        $sql          = sprintf('%s.%s', $tableAlias, $this->quoteStrategy->getColumnName($field, $class, $this->platform));
+        $type         = Type::getType($fieldMapping['type']);
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
+        $sql          = sprintf(
+            '%s.%s',
+            $this->getSQLTableAlias($class->name, $root),
+            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
+        );
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
 
-        if (isset($fieldMapping['requireSQLConversion'])) {
-            $type = Type::getType($fieldMapping['type']);
-            $sql  = $type->convertToPHPValueSQL($sql, $this->platform);
-        }
-
-        return $sql . ' AS ' . $columnAlias;
+        return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 
     /**
@@ -1597,9 +1593,10 @@ class BasicEntityPersister implements EntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldMappings[$field]['requireSQLConversion'])) {
-                $type        = Type::getType($this->class->fieldMappings[$field]['type']);
-                $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->platform);
+            if (isset($this->class->fieldMappings[$field])) {
+                $fieldMapping = $this->class->fieldMappings[$field];
+                $type         = Type::getType($fieldMapping['type']);
+                $placeholder  = $type->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
             if (null !== $comparison) {
