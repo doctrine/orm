@@ -56,43 +56,22 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     abstract protected function getDiscriminatorColumnTableName();
 
     /**
-     * {@inheritdoc}
-     */
-    protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
-    {
-        $tableAlias   = $alias == 'r' ? '' : $alias;
-        $fieldMapping = $class->fieldMappings[$field];
-        $type         = Type::getType($fieldMapping['type']);
-        $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
-        $sql          = sprintf(
-            '%s.%s',
-            $this->getSQLTableAlias($class->name, $tableAlias),
-            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
-        );
-
-        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
-
-        return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
-    }
-
-    /**
-     * @todo Consider receiving fieldName, ClassMetadata and alias only and let this code handle the rest.
-     * This should minimize the need for PersisterHelper::getTypeOfColumn()
-     *
-     * @param string $tableAlias
-     * @param string $joinColumnName
-     * @param string $quotedColumnName
-     *
-     * @param string $type
+     * @param string        $field The field name.
+     * @param ClassMetadata $class The class that declares this field. The table this class is
+     *                             mapped to must own the column for the given field.
+     * @param string        $type
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $quotedColumnName, $type)
+    protected function getSelectJoinColumnSQL($field, ClassMetadata $class, $type)
     {
-        $columnAlias = $this->getSQLColumnAlias($joinColumnName);
+        $tableAlias  = $this->getSQLTableAlias($class->name);
+        $columnAlias = $this->getSQLColumnAlias($field);
+        $type        = Type::getType($type);
+        $sql         = sprintf('%s.%s', $tableAlias, $field);
 
-        $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $joinColumnName, false, $type);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $field, false, $type->getName());
 
-        return $tableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+        return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 }
