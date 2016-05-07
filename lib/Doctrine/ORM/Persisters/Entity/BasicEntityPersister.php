@@ -1464,17 +1464,17 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $root         = $alias == 'r' ? '' : $alias ;
+        $tableAlias   = $alias == 'r' ? '' : $alias;
         $fieldMapping = $class->fieldMappings[$field];
         $type         = Type::getType($fieldMapping['type']);
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
         $sql          = sprintf(
             '%s.%s',
-            $this->getSQLTableAlias($class->name, $root),
+            $this->getSQLTableAlias($class->name, $tableAlias),
             $this->quoteStrategy->getColumnName($field, $class, $this->platform)
         );
 
-        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
+        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
         return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
