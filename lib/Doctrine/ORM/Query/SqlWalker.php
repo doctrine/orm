@@ -1298,7 +1298,6 @@ class SqlWalker implements TreeWalker
                 $qComp        = $this->queryComponents[$dqlAlias];
                 $class        = $qComp['metadata'];
                 $fieldMapping = $class->fieldMappings[$fieldName];
-                $type         = Type::getType($fieldMapping['type']);
                 $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
                 $resultAlias  = $selectExpression->fieldIdentificationVariable ?: $fieldName;
                 $tableName    = ($class->isInheritanceTypeJoined())
@@ -1311,7 +1310,11 @@ class SqlWalker implements TreeWalker
                     $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
                 );
 
-                $sql .= $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform()) . ' AS ' . $columnAlias;
+                $sql .= sprintf(
+                    '%s AS %s',
+                    $fieldMapping['type']->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform()),
+                    $columnAlias
+                );
 
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
@@ -1342,7 +1345,7 @@ class SqlWalker implements TreeWalker
 
                 if ( ! $hidden) {
                     // We cannot resolve field type here; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getType('string'));
                 }
                 break;
 
@@ -1355,8 +1358,9 @@ class SqlWalker implements TreeWalker
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    // We cannot resolve field type here; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                    // Conceptually we could resolve field type here by traverse through AST to retrieve field type,
+                    // but this is not a feasible solution; assume 'string'.
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getType('string'));
                 }
                 break;
 
@@ -1394,7 +1398,6 @@ class SqlWalker implements TreeWalker
                         continue;
                     }
 
-                    $type        = Type::getType($mapping['type']);
                     $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
                     $tableName   = (isset($mapping['inherited']))
                         ? $this->em->getClassMetadata($mapping['inherited'])->getTableName()
@@ -1406,7 +1409,11 @@ class SqlWalker implements TreeWalker
                         $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
                     );
 
-                    $sqlParts[] = $type->convertToPHPValueSQL($col, $this->platform) . ' AS '. $columnAlias;
+                    $sqlParts[] = sprintf(
+                        '%s AS %s',
+                        $mapping['type']->convertToPHPValueSQL($col, $this->platform),
+                        $columnAlias
+                    );
 
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
@@ -1427,7 +1434,6 @@ class SqlWalker implements TreeWalker
                                 continue;
                             }
 
-                            $type        = Type::getType($mapping['type']);
                             $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
                             $col         = sprintf(
                                 '%s.%s',
@@ -1435,7 +1441,11 @@ class SqlWalker implements TreeWalker
                                 $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform)
                             );
 
-                            $sqlParts[] = $type->convertToPHPValueSQL($col, $this->platform) . ' AS ' . $columnAlias;
+                            $sqlParts[] = sprintf(
+                                '%s AS %s',
+                                $mapping['type']->convertToPHPValueSQL($col, $this->platform),
+                                $columnAlias
+                            );
 
                             $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
@@ -1530,7 +1540,7 @@ class SqlWalker implements TreeWalker
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
             $columnAlias = $this->getSQLColumnAlias('sclr');
-            $fieldType   = 'string';
+            $fieldType   = Type::getType('string');
 
             switch (true) {
                 case ($e instanceof AST\NewObjectExpression):
@@ -1553,11 +1563,11 @@ class SqlWalker implements TreeWalker
                 case ($e instanceof AST\Literal):
                     switch ($e->type) {
                         case AST\Literal::BOOLEAN:
-                            $fieldType = 'boolean';
+                            $fieldType = Type::getType('boolean');
                             break;
 
                         case AST\Literal::NUMERIC:
-                            $fieldType = is_float($e->value) ? 'float' : 'integer';
+                            $fieldType = Type::getType(is_float($e->value) ? 'float' : 'integer');
                             break;
                     }
 

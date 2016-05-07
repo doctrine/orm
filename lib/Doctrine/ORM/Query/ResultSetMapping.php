@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM\Query;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
@@ -368,13 +369,13 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      * @param string $alias      The result alias with which the scalar result should be placed in the result structure.
-     * @param string $type       The column type
+     * @param Type   $type       The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      *
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias, $type = 'string')
+    public function addScalarResult($columnName, $alias, Type $type)
     {
         $this->scalarMappings[$columnName] = $alias;
         $this->typeMappings[$columnName]   = $type;
@@ -555,23 +556,18 @@ class ResultSetMapping
      * @param string $columnName         The name of the column in the SQL result set.
      * @param string $fieldName          The name of the field on the declaring class.
      * @param bool   $isIdentifierColumn
-     * @param string $type               The column type
+     * @param Type   $type               The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
-     *
-     * @todo Make all methods of this class require all parameters and not infer anything
      */
-    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
+    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn, Type $type)
     {
         $this->metaMappings[$columnName] = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
+        $this->typeMappings[$columnName] = $type;
 
         if ($isIdentifierColumn) {
             $this->isIdentifierColumn[$alias][$columnName] = true;
-        }
-
-        if ($type) {
-            $this->typeMappings[$columnName] = $type;
         }
 
         return $this;

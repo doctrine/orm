@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -148,7 +147,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'type'    => PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em),
             ];
         }
 

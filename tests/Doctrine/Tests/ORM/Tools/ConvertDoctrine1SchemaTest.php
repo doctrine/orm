@@ -69,7 +69,7 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $this->assertEquals('User', $userClass->name);
         $this->assertEquals(4, count($profileClass->fieldMappings));
         $this->assertEquals(5, count($userClass->fieldMappings));
-        $this->assertEquals('text', $userClass->fieldMappings['clob']['type']);
+        $this->assertEquals('text', $userClass->fieldMappings['clob']['type']->getName());
         $this->assertEquals('test_alias', $userClass->fieldMappings['theAlias']['columnName']);
         $this->assertEquals('theAlias', $userClass->fieldMappings['theAlias']['fieldName']);
 

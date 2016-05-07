@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\DDC3711\DDC3711EntityA;
 use Doctrine\Tests\ORM\Mapping\YamlMappingDriverTest;

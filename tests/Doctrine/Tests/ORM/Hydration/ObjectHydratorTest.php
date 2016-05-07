@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -384,7 +385,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
+        $rsm->addScalarResult('sclr0', 'numPhones', Type::getType('integer'));
 
         // Faked result set
         $resultSet = [
@@ -440,7 +441,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -517,7 +518,7 @@ class ObjectHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addIndexBy('u', 'id');
         $rsm->addIndexBy('p', 'phonenumber');
@@ -602,7 +603,7 @@ class ObjectHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -718,7 +719,7 @@ class ObjectHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -964,8 +965,8 @@ class ObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
-        $rsm->addScalarResult('sclr0', 'id', 'integer');
-        $rsm->addScalarResult('sclr1', 'name', 'string');
+        $rsm->addScalarResult('sclr0', 'id', Type::getType('integer'));
+        $rsm->addScalarResult('sclr1', 'name', Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -1005,7 +1006,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(ECommerceProduct::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id', false, 'integer');
+        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id', false, Type::getType('integer'));
 
         // Faked result set
         $resultSet = [
@@ -1054,7 +1055,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(ECommerceProduct::class, 'p', 'product');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id', false, 'integer');
+        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id', false, Type::getType('integer'));
 
         // Faked result set
         $resultSet = [
@@ -1222,6 +1223,72 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(0, $result[0]['user']->articles->count());
         $this->assertEquals(0, $result[1]['user']->articles->count());
     }
+
+    /**
+     * SELECT PARTIAL u.{id,status}, a.id, a.topic, c.id as cid, c.topic as ctopic
+     *   FROM CmsUser u
+     *   LEFT JOIN u.articles a
+     *   LEFT JOIN a.comments c
+     *
+     * @todo Figure it out why this test is commented out and provide a better description in docblock
+     *
+     * @group bubu
+     * @dataProvider provideDataForUserEntityResult
+     */
+    /*public function testChainedJoinWithScalars($userEntityKey)
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('a__id', 'id', Type::getType('integer'));
+        $rsm->addScalarResult('a__topic', 'topic', Type::getType('string'));
+        $rsm->addScalarResult('c__id', 'cid', Type::getType('integer'));
+        $rsm->addScalarResult('c__topic', 'ctopic', Type::getType('string'));
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => '1',
+                'a__topic' => 'The First',
+                'c__id' => '1',
+                'c__topic' => 'First Comment'
+            ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => '1',
+                'a__topic' => 'The First',
+                'c__id' => '2',
+                'c__topic' => 'Second Comment'
+            ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => '42',
+                'a__topic' => 'The Answer',
+                'c__id' => null,
+                'c__topic' => null
+            ),
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        \Doctrine\Common\Util\Debug::dump($result, 3);
+
+        $this->assertEquals(1, count($result));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]); // User object
+        $this->assertEquals(42, $result[0]['id']);
+        $this->assertEquals('The First', $result[0]['topic']);
+        $this->assertEquals(1, $result[0]['cid']);
+        $this->assertEquals('First Comment', $result[0]['ctopic']);
+    }*/
 
     /**
      * SELECT PARTIAL u.{id, name}
@@ -1575,7 +1642,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -1640,7 +1707,7 @@ class ObjectHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
@@ -1702,10 +1769,10 @@ class ObjectHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__city', 'city');
-        $rsm->addMetaResult('a', 'user_id', 'user_id', false, 'string');
+        $rsm->addMetaResult('a', 'user_id', 'user_id', false, Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -1750,7 +1817,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addIndexBy('u', 'id');
 
         // Faked result set
@@ -1792,7 +1859,7 @@ class ObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addIndexByScalar('sclr0');
 
         // Faked result set
@@ -1860,11 +1927,11 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CompanyFixContract::class, 'c');
         $rsm->addJoinedEntityResult(CompanyEmployee::class, 'e', 'c', 'salesPerson');
         $rsm->addFieldResult('c', 'c__id', 'id');
-        $rsm->addMetaResult('c', 'c_discr', 'discr', false, 'string');
+        $rsm->addMetaResult('c', 'c_discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('c', 'c_discr');
         $rsm->addFieldResult('e', 'e__id', 'id');
         $rsm->addFieldResult('e', 'e__name', 'name');
-        $rsm->addMetaResult('e ', 'e_discr', 'discr', false, 'string');
+        $rsm->addMetaResult('e ', 'e_discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('e', 'e_discr');
 
         $resultSet = [
@@ -1894,7 +1961,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = [

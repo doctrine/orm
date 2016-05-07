@@ -24,8 +24,8 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -178,6 +178,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
                 $entities = [];
                 $columns  = [];
+
                 foreach ($resultSetMapping->entities as $entityResultAnnot) {
                     $entityResult = [
                         'fields'                => [],
@@ -223,6 +224,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 if ( ! ($namedQuery instanceof Annotation\NamedQuery)) {
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
+
                 $metadata->addNamedQuery(
                     [
                         'name'  => $namedQuery->name,
@@ -260,6 +262,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
                     $discrMapAnnot = $classAnnotations[Annotation\DiscriminatorMap::class];
+
                     $metadata->setDiscriminatorMap($discrMapAnnot->value);
                 }
             }

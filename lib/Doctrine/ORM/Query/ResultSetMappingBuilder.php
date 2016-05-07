@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -168,7 +169,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName  = $joinColumn['name'];
                     $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
-                    $columnType = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                     if (isset($this->metaMappings[$columnAlias])) {
                         throw new \InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
@@ -328,7 +329,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $rootShortName  = $class->reflClass->getShortName();
         $rootAlias      = strtolower($rootShortName[0]) . $counter;
 
-
         if (isset($resultMapping['entities'])) {
             foreach ($resultMapping['entities'] as $key => $entityMapping) {
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
@@ -337,9 +337,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $this->addEntityResult($classMetadata->name, $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
-                    $shortName      = $classMetadata->reflClass->getShortName();
-                    $joinAlias      = strtolower($shortName[0]) . ++ $counter;
-                    $associations   = $class->getAssociationsByTargetClass($classMetadata->name);
+                    $shortName    = $classMetadata->reflClass->getShortName();
+                    $joinAlias    = strtolower($shortName[0]) . ++ $counter;
+                    $associations = $class->getAssociationsByTargetClass($classMetadata->name);
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
@@ -354,8 +354,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
         if (isset($resultMapping['columns'])) {
             foreach ($resultMapping['columns'] as $entityMapping) {
                 $type = isset($class->fieldNames[$entityMapping['name']])
-                    ? PersisterHelper::getTypeOfColumn($entityMapping['name'], $class, $this->em)
-                    : 'string';
+                    ? $class->fieldNames[$entityMapping['name']]['type']
+                    : Type::getType('string');
 
                 $this->addScalarResult($entityMapping['name'], $entityMapping['name'], $type);
             }

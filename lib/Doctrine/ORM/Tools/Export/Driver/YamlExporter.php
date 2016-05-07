@@ -94,6 +94,7 @@ class YamlExporter extends AbstractExporter
         $ids = [];
         foreach ($fieldMappings as $name => $fieldMapping) {
             $fieldMapping['column'] = $fieldMapping['columnName'];
+            $fieldMapping['type']   = $fieldMapping['type']->getName();
 
             unset($fieldMapping['columnName'], $fieldMapping['fieldName']);
 
@@ -103,7 +104,9 @@ class YamlExporter extends AbstractExporter
 
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                 $ids[$name] = $fieldMapping;
+
                 unset($fieldMappings[$name]);
+
                 continue;
             }
 
@@ -120,6 +123,7 @@ class YamlExporter extends AbstractExporter
             if ( ! isset($array['fields'])) {
                 $array['fields'] = [];
             }
+            
             $array['fields'] = array_merge($array['fields'], $fieldMappings);
         }
 

@@ -2,11 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -24,7 +25,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
     protected function setUp() {
         $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $this->cacheDataReflection->setAccessible(true);
+
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
@@ -49,7 +52,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-
         $cache = new ArrayCache();
 
         $query->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
@@ -97,6 +99,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->useResultCache(true);
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
+
         $users = $query->getResult();
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
@@ -133,12 +136,17 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "The next two sql should have been cached, but were not.");
     }
 
+    /**
+     * @return \Doctrine\ORM\NativeQuery
+     *
+     * @throws \Doctrine\ORM\ORMException
+     */
     public function testNativeQueryResultCaching()
     {
         $cache = new ArrayCache();
         $rsm   = new ResultSetMapping();
 
-        $rsm->addScalarResult('id', 'u', 'integer');
+        $rsm->addScalarResult('id', 'u', Type::getType('integer'));
 
         $query = $this->_em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
 
@@ -160,7 +168,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testResultCacheNotDependsOnQueryHints($query)
     {
-        $cache = $query->getResultCacheDriver();
+        $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->setHint('foo', 'bar');

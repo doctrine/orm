@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -251,7 +250,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
+                'type'    => PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em),
             ];
         }
 

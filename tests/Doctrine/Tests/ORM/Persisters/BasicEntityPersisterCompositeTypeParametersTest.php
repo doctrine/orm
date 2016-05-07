@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
@@ -45,7 +46,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         list ($values, $types) = $this->_persister->expandParameters(['admin1' => $admin1]);
 
-        $this->assertEquals(['integer', 'string'], $types);
+        $this->assertEquals([Type::getType('integer'), Type::getType('string')], $types);
         $this->assertEquals([10, 'IT'], $values);
     }
 
@@ -59,7 +60,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         list ($values, $types) = $this->_persister->expandCriteriaParameters($criteria);
 
-        $this->assertEquals(['integer', 'string'], $types);
+        $this->assertEquals([Type::getType('integer'), Type::getType('string')], $types);
         $this->assertEquals([10, 'IT'], $values);
     }
 }
