@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
 
 class SimpleObjectHydratorTest extends HydrationTestCase
 {
@@ -16,11 +18,13 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     public function testMissingDiscriminatorColumnException()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p ', 'discr', 'discr', false, 'string');
+        $rsm->addMetaResult('p ', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
+
         $resultSet = array(
               array(
                   'u__id'   => '1',
@@ -28,14 +32,16 @@ class SimpleObjectHydratorTest extends HydrationTestCase
               ),
          );
 
-        $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new SimpleObjectHydrator($this->_em);
+
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
     public function testExtraFieldInResultSetShouldBeIgnore()
     {
         $rsm = new ResultSetMapping;
+
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsAddress', 'a');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__city', 'city');
@@ -48,12 +54,14 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         );
 
         $expectedEntity = new \Doctrine\Tests\Models\CMS\CmsAddress();
+
         $expectedEntity->id = 1;
         $expectedEntity->city = 'Cracow';
 
-        $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
-        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new SimpleObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
         $this->assertEquals($result[0], $expectedEntity);
     }
 
@@ -68,10 +76,9 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm = new ResultSetMapping;
 
         $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
-
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = array(
@@ -82,8 +89,9 @@ class SimpleObjectHydratorTest extends HydrationTestCase
               ),
          );
 
-        $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new SimpleObjectHydrator($this->_em);
+
         $hydrator->hydrateAll($stmt, $rsm);
     }
 }

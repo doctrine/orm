@@ -49,7 +49,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
-        $this->assertEquals('string', $cm->fieldMappings['id']['type']);
+        $this->assertEquals('string', $cm->fieldMappings['id']['type']->getName());
     }
 
     /**

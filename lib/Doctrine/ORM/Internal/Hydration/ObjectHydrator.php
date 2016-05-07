@@ -19,13 +19,14 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\UnitOfWork;
 use PDO;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Event\PostLoadEventDispatcher;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Query;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.

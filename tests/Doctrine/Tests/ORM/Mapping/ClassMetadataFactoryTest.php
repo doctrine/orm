@@ -285,12 +285,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $em     = $this->_createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-
         $userMetadata       = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\User');
         $phoneMetadata      = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Phone');
         $groupMetadata      = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Group');
         $addressMetadata    = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Address');
-
 
         // Phone Class Metadata
         $this->assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
@@ -300,8 +298,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $this->assertTrue($user['joinColumns'][0]['quoted']);
         $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
         $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
-
-
 
         // User Group Metadata
         $this->assertTrue($groupMetadata->fieldMappings['id']['quoted']);
@@ -315,7 +311,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $this->assertEquals('parent-id', $user['joinColumns'][0]['name']);
         $this->assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
 
-
         // Address Class Metadata
         $this->assertTrue($addressMetadata->fieldMappings['id']['quoted']);
         $this->assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
@@ -324,11 +319,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $this->assertEquals('address-zip', $addressMetadata->fieldMappings['zip']['columnName']);
 
         $user = $addressMetadata->associationMappings['user'];
+        
         $this->assertTrue($user['joinColumns'][0]['quoted']);
         $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
         $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
-
-
 
         // User Class Metadata
         $this->assertTrue($userMetadata->fieldMappings['id']['quoted']);
@@ -337,13 +331,14 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
-
         $address = $userMetadata->associationMappings['address'];
+
         $this->assertTrue($address['joinColumns'][0]['quoted']);
         $this->assertEquals('address-id', $address['joinColumns'][0]['name']);
         $this->assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
 
         $groups = $userMetadata->associationMappings['groups'];
+
         $this->assertTrue($groups['joinTable']['quoted']);
         $this->assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
         $this->assertEquals('quote-users-groups', $groups['joinTable']['name']);
