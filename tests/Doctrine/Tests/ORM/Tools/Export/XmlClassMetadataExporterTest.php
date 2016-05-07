@@ -63,7 +63,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 </doctrine-mapping>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
+        self::assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
     }
 
     /**
@@ -101,6 +101,6 @@ XML;
 </doctrine-mapping>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
+        self::assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
     }
 }

@@ -87,13 +87,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user = $this->_em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->groups->isInitialized());
-        $this->assertEquals(3, count($user->groups));
-        $this->assertFalse($user->groups->isInitialized());
+        self::assertFalse($user->groups->isInitialized());
+        self::assertEquals(3, count($user->groups));
+        self::assertFalse($user->groups->isInitialized());
 
         foreach ($user->groups AS $group) { }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
 
     /**
@@ -109,9 +109,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user->addGroup($newGroup);
         $this->_em->persist($newGroup);
 
-        $this->assertFalse($user->groups->isInitialized());
-        $this->assertEquals(4, count($user->groups));
-        $this->assertFalse($user->groups->isInitialized());
+        self::assertFalse($user->groups->isInitialized());
+        self::assertEquals(4, count($user->groups));
+        self::assertFalse($user->groups->isInitialized());
     }
 
     /**
@@ -125,9 +125,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         foreach ($user->groups AS $group) { }
 
-        $this->assertTrue($user->groups->isInitialized());
-        $this->assertEquals(3, count($user->groups));
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Should only execute one query to initialize collection, no extra query for count() more.");
+        self::assertTrue($user->groups->isInitialized());
+        self::assertEquals(3, count($user->groups));
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Should only execute one query to initialize collection, no extra query for count() more.");
     }
 
     /**
@@ -136,10 +136,10 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testCountInverseCollection()
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
-        $this->assertFalse($group->users->isInitialized(), "Pre-Condition");
+        self::assertFalse($group->users->isInitialized(), "Pre-Condition");
 
-        $this->assertEquals(4, count($group->users));
-        $this->assertFalse($group->users->isInitialized(), "Extra Lazy collection should not be initialized by counting the collection.");
+        self::assertEquals(4, count($group->users));
+        self::assertFalse($group->users->isInitialized(), "Extra Lazy collection should not be initialized by counting the collection.");
     }
 
     /**
@@ -148,9 +148,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testCountOneToMany()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->groups->isInitialized(), "Pre-Condition");
+        self::assertFalse($user->groups->isInitialized(), "Pre-Condition");
 
-        $this->assertEquals(2, count($user->articles));
+        self::assertEquals(2, count($user->articles));
     }
 
     /**
@@ -160,8 +160,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Pre-Condition");
-        $this->assertEquals(2, count($otherClass->childClasses));
+        self::assertFalse($otherClass->childClasses->isInitialized(), "Pre-Condition");
+        self::assertEquals(2, count($otherClass->childClasses));
     }
 
     /**
@@ -170,10 +170,10 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testFullSlice()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         $someGroups = $user->groups->slice(null);
-        $this->assertEquals(3, count($someGroups));
+        self::assertEquals(3, count($someGroups));
     }
 
     /**
@@ -183,28 +183,28 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testSlice()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         $queryCount = $this->getCurrentQueryCount();
 
         $someGroups = $user->groups->slice(0, 2);
 
-        $this->assertContainsOnly(CmsGroup::class, $someGroups);
-        $this->assertEquals(2, count($someGroups));
-        $this->assertFalse($user->groups->isInitialized(), "Slice should not initialize the collection if it wasn't before!");
+        self::assertContainsOnly(CmsGroup::class, $someGroups);
+        self::assertEquals(2, count($someGroups));
+        self::assertFalse($user->groups->isInitialized(), "Slice should not initialize the collection if it wasn't before!");
 
         $otherGroup = $user->groups->slice(2, 1);
 
-        $this->assertContainsOnly(CmsGroup::class, $otherGroup);
-        $this->assertEquals(1, count($otherGroup));
-        $this->assertFalse($user->groups->isInitialized());
+        self::assertContainsOnly(CmsGroup::class, $otherGroup);
+        self::assertEquals(1, count($otherGroup));
+        self::assertFalse($user->groups->isInitialized());
 
         foreach ($user->groups AS $group) { }
 
-        $this->assertTrue($user->groups->isInitialized());
-        $this->assertEquals(3, count($user->groups));
+        self::assertTrue($user->groups->isInitialized());
+        self::assertEquals(3, count($user->groups));
 
-        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
 
     /**
@@ -220,11 +220,11 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $someGroups = $user->groups->slice(0, 2);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $this->assertEquals(2, count($someGroups));
-        $this->assertTrue($user->groups->contains(array_shift($someGroups)));
-        $this->assertTrue($user->groups->contains(array_shift($someGroups)));
+        self::assertEquals(2, count($someGroups));
+        self::assertTrue($user->groups->contains(array_shift($someGroups)));
+        self::assertTrue($user->groups->contains(array_shift($someGroups)));
     }
 
     /**
@@ -233,19 +233,19 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testSliceInverseCollection()
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
-        $this->assertFalse($group->users->isInitialized(), "Pre-Condition");
+        self::assertFalse($group->users->isInitialized(), "Pre-Condition");
         $queryCount = $this->getCurrentQueryCount();
 
         $someUsers = $group->users->slice(0, 2);
         $otherUsers = $group->users->slice(2, 2);
 
-        $this->assertContainsOnly(CmsUser::class, $someUsers);
-        $this->assertContainsOnly(CmsUser::class, $otherUsers);
-        $this->assertEquals(2, count($someUsers));
-        $this->assertEquals(2, count($otherUsers));
+        self::assertContainsOnly(CmsUser::class, $someUsers);
+        self::assertContainsOnly(CmsUser::class, $otherUsers);
+        self::assertEquals(2, count($someUsers));
+        self::assertEquals(2, count($otherUsers));
 
         // +2 queries executed by slice
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Slicing two parts should only execute two additional queries.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Slicing two parts should only execute two additional queries.");
     }
 
     /**
@@ -254,14 +254,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testSliceOneToMany()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         $queryCount = $this->getCurrentQueryCount();
 
         $someArticle = $user->articles->slice(0, 1);
         $otherArticle = $user->articles->slice(1, 1);
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
     /**
@@ -270,15 +270,15 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsOneToMany()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         // Test One to Many existence retrieved from DB
         $article    = $this->_em->find(CmsArticle::class, $this->articleId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($user->articles->contains($article));
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($user->articles->contains($article));
+        self::assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         // Test One to Many existence with state new
         $article = new CmsArticle();
@@ -286,17 +286,17 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $article->text = "blub";
 
         $queryCount = $this->getCurrentQueryCount();
-        $this->assertFalse($user->articles->contains($article));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+        self::assertFalse($user->articles->contains($article));
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
 
         // Test One to Many existence with state clear
         $this->_em->persist($article);
         $this->_em->flush();
 
         $queryCount = $this->getCurrentQueryCount();
-        $this->assertFalse($user->articles->contains($article));
-        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($user->articles->contains($article));
+        self::assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
+        self::assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many existence with state managed
         $article = new CmsArticle();
@@ -307,9 +307,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->articles->contains($article));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($user->articles->contains($article));
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
+        self::assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -319,7 +319,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
     /**
@@ -333,9 +333,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $childClass = $this->_em->find(DDC2504ChildClass::class, $this->ddc2504ChildClassId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($otherClass->childClasses->contains($childClass));
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), 'Search operation was performed via SQL');
+        self::assertTrue($otherClass->childClasses->contains($childClass));
+        self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), 'Search operation was performed via SQL');
     }
 
     /**
@@ -346,8 +346,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($otherClass->childClasses->contains(new DDC2504ChildClass()));
-        $this->assertEquals(
+        self::assertFalse($otherClass->childClasses->contains(new DDC2504ChildClass()));
+        self::assertEquals(
             $queryCount,
             $this->getCurrentQueryCount(),
             'Checking for contains of new entity should cause no query to be executed.'
@@ -367,9 +367,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $queryCount = $this->getCurrentQueryCount();
-        $this->assertFalse($otherClass->childClasses->contains($childClass));
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($otherClass->childClasses->contains($childClass));
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
+        self::assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -384,9 +384,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($otherClass->childClasses->contains($childClass));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
-        $this->assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($otherClass->childClasses->contains($childClass));
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
+        self::assertFalse($otherClass->childClasses->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -396,9 +396,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
-        $this->assertEquals(2, count($otherClass->childClasses));
+        self::assertEquals(2, count($otherClass->childClasses));
 
-        $this->assertFalse($otherClass->childClasses->isInitialized());
+        self::assertFalse($otherClass->childClasses->isInitialized());
     }
 
     /**
@@ -407,15 +407,15 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsManyToMany()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         // Test Many to Many existence retrieved from DB
         $group      = $this->_em->find(CmsGroup::class, $this->groupId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($user->groups->contains($group));
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertTrue($user->groups->contains($group));
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many existence with state new
         $group = new CmsGroup();
@@ -423,9 +423,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->groups->contains($group));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->contains($group));
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many existence with state clear
         $this->_em->persist($group);
@@ -433,9 +433,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->groups->contains($group));
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->contains($group));
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many existence with state managed
         $group = new CmsGroup();
@@ -445,9 +445,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->groups->contains($group));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->contains($group));
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of managed entity (but not persisted) should cause no query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -456,22 +456,22 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsManyToManyInverse()
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
-        $this->assertFalse($group->users->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($group->users->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         $user = $this->_em->find(CmsUser::class, $this->userId);
 
         $queryCount = $this->getCurrentQueryCount();
-        $this->assertTrue($group->users->contains($user));
-        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertTrue($group->users->contains($user));
+        self::assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         $newUser = new CmsUser();
         $newUser->name = "A New group!";
 
         $queryCount = $this->getCurrentQueryCount();
-        $this->assertFalse($group->users->contains($newUser));
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertFalse($group->users->contains($newUser));
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -480,7 +480,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testRemoveElementOneToMany()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity retrieved from DB
         $article    = $this->_em->find(CmsArticle::class, $this->articleId);
@@ -488,8 +488,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
         $article = new CmsArticle();
@@ -500,7 +500,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a new entity should cause no query to be executed.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a new entity should cause no query to be executed.");
 
         // Test One to Many removal with Entity state as clean
         $this->_em->persist($article);
@@ -510,8 +510,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity will not cause queries when the owning side doesn't actually change.");
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity will not cause queries when the owning side doesn't actually change.");
+        self::assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity state as managed
         $article = new CmsArticle();
@@ -524,7 +524,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->articles->removeElement($article);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
     }
 
     /**
@@ -542,27 +542,27 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $otherClass->childClasses->removeElement($childClass);
         $childClass->other = null; // updating owning side
 
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
 
-        $this->assertEquals(
+        self::assertEquals(
             $queryCount,
             $this->getCurrentQueryCount(),
             'No queries have been executed'
         );
 
-        $this->assertTrue(
+        self::assertTrue(
             $otherClass->childClasses->contains($childClass),
             'Collection item still not updated (needs flushing)'
         );
 
         $this->_em->flush();
 
-        $this->assertFalse(
+        self::assertFalse(
             $otherClass->childClasses->contains($childClass),
             'Referenced item was removed in the transaction'
         );
 
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
     /**
@@ -576,7 +576,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $otherClass->childClasses->removeElement(new DDC2504ChildClass());
 
-        $this->assertEquals(
+        self::assertEquals(
             $queryCount,
             $this->getCurrentQueryCount(),
             'Removing an unmanaged entity should cause no query to be executed.'
@@ -598,7 +598,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $otherClass->childClasses->removeElement($childClass);
 
-        $this->assertEquals(
+        self::assertEquals(
             $queryCount,
             $this->getCurrentQueryCount(),
             'Removing a new entity should cause no query to be executed.'
@@ -620,12 +620,12 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $otherClass->childClasses->removeElement($childClass);
 
-        $this->assertEquals(
+        self::assertEquals(
             $queryCount,
             $this->getCurrentQueryCount(),
             'No queries are executed, as the owning side of the association is not actually updated.'
         );
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
+        self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
     /**
@@ -634,7 +634,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testRemoveElementManyToMany()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         // Test Many to Many removal with Entity retrieved from DB
         $group      = $this->_em->find(CmsGroup::class, $this->groupId);
@@ -642,8 +642,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many removal with Entity state as new
         $group = new CmsGroup();
@@ -653,8 +653,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing new entity should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing new entity should cause no query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many removal with Entity state as clean
         $this->_em->persist($group);
@@ -664,8 +664,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many removal with Entity state as managed
         $group = new CmsGroup();
@@ -677,8 +677,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -687,15 +687,15 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testRemoveElementManyToManyInverse()
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
-        $this->assertFalse($group->users->isInitialized(), "Pre-Condition: Collection is not initialized.");
+        self::assertFalse($group->users->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         $user       = $this->_em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
         $group->users->removeElement($user);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a managed entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a managed entity should cause one query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         $newUser = new CmsUser();
         $newUser->name = "A New group!";
@@ -704,8 +704,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $group->users->removeElement($newUser);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a new entity should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        self::assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a new entity should cause no query to be executed.");
+        self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
     /**
@@ -721,13 +721,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user->addGroup($newGroup);
         $this->_em->persist($newGroup);
 
-        $this->assertFalse($user->groups->isInitialized());
-        $this->assertEquals(4, count($user->groups));
-        $this->assertFalse($user->groups->isInitialized());
+        self::assertFalse($user->groups->isInitialized());
+        self::assertEquals(4, count($user->groups));
+        self::assertFalse($user->groups->isInitialized());
 
         $this->_em->flush();
 
-        $this->assertEquals(4, count($user->groups));
+        self::assertEquals(4, count($user->groups));
     }
 
     /**
@@ -748,8 +748,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $qc = $this->getCurrentQueryCount();
         $groups = $user->groups->slice(0, 10);
 
-        $this->assertEquals(4, count($groups));
-        $this->assertEquals($qc + 1, $this->getCurrentQueryCount());
+        self::assertEquals(4, count($groups));
+        self::assertEquals($qc + 1, $this->getCurrentQueryCount());
     }
 
     /**
@@ -764,12 +764,12 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
         $phonenumber = $user->phonenumbers->get($this->phonenumber);
 
-        $this->assertFalse($user->phonenumbers->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertSame($phonenumber, $this->_em->find(CmsPhonenumber::class, $this->phonenumber));
+        self::assertFalse($user->phonenumbers->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertSame($phonenumber, $this->_em->find(CmsPhonenumber::class, $this->phonenumber));
 
         $article = $user->phonenumbers->get($this->phonenumber);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Getting the same entity should not cause an extra query to be executed");
     }
 
     /**
@@ -784,9 +784,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $article = $user->articles->get($this->topic);
 
-        $this->assertFalse($user->articles->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertSame($article, $this->_em->find(CmsArticle::class, $this->articleId));
+        self::assertFalse($user->articles->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertSame($article, $this->_em->find(CmsArticle::class, $this->articleId));
     }
 
     /**
@@ -801,9 +801,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user = $group->users->get($this->username);
 
-        $this->assertFalse($group->users->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertSame($user, $this->_em->find(CmsUser::class, $this->userId));
+        self::assertFalse($group->users->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertSame($user, $this->_em->find(CmsUser::class, $this->userId));
     }
 
     /**
@@ -818,9 +818,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $group = $user->groups->get($this->groupname);
 
-        $this->assertFalse($user->groups->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertSame($group, $this->_em->find(CmsGroup::class, $this->groupId));
+        self::assertFalse($user->groups->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertSame($group, $this->_em->find(CmsGroup::class, $this->groupId));
     }
 
     /**
@@ -829,8 +829,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testGetNonExistentIndexBy()
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertNull($user->articles->get(-1));
-        $this->assertNull($user->groups->get(-1));
+        self::assertNull($user->articles->get(-1));
+        self::assertNull($user->groups->get(-1));
     }
 
     public function testContainsKeyIndexByOneToMany()
@@ -842,9 +842,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $user->articles->containsKey($this->topic);
 
-        $this->assertTrue($contains);
-        $this->assertFalse($user->articles->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($contains);
+        self::assertFalse($user->articles->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     public function testContainsKeyIndexByOneToManyJoinedInheritance()
@@ -858,9 +858,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $otherClass->childClasses->containsKey($this->ddc2504ChildClassId);
 
-        $this->assertTrue($contains);
-        $this->assertFalse($otherClass->childClasses->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($contains);
+        self::assertFalse($otherClass->childClasses->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     public function testContainsKeyIndexByManyToMany()
@@ -873,9 +873,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $user->groups->containsKey($group->name);
 
-        $this->assertTrue($contains, "The item is not into collection");
-        $this->assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($contains, "The item is not into collection");
+        self::assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
     public function testContainsKeyIndexByManyToManyNonOwning()
     {
@@ -886,9 +886,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $group->users->containsKey($user->username);
 
-        $this->assertTrue($contains, "The item is not into collection");
-        $this->assertFalse($group->users->isInitialized(), "The collection must not be initialized");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($contains, "The item is not into collection");
+        self::assertFalse($group->users->isInitialized(), "The collection must not be initialized");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     public function testContainsKeyIndexByWithPkManyToMany()
@@ -902,9 +902,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $user->groups->containsKey($this->groupId);
 
-        $this->assertTrue($contains, "The item is not into collection");
-        $this->assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($contains, "The item is not into collection");
+        self::assertFalse($user->groups->isInitialized(), "The collection must not be initialized");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
     public function testContainsKeyIndexByWithPkManyToManyNonOwning()
     {
@@ -917,9 +917,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $group->users->containsKey($this->userId2);
 
-        $this->assertTrue($contains, "The item is not into collection");
-        $this->assertFalse($group->users->isInitialized(), "The collection must not be initialized");
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertTrue($contains, "The item is not into collection");
+        self::assertFalse($group->users->isInitialized(), "The collection must not be initialized");
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     public function testContainsKeyNonExistentIndexByOneToMany()
@@ -930,9 +930,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $user->articles->containsKey("NonExistentTopic");
 
-        $this->assertFalse($contains);
-        $this->assertFalse($user->articles->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertFalse($contains);
+        self::assertFalse($user->articles->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     public function testContainsKeyNonExistentIndexByManyToMany()
@@ -944,9 +944,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $contains = $user->groups->containsKey("NonExistentTopic");
 
-        $this->assertFalse($contains);
-        $this->assertFalse($user->groups->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertFalse($contains);
+        self::assertFalse($user->groups->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
     private function loadFixture()
@@ -1070,7 +1070,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::class, $userId);
 
-        $this->assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
+        self::assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
     }
 
     /**
@@ -1090,13 +1090,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         /* @var $tweet Tweet */
         $tweet = $this->_em->find(Tweet::class, $tweetId);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Tweet::class,
             $tweet,
             'Even though the collection is extra lazy, the tweet should not have been deleted'
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             User::class,
             $tweet->author,
             'Tweet author link has not been removed - need to update the owning side first'
@@ -1120,18 +1120,18 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         /* @var $tweet Tweet */
         $tweet = $this->_em->find(Tweet::class, $tweet->id);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Tweet::class,
             $tweet,
             'Even though the collection is extra lazy, the tweet should not have been deleted'
         );
 
-        $this->assertInstanceOf(User::class, $tweet->author);
+        self::assertInstanceOf(User::class, $tweet->author);
 
         /* @var $user User */
         $user = $this->_em->find(User::class, $userId);
 
-        $this->assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
+        self::assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
     }
 
     /**
@@ -1151,8 +1151,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::class, $userId);
 
-        $this->assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
-        $this->assertNull(
+        self::assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
+        self::assertNull(
             $this->_em->find(UserList::class, $userListId),
             'Element was deleted due to orphan removal'
         );
@@ -1174,13 +1174,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         /* @var $userList UserList */
         $userList = $this->_em->find(UserList::class, $userListId);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             UserList::class,
             $userList,
             'Even though the collection is extra lazy + orphan removal, the user list should not have been deleted'
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             User::class,
             $userList->owner,
             'User list to owner link has not been removed'
@@ -1204,8 +1204,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         /* @var $user User */
         $user = $this->_em->find(User::class, $userId);
 
-        $this->assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
-        $this->assertNull(
+        self::assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
+        self::assertNull(
             $this->_em->find(UserList::class, $userListId),
             'Element was deleted due to orphan removal'
         );

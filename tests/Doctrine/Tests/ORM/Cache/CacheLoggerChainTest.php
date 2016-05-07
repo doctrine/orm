@@ -35,14 +35,14 @@ class CacheLoggerChainTest extends DoctrineTestCase
 
     public function testGetAndSetLogger()
     {
-        $this->assertEmpty($this->logger->getLoggers());
+        self::assertEmpty($this->logger->getLoggers());
 
-        $this->assertNull($this->logger->getLogger('mock'));
+        self::assertNull($this->logger->getLogger('mock'));
 
         $this->logger->setLogger('mock', $this->mock);
 
-        $this->assertSame($this->mock, $this->logger->getLogger('mock'));
-        $this->assertEquals(['mock' => $this->mock], $this->logger->getLoggers());
+        self::assertSame($this->mock, $this->logger->getLogger('mock'));
+        self::assertEquals(['mock' => $this->mock], $this->logger->getLoggers());
     }
 
     public function testEntityCacheChain()

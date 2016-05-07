@@ -41,12 +41,12 @@ class DDC199Test extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
         $result = $query->getResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(DDC199ParentClass::class, $result[0]);
-        $this->assertTrue($result[0]->relatedEntities->isInitialized());
-        $this->assertEquals(2, $result[0]->relatedEntities->count());
-        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
-        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
+        self::assertEquals(1, count($result));
+        self::assertInstanceOf(DDC199ParentClass::class, $result[0]);
+        self::assertTrue($result[0]->relatedEntities->isInitialized());
+        self::assertEquals(2, $result[0]->relatedEntities->count());
+        self::assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
+        self::assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
     }
 }
 

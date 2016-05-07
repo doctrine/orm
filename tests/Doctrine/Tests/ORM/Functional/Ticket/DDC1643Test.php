@@ -54,7 +54,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user1 = $this->_em->find(get_class($user1), $user1->id);
 
-        $this->assertEquals(2, count($user1->groups));
+        self::assertEquals(2, count($user1->groups));
     }
 
     public function testClonePersistentCollectionAndShare()
@@ -70,8 +70,8 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = $this->_em->find(get_class($user1), $user1->id);
         $user2 = $this->_em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(2, count($user1->groups));
-        $this->assertEquals(2, count($user2->groups));
+        self::assertEquals(2, count($user1->groups));
+        self::assertEquals(2, count($user2->groups));
     }
 
     public function testCloneThenDirtyPersistentCollection()
@@ -91,8 +91,8 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = $this->_em->find(get_class($user1), $user1->id);
         $user2 = $this->_em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(2, count($user1->groups));
+        self::assertEquals(3, count($user2->groups));
+        self::assertEquals(2, count($user1->groups));
     }
 
     public function testNotCloneAndPassAroundFlush()
@@ -105,7 +105,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertCount(1, $user1->groups->getInsertDiff());
+        self::assertCount(1, $user1->groups->getInsertDiff());
 
         $this->_em->persist($group3);
         $this->_em->flush();
@@ -114,8 +114,8 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = $this->_em->find(get_class($user1), $user1->id);
         $user2 = $this->_em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(3, count($user1->groups));
+        self::assertEquals(3, count($user2->groups));
+        self::assertEquals(3, count($user1->groups));
     }
 }
 

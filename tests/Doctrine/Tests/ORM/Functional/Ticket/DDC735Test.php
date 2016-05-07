@@ -32,7 +32,7 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Now you see it
-        $this->assertEquals(1, count($product->getReviews()));
+        self::assertEquals(1, count($product->getReviews()));
 
         // Remove the review
         $reviewId = $review->getId();
@@ -40,16 +40,16 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Now you don't
-        $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should be 0 after removing its only Review');
+        self::assertEquals(0, count($product->getReviews()), 'count($reviews) should be 0 after removing its only Review');
 
         // Refresh
         $this->_em->refresh($product);
 
         // It should still be 0
-        $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should still be 0 after the refresh');
+        self::assertEquals(0, count($product->getReviews()), 'count($reviews) should still be 0 after the refresh');
 
         // Review should also not be available anymore
-        $this->assertNull($this->_em->find(DDC735Review::class, $reviewId));
+        self::assertNull($this->_em->find(DDC735Review::class, $reviewId));
     }
 }
 

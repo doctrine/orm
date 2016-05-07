@@ -47,15 +47,15 @@ class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
         $names = $admin1NamesRepo->findBy(['admin1' => $admin1Rome]);
-        $this->assertCount(2, $names);
+        self::assertCount(2, $names);
 
         $name1 = $admin1NamesRepo->findOneBy(['admin1' => $admin1Rome, 'id' => 1]);
         $name2 = $admin1NamesRepo->findOneBy(['admin1' => $admin1Rome, 'id' => 2]);
 
-        $this->assertEquals(1, $name1->id);
-        $this->assertEquals("Roma", $name1->name);
+        self::assertEquals(1, $name1->id);
+        self::assertEquals("Roma", $name1->name);
 
-        $this->assertEquals(2, $name2->id);
-        $this->assertEquals("Rome", $name2->name);
+        self::assertEquals(2, $name2->id);
+        self::assertEquals("Rome", $name2->name);
     }
 }

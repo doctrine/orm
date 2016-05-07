@@ -34,8 +34,8 @@ class DDC1594Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $mergedUser = $this->_em->merge($detachedUser);
 
-        $this->assertNotSame($mergedUser, $detachedUser);
-        $this->assertEquals('bar', $detachedUser->getName());
-        $this->assertEquals('bar', $mergedUser->getName());
+        self::assertNotSame($mergedUser, $detachedUser);
+        self::assertEquals('bar', $detachedUser->getName());
+        self::assertEquals('bar', $mergedUser->getName());
     }
 }

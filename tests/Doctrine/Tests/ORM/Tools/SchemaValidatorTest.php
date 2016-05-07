@@ -94,7 +94,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class1);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 "The inverse join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key4' are missing.",
                 "The join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the source entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key2' are missing."
@@ -113,7 +113,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class2);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
                 "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing."
@@ -132,7 +132,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class1);
 
-        $this->assertEquals([], $ce);
+        self::assertEquals([], $ce);
     }
 
     /**
@@ -143,11 +143,13 @@ class SchemaValidatorTest extends OrmTestCase
         $classThree = $this->em->getClassMetadata(DDC1649Three::class);
         $ce = $this->validator->validateClass($classThree);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
-            "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
-            ], $ce);
+                "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
+                "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
+            ],
+            $ce
+        );
     }
 
     /**
@@ -158,7 +160,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3274One::class);
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 "The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional " .
                 "relationship, but the specified mappedBy association on the target-entity " .
@@ -176,7 +178,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3322One::class);
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 "The association Doctrine\Tests\ORM\Tools\DDC3322One#invalidAssoc is ordered by a foreign field " .
                 "invalidField that is not a field on the target entity Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1."
@@ -193,7 +195,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3322Two::class);
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by a field oneToMany " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association."
@@ -210,7 +212,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3322Three::class);
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 "The association Doctrine\Tests\ORM\Tools\DDC3322Three#invalidAssoc is ordered by a field oneToOneInverse " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is the inverse side of an association."

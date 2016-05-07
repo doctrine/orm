@@ -25,7 +25,7 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $num = $this->_em->createQuery('DELETE '.__NAMESPACE__.'\DDC425Entity e WHERE e.someDatetimeField > ?1')
                 ->setParameter(1, new DateTime, Type::DATETIME)
                 ->getResult();
-        $this->assertEquals(0, $num);
+        self::assertEquals(0, $num);
     }
 }
 

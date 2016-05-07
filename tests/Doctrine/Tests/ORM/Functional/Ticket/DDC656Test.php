@@ -31,14 +31,14 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
         $data2 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
 
-        $this->assertEquals(array_keys($data1), array_keys($data2));
+        self::assertEquals(array_keys($data1), array_keys($data2));
 
         $this->_em->flush();
         $this->_em->clear();
 
         $persistedEntity = $this->_em->find(get_class($entity), $entity->specificationId);
-        $this->assertEquals('type2', $persistedEntity->getType());
-        $this->assertEquals('test1', $persistedEntity->getName());
+        self::assertEquals('type2', $persistedEntity->getType());
+        self::assertEquals('test1', $persistedEntity->getName());
     }
 }
 

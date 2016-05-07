@@ -39,9 +39,9 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
         /* @var $merged CompositeToOneKeyState */
         $merged = $this->_em->merge($state);
 
-        $this->assertInstanceOf(CompositeToOneKeyState::class, $state);
-        $this->assertNotSame($state, $merged);
-        $this->assertInstanceOf(Country::class, $merged->country);
-        $this->assertNotSame($country, $merged->country);
+        self::assertInstanceOf(CompositeToOneKeyState::class, $state);
+        self::assertNotSame($state, $merged);
+        self::assertInstanceOf(Country::class, $merged->country);
+        self::assertNotSame($country, $merged->country);
     }
 }

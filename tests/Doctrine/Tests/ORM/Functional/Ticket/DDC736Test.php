@@ -39,10 +39,10 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cart2 = $result[0];
         unset($result[0]);
 
-        $this->assertInstanceOf(ECommerceCart::class, $cart2);
-        $this->assertNotInstanceOf(Proxy::class, $cart2->getCustomer());
-        $this->assertInstanceOf(ECommerceCustomer::class, $cart2->getCustomer());
-        $this->assertEquals(['name' => 'roman', 'payment' => 'cash'], $result);
+        self::assertInstanceOf(ECommerceCart::class, $cart2);
+        self::assertNotInstanceOf(Proxy::class, $cart2->getCustomer());
+        self::assertInstanceOf(ECommerceCustomer::class, $cart2->getCustomer());
+        self::assertEquals(['name' => 'roman', 'payment' => 'cash'], $result);
     }
 
     /**
@@ -71,7 +71,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /* @var $cart2 ECommerceCart */
         $cart2 = $result[0][0];
-        $this->assertInstanceOf(Proxy::class, $cart2->getCustomer());
+        self::assertInstanceOf(Proxy::class, $cart2->getCustomer());
     }
 }
 

@@ -58,35 +58,35 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         // test1 - lazy-loading many-to-one after find()
         $phrase2 = $this->_em->find(Phrase::class, $phrase->getId());
-        $this->assertTrue(is_numeric($phrase2->getType()->getId()));
+        self::assertTrue(is_numeric($phrase2->getType()->getId()));
 
         $this->_em->clear();
 
         // test2 - eager load in DQL query
         $query = $this->_em->createQuery("SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t");
         $res = $query->getResult();
-        $this->assertEquals(1, count($res));
-        $this->assertInstanceOf(PhraseType::class, $res[0]->getType());
-        $this->assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
-        $this->assertFalse($res[0]->getType()->getPhrases()->isInitialized());
+        self::assertEquals(1, count($res));
+        self::assertInstanceOf(PhraseType::class, $res[0]->getType());
+        self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
+        self::assertFalse($res[0]->getType()->getPhrases()->isInitialized());
 
         $this->_em->clear();
 
         // test2 - eager load in DQL query with double-join back and forth
         $query = $this->_em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
         $res = $query->getResult();
-        $this->assertEquals(1, count($res));
-        $this->assertInstanceOf(PhraseType::class, $res[0]->getType());
-        $this->assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
-        $this->assertTrue($res[0]->getType()->getPhrases()->isInitialized());
+        self::assertEquals(1, count($res));
+        self::assertInstanceOf(PhraseType::class, $res[0]->getType());
+        self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
+        self::assertTrue($res[0]->getType()->getPhrases()->isInitialized());
 
         $this->_em->clear();
 
         // test3 - lazy-loading one-to-many after find()
         $phrase3 = $this->_em->find(Phrase::class, $phrase->getId());
         $definitions = $phrase3->getDefinitions();
-        $this->assertInstanceOf(PersistentCollection::class, $definitions);
-        $this->assertInstanceOf(Definition::class, $definitions[0]);
+        self::assertInstanceOf(PersistentCollection::class, $definitions);
+        self::assertInstanceOf(Definition::class, $definitions[0]);
 
         $this->_em->clear();
 
@@ -95,10 +95,10 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $res = $query->getResult();
         $definitions = $res[0]->getDefinitions();
 
-        $this->assertEquals(1, count($res));
+        self::assertEquals(1, count($res));
 
-        $this->assertInstanceOf(Definition::class, $definitions[0]);
-        $this->assertEquals(2, $definitions->count());
+        self::assertInstanceOf(Definition::class, $definitions[0]);
+        self::assertEquals(2, $definitions->count());
     }
 
     public function testManyToMany()
@@ -121,7 +121,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $res = $query->getResult();
         $types = $res[0]->getTypes();
 
-        $this->assertInstanceOf(Type::class, $types[0]);
+        self::assertInstanceOf(Type::class, $types[0]);
     }
 }
 

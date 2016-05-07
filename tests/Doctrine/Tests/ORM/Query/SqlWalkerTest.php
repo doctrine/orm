@@ -32,7 +32,7 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function testGetSQLTableAlias($tableName, $expectedAlias)
     {
-        $this->assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
+        self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
     /**
@@ -40,7 +40,7 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function testGetSQLTableAliasIsSameForMultipleCalls($tableName)
     {
-        $this->assertSame(
+        self::assertSame(
             $this->sqlWalker->getSQLTableAlias($tableName),
             $this->sqlWalker->getSQLTableAlias($tableName)
         );

@@ -47,15 +47,15 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
         //Until know, everything works as expected
-        $this->assertTrue($user->sameIdentityAs($sameUser));
+        self::assertTrue($user->sameIdentityAs($sameUser));
 
         $this->_em->clear();
 
         //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
         $equalUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
-        $this->assertNotSame($user, $equalUser);
-        $this->assertTrue($user->sameIdentityAs($equalUser));
+        self::assertNotSame($user, $equalUser);
+        self::assertTrue($user->sameIdentityAs($equalUser));
     }
 }
 

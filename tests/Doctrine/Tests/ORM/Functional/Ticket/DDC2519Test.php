@@ -29,29 +29,29 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql    = 'SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l';
         $result = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertCount(2, $result);
-        $this->assertInstanceOf(LegacyUserReference::class, $result[0]);
-        $this->assertInstanceOf(LegacyUserReference::class, $result[1]);
+        self::assertCount(2, $result);
+        self::assertInstanceOf(LegacyUserReference::class, $result[0]);
+        self::assertInstanceOf(LegacyUserReference::class, $result[1]);
 
-        $this->assertInstanceOf(LegacyUser::class, $result[0]->source());
-        $this->assertInstanceOf(LegacyUser::class, $result[0]->target());
-        $this->assertInstanceOf(LegacyUser::class, $result[1]->source());
-        $this->assertInstanceOf(LegacyUser::class, $result[1]->target());
+        self::assertInstanceOf(LegacyUser::class, $result[0]->source());
+        self::assertInstanceOf(LegacyUser::class, $result[0]->target());
+        self::assertInstanceOf(LegacyUser::class, $result[1]->source());
+        self::assertInstanceOf(LegacyUser::class, $result[1]->target());
 
-        $this->assertInstanceOf(Proxy::class, $result[0]->source());
-        $this->assertInstanceOf(Proxy::class, $result[0]->target());
-        $this->assertInstanceOf(Proxy::class, $result[1]->source());
-        $this->assertInstanceOf(Proxy::class, $result[1]->target());
+        self::assertInstanceOf(Proxy::class, $result[0]->source());
+        self::assertInstanceOf(Proxy::class, $result[0]->target());
+        self::assertInstanceOf(Proxy::class, $result[1]->source());
+        self::assertInstanceOf(Proxy::class, $result[1]->target());
 
-        $this->assertFalse($result[0]->target()->__isInitialized());
-        $this->assertFalse($result[0]->source()->__isInitialized());
-        $this->assertFalse($result[1]->target()->__isInitialized());
-        $this->assertFalse($result[1]->source()->__isInitialized());
+        self::assertFalse($result[0]->target()->__isInitialized());
+        self::assertFalse($result[0]->source()->__isInitialized());
+        self::assertFalse($result[1]->target()->__isInitialized());
+        self::assertFalse($result[1]->source()->__isInitialized());
 
-        $this->assertNotNull($result[0]->source()->getId());
-        $this->assertNotNull($result[0]->target()->getId());
-        $this->assertNotNull($result[1]->source()->getId());
-        $this->assertNotNull($result[1]->target()->getId());
+        self::assertNotNull($result[0]->source()->getId());
+        self::assertNotNull($result[0]->target()->getId());
+        self::assertNotNull($result[1]->source()->getId());
+        self::assertNotNull($result[1]->target()->getId());
     }
 
     public function loadFixture()

@@ -28,9 +28,9 @@ class SequenceGeneratorTest extends OrmTestCase
                 $this->_em->getConnection()->setFetchOneResult((int)($i / 10) * 10);
             }
             $id = $this->_seqGen->generate($this->_em, null);
-            $this->assertEquals($i, $id);
-            $this->assertEquals((int)($i / 10) * 10 + 10, $this->_seqGen->getCurrentMaxValue());
-            $this->assertEquals($i + 1, $this->_seqGen->getNextValue());
+            self::assertEquals($i, $id);
+            self::assertEquals((int)($i / 10) * 10 + 10, $this->_seqGen->getCurrentMaxValue());
+            self::assertEquals($i + 1, $this->_seqGen->getNextValue());
         }
 
 

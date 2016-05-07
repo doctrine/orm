@@ -80,19 +80,19 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $user   = $repository->findOneBy(['name' => 'ngal']);
         $tweets = $user->tweets->matching(new Criteria());
 
-        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
-        $this->assertFalse($tweets->isInitialized());
-        $this->assertCount(2, $tweets);
-        $this->assertFalse($tweets->isInitialized());
+        self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);
+        self::assertFalse($tweets->isInitialized());
+        self::assertCount(2, $tweets);
+        self::assertFalse($tweets->isInitialized());
 
         // Make sure it works with constraints
         $tweets = $user->tweets->matching(new Criteria(
             Criteria::expr()->eq('content', 'Foo')
         ));
 
-        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
-        $this->assertFalse($tweets->isInitialized());
-        $this->assertCount(1, $tweets);
-        $this->assertFalse($tweets->isInitialized());
+        self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);
+        self::assertFalse($tweets->isInitialized());
+        self::assertCount(1, $tweets);
+        self::assertFalse($tweets->isInitialized());
     }
 }

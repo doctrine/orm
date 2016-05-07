@@ -38,6 +38,6 @@ class ParameterTypeInfererTest extends OrmTestCase
 
     public function testParameterTypeInferer($value, $expected)
     {
-        $this->assertEquals($expected, ParameterTypeInferer::inferType($value));
+        self::assertEquals($expected, ParameterTypeInferer::inferType($value));
     }
 }

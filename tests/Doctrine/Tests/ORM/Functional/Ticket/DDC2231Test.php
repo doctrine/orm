@@ -33,13 +33,13 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
 
-        $this->assertInstanceOf(Proxy::class, $y1ref);
-        $this->assertFalse($y1ref->__isInitialized__);
+        self::assertInstanceOf(Proxy::class, $y1ref);
+        self::assertFalse($y1ref->__isInitialized__);
 
         $id = $y1ref->doSomething();
 
-        $this->assertTrue($y1ref->__isInitialized__);
-        $this->assertEquals($this->_em, $y1ref->om);
+        self::assertTrue($y1ref->__isInitialized__);
+        self::assertEquals($this->_em, $y1ref->om);
     }
 }
 

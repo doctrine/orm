@@ -42,26 +42,26 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->persist($group);
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertEquals(1, count($user->listeners));
+        self::assertEquals(1, count($group->listeners));
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertEquals(1, count($user->listeners));
+        self::assertEquals(1, count($group->listeners));
 
         $userId = $user->getId();
         $groupId = $group->getId();
         unset($user, $group);
 
         $user = $this->_em->find(NotifyUser::class, $userId);
-        $this->assertEquals(1, $user->getGroups()->count());
+        self::assertEquals(1, $user->getGroups()->count());
         $group = $this->_em->find(NotifyGroup::class, $groupId);
-        $this->assertEquals(1, $group->getUsers()->count());
+        self::assertEquals(1, $group->getUsers()->count());
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertEquals(1, count($user->listeners));
+        self::assertEquals(1, count($group->listeners));
 
         $group2 = new NotifyGroup();
         $group2->setName('nerds');
@@ -74,19 +74,19 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertEquals(1, count($user->listeners));
+        self::assertEquals(1, count($group->listeners));
 
         $group2Id = $group2->getId();
         unset($group2, $user);
 
         $user = $this->_em->find(NotifyUser::class, $userId);
-        $this->assertEquals(2, $user->getGroups()->count());
+        self::assertEquals(2, $user->getGroups()->count());
         $group2 = $this->_em->find(NotifyGroup::class, $group2Id);
-        $this->assertEquals(1, $group2->getUsers()->count());
+        self::assertEquals(1, $group2->getUsers()->count());
         $group = $this->_em->find(NotifyGroup::class, $groupId);
-        $this->assertEquals(1, $group->getUsers()->count());
-        $this->assertEquals('geeks', $group->getName());
+        self::assertEquals(1, $group->getUsers()->count());
+        self::assertEquals('geeks', $group->getName());
     }
 }
 

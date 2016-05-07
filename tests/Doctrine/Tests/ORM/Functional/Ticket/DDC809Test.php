@@ -48,8 +48,8 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery()
                         ->getResult();
 
-        $this->assertEquals(4, count($result[0]->getSpecificationValues()), "Works in test-setup.");
-        $this->assertEquals(4, count($result[1]->getSpecificationValues()), "Only returns 2 in the case of the hydration bug.");
+        self::assertEquals(4, count($result[0]->getSpecificationValues()), "Works in test-setup.");
+        self::assertEquals(4, count($result[1]->getSpecificationValues()), "Only returns 2 in the case of the hydration bug.");
     }
 }
 

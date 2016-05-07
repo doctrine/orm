@@ -39,9 +39,9 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
      */
     public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, Parameter $parameter = null)
     {
-        $this->assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
+        self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
-            $this->assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
+            self::assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
         }
     }
 
@@ -86,8 +86,8 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Andx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Andx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
     public function testWalkOrCompositeExpression()
@@ -100,13 +100,13 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Orx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
     public function testWalkValue()
     {
-        $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
+        self::assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
 
     public function testClearParameters()
@@ -115,6 +115,6 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
 
         $this->visitor->clearParameters();
 
-        $this->assertCount(0, $this->visitor->getParameters());
+        self::assertCount(0, $this->visitor->getParameters());
     }
 }

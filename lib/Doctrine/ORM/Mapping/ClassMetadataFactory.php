@@ -164,7 +164,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         if ( ! $class->isMappedSuperclass) {
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
-
                 if (isset($embeddableClass['inherited'])) {
                     continue;
                 }

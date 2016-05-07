@@ -42,8 +42,8 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->_em->persist($this->firstProduct);
         $this->_em->flush();
 
-        $this->assertForeignKeysContain($this->firstProduct->getId(), $this->firstCategory->getId());
-        $this->assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->firstCategory->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
 
     public function testRemovesAManyToManyAssociation()
@@ -55,13 +55,13 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         $this->_em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstProduct->getId(), $this->firstCategory->getId());
-        $this->assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
+        self::assertForeignKeysNotContain($this->firstProduct->getId(), $this->firstCategory->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
 
         $this->firstProduct->getCategories()->remove(1);
         $this->_em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstProduct->getId(), $this->secondCategory->getId());
+        self::assertForeignKeysNotContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
 
     public function testEagerLoadFromInverseSideAndLazyLoadFromOwningSide()
@@ -69,7 +69,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_createLoadingFixture();
         $categories = $this->_findCategories();
-        $this->assertLazyLoadFromOwningSide($categories);
+        self::assertLazyLoadFromOwningSide($categories);
     }
 
     public function testEagerLoadFromOwningSideAndLazyLoadFromInverseSide()
@@ -77,7 +77,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_createLoadingFixture();
         $products = $this->_findProducts();
-        $this->assertLazyLoadFromInverseSide($products);
+        self::assertLazyLoadFromInverseSide($products);
     }
 
     private function _createLoadingFixture()
@@ -98,13 +98,13 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
         $cats1 = $result[0]->getCategories();
         $cats2 = $result[1]->getCategories();
-        $this->assertTrue($cats1->isInitialized());
-        $this->assertTrue($cats2->isInitialized());
-        $this->assertFalse($cats1[0]->getProducts()->isInitialized());
-        $this->assertFalse($cats2[0]->getProducts()->isInitialized());
+        self::assertTrue($cats1->isInitialized());
+        self::assertTrue($cats2->isInitialized());
+        self::assertFalse($cats1[0]->getProducts()->isInitialized());
+        self::assertFalse($cats2[0]->getProducts()->isInitialized());
 
         return $result;
     }
@@ -114,16 +114,16 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
-        $this->assertEquals(2, count($result));
-        $this->assertInstanceOf(ECommerceCategory::class, $result[0]);
-        $this->assertInstanceOf(ECommerceCategory::class, $result[1]);
+        self::assertEquals(2, count($result));
+        self::assertInstanceOf(ECommerceCategory::class, $result[0]);
+        self::assertInstanceOf(ECommerceCategory::class, $result[1]);
         $prods1 = $result[0]->getProducts();
         $prods2 = $result[1]->getProducts();
-        $this->assertTrue($prods1->isInitialized());
-        $this->assertTrue($prods2->isInitialized());
+        self::assertTrue($prods1->isInitialized());
+        self::assertTrue($prods2->isInitialized());
 
-        $this->assertFalse($prods1[0]->getCategories()->isInitialized());
-        $this->assertFalse($prods2[0]->getCategories()->isInitialized());
+        self::assertFalse($prods1[0]->getCategories()->isInitialized());
+        self::assertFalse($prods2[0]->getCategories()->isInitialized());
 
         return $result;
     }
@@ -135,32 +135,32 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $firstProductCategories = $firstProduct->getCategories();
         $secondProductCategories = $secondProduct->getCategories();
 
-        $this->assertEquals(2, count($firstProductCategories));
-        $this->assertEquals(2, count($secondProductCategories));
+        self::assertEquals(2, count($firstProductCategories));
+        self::assertEquals(2, count($secondProductCategories));
 
-        $this->assertTrue($firstProductCategories[0] === $secondProductCategories[0]);
-        $this->assertTrue($firstProductCategories[1] === $secondProductCategories[1]);
+        self::assertTrue($firstProductCategories[0] === $secondProductCategories[0]);
+        self::assertTrue($firstProductCategories[1] === $secondProductCategories[1]);
 
         $firstCategoryProducts = $firstProductCategories[0]->getProducts();
         $secondCategoryProducts = $firstProductCategories[1]->getProducts();
 
-        $this->assertFalse($firstCategoryProducts->isInitialized());
-        $this->assertFalse($secondCategoryProducts->isInitialized());
-        $this->assertEquals(0, $firstCategoryProducts->unwrap()->count());
-        $this->assertEquals(0, $secondCategoryProducts->unwrap()->count());
+        self::assertFalse($firstCategoryProducts->isInitialized());
+        self::assertFalse($secondCategoryProducts->isInitialized());
+        self::assertEquals(0, $firstCategoryProducts->unwrap()->count());
+        self::assertEquals(0, $secondCategoryProducts->unwrap()->count());
 
-        $this->assertEquals(2, count($firstCategoryProducts)); // lazy-load
-        $this->assertTrue($firstCategoryProducts->isInitialized());
-        $this->assertFalse($secondCategoryProducts->isInitialized());
-        $this->assertEquals(2, count($secondCategoryProducts)); // lazy-load
-        $this->assertTrue($secondCategoryProducts->isInitialized());
+        self::assertEquals(2, count($firstCategoryProducts)); // lazy-load
+        self::assertTrue($firstCategoryProducts->isInitialized());
+        self::assertFalse($secondCategoryProducts->isInitialized());
+        self::assertEquals(2, count($secondCategoryProducts)); // lazy-load
+        self::assertTrue($secondCategoryProducts->isInitialized());
 
-        $this->assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[1]);
-        $this->assertInstanceOf(ECommerceProduct::class, $secondCategoryProducts[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $secondCategoryProducts[1]);
+        self::assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[1]);
+        self::assertInstanceOf(ECommerceProduct::class, $secondCategoryProducts[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $secondCategoryProducts[1]);
 
-        $this->assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
+        self::assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
     }
 
     public function assertLazyLoadFromOwningSide($categories)
@@ -170,31 +170,31 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $firstCategoryProducts = $firstCategory->getProducts();
         $secondCategoryProducts = $secondCategory->getProducts();
 
-        $this->assertEquals(2, count($firstCategoryProducts));
-        $this->assertEquals(2, count($secondCategoryProducts));
+        self::assertEquals(2, count($firstCategoryProducts));
+        self::assertEquals(2, count($secondCategoryProducts));
 
-        $this->assertTrue($firstCategoryProducts[0] === $secondCategoryProducts[0]);
-        $this->assertTrue($firstCategoryProducts[1] === $secondCategoryProducts[1]);
+        self::assertTrue($firstCategoryProducts[0] === $secondCategoryProducts[0]);
+        self::assertTrue($firstCategoryProducts[1] === $secondCategoryProducts[1]);
 
         $firstProductCategories = $firstCategoryProducts[0]->getCategories();
         $secondProductCategories = $firstCategoryProducts[1]->getCategories();
 
-        $this->assertFalse($firstProductCategories->isInitialized());
-        $this->assertFalse($secondProductCategories->isInitialized());
-        $this->assertEquals(0, $firstProductCategories->unwrap()->count());
-        $this->assertEquals(0, $secondProductCategories->unwrap()->count());
+        self::assertFalse($firstProductCategories->isInitialized());
+        self::assertFalse($secondProductCategories->isInitialized());
+        self::assertEquals(0, $firstProductCategories->unwrap()->count());
+        self::assertEquals(0, $secondProductCategories->unwrap()->count());
 
-        $this->assertEquals(2, count($firstProductCategories)); // lazy-load
-        $this->assertTrue($firstProductCategories->isInitialized());
-        $this->assertFalse($secondProductCategories->isInitialized());
-        $this->assertEquals(2, count($secondProductCategories)); // lazy-load
-        $this->assertTrue($secondProductCategories->isInitialized());
+        self::assertEquals(2, count($firstProductCategories)); // lazy-load
+        self::assertTrue($firstProductCategories->isInitialized());
+        self::assertFalse($secondProductCategories->isInitialized());
+        self::assertEquals(2, count($secondProductCategories)); // lazy-load
+        self::assertTrue($secondProductCategories->isInitialized());
 
-        $this->assertInstanceOf(ECommerceCategory::class, $firstProductCategories[0]);
-        $this->assertInstanceOf(ECommerceCategory::class, $firstProductCategories[1]);
-        $this->assertInstanceOf(ECommerceCategory::class, $secondProductCategories[0]);
-        $this->assertInstanceOf(ECommerceCategory::class, $secondProductCategories[1]);
+        self::assertInstanceOf(ECommerceCategory::class, $firstProductCategories[0]);
+        self::assertInstanceOf(ECommerceCategory::class, $firstProductCategories[1]);
+        self::assertInstanceOf(ECommerceCategory::class, $secondProductCategories[0]);
+        self::assertInstanceOf(ECommerceCategory::class, $secondProductCategories[1]);
 
-        $this->assertCollectionEquals($firstProductCategories, $secondProductCategories);
+        self::assertCollectionEquals($firstProductCategories, $secondProductCategories);
     }
 }

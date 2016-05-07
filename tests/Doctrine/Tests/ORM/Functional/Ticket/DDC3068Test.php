@@ -46,7 +46,7 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ]
         );
 
-        $this->assertInstanceOf(Ride::class, $ride1);
+        self::assertInstanceOf(Ride::class, $ride1);
 
         $ride2 = $this->_em->find(Ride::class, [
             'driver' => $this->foo,
@@ -54,7 +54,7 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ]
         );
 
-        $this->assertInstanceOf(Ride::class, $ride2);
-        $this->assertSame($ride1, $ride2);
+        self::assertInstanceOf(Ride::class, $ride2);
+        self::assertSame($ride1, $ride2);
     }
 }

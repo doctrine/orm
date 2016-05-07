@@ -51,12 +51,12 @@ class ManyToManyTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
     }
 
     /**
@@ -74,8 +74,8 @@ class ManyToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertInstanceOf(Models\ValueConversionType\InversedManyToManyEntity::class, $inversed);
-        $this->assertInstanceOf(Models\ValueConversionType\OwningManyToManyEntity::class, $owning);
+        self::assertInstanceOf(Models\ValueConversionType\InversedManyToManyEntity::class, $inversed);
+        self::assertInstanceOf(Models\ValueConversionType\OwningManyToManyEntity::class, $owning);
     }
 
     /**
@@ -93,8 +93,8 @@ class ManyToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertEquals('abc', $inversed->id1);
-        $this->assertEquals('def', $owning->id2);
+        self::assertEquals('abc', $inversed->id1);
+        self::assertEquals('def', $owning->id2);
     }
 
     /**
@@ -107,7 +107,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertCount(1, $owning->associatedEntities);
+        self::assertCount(1, $owning->associatedEntities);
     }
 
     /**
@@ -120,7 +120,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertCount(1, $inversed->associatedEntities);
+        self::assertCount(1, $inversed->associatedEntities);
     }
 
     /**
@@ -148,6 +148,6 @@ class ManyToManyTest extends OrmFunctionalTestCase
 
         // test association is removed
 
-        $this->assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany'));
+        self::assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany'));
     }
 }

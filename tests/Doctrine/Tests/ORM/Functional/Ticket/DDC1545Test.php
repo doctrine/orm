@@ -72,8 +72,8 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
     public function testLinkObjectsWithAssociationLoaded()
@@ -98,8 +98,8 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
     public function testUnlinkObjects()
@@ -119,7 +119,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
     public function testUnlinkObjectsWithAssociationLoaded()
@@ -142,7 +142,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
     public function testChangeLink()
@@ -164,8 +164,8 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 
     public function testChangeLinkWithAssociationLoaded()
@@ -190,7 +190,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 }

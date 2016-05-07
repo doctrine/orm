@@ -41,8 +41,8 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $eagerAppointment = $this->_em->find(DDC633Appointment::class, $app->id);
 
         // Eager loading of one to one leads to fetch-join
-        $this->assertNotInstanceOf(Proxy::class, $eagerAppointment->patient);
-        $this->assertTrue($this->_em->contains($eagerAppointment->patient));
+        self::assertNotInstanceOf(Proxy::class, $eagerAppointment->patient);
+        self::assertTrue($this->_em->contains($eagerAppointment->patient));
     }
 
     /**
@@ -66,8 +66,8 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $appointments = $this->_em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
 
         foreach ($appointments AS $eagerAppointment) {
-            $this->assertInstanceOf(Proxy::class, $eagerAppointment->patient);
-            $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
+            self::assertInstanceOf(Proxy::class, $eagerAppointment->patient);
+            self::assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
         }
     }
 }

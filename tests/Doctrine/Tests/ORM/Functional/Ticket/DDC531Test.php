@@ -31,12 +31,12 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $item3 = $this->_em->find(DDC531Item::class, $item2->id); // Load child item first (id 2)
         // parent will already be loaded, cannot be lazy because it has mapped subclasses and we would not
         // know which proxy type to put in.
-        $this->assertInstanceOf(DDC531Item::class, $item3->parent);
-        $this->assertNotInstanceOf(Proxy::class, $item3->parent);
+        self::assertInstanceOf(DDC531Item::class, $item3->parent);
+        self::assertNotInstanceOf(Proxy::class, $item3->parent);
         $item4 = $this->_em->find(DDC531Item::class, $item1->id); // Load parent item (id 1)
-        $this->assertNull($item4->parent);
-        $this->assertNotNull($item4->getChildren());
-        $this->assertTrue($item4->getChildren()->contains($item3)); // lazy-loads children
+        self::assertNull($item4->parent);
+        self::assertNotNull($item4->getChildren());
+        self::assertTrue($item4->getChildren()->contains($item3)); // lazy-loads children
     }
 }
 

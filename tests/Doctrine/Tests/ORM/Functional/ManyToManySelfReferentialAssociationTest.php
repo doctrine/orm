@@ -40,9 +40,9 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->_em->persist($this->firstProduct);
         $this->_em->flush();
 
-        $this->assertForeignKeysContain($this->firstProduct->getId(),
+        self::assertForeignKeysContain($this->firstProduct->getId(),
                                    $this->firstRelated->getId());
-        $this->assertForeignKeysContain($this->firstProduct->getId(),
+        self::assertForeignKeysContain($this->firstProduct->getId(),
                                    $this->secondRelated->getId());
     }
 
@@ -55,9 +55,9 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
         $this->_em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstProduct->getId(),
+        self::assertForeignKeysNotContain($this->firstProduct->getId(),
                                    $this->firstRelated->getId());
-        $this->assertForeignKeysContain($this->firstProduct->getId(),
+        self::assertForeignKeysContain($this->firstProduct->getId(),
                                    $this->secondRelated->getId());
     }
 
@@ -65,7 +65,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->_createLoadingFixture();
         $products = $this->_findProducts();
-        $this->assertLoadingOfOwningSide($products);
+        self::assertLoadingOfOwningSide($products);
     }
 
     public function testLazyLoadsOwningSide()
@@ -77,28 +77,28 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
         $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();
-        $this->assertLoadingOfOwningSide($products);
+        self::assertLoadingOfOwningSide($products);
     }
 
     public function assertLoadingOfOwningSide($products)
     {
         list ($firstProduct, $secondProduct) = $products;
-        $this->assertEquals(2, count($firstProduct->getRelated()));
-        $this->assertEquals(2, count($secondProduct->getRelated()));
+        self::assertEquals(2, count($firstProduct->getRelated()));
+        self::assertEquals(2, count($secondProduct->getRelated()));
 
         $categories = $firstProduct->getRelated();
         $firstRelatedBy = $categories[0]->getRelated();
         $secondRelatedBy = $categories[1]->getRelated();
 
-        $this->assertEquals(2, count($firstRelatedBy));
-        $this->assertEquals(2, count($secondRelatedBy));
+        self::assertEquals(2, count($firstRelatedBy));
+        self::assertEquals(2, count($secondRelatedBy));
 
-        $this->assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[1]);
-        $this->assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[1]);
+        self::assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[1]);
+        self::assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[1]);
 
-        $this->assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
+        self::assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
     }
 
     protected function _createLoadingFixture()

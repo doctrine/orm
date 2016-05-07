@@ -40,33 +40,33 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->close();
 
-        $this->assertArrayHasKey('convertToDatabaseValue', DDC2494TinyIntType::$calls);
-        $this->assertCount(3, DDC2494TinyIntType::$calls['convertToDatabaseValue']);
+        self::assertArrayHasKey('convertToDatabaseValue', DDC2494TinyIntType::$calls);
+        self::assertCount(3, DDC2494TinyIntType::$calls['convertToDatabaseValue']);
 
         $item = $this->_em->find(DDC2494Campaign::class, $campaign->getId());
 
-        $this->assertInstanceOf(DDC2494Campaign::class, $item);
-        $this->assertInstanceOf(DDC2494Currency::class, $item->getCurrency());
+        self::assertInstanceOf(DDC2494Campaign::class, $item);
+        self::assertInstanceOf(DDC2494Currency::class, $item->getCurrency());
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
-        $this->assertFalse($item->getCurrency()->__isInitialized());
+        self::assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
+        self::assertFalse($item->getCurrency()->__isInitialized());
 
-        $this->assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
-        $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
+        self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
+        self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
-        $this->assertInternalType('integer', $item->getCurrency()->getId());
-        $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        $this->assertFalse($item->getCurrency()->__isInitialized());
+        self::assertInternalType('integer', $item->getCurrency()->getId());
+        self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
+        self::assertFalse($item->getCurrency()->__isInitialized());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertInternalType('integer', $item->getCurrency()->getTemp());
-        $this->assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        $this->assertTrue($item->getCurrency()->__isInitialized());
+        self::assertInternalType('integer', $item->getCurrency()->getTemp());
+        self::assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
+        self::assertTrue($item->getCurrency()->__isInitialized());
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }
 

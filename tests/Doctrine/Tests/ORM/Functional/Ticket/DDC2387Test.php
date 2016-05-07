@@ -24,7 +24,7 @@ class DDC2387Test extends DatabaseDriverTestCase
 
         $metadata = $this->convertToClassMetadata([$product, $attributes], []);
 
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $metadata['Ddc2387Attributes']->generatorType);
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $metadata['Ddc2387Product']->generatorType);
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $metadata['Ddc2387Attributes']->generatorType);
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $metadata['Ddc2387Product']->generatorType);
     }
 }

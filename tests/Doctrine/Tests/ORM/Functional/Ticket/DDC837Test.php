@@ -53,36 +53,36 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Test Class1
         $e1 = $this->_em->find(DDC837Super::class, $c1->id);
 
-        $this->assertInstanceOf(DDC837Class1::class, $e1);
-        $this->assertEquals('Foo', $e1->title);
-        $this->assertEquals('Foo', $e1->description);
-        $this->assertInstanceOf(DDC837Aggregate::class, $e1->aggregate);
-        $this->assertEquals('test1', $e1->aggregate->getSysname());
+        self::assertInstanceOf(DDC837Class1::class, $e1);
+        self::assertEquals('Foo', $e1->title);
+        self::assertEquals('Foo', $e1->description);
+        self::assertInstanceOf(DDC837Aggregate::class, $e1->aggregate);
+        self::assertEquals('test1', $e1->aggregate->getSysname());
 
         // Test Class 2
         $e2 = $this->_em->find(DDC837Super::class, $c2->id);
 
-        $this->assertInstanceOf(DDC837Class2::class, $e2);
-        $this->assertEquals('Bar', $e2->title);
-        $this->assertEquals('Bar', $e2->description);
-        $this->assertEquals('Bar', $e2->text);
-        $this->assertInstanceOf(DDC837Aggregate::class, $e2->aggregate);
-        $this->assertEquals('test2', $e2->aggregate->getSysname());
+        self::assertInstanceOf(DDC837Class2::class, $e2);
+        self::assertEquals('Bar', $e2->title);
+        self::assertEquals('Bar', $e2->description);
+        self::assertEquals('Bar', $e2->text);
+        self::assertInstanceOf(DDC837Aggregate::class, $e2->aggregate);
+        self::assertEquals('test2', $e2->aggregate->getSysname());
 
         $all = $this->_em->getRepository(DDC837Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC837Class1) {
-                $this->assertEquals('Foo', $obj->title);
-                $this->assertEquals('Foo', $obj->description);
+                self::assertEquals('Foo', $obj->title);
+                self::assertEquals('Foo', $obj->description);
             } else if ($obj instanceof DDC837Class2) {
-                $this->assertTrue($e2 === $obj);
-                $this->assertEquals('Bar', $obj->title);
-                $this->assertEquals('Bar', $obj->description);
-                $this->assertEquals('Bar', $obj->text);
+                self::assertTrue($e2 === $obj);
+                self::assertEquals('Bar', $obj->title);
+                self::assertEquals('Bar', $obj->description);
+                self::assertEquals('Bar', $obj->text);
             } else if ($obj instanceof DDC837Class3) {
-                $this->assertEquals('Baz', $obj->apples);
-                $this->assertEquals('Baz', $obj->bananas);
+                self::assertEquals('Baz', $obj->apples);
+                self::assertEquals('Baz', $obj->bananas);
             } else {
                 $this->fail('Instance of DDC837Class1, DDC837Class2 or DDC837Class3 expected.');
             }

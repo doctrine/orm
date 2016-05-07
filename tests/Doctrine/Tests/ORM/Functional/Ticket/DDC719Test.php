@@ -21,7 +21,7 @@ class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $referenceSQL = 'SELECT g0_.name AS name_0, g0_.description AS description_1, g0_.id AS id_2, g1_.name AS name_3, g1_.description AS description_4, g1_.id AS id_5 FROM groups g0_ LEFT JOIN groups_groups g2_ ON g0_.id = g2_.parent_id LEFT JOIN groups g1_ ON g1_.id = g2_.child_id WHERE (SELECT COUNT(*) FROM groups_groups g3_ WHERE g3_.child_id = g0_.id) = 0';
 
-        $this->assertEquals(
+        self::assertEquals(
             strtolower($referenceSQL),
             strtolower($q->getSQL())
         );

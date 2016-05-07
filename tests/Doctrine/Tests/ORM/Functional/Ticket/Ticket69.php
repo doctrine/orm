@@ -82,13 +82,13 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $res = $query->getResult();
         $lemma = $res[0];
 
-        $this->assertEquals('foo', $lemma->getLemma());
-        $this->assertInstanceOf(Lemma::class, $lemma);
+        self::assertEquals('foo', $lemma->getLemma());
+        self::assertInstanceOf(Lemma::class, $lemma);
         $relations = $lemma->getRelations();
 
         foreach($relations as $relation) {
-            $this->assertInstanceOf(Relation::class, $relation);
-            $this->assertTrue($relation->getType()->getType() != '');
+            self::assertInstanceOf(Relation::class, $relation);
+            self::assertTrue($relation->getType()->getType() != '');
         }
 
         $this->_em->clear();

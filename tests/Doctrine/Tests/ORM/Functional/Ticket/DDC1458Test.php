@@ -27,7 +27,7 @@ class DDC1258Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // So here the value is 3
-        $this->assertEquals(3, $testEntity->getValue());
+        self::assertEquals(3, $testEntity->getValue());
 
         $test = $this->_em->getRepository(TestEntity::class)->find(1);
 
@@ -35,19 +35,19 @@ class DDC1258Test extends OrmFunctionalTestCase
         $test->setValue(5);
 
         // So here the value is 5
-        $this->assertEquals(5, $test->getValue());
+        self::assertEquals(5, $test->getValue());
 
         // Get the additional entity
         $additional = $test->getAdditional();
 
         // Still 5..
-        $this->assertEquals(5, $test->getValue());
+        self::assertEquals(5, $test->getValue());
 
         // Force the proxy to load
         $additional->getBool();
 
         // The value should still be 5
-        $this->assertEquals(5, $test->getValue());
+        self::assertEquals(5, $test->getValue());
     }
 }
 

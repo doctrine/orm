@@ -35,8 +35,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             'baz' => CTIBaz::class,
         ];
 
-        $this->assertEquals(3, count($class->discriminatorMap));
-        $this->assertEquals($expectedMap, $class->discriminatorMap);
+        self::assertEquals(3, count($class->discriminatorMap));
+        self::assertEquals($expectedMap, $class->discriminatorMap);
     }
 
     /**
@@ -62,18 +62,18 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
-        $this->assertEquals(['language', 'article'], $class->identifier);
-        $this->assertArrayHasKey('article', $class->associationMappings);
+        self::assertEquals(['language', 'article'], $class->identifier);
+        self::assertArrayHasKey('article', $class->associationMappings);
 
-        $this->assertArrayHasKey('id', $class->associationMappings['article']);
-        $this->assertTrue($class->associationMappings['article']['id']);
+        self::assertArrayHasKey('id', $class->associationMappings['article']);
+        self::assertTrue($class->associationMappings['article']['id']);
     }
 
     public function testEmbeddableMapping()
     {
         $class = $this->createClassMetadata(Name::class);
 
-        $this->assertEquals(true, $class->isEmbeddedClass);
+        self::assertEquals(true, $class->isEmbeddedClass);
     }
 
     /**
@@ -89,7 +89,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
         $factory->setEntityManager($em);
 
-        $this->assertEquals(
+        self::assertEquals(
             '__prefix__',
             $factory->getMetadataFor(DDC3293UserPrefixed::class)
                 ->embeddedClasses['address']['columnPrefix']
@@ -109,7 +109,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
         $factory->setEntityManager($em);
 
-        $this->assertFalse(
+        self::assertFalse(
             $factory->getMetadataFor(DDC3293User::class)
                 ->embeddedClasses['address']['columnPrefix']
         );
@@ -119,7 +119,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $class = $this->createClassMetadata(Person::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => [
                     'class' => Name::class,
@@ -155,7 +155,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $dom->load($xmlMappingFile);
 
-        $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
+        self::assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
     static public function dataValidSchema()

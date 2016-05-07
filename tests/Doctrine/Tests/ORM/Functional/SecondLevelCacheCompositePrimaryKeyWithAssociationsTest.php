@@ -57,9 +57,9 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        $this->assertEquals("Italy", $admin1Rome->country->name);
-        $this->assertEquals(2, count($admin1Rome->names));
-        $this->assertEquals($queries + 3, $this->getCurrentQueryCount());
+        self::assertEquals("Italy", $admin1Rome->country->name);
+        self::assertEquals(2, count($admin1Rome->names));
+        self::assertEquals($queries + 3, $this->getCurrentQueryCount());
 
         $this->_em->clear();
 
@@ -67,9 +67,9 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        $this->assertEquals("Italy", $admin1Rome->country->name);
-        $this->assertEquals(2, count($admin1Rome->names));
-        $this->assertEquals($queries, $this->getCurrentQueryCount());
+        self::assertEquals("Italy", $admin1Rome->country->name);
+        self::assertEquals(2, count($admin1Rome->names));
+        self::assertEquals($queries, $this->getCurrentQueryCount());
     }
 
     private function evictRegions()

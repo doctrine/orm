@@ -31,8 +31,8 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT d FROM Doctrine\Tests\Models\Generic\DecimalModel d";
         $decimal = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals(0.15, $decimal->decimal);
-        $this->assertEquals(0.1515, $decimal->highScale);
+        self::assertEquals(0.15, $decimal->decimal);
+        self::assertEquals(0.1515, $decimal->highScale);
     }
 
     /**
@@ -51,7 +51,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true";
         $bool = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertTrue($bool->booleanField);
+        self::assertTrue($bool->booleanField);
 
         $bool->booleanField = false;
 
@@ -61,7 +61,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false";
         $bool = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertFalse($bool->booleanField);
+        self::assertFalse($bool->booleanField);
     }
 
     public function testArray()
@@ -77,7 +77,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT s FROM Doctrine\Tests\Models\Generic\SerializationModel s";
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals(["foo" => "bar", "bar" => "baz"], $serialize->array);
+        self::assertEquals(["foo" => "bar", "bar" => "baz"], $serialize->array);
     }
 
     public function testObject()
@@ -92,7 +92,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT s FROM Doctrine\Tests\Models\Generic\SerializationModel s";
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertInstanceOf('stdClass', $serialize->object);
+        self::assertInstanceOf('stdClass', $serialize->object);
     }
 
     public function testDate()
@@ -106,8 +106,8 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTimeDb->date);
-        $this->assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
+        self::assertInstanceOf('DateTime', $dateTimeDb->date);
+        self::assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
     }
 
     public function testDateTime()
@@ -121,12 +121,11 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTimeDb->datetime);
-        $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
+        self::assertInstanceOf('DateTime', $dateTimeDb->datetime);
+        self::assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
 
-        $articles = $this->_em->getRepository( DateTimeModel::class )->findBy( ['datetime' => new \DateTime( "now" )]
-        );
-        $this->assertEquals( 0, count( $articles ) );
+        $articles = $this->_em->getRepository(DateTimeModel::class)->findBy(['datetime' => new \DateTime( "now" )]);
+        self::assertEquals( 0, count( $articles ) );
     }
 
     public function testDqlQueryBindDateTimeInstance()
@@ -175,7 +174,7 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTime->time);
-        $this->assertEquals('19:27:20', $dateTime->time->format('H:i:s'));
+        self::assertInstanceOf('DateTime', $dateTime->time);
+        self::assertEquals('19:27:20', $dateTime->time->format('H:i:s'));
     }
 }

@@ -44,8 +44,8 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        $this->assertEquals(1, count($users));
-        $this->assertSame($user, $users[0]);
+        self::assertEquals(1, count($users));
+        self::assertSame($user, $users[0]);
     }
 }
 

@@ -42,9 +42,9 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
         $parents = count($child->extends);
-        $this->assertEquals(1, $parents);
+        self::assertEquals(1, $parents);
         foreach ($child->extends AS $parent) {
-            $this->assertEquals($role->getRoleID(), $parent->getRoleID());
+            self::assertEquals($role->getRoleID(), $parent->getRoleID());
         }
     }
 
@@ -64,21 +64,21 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $childRepository = $this->_em->getRepository(get_class($child));
 
         $parent = $parentRepository->find($parent->id);
-        $this->assertEquals(1, count($parent->childs));
-        $this->assertEquals(0, count($parent->childs[0]->childs()));
+        self::assertEquals(1, count($parent->childs));
+        self::assertEquals(0, count($parent->childs[0]->childs()));
 
         $child = $parentRepository->findOneBy(["id" => $child->id]);
-        $this->assertSame($parent->childs[0], $child);
+        self::assertSame($parent->childs[0], $child);
 
         $this->_em->clear();
 
         $child = $parentRepository->find($child->id);
-        $this->assertEquals(0, count($child->childs));
+        self::assertEquals(0, count($child->childs));
 
         $this->_em->clear();
 
         $child = $childRepository->find($child->id);
-        $this->assertEquals(0, count($child->childs));
+        self::assertEquals(0, count($child->childs));
     }
 }
 

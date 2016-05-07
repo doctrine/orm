@@ -34,14 +34,14 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $querySecond    = $repository->createNamedQuery('second');
 
 
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p', $queryAll->getDQL());
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p', $queryAll->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
 
 
-        $this->assertEquals(sizeof($queryAll->getResult()), 2);
-        $this->assertEquals(sizeof($queryFirst->getResult()), 1);
-        $this->assertEquals(sizeof($querySecond->getResult()), 1);
+        self::assertEquals(sizeof($queryAll->getResult()), 2);
+        self::assertEquals(sizeof($queryFirst->getResult()), 1);
+        self::assertEquals(sizeof($querySecond->getResult()), 1);
     }
 
 

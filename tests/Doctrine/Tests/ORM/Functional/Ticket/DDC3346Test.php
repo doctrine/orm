@@ -26,7 +26,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ['username' => 'bwoogy']
         );
 
-        $this->assertCount(2, $author->articles);
+        self::assertCount(2, $author->articles);
     }
 
     public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection()
@@ -38,8 +38,8 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
             1
         );
 
-        $this->assertCount(1, $authors);
-        $this->assertCount(2, $authors[0]->articles);
+        self::assertCount(1, $authors);
+        self::assertCount(2, $authors[0]->articles);
     }
 
     public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection()
@@ -52,8 +52,8 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
             0 // using an explicitly defined offset
         );
 
-        $this->assertCount(1, $authors);
-        $this->assertCount(2, $authors[0]->articles);
+        self::assertCount(1, $authors);
+        self::assertCount(2, $authors[0]->articles);
     }
 
     private function loadAuthorFixture()

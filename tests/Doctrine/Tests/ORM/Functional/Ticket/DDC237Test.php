@@ -39,26 +39,26 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $x2 = $this->_em->find(get_class($x), $x->id); // proxy injected for Y
-        $this->assertInstanceOf(Proxy::class, $x2->y);
-        $this->assertFalse($x2->y->__isInitialized__);
+        self::assertInstanceOf(Proxy::class, $x2->y);
+        self::assertFalse($x2->y->__isInitialized__);
 
         // proxy for Y is in identity map
 
         $z2 = $this->_em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
-        $this->assertInstanceOf(Proxy::class, $z2->y);
-        $this->assertTrue($z2->y->__isInitialized__);
-        $this->assertEquals('Y', $z2->y->data);
-        $this->assertEquals($y->id, $z2->y->id);
+        self::assertInstanceOf(Proxy::class, $z2->y);
+        self::assertTrue($z2->y->__isInitialized__);
+        self::assertEquals('Y', $z2->y->data);
+        self::assertEquals($y->id, $z2->y->id);
 
         // since the Y is the same, the instance from the identity map is
         // used, even if it is a proxy.
 
-        $this->assertNotSame($x, $x2);
-        $this->assertNotSame($z, $z2);
-        $this->assertSame($z2->y, $x2->y);
-        $this->assertInstanceOf(Proxy::class, $z2->y);
+        self::assertNotSame($x, $x2);
+        self::assertNotSame($z, $z2);
+        self::assertSame($z2->y, $x2->y);
+        self::assertInstanceOf(Proxy::class, $z2->y);
 
     }
 }

@@ -33,19 +33,19 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     public function testSelectConditionStatementEq()
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('admin1', 1, [], Comparison::EQ);
-        $this->assertEquals('t0.admin1 = ? AND t0.country = ?', $statement);
+        self::assertEquals('t0.admin1 = ? AND t0.country = ?', $statement);
     }
 
     public function testSelectConditionStatementEqNull()
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::IS);
-        $this->assertEquals('t0.admin1 IS NULL AND t0.country IS NULL', $statement);
+        self::assertEquals('t0.admin1 IS NULL AND t0.country IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull()
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::NEQ);
-        $this->assertEquals('t0.admin1 IS NOT NULL AND t0.country IS NOT NULL', $statement);
+        self::assertEquals('t0.admin1 IS NOT NULL AND t0.country IS NOT NULL', $statement);
     }
 
     /**

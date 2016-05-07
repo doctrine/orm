@@ -67,15 +67,15 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Test the first phone.  The assertion actually failed because original entity data is not set properly.
         // This was because it is also set as MainPhone and that one is created as a proxy, not the
         // original object when the find on Client is called. However loading proxies did not work correctly.
-        $this->assertInstanceOf(DDC440Phone::class, $p1);
+        self::assertInstanceOf(DDC440Phone::class, $p1);
         $originalData = $uw->getOriginalEntityData($p1);
-        $this->assertEquals($phone->getNumber(), $originalData['number']);
+        self::assertEquals($phone->getNumber(), $originalData['number']);
 
 
         //If you comment out previous test, this one should pass
-        $this->assertInstanceOf(DDC440Phone::class, $p2);
+        self::assertInstanceOf(DDC440Phone::class, $p2);
         $originalData = $uw->getOriginalEntityData($p2);
-        $this->assertEquals($phone2->getNumber(), $originalData['number']);
+        self::assertEquals($phone2->getNumber(), $originalData['number']);
     }
 
 }

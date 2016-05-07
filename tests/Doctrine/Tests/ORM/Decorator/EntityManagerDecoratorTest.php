@@ -62,6 +62,6 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
 
         call_user_func_array([$stub, 'with'], $parameters);
 
-        $this->assertSame('INNER VALUE FROM ' . $method, call_user_func_array([$this->decorator, $method], $parameters));
+        self::assertSame('INNER VALUE FROM ' . $method, call_user_func_array([$this->decorator, $method], $parameters));
     }
 }

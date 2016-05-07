@@ -61,7 +61,7 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $builder->getQuery()
             ->getArrayResult();
 
-        $this->assertCount(2, $result[0]['metadata']['metadataCategories']);
+        self::assertCount(2, $result[0]['metadata']['metadataCategories']);
     }
 }
 

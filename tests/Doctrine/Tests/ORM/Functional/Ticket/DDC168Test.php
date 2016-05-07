@@ -53,10 +53,10 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->setParameter(1, "Foo");
         $theEmployee = $q->getSingleResult();
 
-        $this->assertEquals("bar", $theEmployee->getDepartment());
-        $this->assertEquals("Foo", $theEmployee->getName());
-        $this->assertEquals(1000, $theEmployee->getSalary());
-        $this->assertInstanceOf(CompanyEmployee::class, $theEmployee);
-        $this->assertInstanceOf(CompanyEmployee::class, $theEmployee->getSpouse());
+        self::assertEquals("bar", $theEmployee->getDepartment());
+        self::assertEquals("Foo", $theEmployee->getName());
+        self::assertEquals(1000, $theEmployee->getSalary());
+        self::assertInstanceOf(CompanyEmployee::class, $theEmployee);
+        self::assertInstanceOf(CompanyEmployee::class, $theEmployee->getSpouse());
     }
 }

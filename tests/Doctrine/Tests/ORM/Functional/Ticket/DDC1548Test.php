@@ -33,7 +33,7 @@ class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $obt = $this->_em->find(DDC1548Rel::class, $rel->id);
 
-        $this->assertNull($obt->e2);
+        self::assertNull($obt->e2);
     }
 }
 

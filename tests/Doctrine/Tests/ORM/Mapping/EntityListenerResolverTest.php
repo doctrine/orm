@@ -27,8 +27,8 @@ class EntityListenerResolverTest extends OrmTestCase
         $className  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
         $object     = $this->resolver->resolve($className);
 
-        $this->assertInstanceOf($className, $object);
-        $this->assertSame($object, $this->resolver->resolve($className));
+        self::assertInstanceOf($className, $object);
+        self::assertSame($object, $this->resolver->resolve($className));
     }
 
     public function testRegisterAndResolve()
@@ -38,7 +38,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
         $this->resolver->register($object);
 
-        $this->assertSame($object, $this->resolver->resolve($className));
+        self::assertSame($object, $this->resolver->resolve($className));
     }
 
     public function testClearOne()
@@ -49,19 +49,19 @@ class EntityListenerResolverTest extends OrmTestCase
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
 
-        $this->assertInstanceOf($className1, $obj1);
-        $this->assertInstanceOf($className2, $obj2);
+        self::assertInstanceOf($className1, $obj1);
+        self::assertInstanceOf($className2, $obj2);
 
-        $this->assertSame($obj1, $this->resolver->resolve($className1));
-        $this->assertSame($obj2, $this->resolver->resolve($className2));
+        self::assertSame($obj1, $this->resolver->resolve($className1));
+        self::assertSame($obj2, $this->resolver->resolve($className2));
 
         $this->resolver->clear($className1);
 
-        $this->assertInstanceOf($className1, $this->resolver->resolve($className1));
-        $this->assertInstanceOf($className2, $this->resolver->resolve($className2));
+        self::assertInstanceOf($className1, $this->resolver->resolve($className1));
+        self::assertInstanceOf($className2, $this->resolver->resolve($className2));
 
-        $this->assertNotSame($obj1, $this->resolver->resolve($className1));
-        $this->assertSame($obj2, $this->resolver->resolve($className2));
+        self::assertNotSame($obj1, $this->resolver->resolve($className1));
+        self::assertSame($obj2, $this->resolver->resolve($className2));
     }
 
     public function testClearAll()
@@ -72,19 +72,19 @@ class EntityListenerResolverTest extends OrmTestCase
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
 
-        $this->assertInstanceOf($className1, $obj1);
-        $this->assertInstanceOf($className2, $obj2);
+        self::assertInstanceOf($className1, $obj1);
+        self::assertInstanceOf($className2, $obj2);
         
-        $this->assertSame($obj1, $this->resolver->resolve($className1));
-        $this->assertSame($obj2, $this->resolver->resolve($className2));
+        self::assertSame($obj1, $this->resolver->resolve($className1));
+        self::assertSame($obj2, $this->resolver->resolve($className2));
 
         $this->resolver->clear();
 
-        $this->assertInstanceOf($className1, $this->resolver->resolve($className1));
-        $this->assertInstanceOf($className2, $this->resolver->resolve($className2));
+        self::assertInstanceOf($className1, $this->resolver->resolve($className1));
+        self::assertInstanceOf($className2, $this->resolver->resolve($className2));
         
-        $this->assertNotSame($obj1, $this->resolver->resolve($className1));
-        $this->assertNotSame($obj2, $this->resolver->resolve($className2));
+        self::assertNotSame($obj1, $this->resolver->resolve($className1));
+        self::assertNotSame($obj2, $this->resolver->resolve($className2));
     }
 
     /**

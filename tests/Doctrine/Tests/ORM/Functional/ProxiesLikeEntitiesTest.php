@@ -65,12 +65,12 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $proxy->name = 'Marco';
         $this->_em->persist($proxy);
         $this->_em->flush();
-        $this->assertNotNull($proxy->getId());
+        self::assertNotNull($proxy->getId());
         $proxy->name = 'Marco Pivetta';
         $this->_em->getUnitOfWork()
             ->computeChangeSet($this->_em->getClassMetadata(CmsUser::class), $proxy);
-        $this->assertNotEmpty($this->_em->getUnitOfWork()->getEntityChangeSet($proxy));
-        $this->assertEquals('Marco Pivetta', $this->_em->find(CmsUser::class, $proxy->getId())->name);
+        self::assertNotEmpty($this->_em->getUnitOfWork()->getEntityChangeSet($proxy));
+        self::assertEquals('Marco Pivetta', $this->_em->find(CmsUser::class, $proxy->getId())->name);
         $this->_em->remove($proxy);
         $this->_em->flush();
     }
@@ -80,12 +80,12 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $userId = $this->user->getId();
         /* @var $uninitializedProxy CmsUserProxy */
         $uninitializedProxy = $this->_em->getReference(CmsUser::class, $userId);
-        $this->assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
+        self::assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
 
         $this->_em->persist($uninitializedProxy);
         $this->_em->flush($uninitializedProxy);
-        $this->assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
-        $this->assertEquals($userId, $uninitializedProxy->getId());
+        self::assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
+        self::assertEquals($userId, $uninitializedProxy->getId());
         $this->_em->remove($uninitializedProxy);
         $this->_em->flush();
     }
@@ -103,7 +103,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u = ?1')
             ->setParameter(1, $proxy)
             ->getSingleResult();
-        $this->assertSame($this->user->getId(), $result->getId());
+        self::assertSame($this->user->getId(), $result->getId());
         $this->_em->remove($proxy);
         $this->_em->flush();
     }
@@ -114,23 +114,22 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     public function testFindWithProxyName()
     {
         $result = $this->_em->find(CmsUserProxy::class, $this->user->getId());
-        $this->assertSame($this->user->getId(), $result->getId());
+        self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
 
         $result = $this->_em->getReference(CmsUserProxy::class, $this->user->getId());
-        $this->assertSame($this->user->getId(), $result->getId());
+        self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
 
         $result = $this->_em->getRepository(CmsUserProxy::class)->findOneBy(['username' => $this->user->username]);
-        $this->assertSame($this->user->getId(), $result->getId());
+        self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
 
         $result = $this->_em
             ->createQuery('SELECT u FROM Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1')
             ->setParameter(1, $this->user->getId())
             ->getSingleResult();
-
-        $this->assertSame($this->user->getId(), $result->getId());
+        self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
     }
 

@@ -31,10 +31,10 @@ class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->assertInstanceOf(Collection::class, $user->articles);
+        self::assertInstanceOf(Collection::class, $user->articles);
         $this->_em->refresh($article);
-        $this->assertTrue($article !== $user->articles, "The article should not be replaced on the inverse side of the relation.");
-        $this->assertInstanceOf(Collection::class, $user->articles);
+        self::assertTrue($article !== $user->articles, "The article should not be replaced on the inverse side of the relation.");
+        self::assertInstanceOf(Collection::class, $user->articles);
     }
 
     public function testRefreshOneToOne()
@@ -56,7 +56,7 @@ class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->refresh($address);
-        $this->assertSame($user, $address->user);
-        $this->assertSame($user->address, $address);
+        self::assertSame($user, $address->user);
+        self::assertSame($user->address, $address);
     }
 }

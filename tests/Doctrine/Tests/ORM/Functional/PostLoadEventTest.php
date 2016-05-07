@@ -218,8 +218,8 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $qb->addSelect('email');
         $qb->getQuery()->getSingleResult();
 
-        $this->assertTrue($checkerListener->checked, 'postLoad event is not invoked');
-        $this->assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
+        self::assertTrue($checkerListener->checked, 'postLoad event is not invoked');
+        self::assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
     }
 
     /**
@@ -232,8 +232,8 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $eventManager->addEventListener([Events::postLoad], $listener);
 
         $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
-        $this->assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
+        self::assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
+        self::assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
     }
 
     private function loadFixture()

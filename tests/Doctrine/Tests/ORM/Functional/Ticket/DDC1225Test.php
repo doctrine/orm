@@ -30,7 +30,7 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
            ->where('te1.testEntity2 = ?1')
            ->setParameter(1, 0);
 
-        $this->assertEquals(
+        self::assertEquals(
             strtolower('SELECT t0_.test_entity2_id AS test_entity2_id_0 FROM te1 t0_ WHERE t0_.test_entity2_id = ?'),
             strtolower($qb->getQuery()->getSQL())
         );

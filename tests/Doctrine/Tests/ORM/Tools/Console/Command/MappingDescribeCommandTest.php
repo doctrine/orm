@@ -61,8 +61,8 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
 
         $display = $this->tester->getDisplay();
-        $this->assertContains(AttractionInfo::class, $display);
-        $this->assertContains('Root entity name', $display);
+        self::assertContains(AttractionInfo::class, $display);
+        self::assertContains('Root entity name', $display);
     }
 
     /**
