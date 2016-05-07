@@ -83,6 +83,9 @@ class PhpExporter extends AbstractExporter
         }
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
+            // We need to override the value we'll blindly var_export() later
+            $fieldMapping['type'] = $fieldMapping['type']->getName();
+
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
 

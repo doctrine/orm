@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -29,7 +29,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $reader = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 
@@ -54,8 +54,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->_loadDriver();
 
-        $annotationDriver->loadMetadataForClass(Mapping\InvalidColumn::class, $cm);
-        $this->assertEquals('string', $cm->fieldMappings['id']['type']);
+        $annotationDriver->loadMetadataForClass(Annotation\InvalidColumn::class, $cm);
+        $this->assertEquals('string', $cm->fieldMappings['id']['type']->getName());
     }
 
     /**

@@ -728,7 +728,7 @@ class YamlDriver extends FileDriver
         if (isset($column['type'])) {
             $params = explode('(', $column['type']);
 
-            $column['type']  = $params[0];
+            $column['type']  = trim($params[0]);
             $mapping['type'] = $column['type'];
 
             if (isset($params[1])) {

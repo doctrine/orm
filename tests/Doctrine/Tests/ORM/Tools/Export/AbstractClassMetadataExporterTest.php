@@ -182,16 +182,16 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
         $this->assertEquals('id', $class->fieldMappings['id']['fieldName']);
-        $this->assertEquals('integer', $class->fieldMappings['id']['type']);
+        $this->assertEquals('integer', $class->fieldMappings['id']['type']->getName());
         $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
 
         $this->assertEquals('name', $class->fieldMappings['name']['fieldName']);
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertEquals('string', $class->fieldMappings['name']['type']->getName());
         $this->assertEquals(50, $class->fieldMappings['name']['length']);
         $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
 
         $this->assertEquals('email', $class->fieldMappings['email']['fieldName']);
-        $this->assertEquals('string', $class->fieldMappings['email']['type']);
+        $this->assertEquals('string', $class->fieldMappings['email']['type']->getName());
         $this->assertEquals('user_email', $class->fieldMappings['email']['columnName']);
         $this->assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
 

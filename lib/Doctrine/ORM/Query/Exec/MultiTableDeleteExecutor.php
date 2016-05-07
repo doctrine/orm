@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -106,7 +105,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'type'    => PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em),
             ];
         }
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('

@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadata instances.
  *
@@ -737,18 +738,19 @@ public function __construct(<params>)
         }
 
         foreach ($fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) &&
-                isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-            ) {
+            if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }
 
-            $paramTypes[] = $this->getType($fieldMapping['type']) . (!empty($fieldMapping['nullable']) ? '|null' : '');
-            $param = '$' . $fieldMapping['fieldName'];
+            $fieldType  = $fieldMapping['type']->getName();
+            $mappedType = $this->getType($fieldType);
+            $param      = '$' . $fieldMapping['fieldName'];
+
+            $paramTypes[] = $mappedType . (!empty($fieldMapping['nullable']) ? '|null' : '');
             $paramVariables[] = $param;
 
-            if ($fieldMapping['type'] === 'datetime') {
-                $param = $this->getType($fieldMapping['type']) . ' ' . $param;
+            if ($fieldType === 'datetime') {
+                $param = $mappedType . ' ' . $param;
             }
 
             if (!empty($fieldMapping['nullable'])) {
@@ -1094,11 +1096,14 @@ public function __construct(<params>)
     protected function generateTableConstraints($constraintName, array $constraints)
     {
         $annotations = [];
+
         foreach ($constraints as $name => $constraint) {
             $columns = [];
+
             foreach ($constraint['columns'] as $column) {
                 $columns[] = '"' . $column . '"';
             }
+
             $annotations[] = '@' . $this->annotationsPrefix . $constraintName . '(name="' . $name . '", columns={' . implode(', ', $columns) . '})';
         }
 
@@ -1126,9 +1131,13 @@ public function __construct(<params>)
     {
         if ($metadata->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumn = $metadata->discriminatorColumn;
-            $columnDefinition = 'name="' . $discrColumn['name']
-                . '", type="' . $discrColumn['type']
-                . '", length=' . $discrColumn['length'];
+
+            $columnDefinition = sprintf(
+                'name="%s", type="%s", length=%d',
+                $discrColumn['name'],
+                $discrColumn['type']->getName(),
+                $discrColumn['length']
+            );
 
             return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
         }
@@ -1162,24 +1171,20 @@ public function __construct(<params>)
         $methods = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) &&
-                isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-            ) {
+            if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }
 
+            $fieldType = $fieldMapping['type']->getName();
             $nullableField = $this->nullableFieldExpression($fieldMapping);
 
-            if (( ! isset($fieldMapping['id']) ||
-                    ! $fieldMapping['id'] ||
-                    $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE
-                ) && (! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)
-                && $code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)
-            ) {
+            if (( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] || $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) &&
+                ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
+                $code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldType, $nullableField)) {
                 $methods[] = $code;
             }
 
-            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)) {
+            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldType, $nullableField)) {
                 $methods[] = $code;
             }
         }
@@ -1625,10 +1630,13 @@ public function __construct(<params>)
      */
     protected function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadata $metadata)
     {
+        $fieldType = $fieldMapping['type']->getName();
+
         $lines = [];
+
         $lines[] = $this->spaces . '/**';
         $lines[] = $this->spaces . ' * @var '
-            . $this->getType($fieldMapping['type'])
+            . $this->getType($fieldType)
             . ($this->nullableFieldExpression($fieldMapping) ? '|null' : '');
 
         if ($this->generateAnnotations) {
@@ -1640,7 +1648,7 @@ public function __construct(<params>)
             }
 
             if (isset($fieldMapping['type'])) {
-                $column[] = 'type="' . $fieldMapping['type'] . '"';
+                $column[] = 'type="' . $fieldType . '"';
             }
 
             if (isset($fieldMapping['length'])) {

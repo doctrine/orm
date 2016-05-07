@@ -20,15 +20,15 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
-use Doctrine\Instantiator\Instantiator;
-use InvalidArgumentException;
-use RuntimeException;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use ReflectionClass;
 use Doctrine\Common\ClassLoader;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\CacheException;
+use InvalidArgumentException;
+use ReflectionClass;
+use RuntimeException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -639,7 +639,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function __construct($entityName, NamingStrategy $namingStrategy = null)
     {
-        $this->name = $entityName;
+        $this->name           = $entityName;
         $this->rootEntityName = $entityName;
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
         $this->instantiator   = new Instantiator();
@@ -1363,9 +1363,12 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::missingFieldName($this->name);
         }
 
-        if ( ! isset($mapping['type'])) {
-            // Default to string
-            $mapping['type'] = 'string';
+        $type = isset($mapping['type'])
+            ? $mapping['type']
+            : 'string'; // Default to string
+
+        if ( ! ($type instanceof Type)) {
+            $mapping['type'] = Type::getType($type);
         }
 
         // Complete fieldName and columnName mapping
@@ -1400,9 +1403,13 @@ class ClassMetadata implements ClassMetadataInterface
             }
         }
 
-        if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
+        if ($mapping['type']->canRequireSQLConversion()) {
             if (isset($mapping['id']) && true === $mapping['id']) {
-                 throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
+                 throw MappingException::sqlConversionNotAllowedForIdentifiers(
+                    $this->name,
+                    $mapping['fieldName'],
+                    $mapping['type']
+                );
             }
         }
     }
@@ -2152,9 +2159,15 @@ class ClassMetadata implements ClassMetadataInterface
             $overrideMapping['id'] = $mapping['id'];
         }
 
-        if ( ! isset($overrideMapping['type'])) {
-            $overrideMapping['type'] = $mapping['type'];
+        $type = isset($overrideMapping['type'])
+            ? $overrideMapping['type']
+            : $mapping['type'];
+
+        if ( ! ($type instanceof Type)) {
+            $type = Type::getType($type);
         }
+
+        $overrideMapping['type'] = $type;
 
         if ( ! isset($overrideMapping['fieldName'])) {
             $overrideMapping['fieldName'] = $mapping['fieldName'];
@@ -2464,6 +2477,7 @@ class ClassMetadata implements ClassMetadataInterface
 
                         if (!isset($field['column'])) {
                             $fieldName = $field['name'];
+
                             if (strpos($fieldName, '.')) {
                                 list(, $fieldName) = explode('.', $fieldName);
                             }
@@ -2704,12 +2718,16 @@ class ClassMetadata implements ClassMetadataInterface
                 $columnDef['fieldName'] = $columnDef['name'];
             }
 
-            if ( ! isset($columnDef['type'])) {
-                $columnDef['type'] = "string";
+            $type = isset($columnDef['type'])
+                ? $columnDef['type']
+                : 'string';
+
+            if ( ! ($type instanceof Type)) {
+                $columnDef['type'] = Type::getType($type);
             }
 
-            if (in_array($columnDef['type'], ["boolean", "array", "object", "datetime", "time", "date"])) {
-                throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
+            if (in_array($columnDef['type']->getName(), ["boolean", "array", "object", "datetime", "time", "date"])) {
+                throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']->getName());
             }
 
             $this->discriminatorColumn = $columnDef;
