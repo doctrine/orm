@@ -390,8 +390,8 @@ abstract class AbstractHydrator
                 $columnInfo    = [
                     'isIdentifier' => \in_array($fieldName, $classMetadata->identifier, true),
                     'fieldName'    => $fieldName,
-                    'type'         => Type::getType($fieldMapping['type']),
-                    'dqlAlias'     => $ownerMap,
+                    'type'         => $fieldMapping['type'],
+                    'dqlAlias'     => $this->_rsm->columnOwnerMap[$key],
                 ];
 
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
@@ -416,7 +416,7 @@ abstract class AbstractHydrator
                     'isScalar'             => true,
                     'isNewObjectParameter' => true,
                     'fieldName'            => $this->_rsm->scalarMappings[$key],
-                    'type'                 => Type::getType($this->_rsm->typeMappings[$key]),
+                    'type'                 => $this->_rsm->typeMappings[$key],
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
                     'class'                => new \ReflectionClass($mapping['className']),
@@ -426,16 +426,13 @@ abstract class AbstractHydrator
                 return $this->_cache[$key] = [
                     'isScalar'  => true,
                     'fieldName' => $this->_rsm->scalarMappings[$key],
-                    'type'      => Type::getType($this->_rsm->typeMappings[$key]),
+                    'type'      => $this->_rsm->typeMappings[$key],
                 ];
 
             case (isset($this->_rsm->metaMappings[$key])):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                 $fieldName = $this->_rsm->metaMappings[$key];
                 $dqlAlias  = $this->_rsm->columnOwnerMap[$key];
-                $type      = isset($this->_rsm->typeMappings[$key])
-                    ? Type::getType($this->_rsm->typeMappings[$key])
-                    : null;
 
                 // Cache metadata fetch
                 $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
@@ -444,7 +441,7 @@ abstract class AbstractHydrator
                     'isIdentifier' => isset($this->_rsm->isIdentifierColumn[$dqlAlias][$key]),
                     'isMetaColumn' => true,
                     'fieldName'    => $fieldName,
-                    'type'         => $type,
+                    'type'         => $this->_rsm->typeMappings[$key],
                     'dqlAlias'     => $dqlAlias,
                 ];
         }

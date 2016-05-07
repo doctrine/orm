@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -18,19 +19,21 @@ use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
-     * @var ResultSetMapping
-     */
-    private $_rsm;
-
-    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $_em;
 
-    protected function setUp() {
+    /**
+     * @var ResultSetMapping
+     */
+    private $_rsm;
+
+    protected function setUp()
+    {
         parent::setUp();
+
+        $this->_em  = $this->_getTestEntityManager();
         $this->_rsm = new ResultSetMapping;
-        $this->_em = $this->_getTestEntityManager();
     }
 
     /**
@@ -84,8 +87,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->_rsm->addIndexByColumn('id', 'id');
         $this->_rsm->addIndexBy('username', 'username');
         $this->_rsm->addIndexByScalar('sclr0');
-        $this->_rsm->addScalarResult('sclr0', 'numPhones');
-        $this->_rsm->addMetaResult('a', 'user_id', 'user_id');
+        $this->_rsm->addScalarResult('sclr0', 'numPhones', Type::getType('integer'));
+        $this->_rsm->addMetaResult('a', 'user_id', 'user_id', false, Type::getType('integer'));
 
         $this->assertTrue($rms->hasIndexBy('id'));
         $this->assertTrue($rms->isFieldResult('id'));
@@ -276,8 +279,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->_rsm->addEntityResult(LegacyUser::class, 'u');
         $this->_rsm->addJoinedEntityResult(LegacyUserReference::class, 'lu', 'u', '_references');
-        $this->_rsm->addMetaResult('lu', '_source',  '_source', true, 'integer');
-        $this->_rsm->addMetaResult('lu', '_target',  '_target', true, 'integer');
+        $this->_rsm->addMetaResult('lu', '_source',  '_source', true, Type::getType('integer'));
+        $this->_rsm->addMetaResult('lu', '_target',  '_target', true, Type::getType('integer'));
         $this->_rsm->addIndexBy('lu', '_source');
 
         $this->assertTrue($this->_rsm->hasIndexBy('lu'));

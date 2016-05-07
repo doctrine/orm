@@ -2,6 +2,7 @@
 
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
@@ -80,7 +81,7 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__status', 'status');
         $this->rsm->addFieldResult('u', 'u__username', 'username');
         $this->rsm->addFieldResult('u', 'u__name', 'name');
-        $this->rsm->addScalarResult('sclr0', 'nameUpper');
+        $this->rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
     }
 
