@@ -19,7 +19,7 @@ class ParserTest extends OrmTestCase
     {
         $parser = $this->createParser('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
     }
 
     /**
@@ -30,7 +30,7 @@ class ParserTest extends OrmTestCase
     {
         $parser = $this->createParser('\Doctrine\Tests\Models\CMS\CmsUser');
 
-        $this->assertEquals('\Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals('\Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
     }
 
     /**
@@ -41,7 +41,7 @@ class ParserTest extends OrmTestCase
     {
         $parser = $this->createParser('stdClass');
 
-        $this->assertEquals('stdClass', $parser->AbstractSchemaName());
+        self::assertEquals('stdClass', $parser->AbstractSchemaName());
     }
 
     /**
@@ -54,7 +54,7 @@ class ParserTest extends OrmTestCase
 
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
     }
 
     /**
@@ -67,7 +67,7 @@ class ParserTest extends OrmTestCase
 
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
     }
 
     /**

@@ -36,41 +36,41 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testSetGetProxyDir()
     {
-        $this->assertSame(null, $this->configuration->getProxyDir()); // defaults
+        self::assertSame(null, $this->configuration->getProxyDir()); // defaults
 
         $this->configuration->setProxyDir(__DIR__);
-        $this->assertSame(__DIR__, $this->configuration->getProxyDir());
+        self::assertSame(__DIR__, $this->configuration->getProxyDir());
     }
 
     public function testSetGetAutoGenerateProxyClasses()
     {
-        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
+        self::assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
 
         $this->configuration->setAutoGenerateProxyClasses(false);
-        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_NEVER, $this->configuration->getAutoGenerateProxyClasses());
+        self::assertSame(AbstractProxyFactory::AUTOGENERATE_NEVER, $this->configuration->getAutoGenerateProxyClasses());
 
         $this->configuration->setAutoGenerateProxyClasses(true);
-        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses());
+        self::assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses());
 
         $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-        $this->assertSame(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
+        self::assertSame(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
     }
 
     public function testSetGetProxyNamespace()
     {
-        $this->assertSame(null, $this->configuration->getProxyNamespace()); // defaults
+        self::assertSame(null, $this->configuration->getProxyNamespace()); // defaults
 
         $this->configuration->setProxyNamespace(__NAMESPACE__);
-        $this->assertSame(__NAMESPACE__, $this->configuration->getProxyNamespace());
+        self::assertSame(__NAMESPACE__, $this->configuration->getProxyNamespace());
     }
 
     public function testSetGetMetadataDriverImpl()
     {
-        $this->assertSame(null, $this->configuration->getMetadataDriverImpl()); // defaults
+        self::assertSame(null, $this->configuration->getMetadataDriverImpl()); // defaults
 
         $metadataDriver = $this->createMock(MappingDriver::class);
         $this->configuration->setMetadataDriverImpl($metadataDriver);
-        $this->assertSame($metadataDriver, $this->configuration->getMetadataDriverImpl());
+        self::assertSame($metadataDriver, $this->configuration->getMetadataDriverImpl());
     }
 
     public function testNewDefaultAnnotationDriver()
@@ -84,7 +84,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
             $reflectionClass->getMethod('namespacedAnnotationMethod'),
             AnnotationNamespace\PrePersist::class
         );
-        $this->assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
+        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
 
         $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
         $reader = $annotationDriver->getReader();
@@ -92,49 +92,49 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
             $reflectionClass->getMethod('simpleAnnotationMethod'),
             AnnotationNamespace\PrePersist::class
         );
-        $this->assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
+        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
     }
 
     public function testSetGetEntityNamespace()
     {
         $this->configuration->addEntityNamespace('TestNamespace', __NAMESPACE__);
-        $this->assertSame(__NAMESPACE__, $this->configuration->getEntityNamespace('TestNamespace'));
+        self::assertSame(__NAMESPACE__, $this->configuration->getEntityNamespace('TestNamespace'));
         $namespaces = array('OtherNamespace' => __NAMESPACE__);
         $this->configuration->setEntityNamespaces($namespaces);
-        $this->assertSame($namespaces, $this->configuration->getEntityNamespaces());
+        self::assertSame($namespaces, $this->configuration->getEntityNamespaces());
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->getEntityNamespace('NonExistingNamespace');
     }
 
     public function testSetGetQueryCacheImpl()
     {
-        $this->assertSame(null, $this->configuration->getQueryCacheImpl()); // defaults
+        self::assertSame(null, $this->configuration->getQueryCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setQueryCacheImpl($queryCacheImpl);
-        $this->assertSame($queryCacheImpl, $this->configuration->getQueryCacheImpl());
+        self::assertSame($queryCacheImpl, $this->configuration->getQueryCacheImpl());
     }
 
     public function testSetGetHydrationCacheImpl()
     {
-        $this->assertSame(null, $this->configuration->getHydrationCacheImpl()); // defaults
+        self::assertSame(null, $this->configuration->getHydrationCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setHydrationCacheImpl($queryCacheImpl);
-        $this->assertSame($queryCacheImpl, $this->configuration->getHydrationCacheImpl());
+        self::assertSame($queryCacheImpl, $this->configuration->getHydrationCacheImpl());
     }
 
     public function testSetGetMetadataCacheImpl()
     {
-        $this->assertSame(null, $this->configuration->getMetadataCacheImpl()); // defaults
+        self::assertSame(null, $this->configuration->getMetadataCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setMetadataCacheImpl($queryCacheImpl);
-        $this->assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
+        self::assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
     }
 
     public function testAddGetNamedQuery()
     {
         $dql = 'SELECT u FROM User u';
         $this->configuration->addNamedQuery('QueryName', $dql);
-        $this->assertSame($dql, $this->configuration->getNamedQuery('QueryName'));
+        self::assertSame($dql, $this->configuration->getNamedQuery('QueryName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->getNamedQuery('NonExistingQuery');
     }
@@ -145,8 +145,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $rsm = $this->createMock(ResultSetMapping::class);
         $this->configuration->addNamedNativeQuery('QueryName', $sql, $rsm);
         $fetched = $this->configuration->getNamedNativeQuery('QueryName');
-        $this->assertSame($sql, $fetched[0]);
-        $this->assertSame($rsm, $fetched[1]);
+        self::assertSame($sql, $fetched[0]);
+        self::assertSame($rsm, $fetched[1]);
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->getNamedQuery('NonExistingQuery');
     }
@@ -255,10 +255,10 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function testAddGetCustomStringFunction()
     {
         $this->configuration->addCustomStringFunction('FunctionName', __CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('FunctionName'));
-        $this->assertSame(null, $this->configuration->getCustomStringFunction('NonExistingFunction'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('FunctionName'));
+        self::assertSame(null, $this->configuration->getCustomStringFunction('NonExistingFunction'));
         $this->configuration->setCustomStringFunctions(array('OtherFunctionName' => __CLASS__));
-        $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->addCustomStringFunction('concat', __CLASS__);
     }
@@ -266,10 +266,10 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function testAddGetCustomNumericFunction()
     {
         $this->configuration->addCustomNumericFunction('FunctionName', __CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('FunctionName'));
-        $this->assertSame(null, $this->configuration->getCustomNumericFunction('NonExistingFunction'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('FunctionName'));
+        self::assertSame(null, $this->configuration->getCustomNumericFunction('NonExistingFunction'));
         $this->configuration->setCustomNumericFunctions(array('OtherFunctionName' => __CLASS__));
-        $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->addCustomNumericFunction('abs', __CLASS__);
     }
@@ -277,25 +277,25 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function testAddGetCustomDatetimeFunction()
     {
         $this->configuration->addCustomDatetimeFunction('FunctionName', __CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('FunctionName'));
-        $this->assertSame(null, $this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('FunctionName'));
+        self::assertSame(null, $this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
         $this->configuration->setCustomDatetimeFunctions(array('OtherFunctionName' => __CLASS__));
-        $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->addCustomDatetimeFunction('date_add', __CLASS__);
     }
 
     public function testAddGetCustomHydrationMode()
     {
-        $this->assertSame(null, $this->configuration->getCustomHydrationMode('NonExisting'));
+        self::assertSame(null, $this->configuration->getCustomHydrationMode('NonExisting'));
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
     }
 
     public function testSetCustomHydrationModes()
     {
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
 
         $this->configuration->setCustomHydrationModes(
             array(
@@ -303,48 +303,48 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));
-        $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('AnotherHydrationModeName'));
+        self::assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));
+        self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('AnotherHydrationModeName'));
     }
 
     public function testSetGetClassMetadataFactoryName()
     {
-        $this->assertSame('Doctrine\ORM\Mapping\ClassMetadataFactory', $this->configuration->getClassMetadataFactoryName());
+        self::assertSame('Doctrine\ORM\Mapping\ClassMetadataFactory', $this->configuration->getClassMetadataFactoryName());
         $this->configuration->setClassMetadataFactoryName(__CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getClassMetadataFactoryName());
+        self::assertSame(__CLASS__, $this->configuration->getClassMetadataFactoryName());
     }
 
     public function testAddGetFilters()
     {
-        $this->assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
+        self::assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
         $this->configuration->addFilter('FilterName', __CLASS__);
-        $this->assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
+        self::assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
     }
 
     public function setDefaultRepositoryClassName()
     {
-        $this->assertSame('Doctrine\ORM\EntityRepository', $this->configuration->getDefaultRepositoryClassName());
+        self::assertSame('Doctrine\ORM\EntityRepository', $this->configuration->getDefaultRepositoryClassName());
         $repositoryClass = 'Doctrine\Tests\Models\DDC753\DDC753CustomRepository';
         $this->configuration->setDefaultRepositoryClassName($repositoryClass);
-        $this->assertSame($repositoryClass, $this->configuration->getDefaultRepositoryClassName());
+        self::assertSame($repositoryClass, $this->configuration->getDefaultRepositoryClassName());
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->setDefaultRepositoryClassName(__CLASS__);
     }
 
     public function testSetGetNamingStrategy()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\NamingStrategy', $this->configuration->getNamingStrategy());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\NamingStrategy', $this->configuration->getNamingStrategy());
         $namingStrategy = $this->createMock(NamingStrategy::class);
         $this->configuration->setNamingStrategy($namingStrategy);
-        $this->assertSame($namingStrategy, $this->configuration->getNamingStrategy());
+        self::assertSame($namingStrategy, $this->configuration->getNamingStrategy());
     }
 
     public function testSetGetQuoteStrategy()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $this->configuration->getQuoteStrategy());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $this->configuration->getQuoteStrategy());
         $quoteStrategy = $this->createMock(QuoteStrategy::class);
         $this->configuration->setQuoteStrategy($quoteStrategy);
-        $this->assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
+        self::assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
 
     /**
@@ -352,11 +352,11 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetGetEntityListenerResolver()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\EntityListenerResolver', $this->configuration->getEntityListenerResolver());
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultEntityListenerResolver', $this->configuration->getEntityListenerResolver());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\EntityListenerResolver', $this->configuration->getEntityListenerResolver());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\DefaultEntityListenerResolver', $this->configuration->getEntityListenerResolver());
         $resolver = $this->createMock(EntityListenerResolver::class);
         $this->configuration->setEntityListenerResolver($resolver);
-        $this->assertSame($resolver, $this->configuration->getEntityListenerResolver());
+        self::assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 
     /**
@@ -366,9 +366,9 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $mockClass = $this->createMock(CacheConfiguration::class);
 
-        $this->assertNull($this->configuration->getSecondLevelCacheConfiguration());
+        self::assertNull($this->configuration->getSecondLevelCacheConfiguration());
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
-        $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
+        self::assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
 }
 

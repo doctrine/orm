@@ -56,14 +56,14 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
 
-        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
     }
 
     /**
@@ -86,9 +86,9 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity', $auxiliary);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity', $inversed);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity', $owning);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity', $auxiliary);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity', $inversed);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity', $owning);
     }
 
     /**
@@ -111,10 +111,10 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertEquals('abc', $auxiliary->id4);
-        $this->assertEquals('def', $inversed->id1);
-        $this->assertEquals('abc', $inversed->foreignEntity->id4);
-        $this->assertEquals('ghi', $owning->id2);
+        self::assertEquals('abc', $auxiliary->id4);
+        self::assertEquals('def', $inversed->id1);
+        self::assertEquals('abc', $inversed->foreignEntity->id4);
+        self::assertEquals('ghi', $owning->id2);
     }
 
     /**
@@ -132,7 +132,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             array('id1' => 'def', 'foreignEntity' => $auxiliary)
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity', $inversed);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity', $inversed);
     }
 
     /**
@@ -147,7 +147,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversedProxy = $owning->associatedEntity;
 
-        $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
+        self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
     /**
@@ -160,6 +160,6 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             array('id1' => 'def', 'foreignEntity' => 'abc')
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity', $inversed->associatedEntity);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity', $inversed->associatedEntity);
     }
 }

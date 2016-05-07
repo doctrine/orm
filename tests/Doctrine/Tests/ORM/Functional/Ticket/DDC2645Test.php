@@ -20,8 +20,8 @@ class DDC2645Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $foo3 = $this->_em->merge($foo2);
 
-        $this->assertSame($foo, $foo3);
-        $this->assertEquals('Bar', $foo->name);
+        self::assertSame($foo, $foo3);
+        self::assertEquals('Bar', $foo->name);
     }
 }
 

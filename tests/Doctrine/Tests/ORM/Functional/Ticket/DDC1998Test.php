@@ -35,12 +35,12 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
         $found = $this->_em->find(__NAMESPACE__ . '\\DDC1998Entity', $entity->id);
-        $this->assertNull($found);
+        self::assertNull($found);
 
         $found = $this->_em->find(__NAMESPACE__ . '\\DDC1998Entity', "foo");
-        $this->assertNull($found);
+        self::assertNull($found);
 
-        $this->assertEquals(0, count($this->_em->getRepository(__NAMESPACE__ . '\\DDC1998Entity')->findAll()));
+        self::assertEquals(0, count($this->_em->getRepository(__NAMESPACE__ . '\\DDC1998Entity')->findAll()));
     }
 }
 

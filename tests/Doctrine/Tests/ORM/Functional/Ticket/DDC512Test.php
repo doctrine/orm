@@ -32,16 +32,16 @@ class DDC512Test extends OrmFunctionalTestCase
         $q = $this->_em->createQuery("select u,i from ".__NAMESPACE__."\\DDC512Customer u left join u.item i");
         $result = $q->getResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[0]);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[1]);
+        self::assertEquals(2, count($result));
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[0]);
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[1]);
         if ($result[0]->id == $customer1->id) {
-            $this->assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[0]->item);
-            $this->assertEquals($item->id, $result[0]->item->id);
-            $this->assertNull($result[1]->item);
+            self::assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[0]->item);
+            self::assertEquals($item->id, $result[0]->item->id);
+            self::assertNull($result[1]->item);
         } else {
-            $this->assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[1]->item);
-            $this->assertNull($result[0]->item);
+            self::assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[1]->item);
+            self::assertNull($result[0]->item);
         }
     }
 }

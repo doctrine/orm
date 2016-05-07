@@ -18,8 +18,9 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id", $query->getSQL()
+        self::assertEquals(
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id",
+            $query->getSQL()
         );
     }
 
@@ -31,8 +32,9 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT count(DISTINCT a0_.id) AS sclr_0 FROM Author a0_", $query->getSQL()
+        self::assertEquals(
+            "SELECT count(DISTINCT a0_.id) AS sclr_0 FROM Author a0_",
+            $query->getSQL()
         );
     }
 
@@ -44,8 +46,9 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ GROUP BY b0_.id", $query->getSQL()
+        self::assertEquals(
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ GROUP BY b0_.id",
+            $query->getSQL()
         );
     }
 
@@ -57,8 +60,9 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id", $query->getSQL()
+        self::assertEquals(
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id",
+            $query->getSQL()
         );
     }
 
@@ -70,8 +74,9 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id", $query->getSQL()
+        self::assertEquals(
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id",
+            $query->getSQL()
         );
     }
 
@@ -100,8 +105,9 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ LEFT JOIN Category c1_ ON (b0_.category_id = c1_.id)", $query->getSQL()
+        self::assertEquals(
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ LEFT JOIN Category c1_ ON (b0_.category_id = c1_.id)",
+            $query->getSQL()
         );
     }
 }

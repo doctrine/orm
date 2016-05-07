@@ -35,18 +35,18 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
 
-        $this->assertFalse($user->getProfile()->__isInitialized__, "Proxy is not initialized");
+        self::assertFalse($user->getProfile()->__isInitialized__, "Proxy is not initialized");
         $user->getProfile()->setName("Bar");
-        $this->assertTrue($user->getProfile()->__isInitialized__, "Proxy is not initialized");
+        self::assertTrue($user->getProfile()->__isInitialized__, "Proxy is not initialized");
 
-        $this->assertEquals("Bar", $user->getProfile()->getName());
-        $this->assertEquals(array("id" => 1, "name" => "Foo"), $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
+        self::assertEquals("Bar", $user->getProfile()->getName());
+        self::assertEquals(array("id" => 1, "name" => "Foo"), $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
 
         $this->_em->flush();
         $this->_em->clear();
 
         $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
-        $this->assertEquals("Bar", $user->getProfile()->getName());
+        self::assertEquals("Bar", $user->getProfile()->getName());
     }
 
     public function testRefresh()
@@ -69,7 +69,7 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
-        $this->assertEquals("Baz", $user->name);
+        self::assertEquals("Baz", $user->name);
     }
 }
 

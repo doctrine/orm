@@ -42,33 +42,33 @@ class SetupTest extends OrmTestCase
     {
         Setup::registerAutoloadDirectory(__DIR__ . "/../../../../../vendor/doctrine/common/lib");
 
-        $this->assertEquals($this->originalAutoloaderCount + 2, count(spl_autoload_functions()));
+        self::assertEquals($this->originalAutoloaderCount + 2, count(spl_autoload_functions()));
     }
 
     public function testAnnotationConfiguration()
     {
         $config = Setup::createAnnotationMetadataConfiguration(array(), true);
 
-        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
-        $this->assertEquals(sys_get_temp_dir(), $config->getProxyDir());
-        $this->assertEquals('DoctrineProxies', $config->getProxyNamespace());
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\AnnotationDriver', $config->getMetadataDriverImpl());
+        self::assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
+        self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\Driver\AnnotationDriver', $config->getMetadataDriverImpl());
     }
 
     public function testXMLConfiguration()
     {
         $config = Setup::createXMLMetadataConfiguration(array(), true);
 
-        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\XmlDriver', $config->getMetadataDriverImpl());
+        self::assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        self::assertInstanceOf('Doctrine\ORM\Mapping\Driver\XmlDriver', $config->getMetadataDriverImpl());
     }
 
     public function testYAMLConfiguration()
     {
         $config = Setup::createYAMLMetadataConfiguration(array(), true);
 
-        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
+        self::assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        self::assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
     }
 
     /**
@@ -77,7 +77,7 @@ class SetupTest extends OrmTestCase
     public function testConfigureProxyDir()
     {
         $config = Setup::createAnnotationMetadataConfiguration(array(), true, "/foo");
-        $this->assertEquals('/foo', $config->getProxyDir());
+        self::assertEquals('/foo', $config->getProxyDir());
     }
 
     /**
@@ -88,9 +88,9 @@ class SetupTest extends OrmTestCase
         $cache = new ArrayCache();
         $config = Setup::createAnnotationMetadataConfiguration(array(), true, null, $cache);
 
-        $this->assertSame($cache, $config->getResultCacheImpl());
-        $this->assertSame($cache, $config->getMetadataCacheImpl());
-        $this->assertSame($cache, $config->getQueryCacheImpl());
+        self::assertSame($cache, $config->getResultCacheImpl());
+        self::assertSame($cache, $config->getMetadataCacheImpl());
+        self::assertSame($cache, $config->getQueryCacheImpl());
     }
 
     /**
@@ -101,8 +101,8 @@ class SetupTest extends OrmTestCase
         $cache  = $this->createMock(Cache::class);
         $config = Setup::createConfiguration(array(), true, $cache);
 
-        $this->assertSame($cache, $config->getResultCacheImpl());
-        $this->assertSame($cache, $config->getMetadataCacheImpl());
-        $this->assertSame($cache, $config->getQueryCacheImpl());
+        self::assertSame($cache, $config->getResultCacheImpl());
+        self::assertSame($cache, $config->getMetadataCacheImpl());
+        self::assertSame($cache, $config->getQueryCacheImpl());
     }
 }

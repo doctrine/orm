@@ -39,7 +39,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         foreach ($classes as $class) {
             $ce = $validator->validateClass($class);
 
-            $this->assertEquals(0, count($ce), "Invalid Modelset: " . $modelSet . " class " . $class->name . ": ". implode("\n", $ce));
+            self::assertEquals(0, count($ce), "Invalid Modelset: " . $modelSet . " class " . $class->name . ": ". implode("\n", $ce));
         }
     }
 }

@@ -60,8 +60,8 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $fetchedBazs = $this->_em->getRepository(__NAMESPACE__ . '\\DDC2346Baz')->findAll();
 
-        $this->assertCount(2, $fetchedBazs);
-        $this->assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');
+        self::assertCount(2, $fetchedBazs);
+        self::assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');
     }
 }
 

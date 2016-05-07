@@ -68,7 +68,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertEquals(2, $owning->associatedEntities->count());
+        self::assertEquals(2, $owning->associatedEntities->count());
     }
 
     public function testThatTheExtraLazyCollectionFromInversedToOwningIsCounted()
@@ -78,7 +78,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertEquals(2, $inversed->associatedEntities->count());
+        self::assertEquals(2, $inversed->associatedEntities->count());
     }
 
     public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnEntity()
@@ -93,7 +93,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertTrue($owning->associatedEntities->contains($inversed));
+        self::assertTrue($owning->associatedEntities->contains($inversed));
     }
 
     public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnEntity()
@@ -108,7 +108,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertTrue($inversed->associatedEntities->contains($owning));
+        self::assertTrue($inversed->associatedEntities->contains($owning));
     }
 
     public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnIndexByKey()
@@ -118,7 +118,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertTrue($owning->associatedEntities->containsKey('abc'));
+        self::assertTrue($owning->associatedEntities->containsKey('abc'));
     }
 
     public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnIndexByKey()
@@ -128,7 +128,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertTrue($inversed->associatedEntities->containsKey('ghi'));
+        self::assertTrue($inversed->associatedEntities->containsKey('ghi'));
     }
 
     public function testThatASliceOfTheExtraLazyCollectionFromOwningToInversedIsLoaded()
@@ -138,7 +138,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertCount(1, $owning->associatedEntities->slice(0, 1));
+        self::assertCount(1, $owning->associatedEntities->slice(0, 1));
     }
 
     public function testThatASliceOfTheExtraLazyCollectionFromInversedToOwningIsLoaded()
@@ -148,6 +148,6 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertCount(1, $inversed->associatedEntities->slice(1, 1));
+        self::assertCount(1, $inversed->associatedEntities->slice(1, 1));
     }
 }

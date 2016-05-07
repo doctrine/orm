@@ -45,18 +45,18 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        $this->assertEquals(3, count(iterator_to_array($paginator)));
+        self::assertEquals(3, count(iterator_to_array($paginator)));
 
         $query->setFirstResult(8);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        $this->assertEquals(2, count(iterator_to_array($paginator)));
+        self::assertEquals(2, count(iterator_to_array($paginator)));
 
         $query->setFirstResult(10);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        $this->assertEquals(0, count(iterator_to_array($paginator)));
+        self::assertEquals(0, count(iterator_to_array($paginator)));
     }
 }

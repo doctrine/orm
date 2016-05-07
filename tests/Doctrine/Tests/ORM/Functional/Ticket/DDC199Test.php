@@ -39,12 +39,12 @@ class DDC199Test extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
         $result = $query->getResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass', $result[0]);
-        $this->assertTrue($result[0]->relatedEntities->isInitialized());
-        $this->assertEquals(2, $result[0]->relatedEntities->count());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[0]);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[1]);
+        self::assertEquals(1, count($result));
+        self::assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass', $result[0]);
+        self::assertTrue($result[0]->relatedEntities->isInitialized());
+        self::assertEquals(2, $result[0]->relatedEntities->count());
+        self::assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[0]);
+        self::assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[1]);
     }
 }
 

@@ -36,7 +36,7 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $history = $this->_em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
                   ->setParameter(1, $c2->id)->getSingleResult();
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\\DDC1250ClientHistory', $history);
+        self::assertInstanceOf(__NAMESPACE__ . '\\DDC1250ClientHistory', $history);
     }
 }
 

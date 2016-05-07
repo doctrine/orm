@@ -48,13 +48,13 @@ class QuoteStrategyTest extends OrmTestCase
         $em     = $this->_getTestEntityManager();
         $config = $em->getConfiguration();
 
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultQuoteStrategy', $config->getQuoteStrategy());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\DefaultQuoteStrategy', $config->getQuoteStrategy());
 
         $config->setQuoteStrategy(new MyQuoteStrategy());
 
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Mapping\MyQuoteStrategy', $config->getQuoteStrategy());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
+        self::assertInstanceOf('Doctrine\Tests\ORM\Mapping\MyQuoteStrategy', $config->getQuoteStrategy());
     }
 
     public function testGetColumnName()
@@ -63,20 +63,20 @@ class QuoteStrategyTest extends OrmTestCase
         $cm->mapField(array('fieldName' => 'name', 'columnName' => '`name`'));
         $cm->mapField(array('fieldName' => 'id', 'columnName' => 'id'));
         
-        $this->assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
-        $this->assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
+        self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
+        self::assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
     }
 
     public function testGetTableName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->setPrimaryTable(array('name'=>'`cms_user`'));
-        $this->assertEquals('"cms_user"' ,$this->strategy->getTableName($cm, $this->platform));
+        self::assertEquals('"cms_user"' ,$this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setPrimaryTable(array('name'=>'cms_user'));
-        $this->assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
+        self::assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
     }
     
     public function testJoinTableName()
@@ -103,8 +103,8 @@ class QuoteStrategyTest extends OrmTestCase
             )
         );
 
-        $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
-        $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $this->platform));
+        self::assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
+        self::assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $this->platform));
        
     }
 
@@ -125,18 +125,18 @@ class QuoteStrategyTest extends OrmTestCase
             'columnName'    => 'id',
         ));
 
-        $this->assertEquals(array('"id"'), $this->strategy->getIdentifierColumnNames($cm1, $this->platform));
-        $this->assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($cm2, $this->platform));
+        self::assertEquals(array('"id"'), $this->strategy->getIdentifierColumnNames($cm1, $this->platform));
+        self::assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($cm2, $this->platform));
     }
 
 
     public function testColumnAlias()
     {
         $i = 0;
-        $this->assertEquals('columnName_0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
-        $this->assertEquals('column_name_1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
-        $this->assertEquals('COLUMN_NAME_2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
-        $this->assertEquals('COLUMNNAME_3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
+        self::assertEquals('columnName_0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
+        self::assertEquals('column_name_1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
+        self::assertEquals('COLUMN_NAME_2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
+        self::assertEquals('COLUMNNAME_3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
     }
 
     public function testQuoteIdentifierJoinColumns()
@@ -152,7 +152,7 @@ class QuoteStrategyTest extends OrmTestCase
             )),
         ));
 
-        $this->assertEquals(array('"article"'), $this->strategy->getIdentifierColumnNames($cm, $this->platform));
+        self::assertEquals(array('"article"'), $this->strategy->getIdentifierColumnNames($cm, $this->platform));
     }
 
     public function testJoinColumnName()
@@ -169,7 +169,7 @@ class QuoteStrategyTest extends OrmTestCase
         ));
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals('"article"',$this->strategy->getJoinColumnName($joinColumn, $cm, $this->platform));
+        self::assertEquals('"article"',$this->strategy->getJoinColumnName($joinColumn, $cm, $this->platform));
     }
 
     public function testReferencedJoinColumnName()
@@ -186,7 +186,7 @@ class QuoteStrategyTest extends OrmTestCase
         ));
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals('"id"',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
+        self::assertEquals('"id"',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 }
 

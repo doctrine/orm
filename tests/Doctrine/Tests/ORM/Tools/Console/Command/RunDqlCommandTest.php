@@ -52,7 +52,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
     public function testCommandName()
     {
-        $this->assertSame($this->command, $this->application->get('orm:run-dql'));
+        self::assertSame($this->command, $this->application->get('orm:run-dql'));
     }
 
     public function testWillRunQuery()
@@ -60,7 +60,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->_em->persist(new DateTimeModel());
         $this->_em->flush();
 
-        $this->assertSame(
+        self::assertSame(
             0,
             $this->tester->execute(array(
                 'command' => $this->command->getName(),
@@ -68,7 +68,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             ))
         );
 
-        $this->assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
+        self::assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
     }
 
     public function testWillShowQuery()
@@ -76,7 +76,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->_em->persist(new DateTimeModel());
         $this->_em->flush();
 
-        $this->assertSame(
+        self::assertSame(
             0,
             $this->tester->execute(array(
                 'command'    => $this->command->getName(),
@@ -85,6 +85,6 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             ))
         );
 
-        $this->assertStringMatchesFormat('%Astring%sSELECT %a', $this->tester->getDisplay());
+        self::assertStringMatchesFormat('%Astring%sSELECT %a', $this->tester->getDisplay());
     }
 }

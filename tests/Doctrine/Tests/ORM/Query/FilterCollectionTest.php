@@ -29,25 +29,25 @@ class FilterCollectionTest extends OrmTestCase
     {
         $filterCollection = $this->em->getFilters();
 
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertCount(0, $filterCollection->getEnabledFilters());
 
         $filterCollection->enable('testFilter');
 
         $enabledFilters = $filterCollection->getEnabledFilters();
 
-        $this->assertCount(1, $enabledFilters);
-        $this->assertContainsOnly('Doctrine\Tests\ORM\Query\MyFilter', $enabledFilters);
+        self::assertCount(1, $enabledFilters);
+        self::assertContainsOnly('Doctrine\Tests\ORM\Query\MyFilter', $enabledFilters);
 
         $filterCollection->disable('testFilter');
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertCount(0, $filterCollection->getEnabledFilters());
     }
 
     public function testHasFilter()
     {
         $filterCollection = $this->em->getFilters();
 
-        $this->assertTrue($filterCollection->has('testFilter'));
-        $this->assertFalse($filterCollection->has('fakeFilter'));
+        self::assertTrue($filterCollection->has('testFilter'));
+        self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
     /**
@@ -57,11 +57,11 @@ class FilterCollectionTest extends OrmTestCase
     {
         $filterCollection = $this->em->getFilters();
 
-        $this->assertFalse($filterCollection->isEnabled('testFilter'));
+        self::assertFalse($filterCollection->isEnabled('testFilter'));
 
         $filterCollection->enable('testFilter');
 
-        $this->assertTrue($filterCollection->isEnabled('testFilter'));
+        self::assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
     /**
@@ -80,7 +80,7 @@ class FilterCollectionTest extends OrmTestCase
 
         $filterCollection->enable('testFilter');
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Query\MyFilter', $filterCollection->getFilter('testFilter'));
+        self::assertInstanceOf('Doctrine\Tests\ORM\Query\MyFilter', $filterCollection->getFilter('testFilter'));
     }
 }
 

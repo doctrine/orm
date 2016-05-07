@@ -65,7 +65,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertEquals(3, $inversed->associatedEntities->count());
+        self::assertEquals(3, $inversed->associatedEntities->count());
     }
 
     public function testThatExtraLazyCollectionContainsAnEntity()
@@ -80,7 +80,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertTrue($inversed->associatedEntities->contains($owning));
+        self::assertTrue($inversed->associatedEntities->contains($owning));
     }
 
     public function testThatExtraLazyCollectionContainsAnIndexbyKey()
@@ -90,7 +90,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertTrue($inversed->associatedEntities->containsKey('def'));
+        self::assertTrue($inversed->associatedEntities->containsKey('def'));
     }
 
     public function testThatASliceOfTheExtraLazyCollectionIsLoaded()
@@ -100,6 +100,6 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertCount(2, $inversed->associatedEntities->slice(0, 2));
+        self::assertCount(2, $inversed->associatedEntities->slice(0, 2));
     }
 }

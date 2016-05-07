@@ -77,7 +77,7 @@ class NamingStrategyTest extends OrmTestCase
      */
     public function testClassToTableName(NamingStrategy $strategy, $expected, $className)
     {
-        $this->assertEquals($expected, $strategy->classToTableName($className));
+        self::assertEquals($expected, $strategy->classToTableName($className));
     }
 
     /**
@@ -124,7 +124,7 @@ class NamingStrategyTest extends OrmTestCase
      */
     public function testPropertyToColumnName(NamingStrategy $strategy, $expected, $propertyName)
     {
-        $this->assertEquals($expected, $strategy->propertyToColumnName($propertyName));
+        self::assertEquals($expected, $strategy->propertyToColumnName($propertyName));
     }
 
     /**
@@ -152,7 +152,7 @@ class NamingStrategyTest extends OrmTestCase
      */
     public function testReferenceColumnName(NamingStrategy $strategy, $expected)
     {
-        $this->assertEquals($expected, $strategy->referenceColumnName());
+        self::assertEquals($expected, $strategy->referenceColumnName());
     }
 
     /**
@@ -185,7 +185,7 @@ class NamingStrategyTest extends OrmTestCase
      */
     public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className = null)
     {
-        $this->assertEquals($expected, $strategy->joinColumnName($propertyName, $className));
+        self::assertEquals($expected, $strategy->joinColumnName($propertyName, $className));
     }
 
     /**
@@ -241,7 +241,7 @@ class NamingStrategyTest extends OrmTestCase
      */
     public function testJoinTableName(NamingStrategy $strategy, $expected, $ownerEntity, $associatedEntity, $propertyName = null)
     {
-        $this->assertEquals($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
+        self::assertEquals($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
     }
 
     /**
@@ -288,6 +288,6 @@ class NamingStrategyTest extends OrmTestCase
      */
     public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $propertyName = null)
     {
-        $this->assertEquals($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $propertyName));
+        self::assertEquals($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $propertyName));
     }
 }

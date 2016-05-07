@@ -86,7 +86,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->lte('datetime', new \DateTime('today'))
         ));
 
-        $this->assertEquals(2, count($dates));
+        self::assertEquals(2, count($dates));
     }
 
     private function loadNullFieldFixtures()
@@ -118,7 +118,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->isNull('time')
         ));
 
-        $this->assertEquals(1, count($dates));
+        self::assertEquals(1, count($dates));
     }
 
     public function testEqNullComparison()
@@ -130,7 +130,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->eq('time', null)
         ));
 
-        $this->assertEquals(1, count($dates));
+        self::assertEquals(1, count($dates));
     }
 
     public function testNotEqNullComparison()
@@ -142,7 +142,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->neq('time', null)
         ));
 
-        $this->assertEquals(1, count($dates));
+        self::assertEquals(1, count($dates));
     }
 
     public function testCanCountWithoutLoadingCollection()
@@ -152,22 +152,22 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
         $dates = $repository->matching(new Criteria());
 
-        $this->assertFalse($dates->isInitialized());
-        $this->assertCount(3, $dates);
-        $this->assertFalse($dates->isInitialized());
+        self::assertFalse($dates->isInitialized());
+        self::assertCount(3, $dates);
+        self::assertFalse($dates->isInitialized());
 
         // Test it can work even with a constraint
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->lte('datetime', new \DateTime('today'))
         ));
 
-        $this->assertFalse($dates->isInitialized());
-        $this->assertCount(2, $dates);
-        $this->assertFalse($dates->isInitialized());
+        self::assertFalse($dates->isInitialized());
+        self::assertCount(2, $dates);
+        self::assertFalse($dates->isInitialized());
 
         // Trigger a loading, to make sure collection is initialized
         $date = $dates[0];
-        $this->assertTrue($dates->isInitialized());
+        self::assertTrue($dates->isInitialized());
     }
 
     public function testCanContainsWithoutLoadingCollection()
@@ -191,12 +191,12 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $user   = $this->_em->find('Doctrine\Tests\Models\Tweet\User', $user->id);
         $tweets = $user->tweets->matching($criteria);
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
-        $this->assertFalse($tweets->isInitialized());
+        self::assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        self::assertFalse($tweets->isInitialized());
 
         $tweets->contains($tweet);
-        $this->assertTrue($tweets->contains($tweet));
+        self::assertTrue($tweets->contains($tweet));
 
-        $this->assertFalse($tweets->isInitialized());
+        self::assertFalse($tweets->isInitialized());
     }
 }

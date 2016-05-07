@@ -45,14 +45,14 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
             'car'    => $this->merc->getBrand())
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride1);
+        self::assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride1);
 
         $ride2 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', array(
             'driver' => $this->foo,
             'car'    => $this->merc
         ));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride2);
-        $this->assertSame($ride1, $ride2);
+        self::assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride2);
+        self::assertSame($ride1, $ride2);
     }
 }

@@ -24,7 +24,7 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertTrue($test->id > 0);
+        self::assertTrue($test->id > 0);
     }
 }
 

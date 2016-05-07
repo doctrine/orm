@@ -33,7 +33,7 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
         $user = $this->createNewValidUser();
         $this->_em->persist($user);
         $this->_em->flush();
-        $this->assertFalse($this->listener->wasNotified);
+        self::assertFalse($this->listener->wasNotified);
 
         $group = new CmsGroup();
         $group->name = "admins";
@@ -41,7 +41,7 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->assertTrue($this->listener->wasNotified);
+        self::assertTrue($this->listener->wasNotified);
     }
 
     /**

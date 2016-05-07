@@ -57,16 +57,16 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $user DDC2306User|\Doctrine\ORM\Proxy\Proxy */
         $user    = $address->users->first()->user;
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $user);
-        $this->assertInstanceOf(__NAMESPACE__ . '\\DDC2306User', $user);
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $user);
+        self::assertInstanceOf(__NAMESPACE__ . '\\DDC2306User', $user);
 
         $userId = $user->id;
 
-        $this->assertNotNull($userId);
+        self::assertNotNull($userId);
 
         $user->__load();
 
-        $this->assertEquals(
+        self::assertEquals(
             $userId,
             $user->id,
             'As of DDC-1734, the identifier is NULL for un-managed proxies. The identifier should be an integer here'

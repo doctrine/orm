@@ -25,7 +25,7 @@ class DefaultQuoteStrategyTest extends OrmTestCase
         $strategy = new DefaultQuoteStrategy();
         $platform = $this->getMockForAbstractClass('Doctrine\DBAL\Platforms\AbstractPlatform');
 
-        $this->assertSame(
+        self::assertSame(
             'readers.author_reader',
             $strategy->getJoinTableName($metadata->associationMappings['readers'], $metadata, $platform)
         );

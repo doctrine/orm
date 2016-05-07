@@ -48,15 +48,15 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $criteria = array('assoc' => $assoc, 'id' => $id);
         $entity   = $repository->findOneBy($criteria);
 
-        $this->assertInstanceOf(DDC2579Entity::CLASSNAME, $entity);
-        $this->assertEquals($value, $entity->value);
+        self::assertInstanceOf(DDC2579Entity::CLASSNAME, $entity);
+        self::assertEquals($value, $entity->value);
 
         $this->_em->remove($entity);
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($repository->findOneBy($criteria));
-        $this->assertCount(0, $repository->findAll());
+        self::assertNull($repository->findOneBy($criteria));
+        self::assertCount(0, $repository->findAll());
     }
 }
 

@@ -40,7 +40,7 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $second = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC2931User', $second->id);
 
-        $this->assertSame(2, $second->getRank());
+        self::assertSame(2, $second->getRank());
     }
 
     public function testFetchJoinedEntitiesCanBeRefreshed()
@@ -76,10 +76,10 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setHint(Query::HINT_REFRESH, true)
             ->getResult();
 
-        $this->assertCount(1, $refreshedSecond);
-        $this->assertSame(1, $first->value);
-        $this->assertSame(2, $second->value);
-        $this->assertSame(3, $third->value);
+        self::assertCount(1, $refreshedSecond);
+        self::assertSame(1, $first->value);
+        self::assertSame(2, $second->value);
+        self::assertSame(3, $third->value);
     }
 }
 

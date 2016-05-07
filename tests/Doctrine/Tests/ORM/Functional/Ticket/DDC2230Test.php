@@ -43,8 +43,8 @@ class DDC2230Test extends OrmFunctionalTestCase
         /* @var $address \Doctrine\Common\Proxy\Proxy */
         $address = $mergedUser->address;
 
-        $this->assertInstanceOf('Doctrine\\ORM\\Proxy\\Proxy', $address);
-        $this->assertFalse($address->__isInitialized());
+        self::assertInstanceOf('Doctrine\\ORM\\Proxy\\Proxy', $address);
+        self::assertFalse($address->__isInitialized());
     }
 
     public function testNotifyTrackingCalledOnProxyInitialization()
@@ -58,12 +58,12 @@ class DDC2230Test extends OrmFunctionalTestCase
         $addressProxy = $this->_em->getReference(__NAMESPACE__ . '\\DDC2230Address', $insertedAddress->id);
 
         /* @var $addressProxy \Doctrine\Common\Proxy\Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
-        $this->assertFalse($addressProxy->__isInitialized());
-        $this->assertNull($addressProxy->listener);
+        self::assertFalse($addressProxy->__isInitialized());
+        self::assertNull($addressProxy->listener);
 
         $addressProxy->__load();
 
-        $this->assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
+        self::assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
     }
 }
 

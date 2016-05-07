@@ -49,7 +49,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testImplementsCacheFactory()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheFactory', $this->factory);
+        self::assertInstanceOf('Doctrine\ORM\Cache\CacheFactory', $this->factory);
     }
 
     public function testBuildCachedEntityPersisterReadOnly()
@@ -69,8 +69,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister', $cachedPersister);
     }
 
     public function testBuildCachedEntityPersisterReadWrite()
@@ -90,8 +90,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', $cachedPersister);
     }
 
     public function testBuildCachedEntityPersisterNonStrictReadWrite()
@@ -111,8 +111,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister', $cachedPersister);
     }
 
     public function testBuildCachedCollectionPersisterReadOnly()
@@ -134,8 +134,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $cachedPersister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister', $cachedPersister);
     }
 
     public function testBuildCachedCollectionPersisterReadWrite()
@@ -156,8 +156,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $cachedPersister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', $cachedPersister);
     }
 
     public function testBuildCachedCollectionPersisterNonStrictReadWrite()
@@ -178,8 +178,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $cachedPersister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $cachedPersister);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister', $cachedPersister);
     }
 
     public function testInheritedEntityCacheRegion()
@@ -194,11 +194,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister1);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister2);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister1);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister2);
 
-        $this->assertNotSame($cachedPersister1, $cachedPersister2);
-        $this->assertSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
+        self::assertNotSame($cachedPersister1, $cachedPersister2);
+        self::assertSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
     }
 
     public function testCreateNewCacheDriver()
@@ -213,11 +213,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister1);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister2);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister1);
+        self::assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $cachedPersister2);
 
-        $this->assertNotSame($cachedPersister1, $cachedPersister2);
-        $this->assertNotSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
+        self::assertNotSame($cachedPersister1, $cachedPersister2);
+        self::assertNotSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
     }
 
     /**
@@ -280,8 +280,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
             'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
         ));
 
-        $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
-        $this->assertSame('bar', $barRegion->getCache()->getNamespace());
+        self::assertSame('foo', $fooRegion->getCache()->getNamespace());
+        self::assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion()
@@ -291,7 +291,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Cache\Region\DefaultRegion',
             $factory->getRegion(array(
                 'region' => 'bar',
@@ -307,7 +307,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Cache\Region\DefaultMultiGetRegion',
             $factory->getRegion(array(
                 'region' => 'bar',

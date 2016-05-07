@@ -47,8 +47,8 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $joe    = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 10);
         $alice  = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 11);
 
-        $this->assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
-        $this->assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
+        self::assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
+        self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
     public function testIndexByHydrateArray()
@@ -59,8 +59,8 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $joe    = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 10);
         $alice  = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 11);
 
-        $this->assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
-        $this->assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
+        self::assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
+        self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
     /**
@@ -72,19 +72,19 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        $this->assertEquals(3, count($result[0]->books)); // Alice, Joe doesn't appear because he has no books.
-        $this->assertEquals('Alice', $result[0]->name);
-        $this->assertTrue( isset($result[0]->books["In Wonderland"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]->books["Reloaded"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]->books["Test"] ), "Indexing by title should have books by title.");
+        self::assertEquals(3, count($result[0]->books)); // Alice, Joe doesn't appear because he has no books.
+        self::assertEquals('Alice', $result[0]->name);
+        self::assertTrue( isset($result[0]->books["In Wonderland"] ), "Indexing by title should have books by title.");
+        self::assertTrue( isset($result[0]->books["Reloaded"] ), "Indexing by title should have books by title.");
+        self::assertTrue( isset($result[0]->books["Test"] ), "Indexing by title should have books by title.");
 
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
-        $this->assertEquals(3, count($result[0]['books'])); // Alice, Joe doesn't appear because he has no books.
-        $this->assertEquals('Alice', $result[0]['name']);
-        $this->assertTrue( isset($result[0]['books']["In Wonderland"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]['books']["Reloaded"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]['books']["Test"] ), "Indexing by title should have books by title.");
+        self::assertEquals(3, count($result[0]['books'])); // Alice, Joe doesn't appear because he has no books.
+        self::assertEquals('Alice', $result[0]['name']);
+        self::assertTrue( isset($result[0]['books']["In Wonderland"] ), "Indexing by title should have books by title.");
+        self::assertTrue( isset($result[0]['books']["Reloaded"] ), "Indexing by title should have books by title.");
+        self::assertTrue( isset($result[0]['books']["Test"] ), "Indexing by title should have books by title.");
     }
 
     /**
@@ -96,14 +96,14 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC618Book', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', $result[0]->author);
+        self::assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC618Book', $result[0]);
+        self::assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', $result[0]->author);
 
         $dql = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B '.
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
-        $this->assertEquals("Alice", $result[0]['author']['name']);
+        self::assertEquals("Alice", $result[0]['author']['name']);
     }
 
     /**
@@ -115,13 +115,13 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        $this->assertArrayHasKey(11, $result); // Alice
+        self::assertArrayHasKey(11, $result); // Alice
 
-        $this->assertEquals(3, count($result[11]->books)); // Alice, Joe doesn't appear because he has no books.
-        $this->assertEquals('Alice', $result[11]->name);
-        $this->assertTrue( isset($result[11]->books["In Wonderland"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[11]->books["Reloaded"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[11]->books["Test"] ), "Indexing by title should have books by title.");
+        self::assertEquals(3, count($result[11]->books)); // Alice, Joe doesn't appear because he has no books.
+        self::assertEquals('Alice', $result[11]->name);
+        self::assertTrue( isset($result[11]->books["In Wonderland"] ), "Indexing by title should have books by title.");
+        self::assertTrue( isset($result[11]->books["Reloaded"] ), "Indexing by title should have books by title.");
+        self::assertTrue( isset($result[11]->books["Test"] ), "Indexing by title should have books by title.");
     }
 }
 

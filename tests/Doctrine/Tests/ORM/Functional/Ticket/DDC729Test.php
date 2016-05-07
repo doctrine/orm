@@ -34,20 +34,20 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $a = new DDC729A();
         $a->id = $aId;
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $a->related);
+        self::assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $a->related);
 
         $a = $this->_em->merge($a);
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $a->related);
+        self::assertInstanceOf('Doctrine\ORM\PersistentCollection', $a->related);
 
-        $this->assertFalse($a->related->isInitialized(), "Collection should not be marked initialized.");
-        $this->assertFalse($a->related->isDirty(), "Collection should not be marked as dirty.");
+        self::assertFalse($a->related->isInitialized(), "Collection should not be marked initialized.");
+        self::assertFalse($a->related->isDirty(), "Collection should not be marked as dirty.");
 
         $this->_em->flush();
         $this->_em->clear();
 
         $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
-        $this->assertEquals(1, count($a->related));
+        self::assertEquals(1, count($a->related));
     }
 
     public function testUnidirectionalMergeManyToMany()
@@ -77,7 +77,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
-        $this->assertEquals(2, count($a->related));
+        self::assertEquals(2, count($a->related));
     }
 
     public function testBidirectionalMergeManyToMany()
@@ -109,7 +109,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
-        $this->assertEquals(2, count($a->related));
+        self::assertEquals(2, count($a->related));
     }
 
     public function testBidirectionalMultiMergeManyToMany()
@@ -141,7 +141,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
-        $this->assertEquals(2, count($a->related));
+        self::assertEquals(2, count($a->related));
     }
 }
 

@@ -67,13 +67,13 @@ class DDC3644Test extends OrmFunctionalTestCase
         // We should only have 1 item in the collection list now
         $user = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
 
-        $this->assertCount(1, $user->addresses);
+        self::assertCount(1, $user->addresses);
 
         // We should only have 1 item in the addresses table too
         $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC3644Address');
         $addresses  = $repository->findAll();
 
-        $this->assertCount(1, $addresses);
+        self::assertCount(1, $addresses);
     }
 
     /**
@@ -117,13 +117,13 @@ class DDC3644Test extends OrmFunctionalTestCase
         // We should only have 1 item in the collection list now
         $user = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
 
-        $this->assertCount(1, $user->pets);
+        self::assertCount(1, $user->pets);
 
         // We should only have 1 item in the pets table too
         $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC3644Pet');
         $pets       = $repository->findAll();
 
-        $this->assertCount(1, $pets);
+        self::assertCount(1, $pets);
     }
 }
 

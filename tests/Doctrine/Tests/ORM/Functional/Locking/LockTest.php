@@ -148,7 +148,7 @@ class LockTest extends OrmFunctionalTestCase
 
         $query = array_pop( $this->_sqlLoggerStack->queries );
         $query = array_pop( $this->_sqlLoggerStack->queries );
-        $this->assertContains($writeLockSql, $query['sql']);
+        self::assertContains($writeLockSql, $query['sql']);
     }
 
     /**
@@ -179,7 +179,7 @@ class LockTest extends OrmFunctionalTestCase
 
         $query = array_pop( $this->_sqlLoggerStack->queries );
         $query = array_pop( $this->_sqlLoggerStack->queries );
-        $this->assertContains($readLockSql, $query['sql']);
+        self::assertContains($readLockSql, $query['sql']);
     }
 
     /**

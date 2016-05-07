@@ -37,7 +37,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
     public function testImplementsEntityEntryStructure()
     {
-        $this->assertInstanceOf('\Doctrine\ORM\Cache\EntityHydrator', $this->structure);
+        self::assertInstanceOf('\Doctrine\ORM\Cache\EntityHydrator', $this->structure);
     }
 
     public function testCreateEntity()
@@ -47,11 +47,11 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $entry    = new EntityCacheEntry($metadata->name, array('id'=>1, 'name'=>'Foo'));
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry);
 
-        $this->assertInstanceOf($metadata->name, $entity);
+        self::assertInstanceOf($metadata->name, $entity);
 
-        $this->assertEquals(1, $entity->getId());
-        $this->assertEquals('Foo', $entity->getName());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($entity));
+        self::assertEquals(1, $entity->getId());
+        self::assertEquals('Foo', $entity->getName());
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($entity));
     }
 
     public function testLoadProxy()
@@ -62,12 +62,12 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $proxy    = $this->em->getReference($metadata->name, $key->identifier);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
 
-        $this->assertInstanceOf($metadata->name, $entity);
-        $this->assertSame($proxy, $entity);
+        self::assertInstanceOf($metadata->name, $entity);
+        self::assertSame($proxy, $entity);
 
-        $this->assertEquals(1, $entity->getId());
-        $this->assertEquals('Foo', $entity->getName());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($proxy));
+        self::assertEquals(1, $entity->getId());
+        self::assertEquals('Foo', $entity->getName());
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($proxy));
     }
 
     public function testBuildCacheEntry()
@@ -83,12 +83,12 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
         $cache  = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertEquals(array(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertEquals(array(
             'id'   => 1,
             'name' => 'Foo',
         ), $cache->data);
@@ -112,13 +112,13 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $state);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertArrayHasKey('country', $cache->data);
-        $this->assertEquals(array(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertArrayHasKey('country', $cache->data);
+        self::assertEquals(array(
             'id'        => 12,
             'name'      => 'Bar',
             'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
@@ -140,13 +140,13 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertArrayHasKey('country', $cache->data);
-        $this->assertEquals(array(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertArrayHasKey('country', $cache->data);
+        self::assertEquals(array(
             'id'        => 12,
             'name'      => 'Bar',
             'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),
@@ -168,14 +168,14 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\CacheEntry', $cache);
+        self::assertInstanceOf('Doctrine\ORM\Cache\EntityCacheEntry', $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertArrayHasKey('country', $cache->data);
-        $this->assertSame($entity->getId(), $cache->data['id']);
-        $this->assertEquals(array(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertArrayHasKey('country', $cache->data);
+        self::assertSame($entity->getId(), $cache->data['id']);
+        self::assertEquals(array(
             'id'        => 12,
             'name'      => 'Bar',
             'country'   => new AssociationCacheEntry(Country::CLASSNAME, array('id' => 11)),

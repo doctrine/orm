@@ -49,7 +49,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
-        $this->assertEquals('string', $cm->fieldMappings['id']['type']->getName());
+        self::assertEquals('string', $cm->fieldMappings['id']['type']->getName());
     }
 
     /**
@@ -63,7 +63,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriverForCMSModels();
         $afterTestReset = $annotationDriver->getAllClassNames();
 
-        $this->assertEquals($original, $afterTestReset);
+        self::assertEquals($original, $afterTestReset);
     }
 
     /**
@@ -77,7 +77,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriverForCMSModels();
         $afterTestReset = $annotationDriver->getAllClassNames();
 
-        $this->assertEquals($original, $afterTestReset);
+        self::assertEquals($original, $afterTestReset);
     }
 
     /**
@@ -91,7 +91,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriverForCMSModels();
         $classes = $annotationDriver->getAllClassNames();
 
-        $this->assertContains($rightClassName, $classes);
+        self::assertContains($rightClassName, $classes);
     }
 
     /**
@@ -105,7 +105,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriverForCMSModels();
         $classes = $annotationDriver->getAllClassNames();
 
-        $this->assertNotContains($extraneousClassName, $classes);
+        self::assertNotContains($extraneousClassName, $classes);
     }
 
     protected function _loadDriverForCMSModels()
@@ -141,10 +141,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
-        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\File', $classPage->associationMappings['parentDirectory']['sourceEntity']);
+        self::assertEquals('Doctrine\Tests\Models\DirectoryTree\File', $classPage->associationMappings['parentDirectory']['sourceEntity']);
 
         $classDirectory = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\Directory');
-        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+        self::assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
     /**
@@ -202,10 +202,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationChild');
-        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        self::assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationParent');
-        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        self::assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
     }
 
     /**
@@ -245,10 +245,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $metadataWithoutOverride = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride');
         $metadataWithOverride = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithOverride');
 
-        $this->assertEquals('trait_foo', $metadataWithoutOverride->fieldMappings['foo']['columnName']);
-        $this->assertEquals('foo_overridden', $metadataWithOverride->fieldMappings['foo']['columnName']);
-        $this->assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
-        $this->assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
+        self::assertEquals('trait_foo', $metadataWithoutOverride->fieldMappings['foo']['columnName']);
+        self::assertEquals('foo_overridden', $metadataWithOverride->fieldMappings['foo']['columnName']);
+        self::assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
+        self::assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
     }
 }
 

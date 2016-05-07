@@ -78,16 +78,16 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT c, p FROM " . __NAMESPACE__ . "\DDC881PhoneCall c JOIN c.phonenumber p";
         $calls = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($calls));
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[0]->getPhoneNumber());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[1]->getPhoneNumber());
+        self::assertEquals(2, count($calls));
+        self::assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[0]->getPhoneNumber());
+        self::assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[1]->getPhoneNumber());
 
         $dql = "SELECT p, c FROM " . __NAMESPACE__ . "\DDC881PhoneNumber p JOIN p.calls c";
         $numbers = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($numbers));
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $numbers[0]->getCalls());
-        $this->assertTrue($numbers[0]->getCalls()->isInitialized());
+        self::assertEquals(2, count($numbers));
+        self::assertInstanceOf('Doctrine\ORM\PersistentCollection', $numbers[0]->getCalls());
+        self::assertTrue($numbers[0]->getCalls()->isInitialized());
     }
 
 }

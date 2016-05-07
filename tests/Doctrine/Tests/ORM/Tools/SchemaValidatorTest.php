@@ -82,7 +82,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class1);
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "The inverse join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key4' are missing.",
                 "The join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the source entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key2' are missing."
@@ -101,7 +101,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class2);
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
                 "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing."
@@ -120,7 +120,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class1);
 
-        $this->assertEquals(array(), $ce);
+        self::assertEquals(array(), $ce);
     }
 
     /**
@@ -131,7 +131,7 @@ class SchemaValidatorTest extends OrmTestCase
         $classThree = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1649Three');
         $ce = $this->validator->validateClass($classThree);
 
-        $this->assertEquals(Array(
+        self::assertEquals(Array(
             "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
             "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
         ), $ce);
@@ -145,7 +145,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3274One');
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional " .
                 "relationship, but the specified mappedBy association on the target-entity " .
@@ -163,7 +163,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322One');
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "The association Doctrine\Tests\ORM\Tools\DDC3322One#invalidAssoc is ordered by a foreign field " .
                 "invalidField that is not a field on the target entity Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1."
@@ -180,7 +180,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Two');
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by a field oneToMany " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association."
@@ -197,7 +197,7 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Three');
         $ce = $this->validator->validateClass($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "The association Doctrine\Tests\ORM\Tools\DDC3322Three#invalidAssoc is ordered by a field oneToOneInverse " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is the inverse side of an association."

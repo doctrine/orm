@@ -25,7 +25,7 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2895');
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 "prePersist" => array("setLastModifiedPreUpdate"),
                 "preUpdate" => array("setLastModifiedPreUpdate"),
@@ -42,7 +42,7 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /** @var DDC2895 $ddc2895 */
         $ddc2895 = $this->_em->find(get_class($ddc2895), $ddc2895->id);
 
-        $this->assertNotNull($ddc2895->getLastModified());
+        self::assertNotNull($ddc2895->getLastModified());
 
     }
 }

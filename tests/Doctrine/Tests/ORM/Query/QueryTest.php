@@ -27,7 +27,7 @@ class QueryTest extends OrmTestCase
 
         $parameters = new ArrayCollection();
 
-        $this->assertEquals($parameters, $query->getParameters());
+        self::assertEquals($parameters, $query->getParameters());
     }
 
     public function testGetParameters_HasSomeAlready()
@@ -38,7 +38,7 @@ class QueryTest extends OrmTestCase
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter(2, 84));
 
-        $this->assertEquals($parameters, $query->getParameters());
+        self::assertEquals($parameters, $query->getParameters());
     }
 
     public function testSetParameters()
@@ -51,7 +51,7 @@ class QueryTest extends OrmTestCase
 
         $query->setParameters($parameters);
 
-        $this->assertEquals($parameters, $query->getParameters());
+        self::assertEquals($parameters, $query->getParameters());
     }
 
     public function testFree()
@@ -61,7 +61,7 @@ class QueryTest extends OrmTestCase
 
         $query->free();
 
-        $this->assertEquals(0, count($query->getParameters()));
+        self::assertEquals(0, count($query->getParameters()));
     }
 
     public function testClone()
@@ -74,9 +74,9 @@ class QueryTest extends OrmTestCase
 
         $cloned = clone $query;
 
-        $this->assertEquals($dql, $cloned->getDQL());
-        $this->assertEquals(0, count($cloned->getParameters()));
-        $this->assertFalse($cloned->getHint('foo'));
+        self::assertEquals($dql, $cloned->getDQL());
+        self::assertEquals(0, count($cloned->getParameters()));
+        self::assertFalse($cloned->getHint('foo'));
     }
 
     public function testFluentQueryInterface()
@@ -96,7 +96,7 @@ class QueryTest extends OrmTestCase
           ->setFirstResult(10)
           ->setMaxResults(10);
 
-        $this->assertSame($q2, $q);
+        self::assertSame($q2, $q);
     }
 
     /**
@@ -107,11 +107,11 @@ class QueryTest extends OrmTestCase
         $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
         $q->setHint('foo', 'bar')->setHint('bar', 'baz');
 
-        $this->assertEquals('bar', $q->getHint('foo'));
-        $this->assertEquals('baz', $q->getHint('bar'));
-        $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
-        $this->assertTrue($q->hasHint('foo'));
-        $this->assertFalse($q->hasHint('barFooBaz'));
+        self::assertEquals('bar', $q->getHint('foo'));
+        self::assertEquals('baz', $q->getHint('bar'));
+        self::assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+        self::assertTrue($q->hasHint('foo'));
+        self::assertFalse($q->hasHint('barFooBaz'));
     }
 
     /**
@@ -122,7 +122,7 @@ class QueryTest extends OrmTestCase
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
         $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
         $q->useResultCache(true);
-        $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
+        self::assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
 
     /**
@@ -167,8 +167,8 @@ class QueryTest extends OrmTestCase
         $parameters = $query->getParameters();
         $parameter  = $parameters->first();
 
-        $this->assertEquals('cities', $parameter->getName());
-        $this->assertEquals($cities, $parameter->getValue());
+        self::assertEquals('cities', $parameter->getName());
+        self::assertEquals($cities, $parameter->getValue());
     }
 
     /**
@@ -177,7 +177,7 @@ class QueryTest extends OrmTestCase
     public function testProcessParameterValueClassMetadata()
     {
         $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
-        $this->assertEquals(
+        self::assertEquals(
             'Doctrine\Tests\Models\CMS\CmsAddress',
             $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
         );
@@ -194,11 +194,11 @@ class QueryTest extends OrmTestCase
 
         $config->setDefaultQueryHints($defaultHints);
         $query = $this->_em->createQuery();
-        $this->assertSame($config->getDefaultQueryHints(), $query->getHints());
+        self::assertSame($config->getDefaultQueryHints(), $query->getHints());
         $this->_em->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
-        $this->assertNotSame($config->getDefaultQueryHints(), $query->getHints());
+        self::assertNotSame($config->getDefaultQueryHints(), $query->getHints());
         $q2 = clone $query;
-        $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
+        self::assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
 
     /**
@@ -222,7 +222,7 @@ class QueryTest extends OrmTestCase
             //let it cache
             ->getResult();
 
-        $this->assertCount(1, $res);
+        self::assertCount(1, $res);
 
         $driverConnectionMock->setStatementMock(null);
 
@@ -230,7 +230,7 @@ class QueryTest extends OrmTestCase
             ->useQueryCache(true)
             ->useResultCache(false)
             ->getResult();
-        $this->assertCount(0, $res);
+        self::assertCount(0, $res);
     }
 
     /**
@@ -240,6 +240,6 @@ class QueryTest extends OrmTestCase
     {
         $query = $this->_em->createQuery();
         $query->setHydrationCacheProfile(null);
-        $this->assertNull($query->getHydrationCacheProfile());
+        self::assertNull($query->getHydrationCacheProfile());
     }
 }

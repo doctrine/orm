@@ -64,8 +64,8 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $class      = 'Doctrine\Tests\ORM\Functional\Ticket\DDC2252Membership';
         $membership = $this->_em->find($class, $identifier);
 
-        $this->assertInstanceOf($class, $membership);
-        $this->assertCount(3, $membership->getPrivileges());
+        self::assertInstanceOf($class, $membership);
+        self::assertCount(3, $membership->getPrivileges());
 
         $membership->getPrivileges()->remove(2);
         $this->_em->persist($membership);
@@ -74,8 +74,8 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $membership = $this->_em->find($class, $identifier);
 
-        $this->assertInstanceOf($class, $membership);
-        $this->assertCount(2, $membership->getPrivileges());
+        self::assertInstanceOf($class, $membership);
+        self::assertCount(2, $membership->getPrivileges());
 
         $membership->getPrivileges()->clear();
         $this->_em->persist($membership);
@@ -84,8 +84,8 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $membership = $this->_em->find($class, $identifier);
 
-        $this->assertInstanceOf($class, $membership);
-        $this->assertCount(0, $membership->getPrivileges());
+        self::assertInstanceOf($class, $membership);
+        self::assertCount(0, $membership->getPrivileges());
 
         $membership->addPrivilege($privilege3 = new DDC2252Privilege);
         $this->_em->persist($privilege3);
@@ -95,8 +95,8 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $membership = $this->_em->find($class, $identifier);
 
-        $this->assertInstanceOf($class, $membership);
-        $this->assertCount(1, $membership->getPrivileges());
+        self::assertInstanceOf($class, $membership);
+        self::assertCount(1, $membership->getPrivileges());
     }
 }
 
