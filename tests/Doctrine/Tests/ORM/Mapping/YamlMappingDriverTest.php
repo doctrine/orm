@@ -38,11 +38,11 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         $classPage = new ClassMetadata(File::class);
         $classPage = $factory->getMetadataFor(File::class);
-        $this->assertEquals(File::class, $classPage->associationMappings['parentDirectory']['sourceEntity']);
+        self::assertEquals(File::class, $classPage->associationMappings['parentDirectory']['sourceEntity']);
 
         $classDirectory = new ClassMetadata(Directory::class);
         $classDirectory = $factory->getMetadataFor(Directory::class);
-        $this->assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+        self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
     /**
@@ -68,14 +68,14 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $nameField  = $metadata->fieldMappings['name'];
         $valueField = $metadata->fieldMappings['value'];
 
-        $this->assertEquals('name', $unique[0]);
-        $this->assertEquals('value', $unique[1]);
+        self::assertEquals('name', $unique[0]);
+        self::assertEquals('value', $unique[1]);
 
-        $this->assertEquals('value', $indexes[0]);
-        $this->assertEquals('name', $indexes[1]);
+        self::assertEquals('value', $indexes[0]);
+        self::assertEquals('name', $indexes[1]);
 
-        $this->assertEquals(255, $nameField['length']);
-        $this->assertEquals(255, $valueField['length']);
+        self::assertEquals(255, $nameField['length']);
+        self::assertEquals(255, $valueField['length']);
     }
 
 }

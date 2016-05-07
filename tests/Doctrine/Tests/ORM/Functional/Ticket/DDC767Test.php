@@ -46,7 +46,7 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $pUser CmsUser */
         $pUser = $this->_em->find(get_class($user), $user->id);
 
-        $this->assertNotNull($pUser, "User not retrieved from database.");
+        self::assertNotNull($pUser, "User not retrieved from database.");
 
         $groups = [$group2->id, $group3->id];
 

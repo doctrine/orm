@@ -61,19 +61,19 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $cacheId   = new EntityCacheKey(Country::class, ['id'=>$countryId]);
         $region    = $this->_em->getCache()->getEntityCacheRegion(Country::class);
 
-        $this->assertTrue($this->cache->containsEntity(Country::class, $countryId));
+        self::assertTrue($this->cache->containsEntity(Country::class, $countryId));
 
         /** @var \Doctrine\Tests\Mocks\ConcurrentRegionMock */
         $region->setLock($cacheId, Lock::createLockRead()); // another proc lock the entity cache
 
-        $this->assertFalse($this->cache->containsEntity(Country::class, $countryId));
+        self::assertFalse($this->cache->containsEntity(Country::class, $countryId));
 
         $queryCount = $this->getCurrentQueryCount();
         $country    = $this->_em->find(Country::class, $countryId);
 
-        $this->assertInstanceOf(Country::class, $country);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertFalse($this->cache->containsEntity(Country::class, $countryId));
+        self::assertInstanceOf(Country::class, $country);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertFalse($this->cache->containsEntity(Country::class, $countryId));
     }
 
     public function testBasicConcurrentCollectionReadLock()
@@ -88,10 +88,10 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $stateId    = $this->states[0]->getId();
         $state      = $this->_em->find(State::class, $stateId);
 
-        $this->assertInstanceOf(State::class, $state);
-        $this->assertInstanceOf(Country::class, $state->getCountry());
-        $this->assertNotNull($state->getCountry()->getName());
-        $this->assertCount(2, $state->getCities());
+        self::assertInstanceOf(State::class, $state);
+        self::assertInstanceOf(Country::class, $state->getCountry());
+        self::assertNotNull($state->getCountry()->getName());
+        self::assertCount(2, $state->getCities());
 
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
@@ -100,31 +100,31 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $cacheId   = new CollectionCacheKey(State::class, 'cities', ['id'=>$stateId]);
         $region    = $this->_em->getCache()->getCollectionCacheRegion(State::class, 'cities');
 
-        $this->assertTrue($this->cache->containsCollection(State::class, 'cities', $stateId));
+        self::assertTrue($this->cache->containsCollection(State::class, 'cities', $stateId));
 
         /* @var $region \Doctrine\Tests\Mocks\ConcurrentRegionMock */
         $region->setLock($cacheId, Lock::createLockRead()); // another proc lock the entity cache
 
-        $this->assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
+        self::assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
 
         $queryCount = $this->getCurrentQueryCount();
         $state      = $this->_em->find(State::class, $stateId);
 
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getMissCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        self::assertEquals(0, $this->secondLevelCacheLogger->getMissCount());
+        self::assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
 
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionMissCount($this->getEntityRegion(State::class)));
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::class)));
+        self::assertEquals(0, $this->secondLevelCacheLogger->getRegionMissCount($this->getEntityRegion(State::class)));
+        self::assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::class)));
 
-        $this->assertInstanceOf(State::class, $state);
-        $this->assertCount(2, $state->getCities());
+        self::assertInstanceOf(State::class, $state);
+        self::assertCount(2, $state->getCities());
 
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getCollectionRegion(State::class, 'cities')));
+        self::assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
+        self::assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        self::assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getCollectionRegion(State::class, 'cities')));
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
     }
 }
 

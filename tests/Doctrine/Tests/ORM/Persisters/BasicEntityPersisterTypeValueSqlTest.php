@@ -55,7 +55,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $sql = $method->invoke($this->_persister);
 
-        $this->assertEquals('INSERT INTO customtype_parents (customInteger, child_id) VALUES (ABS(?), ?)', $sql);
+        self::assertEquals('INSERT INTO customtype_parents (customInteger, child_id) VALUES (ABS(?), ?)', $sql);
     }
 
     public function testUpdateUsesTypeValuesSQL()
@@ -76,7 +76,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $executeUpdates = $this->_em->getConnection()->getExecuteUpdates();
 
-        $this->assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeUpdates[0]['query']);
+        self::assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeUpdates[0]['query']);
     }
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL()
@@ -86,7 +86,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $sql = $method->invoke($this->_persister,  ['customInteger' => 1, 'child' => 1]);
 
-        $this->assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
+        self::assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
     }
 
     /**
@@ -98,7 +98,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $method     = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
-        $this->assertEquals('t1."simple-entity-id" AS simpleentityid_0, t1."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
+        self::assertEquals('t1."simple-entity-id" AS simpleentityid_0, t1."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
     }
 
     /**
@@ -107,19 +107,19 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testSelectConditionStatementIsNull()
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
-        $this->assertEquals('test IS NULL', $statement);
+        self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementEqNull()
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('test', null, [], Comparison::EQ);
-        $this->assertEquals('test IS NULL', $statement);
+        self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull()
     {
         $statement = $this->_persister->getSelectConditionStatementSQL('test', null, [], Comparison::NEQ);
-        $this->assertEquals('test IS NOT NULL', $statement);
+        self::assertEquals('test IS NOT NULL', $statement);
     }
 
     /**
@@ -127,17 +127,17 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
      */
     public function testSelectConditionStatementWithMultipleValuesContainingNull()
     {
-        $this->assertEquals(
+        self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
             $this->_persister->getSelectConditionStatementSQL('id', [null])
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
             $this->_persister->getSelectConditionStatementSQL('id', [null, 123])
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
             $this->_persister->getSelectConditionStatementSQL('id', [123, null])
         );
@@ -149,16 +149,16 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         // Using a criteria as array
         $statement = $persister->getCountSQL(['value' => 'bar']);
-        $this->assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
+        self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
 
         // Using a criteria object
         $criteria = new Criteria(Criteria::expr()->eq('value', 'bar'));
         $statement = $persister->getCountSQL($criteria);
-        $this->assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
+        self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
     }
 
     public function testCountEntities()
     {
-        $this->assertEquals(0, $this->_persister->count());
+        self::assertEquals(0, $this->_persister->count());
     }
 }

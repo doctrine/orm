@@ -43,8 +43,8 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadata = $this->convertToClassMetadata([$project, $user], []);
 
-        $this->assertTrue(isset($metadata['Ddc2059Project']->fieldMappings['user']));
-        $this->assertTrue(isset($metadata['Ddc2059Project']->associationMappings['user2']));
+        self::assertTrue(isset($metadata['Ddc2059Project']->fieldMappings['user']));
+        self::assertTrue(isset($metadata['Ddc2059Project']->associationMappings['user2']));
     }
 
     public function testLoadMetadataFromDatabase()
@@ -62,20 +62,20 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->extractClassMetadata(["DbdriverFoo"]);
 
-        $this->assertArrayHasKey('DbdriverFoo', $metadatas);
+        self::assertArrayHasKey('DbdriverFoo', $metadatas);
         $metadata = $metadatas['DbdriverFoo'];
 
-        $this->assertArrayHasKey('id', $metadata->fieldMappings);
-        $this->assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        $this->assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
+        self::assertArrayHasKey('id', $metadata->fieldMappings);
+        self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
+        self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
+        self::assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
 
-        $this->assertArrayHasKey('bar', $metadata->fieldMappings);
-        $this->assertEquals('bar', $metadata->fieldMappings['bar']['fieldName']);
-        $this->assertEquals('bar', strtolower($metadata->fieldMappings['bar']['columnName']));
-        $this->assertEquals('string', $metadata->fieldMappings['bar']['type']->getName());
-        $this->assertEquals(200, $metadata->fieldMappings['bar']['length']);
-        $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
+        self::assertArrayHasKey('bar', $metadata->fieldMappings);
+        self::assertEquals('bar', $metadata->fieldMappings['bar']['fieldName']);
+        self::assertEquals('bar', strtolower($metadata->fieldMappings['bar']['columnName']));
+        self::assertEquals('string', $metadata->fieldMappings['bar']['type']->getName());
+        self::assertEquals(200, $metadata->fieldMappings['bar']['length']);
+        self::assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 
     public function testLoadMetadataWithForeignKeyFromDatabase()
@@ -100,16 +100,16 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->extractClassMetadata(["DbdriverBar", "DbdriverBaz"]);
 
-        $this->assertArrayHasKey('DbdriverBaz', $metadatas);
+        self::assertArrayHasKey('DbdriverBaz', $metadatas);
         $bazMetadata = $metadatas['DbdriverBaz'];
 
-        $this->assertArrayNotHasKey('barId', $bazMetadata->fieldMappings, "The foreign Key field should not be inflected as 'barId' field, its an association.");
-        $this->assertArrayHasKey('id', $bazMetadata->fieldMappings);
+        self::assertArrayNotHasKey('barId', $bazMetadata->fieldMappings, "The foreign Key field should not be inflected as 'barId' field, its an association.");
+        self::assertArrayHasKey('id', $bazMetadata->fieldMappings);
 
         $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
 
-        $this->assertArrayHasKey('bar', $bazMetadata->associationMappings);
-        $this->assertEquals(ClassMetadata::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
+        self::assertArrayHasKey('bar', $bazMetadata->associationMappings);
+        self::assertEquals(ClassMetadata::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
     }
 
     public function testDetectManyToManyTables()
@@ -120,16 +120,16 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->extractClassMetadata(["CmsUsers", "CmsGroups", "CmsTags"]);
 
-        $this->assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
-        $this->assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
-        $this->assertArrayHasKey('CmsTags', $metadatas, 'CmsTags entity was not detected.');
+        self::assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
+        self::assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
+        self::assertArrayHasKey('CmsTags', $metadatas, 'CmsTags entity was not detected.');
 
-        $this->assertEquals(3, count($metadatas['CmsUsers']->associationMappings));
-        $this->assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
-        $this->assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
-        $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
-        $this->assertEquals(1, count($metadatas['CmsTags']->associationMappings));
-        $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
+        self::assertEquals(3, count($metadatas['CmsUsers']->associationMappings));
+        self::assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
+        self::assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
+        self::assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
+        self::assertEquals(1, count($metadatas['CmsTags']->associationMappings));
+        self::assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
     }
 
     public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails()
@@ -149,7 +149,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->convertToClassMetadata([$tableA, $tableB], [$tableMany]);
 
-        $this->assertEquals(0, count($metadatas['DbdriverBaz']->associationMappings), "no association mappings should be detected.");
+        self::assertEquals(0, count($metadatas['DbdriverBaz']->associationMappings), "no association mappings should be detected.");
     }
 
     public function testLoadMetadataFromDatabaseDetail()
@@ -179,41 +179,41 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->extractClassMetadata(["DbdriverFoo"]);
 
-        $this->assertArrayHasKey('DbdriverFoo', $metadatas);
+        self::assertArrayHasKey('DbdriverFoo', $metadatas);
 
         $metadata = $metadatas['DbdriverFoo'];
 
-        $this->assertArrayHasKey('id', $metadata->fieldMappings);
-        $this->assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        $this->assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
+        self::assertArrayHasKey('id', $metadata->fieldMappings);
+        self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
+        self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
+        self::assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
 
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
         if ( ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform AND
              ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform) {
-            $this->assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
-            $this->assertTrue($metadata->fieldMappings['columnUnsigned']['options']['unsigned']);
+            self::assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
+            self::assertTrue($metadata->fieldMappings['columnUnsigned']['options']['unsigned']);
         }
 
-        $this->assertArrayHasKey('columnComment', $metadata->fieldMappings);
-        $this->assertEquals('test_comment', $metadata->fieldMappings['columnComment']['options']['comment']);
+        self::assertArrayHasKey('columnComment', $metadata->fieldMappings);
+        self::assertEquals('test_comment', $metadata->fieldMappings['columnComment']['options']['comment']);
 
-        $this->assertArrayHasKey('columnDefault', $metadata->fieldMappings);
-        $this->assertEquals('test_default', $metadata->fieldMappings['columnDefault']['options']['default']);
+        self::assertArrayHasKey('columnDefault', $metadata->fieldMappings);
+        self::assertEquals('test_default', $metadata->fieldMappings['columnDefault']['options']['default']);
 
-        $this->assertArrayHasKey('columnDecimal', $metadata->fieldMappings);
-        $this->assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
-        $this->assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
+        self::assertArrayHasKey('columnDecimal', $metadata->fieldMappings);
+        self::assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
+        self::assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
 
-        $this->assertTrue( ! empty($metadata->table['indexes']['index1']['columns']));
-        $this->assertEquals(
+        self::assertTrue( ! empty($metadata->table['indexes']['index1']['columns']));
+        self::assertEquals(
             ['column_index1','column_index2'],
             $metadata->table['indexes']['index1']['columns']
         );
 
-        $this->assertTrue( ! empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
-        $this->assertEquals(
+        self::assertTrue( ! empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
+        self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
             $metadata->table['uniqueConstraints']['unique_index1']['columns']
         );

@@ -50,21 +50,21 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf->setMetadataFor($cm1->name, $cm1);
 
         // Prechecks
-        $this->assertEquals([], $cm1->parentClasses);
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
-        $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals(2, count($cm1->associationMappings));
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
-        $this->assertEquals('group', $cm1->table['name']);
+        self::assertEquals([], $cm1->parentClasses);
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
+        self::assertTrue($cm1->hasField('name'));
+        self::assertEquals(2, count($cm1->associationMappings));
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
+        self::assertEquals('group', $cm1->table['name']);
 
         // Go
         $cmMap1 = $cmf->getMetadataFor($cm1->name);
 
-        $this->assertSame($cm1, $cmMap1);
-        $this->assertEquals('group', $cmMap1->table['name']);
-        $this->assertTrue($cmMap1->table['quoted']);
-        $this->assertEquals([], $cmMap1->parentClasses);
-        $this->assertTrue($cmMap1->hasField('name'));
+        self::assertSame($cm1, $cmMap1);
+        self::assertEquals('group', $cmMap1->table['name']);
+        self::assertTrue($cmMap1->table['quoted']);
+        self::assertEquals([], $cmMap1->parentClasses);
+        self::assertTrue($cmMap1->hasField('name'));
     }
 
     public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
@@ -77,8 +77,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $actual = $cmf->getMetadataFor($cm1->name);
 
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->generatorType);
-        $this->assertInstanceOf(CustomIdGenerator::class, $actual->idGenerator);
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->generatorType);
+        self::assertInstanceOf(CustomIdGenerator::class, $actual->idGenerator);
     }
 
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
@@ -118,9 +118,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobal_Article::class);
         $m2 = $mf->getMetadataFor('\\' . DoctrineGlobal_Article::class);
 
-        $this->assertNotSame($m1, $m2);
-        $this->assertFalse($h2);
-        $this->assertTrue($h1);
+        self::assertNotSame($m1, $m2);
+        self::assertFalse($h2);
+        self::assertTrue($h1);
     }
 
     /**
@@ -141,8 +141,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $em = $this->_createEntityManager($driver);
 
-        $this->assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
-        $this->assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
+        self::assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
+        self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
     /**
@@ -164,8 +164,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $em = $this->_createEntityManager($driver);
         $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
 
-        $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
-        $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
+        self::assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
+        self::assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
 
     public function testAddDefaultDiscriminatorMap()
@@ -190,12 +190,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $childClassKey = array_search($childClass, $rootDiscriminatorMap);
         $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
 
-        $this->assertEquals('rootclass', $rootClassKey);
-        $this->assertEquals('childclass', $childClassKey);
-        $this->assertEquals('anotherchildclass', $anotherChildClassKey);
+        self::assertEquals('rootclass', $rootClassKey);
+        self::assertEquals('childclass', $childClassKey);
+        self::assertEquals('anotherchildclass', $anotherChildClassKey);
 
-        $this->assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
-        $this->assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
+        self::assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
+        self::assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
 
         // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
         // discriminator map is already cached
@@ -224,7 +224,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // getting all the metadata should work, even if get DatabasePlatform blows up
         $metadata = $cmf->getAllMetadata();
         // this will just be an empty array - there was no error
-        $this->assertEquals([], $metadata);
+        self::assertEquals([], $metadata);
     }
 
     protected function _createEntityManager($metadataDriver, $conn = null)
@@ -298,63 +298,63 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $addressMetadata    = $cmf->getMetadataFor(Quote\Address::class);
 
         // Phone Class Metadata
-        $this->assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
-        $this->assertEquals('phone-number', $phoneMetadata->fieldMappings['number']['columnName']);
+        self::assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
+        self::assertEquals('phone-number', $phoneMetadata->fieldMappings['number']['columnName']);
 
         $user = $phoneMetadata->associationMappings['user'];
-        $this->assertTrue($user['joinColumns'][0]['quoted']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
+        self::assertTrue($user['joinColumns'][0]['quoted']);
+        self::assertEquals('user-id', $user['joinColumns'][0]['name']);
+        self::assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
 
         // User Group Metadata
-        $this->assertTrue($groupMetadata->fieldMappings['id']['quoted']);
-        $this->assertTrue($groupMetadata->fieldMappings['name']['quoted']);
+        self::assertTrue($groupMetadata->fieldMappings['id']['quoted']);
+        self::assertTrue($groupMetadata->fieldMappings['name']['quoted']);
 
-        $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
+        self::assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
+        self::assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
         $user = $groupMetadata->associationMappings['parent'];
-        $this->assertTrue($user['joinColumns'][0]['quoted']);
-        $this->assertEquals('parent-id', $user['joinColumns'][0]['name']);
-        $this->assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
+        self::assertTrue($user['joinColumns'][0]['quoted']);
+        self::assertEquals('parent-id', $user['joinColumns'][0]['name']);
+        self::assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
 
         // Address Class Metadata
-        $this->assertTrue($addressMetadata->fieldMappings['id']['quoted']);
-        $this->assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
+        self::assertTrue($addressMetadata->fieldMappings['id']['quoted']);
+        self::assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
 
-        $this->assertEquals('address-id', $addressMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('address-zip', $addressMetadata->fieldMappings['zip']['columnName']);
+        self::assertEquals('address-id', $addressMetadata->fieldMappings['id']['columnName']);
+        self::assertEquals('address-zip', $addressMetadata->fieldMappings['zip']['columnName']);
 
         $user = $addressMetadata->associationMappings['user'];
 
-        $this->assertTrue($user['joinColumns'][0]['quoted']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
+        self::assertTrue($user['joinColumns'][0]['quoted']);
+        self::assertEquals('user-id', $user['joinColumns'][0]['name']);
+        self::assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
 
         // User Class Metadata
-        $this->assertTrue($userMetadata->fieldMappings['id']['quoted']);
-        $this->assertTrue($userMetadata->fieldMappings['name']['quoted']);
+        self::assertTrue($userMetadata->fieldMappings['id']['quoted']);
+        self::assertTrue($userMetadata->fieldMappings['name']['quoted']);
 
-        $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
+        self::assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
+        self::assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
         $address = $userMetadata->associationMappings['address'];
 
-        $this->assertTrue($address['joinColumns'][0]['quoted']);
-        $this->assertEquals('address-id', $address['joinColumns'][0]['name']);
-        $this->assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
+        self::assertTrue($address['joinColumns'][0]['quoted']);
+        self::assertEquals('address-id', $address['joinColumns'][0]['name']);
+        self::assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
 
         $groups = $userMetadata->associationMappings['groups'];
 
-        $this->assertTrue($groups['joinTable']['quoted']);
-        $this->assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
-        $this->assertEquals('quote-users-groups', $groups['joinTable']['name']);
-        $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['referencedColumnName']);
+        self::assertTrue($groups['joinTable']['quoted']);
+        self::assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
+        self::assertEquals('quote-users-groups', $groups['joinTable']['name']);
+        self::assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['name']);
+        self::assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['referencedColumnName']);
 
-        $this->assertTrue($groups['joinTable']['inverseJoinColumns'][0]['quoted']);
-        $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
-        $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
+        self::assertTrue($groups['joinTable']['inverseJoinColumns'][0]['quoted']);
+        self::assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
+        self::assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
     }
 
     /**
@@ -388,7 +388,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $eventManager->addEventListener([Events::onClassMetadataNotFound], $listener);
 
-        $this->assertSame($metadata, $cmf->getMetadataFor('Foo'));
+        self::assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }
 
     /**
@@ -404,7 +404,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $classMetadataFactory->setEntityManager($entityManager);
 
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
-        $this->assertAttributeSame($entityManager, 'em', $classMetadataFactory);
+        self::assertAttributeSame($entityManager, 'em', $classMetadataFactory);
     }
 
     /**
@@ -444,7 +444,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $userMetadata = $cmf->getMetadataFor(DDC4006User::class);
 
-        $this->assertTrue($userMetadata->isIdGeneratorIdentity());
+        self::assertTrue($userMetadata->isIdGeneratorIdentity());
     }
 }
 

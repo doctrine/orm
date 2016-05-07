@@ -43,13 +43,13 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->_articles->isInitialized());
-        $this->assertEquals(2, count($user->_articles));
-        $this->assertFalse($user->_articles->isInitialized());
+        self::assertFalse($user->_articles->isInitialized());
+        self::assertEquals(2, count($user->_articles));
+        self::assertFalse($user->_articles->isInitialized());
 
         foreach ($user->_articles AS $article) { }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
 
     public function testCountNotInitializesLegacyCollectionWithForeignIdentifier()
@@ -57,13 +57,13 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->_references->isInitialized());
-        $this->assertEquals(2, count($user->_references));
-        $this->assertFalse($user->_references->isInitialized());
+        self::assertFalse($user->_references->isInitialized());
+        self::assertEquals(2, count($user->_references));
+        self::assertFalse($user->_references->isInitialized());
 
         foreach ($user->_references AS $reference) { }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
 
     public function testCountNotInitializesLegacyManyToManyCollection()
@@ -71,13 +71,13 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->_cars->isInitialized());
-        $this->assertEquals(3, count($user->_cars));
-        $this->assertFalse($user->_cars->isInitialized());
+        self::assertFalse($user->_cars->isInitialized());
+        self::assertEquals(3, count($user->_cars));
+        self::assertFalse($user->_cars->isInitialized());
 
         foreach ($user->_cars AS $reference) { }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
 
     public function loadFixture()

@@ -44,25 +44,25 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];
 
-        $this->assertTrue($this->user->groups->contains($group1));
-        $this->assertTrue($this->user->groups->contains($group2));
+        self::assertTrue($this->user->groups->contains($group1));
+        self::assertTrue($this->user->groups->contains($group2));
 
         $this->user->groups->removeElement($group1);
         $this->user->groups->remove(1);
 
-        $this->assertFalse($this->user->groups->contains($group1));
-        $this->assertFalse($this->user->groups->contains($group2));
+        self::assertFalse($this->user->groups->contains($group1));
+        self::assertFalse($this->user->groups->contains($group2));
     }
 
     public function testClearCount()
     {
         $this->user->addGroup(new CmsGroup);
-        $this->assertEquals(3, count($this->user->groups));
+        self::assertEquals(3, count($this->user->groups));
 
         $this->user->groups->clear();
 
-        $this->assertEquals(0, $this->user->groups->count());
-        $this->assertEquals(0, count($this->user->groups));
+        self::assertEquals(0, $this->user->groups->count());
+        self::assertEquals(0, count($this->user->groups));
     }
 
     public function testClearContains()
@@ -70,12 +70,12 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];
 
-        $this->assertTrue($this->user->groups->contains($group1));
-        $this->assertTrue($this->user->groups->contains($group2));
+        self::assertTrue($this->user->groups->contains($group1));
+        self::assertTrue($this->user->groups->contains($group2));
 
         $this->user->groups->clear();
 
-        $this->assertFalse($this->user->groups->contains($group1));
-        $this->assertFalse($this->user->groups->contains($group2));
+        self::assertFalse($this->user->groups->contains($group1));
+        self::assertFalse($this->user->groups->contains($group2));
     }
 }

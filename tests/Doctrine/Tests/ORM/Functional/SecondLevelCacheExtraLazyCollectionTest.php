@@ -48,8 +48,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $owner      = $this->_em->find(Travel::class, $ownerId);
         $ref        = $this->_em->find(State::class, $this->states[1]->getId());
 
-        $this->assertTrue($this->cache->containsEntity(Travel::class, $ownerId));
-        $this->assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
+        self::assertTrue($this->cache->containsEntity(Travel::class, $ownerId));
+        self::assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
 
         $newItem = new City("New City", $ref);
         $owner->getVisitedCities()->add($newItem);
@@ -59,23 +59,23 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertEquals(4, $owner->getVisitedCities()->count());
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertEquals(4, $owner->getVisitedCities()->count());
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
         $this->_em->flush();
 
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertFalse($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertFalse($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
 
         $this->_em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
         $owner      = $this->_em->find(Travel::class, $ownerId);
 
-        $this->assertEquals(4, $owner->getVisitedCities()->count());
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals(4, $owner->getVisitedCities()->count());
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }

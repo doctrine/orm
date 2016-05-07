@@ -58,7 +58,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $id = $this->createProduct();
 
         $productProxy = $this->_em->getReference(ECommerceProduct::class, ['id' => $id]);
-        $this->assertEquals('Doctrine Cookbook', $productProxy->getName());
+        self::assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
 
     /**
@@ -71,7 +71,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
         $class = $this->_em->getClassMetadata(get_class($entity));
 
-        $this->assertEquals(ECommerceProduct::class, $class->name);
+        self::assertEquals(ECommerceProduct::class, $class->name);
     }
 
     /**
@@ -84,8 +84,8 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
         $entity2 = $this->_em->find(ECommerceProduct::class , $id);
 
-        $this->assertSame($entity, $entity2);
-        $this->assertEquals('Doctrine Cookbook', $entity2->getName());
+        self::assertSame($entity, $entity2);
+        self::assertEquals('Doctrine Cookbook', $entity2->getName());
     }
 
     /**
@@ -101,16 +101,16 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $clone ECommerceProduct */
         $clone = clone $entity;
 
-        $this->assertEquals($id, $entity->getId());
-        $this->assertEquals('Doctrine Cookbook', $entity->getName());
+        self::assertEquals($id, $entity->getId());
+        self::assertEquals('Doctrine Cookbook', $entity->getName());
 
-        $this->assertFalse($this->_em->contains($clone), "Cloning a reference proxy should return an unmanaged/detached entity.");
-        $this->assertEquals($id, $clone->getId(), "Cloning a reference proxy should return same id.");
-        $this->assertEquals('Doctrine Cookbook', $clone->getName(), "Cloning a reference proxy should return same product name.");
+        self::assertFalse($this->_em->contains($clone), "Cloning a reference proxy should return an unmanaged/detached entity.");
+        self::assertEquals($id, $clone->getId(), "Cloning a reference proxy should return same id.");
+        self::assertEquals('Doctrine Cookbook', $clone->getName(), "Cloning a reference proxy should return same product name.");
 
         // domain logic, Product::__clone sets isCloned public property
-        $this->assertTrue($clone->isCloned);
-        $this->assertFalse($entity->isCloned);
+        self::assertTrue($clone->isCloned);
+        self::assertFalse($entity->isCloned);
     }
 
     /**
@@ -123,9 +123,9 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $entity ECommerceProduct */
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        self::assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->_em->getUnitOfWork()->initializeObject($entity);
-        $this->assertTrue($entity->__isInitialized__, "Should be initialized after called UnitOfWork::initializeObject()");
+        self::assertTrue($entity->__isInitialized__, "Should be initialized after called UnitOfWork::initializeObject()");
     }
 
     /**
@@ -143,7 +143,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
-        $this->assertEquals('Doctrine 2 Cookbook', $entity->getName());
+        self::assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
 
     /**
@@ -156,11 +156,11 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $entity ECommerceProduct */
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
-        $this->assertFalse($entity->wakeUp);
+        self::assertFalse($entity->wakeUp);
 
         $entity->setName('Doctrine 2 Cookbook');
 
-        $this->assertTrue($entity->wakeUp, "Loading the proxy should call __wakeup().");
+        self::assertTrue($entity->wakeUp, "Loading the proxy should call __wakeup().");
     }
 
     public function testDoNotInitializeProxyOnGettingTheIdentifier()
@@ -170,9 +170,9 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $entity ECommerceProduct */
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
-        $this->assertEquals($id, $entity->getId());
-        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
+        self::assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        self::assertEquals($id, $entity->getId());
+        self::assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
     }
 
     /**
@@ -185,9 +185,9 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $entity CompanyAuction */
         $entity = $this->_em->getReference(CompanyAuction::class , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
-        $this->assertEquals($id, $entity->getId());
-        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
+        self::assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        self::assertEquals($id, $entity->getId());
+        self::assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
     }
 
     public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
@@ -207,10 +207,10 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $product = $this->_em->getRepository(ECommerceProduct::class)->find($product->getId());
 
         $entity = $product->getShipping();
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
-        $this->assertEquals($id, $entity->getId());
-        $this->assertSame($id, $entity->getId(), "Check that the id's are the same value, and type.");
-        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
+        self::assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        self::assertEquals($id, $entity->getId());
+        self::assertSame($id, $entity->getId(), "Check that the id's are the same value, and type.");
+        self::assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
     }
 
     public function testInitializeProxyOnGettingSomethingOtherThanTheIdentifier()
@@ -220,9 +220,9 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $entity ECommerceProduct */
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
-        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
-        $this->assertEquals('Doctrine Cookbook', $entity->getName());
-        $this->assertTrue($entity->__isInitialized__, "Getting something other than the identifier initializes the proxy.");
+        self::assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        self::assertEquals('Doctrine Cookbook', $entity->getName());
+        self::assertTrue($entity->__isInitialized__, "Getting something other than the identifier initializes the proxy.");
     }
 
     /**
@@ -236,16 +236,16 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $entity = $this->_em->getReference(ECommerceProduct::class , $id);
         $className = ClassUtils::getClass($entity);
 
-        $this->assertInstanceOf(Proxy::class, $entity);
-        $this->assertFalse($entity->__isInitialized());
-        $this->assertEquals(ECommerceProduct::class, $className);
+        self::assertInstanceOf(Proxy::class, $entity);
+        self::assertFalse($entity->__isInitialized());
+        self::assertEquals(ECommerceProduct::class, $className);
 
         $restName = str_replace($this->_em->getConfiguration()->getProxyNamespace(), "", get_class($entity));
         $restName = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) +1);
         $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace("\\", "", $restName) . ".php";
-        $this->assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
+        self::assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
 
         $entity->__load();
-        $this->assertTrue($entity->__isInitialized());
+        self::assertTrue($entity->__isInitialized());
     }
 }

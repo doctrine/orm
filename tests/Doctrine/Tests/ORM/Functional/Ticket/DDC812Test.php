@@ -40,7 +40,7 @@ class DDC812Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter(1, $article->id)
             ->getSingleResult();
 
-        $this->assertTrue($article2Again === $article2);
-        $this->assertTrue($article2Again->comments->isInitialized());
+        self::assertTrue($article2Again === $article2);
+        self::assertTrue($article2Again->comments->isInitialized());
     }
 }

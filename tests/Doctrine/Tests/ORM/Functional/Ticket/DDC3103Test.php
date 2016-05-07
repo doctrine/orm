@@ -18,12 +18,12 @@ class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->createAnnotationDriver()->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata);
 
-        $this->assertTrue(
+        self::assertTrue(
             $classMetadata->isEmbeddedClass,
             'The isEmbeddedClass property should be true from the mapping data.'
         );
 
-        $this->assertTrue(
+        self::assertTrue(
             unserialize(serialize($classMetadata))->isEmbeddedClass,
             'The isEmbeddedClass property should still be true after serialization and unserialization.'
         );

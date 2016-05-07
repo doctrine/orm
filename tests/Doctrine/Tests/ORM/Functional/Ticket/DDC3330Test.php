@@ -42,7 +42,7 @@ class DDC3330Test extends OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
 
-        $this->assertEquals(3, count(iterator_to_array($paginator)), 'Count is not correct for pagination');
+        self::assertEquals(3, count(iterator_to_array($paginator)), 'Count is not correct for pagination');
     }
 
     /**

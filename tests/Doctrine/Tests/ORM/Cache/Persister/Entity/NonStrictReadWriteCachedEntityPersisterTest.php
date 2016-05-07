@@ -37,11 +37,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testInsertTransactionCommitShouldPutCache()
@@ -74,11 +74,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister->addInsert($entity);
         $persister->executeInserts();
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateTransactionCommitShouldPutCache()
@@ -103,11 +103,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $persister->update($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteTransactionCommitShouldEvictCache()
@@ -131,10 +131,10 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $persister->delete($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

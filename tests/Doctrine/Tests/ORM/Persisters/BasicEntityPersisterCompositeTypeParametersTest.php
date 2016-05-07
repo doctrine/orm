@@ -46,8 +46,8 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         list ($values, $types) = $this->_persister->expandParameters(['admin1' => $admin1]);
 
-        $this->assertEquals([Type::getType('integer'), Type::getType('string')], $types);
-        $this->assertEquals([10, 'IT'], $values);
+        self::assertEquals([Type::getType('integer'), Type::getType('string')], $types);
+        self::assertEquals([10, 'IT'], $values);
     }
 
     public function testExpandCriteriaParametersWillExpandCompositeEntityKeys()
@@ -60,7 +60,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         list ($values, $types) = $this->_persister->expandCriteriaParameters($criteria);
 
-        $this->assertEquals([Type::getType('integer'), Type::getType('string')], $types);
-        $this->assertEquals([10, 'IT'], $values);
+        self::assertEquals([Type::getType('integer'), Type::getType('string')], $types);
+        self::assertEquals([10, 'IT'], $values);
     }
 }

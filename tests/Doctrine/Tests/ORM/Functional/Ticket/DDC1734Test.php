@@ -32,15 +32,15 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $proxy = $this->getProxy($group);
 
-        $this->assertInstanceOf(Proxy::class, $proxy);
-        $this->assertFalse($proxy->__isInitialized());
+        self::assertInstanceOf(Proxy::class, $proxy);
+        self::assertFalse($proxy->__isInitialized());
 
         $this->_em->detach($proxy);
         $this->_em->clear();
 
         $proxy = $this->_em->merge($proxy);
 
-        $this->assertEquals('Foo', $proxy->getName(), 'The entity is broken');
+        self::assertEquals('Foo', $proxy->getName(), 'The entity is broken');
     }
 
     /**
@@ -62,15 +62,15 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $proxy = $this->getProxy($group);
 
-        $this->assertInstanceOf(Proxy::class, $proxy);
-        $this->assertFalse($proxy->__isInitialized());
+        self::assertInstanceOf(Proxy::class, $proxy);
+        self::assertFalse($proxy->__isInitialized());
 
         $this->_em->detach($proxy);
         $serializedProxy = serialize($proxy);
         $this->_em->clear();
 
         $unserializedProxy = $this->_em->merge(unserialize($serializedProxy));
-        $this->assertEquals('Foo', $unserializedProxy->getName(), 'The entity is broken');
+        self::assertEquals('Foo', $unserializedProxy->getName(), 'The entity is broken');
     }
 
     /**

@@ -35,14 +35,14 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($parent);
         $this->_em->persist($child);
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
 
         $parentId = $parent->getId();
         $childId = $child->getId();
@@ -51,25 +51,25 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $parent = $this->_em->find(DDC1690Parent::class, $parentId);
         $child = $this->_em->find(DDC1690Child::class, $childId);
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
-        $this->assertCount(0, $child->listeners);
+        self::assertEquals(1, count($parent->listeners));
+        self::assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
+        self::assertCount(0, $child->listeners);
         $child->__load();
-        $this->assertCount(1, $child->listeners);
+        self::assertCount(1, $child->listeners);
         unset($parent, $child);
 
         $parent = $this->_em->find(DDC1690Parent::class, $parentId);
         $child = $parent->getChild();
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
         unset($parent, $child);
 
         $child = $this->_em->find(DDC1690Child::class, $childId);
         $parent = $child->getParent();
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
     }
 }
 

@@ -31,15 +31,15 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $customer = $this->_em->find(get_class($customer), $customer->id);
 
-        $this->assertInstanceOf(PersistentCollection::class, $customer->contacts);
-        $this->assertFalse($customer->contacts->isInitialized());
+        self::assertInstanceOf(PersistentCollection::class, $customer->contacts);
+        self::assertFalse($customer->contacts->isInitialized());
         $contact = new DDC422Contact;
         $customer->contacts->add($contact);
-        $this->assertTrue($customer->contacts->isDirty());
-        $this->assertFalse($customer->contacts->isInitialized());
+        self::assertTrue($customer->contacts->isDirty());
+        self::assertFalse($customer->contacts->isInitialized());
         $this->_em->flush();
 
-        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from ddc422_customers_contacts"));
+        self::assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from ddc422_customers_contacts"));
     }
 }
 

@@ -31,55 +31,55 @@ class DDC501Test extends OrmFunctionalTestCase
         $user = $this->createAndPersistUser();
         $this->_em->flush();
 
-        $this->assertTrue($this->_em->contains($user));
+        self::assertTrue($this->_em->contains($user));
         $this->_em->clear();
-        $this->assertFalse($this->_em->contains($user));
+        self::assertFalse($this->_em->contains($user));
 
         unset($user);
 
         // Reload User from DB *without* any associations (i.e. an uninitialized PersistantCollection)
         $userReloaded = $this->loadUserFromEntityManager();
 
-        $this->assertTrue($this->_em->contains($userReloaded));
+        self::assertTrue($this->_em->contains($userReloaded));
         $this->_em->clear();
-        $this->assertFalse($this->_em->contains($userReloaded));
+        self::assertFalse($this->_em->contains($userReloaded));
 
         // freeze and unfreeze
         $userClone = unserialize(serialize($userReloaded));
-        $this->assertInstanceOf(CmsUser::class, $userClone);
+        self::assertInstanceOf(CmsUser::class, $userClone);
 
         // detached user can't know about his phonenumbers
-        $this->assertEquals(0, count($userClone->getPhonenumbers()));
-        $this->assertFalse($userClone->getPhonenumbers()->isInitialized(), "User::phonenumbers should not be marked initialized.");
+        self::assertEquals(0, count($userClone->getPhonenumbers()));
+        self::assertFalse($userClone->getPhonenumbers()->isInitialized(), "User::phonenumbers should not be marked initialized.");
 
         // detached user can't know about his groups either
-        $this->assertEquals(0, count($userClone->getGroups()));
-        $this->assertFalse($userClone->getGroups()->isInitialized(), "User::groups should not be marked initialized.");
+        self::assertEquals(0, count($userClone->getGroups()));
+        self::assertFalse($userClone->getGroups()->isInitialized(), "User::groups should not be marked initialized.");
 
         // Merge back and flush
         $userClone = $this->_em->merge($userClone);
 
         // Back in managed world I would expect to have my phonenumbers back but they aren't!
 	// Remember I didn't touch (and probably didn't need) them at all while in detached mode.
-        $this->assertEquals(4, count($userClone->getPhonenumbers()), 'Phonenumbers are not available anymore');
+        self::assertEquals(4, count($userClone->getPhonenumbers()), 'Phonenumbers are not available anymore');
 
         // This works fine as long as cmUser::groups doesn't cascade "merge"
-        $this->assertEquals(2, count($userClone->getGroups()));
+        self::assertEquals(2, count($userClone->getGroups()));
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertFalse($this->_em->contains($userClone));
+        self::assertFalse($this->_em->contains($userClone));
 
         // Reload user from DB
         $userFromEntityManager = $this->loadUserFromEntityManager();
 
         //Strange: Now the phonenumbers are back again
-        $this->assertEquals(4, count($userFromEntityManager->getPhonenumbers()));
+        self::assertEquals(4, count($userFromEntityManager->getPhonenumbers()));
 
         // This works fine as long as cmUser::groups doesn't cascade "merge"
         // Otherwise group memberships are physically deleted now!
-        $this->assertEquals(2, count($userClone->getGroups()));
+        self::assertEquals(2, count($userClone->getGroups()));
     }
 
     protected function createAndPersistUser()

@@ -34,18 +34,18 @@ class DDC309Test extends OrmFunctionalTestCase
         $q = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309Country c')->iterate();
         $c = $q->next();
 
-        $this->assertEquals(1, $c[0]->id);
+        self::assertEquals(1, $c[0]->id);
 
         $r = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309User u')->iterate();
         $u = $r->next(); // This line breaks
 
-        $this->assertEquals(1, $u[0]->id);
+        self::assertEquals(1, $u[0]->id);
 
         $c = $q->next();
         $u = $r->next();
 
-        $this->assertEquals(2, $c[0]->id);
-        $this->assertEquals(2, $u[0]->id);
+        self::assertEquals(2, $c[0]->id);
+        self::assertEquals(2, $u[0]->id);
     }
 }
 
