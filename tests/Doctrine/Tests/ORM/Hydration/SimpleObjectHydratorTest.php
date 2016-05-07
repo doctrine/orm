@@ -67,7 +67,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $hydrator = new SimpleObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals($result[0], $expectedEntity);
+        self::assertEquals($result[0], $expectedEntity);
     }
 
     /**
@@ -127,6 +127,6 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $stmt       = new HydratorMockStatement($resultSet);
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
         $result = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+        self::assertEquals($result[0], $expectedEntity);
     }
 }

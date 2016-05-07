@@ -15,7 +15,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $childClassMetadata = new ClassMetadata('ChildEntity');
         $childClassMetadata->name = 'Some\Class\Child\Name';
         $childClassMetadata->discriminatorValue = 'child-discriminator';
-        
+
         $classMetadata = new ClassMetadata('Entity');
         $classMetadata->subClasses = [$childClassMetadata->name];
         $classMetadata->name = 'Some\Class\Name';
@@ -30,10 +30,10 @@ class HierarchyDiscriminatorResolverTest extends TestCase
             ->willReturn($childClassMetadata);
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
-        
-        $this->assertCount(2, $discriminators);
-        $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
-        $this->assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
+
+        self::assertCount(2, $discriminators);
+        self::assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
+        self::assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
     }
 
     public function testResolveDiscriminatorsForClassWithNoSubclasses()
@@ -49,8 +49,8 @@ class HierarchyDiscriminatorResolverTest extends TestCase
             ->willReturn($classMetadata);
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
-        
-        $this->assertCount(1, $discriminators);
-        $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
+
+        self::assertCount(1, $discriminators);
+        self::assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
     }
 }

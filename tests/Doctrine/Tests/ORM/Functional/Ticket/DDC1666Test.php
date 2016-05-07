@@ -28,13 +28,13 @@ class DDC1666Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->assertTrue($this->_em->contains($email));
+        self::assertTrue($this->_em->contains($email));
 
         $user->setEmail($newEmail = new CmsEmail());
         $newEmail->setEmail("benjamin.eberlei@googlemail.com");
 
         $this->_em->flush();
 
-        $this->assertFalse($this->_em->contains($email));
+        self::assertFalse($this->_em->contains($email));
     }
 }

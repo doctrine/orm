@@ -53,8 +53,8 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $exporter->setMetadata($converter->getMetadata());
         $exporter->export();
 
-        $this->assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
-        $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
+        self::assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
+        self::assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
 
         $metadataDriver = new YamlDriver(__DIR__ . '/convert');
         $em = $this->_createEntityManager($metadataDriver);
@@ -64,19 +64,19 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $profileClass = $cmf->getMetadataFor('Profile');
         $userClass = $cmf->getMetadataFor('User');
 
-        $this->assertEquals(2, count($metadata));
-        $this->assertEquals('Profile', $profileClass->name);
-        $this->assertEquals('User', $userClass->name);
-        $this->assertEquals(4, count($profileClass->fieldMappings));
-        $this->assertEquals(5, count($userClass->fieldMappings));
-        $this->assertEquals('text', $userClass->fieldMappings['clob']['type']->getName());
-        $this->assertEquals('test_alias', $userClass->fieldMappings['theAlias']['columnName']);
-        $this->assertEquals('theAlias', $userClass->fieldMappings['theAlias']['fieldName']);
+        self::assertEquals(2, count($metadata));
+        self::assertEquals('Profile', $profileClass->name);
+        self::assertEquals('User', $userClass->name);
+        self::assertEquals(4, count($profileClass->fieldMappings));
+        self::assertEquals(5, count($userClass->fieldMappings));
+        self::assertEquals('text', $userClass->fieldMappings['clob']['type']->getName());
+        self::assertEquals('test_alias', $userClass->fieldMappings['theAlias']['columnName']);
+        self::assertEquals('theAlias', $userClass->fieldMappings['theAlias']['fieldName']);
 
-        $this->assertEquals('Profile', $profileClass->associationMappings['User']['sourceEntity']);
-        $this->assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
+        self::assertEquals('Profile', $profileClass->associationMappings['User']['sourceEntity']);
+        self::assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
 
-        $this->assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
+        self::assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
     }
 
     public function tearDown()

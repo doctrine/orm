@@ -40,7 +40,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $newCart = new ECommerceCart();
         $this->_em->getUnitOfWork()->registerManaged($newCart, ['id' => $cardId], []);
         $persister->load(['customer_id' => $customer->getId()], $newCart, $class->associationMappings['customer']);
-        $this->assertEquals('Credit card', $newCart->getPayment());
+        self::assertEquals('Credit card', $newCart->getPayment());
     }
 
     /**
@@ -61,8 +61,8 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->assertEquals(2, count($p->getFeatures()));
-        $this->assertInstanceOf(PersistentCollection::class, $p->getFeatures());
+        self::assertEquals(2, count($p->getFeatures()));
+        self::assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
         $q = $this->_em->createQuery(
             'SELECT p, f
@@ -72,15 +72,15 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         $res = $q->getResult();
 
-        $this->assertEquals(2, count($p->getFeatures()));
-        $this->assertInstanceOf(PersistentCollection::class, $p->getFeatures());
+        self::assertEquals(2, count($p->getFeatures()));
+        self::assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
         // Check that the features are the same instances still
         foreach ($p->getFeatures() as $feature) {
             if ($feature->getDescription() == 'AC-3') {
-                $this->assertTrue($feature === $f1);
+                self::assertTrue($feature === $f1);
             } else {
-                $this->assertTrue($feature === $f2);
+                self::assertTrue($feature === $f2);
             }
         }
 
@@ -103,6 +103,6 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $res = $q->getResult();
 
         // Persisted Product now must have 3 Feature items
-        $this->assertEquals(3, count($res[0]->getFeatures()));
+        self::assertEquals(3, count($res[0]->getFeatures()));
     }
 }

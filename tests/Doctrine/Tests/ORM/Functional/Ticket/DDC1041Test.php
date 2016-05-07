@@ -26,8 +26,8 @@ class DDC1041Test extends OrmFunctionalTestCase
 
         $id = $fix->getId();
 
-        $this->assertNull($this->_em->find(Models\Company\CompanyFlexContract::class, $id));
-        $this->assertNull($this->_em->getReference(Models\Company\CompanyFlexContract::class, $id));
-        $this->assertNull($this->_em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->_em->find(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->_em->getReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->_em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
     }
 }

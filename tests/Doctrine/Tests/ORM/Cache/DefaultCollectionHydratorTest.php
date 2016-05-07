@@ -35,7 +35,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 
     public function testImplementsCollectionEntryStructure()
     {
-        $this->assertInstanceOf(DefaultCollectionHydrator::class, $this->structure);
+        self::assertInstanceOf(DefaultCollectionHydrator::class, $this->structure);
     }
 
     public function testLoadCacheCollection()
@@ -59,24 +59,24 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $collection     = new PersistentCollection($this->_em, $targetClass, new ArrayCollection());
         $list           = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
 
-        $this->assertNotNull($list);
-        $this->assertCount(2, $list);
-        $this->assertCount(2, $collection);
+        self::assertNotNull($list);
+        self::assertCount(2, $list);
+        self::assertCount(2, $collection);
 
-        $this->assertInstanceOf($targetClass->name, $list[0]);
-        $this->assertInstanceOf($targetClass->name, $list[1]);
-        $this->assertInstanceOf($targetClass->name, $collection[0]);
-        $this->assertInstanceOf($targetClass->name, $collection[1]);
+        self::assertInstanceOf($targetClass->name, $list[0]);
+        self::assertInstanceOf($targetClass->name, $list[1]);
+        self::assertInstanceOf($targetClass->name, $collection[0]);
+        self::assertInstanceOf($targetClass->name, $collection[1]);
 
-        $this->assertSame($list[0], $collection[0]);
-        $this->assertSame($list[1], $collection[1]);
+        self::assertSame($list[0], $collection[0]);
+        self::assertSame($list[1], $collection[1]);
 
-        $this->assertEquals(31, $list[0]->getId());
-        $this->assertEquals(32, $list[1]->getId());
-        $this->assertEquals($list[0]->getId(), $collection[0]->getId());
-        $this->assertEquals($list[1]->getId(), $collection[1]->getId());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($collection[0]));
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($collection[1]));
+        self::assertEquals(31, $list[0]->getId());
+        self::assertEquals(32, $list[1]->getId());
+        self::assertEquals($list[0]->getId(), $collection[0]->getId());
+        self::assertEquals($list[1]->getId(), $collection[1]->getId());
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($collection[0]));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($collection[1]));
     }
 
 }

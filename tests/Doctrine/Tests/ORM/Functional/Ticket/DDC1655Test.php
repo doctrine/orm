@@ -54,10 +54,10 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPostLoadOneToManyInheritance()
     {
         $cm = $this->_em->getClassMetadata(DDC1655Foo::class);
-        $this->assertEquals(["postLoad" => ["postLoad"]], $cm->lifecycleCallbacks);
+        self::assertEquals(["postLoad" => ["postLoad"]], $cm->lifecycleCallbacks);
 
         $cm = $this->_em->getClassMetadata(DDC1655Bar::class);
-        $this->assertEquals(["postLoad" => ["postLoad", "postSubLoaded"]], $cm->lifecycleCallbacks);
+        self::assertEquals(["postLoad" => ["postLoad", "postSubLoaded"]], $cm->lifecycleCallbacks);
 
         $baz = new DDC1655Baz();
         $foo = new DDC1655Foo();
@@ -73,7 +73,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $baz = $this->_em->find(get_class($baz), $baz->id);
         foreach ($baz->foos as $foo) {
-            $this->assertEquals(1, $foo->loaded, "should have loaded callback counter incremented for " . get_class($foo));
+            self::assertEquals(1, $foo->loaded, "should have loaded callback counter incremented for " . get_class($foo));
         }
     }
 
@@ -90,23 +90,23 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $bar = $this->_em->find(get_class($bar), $bar->id);
-        $this->assertEquals(1, $bar->loaded);
-        $this->assertEquals(1, $bar->subLoaded);
+        self::assertEquals(1, $bar->loaded);
+        self::assertEquals(1, $bar->subLoaded);
 
         $bar = $this->_em->find(get_class($bar), $bar->id);
-        $this->assertEquals(1, $bar->loaded);
-        $this->assertEquals(1, $bar->subLoaded);
+        self::assertEquals(1, $bar->loaded);
+        self::assertEquals(1, $bar->subLoaded);
 
         $dql = "SELECT b FROM " . __NAMESPACE__ . "\DDC1655Bar b WHERE b.id = ?1";
         $bar = $this->_em->createQuery($dql)->setParameter(1, $bar->id)->getSingleResult();
 
-        $this->assertEquals(1, $bar->loaded);
-        $this->assertEquals(1, $bar->subLoaded);
+        self::assertEquals(1, $bar->loaded);
+        self::assertEquals(1, $bar->subLoaded);
 
         $this->_em->refresh($bar);
 
-        $this->assertEquals(2, $bar->loaded);
-        $this->assertEquals(2, $bar->subLoaded);
+        self::assertEquals(2, $bar->loaded);
+        self::assertEquals(2, $bar->subLoaded);
     }
 }
 

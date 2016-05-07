@@ -51,7 +51,7 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = end($logger->queries);
 
-        $this->assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
+        self::assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
 }
 

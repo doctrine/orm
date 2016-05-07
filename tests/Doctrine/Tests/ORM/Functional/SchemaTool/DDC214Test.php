@@ -41,7 +41,7 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\CMS\CmsEmail::class,
         ];
 
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        self::assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     /**
@@ -60,7 +60,7 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\Company\CompanyCar::class
         ];
 
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        self::assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     public function assertCreatedSchemaNeedsNoUpdates($classes)
@@ -87,6 +87,6 @@ class DDC214Test extends OrmFunctionalTestCase
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
 
-        $this->assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));
+        self::assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));
     }
 }

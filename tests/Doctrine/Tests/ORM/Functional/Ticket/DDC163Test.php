@@ -56,8 +56,8 @@ class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->setParameter('name2', "p4");
         $result = $q->getScalarResult();
 
-        $this->assertEquals('p3', $result[0]['spouse_name']);
-        $this->assertEquals('p1', $result[0]['person_name']);
-        $this->assertEquals('p2', $result[0]['friend_name']);
+        self::assertEquals('p3', $result[0]['spouse_name']);
+        self::assertEquals('p1', $result[0]['person_name']);
+        self::assertEquals('p2', $result[0]['friend_name']);
     }
 }
