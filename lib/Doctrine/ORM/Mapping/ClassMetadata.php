@@ -1995,21 +1995,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets the type of a column.
-     *
-     * @param string $columnName
-     *
-     * @return \Doctrine\DBAL\Types\Type|string|null
-     *
-     * @deprecated 3.0 remove this. this method is bogous and unreliable, since it cannot resolve the type of a column
-     *             that is derived by a referenced field on a different entity.
-     */
-    public function getTypeOfColumn($columnName)
-    {
-        return $this->getTypeOfField($this->getFieldName($columnName));
-    }
-
-    /**
      * Gets the name of the primary table.
      *
      * @return string
