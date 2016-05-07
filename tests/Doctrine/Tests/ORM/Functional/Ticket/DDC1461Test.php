@@ -29,8 +29,8 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
+        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
+        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
 
         $acc = new DDC1461TwitterAccount;
         $user->twitterAccount = $acc;
@@ -39,7 +39,7 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $user = $this->_em->find(get_class($user), $user->id);
-        $this->assertNotNull($user->twitterAccount);
+        self::assertNotNull($user->twitterAccount);
     }
 }
 

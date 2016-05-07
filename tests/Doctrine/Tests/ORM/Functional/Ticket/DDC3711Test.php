@@ -20,10 +20,10 @@ class DDC3711Test extends YamlMappingDriverTest
         $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $entityA = new ClassMetadata(DDC3711EntityA::class);
-        $entityA = $factory->getMetadataFor(DDC3711EntityA::class);
+        $metadataA = new ClassMetadata(DDC3711EntityA::class);
+        $entityA   = $factory->getMetadataFor(DDC3711EntityA::class);
 
-        $this->assertEquals(['link_a_id1' => "id1", 'link_a_id2' => "id2"], $entityA->associationMappings['entityB']['relationToSourceKeyColumns']);
-        $this->assertEquals(['link_b_id1' => "id1", 'link_b_id2' => "id2"], $entityA->associationMappings['entityB']['relationToTargetKeyColumns']);
+        self::assertEquals(['link_a_id1' => "id1", 'link_a_id2' => "id2"], $entityA->associationMappings['entityB']['relationToSourceKeyColumns']);
+        self::assertEquals(['link_b_id1' => "id1", 'link_b_id2' => "id2"], $entityA->associationMappings['entityB']['relationToTargetKeyColumns']);
     }
 }

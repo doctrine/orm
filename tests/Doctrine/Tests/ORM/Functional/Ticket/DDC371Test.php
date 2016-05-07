@@ -44,10 +44,10 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setHint(Query::HINT_REFRESH, true)
                 ->getResult();
 
-        $this->assertEquals(1, count($children));
-        $this->assertNotInstanceOf(Proxy::class, $children[0]->parent);
-        $this->assertFalse($children[0]->parent->children->isInitialized());
-        $this->assertEquals(0, $children[0]->parent->children->unwrap()->count());
+        self::assertEquals(1, count($children));
+        self::assertNotInstanceOf(Proxy::class, $children[0]->parent);
+        self::assertFalse($children[0]->parent->children->isInitialized());
+        self::assertEquals(0, $children[0]->parent->children->unwrap()->count());
     }
 }
 

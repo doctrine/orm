@@ -32,13 +32,13 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Test initial state
-        $this->assertTrue(count($cm->getReflectionProperties()) == 0);
-        $this->assertInstanceOf('ReflectionClass', $cm->reflClass);
-        $this->assertEquals(CMS\CmsUser::class, $cm->name);
-        $this->assertEquals(CMS\CmsUser::class, $cm->rootEntityName);
-        $this->assertEquals([], $cm->subClasses);
-        $this->assertEquals([], $cm->parentClasses);
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
+        self::assertTrue(count($cm->getReflectionProperties()) == 0);
+        self::assertInstanceOf('ReflectionClass', $cm->reflClass);
+        self::assertEquals(CMS\CmsUser::class, $cm->name);
+        self::assertEquals(CMS\CmsUser::class, $cm->rootEntityName);
+        self::assertEquals([], $cm->subClasses);
+        self::assertEquals([], $cm->parentClasses);
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
@@ -49,29 +49,29 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapOneToOne(['fieldName' => 'phonenumbers', 'targetEntity' => 'CmsAddress', 'mappedBy' => 'foo']);
         $cm->markReadOnly();
         $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
-        $this->assertEquals(1, count($cm->associationMappings));
+        self::assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
         $cm->wakeupReflection(new RuntimeReflectionService());
 
         // Check state
-        $this->assertTrue(count($cm->getReflectionProperties()) > 0);
-        $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
-        $this->assertEquals(CMS\CmsUser::class, $cm->name);
-        $this->assertEquals('UserParent', $cm->rootEntityName);
-        $this->assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
-        $this->assertEquals(['UserParent'], $cm->parentClasses);
-        $this->assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
-        $this->assertEquals(['name' => 'disc', 'type' => Type::getType('integer'), 'fieldName' => 'disc'], $cm->discriminatorColumn);
-        $this->assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
-        $this->assertEquals(1, count($cm->associationMappings));
+        self::assertTrue(count($cm->getReflectionProperties()) > 0);
+        self::assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
+        self::assertEquals(CMS\CmsUser::class, $cm->name);
+        self::assertEquals('UserParent', $cm->rootEntityName);
+        self::assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
+        self::assertEquals(['UserParent'], $cm->parentClasses);
+        self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
+        self::assertEquals(['name' => 'disc', 'type' => Type::getType('integer'), 'fieldName' => 'disc'], $cm->discriminatorColumn);
+        self::assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
+        self::assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
-        $this->assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
-        $this->assertEquals('phonenumbers', $oneOneMapping['fieldName']);
-        $this->assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
-        $this->assertTrue($cm->isReadOnly);
-        $this->assertEquals(['dql' => ['name'=>'dql','query'=>'foo','dql'=>'foo']], $cm->namedQueries);
+        self::assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
+        self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
+        self::assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
+        self::assertTrue($cm->isReadOnly);
+        self::assertEquals(['dql' => ['name'=>'dql','query'=>'foo','dql'=>'foo']], $cm->namedQueries);
     }
 
     public function testFieldIsNullable()
@@ -81,15 +81,15 @@ class ClassMetadataTest extends OrmTestCase
 
         // Explicit Nullable
         $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50]);
-        $this->assertTrue($cm->isNullable('status'));
+        self::assertTrue($cm->isNullable('status'));
 
         // Explicit Not Nullable
         $cm->mapField(['fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('username'));
+        self::assertFalse($cm->isNullable('username'));
 
         // Implicit Not Nullable
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
+        self::assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
     }
 
     /**
@@ -113,7 +113,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']['targetEntity']);
+        self::assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']['targetEntity']);
     }
 
     public function testMapManyToManyJoinTableDefaults()
@@ -128,13 +128,17 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         $assoc = $cm->associationMappings['groups'];
-        $this->assertEquals(
+
+        self::assertEquals(
             [
-            'name' => 'cmsuser_cmsgroup',
-            'joinColumns' => [['name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
-            'inverseJoinColumns' => [['name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']]
-            ], $assoc['joinTable']);
-        $this->assertTrue($assoc['isOnDeleteCascade']);
+                'name' => 'cmsuser_cmsgroup',
+                'joinColumns' => [['name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
+                'inverseJoinColumns' => [['name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']]
+            ],
+            $assoc['joinTable']
+        );
+
+        self::assertTrue($assoc['isOnDeleteCascade']);
     }
 
     public function testSerializeManyToManyJoinTableCascade()
@@ -143,8 +147,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToMany(
             [
-            'fieldName' => 'groups',
-            'targetEntity' => 'CmsGroup'
+                'fieldName' => 'groups',
+                'targetEntity' => 'CmsGroup'
             ]
         );
 
@@ -152,7 +156,7 @@ class ClassMetadataTest extends OrmTestCase
         $assoc = $cm->associationMappings['groups'];
         $assoc = unserialize(serialize($assoc));
 
-        $this->assertTrue($assoc['isOnDeleteCascade']);
+        self::assertTrue($assoc['isOnDeleteCascade']);
     }
 
     /**
@@ -166,8 +170,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setDiscriminatorMap(['descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User']);
 
-        $this->assertEquals("DoctrineGlobal_Article", $cm->discriminatorMap['descr']);
-        $this->assertEquals("DoctrineGlobal_User", $cm->discriminatorMap['foo']);
+        self::assertEquals("DoctrineGlobal_Article", $cm->discriminatorMap['descr']);
+        self::assertEquals("DoctrineGlobal_User", $cm->discriminatorMap['foo']);
     }
 
     /**
@@ -181,7 +185,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setSubclasses(['DoctrineGlobal_Article']);
 
-        $this->assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
+        self::assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
     }
 
     /**
@@ -297,7 +301,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm->setTableName('foo.bar');
 
-        $this->assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
+        self::assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
     }
 
     public function testDefaultTableName()
@@ -309,8 +313,8 @@ class ClassMetadataTest extends OrmTestCase
         $primaryTable = [];
         $cm->setPrimaryTable($primaryTable);
 
-        $this->assertEquals('CmsUser', $cm->getTableName());
-        $this->assertEquals('CmsUser', $cm->table['name']);
+        self::assertEquals('CmsUser', $cm->getTableName());
+        self::assertEquals('CmsUser', $cm->table['name']);
 
         $cm = new ClassMetadata(CMS\CmsAddress::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -326,7 +330,7 @@ class ClassMetadataTest extends OrmTestCase
                 ]
             ]
         );
-        $this->assertEquals('cmsaddress_cmsuser', $cm->associationMappings['user']['joinTable']['name']);
+        self::assertEquals('cmsaddress_cmsuser', $cm->associationMappings['user']['joinTable']['name']);
     }
 
     public function testDefaultJoinColumnName()
@@ -343,7 +347,7 @@ class ClassMetadataTest extends OrmTestCase
             'joinColumns' => [['referencedColumnName' => 'id']]
             ]
         );
-        $this->assertEquals('user_id', $cm->associationMappings['user']['joinColumns'][0]['name']);
+        self::assertEquals('user_id', $cm->associationMappings['user']['joinColumns'][0]['name']);
 
         $cm = new ClassMetadata(CMS\CmsAddress::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -359,8 +363,8 @@ class ClassMetadataTest extends OrmTestCase
                 ]
             ]
         );
-        $this->assertEquals('cmsaddress_id', $cm->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
+        self::assertEquals('cmsaddress_id', $cm->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
+        self::assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
     }
 
     /**
@@ -386,30 +390,30 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals(['USER_ID'=>'ID'], $oneToOneMetadata->associationMappings['user']['sourceToTargetKeyColumns']);
-        $this->assertEquals(['USER_ID'=>'USER_ID'], $oneToOneMetadata->associationMappings['user']['joinColumnFieldNames']);
-        $this->assertEquals(['ID'=>'USER_ID'], $oneToOneMetadata->associationMappings['user']['targetToSourceKeyColumns']);
+        self::assertEquals(['USER_ID'=>'ID'], $oneToOneMetadata->associationMappings['user']['sourceToTargetKeyColumns']);
+        self::assertEquals(['USER_ID'=>'USER_ID'], $oneToOneMetadata->associationMappings['user']['joinColumnFieldNames']);
+        self::assertEquals(['ID'=>'USER_ID'], $oneToOneMetadata->associationMappings['user']['targetToSourceKeyColumns']);
 
-        $this->assertEquals('USER_ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['name']);
-        $this->assertEquals('ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('USER_ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['name']);
+        self::assertEquals('ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['referencedColumnName']);
 
 
-        $this->assertEquals('CMS_ADDRESS_CMS_USER', $manyToManyMetadata->associationMappings['user']['joinTable']['name']);
+        self::assertEquals('CMS_ADDRESS_CMS_USER', $manyToManyMetadata->associationMappings['user']['joinTable']['name']);
 
-        $this->assertEquals(['CMS_ADDRESS_ID','CMS_USER_ID'], $manyToManyMetadata->associationMappings['user']['joinTableColumns']);
-        $this->assertEquals(['CMS_ADDRESS_ID'=>'ID'], $manyToManyMetadata->associationMappings['user']['relationToSourceKeyColumns']);
-        $this->assertEquals(['CMS_USER_ID'=>'ID'], $manyToManyMetadata->associationMappings['user']['relationToTargetKeyColumns']);
+        self::assertEquals(['CMS_ADDRESS_ID','CMS_USER_ID'], $manyToManyMetadata->associationMappings['user']['joinTableColumns']);
+        self::assertEquals(['CMS_ADDRESS_ID'=>'ID'], $manyToManyMetadata->associationMappings['user']['relationToSourceKeyColumns']);
+        self::assertEquals(['CMS_USER_ID'=>'ID'], $manyToManyMetadata->associationMappings['user']['relationToTargetKeyColumns']);
 
-        $this->assertEquals('CMS_ADDRESS_ID', $manyToManyMetadata->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('CMS_USER_ID', $manyToManyMetadata->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
+        self::assertEquals('CMS_ADDRESS_ID', $manyToManyMetadata->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
+        self::assertEquals('CMS_USER_ID', $manyToManyMetadata->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
 
-        $this->assertEquals('ID', $manyToManyMetadata->associationMappings['user']['joinTable']['joinColumns'][0]['referencedColumnName']);
-        $this->assertEquals('ID', $manyToManyMetadata->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
+        self::assertEquals('ID', $manyToManyMetadata->associationMappings['user']['joinTable']['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('ID', $manyToManyMetadata->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
 
 
         $cm = new ClassMetadata('DoctrineGlobal_Article', $namingStrategy);
         $cm->mapManyToMany(['fieldName' => 'author', 'targetEntity' => CMS\CmsUser::class]);
-        $this->assertEquals('DOCTRINE_GLOBAL_ARTICLE_CMS_USER', $cm->associationMappings['author']['joinTable']['name']);
+        self::assertEquals('DOCTRINE_GLOBAL_ARTICLE_CMS_USER', $cm->associationMappings['author']['joinTable']['name']);
     }
 
     /**
@@ -424,7 +428,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'username']);
 
         $cm->setIdentifier(['name', 'username']);
-        $this->assertTrue($cm->isIdentifierComposite);
+        self::assertTrue($cm->isIdentifierComposite);
     }
 
     /**
@@ -451,7 +455,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm->mapManyToMany(['fieldName' => 'author', 'targetEntity' => CMS\CmsUser::class]);
 
-        $this->assertEquals('doctrineglobal_article_cmsuser', $cm->associationMappings['author']['joinTable']['name']);
+        self::assertEquals('doctrineglobal_article_cmsuser', $cm->associationMappings['author']['joinTable']['name']);
     }
 
     /**
@@ -471,8 +475,8 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertTrue($cm->containsForeignIdentifier, "Identifier Association should set 'containsForeignIdentifier' boolean flag.");
-        $this->assertEquals(["article"], $cm->identifier);
+        self::assertTrue($cm->containsForeignIdentifier, "Identifier Association should set 'containsForeignIdentifier' boolean flag.");
+        self::assertEquals(["article"], $cm->identifier);
     }
 
     /**
@@ -560,7 +564,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
 
-        $this->assertEquals(0, count($cm->getNamedQueries()));
+        self::assertEquals(0, count($cm->getNamedQueries()));
 
         $cm->addNamedQuery(
             [
@@ -569,7 +573,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals(1, count($cm->getNamedQueries()));
+        self::assertEquals(1, count($cm->getNamedQueries()));
     }
 
     /**
@@ -581,7 +585,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
 
-        $this->assertEquals(0, count($cm->getSqlResultSetMappings()));
+        self::assertEquals(0, count($cm->getSqlResultSetMappings()));
 
         $cm->addSqlResultSetMapping(
             [
@@ -594,7 +598,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals(1, count($cm->getSqlResultSetMappings()));
+        self::assertEquals(1, count($cm->getSqlResultSetMappings()));
     }
 
     public function testExistanceOfNamedQuery()
@@ -610,8 +614,8 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertTrue($cm->hasNamedQuery('all'));
-        $this->assertFalse($cm->hasNamedQuery('userById'));
+        self::assertTrue($cm->hasNamedQuery('all'));
+        self::assertFalse($cm->hasNamedQuery('userById'));
     }
 
     /**
@@ -641,14 +645,14 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         $mapping = $cm->getNamedNativeQuery('find-all');
-        $this->assertEquals('SELECT * FROM cms_users', $mapping['query']);
-        $this->assertEquals('result-mapping-name', $mapping['resultSetMapping']);
-        $this->assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
+        self::assertEquals('SELECT * FROM cms_users', $mapping['query']);
+        self::assertEquals('result-mapping-name', $mapping['resultSetMapping']);
+        self::assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
 
         $mapping = $cm->getNamedNativeQuery('find-by-id');
-        $this->assertEquals('SELECT * FROM cms_users WHERE id = ?', $mapping['query']);
-        $this->assertEquals('result-mapping-name', $mapping['resultSetMapping']);
-        $this->assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
+        self::assertEquals('SELECT * FROM cms_users WHERE id = ?', $mapping['query']);
+        self::assertEquals('result-mapping-name', $mapping['resultSetMapping']);
+        self::assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
     }
 
     /**
@@ -700,15 +704,15 @@ class ClassMetadataTest extends OrmTestCase
 
         $mapping = $cm->getSqlResultSetMapping('find-all');
 
-        $this->assertEquals(CMS\CmsUser::class, $mapping['entities'][0]['entityClass']);
-        $this->assertEquals(['name'=>'id','column'=>'id'], $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'name','column'=>'name'], $mapping['entities'][0]['fields'][1]);
+        self::assertEquals(CMS\CmsUser::class, $mapping['entities'][0]['entityClass']);
+        self::assertEquals(['name'=>'id','column'=>'id'], $mapping['entities'][0]['fields'][0]);
+        self::assertEquals(['name'=>'name','column'=>'name'], $mapping['entities'][0]['fields'][1]);
 
-        $this->assertEquals(CMS\CmsEmail::class, $mapping['entities'][1]['entityClass']);
-        $this->assertEquals(['name'=>'id','column'=>'id'], $mapping['entities'][1]['fields'][0]);
-        $this->assertEquals(['name'=>'email','column'=>'email'], $mapping['entities'][1]['fields'][1]);
+        self::assertEquals(CMS\CmsEmail::class, $mapping['entities'][1]['entityClass']);
+        self::assertEquals(['name'=>'id','column'=>'id'], $mapping['entities'][1]['fields'][0]);
+        self::assertEquals(['name'=>'email','column'=>'email'], $mapping['entities'][1]['fields'][1]);
 
-        $this->assertEquals('scalarColumn', $mapping['columns'][0]['name']);
+        self::assertEquals('scalarColumn', $mapping['columns'][0]['name']);
     }
 
     /**
@@ -730,8 +734,8 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertTrue($cm->hasSqlResultSetMapping('find-all'));
-        $this->assertFalse($cm->hasSqlResultSetMapping('find-by-id'));
+        self::assertTrue($cm->hasSqlResultSetMapping('find-all'));
+        self::assertFalse($cm->hasSqlResultSetMapping('find-by-id'));
     }
 
     /**
@@ -752,8 +756,8 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertTrue($cm->hasNamedNativeQuery('find-all'));
-        $this->assertFalse($cm->hasNamedNativeQuery('find-by-id'));
+        self::assertTrue($cm->hasNamedNativeQuery('find-all'));
+        self::assertFalse($cm->hasNamedNativeQuery('find-by-id'));
     }
 
     public function testRetrieveOfNamedQuery()
@@ -769,7 +773,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
     }
 
     /**
@@ -780,7 +784,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $this->assertEquals(0, count($cm->getNamedNativeQueries()));
+        self::assertEquals(0, count($cm->getNamedNativeQueries()));
 
         $cm->addNamedNativeQuery(
             [
@@ -791,7 +795,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals(1, count($cm->getNamedNativeQueries()));
+        self::assertEquals(1, count($cm->getNamedNativeQueries()));
     }
 
     /**
@@ -808,7 +812,7 @@ class ClassMetadataTest extends OrmTestCase
         $serialize   = serialize($metadata);
         $unserialize = unserialize($serialize);
 
-        $this->assertEquals($metadata->entityListeners, $unserialize->entityListeners);
+        self::assertEquals($metadata->entityListeners, $unserialize->entityListeners);
     }
 
     /**
@@ -908,7 +912,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(strtoupper(CMS\CmsUser::class));
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $this->assertEquals(CMS\CmsUser::class, $cm->name);
+        self::assertEquals(CMS\CmsUser::class, $cm->name);
     }
 
     /**
@@ -1040,9 +1044,9 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals('routing_routingleg', $routingMetadata->table['name']);
-        $this->assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']['name']);
-        $this->assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']['name']);
+        self::assertEquals('routing_routingleg', $routingMetadata->table['name']);
+        self::assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']['name']);
+        self::assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']['name']);
     }
 
     /**
@@ -1059,10 +1063,12 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->mapField(['fieldName'=>'country']);
         $metadata->mapField(['fieldName'=>'city']);
 
-        $this->assertEquals($metadata->fieldNames, [
-            'cmsaddress_country'   => 'country',
-            'cmsaddress_city'      => 'city'
-        ]
+        self::assertEquals(
+            $metadata->fieldNames,
+            [
+                'cmsaddress_country'   => 'country',
+                'cmsaddress_city'      => 'city'
+            ]
         );
     }
 
@@ -1161,7 +1167,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => 'customtypeparent_customtypeparent',
                 'joinColumns' => [['name' => 'customtypeparent_source', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
@@ -1169,9 +1175,9 @@ class ClassMetadataTest extends OrmTestCase
             ],
             $cm->associationMappings['friendsWithMe']['joinTable']
         );
-        $this->assertEquals(['customtypeparent_source', 'customtypeparent_target'], $cm->associationMappings['friendsWithMe']['joinTableColumns']);
-        $this->assertEquals(['customtypeparent_source' => 'id'], $cm->associationMappings['friendsWithMe']['relationToSourceKeyColumns']);
-        $this->assertEquals(['customtypeparent_target' => 'id'], $cm->associationMappings['friendsWithMe']['relationToTargetKeyColumns']);
+        self::assertEquals(['customtypeparent_source', 'customtypeparent_target'], $cm->associationMappings['friendsWithMe']['joinTableColumns']);
+        self::assertEquals(['customtypeparent_source' => 'id'], $cm->associationMappings['friendsWithMe']['relationToSourceKeyColumns']);
+        self::assertEquals(['customtypeparent_target' => 'id'], $cm->associationMappings['friendsWithMe']['relationToTargetKeyColumns']);
     }
 
     /**
@@ -1196,7 +1202,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm->setSequenceGeneratorDefinition(['sequenceName' => '`foo`']);
 
-        $this->assertEquals(['sequenceName' => 'foo', 'quoted' => true], $cm->sequenceGeneratorDefinition);
+        self::assertEquals(['sequenceName' => 'foo', 'quoted' => true], $cm->sequenceGeneratorDefinition);
     }
 
     /**
@@ -1206,7 +1212,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         $class = new ClassMetadata(DDC2700MappedSuperClass::class);
 
-        $this->assertFalse($class->isIdentifier('foo'));
+        self::assertFalse($class->isIdentifier('foo'));
     }
 
     /**
@@ -1216,7 +1222,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
 
-        $this->assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
+        self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
     }
 
     /**
@@ -1229,7 +1235,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $classMetadata->wakeupReflection(new RuntimeReflectionService());
 
-        $this->assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
+        self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
     }
 
     public function testWakeupReflectionWithEmbeddableAndStaticReflectionService()
@@ -1255,7 +1261,7 @@ class ClassMetadataTest extends OrmTestCase
         $classMetadata->mapField($field);
         $classMetadata->wakeupReflection(new StaticReflectionService());
 
-        $this->assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getReflectionProperties());
+        self::assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getReflectionProperties());
     }
 
     public function testGetColumnNamesWithGivenFieldNames()

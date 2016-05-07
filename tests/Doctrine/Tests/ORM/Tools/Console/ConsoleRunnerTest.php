@@ -19,8 +19,8 @@ class ConsoleRunnerTest extends DoctrineTestCase
         $helperSet = new HelperSet();
         $app       = ConsoleRunner::createApplication($helperSet);
 
-        $this->assertInstanceOf('Symfony\Component\Console\Application', $app);
-        $this->assertSame($helperSet, $app->getHelperSet());
-        $this->assertEquals(Version::VERSION, $app->getVersion());
+        self::assertInstanceOf('Symfony\Component\Console\Application', $app);
+        self::assertSame($helperSet, $app->getHelperSet());
+        self::assertEquals(Version::VERSION, $app->getVersion());
     }
 }

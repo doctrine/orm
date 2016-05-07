@@ -41,10 +41,10 @@ class MappedSuperclassTest extends OrmFunctionalTestCase
 
         $cleanFile = $this->_em->find(get_class($file), $file->getId());
 
-        $this->assertInstanceOf(Directory::class, $cleanFile->getParent());
-        $this->assertInstanceOf(Proxy::class, $cleanFile->getParent());
-        $this->assertEquals($directory->getId(), $cleanFile->getParent()->getId());
-        $this->assertInstanceOf(Directory::class, $cleanFile->getParent()->getParent());
-        $this->assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
+        self::assertInstanceOf(Directory::class, $cleanFile->getParent());
+        self::assertInstanceOf(Proxy::class, $cleanFile->getParent());
+        self::assertEquals($directory->getId(), $cleanFile->getParent()->getId());
+        self::assertInstanceOf(Directory::class, $cleanFile->getParent()->getParent());
+        self::assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
     }
 }

@@ -20,7 +20,7 @@ class ClearEventTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $this->assertTrue($listener->called);
+        self::assertTrue($listener->called);
     }
 }
 

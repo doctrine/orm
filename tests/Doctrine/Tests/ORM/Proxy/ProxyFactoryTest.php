@@ -82,11 +82,11 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $cm = new ClassMetadata(AbstractClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $this->assertNotNull($cm->reflClass);
+        self::assertNotNull($cm->reflClass);
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
-        $this->assertEquals(0, $num, "No proxies generated.");
+        self::assertEquals(0, $num, "No proxies generated.");
     }
 
     /**
@@ -111,9 +111,9 @@ class ProxyFactoryTest extends OrmTestCase
         } catch (EntityNotFoundException $exception) {
         }
 
-        $this->assertFalse($proxy->__isInitialized());
-        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        self::assertFalse($proxy->__isInitialized());
+        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     /**
@@ -138,9 +138,9 @@ class ProxyFactoryTest extends OrmTestCase
         } catch (EntityNotFoundException $exception) {
         }
 
-        $this->assertFalse($proxy->__isInitialized());
-        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        self::assertFalse($proxy->__isInitialized());
+        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     public function testProxyClonesParentFields()

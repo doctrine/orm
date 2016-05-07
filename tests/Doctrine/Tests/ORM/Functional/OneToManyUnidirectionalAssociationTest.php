@@ -50,9 +50,9 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
             "JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t"
         )->getSingleResult();
 
-        $this->assertEquals(1, count($routes->legs));
-        $this->assertEquals("Berlin", $routes->legs[0]->fromLocation->name);
-        $this->assertEquals("Bonn", $routes->legs[0]->toLocation->name);
+        self::assertEquals(1, count($routes->legs));
+        self::assertEquals("Berlin", $routes->legs[0]->fromLocation->name);
+        self::assertEquals("Bonn", $routes->legs[0]->toLocation->name);
     }
 
     public function testLegsAreUniqueToRoutes()
@@ -80,6 +80,6 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
             $exceptionThrown = true;
         }
 
-        $this->assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
+        self::assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
     }
 }

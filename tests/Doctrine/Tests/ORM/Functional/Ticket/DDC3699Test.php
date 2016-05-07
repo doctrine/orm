@@ -55,8 +55,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $mergedChild DDC3699Child */
         $mergedChild = $this->_em->merge($unManagedChild);
 
-        $this->assertSame($mergedChild->childField, 'modifiedChildValue');
-        $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
+        self::assertSame($mergedChild->childField, 'modifiedChildValue');
+        self::assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 
     /**
@@ -96,7 +96,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $mergedChild DDC3699Child */
         $mergedChild = $this->_em->merge($unmanagedChild);
 
-        $this->assertSame($mergedChild->childField, 'modifiedChildValue');
-        $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
+        self::assertSame($mergedChild->childField, 'modifiedChildValue');
+        self::assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 }

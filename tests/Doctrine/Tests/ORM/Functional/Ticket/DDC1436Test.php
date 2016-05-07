@@ -42,13 +42,13 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter('id', $id)
                 ->getOneOrNullResult();
 
-        $this->assertInstanceOf(DDC1436Page::class, $page);
+        self::assertInstanceOf(DDC1436Page::class, $page);
 
         // step 2
         $page = $this->_em->find(DDC1436Page::class, $id);
-        $this->assertInstanceOf(DDC1436Page::class, $page);
-        $this->assertInstanceOf(DDC1436Page::class, $page->getParent());
-        $this->assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
+        self::assertInstanceOf(DDC1436Page::class, $page);
+        self::assertInstanceOf(DDC1436Page::class, $page->getParent());
+        self::assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
     }
 }
 

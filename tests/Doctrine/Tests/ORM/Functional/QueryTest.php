@@ -44,30 +44,30 @@ class QueryTest extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(CmsUser::class, $result[0][0]);
-        $this->assertEquals('Guilherme', $result[0][0]->name);
-        $this->assertEquals('gblanco', $result[0][0]->username);
-        $this->assertEquals('developer', $result[0][0]->status);
-        $this->assertEquals('GUILHERME', $result[0][1]);
+        self::assertEquals(1, count($result));
+        self::assertInstanceOf(CmsUser::class, $result[0][0]);
+        self::assertEquals('Guilherme', $result[0][0]->name);
+        self::assertEquals('gblanco', $result[0][0]->username);
+        self::assertEquals('developer', $result[0][0]->status);
+        self::assertEquals('GUILHERME', $result[0][1]);
 
         $resultArray = $query->getArrayResult();
-        $this->assertEquals(1, count($resultArray));
-        $this->assertTrue(is_array($resultArray[0][0]));
-        $this->assertEquals('Guilherme', $resultArray[0][0]['name']);
-        $this->assertEquals('gblanco', $resultArray[0][0]['username']);
-        $this->assertEquals('developer', $resultArray[0][0]['status']);
-        $this->assertEquals('GUILHERME', $resultArray[0][1]);
+        self::assertEquals(1, count($resultArray));
+        self::assertTrue(is_array($resultArray[0][0]));
+        self::assertEquals('Guilherme', $resultArray[0][0]['name']);
+        self::assertEquals('gblanco', $resultArray[0][0]['username']);
+        self::assertEquals('developer', $resultArray[0][0]['status']);
+        self::assertEquals('GUILHERME', $resultArray[0][1]);
 
         $scalarResult = $query->getScalarResult();
-        $this->assertEquals(1, count($scalarResult));
-        $this->assertEquals('Guilherme', $scalarResult[0]['u_name']);
-        $this->assertEquals('gblanco', $scalarResult[0]['u_username']);
-        $this->assertEquals('developer', $scalarResult[0]['u_status']);
-        $this->assertEquals('GUILHERME', $scalarResult[0][1]);
+        self::assertEquals(1, count($scalarResult));
+        self::assertEquals('Guilherme', $scalarResult[0]['u_name']);
+        self::assertEquals('gblanco', $scalarResult[0]['u_username']);
+        self::assertEquals('developer', $scalarResult[0]['u_status']);
+        self::assertEquals('GUILHERME', $scalarResult[0][1]);
 
         $query = $this->_em->createQuery("select upper(u.name) from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
-        $this->assertEquals('GUILHERME', $query->getSingleScalarResult());
+        self::assertEquals('GUILHERME', $query->getSingleScalarResult());
     }
 
     public function testJoinQueries()
@@ -96,11 +96,11 @@ class QueryTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select u, a from ' . CmsUser::class . ' u join u.articles a ORDER BY a.topic');
         $users = $query->getResult();
-        $this->assertEquals(1, count($users));
-        $this->assertInstanceOf(CmsUser::class, $users[0]);
-        $this->assertEquals(2, count($users[0]->articles));
-        $this->assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
-        $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
+        self::assertEquals(1, count($users));
+        self::assertInstanceOf(CmsUser::class, $users[0]);
+        self::assertEquals(2, count($users[0]->articles));
+        self::assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
+        self::assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
     public function testUsingZeroBasedQueryParameterShouldWork()
@@ -117,7 +117,7 @@ class QueryTest extends OrmFunctionalTestCase
         $q->setParameter(0, 'jwage');
         $user = $q->getSingleResult();
 
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
     }
 
     public function testUsingUnknownQueryParameterShouldThrowException()
@@ -223,17 +223,17 @@ class QueryTest extends OrmFunctionalTestCase
             $found[] = $article;
         }
 
-        $this->assertEquals(1, count($found));
-        $this->assertSame(
+        self::assertEquals(1, count($found));
+        self::assertEquals(
             [
                 [
                     [
                         'id'      => $articleId,
                         'topic'   => 'Doctrine 2',
                         'text'    => 'This is an introduction to Doctrine 2.',
-                        'version' => 1,
-                    ],
-                ],
+                        'version' => 1
+                    ]
+                ]
             ],
             $found
         );
@@ -267,13 +267,13 @@ class QueryTest extends OrmFunctionalTestCase
 
             $identityMap = $this->_em->getUnitOfWork()->getIdentityMap();
             $identityMapCount = count($identityMap[CmsArticle::class]);
-            $this->assertTrue($identityMapCount>$iteratedCount);
+            self::assertTrue($identityMapCount>$iteratedCount);
 
             $iteratedCount++;
         }
 
-        $this->assertSame(["Doctrine 2", "Symfony 2"], $topics);
-        $this->assertSame(2, $iteratedCount);
+        self::assertSame(["Doctrine 2", "Symfony 2"], $topics);
+        self::assertSame(2, $iteratedCount);
 
         $this->_em->flush();
         $this->_em->clear();
@@ -309,8 +309,8 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        $this->assertSame(["Doctrine 2", "Symfony 2"], $topics);
-        $this->assertSame(2, $iteratedCount);
+        self::assertSame(["Doctrine 2", "Symfony 2"], $topics);
+        self::assertSame(2, $iteratedCount);
 
         $this->_em->flush();
     }
@@ -391,18 +391,18 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setMaxResults(2)
                   ->getResult();
 
-        $this->assertEquals(2, count($data));
-        $this->assertEquals('gblanco1', $data[0]->username);
-        $this->assertEquals('gblanco2', $data[1]->username);
+        self::assertEquals(2, count($data));
+        self::assertEquals('gblanco1', $data[0]->username);
+        self::assertEquals('gblanco2', $data[1]->username);
 
         $data = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u')
                   ->setFirstResult(3)
                   ->setMaxResults(2)
                   ->getResult();
 
-        $this->assertEquals(2, count($data));
-        $this->assertEquals('gblanco3', $data[0]->username);
-        $this->assertEquals('gblanco4', $data[1]->username);
+        self::assertEquals(2, count($data));
+        self::assertEquals('gblanco3', $data[0]->username);
+        self::assertEquals('gblanco4', $data[1]->username);
 
         $data = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u')
                   ->setFirstResult(3)
@@ -416,7 +416,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         try {
             $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
-            $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSQL());
+            self::assertEquals('UPDATE cms_users SET name = ?', $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
@@ -448,11 +448,11 @@ class QueryTest extends OrmFunctionalTestCase
                 ->setParameter("topic", "dr. dolittle");
 
         $result = $q->getResult();
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(CmsArticle::class, $result[0]);
-        $this->assertEquals("dr. dolittle", $result[0]->topic);
-        $this->assertInstanceOf(Proxy::class, $result[0]->user);
-        $this->assertFalse($result[0]->user->__isInitialized__);
+        self::assertEquals(1, count($result));
+        self::assertInstanceOf(CmsArticle::class, $result[0]);
+        self::assertEquals("dr. dolittle", $result[0]->topic);
+        self::assertInstanceOf(Proxy::class, $result[0]->user);
+        self::assertFalse($result[0]->user->__isInitialized__);
     }
 
     /**
@@ -479,9 +479,9 @@ class QueryTest extends OrmFunctionalTestCase
                          ->setFetchMode(CmsArticle::class, 'user', ClassMetadata::FETCH_EAGER)
                          ->getResult();
 
-        $this->assertEquals(10, count($articles));
+        self::assertEquals(10, count($articles));
         foreach ($articles AS $article) {
-            $this->assertNotInstanceOf(Proxy::class, $article);
+            self::assertNotInstanceOf(Proxy::class, $article);
         }
     }
 
@@ -501,12 +501,12 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u from " . CmsUser::class . " u where u.username = 'gblanco'");
 
         $fetchedUser = $query->getOneOrNullResult();
-        $this->assertInstanceOf(CmsUser::class, $fetchedUser);
-        $this->assertEquals('gblanco', $fetchedUser->username);
+        self::assertInstanceOf(CmsUser::class, $fetchedUser);
+        self::assertEquals('gblanco', $fetchedUser->username);
 
         $query = $this->_em->createQuery("select u.username from " . CmsUser::class . " u where u.username = 'gblanco'");
         $fetchedUsername = $query->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
-        $this->assertEquals('gblanco', $fetchedUsername);
+        self::assertEquals('gblanco', $fetchedUsername);
     }
 
     /**
@@ -540,10 +540,10 @@ class QueryTest extends OrmFunctionalTestCase
     public function testgetOneOrNullResultNoRows()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
-        $this->assertNull($query->getOneOrNullResult());
+        self::assertNull($query->getOneOrNullResult());
 
         $query = $this->_em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
-        $this->assertNull($query->getOneOrNullResult(Query::HYDRATE_SCALAR));
+        self::assertNull($query->getOneOrNullResult(Query::HYDRATE_SCALAR));
     }
 
     /**
@@ -581,7 +581,7 @@ class QueryTest extends OrmFunctionalTestCase
         ));
         $result = $query->getResult();
 
-        $this->assertEquals(3, count($result));
+        self::assertEquals(3, count($result));
     }
 
     public function testDqlWithAutoInferOfParameters()
@@ -612,7 +612,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $users = $query->execute();
 
-        $this->assertEquals(2, count($users));
+        self::assertEquals(2, count($users));
     }
 
     public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary()
@@ -626,7 +626,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        $this->assertEquals(0, count($users));
+        self::assertEquals(0, count($users));
     }
 
     public function testQueryWithArrayOfEntitiesAsParameter()
@@ -658,7 +658,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $users = $query->execute();
 
-        $this->assertEquals(2, count($users));
+        self::assertEquals(2, count($users));
     }
 
     public function testQueryWithHiddenAsSelectExpression()
@@ -687,8 +687,8 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("SELECT u, (SELECT COUNT(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) AS HIDDEN total FROM Doctrine\Tests\Models\CMS\CmsUser u");
         $users = $query->execute();
 
-        $this->assertEquals(3, count($users));
-        $this->assertInstanceOf(CmsUser::class, $users[0]);
+        self::assertEquals(3, count($users));
+        self::assertInstanceOf(CmsUser::class, $users[0]);
     }
 
     /**
@@ -708,7 +708,7 @@ class QueryTest extends OrmFunctionalTestCase
         $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1");
         $q->setParameter(1, $userC);
 
-        $this->assertEquals($userC, $q->getParameter(1)->getValue());
+        self::assertEquals($userC, $q->getParameter(1)->getValue());
 
         // Parameter is not converted before, but it should be converted during execution. Test should not fail here
         $q->getResult();
@@ -750,18 +750,18 @@ class QueryTest extends OrmFunctionalTestCase
         $q->setParameter('users', $userCollection);
         $users = $q->execute();
 
-        $this->assertEquals(3, count($users));
-        $this->assertInstanceOf(CmsUser::class, $users[0]);
-        $this->assertInstanceOf(CmsUser::class, $users[1]);
-        $this->assertInstanceOf(CmsUser::class, $users[2]);
+        self::assertEquals(3, count($users));
+        self::assertInstanceOf(CmsUser::class, $users[0]);
+        self::assertInstanceOf(CmsUser::class, $users[1]);
+        self::assertInstanceOf(CmsUser::class, $users[2]);
 
         $resultUser1 = $users[0];
         $resultUser2 = $users[1];
         $resultUser3 = $users[2];
 
-        $this->assertEquals($u1->username, $resultUser1->username);
-        $this->assertEquals($u2->username, $resultUser2->username);
-        $this->assertEquals($u3->username, $resultUser3->username);
+        self::assertEquals($u1->username, $resultUser1->username);
+        self::assertEquals($u2->username, $resultUser2->username);
+        self::assertEquals($u3->username, $resultUser3->username);
     }
 
     /**
@@ -783,7 +783,7 @@ class QueryTest extends OrmFunctionalTestCase
             $this->_em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NoResultException".');
         } catch (UnexpectedResultException $exc) {
-            $this->assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
+            self::assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
         }
 
 
@@ -796,7 +796,7 @@ class QueryTest extends OrmFunctionalTestCase
             $this->_em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NonUniqueResultException".');
         } catch (UnexpectedResultException $exc) {
-            $this->assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
+            self::assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
         }
     }
 
@@ -828,9 +828,9 @@ class QueryTest extends OrmFunctionalTestCase
         ");
         $users = $query->execute();
 
-        $this->assertEquals(2, count($users));
-        $this->assertInstanceOf(CmsUser::class, $users[0]);
-        $this->assertInstanceOf(CmsPhonenumber::class, $users[1]);
+        self::assertEquals(2, count($users));
+        self::assertInstanceOf(CmsUser::class, $users[0]);
+        self::assertInstanceOf(CmsPhonenumber::class, $users[1]);
     }
 
     public function testMultipleJoinComponentsUsingLeftJoin()
@@ -861,10 +861,10 @@ class QueryTest extends OrmFunctionalTestCase
         ");
         $users = $query->execute();
 
-        $this->assertEquals(4, count($users));
-        $this->assertInstanceOf(CmsUser::class, $users[0]);
-        $this->assertInstanceOf(CmsPhonenumber::class, $users[1]);
-        $this->assertInstanceOf(CmsUser::class, $users[2]);
-        $this->assertNull($users[3]);
+        self::assertEquals(4, count($users));
+        self::assertInstanceOf(CmsUser::class, $users[0]);
+        self::assertInstanceOf(CmsPhonenumber::class, $users[1]);
+        self::assertInstanceOf(CmsUser::class, $users[2]);
+        self::assertNull($users[3]);
     }
 }

@@ -65,20 +65,20 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testImplementQueryCache()
     {
-        $this->assertInstanceOf(QueryCache::class, $this->queryCache);
+        self::assertInstanceOf(QueryCache::class, $this->queryCache);
     }
 
     public function testGetRegion()
     {
-        $this->assertSame($this->region, $this->queryCache->getRegion());
+        self::assertSame($this->region, $this->queryCache->getRegion());
     }
 
     public function testClearShouldEvictRegion()
     {
         $this->queryCache->clear();
 
-        $this->assertArrayHasKey('evictAll', $this->region->calls);
-        $this->assertCount(1, $this->region->calls['evictAll']);
+        self::assertArrayHasKey('evictAll', $this->region->calls);
+        self::assertCount(1, $this->region->calls['evictAll']);
     }
 
     public function testPutBasicQueryResult()
@@ -99,21 +99,21 @@ class DefaultQueryCacheTest extends OrmTestCase
             $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['name' => $name]);
         }
 
-        $this->assertTrue($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(5, $this->region->calls['put']);
+        self::assertTrue($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(5, $this->region->calls['put']);
 
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
-        $this->assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][4]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
+        self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][4]['key']);
 
-        $this->assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][0]['entry']);
-        $this->assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][1]['entry']);
-        $this->assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][2]['entry']);
-        $this->assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][3]['entry']);
-        $this->assertInstanceOf(QueryCacheEntry::class, $this->region->calls['put'][4]['entry']);
+        self::assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][0]['entry']);
+        self::assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][1]['entry']);
+        self::assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][2]['entry']);
+        self::assertInstanceOf(EntityCacheEntry::class, $this->region->calls['put'][3]['entry']);
+        self::assertInstanceOf(QueryCacheEntry::class, $this->region->calls['put'][4]['entry']);
     }
 
     public function testPutToOneAssociationQueryResult()
@@ -141,19 +141,19 @@ class DefaultQueryCacheTest extends OrmTestCase
             $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => $state]);
         }
 
-        $this->assertTrue($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(9, $this->region->calls['put']);
+        self::assertTrue($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(9, $this->region->calls['put']);
 
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][4]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][5]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][6]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][7]['key']);
-        $this->assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][8]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][4]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][5]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][6]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][7]['key']);
+        self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][8]['key']);
     }
 
     public function testPutToOneAssociation2LevelsQueryResult()
@@ -189,23 +189,23 @@ class DefaultQueryCacheTest extends OrmTestCase
             $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => $state]);
         }
 
-        $this->assertTrue($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(13, $this->region->calls['put']);
+        self::assertTrue($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(13, $this->region->calls['put']);
 
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][4]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][5]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][6]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][7]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][8]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][9]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][10]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][11]['key']);
-        $this->assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][12]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][4]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][5]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][6]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][7]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][8]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][9]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][10]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][11]['key']);
+        self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][12]['key']);
     }
 
     public function testPutToOneAssociationNullQueryResult()
@@ -229,15 +229,15 @@ class DefaultQueryCacheTest extends OrmTestCase
             $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => null]);
         }
 
-        $this->assertTrue($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(5, $this->region->calls['put']);
+        self::assertTrue($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(5, $this->region->calls['put']);
 
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
-        $this->assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
-        $this->assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][4]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][0]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][1]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][2]['key']);
+        self::assertInstanceOf(EntityCacheKey::class, $this->region->calls['put'][3]['key']);
+        self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][4]['key']);
     }
 
     public function testPutToManyAssociationQueryResult()
@@ -273,9 +273,9 @@ class DefaultQueryCacheTest extends OrmTestCase
             );
         }
 
-        $this->assertTrue($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(13, $this->region->calls['put']);
+        self::assertTrue($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(13, $this->region->calls['put']);
     }
 
     public function testGetBasicQueryResult()
@@ -308,13 +308,13 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $result = $this->queryCache->get($key, $rsm);
 
-        $this->assertCount(2, $result);
-        $this->assertInstanceOf(Country::class, $result[0]);
-        $this->assertInstanceOf(Country::class, $result[1]);
-        $this->assertEquals(1, $result[0]->getId());
-        $this->assertEquals(2, $result[1]->getId());
-        $this->assertEquals('Foo', $result[0]->getName());
-        $this->assertEquals('Bar', $result[1]->getName());
+        self::assertCount(2, $result);
+        self::assertInstanceOf(Country::class, $result[0]);
+        self::assertInstanceOf(Country::class, $result[1]);
+        self::assertEquals(1, $result[0]->getId());
+        self::assertEquals(2, $result[1]->getId());
+        self::assertEquals('Foo', $result[0]->getName());
+        self::assertEquals('Bar', $result[1]->getName());
     }
 
     public function testCancelPutResultIfEntityPutFails()
@@ -337,9 +337,9 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $this->region->addReturn('put', false);
 
-        $this->assertFalse($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(1, $this->region->calls['put']);
+        self::assertFalse($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(1, $this->region->calls['put']);
     }
 
     public function testCancelPutResultIfAssociationEntityPutFails()
@@ -368,7 +368,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->region->addReturn('put', true);  // put root entity
         $this->region->addReturn('put', false); // association fails
 
-        $this->assertFalse($this->queryCache->put($key, $rsm, $result));
+        self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
 
     public function testCancelPutToManyAssociationQueryResult()
@@ -403,9 +403,9 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->region->addReturn('put', true);  // put root entity
         $this->region->addReturn('put', false); // collection association fails
 
-        $this->assertFalse($this->queryCache->put($key, $rsm, $result));
-        $this->assertArrayHasKey('put', $this->region->calls);
-        $this->assertCount(2, $this->region->calls['put']);
+        self::assertFalse($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+        self::assertCount(2, $this->region->calls['put']);
     }
 
     public function testIgnoreCacheNonGetMode()
@@ -423,7 +423,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $this->region->addReturn('get', $entry);
 
-        $this->assertNull($this->queryCache->get($key, $rsm));
+        self::assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testIgnoreCacheNonPutMode()
@@ -444,7 +444,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['name' => $name]);
         }
 
-        $this->assertFalse($this->queryCache->put($key, $rsm, $result));
+        self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
 
     public function testGetShouldIgnoreOldQueryCacheEntryResult()
@@ -476,7 +476,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
-        $this->assertNull($this->queryCache->get($key, $rsm));
+        self::assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testGetShouldIgnoreNonQueryCacheEntryResult()
@@ -507,7 +507,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
-        $this->assertNull($this->queryCache->get($key, $rsm));
+        self::assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testGetShouldIgnoreMissingEntityQueryCacheEntry()
@@ -526,7 +526,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
-        $this->assertNull($this->queryCache->get($key, $rsm));
+        self::assertNull($this->queryCache->get($key, $rsm));
     }
 
     public function testGetAssociationValue()
@@ -628,7 +628,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['booleanField' => $boolean]);
         }
 
-        $this->assertFalse($this->queryCache->put($key, $rsm, $result));
+        self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
 
 }

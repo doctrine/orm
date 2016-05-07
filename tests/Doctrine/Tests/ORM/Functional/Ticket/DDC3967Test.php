@@ -30,6 +30,6 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
         $country = $this->_em->find(Country::class, "$id");
 
         // Identifier type should be integer
-        $this->assertSame($country->getId(), $id);
+        self::assertSame($country->getId(), $id);
     }
 }

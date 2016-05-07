@@ -36,9 +36,9 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($item);
         $this->_em->flush(); // Should not fail
 
-        $this->assertFalse($this->_em->contains($item));
+        self::assertFalse($this->_em->contains($item));
         $children = $item->getChildren();
-        $this->assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->_em->contains($children[0]));
 
         $this->_em->clear();
 
@@ -57,17 +57,17 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($item2);
         $this->_em->flush(); // should not fail
 
-        $this->assertFalse($this->_em->contains($item));
+        self::assertFalse($this->_em->contains($item));
         $children = $item->getChildren();
-        $this->assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->_em->contains($children[0]));
     }
 
     public function testCascadeRemoveOnChildren()
     {
         $class = $this->_em->getClassMetadata(DDC599Subitem::class);
 
-        $this->assertArrayHasKey('children', $class->associationMappings);
-        $this->assertTrue($class->associationMappings['children']['isCascadeRemove']);
+        self::assertArrayHasKey('children', $class->associationMappings);
+        self::assertTrue($class->associationMappings['children']['isCascadeRemove']);
     }
 }
 

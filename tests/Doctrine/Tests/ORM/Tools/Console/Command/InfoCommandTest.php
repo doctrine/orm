@@ -49,7 +49,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
     {
         $this->tester->execute(['command' => $this->command->getName()]);
 
-        $this->assertContains(AttractionInfo::class, $this->tester->getDisplay());
-        $this->assertContains(City::class, $this->tester->getDisplay());
+        self::assertContains(AttractionInfo::class, $this->tester->getDisplay());
+        self::assertContains(City::class, $this->tester->getDisplay());
     }
 }

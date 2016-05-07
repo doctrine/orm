@@ -83,16 +83,16 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT c, p FROM " . DDC881PhoneCall::class . " c JOIN c.phonenumber p";
         $calls = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($calls));
-        $this->assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
-        $this->assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
+        self::assertEquals(2, count($calls));
+        self::assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
+        self::assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
 
         $dql = "SELECT p, c FROM " . DDC881PhoneNumber::class . " p JOIN p.calls c";
         $numbers = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($numbers));
-        $this->assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());
-        $this->assertTrue($numbers[0]->getCalls()->isInitialized());
+        self::assertEquals(2, count($numbers));
+        self::assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());
+        self::assertTrue($numbers[0]->getCalls()->isInitialized());
     }
 
 }
