@@ -57,17 +57,17 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Retrieve
         $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
         
-        $this->assertCount(2, $user->groups);
+        self::assertCount(2, $user->groups);
 
         $g1 = $user->getGroups()->get(0);
         $g2 = $user->getGroups()->get(1);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $g1);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $g2);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $g1);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $g2);
 
         $g1->name = 'Bar 11';
         $g2->name = 'Foo 22';
@@ -79,9 +79,9 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
 
         // Delete
         $this->_em->remove($user);
@@ -89,9 +89,9 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id));
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Quote\Group', $g1Id));
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Quote\Group', $g2Id));
+        self::assertNull($this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id));
+        self::assertNull($this->_em->find('Doctrine\Tests\Models\Quote\Group', $g1Id));
+        self::assertNull($this->_em->find('Doctrine\Tests\Models\Quote\Group', $g2Id));
     }
 
     public function testRemoveItem()
@@ -100,13 +100,13 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $u1Id   = $user->id;
         $user   = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
 
-        $this->assertCount(2, $user->groups);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
+        self::assertCount(2, $user->groups);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
 
         $user->getGroups()->remove(0);
 
@@ -117,11 +117,11 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
 
-        $this->assertCount(1, $user->getGroups());
+        self::assertCount(1, $user->getGroups());
     }
 
     public function testClearAll()
@@ -130,13 +130,13 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $u1Id   = $user->id;
         $user   = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
 
-        $this->assertCount(2, $user->groups);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
+        self::assertCount(2, $user->groups);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
 
         $user->getGroups()->clear();
 
@@ -147,11 +147,11 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
 
-        $this->assertCount(0, $user->getGroups());
+        self::assertCount(0, $user->getGroups());
     }
 
     public function testCountExtraLazy()
@@ -160,12 +160,12 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $u1Id   = $user->id;
         $user   = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals($u1Id, $user->id);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals($u1Id, $user->id);
 
-        $this->assertCount(2, $user->groups);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
+        self::assertCount(2, $user->groups);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
     }
 }

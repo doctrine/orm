@@ -26,8 +26,8 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
-        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
+        self::assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
+        self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
     }
 
     public function testAnnotationOptionsAttribute()
@@ -43,8 +43,8 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
 
-        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
-        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
+        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
+        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
     }
 
     /**
@@ -65,10 +65,10 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('forum_users'));
+        self::assertTrue($schema->hasTable('forum_users'));
         $table = $schema->getTable("forum_users");
-        $this->assertTrue($table->hasColumn('avatar_id'));
-        $this->assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
+        self::assertTrue($table->hasColumn('avatar_id'));
+        self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
     /**
@@ -96,8 +96,8 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertEquals(count($classes), $listener->tableCalls);
-        $this->assertTrue($listener->schemaCalled);
+        self::assertEquals(count($classes), $listener->tableCalls);
+        self::assertTrue($listener->schemaCalled);
     }
 
     public function testNullDefaultNotAddedToCustomSchemaOptions()
@@ -114,7 +114,7 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
             ->getColumn('nullDefault')
             ->getCustomSchemaOptions();
 
-        $this->assertSame(array(), $customSchemaOptions);
+        self::assertSame(array(), $customSchemaOptions);
     }
 
     /**
@@ -130,12 +130,12 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('unique_constraint_annotation_table'));
+        self::assertTrue($schema->hasTable('unique_constraint_annotation_table'));
         $table = $schema->getTable('unique_constraint_annotation_table');
 
-        $this->assertEquals(2, count($table->getIndexes()));
-        $this->assertTrue($table->hasIndex('primary'));
-        $this->assertTrue($table->hasIndex('uniq_hash'));
+        self::assertEquals(2, count($table->getIndexes()));
+        self::assertTrue($table->hasIndex('primary'));
+        self::assertTrue($table->hasIndex('uniq_hash'));
     }
 
     public function testRemoveUniqueIndexOverruledByPrimaryKey()
@@ -149,12 +149,12 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('first_entity'), "Table first_entity should exist.");
+        self::assertTrue($schema->hasTable('first_entity'), "Table first_entity should exist.");
 
         $indexes = $schema->getTable('first_entity')->getIndexes();
 
-        $this->assertCount(1, $indexes, "there should be only one index");
-        $this->assertTrue(current($indexes)->isPrimary(), "index should be primary");
+        self::assertCount(1, $indexes, "there should be only one index");
+        self::assertTrue(current($indexes)->isPrimary(), "index should be primary");
     }
 }
 

@@ -35,7 +35,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2 = $this->_em->getReference(get_class($user), $userId);
 
         $this->_em->flush();
-        $this->assertFalse($user2->__isInitialized__);
+        self::assertFalse($user2->__isInitialized__);
 
         $a = new DefaultValueAddress;
         $a->country = 'de';
@@ -47,13 +47,13 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($a);
         $this->_em->flush();
 
-        $this->assertFalse($user2->__isInitialized__);
+        self::assertFalse($user2->__isInitialized__);
         $this->_em->clear();
 
         $a2 = $this->_em->find(get_class($a), $a->id);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\DefaultValueUser', $a2->getUser());
-        $this->assertEquals($userId, $a2->getUser()->getId());
-        $this->assertEquals('Poweruser', $a2->getUser()->type);
+        self::assertInstanceOf('Doctrine\Tests\ORM\Functional\DefaultValueUser', $a2->getUser());
+        self::assertEquals($userId, $a2->getUser()->getId());
+        self::assertEquals('Poweruser', $a2->getUser()->type);
     }
 
     /**
@@ -70,14 +70,14 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $user = $this->_em->getPartialReference('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
-        $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
 
         $this->_em->flush();
         $this->_em->clear();
 
         $user = $this->_em->find('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
 
-        $this->assertEquals('Normaluser', $user->type);
+        self::assertEquals('Normaluser', $user->type);
     }
 }
 

@@ -38,7 +38,7 @@ class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
             }
         }
 
-        $this->assertEquals(4, $user->getGroups()->count());
+        self::assertEquals(4, $user->getGroups()->count());
 
     }
 }

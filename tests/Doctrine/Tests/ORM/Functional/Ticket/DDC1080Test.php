@@ -58,7 +58,7 @@ class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $foo = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC1080Foo', $foo1->getFooId());
         $fooBars = $foo->getFooBars();
 
-        $this->assertEquals(3, count($fooBars), "Should return three foobars.");
+        self::assertEquals(3, count($fooBars), "Should return three foobars.");
     }
 }
 

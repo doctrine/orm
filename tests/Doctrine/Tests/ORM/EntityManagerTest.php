@@ -17,39 +17,39 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testIsOpen()
     {
-        $this->assertTrue($this->_em->isOpen());
+        self::assertTrue($this->_em->isOpen());
         $this->_em->close();
-        $this->assertFalse($this->_em->isOpen());
+        self::assertFalse($this->_em->isOpen());
     }
 
     public function testGetConnection()
     {
-        $this->assertInstanceOf('Doctrine\DBAL\Connection', $this->_em->getConnection());
+        self::assertInstanceOf('Doctrine\DBAL\Connection', $this->_em->getConnection());
     }
 
     public function testGetMetadataFactory()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\ClassMetadataFactory', $this->_em->getMetadataFactory());
+        self::assertInstanceOf('Doctrine\ORM\Mapping\ClassMetadataFactory', $this->_em->getMetadataFactory());
     }
 
     public function testGetConfiguration()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Configuration', $this->_em->getConfiguration());
+        self::assertInstanceOf('Doctrine\ORM\Configuration', $this->_em->getConfiguration());
     }
 
     public function testGetUnitOfWork()
     {
-        $this->assertInstanceOf('Doctrine\ORM\UnitOfWork', $this->_em->getUnitOfWork());
+        self::assertInstanceOf('Doctrine\ORM\UnitOfWork', $this->_em->getUnitOfWork());
     }
 
     public function testGetProxyFactory()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\ProxyFactory', $this->_em->getProxyFactory());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\ProxyFactory', $this->_em->getProxyFactory());
     }
 
     public function testGetEventManager()
     {
-        $this->assertInstanceOf('Doctrine\Common\EventManager', $this->_em->getEventManager());
+        self::assertInstanceOf('Doctrine\Common\EventManager', $this->_em->getEventManager());
     }
 
     public function testCreateNativeQuery()
@@ -57,7 +57,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
         $query = $this->_em->createNativeQuery('SELECT foo', $rsm);
 
-        $this->assertSame('SELECT foo', $query->getSql());
+        self::assertSame('SELECT foo', $query->getSql());
     }
 
     /**
@@ -70,12 +70,12 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         
         $query = $this->_em->createNamedNativeQuery('foo');
         
-        $this->assertInstanceOf('Doctrine\ORM\NativeQuery', $query);
+        self::assertInstanceOf('Doctrine\ORM\NativeQuery', $query);
     }
 
     public function testCreateQueryBuilder()
     {
-        $this->assertInstanceOf('Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
+        self::assertInstanceOf('Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
     }
 
     public function testCreateQueryBuilderAliasValid()
@@ -84,32 +84,32 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
              ->select('u')->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $q2 = clone $q;
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q->getQuery()->getDql());
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q2->getQuery()->getDql());
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q->getQuery()->getDql());
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q2->getQuery()->getDql());
 
         $q3 = clone $q;
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
     }
 
     public function testCreateQuery_DqlIsOptional()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Query', $this->_em->createQuery());
+        self::assertInstanceOf('Doctrine\ORM\Query', $this->_em->createQuery());
     }
 
     public function testGetPartialReference()
     {
         $user = $this->_em->getPartialReference('Doctrine\Tests\Models\CMS\CmsUser', 42);
-        $this->assertTrue($this->_em->contains($user));
-        $this->assertEquals(42, $user->id);
-        $this->assertNull($user->getName());
+        self::assertTrue($this->_em->contains($user));
+        self::assertEquals(42, $user->id);
+        self::assertNull($user->getName());
     }
 
     public function testCreateQuery()
     {
         $q = $this->_em->createQuery('SELECT 1');
-        $this->assertInstanceOf('Doctrine\ORM\Query', $q);
-        $this->assertEquals('SELECT 1', $q->getDql());
+        self::assertInstanceOf('Doctrine\ORM\Query', $q);
+        self::assertEquals('SELECT 1', $q->getDql());
     }
     
     /**
@@ -120,8 +120,8 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->_em->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
         
         $query = $this->_em->createNamedQuery('foo');
-        $this->assertInstanceOf('Doctrine\ORM\Query', $query);
-        $this->assertEquals('SELECT 1', $query->getDql());
+        self::assertInstanceOf('Doctrine\ORM\Query', $query);
+        self::assertEquals('SELECT 1', $query->getDql());
     }
 
     static public function dataMethodsAffectedByNoObjectArguments()
@@ -176,12 +176,12 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
             return 'foo';
         });
 
-        $this->assertEquals('foo', $return);
+        self::assertEquals('foo', $return);
     }
 
     public function testTransactionalAcceptsVariousCallables()
     {
-        $this->assertSame('callback', $this->_em->transactional(array($this, 'transactionalCallback')));
+        self::assertSame('callback', $this->_em->transactional(array($this, 'transactionalCallback')));
     }
 
     public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed()
@@ -192,7 +192,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function transactionalCallback($em)
     {
-        $this->assertSame($this->_em, $em);
+        self::assertSame($this->_em, $em);
         return 'callback';
     }
 }

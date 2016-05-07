@@ -39,7 +39,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     /**
@@ -52,7 +52,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     public function testCountComplexWithOutputWalker()
@@ -62,7 +62,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(true);
-        $this->assertCount(3, $paginator);
+        self::assertCount(3, $paginator);
     }
 
     public function testCountComplexWithoutOutputWalker()
@@ -77,7 +77,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             'RuntimeException',
             'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
         );
-        $this->assertCount(3, $paginator);
+        self::assertCount(3, $paginator);
     }
 
     /**
@@ -90,7 +90,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     /**
@@ -103,19 +103,19 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
 
         // Test with limit
         $query->setMaxResults(3);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(3, $paginator->getIterator());
+        self::assertCount(3, $paginator->getIterator());
 
         // Test with limit and offset
         $query->setMaxResults(3)->setFirstResult(4);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(3, $paginator->getIterator());
+        self::assertCount(3, $paginator->getIterator());
     }
 
     private function iterateWithOrderAsc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -127,9 +127,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(9, $iter);
+        self::assertCount(9, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "0", $result[0]->$checkField);
+        self::assertEquals($checkField . "0", $result[0]->$checkField);
     }
 
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -143,9 +143,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "0", $result[0]->$checkField);
+        self::assertEquals($checkField . "0", $result[0]->$checkField);
     }
 
     private function iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -159,9 +159,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "3", $result[0]->$checkField);
+        self::assertEquals($checkField . "3", $result[0]->$checkField);
     }
 
     private function iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -172,9 +172,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(9, $iter);
+        self::assertCount(9, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "8", $result[0]->$checkField);
+        self::assertEquals($checkField . "8", $result[0]->$checkField);
     }
 
     private function iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -187,9 +187,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "8", $result[0]->$checkField);
+        self::assertEquals($checkField . "8", $result[0]->$checkField);
     }
 
     private function iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -202,9 +202,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "5", $result[0]->$checkField);
+        self::assertEquals($checkField . "5", $result[0]->$checkField);
     }
 
     /**
@@ -283,7 +283,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
     }
 
     /**
@@ -459,7 +459,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(true);
-        $this->assertCount(3, $paginator->getIterator());
+        self::assertCount(3, $paginator->getIterator());
     }
 
     public function testJoinedClassTableInheritance()
@@ -468,7 +468,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $this->assertCount(1, $paginator->getIterator());
+        self::assertCount(1, $paginator->getIterator());
     }
 
     /**
@@ -565,7 +565,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(true);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     public function testIterateWithCountSubqueryInWhereClause()
@@ -577,9 +577,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator->setUseOutputWalkers(true);
 
         $users = iterator_to_array($paginator->getIterator());
-        $this->assertCount(9, $users);
+        self::assertCount(9, $users);
         foreach ($users as $i => $user) {
-            $this->assertEquals("username" . (8 - $i), $user->username);
+            self::assertEquals("username" . (8 - $i), $user->username);
         }
     }
 
@@ -613,7 +613,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query);
         $paginator->getIterator();
 
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
     }
 
     public function testCloneQuery()
@@ -624,7 +624,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query);
         $paginator->getIterator();
 
-        $this->assertTrue($query->getParameters()->isEmpty());
+        self::assertTrue($query->getParameters()->isEmpty());
     }
 
     public function testQueryWalkerIsKept()
@@ -635,8 +635,8 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);
-        $this->assertCount(1, $paginator->getIterator());
-        $this->assertEquals(1, $paginator->count());
+        self::assertCount(1, $paginator->getIterator());
+        self::assertEquals(1, $paginator->count());
     }
     
     public function testCountQueryStripsParametersInSelect()
@@ -656,8 +656,8 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $getCountQuery->setAccessible(true);
 
-        $this->assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
-        $this->assertCount(9, $paginator);
+        self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
+        self::assertCount(9, $paginator);
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
 
@@ -665,8 +665,8 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // if select part of query is replaced with count(...) paginator should remove
         // parameters from query object not used in new query.
-        $this->assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
-        $this->assertCount(9, $paginator);
+        self::assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
+        self::assertCount(9, $paginator);
     }
 
     /**
@@ -688,7 +688,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalker);
 
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
     }
 
     public function populate()

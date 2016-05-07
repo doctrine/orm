@@ -40,6 +40,6 @@ class MergeVersionedManyToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $articleMerged->name = 'Article Merged';
 
         $this->_em->flush();
-        $this->assertEquals(2, $articleMerged->version);
+        self::assertEquals(2, $articleMerged->version);
     }
 }

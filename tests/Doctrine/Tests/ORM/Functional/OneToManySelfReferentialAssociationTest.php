@@ -34,8 +34,8 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
 
         $this->_em->flush();
 
-        $this->assertForeignKeyIs($this->parent->getId(), $this->firstChild);
-        $this->assertForeignKeyIs($this->parent->getId(), $this->secondChild);
+        self::assertForeignKeyIs($this->parent->getId(), $this->firstChild);
+        self::assertForeignKeyIs($this->parent->getId(), $this->secondChild);
     }
 
     public function testSavesAnEmptyCollection()
@@ -43,7 +43,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->_em->persist($this->parent);
         $this->_em->flush();
 
-        $this->assertEquals(0, count($this->parent->getChildren()));
+        self::assertEquals(0, count($this->parent->getChildren()));
     }
 
     public function testDoesNotSaveAnInverseSideSet() {
@@ -51,7 +51,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->_em->persist($this->parent);
         $this->_em->flush();
 
-        $this->assertForeignKeyIs(null, $this->firstChild);
+        self::assertForeignKeyIs(null, $this->firstChild);
     }
 
     public function testRemovesOneToManyAssociation()
@@ -63,8 +63,8 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->parent->removeChild($this->firstChild);
         $this->_em->flush();
 
-        $this->assertForeignKeyIs(null, $this->firstChild);
-        $this->assertForeignKeyIs($this->parent->getId(), $this->secondChild);
+        self::assertForeignKeyIs(null, $this->firstChild);
+        self::assertForeignKeyIs($this->parent->getId(), $this->secondChild);
     }
 
     public function testEagerLoadsOneToManyAssociation()
@@ -73,16 +73,16 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
 
         $query = $this->_em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
         $result = $query->getResult();
-        $this->assertEquals(1, count($result));
+        self::assertEquals(1, count($result));
         $parent = $result[0];
         $children = $parent->getChildren();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
-        $this->assertSame($parent, $children[0]->getParent());
-        $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[1]);
-        $this->assertSame($parent, $children[1]->getParent());
-        $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
+        self::assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
+        self::assertSame($parent, $children[0]->getParent());
+        self::assertEquals(' books', strstr($children[0]->getName(), ' books'));
+        self::assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[1]);
+        self::assertSame($parent, $children[1]->getParent());
+        self::assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
 
     public function testLazyLoadsOneToManyAssociation()
@@ -96,12 +96,12 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $parent = $result[0];
         $children = $parent->getChildren();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
-        $this->assertSame($parent, $children[0]->getParent());
-        $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[1]);
-        $this->assertSame($parent, $children[1]->getParent());
-        $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
+        self::assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
+        self::assertSame($parent, $children[0]->getParent());
+        self::assertEquals(' books', strstr($children[0]->getName(), ' books'));
+        self::assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[1]);
+        self::assertSame($parent, $children[1]->getParent());
+        self::assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
 
     private function _createFixture()
@@ -116,6 +116,6 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
 
     public function assertForeignKeyIs($value, ECommerceCategory $child) {
         $foreignKey = $this->_em->getConnection()->executeQuery('SELECT parent_id FROM ecommerce_categories WHERE id=?', array($child->getId()))->fetchColumn();
-        $this->assertEquals($value, $foreignKey);
+        self::assertEquals($value, $foreignKey);
     }
 }

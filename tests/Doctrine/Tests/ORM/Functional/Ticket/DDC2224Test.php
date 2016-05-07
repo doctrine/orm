@@ -24,7 +24,7 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver(new ArrayCache());
 
         $query->setParameter('field', 'test', 'DDC2224Type');
-        $this->assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
+        self::assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
 
         return $query;
     }
@@ -35,7 +35,7 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCacheMissWhenTypeChanges(Query $query)
     {
         $query->setParameter('field', 'test', 'string');
-        $this->assertStringEndsWith('.field = ?', $query->getSQL());
+        self::assertStringEndsWith('.field = ?', $query->getSQL());
     }
 }
 

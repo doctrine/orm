@@ -30,13 +30,13 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->clear();
 
         $fileId = $file->getFileId();
-        $this->assertTrue($fileId > 0);
+        self::assertTrue($fileId > 0);
 
         $file = $em->getReference('Doctrine\Tests\ORM\Functional\Ticket\DDC353File', $fileId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), "Reference Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), "Reference Proxy should be marked MANAGED.");
 
         $picture = $em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC353Picture', $picture->getPictureId());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
 
         $em->remove($picture);
         $em->flush();
@@ -57,10 +57,10 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fileId = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        $this->assertTrue($fileId > 0);
+        self::assertTrue($fileId > 0);
 
         $picture = $em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC353Picture', $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
 
         $em->remove($picture);
         $em->flush();

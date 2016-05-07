@@ -24,8 +24,8 @@ class UUIDGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity = new UUIDEntity();
 
         $this->_em->persist($entity);
-        $this->assertNotNull($entity->getId());
-        $this->assertTrue(strlen($entity->getId()) > 0);
+        self::assertNotNull($entity->getId());
+        self::assertTrue(strlen($entity->getId()) > 0);
     }
 }
 

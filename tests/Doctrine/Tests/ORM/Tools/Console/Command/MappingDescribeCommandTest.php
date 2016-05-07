@@ -56,8 +56,8 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         ));
 
         $display = $this->tester->getDisplay();
-        $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $display);
-        $this->assertContains('Root entity name', $display);
+        self::assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $display);
+        self::assertContains('Root entity name', $display);
     }
 
     /**

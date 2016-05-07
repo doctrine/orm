@@ -48,10 +48,10 @@ class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $article->setAuthor($user);
 
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $uow->getEntityState($originalArticle));
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $uow->getEntityState($originalUser));
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($article));
-        $this->assertEquals(UnitOfWork::STATE_NEW, $uow->getEntityState($user));
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $uow->getEntityState($originalArticle));
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $uow->getEntityState($originalUser));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($article));
+        self::assertEquals(UnitOfWork::STATE_NEW, $uow->getEntityState($user));
 
         $em->detach($user);
         $em->detach($article);
@@ -59,14 +59,14 @@ class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $userMerged     = $em->merge($user);
         $articleMerged  = $em->merge($article);
 
-        $this->assertEquals(UnitOfWork::STATE_NEW, $uow->getEntityState($user));
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $uow->getEntityState($article));
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($userMerged));
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($articleMerged));
+        self::assertEquals(UnitOfWork::STATE_NEW, $uow->getEntityState($user));
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $uow->getEntityState($article));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($userMerged));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($articleMerged));
 
-        $this->assertNotSame($user, $userMerged);
-        $this->assertNotSame($article, $articleMerged);
-        $this->assertNotSame($userMerged, $articleMerged->user);
-        $this->assertSame($user, $articleMerged->user);
+        self::assertNotSame($user, $userMerged);
+        self::assertNotSame($article, $articleMerged);
+        self::assertNotSame($userMerged, $articleMerged->user);
+        self::assertSame($user, $articleMerged->user);
     }
 }

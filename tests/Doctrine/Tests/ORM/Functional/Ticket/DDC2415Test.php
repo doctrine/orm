@@ -29,9 +29,9 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $parentMetadata  = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ParentEntity');
         $childMetadata   = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ChildEntity');
 
-        $this->assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
-        $this->assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
-        $this->assertEquals('Doctrine\Tests\ORM\Functional\Ticket\DDC2415Generator', $parentMetadata->customGeneratorDefinition['class']);
+        self::assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
+        self::assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
+        self::assertEquals('Doctrine\Tests\ORM\Functional\Ticket\DDC2415Generator', $parentMetadata->customGeneratorDefinition['class']);
 
         $e1 = new DDC2415ChildEntity("ChildEntity 1");
         $e2 = new DDC2415ChildEntity("ChildEntity 2");
@@ -41,8 +41,8 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(md5($e1->getName()), $e1->getId());
-        $this->assertEquals(md5($e2->getName()), $e2->getId());
+        self::assertEquals(md5($e1->getName()), $e1->getId());
+        self::assertEquals(md5($e2->getName()), $e2->getId());
     }
 }
 

@@ -45,10 +45,10 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Navigation\NavPointOfInterest', $poi);
-        $this->assertEquals(100, $poi->getLat());
-        $this->assertEquals(200, $poi->getLong());
-        $this->assertEquals('Brandenburger Tor', $poi->getName());
+        self::assertInstanceOf('Doctrine\Tests\Models\Navigation\NavPointOfInterest', $poi);
+        self::assertEquals(100, $poi->getLat());
+        self::assertEquals(200, $poi->getLong());
+        self::assertEquals('Brandenburger Tor', $poi->getName());
     }
 
     /**
@@ -83,9 +83,9 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql    = "SELECT IDENTITY(p.poi, 'long') AS long, IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p";
         $result = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertEquals(200, $result[0]['long']);
-        $this->assertEquals(100, $result[0]['lat']);
+        self::assertCount(1, $result);
+        self::assertEquals(200, $result[0]['long']);
+        self::assertEquals(100, $result[0]['lat']);
     }
 
     public function testManyToManyCompositeRelation()
@@ -95,7 +95,7 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $tour = $this->_em->find('Doctrine\Tests\Models\Navigation\NavTour', $tour->getId());
 
-        $this->assertEquals(1, count($tour->getPointOfInterests()));
+        self::assertEquals(1, count($tour->getPointOfInterests()));
     }
 
     public function testCompositeDqlEagerFetching()
@@ -107,12 +107,12 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
                'INNER JOIN t.pois p INNER JOIN p.country c';
         $tours = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(1, count($tours));
+        self::assertEquals(1, count($tours));
 
         $pois = $tours[0]->getPointOfInterests();
 
-        $this->assertEquals(1, count($pois));
-        $this->assertEquals('Brandenburger Tor', $pois[0]->getName());
+        self::assertEquals(1, count($pois));
+        self::assertEquals('Brandenburger Tor', $pois[0]->getName());
     }
 
     public function testCompositeCollectionMemberExpression()
@@ -127,7 +127,7 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tours = $this->_em->createQuery($dql)
                            ->getResult();
 
-        $this->assertEquals(1, count($tours));
+        self::assertEquals(1, count($tours));
     }
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails()
@@ -161,6 +161,6 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
-        $this->assertEquals(0, count($poi->getVisitors()));
+        self::assertEquals(0, count($poi->getVisitors()));
     }
 }

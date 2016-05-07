@@ -54,12 +54,12 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
         $cm   = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity');
         $meta = $cm->associationMappings;
 
-        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['manyToMany']['targetEntity']);
-        $this->assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['manyToOne']['targetEntity']);
-        $this->assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['oneToMany']['targetEntity']);
-        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['oneToOne']['targetEntity']);
+        self::assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['manyToMany']['targetEntity']);
+        self::assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['manyToOne']['targetEntity']);
+        self::assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['oneToMany']['targetEntity']);
+        self::assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['oneToOne']['targetEntity']);
 
-        $this->assertSame($cm, $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetInterface'));
+        self::assertSame($cm, $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetInterface'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
 
         $cm = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetInterface');
 
-        $this->assertSame($this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity'), $cm);
+        self::assertSame($this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity'), $cm);
     }
 
     /**
@@ -103,8 +103,8 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
         $cm = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity');
         $meta = $cm->associationMappings['manyToMany'];
 
-        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
-        $this->assertEquals(array('resolvetargetentity_id', 'targetinterface_id'), $meta['joinTableColumns']);
+        self::assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
+        self::assertEquals(array('resolvetargetentity_id', 'targetinterface_id'), $meta['joinTableColumns']);
     }
 
     /**
@@ -124,7 +124,7 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
 
         $evm->addEventSubscriber($this->listener);
 
-        $this->assertStringMatchesFormat(
+        self::assertStringMatchesFormat(
             'SELECT%AFROM ResolveTargetEntity%A',
             $this
                 ->em

@@ -108,9 +108,9 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->getQuery()
             ->getArrayResult();
 
-        $this->assertCount(1, $result);
-        $this->assertArrayHasKey('freeDriverRides', $result[0]);
-        $this->assertCount(3, $result[0]['freeDriverRides']);
+        self::assertCount(1, $result);
+        self::assertArrayHasKey('freeDriverRides', $result[0]);
+        self::assertCount(3, $result[0]['freeDriverRides']);
     }
 
     /**
@@ -129,9 +129,9 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter(1, 'John Doe')
             ->getQuery()->getArrayResult();
 
-        $this->assertCount(1, $result);
-        $this->assertArrayHasKey('driverRides', $result[0]);
-        $this->assertCount(3, $result[0]['driverRides']);
+        self::assertCount(1, $result);
+        self::assertArrayHasKey('driverRides', $result[0]);
+        self::assertCount(3, $result[0]['driverRides']);
     }
 
     /**
@@ -149,8 +149,8 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter(1, 'John Doe')
             ->getQuery()->getArrayResult();
 
-        $this->assertCount(3, $result);
-        $this->assertArrayHasKey('driver', $result[0]);
-        $this->assertArrayHasKey('car', $result[0]);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey('driver', $result[0]);
+        self::assertArrayHasKey('car', $result[0]);
     }
 }

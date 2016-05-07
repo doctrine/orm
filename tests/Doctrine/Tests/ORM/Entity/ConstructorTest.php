@@ -7,7 +7,7 @@ class ConstructorTest extends \Doctrine\Tests\OrmTestCase
     public function testFieldInitializationInConstructor()
     {
         $entity = new ConstructorTestEntity1("romanb");
-        $this->assertEquals("romanb", $entity->username);
+        self::assertEquals("romanb", $entity->username);
     }
 }
 

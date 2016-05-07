@@ -32,7 +32,7 @@ class DDC960Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->assertEquals(2, $child->getVersion());
+        self::assertEquals(2, $child->getVersion());
     }
 }
 

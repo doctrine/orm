@@ -44,18 +44,18 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
     {
         $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(10));
 
-        $this->assertSame(10, $this->lazyCriteriaCollection->count());
-        $this->assertSame(10, $this->lazyCriteriaCollection->count());
-        $this->assertSame(10, $this->lazyCriteriaCollection->count());
+        self::assertSame(10, $this->lazyCriteriaCollection->count());
+        self::assertSame(10, $this->lazyCriteriaCollection->count());
+        self::assertSame(10, $this->lazyCriteriaCollection->count());
     }
 
     public function testCountIsCachedEvenWithZeroResult()
     {
         $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(0));
 
-        $this->assertSame(0, $this->lazyCriteriaCollection->count());
-        $this->assertSame(0, $this->lazyCriteriaCollection->count());
-        $this->assertSame(0, $this->lazyCriteriaCollection->count());
+        self::assertSame(0, $this->lazyCriteriaCollection->count());
+        self::assertSame(0, $this->lazyCriteriaCollection->count());
+        self::assertSame(0, $this->lazyCriteriaCollection->count());
     }
 
     public function testCountUsesWrappedCollectionWhenInitialized()
@@ -70,9 +70,9 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
         // should never call the persister's count
         $this->persister->expects($this->never())->method('count');
 
-        $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
+        self::assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
 
-        $this->assertSame(3, $this->lazyCriteriaCollection->count());
+        self::assertSame(3, $this->lazyCriteriaCollection->count());
     }
 
     public function testMatchingUsesThePersisterOnlyOnce()
@@ -98,24 +98,24 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
 
         $filtered = $this->lazyCriteriaCollection->matching($criteria);
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $filtered);
-        $this->assertEquals(array($foo), $filtered->toArray());
+        self::assertInstanceOf('Doctrine\Common\Collections\Collection', $filtered);
+        self::assertEquals(array($foo), $filtered->toArray());
 
-        $this->assertEquals(array($foo), $this->lazyCriteriaCollection->matching($criteria)->toArray());
+        self::assertEquals(array($foo), $this->lazyCriteriaCollection->matching($criteria)->toArray());
     }
 
     public function testIsEmptyUsesCountWhenNotInitialized()
     {
         $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(0));
 
-        $this->assertTrue($this->lazyCriteriaCollection->isEmpty());
+        self::assertTrue($this->lazyCriteriaCollection->isEmpty());
     }
 
     public function testIsEmptyIsFalseIfCountIsNotZero()
     {
         $this->persister->expects($this->once())->method('count')->with($this->criteria)->will($this->returnValue(1));
 
-        $this->assertFalse($this->lazyCriteriaCollection->isEmpty());
+        self::assertFalse($this->lazyCriteriaCollection->isEmpty());
     }
 
     public function testIsEmptyUsesWrappedCollectionWhenInitialized()
@@ -130,8 +130,8 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
         // should never call the persister's count
         $this->persister->expects($this->never())->method('count');
 
-        $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
+        self::assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
 
-        $this->assertFalse($this->lazyCriteriaCollection->isEmpty());
+        self::assertFalse($this->lazyCriteriaCollection->isEmpty());
     }
 }

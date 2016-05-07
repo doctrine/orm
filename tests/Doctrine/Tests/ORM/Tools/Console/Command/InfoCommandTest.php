@@ -50,7 +50,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
             'command' => $this->command->getName(),
         ));
 
-        $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $this->tester->getDisplay());
-        $this->assertContains('Doctrine\Tests\Models\Cache\City', $this->tester->getDisplay());
+        self::assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $this->tester->getDisplay());
+        self::assertContains('Doctrine\Tests\Models\Cache\City', $this->tester->getDisplay());
     }
 }

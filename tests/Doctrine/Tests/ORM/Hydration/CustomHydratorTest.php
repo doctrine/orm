@@ -13,8 +13,8 @@ class CustomHydratorTest extends HydrationTestCase
         $config->addCustomHydrationMode('CustomHydrator', 'Doctrine\Tests\ORM\Hydration\CustomHydrator');
 
         $hydrator = $em->newHydrator('CustomHydrator');
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Hydration\CustomHydrator', $hydrator);
-        $this->assertNull($config->getCustomHydrationMode('does not exist'));
+        self::assertInstanceOf('Doctrine\Tests\ORM\Hydration\CustomHydrator', $hydrator);
+        self::assertNull($config->getCustomHydrationMode('does not exist'));
     }
 }
 

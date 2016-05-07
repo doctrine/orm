@@ -50,8 +50,8 @@ class AnsiQuoteStrategyTest extends OrmTestCase
         $class->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
         $class->mapField(array('fieldName' => 'id', 'columnName' => 'id', 'id' => true));
 
-        $this->assertEquals('id' ,$this->strategy->getColumnName('id', $class, $this->platform));
-        $this->assertEquals('name' ,$this->strategy->getColumnName('name', $class, $this->platform));
+        self::assertEquals('id' ,$this->strategy->getColumnName('id', $class, $this->platform));
+        self::assertEquals('name' ,$this->strategy->getColumnName('name', $class, $this->platform));
     }
 
     public function testGetTableName()
@@ -59,7 +59,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
         $class->setPrimaryTable(array('name'=>'cms_user'));
-        $this->assertEquals('cms_user' ,$this->strategy->getTableName($class, $this->platform));
+        self::assertEquals('cms_user' ,$this->strategy->getTableName($class, $this->platform));
     }
 
     public function testJoinTableName()
@@ -75,7 +75,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
             )
         ));
         
-        $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($class->associationMappings['user'], $class, $this->platform));
+        self::assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($class->associationMappings['user'], $class, $this->platform));
        
     }
 
@@ -89,13 +89,13 @@ class AnsiQuoteStrategyTest extends OrmTestCase
             'columnName'    => 'id',
         ));
 
-        $this->assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($class, $this->platform));
+        self::assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($class, $this->platform));
     }
 
 
     public function testColumnAlias()
     {
-        $this->assertEquals('columnName_1', $this->strategy->getColumnAlias('columnName', 1, $this->platform));
+        self::assertEquals('columnName_1', $this->strategy->getColumnAlias('columnName', 1, $this->platform));
     }
 
     public function testJoinColumnName()
@@ -112,7 +112,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
         ));
 
         $joinColumn = $class->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals('article',$this->strategy->getJoinColumnName($joinColumn, $class, $this->platform));
+        self::assertEquals('article',$this->strategy->getJoinColumnName($joinColumn, $class, $this->platform));
     }
 
     public function testReferencedJoinColumnName()
@@ -129,7 +129,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
         ));
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals('id',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
+        self::assertEquals('id',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 
     public function testGetSequenceName()
@@ -143,6 +143,6 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
         $class->setSequenceGeneratorDefinition($definition);
 
-        $this->assertEquals('user_id_seq',$this->strategy->getSequenceName($definition, $class, $this->platform));
+        self::assertEquals('user_id_seq',$this->strategy->getSequenceName($definition, $class, $this->platform));
     }
 }

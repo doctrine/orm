@@ -39,7 +39,7 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $content = new PersistentCollectionContent('second element');
         $collectionHolder->addElement($content);
 
-        $this->assertEquals(2, $collectionHolder->getCollection()->count());
+        self::assertEquals(2, $collectionHolder->getCollection()->count());
     }
 
     /**
@@ -56,8 +56,8 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
         $collection = $collectionHolder->getRawCollection();
 
-        $this->assertTrue($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertTrue($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
 
         $collectionHolder->addElement(new PersistentCollectionContent());
 
@@ -67,8 +67,8 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
         $collection = $collectionHolder->getRawCollection();
 
-        $this->assertFalse($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertFalse($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
     }
 
     /**
@@ -88,10 +88,10 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);
 
-        $this->assertEmpty($criteria->getWhereExpression());
-        $this->assertEmpty($criteria->getFirstResult());
-        $this->assertEmpty($criteria->getMaxResults());
-        $this->assertEmpty($criteria->getOrderings());
+        self::assertEmpty($criteria->getWhereExpression());
+        self::assertEmpty($criteria->getFirstResult());
+        self::assertEmpty($criteria->getMaxResults());
+        self::assertEmpty($criteria->getOrderings());
     }
 }
 

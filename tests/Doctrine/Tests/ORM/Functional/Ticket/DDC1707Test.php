@@ -31,7 +31,7 @@ class DDC1707Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::postLoad, $entity, $event);
 
-        $this->assertTrue($entity->postLoad);
+        self::assertTrue($entity->postLoad);
     }
 }
 

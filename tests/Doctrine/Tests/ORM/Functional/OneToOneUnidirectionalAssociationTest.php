@@ -32,7 +32,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->_em->persist($this->product);
         $this->_em->flush();
 
-        $this->assertForeignKeyIs($this->shipping->getId());
+        self::assertForeignKeyIs($this->shipping->getId());
     }
 
     public function testRemovesOneToOneAssociation()
@@ -43,7 +43,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
         $this->_em->flush();
 
-        $this->assertForeignKeyIs(null);
+        self::assertForeignKeyIs(null);
     }
 
     public function _testEagerLoad()
@@ -54,8 +54,8 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $result = $query->getResult();
         $product = $result[0];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
-        $this->assertEquals(1, $product->getShipping()->getDays());
+        self::assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
+        self::assertEquals(1, $product->getShipping()->getDays());
     }
 
     public function testLazyLoadsObjects() {
@@ -67,8 +67,8 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $result = $query->getResult();
         $product = $result[0];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
-        $this->assertEquals(1, $product->getShipping()->getDays());
+        self::assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
+        self::assertEquals(1, $product->getShipping()->getDays());
     }
 
     public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() {
@@ -80,7 +80,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $result = $query->getResult();
         $product = $result[0];
 
-        $this->assertNull($product->getShipping());
+        self::assertNull($product->getShipping());
     }
 
     protected function _createFixture()
@@ -102,7 +102,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
             array($this->product->getId())
         )->fetchColumn();
-        $this->assertEquals($value, $foreignKey);
+        self::assertEquals($value, $foreignKey);
     }
 
     /**
@@ -118,6 +118,6 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
         $product = $this->_em->find(get_class($product), $product->getId());
 
-        $this->assertNull($product->getShipping());
+        self::assertNull($product->getShipping());
     }
 }

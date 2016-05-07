@@ -30,7 +30,7 @@ class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
             return strpos($sql, 'DBAL483') !== false;
         });
 
-        $this->assertEquals(0, count($updateSql));
+        self::assertEquals(0, count($updateSql));
     }
 }
 

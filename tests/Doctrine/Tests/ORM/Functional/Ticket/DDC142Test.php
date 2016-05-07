@@ -48,17 +48,17 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $id = $user->id;
-        $this->assertNotNull($id);
+        self::assertNotNull($id);
 
         
         $user       = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
         $address    = $user->getAddress();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Address', $user->getAddress());
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\Address', $user->getAddress());
 
-        $this->assertEquals('FabioBatSilva', $user->name);
-        $this->assertEquals('12345', $address->zip);
+        self::assertEquals('FabioBatSilva', $user->name);
+        self::assertEquals('12345', $address->zip);
 
 
         $user->name     = 'FabioBatSilva1';
@@ -71,17 +71,17 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
         $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertNull($user->getAddress());
+        self::assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        self::assertNull($user->getAddress());
 
-        $this->assertEquals('FabioBatSilva1', $user->name);
+        self::assertEquals('FabioBatSilva1', $user->name);
         
         
         $this->_em->remove($user);
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Quote\User', $id));
+        self::assertNull($this->_em->find('Doctrine\Tests\Models\Quote\User', $id));
     }
 
 }

@@ -52,9 +52,9 @@ class SequenceEmulatedIdentityStrategyTest extends \Doctrine\Tests\OrmFunctional
         $entity->setValue('hello');
         $this->_em->persist($entity);
         $this->_em->flush();
-        $this->assertTrue(is_numeric($entity->getId()));
-        $this->assertTrue($entity->getId() > 0);
-        $this->assertTrue($this->_em->contains($entity));
+        self::assertTrue(is_numeric($entity->getId()));
+        self::assertTrue($entity->getId() > 0);
+        self::assertTrue($this->_em->contains($entity));
     }
 }
 

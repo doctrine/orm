@@ -51,7 +51,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
             ->method('getClassMetadata')
             ->will($this->returnCallback(array($this, 'buildClassMetadata')));
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\\Tests\\Models\\DDC869\\DDC869PaymentRepository',
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
@@ -65,7 +65,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
             ->method('getClassMetadata')
             ->will($this->returnCallback(array($this, 'buildClassMetadata')));
 
-        $this->assertSame(
+        self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__),
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
@@ -83,7 +83,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
             ->method('getClassMetadata')
             ->will($this->returnValue($customMetadata));
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\\Tests\\Models\\DDC753\\DDC753DefaultRepository',
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
@@ -106,10 +106,10 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         $repo1 = $this->repositoryFactory->getRepository($em1, __CLASS__);
         $repo2 = $this->repositoryFactory->getRepository($em2, __CLASS__);
 
-        $this->assertSame($repo1, $this->repositoryFactory->getRepository($em1, __CLASS__));
-        $this->assertSame($repo2, $this->repositoryFactory->getRepository($em2, __CLASS__));
+        self::assertSame($repo1, $this->repositoryFactory->getRepository($em1, __CLASS__));
+        self::assertSame($repo2, $this->repositoryFactory->getRepository($em2, __CLASS__));
 
-        $this->assertNotSame($repo1, $repo2);
+        self::assertNotSame($repo1, $repo2);
     }
 
     /**

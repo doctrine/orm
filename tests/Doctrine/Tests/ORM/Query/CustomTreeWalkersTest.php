@@ -54,7 +54,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, $treeWalkers = array(), $outputWalker = null)
     {
         try {
-            $this->assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
+            self::assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
         } catch (\Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
@@ -62,7 +62,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsQueriesWithoutWhere()
     {
-        $this->assertSqlGeneration(
+        self::assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
@@ -71,7 +71,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsQueriesWithMultipleConditionalExpressions()
     {
-        $this->assertSqlGeneration(
+        self::assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
@@ -80,7 +80,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsQueriesWithSimpleConditionalExpression()
     {
-        $this->assertSqlGeneration(
+        self::assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
@@ -99,7 +99,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsSeveralHintsQueries()
     {
-        $this->assertSqlGeneration(
+        self::assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c1_.id AS id_4, c1_.country AS country_5, c1_.zip AS zip_6, c1_.city AS city_7, c0_.email_id AS email_id_8, c1_.user_id AS user_id_9 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1",
             array('Doctrine\Tests\ORM\Functional\CustomTreeWalkerJoin', 'Doctrine\Tests\ORM\Functional\CustomTreeWalker')

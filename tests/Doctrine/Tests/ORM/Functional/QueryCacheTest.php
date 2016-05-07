@@ -45,12 +45,12 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        self::assertEquals(1, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        self::assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -68,7 +68,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setMaxResults(9999);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -83,7 +83,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setMaxResults(10);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -96,7 +96,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $cacheCount = $this->getCacheSize($cache);
 
         $query->getArrayResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     public function testQueryCache_NoHitSaveParserResult()

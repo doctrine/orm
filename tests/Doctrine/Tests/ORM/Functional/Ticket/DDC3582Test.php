@@ -14,9 +14,9 @@ class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /** @var DDC3582Entity $entity */
         $entity = $this->_em->find(DDC3582Entity::CLASSNAME, 'foo');
 
-        $this->assertInstanceOf(DDC3582Embeddable1::CLASSNAME, $entity->embeddable1);
-        $this->assertInstanceOf(DDC3582Embeddable2::CLASSNAME, $entity->embeddable1->embeddable2);
-        $this->assertInstanceOf(DDC3582Embeddable3::CLASSNAME, $entity->embeddable1->embeddable2->embeddable3);
+        self::assertInstanceOf(DDC3582Embeddable1::CLASSNAME, $entity->embeddable1);
+        self::assertInstanceOf(DDC3582Embeddable2::CLASSNAME, $entity->embeddable1->embeddable2);
+        self::assertInstanceOf(DDC3582Embeddable3::CLASSNAME, $entity->embeddable1->embeddable2->embeddable3);
     }
 }
 

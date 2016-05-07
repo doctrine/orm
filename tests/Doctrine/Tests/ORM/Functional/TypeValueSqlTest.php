@@ -41,8 +41,8 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $entity = $this->_em->find('\Doctrine\Tests\Models\CustomType\CustomTypeUpperCase', $id);
 
-        $this->assertEquals('foo', $entity->lowerCaseString, 'Entity holds lowercase string');
-        $this->assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select lowerCaseString from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
+        self::assertEquals('foo', $entity->lowerCaseString, 'Entity holds lowercase string');
+        self::assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select lowerCaseString from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
     }
 
     /**
@@ -63,8 +63,8 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $entity = $this->_em->find('\Doctrine\Tests\Models\CustomType\CustomTypeUpperCase', $id);
-        $this->assertEquals('foo', $entity->namedLowerCaseString, 'Entity holds lowercase string');
-        $this->assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select named_lower_case_string from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
+        self::assertEquals('foo', $entity->namedLowerCaseString, 'Entity holds lowercase string');
+        self::assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select named_lower_case_string from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
 
 
         $entity->namedLowerCaseString   = 'bar';
@@ -78,8 +78,8 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
         $entity = $this->_em->find('\Doctrine\Tests\Models\CustomType\CustomTypeUpperCase', $id);
-        $this->assertEquals('bar', $entity->namedLowerCaseString, 'Entity holds lowercase string');
-        $this->assertEquals('BAR', $this->_em->getConnection()->fetchColumn("select named_lower_case_string from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
+        self::assertEquals('bar', $entity->namedLowerCaseString, 'Entity holds lowercase string');
+        self::assertEquals('BAR', $this->_em->getConnection()->fetchColumn("select named_lower_case_string from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
     }
 
     public function testTypeValueSqlWithAssociations()
@@ -105,11 +105,11 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $entity = $this->_em->find('Doctrine\Tests\Models\CustomType\CustomTypeParent', $parentId);
 
-        $this->assertTrue($entity->customInteger < 0, 'Fetched customInteger negative');
-        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select customInteger from customtype_parents where id=".$entity->id.""), 'Database has stored customInteger positive');
+        self::assertTrue($entity->customInteger < 0, 'Fetched customInteger negative');
+        self::assertEquals(1, $this->_em->getConnection()->fetchColumn("select customInteger from customtype_parents where id=".$entity->id.""), 'Database has stored customInteger positive');
 
-        $this->assertNotNull($parent->child, 'Child attached');
-        $this->assertCount(2, $entity->getMyFriends(), '2 friends attached');
+        self::assertNotNull($parent->child, 'Child attached');
+        self::assertCount(2, $entity->getMyFriends(), '2 friends attached');
     }
 
     public function testSelectDQL()
@@ -129,12 +129,12 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CustomType\CustomTypeParent', $result[0][0]);
-        $this->assertEquals(-1, $result[0][0]->customInteger);
+        self::assertEquals(1, count($result));
+        self::assertInstanceOf('Doctrine\Tests\Models\CustomType\CustomTypeParent', $result[0][0]);
+        self::assertEquals(-1, $result[0][0]->customInteger);
 
-        $this->assertEquals(-1, $result[0]['customInteger']);
+        self::assertEquals(-1, $result[0]['customInteger']);
 
-        $this->assertEquals('foo', $result[0][0]->child->lowerCaseString);
+        self::assertEquals('foo', $result[0][0]->child->lowerCaseString);
     }
 }

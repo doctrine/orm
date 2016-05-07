@@ -27,20 +27,20 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entity);
         $this->_em->flush();
 
-        $this->assertTrue($entity->prePersistCallbackInvoked);
-        $this->assertTrue($entity->postPersistCallbackInvoked);
+        self::assertTrue($entity->prePersistCallbackInvoked);
+        self::assertTrue($entity->postPersistCallbackInvoked);
 
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity e");
         $result = $query->getResult();
-        $this->assertTrue($result[0]->postLoadCallbackInvoked);
+        self::assertTrue($result[0]->postLoadCallbackInvoked);
 
         $result[0]->value = 'hello again';
 
         $this->_em->flush();
 
-        $this->assertEquals('changed from preUpdate callback!', $result[0]->value);
+        self::assertEquals('changed from preUpdate callback!', $result[0]->value);
     }
 
     public function testPreFlushCallbacksAreInvoked()
@@ -51,19 +51,19 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->assertTrue($entity->prePersistCallbackInvoked);
-        $this->assertTrue($entity->preFlushCallbackInvoked);
+        self::assertTrue($entity->prePersistCallbackInvoked);
+        self::assertTrue($entity->preFlushCallbackInvoked);
 
         $entity->preFlushCallbackInvoked = false;
         $this->_em->flush();
 
-        $this->assertTrue($entity->preFlushCallbackInvoked);
+        self::assertTrue($entity->preFlushCallbackInvoked);
 
         $entity->value = 'bye';
         $entity->preFlushCallbackInvoked = false;
         $this->_em->flush();
 
-        $this->assertTrue($entity->preFlushCallbackInvoked);
+        self::assertTrue($entity->preFlushCallbackInvoked);
     }
 
     public function testChangesDontGetLost()
@@ -81,8 +81,8 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user2 = $this->_em->find(get_class($user), $user->getId());
 
-        $this->assertEquals('Alice', $user2->getName());
-        $this->assertEquals('Hello World', $user2->getValue());
+        self::assertEquals('Alice', $user2->getName());
+        self::assertEquals('Hello World', $user2->getValue());
     }
 
     /**
@@ -99,10 +99,10 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $reference = $this->_em->getReference('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity', $id);
-        $this->assertFalse($reference->postLoadCallbackInvoked);
+        self::assertFalse($reference->postLoadCallbackInvoked);
 
         $reference->getValue(); // trigger proxy load
-        $this->assertTrue($reference->postLoadCallbackInvoked);
+        self::assertTrue($reference->postLoadCallbackInvoked);
     }
 
     /**
@@ -119,11 +119,11 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $reference = $this->_em->find('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity', $id);
-        $this->assertTrue($reference->postLoadCallbackInvoked);
+        self::assertTrue($reference->postLoadCallbackInvoked);
         $reference->postLoadCallbackInvoked = false;
 
         $this->_em->refresh($reference);
-        $this->assertTrue($reference->postLoadCallbackInvoked, "postLoad should be invoked when refresh() is called.");
+        self::assertTrue($reference->postLoadCallbackInvoked, "postLoad should be invoked when refresh() is called.");
     }
 
     /**
@@ -147,8 +147,8 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         //$this->_em->persist($c);
         $this->_em->flush();
 
-        $this->assertTrue($e1->prePersistCallbackInvoked);
-        $this->assertTrue($e2->prePersistCallbackInvoked);
+        self::assertTrue($e1->prePersistCallbackInvoked);
+        self::assertTrue($e2->prePersistCallbackInvoked);
     }
 
     /**
@@ -187,10 +187,10 @@ DQL;
             ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
             ->getResult();
 
-        $this->assertTrue(current($entities)->postLoadCallbackInvoked);
-        $this->assertTrue(current($entities)->postLoadCascaderNotNull);
-        $this->assertTrue(current($entities)->cascader->postLoadCallbackInvoked);
-        $this->assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
+        self::assertTrue(current($entities)->postLoadCallbackInvoked);
+        self::assertTrue(current($entities)->postLoadCascaderNotNull);
+        self::assertTrue(current($entities)->cascader->postLoadCallbackInvoked);
+        self::assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
     }
 
     /**
@@ -230,8 +230,8 @@ DQL;
             ->iterate();
 
         foreach ($result as $entity) {
-            $this->assertTrue($entity[0]->postLoadCallbackInvoked);
-            $this->assertFalse($entity[0]->postLoadCascaderNotNull);
+            self::assertTrue($entity[0]->postLoadCallbackInvoked);
+            self::assertFalse($entity[0]->postLoadCascaderNotNull);
 
             break;
         }
@@ -254,8 +254,8 @@ DQL;
             ->iterate(null, Query::HYDRATE_SIMPLEOBJECT);
 
         foreach ($result as $entity) {
-            $this->assertTrue($entity[0]->postLoadCallbackInvoked);
-            $this->assertFalse($entity[0]->postLoadCascaderNotNull);
+            self::assertTrue($entity[0]->postLoadCallbackInvoked);
+            self::assertFalse($entity[0]->postLoadCascaderNotNull);
 
             break;
         }
@@ -264,7 +264,7 @@ DQL;
     public function testLifecycleCallbacksGetInherited()
     {
         $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
-        $this->assertEquals(array('prePersist' => array(0 => 'doStuff')), $childMeta->lifecycleCallbacks);
+        self::assertEquals(array('prePersist' => array(0 => 'doStuff')), $childMeta->lifecycleCallbacks);
     }
 
     public function testLifecycleListener_ChangeUpdateChangeSet()
@@ -290,7 +290,7 @@ DQL;
 
         $bob = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals('Bob', $bob->getName());
+        self::assertEquals('Bob', $bob->getName());
     }
 
     /**
@@ -314,51 +314,51 @@ DQL;
         $this->_em->flush();
 
 
-        $this->assertArrayHasKey('preFlushHandler', $e->calls);
-        $this->assertArrayHasKey('postLoadHandler', $e->calls);
-        $this->assertArrayHasKey('prePersistHandler', $e->calls);
-        $this->assertArrayHasKey('postPersistHandler', $e->calls);
-        $this->assertArrayHasKey('preUpdateHandler', $e->calls);
-        $this->assertArrayHasKey('postUpdateHandler', $e->calls);
-        $this->assertArrayHasKey('preRemoveHandler', $e->calls);
-        $this->assertArrayHasKey('postRemoveHandler', $e->calls);
+        self::assertArrayHasKey('preFlushHandler', $e->calls);
+        self::assertArrayHasKey('postLoadHandler', $e->calls);
+        self::assertArrayHasKey('prePersistHandler', $e->calls);
+        self::assertArrayHasKey('postPersistHandler', $e->calls);
+        self::assertArrayHasKey('preUpdateHandler', $e->calls);
+        self::assertArrayHasKey('postUpdateHandler', $e->calls);
+        self::assertArrayHasKey('preRemoveHandler', $e->calls);
+        self::assertArrayHasKey('postRemoveHandler', $e->calls);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\PreFlushEventArgs',
             $e->calls['preFlushHandler']
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['postLoadHandler']
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['prePersistHandler']
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['postPersistHandler']
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\PreUpdateEventArgs',
             $e->calls['preUpdateHandler']
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['postUpdateHandler']
         );
  
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['preRemoveHandler']
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
             $e->calls['postRemoveHandler']
         );

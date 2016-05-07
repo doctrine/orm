@@ -37,10 +37,10 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fileId = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        $this->assertTrue($fileId > 0);
+        self::assertTrue($fileId > 0);
 
         $picture = $em->find(__NAMESPACE__ . '\DDC1392Picture', $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
 
         $file = $picture->getFile();
 

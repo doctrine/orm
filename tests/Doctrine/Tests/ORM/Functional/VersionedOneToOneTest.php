@@ -55,8 +55,8 @@ class VersionedOneToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $secondEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity')
             ->findOneBy(array('name' => 'Bob'));
 
-        $this->assertSame($firstRelatedEntity, $firstEntity);
-        $this->assertSame($secondRelatedEntity, $secondEntity);
-        $this->assertSame($firstEntity->secondEntity, $secondEntity);
+        self::assertSame($firstRelatedEntity, $firstEntity);
+        self::assertSame($secondRelatedEntity, $secondEntity);
+        self::assertSame($firstEntity->secondEntity, $secondEntity);
     }
 }

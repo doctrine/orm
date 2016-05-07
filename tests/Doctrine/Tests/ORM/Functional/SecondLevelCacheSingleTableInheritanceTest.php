@@ -20,9 +20,9 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $beachRegion        = $this->cache->getEntityCacheRegion(Beach::CLASSNAME);
         $barRegion          = $this->cache->getEntityCacheRegion(Bar::CLASSNAME);
 
-        $this->assertEquals($attractionRegion->getName(), $restaurantRegion->getName());
-        $this->assertEquals($attractionRegion->getName(), $beachRegion->getName());
-        $this->assertEquals($attractionRegion->getName(), $barRegion->getName());
+        self::assertEquals($attractionRegion->getName(), $restaurantRegion->getName());
+        self::assertEquals($attractionRegion->getName(), $beachRegion->getName());
+        self::assertEquals($attractionRegion->getName(), $barRegion->getName());
     }
 
     public function testPutOnPersistSingleTableInheritance()
@@ -34,8 +34,8 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $this->attractions[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $this->attractions[1]->getId()));
+        self::assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $this->attractions[0]->getId()));
+        self::assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $this->attractions[1]->getId()));
     }
 
     public function testCountaisRootClass()
@@ -48,8 +48,8 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->_em->clear();
 
         foreach ($this->attractions as $attraction) {
-            $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $attraction->getId()));
-            $this->assertTrue($this->cache->containsEntity(get_class($attraction), $attraction->getId()));
+            self::assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $attraction->getId()));
+            self::assertTrue($this->cache->containsEntity(get_class($attraction), $attraction->getId()));
         }
     }
 
@@ -67,29 +67,29 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $entityId1 = $this->attractions[0]->getId();
         $entityId2 = $this->attractions[1]->getId();
 
-        $this->assertFalse($this->cache->containsEntity(Attraction::CLASSNAME, $entityId1));
-        $this->assertFalse($this->cache->containsEntity(Attraction::CLASSNAME, $entityId2));
-        $this->assertFalse($this->cache->containsEntity(Bar::CLASSNAME, $entityId1));
-        $this->assertFalse($this->cache->containsEntity(Bar::CLASSNAME, $entityId2));
+        self::assertFalse($this->cache->containsEntity(Attraction::CLASSNAME, $entityId1));
+        self::assertFalse($this->cache->containsEntity(Attraction::CLASSNAME, $entityId2));
+        self::assertFalse($this->cache->containsEntity(Bar::CLASSNAME, $entityId1));
+        self::assertFalse($this->cache->containsEntity(Bar::CLASSNAME, $entityId2));
 
         $entity1 = $this->_em->find(Attraction::CLASSNAME, $entityId1);
         $entity2 = $this->_em->find(Attraction::CLASSNAME, $entityId2);
 
-        $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $entityId1));
-        $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $entityId2));
-        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $entityId1));
-        $this->assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $entityId2));
+        self::assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $entityId1));
+        self::assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $entityId2));
+        self::assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $entityId1));
+        self::assertTrue($this->cache->containsEntity(Bar::CLASSNAME, $entityId2));
 
-        $this->assertInstanceOf(Attraction::CLASSNAME, $entity1);
-        $this->assertInstanceOf(Attraction::CLASSNAME, $entity2);
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity1);
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity2);
+        self::assertInstanceOf(Attraction::CLASSNAME, $entity1);
+        self::assertInstanceOf(Attraction::CLASSNAME, $entity2);
+        self::assertInstanceOf(Bar::CLASSNAME, $entity1);
+        self::assertInstanceOf(Bar::CLASSNAME, $entity2);
 
-        $this->assertEquals($this->attractions[0]->getId(), $entity1->getId());
-        $this->assertEquals($this->attractions[0]->getName(), $entity1->getName());
+        self::assertEquals($this->attractions[0]->getId(), $entity1->getId());
+        self::assertEquals($this->attractions[0]->getName(), $entity1->getName());
 
-        $this->assertEquals($this->attractions[1]->getId(), $entity2->getId());
-        $this->assertEquals($this->attractions[1]->getName(), $entity2->getName());
+        self::assertEquals($this->attractions[1]->getId(), $entity2->getId());
+        self::assertEquals($this->attractions[1]->getName(), $entity2->getName());
 
         $this->_em->clear();
 
@@ -98,20 +98,20 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $entity3 = $this->_em->find(Attraction::CLASSNAME, $entityId1);
         $entity4 = $this->_em->find(Attraction::CLASSNAME, $entityId2);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertInstanceOf(Attraction::CLASSNAME, $entity3);
-        $this->assertInstanceOf(Attraction::CLASSNAME, $entity4);
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity3);
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity4);
+        self::assertInstanceOf(Attraction::CLASSNAME, $entity3);
+        self::assertInstanceOf(Attraction::CLASSNAME, $entity4);
+        self::assertInstanceOf(Bar::CLASSNAME, $entity3);
+        self::assertInstanceOf(Bar::CLASSNAME, $entity4);
 
-        $this->assertNotSame($entity1, $entity3);
-        $this->assertEquals($entity1->getId(), $entity3->getId());
-        $this->assertEquals($entity1->getName(), $entity3->getName());
+        self::assertNotSame($entity1, $entity3);
+        self::assertEquals($entity1->getId(), $entity3->getId());
+        self::assertEquals($entity1->getName(), $entity3->getName());
 
-        $this->assertNotSame($entity2, $entity4);
-        $this->assertEquals($entity2->getId(), $entity4->getId());
-        $this->assertEquals($entity2->getName(), $entity4->getName());
+        self::assertNotSame($entity2, $entity4);
+        self::assertEquals($entity2->getId(), $entity4->getId());
+        self::assertEquals($entity2->getName(), $entity4->getName());
     }
 
     public function testQueryCacheFindAll()
@@ -129,8 +129,8 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractions), $result1);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractions), $result1);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->_em->clear();
 
@@ -138,11 +138,11 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractions), $result2);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractions), $result2);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         foreach ($result2 as $entity) {
-            $this->assertInstanceOf(Attraction::CLASSNAME, $entity);
+            self::assertInstanceOf(Attraction::CLASSNAME, $entity);
         }
     }
 
@@ -156,12 +156,12 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->_em->clear();
 
         foreach ($this->cities as $city) {
-            $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $city->getId()));
-            $this->assertFalse($this->cache->containsCollection(City::CLASSNAME, 'attractions', $city->getId()));
+            self::assertTrue($this->cache->containsEntity(City::CLASSNAME, $city->getId()));
+            self::assertFalse($this->cache->containsCollection(City::CLASSNAME, 'attractions', $city->getId()));
         }
 
         foreach ($this->attractions as $attraction) {
-            $this->assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $attraction->getId()));
+            self::assertTrue($this->cache->containsEntity(Attraction::CLASSNAME, $attraction->getId()));
         }
     }
 
@@ -180,34 +180,34 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         $entity = $this->_em->find(City::CLASSNAME, $this->cities[0]->getId());
 
-        $this->assertInstanceOf(City::CLASSNAME, $entity);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
-        $this->assertCount(2, $entity->getAttractions());
+        self::assertInstanceOf(City::CLASSNAME, $entity);
+        self::assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
+        self::assertCount(2, $entity->getAttractions());
 
         $ownerId    = $this->cities[0]->getId();
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $ownerId));
-        $this->assertTrue($this->cache->containsCollection(City::CLASSNAME, 'attractions', $ownerId));
+        self::assertTrue($this->cache->containsEntity(City::CLASSNAME, $ownerId));
+        self::assertTrue($this->cache->containsCollection(City::CLASSNAME, 'attractions', $ownerId));
 
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(0));
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(1));
-        $this->assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
-        $this->assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
+        self::assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(0));
+        self::assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(1));
+        self::assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
+        self::assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
 
         $this->_em->clear();
 
         $entity = $this->_em->find(City::CLASSNAME, $ownerId);
 
-        $this->assertInstanceOf(City::CLASSNAME, $entity);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
-        $this->assertCount(2, $entity->getAttractions());
+        self::assertInstanceOf(City::CLASSNAME, $entity);
+        self::assertInstanceOf('Doctrine\ORM\PersistentCollection', $entity->getAttractions());
+        self::assertCount(2, $entity->getAttractions());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(0));
-        $this->assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(1));
-        $this->assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
-        $this->assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
+        self::assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(0));
+        self::assertInstanceOf(Bar::CLASSNAME, $entity->getAttractions()->get(1));
+        self::assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
+        self::assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
     }
 }

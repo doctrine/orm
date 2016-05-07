@@ -30,7 +30,7 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $bar = $this->_em->find(__NAMESPACE__ . '\DDC1515Bar', $bar->id);
-        $this->assertInstanceOf(__NAMESPACE__.'\DDC1515Foo', $bar->foo);
+        self::assertInstanceOf(__NAMESPACE__.'\DDC1515Foo', $bar->foo);
     }
 }
 

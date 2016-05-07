@@ -44,9 +44,9 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         /* @var $foundCat Cat */
         $foundCat = $this->_em->find(Pet::CLASSNAME, $cat->id);
 
-        $this->assertInstanceOf(Cat::CLASSNAME, $foundCat);
-        $this->assertSame($cat->id, $foundCat->id);
-        $this->assertInstanceOf(LitterBox::CLASSNAME, $foundCat->litterBox);
-        $this->assertSame($cat->litterBox->id, $foundCat->litterBox->id);
+        self::assertInstanceOf(Cat::CLASSNAME, $foundCat);
+        self::assertSame($cat->id, $foundCat->id);
+        self::assertInstanceOf(LitterBox::CLASSNAME, $foundCat->litterBox);
+        self::assertSame($cat->litterBox->id, $foundCat->litterBox->id);
     }
 }

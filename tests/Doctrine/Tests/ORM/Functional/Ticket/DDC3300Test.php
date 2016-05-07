@@ -40,8 +40,8 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals($boss, $this->_em->find(DDC3300BossInterface::INTERFACENAME, $boss->id));
-        $this->assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::INTERFACENAME, $employee->id));
+        self::assertEquals($boss, $this->_em->find(DDC3300BossInterface::INTERFACENAME, $boss->id));
+        self::assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::INTERFACENAME, $employee->id));
     }
 }
 

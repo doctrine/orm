@@ -150,11 +150,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->delete($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionRollBackUpdateShouldClearQueue()
@@ -181,11 +181,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->update($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionRollCommitDeleteShouldClearQueue()
@@ -212,11 +212,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->delete($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionRollCommitUpdateShouldClearQueue()
@@ -243,11 +243,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->update($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteLockFailureShouldIgnoreQueue()
@@ -272,7 +272,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
 
         $persister->delete($collection);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateLockFailureShouldIgnoreQueue()
@@ -297,6 +297,6 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
 
         $persister->update($collection);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

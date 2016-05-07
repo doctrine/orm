@@ -25,7 +25,7 @@ class CompanySchemaTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $schema = $this->_em->getConnection()->getSchemaManager()->createSchema();
 
-        $this->assertTrue($schema->hasTable('company_contracts'));
+        self::assertTrue($schema->hasTable('company_contracts'));
 
         return $schema;
     }
@@ -39,14 +39,14 @@ class CompanySchemaTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $table = $schema->getTable('company_contracts');
 
         // Check nullability constraints
-        $this->assertTrue($table->getColumn('id')->getNotnull());
-        $this->assertTrue($table->getColumn('completed')->getNotnull());
-        $this->assertFalse($table->getColumn('salesPerson_id')->getNotnull());
-        $this->assertTrue($table->getColumn('discr')->getNotnull());
-        $this->assertFalse($table->getColumn('fixPrice')->getNotnull());
-        $this->assertFalse($table->getColumn('hoursWorked')->getNotnull());
-        $this->assertFalse($table->getColumn('pricePerHour')->getNotnull());
-        $this->assertFalse($table->getColumn('maxPrice')->getNotnull());
+        self::assertTrue($table->getColumn('id')->getNotnull());
+        self::assertTrue($table->getColumn('completed')->getNotnull());
+        self::assertFalse($table->getColumn('salesPerson_id')->getNotnull());
+        self::assertTrue($table->getColumn('discr')->getNotnull());
+        self::assertFalse($table->getColumn('fixPrice')->getNotnull());
+        self::assertFalse($table->getColumn('hoursWorked')->getNotnull());
+        self::assertFalse($table->getColumn('pricePerHour')->getNotnull());
+        self::assertFalse($table->getColumn('maxPrice')->getNotnull());
     }
 
     /**
@@ -61,6 +61,6 @@ class CompanySchemaTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $this->_schemaTool->getDropSchemaSQL(array(
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyManager'),
         ));
-        $this->assertEquals(4, count($sql));
+        self::assertEquals(4, count($sql));
     }
 }

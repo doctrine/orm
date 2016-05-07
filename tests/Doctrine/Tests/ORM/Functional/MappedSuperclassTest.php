@@ -36,10 +36,10 @@ class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $cleanFile = $this->_em->find(get_class($file), $file->getId());
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $cleanFile->getParent());
-        $this->assertEquals($directory->getId(), $cleanFile->getParent()->getId());
-        $this->assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent()->getParent());
-        $this->assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
+        self::assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $cleanFile->getParent());
+        self::assertEquals($directory->getId(), $cleanFile->getParent()->getId());
+        self::assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent()->getParent());
+        self::assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
     }
 }

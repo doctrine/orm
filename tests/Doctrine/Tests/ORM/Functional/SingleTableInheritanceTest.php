@@ -106,9 +106,9 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFixContract', $fixContract->getId());
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
-        $this->assertEquals(1000, $contract->getFixPrice());
-        $this->assertEquals($this->salesPerson->getId(), $contract->getSalesPerson()->getId());
+        self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
+        self::assertEquals(1000, $contract->getFixPrice());
+        self::assertEquals($this->salesPerson->getId(), $contract->getSalesPerson()->getId());
     }
 
     public function testPersistDeepChildOfBaseClass()
@@ -127,10 +127,10 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $ultraContract->getId());
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $contract);
-        $this->assertEquals(7000, $contract->getMaxPrice());
-        $this->assertEquals(100, $contract->getHoursWorked());
-        $this->assertEquals(50, $contract->getPricePerHour());
+        self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $contract);
+        self::assertEquals(7000, $contract->getMaxPrice());
+        self::assertEquals(100, $contract->getHoursWorked());
+        self::assertEquals(50, $contract->getPricePerHour());
     }
 
     public function testChildClassLifecycleUpdate()
@@ -144,7 +144,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $newFix = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
-        $this->assertEquals(2500, $newFix->getFixPrice());
+        self::assertEquals(2500, $newFix->getFixPrice());
     }
 
     public function testChildClassLifecycleRemove()
@@ -155,7 +155,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($fix);
         $this->_em->flush();
 
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId()));
+        self::assertNull($this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId()));
     }
 
     public function testFindAllForAbstractBaseClass()
@@ -163,17 +163,17 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFullFixture();
         $contracts = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyContract')->findAll();
 
-        $this->assertEquals(3, count($contracts));
-        $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
+        self::assertEquals(3, count($contracts));
+        self::assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
     }
 
     public function testFindAllForChildClass()
     {
         $this->loadFullFixture();
 
-        $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFixContract')->findAll()));
-        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
-        $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+        self::assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFixContract')->findAll()));
+        self::assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+        self::assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
     }
 
     public function testFindForAbstractBaseClass()
@@ -182,8 +182,8 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
-        $this->assertEquals(1000, $contract->getFixPrice());
+        self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
+        self::assertEquals(1000, $contract->getFixPrice());
     }
 
     public function testQueryForAbstractBaseClass()
@@ -192,17 +192,17 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c')->getResult();
 
-        $this->assertEquals(3, count($contracts));
-        $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
+        self::assertEquals(3, count($contracts));
+        self::assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
     }
 
     public function testQueryForChildClass()
     {
         $this->loadFullFixture();
 
-        $this->assertEquals(1, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c')->getResult()));
-        $this->assertEquals(2, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexContract c')->getResult()));
-        $this->assertEquals(1, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract c')->getResult()));
+        self::assertEquals(1, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c')->getResult()));
+        self::assertEquals(2, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexContract c')->getResult()));
+        self::assertEquals(1, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract c')->getResult()));
     }
 
     public function testQueryBaseClassWithJoin()
@@ -210,8 +210,8 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $contracts = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN c.salesPerson p')->getResult();
-        $this->assertEquals(3, count($contracts));
-        $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
+        self::assertEquals(3, count($contracts));
+        self::assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
     }
 
     public function testQueryScalarWithDiscriminatorValue()
@@ -226,7 +226,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         sort($discrValues);
 
-        $this->assertEquals(array('fix', 'flexible', 'flexultra'), $discrValues);
+        self::assertEquals(array('fix', 'flexible', 'flexultra'), $discrValues);
     }
 
     public function testQueryChildClassWithCondition()
@@ -236,8 +236,8 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = 'SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c WHERE c.fixPrice = ?1';
         $contract = $this->_em->createQuery($dql)->setParameter(1, 1000)->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
-        $this->assertEquals(1000, $contract->getFixPrice());
+        self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
+        self::assertEquals(1000, $contract->getFixPrice());
     }
 
     /**
@@ -250,13 +250,13 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyFlexContract c SET c.hoursWorked = c.hoursWorked * 2 WHERE c.hoursWorked = 150';
         $affected = $this->_em->createQuery($dql)->execute();
 
-        $this->assertEquals(1, $affected);
+        self::assertEquals(1, $affected);
 
         $flexContract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->flex->getId());
         $ultraContract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->ultra->getId());
 
-        $this->assertEquals(300, $ultraContract->getHoursWorked());
-        $this->assertEquals(100, $flexContract->getHoursWorked());
+        self::assertEquals(300, $ultraContract->getHoursWorked());
+        self::assertEquals(100, $flexContract->getHoursWorked());
     }
 
     public function testUpdateBaseClassWithCondition()
@@ -266,12 +266,12 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyContract c SET c.completed = true WHERE c.completed = false';
         $affected = $this->_em->createQuery($dql)->execute();
 
-        $this->assertEquals(1, $affected);
+        self::assertEquals(1, $affected);
 
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyContract c SET c.completed = false';
         $affected = $this->_em->createQuery($dql)->execute();
 
-        $this->assertEquals(3, $affected);
+        self::assertEquals(3, $affected);
     }
 
     public function testDeleteByChildClassCondition()
@@ -281,7 +281,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyFlexContract c';
         $affected = $this->_em->createQuery($dql)->execute();
 
-        $this->assertEquals(2, $affected);
+        self::assertEquals(2, $affected);
     }
 
     public function testDeleteByBaseClassCondition()
@@ -291,12 +291,12 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "DELETE Doctrine\Tests\Models\Company\CompanyContract c WHERE c.completed = true";
         $affected = $this->_em->createQuery($dql)->execute();
 
-        $this->assertEquals(2, $affected);
+        self::assertEquals(2, $affected);
 
         $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c')->getResult();
-        $this->assertEquals(1, count($contracts));
+        self::assertEquals(1, count($contracts));
 
-        $this->assertFalse($contracts[0]->isCompleted(), "Only non completed contracts should be left.");
+        self::assertFalse($contracts[0]->isCompleted(), "Only non completed contracts should be left.");
     }
 
     /**
@@ -310,7 +310,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($this->_em->find(get_class($this->fix), $this->fix->getId()));
         $this->_em->flush();
 
-        $this->assertNull($this->_em->find(get_class($this->fix), $this->fix->getId()), "Contract should not be present in the database anymore.");
+        self::assertNull($this->_em->find(get_class($this->fix), $this->fix->getId()), "Contract should not be present in the database anymore.");
     }
 
     /**
@@ -322,19 +322,19 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
         $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
-        $this->assertEquals(3, count($contracts), "There should be 3 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyContract'");
+        self::assertEquals(3, count($contracts), "There should be 3 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyContract'");
 
         $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
         $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
-        $this->assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFixContract'");
+        self::assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFixContract'");
 
         $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexContract");
         $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
-        $this->assertEquals(2, count($contracts), "There should be 2 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexContract'");
+        self::assertEquals(2, count($contracts), "There should be 2 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexContract'");
 
         $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexUltraContract");
         $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
-        $this->assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
+        self::assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
     }
 
     /**
@@ -348,13 +348,13 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $contracts = $repository->matching(new Criteria(
             Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
-        $this->assertEquals(3, count($contracts));
+        self::assertEquals(3, count($contracts));
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
         $contracts = $repository->matching(new Criteria(
             Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
-        $this->assertEquals(1, count($contracts));
+        self::assertEquals(1, count($contracts));
     }
 
     /**
@@ -383,13 +383,13 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyContract', $ref);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Employee directly.");
+        self::assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
+        self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyContract', $ref);
+        self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Employee directly.");
         $this->_em->clear();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFixContract', $this->fix->getId());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
     }
 
     /**
@@ -405,6 +405,6 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
                               ->setParameter(1, $this->fix->getId())
                               ->getSingleResult();
 
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $contract->getSalesPerson());
+        self::assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $contract->getSalesPerson());
     }
 }

@@ -19,15 +19,15 @@ class EntityNotFoundExceptionTest extends PHPUnit_Framework_TestCase
             array('foo' => 'bar')
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
-        $this->assertSame('Entity of type \'foo\' for IDs foo(bar) was not found', $exception->getMessage());
+        self::assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
+        self::assertSame('Entity of type \'foo\' for IDs foo(bar) was not found', $exception->getMessage());
 
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
             array()
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
-        $this->assertSame('Entity of type \'foo\' was not found', $exception->getMessage());
+        self::assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
+        self::assertSame('Entity of type \'foo\' was not found', $exception->getMessage());
     }
 }

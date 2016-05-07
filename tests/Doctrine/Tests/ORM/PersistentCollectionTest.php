@@ -52,7 +52,7 @@ class PersistentCollectionTest extends OrmTestCase
         $class = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection);
         $collection->setInitialized(false);
-        $this->assertFalse($collection->isInitialized());
+        self::assertFalse($collection->isInitialized());
     }
 
     /**
@@ -62,7 +62,7 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->setUpPersistentCollection();
         $this->collection->current();
-        $this->assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isInitialized());
     }
 
     /**
@@ -72,7 +72,7 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->setUpPersistentCollection();
         $this->collection->key();
-        $this->assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isInitialized());
     }
 
     /**
@@ -82,7 +82,7 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->setUpPersistentCollection();
         $this->collection->next();
-        $this->assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isInitialized());
     }
 
     /**
@@ -92,11 +92,11 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->setUpPersistentCollection();
 
-        $this->assertEmpty($this->collection);
+        self::assertEmpty($this->collection);
 
         $this->collection->add("dummy");
 
-        $this->assertNotEmpty($this->collection);
+        self::assertNotEmpty($this->collection);
 
         $product = new ECommerceProduct();
 
@@ -104,8 +104,8 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->set(2, "dummy");
         $this->collection->set(3, null);
 
-        $this->assertSame($product, $this->collection->get(1));
-        $this->assertSame("dummy", $this->collection->get(2));
-        $this->assertSame(null, $this->collection->get(3));
+        self::assertSame($product, $this->collection->get(1));
+        self::assertSame("dummy", $this->collection->get(2));
+        self::assertSame(null, $this->collection->get(3));
     }
 }

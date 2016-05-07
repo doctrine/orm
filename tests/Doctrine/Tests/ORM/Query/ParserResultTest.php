@@ -15,7 +15,7 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRsm()
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Doctrine\ORM\Query\ResultSetMapping',
             $this->parserResult->getResultSetMapping()
         );
@@ -23,26 +23,26 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetSqlExecutor()
     {
-        $this->assertNull($this->parserResult->getSqlExecutor());
+        self::assertNull($this->parserResult->getSqlExecutor());
 
         $executor = $this->getMock('Doctrine\ORM\Query\Exec\AbstractSqlExecutor', array('execute'));
         $this->parserResult->setSqlExecutor($executor);
-        $this->assertSame($executor, $this->parserResult->getSqlExecutor());
+        self::assertSame($executor, $this->parserResult->getSqlExecutor());
     }
 
     public function testGetSqlParameterPosition()
     {
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
-        $this->assertEquals(array(1, 2), $this->parserResult->getSqlParameterPositions(1));
+        self::assertEquals(array(1, 2), $this->parserResult->getSqlParameterPositions(1));
     }
 
     public function testGetParameterMappings()
     {
-        $this->assertInternalType('array', $this->parserResult->getParameterMappings());
+        self::assertInternalType('array', $this->parserResult->getParameterMappings());
 
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
-        $this->assertEquals(array(1 => array(1, 2)), $this->parserResult->getParameterMappings());
+        self::assertEquals(array(1 => array(1, 2)), $this->parserResult->getParameterMappings());
     }
 }

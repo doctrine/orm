@@ -51,7 +51,7 @@ class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $qb->from(get_class($entity), 'c');
         $qb->select("count(c)");
         $count = intval($qb->getQuery()->getSingleScalarResult());
-        $this->assertEquals($initial, $count);
+        self::assertEquals($initial, $count);
     }
 }
 

@@ -48,7 +48,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             '--all'   => true,
         ), array('decorated' => false));
 
-        $this->assertEquals('Clearing all second-level cache query regions' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Clearing all second-level cache query regions' . PHP_EOL, $tester->getDisplay());
     }
 
     public function testClearDefaultRegionName()
@@ -60,7 +60,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             'region-name'   => null,
         ), array('decorated' => false));
 
-        $this->assertEquals('Clearing second-level cache query region named "query_cache_region"' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Clearing second-level cache query region named "query_cache_region"' . PHP_EOL, $tester->getDisplay());
     }
 
     public function testClearByRegionName()
@@ -72,7 +72,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             'region-name'   => 'my_region',
         ), array('decorated' => false));
 
-        $this->assertEquals('Clearing second-level cache query region named "my_region"' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Clearing second-level cache query region named "my_region"' . PHP_EOL, $tester->getDisplay());
     }
 
     public function testFlushRegionName()
@@ -85,6 +85,6 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             '--flush'       => true,
         ), array('decorated' => false));
 
-        $this->assertEquals('Flushing cache provider configured for second-level cache query region named "my_region"' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Flushing cache provider configured for second-level cache query region named "my_region"' . PHP_EOL, $tester->getDisplay());
     }
 }

@@ -31,15 +31,15 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($user);
 
-        $this->assertEquals(0, $user->phonenumbers->count());
+        self::assertEquals(0, $user->phonenumbers->count());
 
         $this->_em->flush();
 
-        $this->assertEquals(1, $user->phonenumbers->count());
-        $this->assertTrue($this->_em->contains($user->phonenumbers->get(0)));
-        $this->assertTrue($user->phonenumbers->get(0)->getUser() === $user);
+        self::assertEquals(1, $user->phonenumbers->count());
+        self::assertTrue($this->_em->contains($user->phonenumbers->get(0)));
+        self::assertTrue($user->phonenumbers->get(0)->getUser() === $user);
 
-        $this->assertFalse($user->phonenumbers->isDirty());
+        self::assertFalse($user->phonenumbers->isDirty());
 
         // Can be used together with SQL Logging to check that a subsequent flush has
         // nothing to do. This proofs the correctness of the changes that happened in onFlush.
@@ -59,13 +59,13 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->assertEquals(1, $listener->preFlush);
-        $this->assertEquals(1, $listener->onFlush);
+        self::assertEquals(1, $listener->preFlush);
+        self::assertEquals(1, $listener->onFlush);
 
         $this->_em->flush();
 
-        $this->assertEquals(2, $listener->preFlush);
-        $this->assertEquals(2, $listener->onFlush);
+        self::assertEquals(2, $listener->preFlush);
+        self::assertEquals(2, $listener->onFlush);
     }
 }
 

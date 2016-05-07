@@ -37,7 +37,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
 
         //request entity
         $imageEntity = $this->_em->find(DDC3597Image::CLASSNAME, $imageEntity->getId());
-        $this->assertInstanceOf(DDC3597Image::CLASSNAME, $imageEntity);
+        self::assertInstanceOf(DDC3597Image::CLASSNAME, $imageEntity);
 
         //cleanup
         $this->_em->remove($imageEntity);
@@ -46,6 +46,6 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
 
         //check delete
         $imageEntity = $this->_em->find(DDC3597Image::CLASSNAME, $imageEntity->getId());
-        $this->assertNull($imageEntity);
+        self::assertNull($imageEntity);
     }
 }

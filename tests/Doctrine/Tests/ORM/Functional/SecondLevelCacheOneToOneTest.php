@@ -29,10 +29,10 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $entity1 = $this->travelersWithProfile[0];
         $entity2 = $this->travelersWithProfile[1];
 
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
     }
 
     public function testPutOneToOneOnBidirectionalPersist()
@@ -48,12 +48,12 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $entity1 = $this->travelersWithProfile[0];
         $entity2 = $this->travelersWithProfile[1];
 
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity1->getProfile()->getInfo()->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity2->getProfile()->getInfo()->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity1->getProfile()->getInfo()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity2->getProfile()->getInfo()->getId()));
     }
 
     public function testPutAndLoadOneToOneUnidirectionalRelation()
@@ -72,40 +72,40 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $entity1 = $this->travelersWithProfile[0];
         $entity2 = $this->travelersWithProfile[1];
 
-        $this->assertFalse($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
-        $this->assertFalse($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
-        $this->assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
-        $this->assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
+        self::assertFalse($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
+        self::assertFalse($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
 
         $t1 = $this->_em->find(Traveler::CLASSNAME, $entity1->getId());
         $t2 = $this->_em->find(Traveler::CLASSNAME, $entity2->getId());
 
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
         // The inverse side its not cached
-        $this->assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
-        $this->assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getProfile()->getId()));
 
-        $this->assertInstanceOf(Traveler::CLASSNAME, $t1);
-        $this->assertInstanceOf(Traveler::CLASSNAME, $t2);
-        $this->assertInstanceOf(TravelerProfile::CLASSNAME, $t1->getProfile());
-        $this->assertInstanceOf(TravelerProfile::CLASSNAME, $t2->getProfile());
+        self::assertInstanceOf(Traveler::CLASSNAME, $t1);
+        self::assertInstanceOf(Traveler::CLASSNAME, $t2);
+        self::assertInstanceOf(TravelerProfile::CLASSNAME, $t1->getProfile());
+        self::assertInstanceOf(TravelerProfile::CLASSNAME, $t2->getProfile());
 
-        $this->assertEquals($entity1->getId(), $t1->getId());
-        $this->assertEquals($entity1->getName(), $t1->getName());
-        $this->assertEquals($entity1->getProfile()->getId(), $t1->getProfile()->getId());
-        $this->assertEquals($entity1->getProfile()->getName(), $t1->getProfile()->getName());
+        self::assertEquals($entity1->getId(), $t1->getId());
+        self::assertEquals($entity1->getName(), $t1->getName());
+        self::assertEquals($entity1->getProfile()->getId(), $t1->getProfile()->getId());
+        self::assertEquals($entity1->getProfile()->getName(), $t1->getProfile()->getName());
 
-        $this->assertEquals($entity2->getId(), $t2->getId());
-        $this->assertEquals($entity2->getName(), $t2->getName());
-        $this->assertEquals($entity2->getProfile()->getId(), $t2->getProfile()->getId());
-        $this->assertEquals($entity2->getProfile()->getName(), $t2->getProfile()->getName());
+        self::assertEquals($entity2->getId(), $t2->getId());
+        self::assertEquals($entity2->getName(), $t2->getName());
+        self::assertEquals($entity2->getProfile()->getId(), $t2->getProfile()->getId());
+        self::assertEquals($entity2->getProfile()->getName(), $t2->getProfile()->getName());
 
         // its all cached now
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
-        $this->assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity1->getId()));
+        self::assertTrue($this->cache->containsEntity(Traveler::CLASSNAME, $entity2->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getProfile()->getId()));
 
         $this->_em->clear();
 
@@ -114,18 +114,18 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $t3 = $this->_em->find(Traveler::CLASSNAME, $entity1->getId());
         $t4 = $this->_em->find(Traveler::CLASSNAME, $entity2->getId());
 
-        $this->assertInstanceOf(Traveler::CLASSNAME, $t3);
-        $this->assertInstanceOf(Traveler::CLASSNAME, $t4);
-        $this->assertInstanceOf(TravelerProfile::CLASSNAME, $t3->getProfile());
-        $this->assertInstanceOf(TravelerProfile::CLASSNAME, $t4->getProfile());
+        self::assertInstanceOf(Traveler::CLASSNAME, $t3);
+        self::assertInstanceOf(Traveler::CLASSNAME, $t4);
+        self::assertInstanceOf(TravelerProfile::CLASSNAME, $t3->getProfile());
+        self::assertInstanceOf(TravelerProfile::CLASSNAME, $t4->getProfile());
 
-        $this->assertEquals($entity1->getProfile()->getId(), $t3->getProfile()->getId());
-        $this->assertEquals($entity2->getProfile()->getId(), $t4->getProfile()->getId());
+        self::assertEquals($entity1->getProfile()->getId(), $t3->getProfile()->getId());
+        self::assertEquals($entity2->getProfile()->getId(), $t4->getProfile()->getId());
 
-        $this->assertEquals($entity1->getProfile()->getName(), $t3->getProfile()->getName());
-        $this->assertEquals($entity2->getProfile()->getName(), $t4->getProfile()->getName());
+        self::assertEquals($entity1->getProfile()->getName(), $t3->getProfile()->getName());
+        self::assertEquals($entity2->getProfile()->getName(), $t4->getProfile()->getName());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
     public function testPutAndLoadOneToOneBidirectionalRelation()
@@ -145,28 +145,28 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $entity1 = $this->travelersWithProfile[0]->getProfile();
         $entity2 = $this->travelersWithProfile[1]->getProfile();
 
-        $this->assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getId()));
-        $this->assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getId()));
-        $this->assertFalse($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity1->getInfo()->getId()));
-        $this->assertFalse($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity2->getInfo()->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity1->getInfo()->getId()));
+        self::assertFalse($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity2->getInfo()->getId()));
 
         $p1 = $this->_em->find(TravelerProfile::CLASSNAME, $entity1->getId());
         $p2 = $this->_em->find(TravelerProfile::CLASSNAME, $entity2->getId());
 
-        $this->assertEquals($entity1->getId(), $p1->getId());
-        $this->assertEquals($entity1->getName(), $p1->getName());
-        $this->assertEquals($entity1->getInfo()->getId(), $p1->getInfo()->getId());
-        $this->assertEquals($entity1->getInfo()->getDescription(), $p1->getInfo()->getDescription());
+        self::assertEquals($entity1->getId(), $p1->getId());
+        self::assertEquals($entity1->getName(), $p1->getName());
+        self::assertEquals($entity1->getInfo()->getId(), $p1->getInfo()->getId());
+        self::assertEquals($entity1->getInfo()->getDescription(), $p1->getInfo()->getDescription());
 
-        $this->assertEquals($entity2->getId(), $p2->getId());
-        $this->assertEquals($entity2->getName(), $p2->getName());
-        $this->assertEquals($entity2->getInfo()->getId(), $p2->getInfo()->getId());
-        $this->assertEquals($entity2->getInfo()->getDescription(), $p2->getInfo()->getDescription());
+        self::assertEquals($entity2->getId(), $p2->getId());
+        self::assertEquals($entity2->getName(), $p2->getName());
+        self::assertEquals($entity2->getInfo()->getId(), $p2->getInfo()->getId());
+        self::assertEquals($entity2->getInfo()->getDescription(), $p2->getInfo()->getDescription());
 
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity1->getInfo()->getId()));
-        $this->assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity2->getInfo()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity1->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfile::CLASSNAME, $entity2->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity1->getInfo()->getId()));
+        self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::CLASSNAME, $entity2->getInfo()->getId()));
 
         $this->_em->clear();
 
@@ -175,22 +175,22 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $p3 = $this->_em->find(TravelerProfile::CLASSNAME, $entity1->getId());
         $p4 = $this->_em->find(TravelerProfile::CLASSNAME, $entity2->getId());
 
-        $this->assertInstanceOf(TravelerProfile::CLASSNAME, $p3);
-        $this->assertInstanceOf(TravelerProfile::CLASSNAME, $p4);
-        $this->assertInstanceOf(TravelerProfileInfo::CLASSNAME, $p3->getInfo());
-        $this->assertInstanceOf(TravelerProfileInfo::CLASSNAME, $p4->getInfo());
+        self::assertInstanceOf(TravelerProfile::CLASSNAME, $p3);
+        self::assertInstanceOf(TravelerProfile::CLASSNAME, $p4);
+        self::assertInstanceOf(TravelerProfileInfo::CLASSNAME, $p3->getInfo());
+        self::assertInstanceOf(TravelerProfileInfo::CLASSNAME, $p4->getInfo());
 
-        $this->assertEquals($entity1->getId(), $p3->getId());
-        $this->assertEquals($entity1->getName(), $p3->getName());
-        $this->assertEquals($entity1->getInfo()->getId(), $p3->getInfo()->getId());
-        $this->assertEquals($entity1->getInfo()->getDescription(), $p3->getInfo()->getDescription());
+        self::assertEquals($entity1->getId(), $p3->getId());
+        self::assertEquals($entity1->getName(), $p3->getName());
+        self::assertEquals($entity1->getInfo()->getId(), $p3->getInfo()->getId());
+        self::assertEquals($entity1->getInfo()->getDescription(), $p3->getInfo()->getDescription());
 
-        $this->assertEquals($entity2->getId(), $p4->getId());
-        $this->assertEquals($entity2->getName(), $p4->getName());
-        $this->assertEquals($entity2->getInfo()->getId(), $p4->getInfo()->getId());
-        $this->assertEquals($entity2->getInfo()->getDescription(), $p4->getInfo()->getDescription());
+        self::assertEquals($entity2->getId(), $p4->getId());
+        self::assertEquals($entity2->getName(), $p4->getName());
+        self::assertEquals($entity2->getInfo()->getId(), $p4->getInfo()->getId());
+        self::assertEquals($entity2->getInfo()->getDescription(), $p4->getInfo()->getDescription());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
     public function testInverseSidePutAndLoadOneToOneBidirectionalRelation()
@@ -205,29 +205,29 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $entity1 = $this->addresses[0]->person;
         $entity2 = $this->addresses[1]->person;
 
-        $this->assertFalse($this->cache->containsEntity(Person::CLASSNAME, $entity1->id));
-        $this->assertFalse($this->cache->containsEntity(Person::CLASSNAME, $entity2->id));
-        $this->assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity1->address->id));
-        $this->assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity2->address->id));
+        self::assertFalse($this->cache->containsEntity(Person::CLASSNAME, $entity1->id));
+        self::assertFalse($this->cache->containsEntity(Person::CLASSNAME, $entity2->id));
+        self::assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity1->address->id));
+        self::assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity2->address->id));
 
         $p1 = $this->_em->find(Person::CLASSNAME, $entity1->id);
         $p2 = $this->_em->find(Person::CLASSNAME, $entity2->id);
 
-        $this->assertEquals($entity1->id, $p1->id);
-        $this->assertEquals($entity1->name, $p1->name);
-        $this->assertEquals($entity1->address->id, $p1->address->id);
-        $this->assertEquals($entity1->address->location, $p1->address->location);
+        self::assertEquals($entity1->id, $p1->id);
+        self::assertEquals($entity1->name, $p1->name);
+        self::assertEquals($entity1->address->id, $p1->address->id);
+        self::assertEquals($entity1->address->location, $p1->address->location);
 
-        $this->assertEquals($entity2->id, $p2->id);
-        $this->assertEquals($entity2->name, $p2->name);
-        $this->assertEquals($entity2->address->id, $p2->address->id);
-        $this->assertEquals($entity2->address->location, $p2->address->location);
+        self::assertEquals($entity2->id, $p2->id);
+        self::assertEquals($entity2->name, $p2->name);
+        self::assertEquals($entity2->address->id, $p2->address->id);
+        self::assertEquals($entity2->address->location, $p2->address->location);
 
-        $this->assertTrue($this->cache->containsEntity(Person::CLASSNAME, $entity1->id));
-        $this->assertTrue($this->cache->containsEntity(Person::CLASSNAME, $entity2->id));
+        self::assertTrue($this->cache->containsEntity(Person::CLASSNAME, $entity1->id));
+        self::assertTrue($this->cache->containsEntity(Person::CLASSNAME, $entity2->id));
         // The inverse side its not cached
-        $this->assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity1->address->id));
-        $this->assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity2->address->id));
+        self::assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity1->address->id));
+        self::assertFalse($this->cache->containsEntity(Address::CLASSNAME, $entity2->address->id));
 
         $this->_em->clear();
 
@@ -236,28 +236,28 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $p3 = $this->_em->find(Person::CLASSNAME, $entity1->id);
         $p4 = $this->_em->find(Person::CLASSNAME, $entity2->id);
 
-        $this->assertInstanceOf(Person::CLASSNAME, $p3);
-        $this->assertInstanceOf(Person::CLASSNAME, $p4);
-        $this->assertInstanceOf(Address::CLASSNAME, $p3->address);
-        $this->assertInstanceOf(Address::CLASSNAME, $p4->address);
+        self::assertInstanceOf(Person::CLASSNAME, $p3);
+        self::assertInstanceOf(Person::CLASSNAME, $p4);
+        self::assertInstanceOf(Address::CLASSNAME, $p3->address);
+        self::assertInstanceOf(Address::CLASSNAME, $p4->address);
 
-        $this->assertEquals($entity1->id, $p3->id);
-        $this->assertEquals($entity1->name, $p3->name);
-        $this->assertEquals($entity1->address->id, $p3->address->id);
-        $this->assertEquals($entity1->address->location, $p3->address->location);
+        self::assertEquals($entity1->id, $p3->id);
+        self::assertEquals($entity1->name, $p3->name);
+        self::assertEquals($entity1->address->id, $p3->address->id);
+        self::assertEquals($entity1->address->location, $p3->address->location);
 
-        $this->assertEquals($entity2->id, $p4->id);
-        $this->assertEquals($entity2->name, $p4->name);
-        $this->assertEquals($entity2->address->id, $p4->address->id);
-        $this->assertEquals($entity2->address->location, $p4->address->location);
+        self::assertEquals($entity2->id, $p4->id);
+        self::assertEquals($entity2->name, $p4->name);
+        self::assertEquals($entity2->address->id, $p4->address->id);
+        self::assertEquals($entity2->address->location, $p4->address->location);
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
     public function testPutAndLoadNonCacheableOneToOne()
     {
-        $this->assertNull($this->cache->getEntityCacheRegion(Client::CLASSNAME));
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(Token::CLASSNAME));
+        self::assertNull($this->cache->getEntityCacheRegion(Client::CLASSNAME));
+        self::assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(Token::CLASSNAME));
 
         $client = new Client('FabioBatSilva');
         $token  = new Token('token-hash', $client);
@@ -269,17 +269,17 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
-        $this->assertFalse($this->cache->containsEntity(Client::CLASSNAME, $client->id));
+        self::assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
+        self::assertFalse($this->cache->containsEntity(Client::CLASSNAME, $client->id));
 
         $entity = $this->_em->find(Token::CLASSNAME, $token->token);
 
-        $this->assertInstanceOf(Token::CLASSNAME, $entity);
-        $this->assertInstanceOf(Client::CLASSNAME, $entity->getClient());
-        $this->assertEquals('token-hash', $entity->token);
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertInstanceOf(Token::CLASSNAME, $entity);
+        self::assertInstanceOf(Client::CLASSNAME, $entity->getClient());
+        self::assertEquals('token-hash', $entity->token);
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertEquals('FabioBatSilva', $entity->getClient()->name);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals('FabioBatSilva', $entity->getClient()->name);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }

@@ -46,7 +46,7 @@ class DDC2359Test extends \PHPUnit_Framework_TestCase
 
         $metadataFactory->setEntityManager($entityManager);
 
-        $this->assertSame($mockMetadata, $metadataFactory->getMetadataFor(__NAMESPACE__ . '\\DDC2359Foo'));
+        self::assertSame($mockMetadata, $metadataFactory->getMetadataFor(__NAMESPACE__ . '\\DDC2359Foo'));
     }
 }
 

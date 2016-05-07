@@ -28,29 +28,29 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql    = 'SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l';
         $result = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertCount(2, $result);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUserReference', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUserReference', $result[1]);
+        self::assertCount(2, $result);
+        self::assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUserReference', $result[0]);
+        self::assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUserReference', $result[1]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[0]->source());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[0]->target());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->source());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->target());
+        self::assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[0]->source());
+        self::assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[0]->target());
+        self::assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->source());
+        self::assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->target());
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->source());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->target());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->source());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->target());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->source());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->target());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->source());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->target());
 
-        $this->assertFalse($result[0]->target()->__isInitialized());
-        $this->assertFalse($result[0]->source()->__isInitialized());
-        $this->assertFalse($result[1]->target()->__isInitialized());
-        $this->assertFalse($result[1]->source()->__isInitialized());
+        self::assertFalse($result[0]->target()->__isInitialized());
+        self::assertFalse($result[0]->source()->__isInitialized());
+        self::assertFalse($result[1]->target()->__isInitialized());
+        self::assertFalse($result[1]->source()->__isInitialized());
 
-        $this->assertNotNull($result[0]->source()->getId());
-        $this->assertNotNull($result[0]->target()->getId());
-        $this->assertNotNull($result[1]->source()->getId());
-        $this->assertNotNull($result[1]->target()->getId());
+        self::assertNotNull($result[0]->source()->getId());
+        self::assertNotNull($result[0]->target()->getId());
+        self::assertNotNull($result[1]->source()->getId());
+        self::assertNotNull($result[1]->target()->getId());
     }
 
     public function loadFixture()

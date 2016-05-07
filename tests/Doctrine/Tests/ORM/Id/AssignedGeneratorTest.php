@@ -40,13 +40,13 @@ class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $entity = new AssignedSingleIdEntity;
         $entity->myId = 1;
         $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(array('myId' => 1), $id);
+        self::assertEquals(array('myId' => 1), $id);
 
         $entity = new AssignedCompositeIdEntity;
         $entity->myId2 = 2;
         $entity->myId1 = 4;
         $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(array('myId1' => 4, 'myId2' => 2), $id);
+        self::assertEquals(array('myId1' => 4, 'myId2' => 2), $id);
     }
 }
 

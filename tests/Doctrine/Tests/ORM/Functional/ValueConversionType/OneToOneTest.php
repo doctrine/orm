@@ -51,10 +51,10 @@ class OneToOneTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone LIMIT 1'));
     }
 
     /**
@@ -72,8 +72,8 @@ class OneToOneTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneEntity', $inversed);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity', $owning);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedOneToOneEntity', $inversed);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity', $owning);
     }
 
     /**
@@ -91,8 +91,8 @@ class OneToOneTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertEquals('abc', $inversed->id1);
-        $this->assertEquals('def', $owning->id2);
+        self::assertEquals('abc', $inversed->id1);
+        self::assertEquals('def', $owning->id2);
     }
 
     /**
@@ -107,7 +107,7 @@ class OneToOneTest extends OrmFunctionalTestCase
 
         $inversedProxy = $owning->associatedEntity;
 
-        $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
+        self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
     /**
@@ -120,6 +120,6 @@ class OneToOneTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity', $inversed->associatedEntity);
+        self::assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity', $inversed->associatedEntity);
     }
 }

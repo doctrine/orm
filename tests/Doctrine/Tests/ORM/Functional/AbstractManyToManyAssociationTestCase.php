@@ -15,12 +15,12 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
 
     public function assertForeignKeysContain($firstId, $secondId)
     {
-        $this->assertEquals(1, $this->_countForeignKeys($firstId, $secondId));
+        self::assertEquals(1, $this->_countForeignKeys($firstId, $secondId));
     }
 
     public function assertForeignKeysNotContain($firstId, $secondId)
     {
-        $this->assertEquals(0, $this->_countForeignKeys($firstId, $secondId));
+        self::assertEquals(0, $this->_countForeignKeys($firstId, $secondId));
     }
 
     protected function _countForeignKeys($firstId, $secondId)
