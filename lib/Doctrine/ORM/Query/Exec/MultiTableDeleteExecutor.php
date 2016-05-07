@@ -66,9 +66,9 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $platform       = $conn->getDatabasePlatform();
         $quoteStrategy  = $em->getConfiguration()->getQuoteStrategy();
 
-        $primaryClass       = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
-        $primaryDqlAlias    = $AST->deleteClause->aliasIdentificationVariable;
-        $rootClass          = $em->getClassMetadata($primaryClass->rootEntityName);
+        $primaryClass    = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
+        $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
+        $rootClass       = $em->getClassMetadata($primaryClass->rootEntityName);
 
         $tempTable      = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumnNames  = $rootClass->getIdentifierColumnNames();
@@ -102,6 +102,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
+
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
