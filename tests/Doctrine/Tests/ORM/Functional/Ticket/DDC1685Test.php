@@ -15,6 +15,7 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('ddc117');
+
         parent::setUp();
 
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad')->execute();
@@ -48,6 +49,7 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPaginateCountNoOutputWalkers()
     {
         $this->paginator->setUseOutputWalkers(false);
+
         $this->assertEquals(1, count($this->paginator));
     }
 

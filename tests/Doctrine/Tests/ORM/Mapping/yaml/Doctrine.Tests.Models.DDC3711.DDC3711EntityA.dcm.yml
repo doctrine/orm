@@ -3,9 +3,9 @@ Doctrine\Tests\Models\DDC3711\DDC3711EntityA:
   table: ddc3711.entityA
   id:
     id1:
-        type: int
+        type: integer
     id2:
-        type: int
+        type: integer
   manyToMany:
     entityB:
       targetEntity: Doctrine\Tests\Models\DDC3711\DDC3711EntityB

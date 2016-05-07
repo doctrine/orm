@@ -105,7 +105,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function onNotFoundMetadata($className)
     {
-        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+        if ( ! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return;
         }
 
@@ -162,7 +162,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->completeIdGeneratorMapping($class);
         }
 
-        if (!$class->isMappedSuperclass) {
+        if ( ! $class->isMappedSuperclass) {
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
 
                 if (isset($embeddableClass['inherited'])) {
@@ -202,9 +202,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setPrimaryTable($parent->table);
             }
 
-            if ($parent) {
-                $this->addInheritedIndexes($class, $parent);
-            }
+            $this->addInheritedIndexes($class, $parent);
 
             if ($parent->cache) {
                 $class->cache = $parent->cache;
@@ -239,6 +237,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
+
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
 
@@ -267,11 +266,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
-        if ( ! $class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
+        if ( ! $class->isMappedSuperclass && ! $class->isInheritanceTypeNone()) {
             if ( ! $parent) {
                 if (count($class->discriminatorMap) == 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);
                 }
+
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
@@ -302,12 +302,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function resolveDiscriminatorValue(ClassMetadata $metadata)
     {
-        if ($metadata->discriminatorValue
-            || ! $metadata->discriminatorMap
-            || $metadata->isMappedSuperclass
-            || ! $metadata->reflClass
-            || $metadata->reflClass->isAbstract()
-        ) {
+        if ($metadata->discriminatorValue || ! $metadata->discriminatorMap ||
+            $metadata->isMappedSuperclass || ! $metadata->reflClass || $metadata->reflClass->isAbstract()) {
             return;
         }
 
@@ -349,10 +345,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
     {
         $allClasses = $this->driver->getAllClassNames();
-        $fqcn = $class->getName();
-        $map = [$this->getShortName($class->name) => $fqcn];
-
+        $fqcn       = $class->getName();
+        $map        = [$this->getShortName($class->name) => $fqcn];
         $duplicates = [];
+
         foreach ($allClasses as $subClassCandidate) {
             if (is_subclass_of($subClassCandidate, $fqcn)) {
                 $shortName = $this->getShortName($subClassCandidate);
@@ -404,11 +400,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
+
             if ( ! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
+
             $subClass->addInheritedFieldMapping($mapping);
         }
+
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
         }
@@ -431,6 +430,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ($mapping['type'] & ClassMetadata::TO_MANY && !$mapping['isOwningSide']) {
                     throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
                 }
+
                 $mapping['sourceEntity'] = $subClass->name;
             }
 
@@ -438,9 +438,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
+
             if ( ! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
+
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
@@ -451,6 +453,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             if ( ! isset($embeddedClass['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $embeddedClass['inherited'] = $parentClass->name;
             }
+
             if ( ! isset($embeddedClass['declared'])) {
                 $embeddedClass['declared'] = $parentClass->name;
             }
@@ -499,19 +502,21 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        if (! $parentClass->isMappedSuperclass) {
+        if ( ! $parentClass->isMappedSuperclass) {
             return;
         }
 
         foreach (['uniqueConstraints', 'indexes'] as $indexType) {
-            if (isset($parentClass->table[$indexType])) {
-                foreach ($parentClass->table[$indexType] as $indexName => $index) {
-                    if (isset($subClass->table[$indexType][$indexName])) {
-                        continue; // Let the inheriting table override indices
-                    }
+            if ( ! isset($parentClass->table[$indexType])) {
+                continue;
+            }
 
-                    $subClass->table[$indexType][$indexName] = $index;
+            foreach ($parentClass->table[$indexType] as $indexName => $index) {
+                if (isset($subClass->table[$indexType][$indexName])) {
+                    continue; // Let the inheriting table override indices
                 }
+
+                $subClass->table[$indexType][$indexName] = $index;
             }
         }
     }
@@ -529,14 +534,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->namedQueries as $name => $query) {
-            if ( ! isset ($subClass->namedQueries[$name])) {
-                $subClass->addNamedQuery(
-                    [
-                        'name'  => $query['name'],
-                        'query' => $query['query']
-                    ]
-                );
+            if (isset($subClass->namedQueries[$name])) {
+                continue;
             }
+
+            $subClass->addNamedQuery(
+                [
+                    'name'  => $query['name'],
+                    'query' => $query['query']
+                ]
+            );
         }
     }
 
@@ -553,17 +560,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->namedNativeQueries as $name => $query) {
-            if ( ! isset ($subClass->namedNativeQueries[$name])) {
-                $subClass->addNamedNativeQuery(
-                    [
-                        'name'              => $query['name'],
-                        'query'             => $query['query'],
-                        'isSelfClass'       => $query['isSelfClass'],
-                        'resultSetMapping'  => $query['resultSetMapping'],
-                        'resultClass'       => $query['isSelfClass'] ? $subClass->name : $query['resultClass'],
-                    ]
-                );
+            if (isset($subClass->namedNativeQueries[$name])) {
+                continue;
             }
+
+            $subClass->addNamedNativeQuery(
+                [
+                    'name'             => $query['name'],
+                    'query'            => $query['query'],
+                    'isSelfClass'      => $query['isSelfClass'],
+                    'resultSetMapping' => $query['resultSetMapping'],
+                    'resultClass'      => $query['isSelfClass'] ? $subClass->name : $query['resultClass'],
+                ]
+            );
         }
     }
 
@@ -580,25 +589,28 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
-            if ( ! isset ($subClass->sqlResultSetMappings[$name])) {
-                $entities = [];
-                foreach ($mapping['entities'] as $entity) {
-                    $entities[] = [
-                        'fields'                => $entity['fields'],
-                        'isSelfClass'           => $entity['isSelfClass'],
-                        'discriminatorColumn'   => $entity['discriminatorColumn'],
-                        'entityClass'           => $entity['isSelfClass'] ? $subClass->name : $entity['entityClass'],
-                    ];
-                }
-
-                $subClass->addSqlResultSetMapping(
-                    [
-                        'name'          => $mapping['name'],
-                        'columns'       => $mapping['columns'],
-                        'entities'      => $entities,
-                    ]
-                );
+            if (isset ($subClass->sqlResultSetMappings[$name])) {
+                continue;
             }
+
+            $entities = [];
+
+            foreach ($mapping['entities'] as $entity) {
+                $entities[] = [
+                    'fields'              => $entity['fields'],
+                    'isSelfClass'         => $entity['isSelfClass'],
+                    'discriminatorColumn' => $entity['discriminatorColumn'],
+                    'entityClass'         => $entity['isSelfClass'] ? $subClass->name : $entity['entityClass'],
+                ];
+            }
+
+            $subClass->addSqlResultSetMapping(
+                [
+                    'name'     => $mapping['name'],
+                    'columns'  => $mapping['columns'],
+                    'entities' => $entities,
+                ]
+            );
         }
     }
 
@@ -615,14 +627,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function completeIdGeneratorMapping(ClassMetadata $class)
     {
         $idGenType = $class->generatorType;
+
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
-            if ($this->getTargetPlatform()->prefersSequences()) {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
-            } else if ($this->getTargetPlatform()->prefersIdentityColumns()) {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
-            } else {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);
-            }
+            $idGenType = $this->getTargetPlatform()->prefersSequences()
+                ? ClassMetadata::GENERATOR_TYPE_SEQUENCE
+                : ($this->getTargetPlatform()->prefersIdentityColumns()
+                    ? ClassMetadata::GENERATOR_TYPE_IDENTITY
+                    : ClassMetadata::GENERATOR_TYPE_TABLE
+                );
+
+            $class->setIdGeneratorType($idGenType);
         }
 
         // Create & assign an appropriate ID generator instance
@@ -652,7 +666,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         ->getSequenceName($definition, $class, $this->getTargetPlatform());
                 }
 
-                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')
+                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type']->getName() === 'bigint')
                     ? new BigIntegerIdentityGenerator($sequenceName)
                     : new IdentityGenerator($sequenceName);
 
@@ -670,9 +684,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
 
                     $definition = [
-                        'sequenceName'      => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
-                        'allocationSize'    => 1,
-                        'initialValue'      => 1,
+                        'sequenceName'   => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'allocationSize' => 1,
+                        'initialValue'   => 1,
                     ];
 
                     if ($quoted) {
@@ -682,10 +696,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $class->setSequenceGeneratorDefinition($definition);
                 }
 
-                $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
-                    $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->getTargetPlatform()),
-                    $definition['allocationSize']
-                );
+                $sequenceName = $this
+                    ->em
+                    ->getConfiguration()
+                    ->getQuoteStrategy()
+                    ->getSequenceName($definition, $class, $this->getTargetPlatform());
+
+                $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator($sequenceName, $definition['allocationSize']);
+
                 $class->setIdGenerator($sequenceGenerator);
                 break;
 
@@ -703,10 +721,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
+
                 if ( ! class_exists($definition['class'])) {
-                    throw new ORMException("Can't instantiate custom generator : " .
-                        $definition['class']);
+                    throw new ORMException("Can't instantiate custom generator : " . $definition['class']);
                 }
+
                 $class->setIdGenerator(new $definition['class']);
                 break;
 

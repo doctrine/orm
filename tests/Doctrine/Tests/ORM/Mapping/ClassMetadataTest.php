@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -62,7 +63,7 @@ class ClassMetadataTest extends OrmTestCase
         $this->assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
         $this->assertEquals(['UserParent'], $cm->parentClasses);
         $this->assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
-        $this->assertEquals(['name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'], $cm->discriminatorColumn);
+        $this->assertEquals(['name' => 'disc', 'type' => Type::getType('integer'), 'fieldName' => 'disc'], $cm->discriminatorColumn);
         $this->assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
         $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');

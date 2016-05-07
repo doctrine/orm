@@ -65,16 +65,16 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->assertArrayHasKey('DbdriverFoo', $metadatas);
         $metadata = $metadatas['DbdriverFoo'];
 
-        $this->assertArrayHasKey('id',          $metadata->fieldMappings);
-        $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
-        $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
+        $this->assertArrayHasKey('id', $metadata->fieldMappings);
+        $this->assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
+        $this->assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
 
-        $this->assertArrayHasKey('bar',         $metadata->fieldMappings);
-        $this->assertEquals('bar',              $metadata->fieldMappings['bar']['fieldName']);
-        $this->assertEquals('bar',              strtolower($metadata->fieldMappings['bar']['columnName']));
-        $this->assertEquals('string',           (string)$metadata->fieldMappings['bar']['type']);
-        $this->assertEquals(200,                $metadata->fieldMappings['bar']['length']);
+        $this->assertArrayHasKey('bar', $metadata->fieldMappings);
+        $this->assertEquals('bar', $metadata->fieldMappings['bar']['fieldName']);
+        $this->assertEquals('bar', strtolower($metadata->fieldMappings['bar']['columnName']));
+        $this->assertEquals('string', $metadata->fieldMappings['bar']['type']->getName());
+        $this->assertEquals(200, $metadata->fieldMappings['bar']['length']);
         $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 

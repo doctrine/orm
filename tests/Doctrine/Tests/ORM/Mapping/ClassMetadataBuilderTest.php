@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
@@ -182,7 +183,15 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testSetDiscriminatorColumn()
     {
         $this->assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
-        $this->assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'], $this->cm->discriminatorColumn);
+        $this->assertEquals(
+            [
+                'fieldName' => 'discr',
+                'name'      => 'discr',
+                'type'      => Type::getType('string'),
+                'length'    => '124',
+            ],
+            $this->cm->discriminatorColumn
+        );
     }
 
     public function testAddDiscriminatorMapClass()
@@ -210,7 +219,14 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testAddField()
     {
         $this->assertIsFluent($this->builder->addField('name', 'string'));
-        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        $this->assertEquals(
+            [
+                'columnName' => 'name',
+                'fieldName' => 'name',
+                'type' => Type::getType('string')
+            ],
+            $this->cm->fieldMappings['name']
+        );
     }
 
     public function testCreateField()
@@ -220,23 +236,40 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         $this->assertFalse(isset($this->cm->fieldMappings['name']));
         $this->assertIsFluent($fieldBuilder->build());
-        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        $this->assertEquals(
+            [
+                'columnName' => 'name',
+                'fieldName'  => 'name',
+                'type'       => Type::getType('string'),
+            ],
+            $this->cm->fieldMappings['name']
+        );
     }
 
     public function testCreateVersionedField()
     {
-        $this->builder->createField('name', 'integer')->columnName('username')->length(124)->nullable()->columnDefinition('foobar')->unique()->isVersionField()->build();
+        $this->builder->createField('name', 'integer')
+            ->columnName('username')
+            ->length(124)
+            ->nullable()
+            ->columnDefinition('foobar')
+            ->unique()
+            ->isVersionField()
+            ->build();
+
         $this->assertEquals(
             [
-            'columnDefinition' => 'foobar',
-            'columnName' => 'username',
-            'default' => 1,
-            'fieldName' => 'name',
-            'length' => 124,
-            'type' => 'integer',
-            'nullable' => true,
-            'unique' => true,
-            ], $this->cm->fieldMappings['name']);
+                'columnDefinition' => 'foobar',
+                'columnName' => 'username',
+                'default' => 1,
+                'fieldName' => 'name',
+                'length' => 124,
+                'type' => Type::getType('integer'),
+                'nullable' => true,
+                'unique' => true,
+            ],
+            $this->cm->fieldMappings['name']
+        );
     }
 
     public function testCreatePrimaryField()
@@ -244,7 +277,15 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();
 
         $this->assertEquals(['id'], $this->cm->identifier);
-        $this->assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
+        $this->assertEquals(
+            [
+                'columnName' => 'id',
+                'fieldName'  => 'id',
+                'id'         => true,
+                'type'       => Type::getType('integer'),
+            ],
+            $this->cm->fieldMappings['id']
+        );
     }
 
     public function testCreateUnsignedOptionField()
@@ -252,7 +293,14 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->builder->createField('state', 'integer')->option('unsigned', true)->build();
 
         $this->assertEquals(
-            ['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'], $this->cm->fieldMappings['state']);
+            [
+                'fieldName'  => 'state',
+                'type'       => Type::getType('integer'),
+                'options'    => ['unsigned' => true],
+                'columnName' => 'state'
+            ],
+            $this->cm->fieldMappings['state']
+        );
     }
 
     public function testAddLifecycleEvent()
