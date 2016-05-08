@@ -86,6 +86,8 @@ class PhpExporter extends AbstractExporter
             // We need to override the value we'll blindly var_export() later
             $fieldMapping['type'] = $fieldMapping['type']->getName();
 
+            unset($fieldMapping['declaringClass']);
+
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
 
@@ -108,50 +110,72 @@ class PhpExporter extends AbstractExporter
             $associationMappingArray = [
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
-                'cascade'     => $cascade,
+                'cascade'      => $cascade,
             ];
 
             if (isset($associationMapping['fetch'])) {
                 $associationMappingArray['fetch'] = $associationMapping['fetch'];
             }
 
-            if ($associationMapping['type'] & ClassMetadata::TO_ONE) {
-                $method = 'mapOneToOne';
-                $oneToOneMappingArray = [
-                    'mappedBy'      => $associationMapping['mappedBy'],
-                    'inversedBy'    => $associationMapping['inversedBy'],
-                    'joinColumns'   => $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [],
-                    'orphanRemoval' => $associationMapping['orphanRemoval'],
-                ];
+            switch ($associationMapping['type'] ) {
+                case ClassMetadata::ONE_TO_ONE:
+                    $method = 'mapOneToOne';
+                    $specificMappingArray = [
+                        'mappedBy'      => $associationMapping['mappedBy'],
+                        'inversedBy'    => $associationMapping['inversedBy'],
+                        'joinColumns'   => $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [],
+                        'orphanRemoval' => $associationMapping['orphanRemoval'],
+                    ];
+                    break;
 
-                $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
-            } elseif ($associationMapping['type'] == ClassMetadata::ONE_TO_MANY) {
-                $method = 'mapOneToMany';
-                $potentialAssociationMappingIndexes = [
-                    'mappedBy',
-                    'orphanRemoval',
-                    'orderBy',
-                ];
-                foreach ($potentialAssociationMappingIndexes as $index) {
-                    if (isset($associationMapping[$index])) {
-                        $oneToManyMappingArray[$index] = $associationMapping[$index];
+                case ClassMetadata::MANY_TO_ONE:
+                    $method = 'mapManyToOne';
+                    $specificMappingArray = [
+                        'mappedBy'      => $associationMapping['mappedBy'],
+                        'inversedBy'    => $associationMapping['inversedBy'],
+                        'joinColumns'   => $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [],
+                        'orphanRemoval' => $associationMapping['orphanRemoval'],
+                    ];
+                    break;
+
+                case ClassMetadata::ONE_TO_MANY:
+                    $method = 'mapOneToMany';
+                    $specificMappingArray = [];
+                        $potentialAssociationMappingIndexes = [
+                        'mappedBy',
+                        'orphanRemoval',
+                        'orderBy',
+                    ];
+
+                    foreach ($potentialAssociationMappingIndexes as $index) {
+                        if (!isset($associationMapping[$index])) {
+                            continue;
+                        }
+
+                        $specificMappingArray[$index] = $associationMapping[$index];
                     }
-                }
-                $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
-            } elseif ($associationMapping['type'] == ClassMetadata::MANY_TO_MANY) {
-                $method = 'mapManyToMany';
-                $potentialAssociationMappingIndexes = [
-                    'mappedBy',
-                    'joinTable',
-                    'orderBy',
-                ];
-                foreach ($potentialAssociationMappingIndexes as $index) {
-                    if (isset($associationMapping[$index])) {
-                        $manyToManyMappingArray[$index] = $associationMapping[$index];
+                    break;
+
+                case ClassMetadata::MANY_TO_MANY:
+                    $method = 'mapManyToMany';
+                    $specificMappingArray = [];
+                        $potentialAssociationMappingIndexes = [
+                        'mappedBy',
+                        'joinTable',
+                        'orderBy',
+                    ];
+
+                    foreach ($potentialAssociationMappingIndexes as $index) {
+                        if (!isset($associationMapping[$index])) {
+                            continue;
+                        }
+
+                        $specificMappingArray[$index] = $associationMapping[$index];
                     }
-                }
-                $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
+                    break;
             }
+
+            $associationMappingArray = array_merge($associationMappingArray, $specificMappingArray);
 
             $lines[] = '$metadata->' . $method . '(' . $this->_varExport($associationMappingArray) . ');';
         }
