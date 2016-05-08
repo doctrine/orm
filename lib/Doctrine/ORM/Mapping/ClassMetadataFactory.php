@@ -400,10 +400,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['inherited'] = $parentClass->name;
             }
 
-            if ( ! isset($mapping['declared'])) {
-                $mapping['declared'] = $parentClass->name;
-            }
-
             $subClass->addInheritedFieldMapping($mapping);
         }
 
@@ -438,10 +434,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['inherited'] = $parentClass->name;
             }
 
-            if ( ! isset($mapping['declared'])) {
-                $mapping['declared'] = $parentClass->name;
-            }
-
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
@@ -451,10 +443,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
             if ( ! isset($embeddedClass['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $embeddedClass['inherited'] = $parentClass->name;
-            }
-
-            if ( ! isset($embeddedClass['declared'])) {
-                $embeddedClass['declared'] = $parentClass->name;
             }
 
             $subClass->embeddedClasses[$field] = $embeddedClass;
