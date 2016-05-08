@@ -932,15 +932,11 @@ class ClassMetadata implements ClassMetadataInterface
                 continue;
             }
 
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($mapping['declaringClass']->name, $field);
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($mapping['declaringClass']->name, $field);
         }
     }
 
@@ -1361,6 +1357,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     protected function validateAndCompleteFieldMapping(array &$mapping)
     {
+        $mapping['declaringClass'] = $this;
+
         // Check mandatory fields
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
             throw MappingException::missingFieldName($this->name);
@@ -1429,6 +1427,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     protected function validateAndCompleteAssociationMapping(array $mapping)
     {
+        $mapping['declaringClass'] = $this;
+
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
         }
@@ -2199,6 +2199,16 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
+     * Checks if this entity is the root in any entity-inheritance-hierarchy.
+     *
+     * @return bool
+     */
+    public function isRootEntity()
+    {
+        return $this->name == $this->rootEntityName;
+    }
+
+    /**
      * Checks whether a mapped field is inherited from an entity superclass.
      *
      * @param string $fieldName
@@ -2208,16 +2218,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isInheritedField($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['inherited']);
-    }
-
-    /**
-     * Checks if this entity is the root in any entity-inheritance-hierarchy.
-     *
-     * @return bool
-     */
-    public function isRootEntity()
-    {
-        return $this->name == $this->rootEntityName;
     }
 
     /**
@@ -2232,6 +2232,13 @@ class ClassMetadata implements ClassMetadataInterface
         return isset($this->associationMappings[$fieldName]['inherited']);
     }
 
+    /**
+     * Checks whether a mapped embedded field is inherited from a superclass.
+     *
+     * @param string $fieldName
+     *
+     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     */
     public function isInheritedEmbeddedClass($fieldName)
     {
         return isset($this->embeddedClasses[$fieldName]['inherited']);
@@ -3262,10 +3269,11 @@ class ClassMetadata implements ClassMetadataInterface
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = array(
-            'class' => $this->fullyQualifiedClassName($mapping['class']),
-            'columnPrefix' => $mapping['columnPrefix'],
-            'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
-            'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'class'          => $this->fullyQualifiedClassName($mapping['class']),
+            'columnPrefix'   => $mapping['columnPrefix'],
+            'declaredField'  => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
+            'originalField'  => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'declaringClass' => $this,
         );
     }
 
@@ -3292,13 +3300,12 @@ class ClassMetadata implements ClassMetadataInterface
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
             } elseif ($this->embeddedClasses[$property]['columnPrefix'] !== false) {
-                $fieldMapping['columnName'] = $this->namingStrategy
-                    ->embeddedFieldToColumnName(
-                        $property,
-                        $fieldMapping['columnName'],
-                        $this->reflClass->name,
-                        $embeddable->reflClass->name
-                    );
+                $fieldMapping['columnName'] = $this->namingStrategy->embeddedFieldToColumnName(
+                    $property,
+                    $fieldMapping['columnName'],
+                    $this->reflClass->name,
+                    $embeddable->reflClass->name
+                );
             }
 
             $this->mapField($fieldMapping);
@@ -3314,7 +3321,6 @@ class ClassMetadata implements ClassMetadataInterface
         if (isset($this->fieldMappings[$fieldName]) ||
             isset($this->associationMappings[$fieldName]) ||
             isset($this->embeddedClasses[$fieldName])) {
-
             throw MappingException::duplicateFieldMapping($this->name, $fieldName);
         }
     }

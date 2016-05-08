@@ -27,8 +27,11 @@ class EntityGeneratorTest extends OrmTestCase
     {
         $this->_namespace = uniqid("doctrine_");
         $this->_tmpDir = \sys_get_temp_dir();
+
         \mkdir($this->_tmpDir . \DIRECTORY_SEPARATOR . $this->_namespace);
+
         $this->_generator = new EntityGenerator();
+
         $this->_generator->setAnnotationPrefix("");
         $this->_generator->setGenerateAnnotations(true);
         $this->_generator->setGenerateStubMethods(true);
@@ -40,12 +43,15 @@ class EntityGeneratorTest extends OrmTestCase
     public function tearDown()
     {
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
+
         foreach ($ri AS $file) {
             /* @var $file \SplFileInfo */
             if ($file->isFile()) {
-                \unlink($file->getPathname());
+                echo $file->getPath();
+                //\unlink($file->getPathname());
             }
         }
+
         rmdir($this->_tmpDir . '/' . $this->_namespace);
     }
 
@@ -168,15 +174,13 @@ class EntityGeneratorTest extends OrmTestCase
      * @param ClassMetadata $embeddableMetadata
      * @param string|null   $columnPrefix
      */
-    private function mapEmbedded(
-        $fieldName,
-        ClassMetadata $classMetadata,
-        ClassMetadata $embeddableMetadata,
-        $columnPrefix = false
-    ) {
-        $classMetadata->mapEmbedded(
-            array('fieldName' => $fieldName, 'class' => $embeddableMetadata->name, 'columnPrefix' => $columnPrefix)
-        );
+    private function mapEmbedded($fieldName, ClassMetadata $classMetadata, ClassMetadata $embeddableMetadata, $columnPrefix = false)
+    {
+        $classMetadata->mapEmbedded(array(
+            'fieldName'    => $fieldName,
+            'class'        => $embeddableMetadata->name,
+            'columnPrefix' => $columnPrefix
+        ));
     }
 
     /**
@@ -194,9 +198,7 @@ class EntityGeneratorTest extends OrmTestCase
                 'fieldName' => $fieldName . '.' . $property,
                 'class' => $embeddableClass['class'],
                 'columnPrefix' => $embeddableClass['columnPrefix'],
-                'declaredField' => $embeddableClass['declaredField']
-                        ? $fieldName . '.' . $embeddableClass['declaredField']
-                        : $fieldName,
+                'declaredField' => $embeddableClass['declaredField'] ? $fieldName . '.' . $embeddableClass['declaredField'] : $fieldName,
                 'originalField' => $embeddableClass['originalField'] ?: $property,
             ));
         }

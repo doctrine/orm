@@ -119,10 +119,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         self::assertEquals(
             array(
                 'name' => array(
-                    'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
-                    'columnPrefix' => 'nm_',
-                    'declaredField' => null,
-                    'originalField' => null,
+                    'class'          => 'Doctrine\Tests\Models\ValueObjects\Name',
+                    'columnPrefix'   => 'nm_',
+                    'declaredField'  => null,
+                    'originalField'  => null,
+                    'declaringClass' => $class,
                 )
             ),
             $class->embeddedClasses
