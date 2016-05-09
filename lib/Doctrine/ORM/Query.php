@@ -292,14 +292,18 @@ final class Query extends AbstractQuery
     {
         $executor = $this->_parse()->getSqlExecutor();
 
-        if ($this->_queryCacheProfile) {
-            $executor->setQueryCacheProfile($this->_queryCacheProfile);
-        } else {
-            $executor->removeQueryCacheProfile();
-        }
-
         if ($this->_resultSetMapping === null) {
             $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
+        }
+        
+        if ($this->_queryCacheProfile) {
+            $executor->setQueryCacheProfile(
+                $this->_queryCacheProfile->setRealCacheKeyPrefix(
+                    sha1(serialize($this->_resultSetMapping))
+                )
+            );
+        } else {
+            $executor->removeQueryCacheProfile();
         }
 
         // Prepare parameters
