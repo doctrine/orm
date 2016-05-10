@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Cache\ArrayCache;
@@ -21,6 +22,7 @@ use Doctrine\Tests\Models\Company\CompanyAuction;
 
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests SQLFilter functionality.
@@ -29,7 +31,7 @@ use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
  *
  * @group non-cacheable
  */
-class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SQLFilterTest extends OrmFunctionalTestCase
 {
     private $userId, $userId2, $articleId, $articleId2;
     private $groupId, $groupId2;
@@ -54,7 +56,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testConfigureFilter()
     {
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
 
         $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
@@ -69,7 +71,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Enable an existing filter
         $filter = $em->getFilters()->enable("locale");
-        $this->assertTrue($filter instanceof \Doctrine\Tests\ORM\Functional\MyLocaleFilter);
+        $this->assertTrue($filter instanceof MyLocaleFilter);
 
         // Enable the filter again
         $filter2 = $em->getFilters()->enable("locale");
@@ -223,7 +225,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->with($this->equalTo('en'))
             ->will($this->returnValue("'en'"));
 
-        $em = $this->getMockEntityManager($conn);
+        $em = $this->getMockEntityManager();
         $em->expects($this->once())
             ->method('getConnection')
             ->will($this->returnValue($conn));
@@ -249,7 +251,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Setup mock connection
         $conn = $this->getMockConnection();
 
-        $em = $this->getMockEntityManager($conn);
+        $em = $this->getMockEntityManager();
         $em->expects($this->once())
             ->method('getConnection')
             ->will($this->returnValue($conn));
@@ -271,7 +273,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->with($this->equalTo('en'))
             ->will($this->returnValue("'en'"));
 
-        $em = $this->getMockEntityManager($conn);
+        $em = $this->getMockEntityManager();
         $em->expects($this->once())
             ->method('getConnection')
             ->will($this->returnValue($conn));

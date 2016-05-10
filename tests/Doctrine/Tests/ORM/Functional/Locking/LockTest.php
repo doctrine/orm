@@ -2,15 +2,19 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\Tests\Models\CMS\CmsArticle,
-    Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group locking
  */
-class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
-    protected function setUp() {
+class LockTest extends OrmFunctionalTestCase
+{
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
         $this->handles = array();
@@ -111,8 +115,9 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticWrite() {
-        $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSql();
+    public function testLockPessimisticWrite()
+    {
+        $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
         if (strlen($writeLockSql) == 0) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
         }
@@ -141,8 +146,9 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     /**
      * @group DDC-178
      */
-    public function testLockPessimisticRead() {
-        $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSql();
+    public function testLockPessimisticRead()
+    {
+        $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
         if (strlen($readLockSql) == 0) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
         }
@@ -177,7 +183,7 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
 
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException', 'The optimistic lock on an entity failed.');
         $sql = $this->_em->createQuery($dql)->setHint(
-            \Doctrine\ORM\Query::HINT_LOCK_MODE, \Doctrine\DBAL\LockMode::OPTIMISTIC
+            Query::HINT_LOCK_MODE, LockMode::OPTIMISTIC
         )->getSQL();
     }
 }

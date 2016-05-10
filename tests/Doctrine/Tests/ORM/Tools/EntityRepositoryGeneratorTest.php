@@ -55,7 +55,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
             if ($file->isFile()) {
                 \unlink($file->getPathname());
             } elseif ($file->getBasename() === '.') {
-                $dirs[] = $file->getRealpath();
+                $dirs[] = $file->getRealPath();
             }
         }
 

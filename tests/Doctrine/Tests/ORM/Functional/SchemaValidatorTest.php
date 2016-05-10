@@ -3,13 +3,14 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Test the validity of all modelsets
  *
  * @group DDC-1601
  */
-class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SchemaValidatorTest extends OrmFunctionalTestCase
 {
     static public function dataValidateModelSets()
     {

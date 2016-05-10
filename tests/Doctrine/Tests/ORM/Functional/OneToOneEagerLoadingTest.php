@@ -1,16 +1,19 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-952
  */
-class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+        $schemaTool = new SchemaTool($this->_em);
         try {
             $schemaTool->createSchema(array(
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Train'),
@@ -248,7 +251,7 @@ class Train
 
     public function __construct(TrainOwner $owner)
     {
-        $this->waggons = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->waggons = new ArrayCollection();
         $this->setOwner($owner);
     }
 

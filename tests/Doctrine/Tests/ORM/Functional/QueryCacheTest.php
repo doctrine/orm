@@ -3,13 +3,14 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * QueryCacheTest
  *
  * @author robo
  */
-class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class QueryCacheTest extends OrmFunctionalTestCase
 {
     /**
      * @var \ReflectionProperty

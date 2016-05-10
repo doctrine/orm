@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DBAL483Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {

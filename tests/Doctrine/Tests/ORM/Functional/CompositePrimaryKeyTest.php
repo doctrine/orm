@@ -6,8 +6,9 @@ use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
 use Doctrine\Tests\Models\Navigation\NavPhotos;
 use Doctrine\Tests\Models\Navigation\NavUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {

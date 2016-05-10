@@ -2,12 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1707
  */
-class DDC1707Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1707Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -27,9 +28,8 @@ class DDC1707Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $class  = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1707Child');
         $entity = new DDC1707Child();
-        $event  = new LifecycleEventArgs($entity, $this->_em);
 
-        $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::postLoad, $entity, $event);
+        $class->invokeLifecycleCallbacks(Events::postLoad, $entity);
 
         $this->assertTrue($entity->postLoad);
     }

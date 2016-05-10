@@ -50,7 +50,7 @@ class LanguageRecognitionTest extends OrmTestCase
     {
         $query = $this->_em->createQuery($dql);
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
-        $query->setDql($dql);
+        $query->setDQL($dql);
 
         foreach ($hints as $key => $value) {
         	$query->setHint($key, $value);

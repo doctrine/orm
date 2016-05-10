@@ -5,11 +5,12 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
-class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
     protected $locations = array();
 

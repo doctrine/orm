@@ -24,7 +24,7 @@ class DDC1050Test extends OrmFunctionalTestCase
         for ($i = 2; $i < 10000; ++$i) {
             $user = new CmsUser();
             $user->status = 'developer';
-            $user->username = 'jwage'+$i;
+            $user->username = 'jwage'.$i;
             $user->name = 'Jonathan';
             $this->_em->persist($user);
         }

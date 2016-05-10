@@ -6,15 +6,17 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Description of DetachedEntityTest
  *
  * @author robo
  */
-class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DetachedEntityTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }

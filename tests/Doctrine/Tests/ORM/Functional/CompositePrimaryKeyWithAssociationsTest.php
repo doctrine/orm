@@ -5,8 +5,9 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class CompositePrimaryKeyWithAssociationsTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {

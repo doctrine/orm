@@ -5,11 +5,12 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsEmail,
     Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping with orphan removal.
  */
-class OneToOneOrphanRemovalTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

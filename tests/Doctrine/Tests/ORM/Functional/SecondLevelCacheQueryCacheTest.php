@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\Cache\State;
@@ -716,7 +717,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $getHash = function(\Doctrine\ORM\AbstractQuery $query){
+        $getHash = function(AbstractQuery $query){
             $method = new \ReflectionMethod($query, 'getHash');
             $method->setAccessible(true);
 

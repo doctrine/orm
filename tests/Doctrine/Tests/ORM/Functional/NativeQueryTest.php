@@ -13,17 +13,19 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * NativeQueryTest
  *
  * @author robo
  */
-class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class NativeQueryTest extends OrmFunctionalTestCase
 {
     private $platform = null;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         $this->useModelSet('company');
         parent::setUp();
@@ -197,7 +199,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm = new ResultSetMapping;
 
         $q = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
-        $q2 = $q->setSql('foo', $rsm)
+        $q2 = $q->setSQL('foo')
           ->setResultSetMapping($rsm)
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
