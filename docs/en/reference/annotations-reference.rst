@@ -39,6 +39,8 @@ Index
 -  :ref:`@ChangeTrackingPolicy <annref_changetrackingpolicy>`
 -  :ref:`@DiscriminatorColumn <annref_discriminatorcolumn>`
 -  :ref:`@DiscriminatorMap <annref_discriminatormap>`
+-  :ref:`@Embeddable <annref_embeddable>`
+-  :ref:`@Embedded <annref_embedded>`
 -  :ref:`@Entity <annref_entity>`
 -  :ref:`@EntityResult <annref_entity_result>`
 -  :ref:`@FieldResult <annref_field_result>`
@@ -281,6 +283,67 @@ depending on whether the classes are in the namespace or not.
     {
         // ...
     }
+
+
+.. _annref_embeddable:
+
+@Embeddable
+~~~~~~~~~~~~~~~~~~~~~
+
+The embeddable is required on an entity targed to be embeddable inside
+another. It works together with the :ref:`@Embedded <annref_embedded>`
+annotation to establish the relationship between two entities.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Embeddable
+     */
+    class Address
+    {
+    // ...
+    class User
+    {
+        /**
+         * @Embedded(class = "Address")
+         */
+        private $address;
+
+
+.. _annref_embedded:
+
+@Embedded
+~~~~~~~~~~~~~~~~~~~~~
+
+The embedded annotation is required on a member class varible targed to
+embed it's class argument inside it's own class.
+
+Required attributes:
+
+-  **class**: The embeddable class
+
+
+.. code-block:: php
+
+    <?php
+
+    // ...
+    class User
+    {
+        /**
+         * @Embedded(class = "Address")
+         */
+        private $address;
+
+    /**
+     * @Embeddable
+     */
+    class Address
+    {
+    // ...
+
 
 .. _annref_entity:
 
