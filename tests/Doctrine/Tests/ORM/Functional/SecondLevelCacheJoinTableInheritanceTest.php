@@ -79,7 +79,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $entity2    = $this->_em->find(AttractionInfo::CLASSNAME, $entityId2);
 
         //load entity and relation whit sub classes
-        $this->assertEquals($queryCount + 4, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
 
         $this->assertTrue($this->cache->containsEntity(AttractionInfo::CLASSNAME, $entityId1));
         $this->assertTrue($this->cache->containsEntity(AttractionInfo::CLASSNAME, $entityId2));

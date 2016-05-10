@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
+use Doctrine\Tests\Models\Cache\TravelerProfile;
+use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
 use Doctrine\Tests\OrmTestCase;
 
 use Doctrine\ORM\Cache\Region;
@@ -26,7 +28,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     protected $region;
 
     /**
-     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister
+     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $entityPersister;
 
@@ -114,7 +116,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\Persister\AbstractEntityPersister
+     * @return \Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister
      */
     protected function createPersisterDefault()
     {
@@ -313,17 +315,74 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->assertEquals($entity, $persister->loadById(array('id' => 1), $entity));
     }
 
-    public function testInvokeLoadOneToOneEntity()
+    public function testInvokeLoadOneToOneEntityNotOwningSide()
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new TravelerProfile("Foo");
+        $assoc     = array(
+            'targetEntity' => TravelerProfileInfo::CLASSNAME,
+            'sourceEntity' => TravelerProfile::CLASSNAME,
+            'isOwningSide' => false,
+        );
 
         $this->entityPersister->expects($this->once())
             ->method('loadOneToOneEntity')
-            ->with($this->equalTo(array()), $this->equalTo('foo'), $this->equalTo(array('id' => 11)))
+            ->with($this->equalTo($assoc), $this->equalTo('foo'), $this->equalTo(array('id' => 11)))
             ->will($this->returnValue($entity));
 
-        $this->assertEquals($entity, $persister->loadOneToOneEntity(array(), 'foo', array('id' => 11)));
+        $this->assertSame($entity, $persister->loadOneToOneEntity($assoc, 'foo', array('id' => 11)));
+    }
+
+    public function testInvokeLoadOneToOneEntityIsOwningSide()
+    {
+        $metadata = new ClassMetadata(TravelerProfileInfo::CLASSNAME);
+
+        $persister = $this->createPersisterDefault();
+        $entity    = new TravelerProfile("Foo");
+        $source    = $metadata->newInstance();
+        $assoc     = array(
+            'targetEntity' => TravelerProfile::CLASSNAME,
+            'sourceEntity' => TravelerProfileInfo::CLASSNAME,
+            'inversedBy'   => 'info',
+            'isOwningSide' => true,
+        );
+
+        $this->entityPersister->expects($this->once())
+            ->method('loadById')
+            ->with($this->equalTo(array('id' => 11)), $this->equalTo(null))
+            ->will($this->returnValue($entity));
+
+        $this->entityPersister->expects($this->never())
+            ->method('loadOneToOneEntity');
+
+        $this->assertNull($entity->getInfo());
+
+        $this->assertSame($entity, $persister->loadOneToOneEntity($assoc, $source, array('id' => 11)));
+
+        $this->assertSame($source, $entity->getInfo());
+    }
+
+    public function testInvokeLoadOneToOneEntityFoundInIdentityMap()
+    {
+        $persister = $this->createPersisterDefault();
+        $entity    = new TravelerProfile("Foo");
+        $assoc     = array(
+            'targetEntity' => TravelerProfile::CLASSNAME,
+            'sourceEntity' => TravelerProfileInfo::CLASSNAME,
+            'inversedBy'   => 'info',
+            'isOwningSide' => true,
+        );
+
+        $entity->setId(11);
+        $this->em->getUnitOfWork()->registerManaged($entity, array('id' => 11), array());
+
+        $this->entityPersister->expects($this->never())
+            ->method('loadById');
+
+        $this->entityPersister->expects($this->never())
+            ->method('loadOneToOneEntity');
+
+        $this->assertSame($entity, $persister->loadOneToOneEntity($assoc, 'foo', array('id' => 11)));
     }
 
     public function testInvokeRefresh()

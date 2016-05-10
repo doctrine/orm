@@ -618,6 +618,26 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = array())
     {
+        if (($foundEntity = $this->uow->tryGetById($identifier, $assoc['targetEntity'])) !== false) {
+            return $foundEntity;
+        }
+
+        if ($assoc['isOwningSide']) {
+            $foundEntity = $this->loadById($identifier);
+
+            /** @var ClassMetadata $targetClass */
+            $targetClass = $this->metadataFactory->getMetadataFor($assoc['targetEntity']);
+
+            // Complete bidirectional association, if necessary
+            if ($foundEntity !== null
+                && $assoc['inversedBy']
+                && !$targetClass->isCollectionValuedAssociation($assoc['inversedBy'])
+            ) {
+                $targetClass->reflFields[$assoc['inversedBy']]->setValue($foundEntity, $sourceEntity);
+            }
+            return $foundEntity;
+        }
+
         return $this->persister->loadOneToOneEntity($assoc, $sourceEntity, $identifier);
     }
 
