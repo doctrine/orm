@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -264,9 +265,9 @@ class EntityGeneratorTest extends OrmTestCase
         $comment = new EntityGeneratorComment();
         $this->assertInstanceOf($metadata->name, $book->addComment($comment));
         $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
-        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array($comment)), $book->getComments());
+        $this->assertEquals(new ArrayCollection(array($comment)), $book->getComments());
         $this->assertInternalType('boolean', $book->removeComment($comment));
-        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array()), $book->getComments());
+        $this->assertEquals(new ArrayCollection(array()), $book->getComments());
 
         $this->newInstance($isbnMetadata);
         $isbn = new $isbnMetadata->name();

@@ -3,8 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\PHPDriver,
-    Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+    Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {

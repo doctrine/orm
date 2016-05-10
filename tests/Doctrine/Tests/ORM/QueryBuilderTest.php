@@ -27,6 +27,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -36,7 +37,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
  * @author      Roman Borschel <roman@code-factory.org
  * @since       2.0
  */
-class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
+class QueryBuilderTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager

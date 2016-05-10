@@ -1,4 +1,5 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -17,7 +18,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = "Benjamin";
         $user->username = "beberlei";
         $user->status = 'active';

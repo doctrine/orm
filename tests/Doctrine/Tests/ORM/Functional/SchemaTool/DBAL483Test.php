@@ -10,7 +10,7 @@ class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $conn = $this->_em->getConnection();
+        $this->_em->getConnection();
 
         $this->schemaTool = new Tools\SchemaTool($this->_em);
     }

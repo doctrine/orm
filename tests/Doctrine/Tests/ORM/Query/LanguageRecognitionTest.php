@@ -1,11 +1,13 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\OrmTestCase;
 
-class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
+class LanguageRecognitionTest extends OrmTestCase
 {
     /**
      * @var EntityManagerInterface
@@ -54,7 +56,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         	$query->setHint($key, $value);
         }
 
-        $parser = new \Doctrine\ORM\Query\Parser($query);
+        $parser = new Query\Parser($query);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
         $parser->setCustomOutputTreeWalker('Doctrine\Tests\Mocks\MockTreeWalker');

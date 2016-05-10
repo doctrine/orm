@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand;
+use Doctrine\Tests\OrmTestCase;
 
-class ConvertDoctrine1SchemaCommandTest extends \Doctrine\Tests\OrmTestCase
+class ConvertDoctrine1SchemaCommandTest extends OrmTestCase
 {
     public function testExecution()
     {

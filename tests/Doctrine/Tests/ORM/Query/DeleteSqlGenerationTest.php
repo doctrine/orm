@@ -20,6 +20,7 @@
  */
 
 namespace Doctrine\Tests\ORM\Query;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
@@ -35,7 +36,7 @@ namespace Doctrine\Tests\ORM\Query;
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
  */
-class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
+class DeleteSqlGenerationTest extends OrmTestCase
 {
     private $_em;
 

@@ -1,7 +1,5 @@
 <?php
 
-use Doctrine\DBAL\Schema\SchemaException;
-use Doctrine\Tests\Models\DDC3699\DDC3699Parent;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
 use Doctrine\Tests\Models\DDC3699\DDC3699Child;

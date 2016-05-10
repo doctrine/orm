@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
-
 /**
  * @group DDC-1509
  */

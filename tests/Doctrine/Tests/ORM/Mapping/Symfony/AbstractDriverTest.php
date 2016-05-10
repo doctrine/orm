@@ -96,18 +96,4 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     abstract protected function getFileExtension();
     abstract protected function getDriver(array $paths = array());
-
-    private function setField($obj, $field, $value)
-    {
-        $ref = new \ReflectionProperty($obj, $field);
-        $ref->setAccessible(true);
-        $ref->setValue($obj, $value);
-    }
-
-    private function invoke($obj, $method, array $args = array()) {
-        $ref = new \ReflectionMethod($obj, $method);
-        $ref->setAccessible(true);
-
-        return $ref->invokeArgs($obj, $args);
-    }
 }

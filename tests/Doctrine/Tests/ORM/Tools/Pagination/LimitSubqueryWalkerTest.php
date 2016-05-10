@@ -19,7 +19,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
 

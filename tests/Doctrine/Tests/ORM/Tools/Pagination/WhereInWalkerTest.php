@@ -20,7 +20,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE u0_.id IN (?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE u0_.id IN (?)", $whereInQuery->getSQL()
         );
     }
 

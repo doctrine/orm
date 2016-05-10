@@ -2,10 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Events;
-use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
-use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -15,9 +16,9 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonEntityThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $reader = new AnnotationReader();
+        $annotationDriver = new AnnotationDriver($reader);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
@@ -42,7 +43,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ColumnWithoutType');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
@@ -134,7 +135,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
@@ -153,7 +154,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
@@ -171,7 +172,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
@@ -187,10 +188,9 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $annotationDriver = $this->_loadDriver();
 
-        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\AnnotationChild');
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationChild');
@@ -209,7 +209,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\ChildEntity');
@@ -221,7 +221,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $this->setExpectedException('Doctrine\Common\Annotations\AnnotationException',

@@ -2,12 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 

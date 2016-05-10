@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\Driver\XmlDriver,
     Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -29,7 +29,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $classPage = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\File');

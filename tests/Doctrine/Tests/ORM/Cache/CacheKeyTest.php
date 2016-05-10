@@ -4,11 +4,12 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-2183
  */
-class CacheKeyTest extends \Doctrine\Tests\DoctrineTestCase
+class CacheKeyTest extends DoctrineTestCase
 {
     public function testEntityCacheKeyIdentifierCollision()
     {

@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;

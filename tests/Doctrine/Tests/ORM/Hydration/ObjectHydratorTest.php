@@ -4,14 +4,10 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
-
-use Doctrine\Tests\Models\CMS\CmsUser;
 
 class ObjectHydratorTest extends HydrationTestCase
 {

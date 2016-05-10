@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyCar;
 
 /**

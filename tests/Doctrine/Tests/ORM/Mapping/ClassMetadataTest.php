@@ -7,10 +7,13 @@ use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
-class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
+class ClassMetadataTest extends OrmTestCase
 {
     public function testClassMetadataInstanceSerialization()
     {
@@ -329,7 +332,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnderscoreNamingStrategyDefaults()
     {
-        $namingStrategy     = new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER);
+        $namingStrategy     = new UnderscoreNamingStrategy(CASE_UPPER);
         $oneToOneMetadata   = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
         $manyToManyMetadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
 
@@ -724,8 +727,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $metadata = new ClassMetadata('Doctrine\Tests\Models\Company\CompanyContract');
 
         $metadata->initializeReflection(new RuntimeReflectionService());
-        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
+        $metadata->addEntityListener(Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+        $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
 
         $serialize   = serialize($metadata);
         $unserialize = unserialize($serialize);
@@ -814,7 +817,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testClassCaseSensitivity()
     {
-        $user = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $user = new CmsUser();
         $cm = new ClassMetadata('DOCTRINE\TESTS\MODELS\CMS\CMSUSER');
         $cm->initializeReflection(new RuntimeReflectionService());
 

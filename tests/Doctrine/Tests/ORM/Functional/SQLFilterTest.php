@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query\Filter\SQLFilter;
-use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Cache\ArrayCache;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;

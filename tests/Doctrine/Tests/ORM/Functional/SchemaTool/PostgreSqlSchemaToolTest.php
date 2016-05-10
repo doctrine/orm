@@ -2,8 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\ORM\Tools\SchemaTool,
-    Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\SchemaTool;
 
 class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {

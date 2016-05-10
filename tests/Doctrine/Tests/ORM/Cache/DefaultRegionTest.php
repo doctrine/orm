@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
@@ -32,8 +33,8 @@ class DefaultRegionTest extends AbstractRegionTest
 
         $key     = new CacheKeyMock('key');
         $entry   = new CacheEntryMock(array('value' => 'foo'));
-        $region1 = new DefaultRegion('region1', new \Doctrine\Common\Cache\ApcCache());
-        $region2 = new DefaultRegion('region2', new \Doctrine\Common\Cache\ApcCache());
+        $region1 = new DefaultRegion('region1', new ApcCache());
+        $region2 = new DefaultRegion('region2', new ApcCache());
 
         $this->assertFalse($region1->contains($key));
         $this->assertFalse($region2->contains($key));

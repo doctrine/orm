@@ -19,7 +19,7 @@ class CountWalkerTest extends PaginationTestCase
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
-            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id", $query->getSql()
+            "SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id", $query->getSQL()
         );
     }
 

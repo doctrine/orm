@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\ORM\Tools\SchemaTool,
-    Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();

@@ -5,8 +5,9 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\Tests\OrmTestCase;
 
-class ParserTest extends \Doctrine\Tests\OrmTestCase
+class ParserTest extends OrmTestCase
 {
 
     /**

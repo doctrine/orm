@@ -21,6 +21,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -32,7 +33,7 @@ use Doctrine\ORM\Query;
  * @since       2.0
  * @version     $Revision$
  */
-class ExprTest extends \Doctrine\Tests\OrmTestCase
+class ExprTest extends OrmTestCase
 {
     private $_em;
 

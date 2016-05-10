@@ -234,7 +234,6 @@ class DefaultQueryCache implements QueryCache
         $data        = array();
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
-        $metadata    = $this->em->getClassMetadata($entityName);
         $persister   = $this->uow->getEntityPersister($entityName);
 
         if ( ! ($persister instanceof CachedPersister)) {

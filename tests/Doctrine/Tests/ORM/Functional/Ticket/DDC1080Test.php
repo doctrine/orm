@@ -2,10 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
+
 /**
  * @group DDC-1080
  */
-class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration()
     {

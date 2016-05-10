@@ -49,7 +49,6 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
-use Doctrine\ORM\Cache\AssociationCacheEntry;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -1281,7 +1280,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = array($entity, $changeset);
 
         if (isset($this->extraUpdates[$oid])) {
-            list($ignored, $changeset2) = $this->extraUpdates[$oid];
+            list(, $changeset2) = $this->extraUpdates[$oid];
 
             $extraUpdate = array($entity, $changeset + $changeset2);
         }

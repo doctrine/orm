@@ -20,6 +20,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for custom AST walking and modification.
@@ -29,7 +30,7 @@ use Doctrine\ORM\Query;
  * @link        http://www.doctrine-project.org
  * @since       2.0
  */
-class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
+class CustomTreeWalkersTest extends OrmTestCase
 {
     private $_em;
 

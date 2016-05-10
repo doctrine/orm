@@ -2,15 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\Common\EventManager;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\LockMode;
 use DateTime;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OptimisticTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

@@ -13,9 +13,9 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         $this->_schemaTool->createSchema(
             array(

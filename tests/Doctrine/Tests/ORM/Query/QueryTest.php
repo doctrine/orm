@@ -9,8 +9,9 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\OrmTestCase;
 
-class QueryTest extends \Doctrine\Tests\OrmTestCase
+class QueryTest extends OrmTestCase
 {
     /** @var EntityManager */
     protected $_em = null;

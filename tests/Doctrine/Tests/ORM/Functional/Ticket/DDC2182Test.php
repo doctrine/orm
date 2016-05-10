@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
-
 class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testPassColumnOptionsToJoinColumns()

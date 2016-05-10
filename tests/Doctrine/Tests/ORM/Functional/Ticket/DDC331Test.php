@@ -2,15 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Company\CompanyPerson,
-    Doctrine\Tests\Models\Company\CompanyEmployee,
-    Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyOrganization,
-    Doctrine\Tests\Models\Company\CompanyEvent,
-    Doctrine\Tests\Models\Company\CompanyAuction,
-    Doctrine\Tests\Models\Company\CompanyRaffle,
-    Doctrine\Tests\Models\Company\CompanyCar;
-
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  *

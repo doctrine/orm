@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -19,7 +20,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($className);
-        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass($className, $class);
 
         $expectedMap = array(

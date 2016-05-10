@@ -2,10 +2,24 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Query as ORMQuery;
+use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\OrmTestCase;
 
-class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
+class SelectSqlGenerationTest extends OrmTestCase
 {
     private $_em;
 
@@ -31,7 +45,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                 $query->setParameter($name, $value);
             }
 
-            $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
+            $query->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
                   ->useQueryCache(false);
 
             foreach ($queryHints AS $name => $value) {
@@ -70,7 +84,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             $query->setParameter($name, $value);
         }
 
-        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
+        $query->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
               ->useQueryCache(false);
 
         foreach ($queryHints AS $name => $value) {
@@ -92,7 +106,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ INNER JOIN company_persons c1_ WHERE c0_.spouse_id = c1_.id AND c1_.id = 42',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -109,7 +123,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id WHERE c0_.spouse_id = c3_.id AND c3_.id = 42',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -299,7 +313,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $connMock = $this->_em->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
-        $connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+        $connMock->setDatabasePlatform(new MySqlPlatform());
 
         $this->assertSqlGeneration(
             'SELECT COUNT(CONCAT(u.id, u.name)) FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id',
@@ -514,7 +528,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertInvalidSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\CMS\CmsUser",
-            "Doctrine\ORM\Query\QueryException"
+            "Doctrine\\ORM\\Query\\QueryException"
         );
     }
 
@@ -601,7 +615,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $connMock = $this->_em->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
-        $connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+        $connMock->setDatabasePlatform(new MySqlPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE CONCAT(c0_.name, 's') = ?"
@@ -611,7 +625,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(c0_.id, c0_.name) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?"
         );
 
-        $connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $connMock->setDatabasePlatform(new PostgreSqlPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || 's' = ?"
@@ -647,9 +661,9 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
         $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
-        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $phone = new \Doctrine\Tests\Models\CMS\CmsPhonenumber;
+        $phone = new CmsPhonenumber();
         $phone->phonenumber = 101;
         $q->setParameter('param', $phone);
 
@@ -663,9 +677,9 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         // "Get all users who are members of $group."
         $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
-        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group = new CmsGroup();
         $group->id = 101;
         $q->setParameter('param', $group);
 
@@ -678,11 +692,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsMemberOfExpressionManyToManyParameterArray()
     {
         $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
-        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group = new CmsGroup();
         $group->id = 101;
-        $group2 = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group2 = new CmsGroup();
         $group2->id = 105;
         $q->setParameter('param', array($group, $group2));
 
@@ -697,7 +711,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         // "Get all persons who have $person as a friend."
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
         $q = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
-        $person = new \Doctrine\Tests\Models\Company\CompanyPerson;
+        $person = new CompanyPerson();
         $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, array('id' => 101));
         $q->setParameter('param', $person);
         $this->assertEquals(
@@ -731,21 +745,21 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsCurrentDateFunction()
     {
         $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()');
-        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
         $this->assertEquals('SELECT d0_.id AS id_0 FROM date_time_model d0_ WHERE d0_.col_datetime > CURRENT_DATE', $q->getSql());
     }
 
     public function testSupportsCurrentTimeFunction()
     {
         $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
-        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
         $this->assertEquals('SELECT d0_.id AS id_0 FROM date_time_model d0_ WHERE d0_.col_time > CURRENT_TIME', $q->getSql());
     }
 
     public function testSupportsCurrentTimestampFunction()
     {
         $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
-        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
         $this->assertEquals('SELECT d0_.id AS id_0 FROM date_time_model d0_ WHERE d0_.col_datetime > CURRENT_TIMESTAMP', $q->getSql());
     }
 
@@ -884,7 +898,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testBooleanLiteralInWhereOnSqlite()
     {
         $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
-        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SqlitePlatform);
+        $this->_em->getConnection()->setDatabasePlatform(new SqlitePlatform());
 
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
@@ -902,7 +916,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testBooleanLiteralInWhereOnPostgres()
     {
         $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
-        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->_em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
@@ -1024,7 +1038,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testPessimisticWriteLockQueryHint()
     {
-        if ($this->_em->getConnection()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\SqlitePlatform) {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
             $this->markTestSkipped('SqLite does not support Row locking at all.');
         }
 
@@ -1032,7 +1046,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)
+            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_WRITE)
         );
     }
 
@@ -1042,14 +1056,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testPessimisticReadLockQueryHintPostgreSql()
     {
-        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->_em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR SHARE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
-                );
+            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ)
+        );
     }
 
     /**
@@ -1062,8 +1076,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco'",
-            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::NONE)
-                );
+            array(ORMQuery::HINT_LOCK_MODE => LockMode::NONE)
+        );
     }
 
     /**
@@ -1083,13 +1097,13 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testPessimisticReadLockQueryHintMySql()
     {
-        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+        $this->_em->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' LOCK IN SHARE MODE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
+            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ)
         );
     }
 
@@ -1099,13 +1113,13 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testPessimisticReadLockQueryHintOracle()
     {
-        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\OraclePlatform);
+        $this->_em->getConnection()->setDatabasePlatform(new OraclePlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS ID_0, c0_.status AS STATUS_1, c0_.username AS USERNAME_2, c0_.name AS NAME_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
+            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ)
         );
     }
 
@@ -1426,7 +1440,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -1438,7 +1452,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -1450,7 +1464,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c2_.car_id AS car_id_8 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -1462,7 +1476,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -1474,7 +1488,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c2_.car_id AS car_id_8 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -1486,7 +1500,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -1498,7 +1512,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6, c0_.salesPerson_id AS salesPerson_id_7 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -1510,7 +1524,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -1522,7 +1536,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -1534,7 +1548,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -1546,7 +1560,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -1558,7 +1572,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
 
@@ -1570,7 +1584,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p, pp FROM Doctrine\Tests\Models\Company\CompanyPerson p JOIN p.spouse pp',
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c3_.id AS id_6, c3_.name AS name_7, c4_.title AS title_8, c5_.salary AS salary_9, c5_.department AS department_10, c5_.startDate AS startDate_11, c0_.discr AS discr_12, c0_.spouse_id AS spouse_id_13, c1_.car_id AS car_id_14, c3_.discr AS discr_15, c3_.spouse_id AS spouse_id_16, c4_.car_id AS car_id_17 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ ON c0_.spouse_id = c3_.id LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id",
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -2051,7 +2065,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     	$connMock    = $this->_em->getConnection();
     	$orgPlatform = $connMock->getDatabasePlatform();
 
-    	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+    	$connMock->setDatabasePlatform(new MySqlPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE CONCAT(c0_.name, c0_.status, 's') = ?"
@@ -2061,7 +2075,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
 
-    	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+    	$connMock->setDatabasePlatform(new PostgreSqlPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || c0_.status || 's' = ?"
@@ -2071,7 +2085,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id || c0_.name || c0_.status AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?"
     	);
 
-    	$connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SQLServerPlatform());
+    	$connMock->setDatabasePlatform(new SQLServerPlatform());
     	$this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE (c0_.name + c0_.status + 's') = ?"
@@ -2145,7 +2159,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e.id FROM Doctrine\Tests\Models\Company\CompanyOrganization o JOIN o.events e WITH e.id = ?1',
             'SELECT c0_.id AS id_0 FROM company_organizations c1_ INNER JOIN (company_events c0_ LEFT JOIN company_auctions c2_ ON c0_.id = c2_.id LEFT JOIN company_raffles c3_ ON c0_.id = c3_.id) ON c1_.id = c0_.org_id AND (c0_.id = ?)',
-            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 
@@ -2294,14 +2308,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 }
 
-class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
+class MyAbsFunction extends FunctionNode
 {
     public $simpleArithmeticExpression;
 
     /**
      * @override
      */
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker)
     {
         return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) . ')';
     }
@@ -2309,16 +2323,16 @@ class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
     /**
      * @override
      */
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(Parser $parser)
     {
         $lexer = $parser->getLexer();
 
-        $parser->match(\Doctrine\ORM\Query\Lexer::T_IDENTIFIER);
-        $parser->match(\Doctrine\ORM\Query\Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
         $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
-        $parser->match(\Doctrine\ORM\Query\Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 /**

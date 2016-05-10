@@ -4,8 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\DBAL\LockMode,
-    Doctrine\ORM\EntityManager;
+    Doctrine\DBAL\LockMode;
 
 /**
  * @group locking

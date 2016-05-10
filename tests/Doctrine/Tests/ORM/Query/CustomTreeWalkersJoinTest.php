@@ -20,6 +20,7 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for custom AST walking and adding new joins.
@@ -28,7 +29,7 @@ use Doctrine\ORM\Query;
  * @license     MIT
  * @link        http://www.doctrine-project.org
  */
-class CustomTreeWalkersJoinTest extends \Doctrine\Tests\OrmTestCase
+class CustomTreeWalkersJoinTest extends OrmTestCase
 {
     private $em;
 

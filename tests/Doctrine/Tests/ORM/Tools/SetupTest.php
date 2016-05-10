@@ -4,15 +4,17 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Version;
+use Doctrine\Tests\OrmTestCase;
 
-class SetupTest extends \Doctrine\Tests\OrmTestCase
+class SetupTest extends OrmTestCase
 {
     private $originalAutoloaderCount;
     private $originalIncludePath;
 
     public function setUp()
     {
-        if (strpos(\Doctrine\ORM\Version::VERSION, "DEV") === false) {
+        if (strpos(Version::VERSION, "DEV") === false) {
             $this->markTestSkipped("Test only runs in a dev-installation from Github");
         }
 

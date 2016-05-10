@@ -5,8 +5,9 @@ namespace Doctrine\Tests\ORM\Tools;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\EntityRepositoryGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
 
-class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class EntityRepositoryGeneratorTest extends OrmTestCase
 {
     /**
      * @var EntityGenerator

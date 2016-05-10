@@ -6,7 +6,6 @@ use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\ORMException;
 use ReflectionClass;
 use PHPUnit_Framework_TestCase;
 

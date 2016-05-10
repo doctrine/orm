@@ -6,7 +6,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * Description of DetachedEntityTest

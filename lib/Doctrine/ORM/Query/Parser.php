@@ -2953,7 +2953,7 @@ class Parser
     /**
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      *
-     * @return \Doctrine\ORM\Query\AST\SingleValuedAssociationPathExpression |
+     * @return \Doctrine\ORM\Query\AST\PathExpression |
      *         \Doctrine\ORM\Query\AST\SimpleEntityExpression
      */
     public function EntityExpression()

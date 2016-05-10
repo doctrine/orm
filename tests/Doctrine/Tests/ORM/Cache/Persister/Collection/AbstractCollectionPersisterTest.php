@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmTestCase;
 
 use Doctrine\ORM\Cache\Region;
@@ -101,7 +102,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $em    = $this->em;
         $class = $class ?: $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\State');
         $assoc = $assoc ?: $class->associationMappings['cities'];
-        $coll  = new \Doctrine\ORM\PersistentCollection($em, $class, $elements ?: new ArrayCollection);
+        $coll  = new PersistentCollection($em, $class, $elements ?: new ArrayCollection);
 
         $coll->setOwner($owner, $assoc);
         $coll->setInitialized(true);

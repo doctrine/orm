@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Lexer;
+use Doctrine\Tests\OrmTestCase;
 
-class LexerTest extends \Doctrine\Tests\OrmTestCase
+class LexerTest extends OrmTestCase
 {
     //private $_lexer;
 

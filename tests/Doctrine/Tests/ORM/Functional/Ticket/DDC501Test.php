@@ -5,8 +5,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * ----------------- !! NOTE !! --------------------

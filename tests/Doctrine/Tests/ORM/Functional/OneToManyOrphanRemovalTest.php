@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsAddress,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
 /**

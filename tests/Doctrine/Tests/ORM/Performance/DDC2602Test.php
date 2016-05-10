@@ -5,12 +5,13 @@ namespace Doctrine\Tests\ORM\Performance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
  * @group performance
  * @group DDC-2602
  */
-class DDC2602Test extends \Doctrine\Tests\OrmPerformanceTestCase
+class DDC2602Test extends OrmPerformanceTestCase
 {
     protected function setUp()
     {
