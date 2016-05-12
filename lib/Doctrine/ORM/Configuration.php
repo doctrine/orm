@@ -35,6 +35,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 
@@ -923,5 +924,33 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setDefaultQueryHint($name, $value)
     {
         $this->_attributes['defaultQueryHints'][$name] = $value;
+    }
+
+    /**
+     * Gets the type of the result set root that should be returned. By default its an array, but we can set it as
+     * 'collection', in which case the ORM returns the collection specified for the entity contained in the result set.
+     *
+     * @since 2.5
+     *
+     * @return string $type The name of the type: 'array' or 'collection'.
+     */
+    public function getResultRootType()
+    {
+        return isset($this->_attributes['resultRootType'])
+            ? $this->_attributes['resultRootType']
+            : EntityPersister::RESULT_ROOT_TYPE_ARRAY;
+    }
+
+    /**
+     * Gets the type of the result set root that should be returned. By default its an array, but we can set it as
+     * 'collection', in which case the ORM returns the collection specified for the entity contained in the result set.
+     *
+     * @since 2.5
+     *
+     * @param string $type The name of the type: 'array' or 'collection'.
+     */
+    public function setResultRootType($type)
+    {
+        $this->_attributes['resultRootType'] = $type;
     }
 }

@@ -19,18 +19,22 @@
 
 namespace Doctrine\ORM\Persisters\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Mapping\Factory\CollectionFactory;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
@@ -193,6 +197,11 @@ class BasicEntityPersister implements EntityPersister
     private $noLimitsContext;
 
     /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
+
+    /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
@@ -217,6 +226,7 @@ class BasicEntityPersister implements EntityPersister
             new Query\ResultSetMapping(),
             true
         );
+        $this->collectionFactory = new CollectionFactory();
     }
 
     /**
@@ -887,7 +897,36 @@ class BasicEntityPersister implements EntityPersister
 
         $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
 
-        return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
+        $result = $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
+
+        if ($this->shouldReturnCollection($this->em->getConfiguration(), $this->getClassMetadata())) {
+            return $this->collectionFactory->create($this->em, $this->getClassMetadata(), new ArrayCollection($result));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Configuration $configuration
+     * @param ClassMetadata $classMetadata
+     *
+     * @return bool
+     */
+    protected function shouldReturnCollection(Configuration $configuration, ClassMetadata $classMetadata)
+    {
+        if ($configuration->getResultRootType() === static::RESULT_ROOT_TYPE_ARRAY) {
+            return false;
+        }
+        
+        if (! isset($classMetadata->customCollectionClassName)) {
+            throw new ORMInvalidArgumentException(
+                'Doctrine is configured to return a collection, '
+                . 'but there is no collection class specified for entity '
+                . $classMetadata->name
+            );
+        }
+
+        return true;
     }
 
     /**

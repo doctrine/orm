@@ -22,6 +22,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\Factory\CollectionFactory;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Exception;
 use InvalidArgumentException;
@@ -286,6 +287,11 @@ class UnitOfWork implements PropertyChangedListener
     private $reflectionPropertiesGetter;
 
     /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param EntityManagerInterface $em
@@ -299,6 +305,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
         $this->hydrationCompleteHandler   = new HydrationCompleteHandler($this->listenersInvoker, $em);
         $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
+        $this->collectionFactory          = new CollectionFactory();
     }
 
     /**
@@ -601,7 +608,7 @@ class UnitOfWork implements PropertyChangedListener
                 $assoc = $class->associationMappings[$name];
 
                 // Inject PersistentCollection
-                $value = new PersistentCollection(
+                $value = $this->collectionFactory->createDefault(
                     $this->em, $this->em->getClassMetadata($assoc['targetEntity']), $value
                 );
                 $value->setOwner($entity, $assoc);
@@ -2764,7 +2771,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     // Inject collection
-                    $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
+                    $pColl = $this->collectionFactory->create($this->em, $targetClass, new ArrayCollection);
                     $pColl->setOwner($entity, $assoc);
                     $pColl->setInitialized(false);
 
@@ -3417,7 +3424,7 @@ class UnitOfWork implements PropertyChangedListener
                     $managedCol = $prop->getValue($managedCopy);
 
                     if ( ! $managedCol) {
-                        $managedCol = new PersistentCollection(
+                        $managedCol = $this->collectionFactory->createDefault(
                             $this->em,
                             $this->em->getClassMetadata($assoc2['targetEntity']),
                             new ArrayCollection

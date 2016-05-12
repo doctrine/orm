@@ -7,6 +7,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use ReflectionClass;
 use PHPUnit_Framework_TestCase;
 
@@ -345,6 +346,17 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->configuration->getSecondLevelCacheConfiguration());
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         $this->assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
+    }
+
+    /**
+     * @group custom-collections
+     */
+    public function testSetGetResultRootType()
+    {
+        $this->assertEquals(EntityPersister::RESULT_ROOT_TYPE_ARRAY, $this->configuration->getResultRootType());
+
+        $this->configuration->setResultRootType(EntityPersister::RESULT_ROOT_TYPE_COLLECTION);
+        $this->assertSame(EntityPersister::RESULT_ROOT_TYPE_COLLECTION, $this->configuration->getResultRootType());
     }
 }
 
