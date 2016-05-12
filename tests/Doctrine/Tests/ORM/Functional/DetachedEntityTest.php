@@ -7,6 +7,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\ORM\UnitOfWork;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Description of DetachedEntityTest
@@ -143,16 +144,16 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $address2 = $this->_em->find(get_class($address), $address->id);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $address2->user);
-        $this->assertFalse($address2->user->__isInitialized__);
-        $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $detachedAddress2->user);
-        $this->assertFalse($detachedAddress2->user->__isInitialized__);
+        $this->assertInstanceOf(GhostObjectInterface::class, $address2->user);
+        $this->assertFalse($address2->user->isProxyInitialized());
+        $this->_em->detach($address2);
+        $this->assertInstanceOf(GhostObjectInterface::class, $address2->user);
+        $this->assertFalse($address2->user->isProxyInitialized());
 
-        $managedAddress2 = $this->_em->merge($detachedAddress2);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $managedAddress2->user);
-        $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
-        $this->assertFalse($managedAddress2->user->__isInitialized__);
+        $managedAddress2 = $this->_em->merge($address2);
+        $this->assertInstanceOf(GhostObjectInterface::class, $managedAddress2->user);
+        $this->assertSame($managedAddress2->user, $address2->user);
+        $this->assertFalse($managedAddress2->user->isProxyInitialized());
     }
 
     /**

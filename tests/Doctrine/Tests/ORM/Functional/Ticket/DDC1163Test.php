@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1163
@@ -69,7 +70,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $specialProduct = $this->_em->find(__NAMESPACE__ . '\\DDC1163SpecialProduct', $this->productId);
 
         $this->assertInstanceOf(__NAMESPACE__.'\\DDC1163SpecialProduct', $specialProduct);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $specialProduct);
+        $this->assertInstanceOf(GhostObjectInterface::class, $specialProduct);
 
         $specialProduct->setSubclassProperty('foobar');
 

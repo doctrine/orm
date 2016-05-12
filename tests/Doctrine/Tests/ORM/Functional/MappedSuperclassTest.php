@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * MappedSuperclassTest
@@ -37,7 +38,7 @@ class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $cleanFile = $this->_em->find(get_class($file), $file->getId());
 
         $this->assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $cleanFile->getParent());
+        $this->assertInstanceOf(GhostObjectInterface::class, $cleanFile->getParent());
         $this->assertEquals($directory->getId(), $cleanFile->getParent()->getId());
         $this->assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent()->getParent());
         $this->assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());

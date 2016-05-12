@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -64,8 +65,8 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $appointments = $this->_em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
 
         foreach ($appointments AS $eagerAppointment) {
-            $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
-            $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
+            $this->assertInstanceOf(GhostObjectInterface::class, $eagerAppointment->patient);
+            $this->assertTrue($eagerAppointment->patient->isProxyInitialized(), "Proxy should already be initialized due to eager loading!");
         }
     }
 }

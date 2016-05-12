@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Common\Collections\Criteria;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
@@ -111,12 +112,13 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $query = $this->_em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
 
+        /* @var $product GhostObjectInterface|ECommerceProduct */
         $product = $features[0]->getProduct();
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $product);
+        $this->assertInstanceOf(GhostObjectInterface::class, $product);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $product);
-        $this->assertFalse($product->__isInitialized__);
+        $this->assertFalse($product->isProxyInitialized());
         $this->assertSame('Doctrine Cookbook', $product->getName());
-        $this->assertTrue($product->__isInitialized__);
+        $this->assertTrue($product->isProxyInitialized());
     }
 
     public function testLazyLoadsObjectsOnTheInverseSide2()

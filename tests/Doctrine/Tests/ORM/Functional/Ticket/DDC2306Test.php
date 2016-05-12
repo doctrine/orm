@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2306
@@ -54,17 +55,17 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /* @var $address DDC2306Address */
         $address = $this->_em->find(__NAMESPACE__ . '\\DDC2306Address', $address->id);
-        /* @var $user DDC2306User|\Doctrine\ORM\Proxy\Proxy */
+        /* @var $user DDC2306User|GhostObjectInterface */
         $user    = $address->users->first()->user;
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $user);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user);
         $this->assertInstanceOf(__NAMESPACE__ . '\\DDC2306User', $user);
 
         $userId = $user->id;
 
         $this->assertNotNull($userId);
 
-        $user->__load();
+        $user->isProxyInitialized();
 
         $this->assertEquals(
             $userId,

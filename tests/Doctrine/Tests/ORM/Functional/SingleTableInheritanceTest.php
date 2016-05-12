@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -389,7 +390,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFixContract', $this->fix->getId());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+        $this->assertInstanceOf(GhostObjectInterface::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
     }
 
     /**

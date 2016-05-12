@@ -26,9 +26,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Default query cache implementation.
@@ -264,7 +264,7 @@ class DefaultQueryCache implements QueryCache
                 $metadata = $this->em->getClassMetadata($rsm->aliasMap[$rsm->parentAliasMap[$alias]]);
                 $assoc = $metadata->associationMappings[$name];
 
-                if (($assocValue = $metadata->getFieldValue($entity, $name)) === null || $assocValue instanceof Proxy) {
+                if (($assocValue = $metadata->getFieldValue($entity, $name)) === null || $assocValue instanceof GhostObjectInterface) {
                     continue;
                 }
 

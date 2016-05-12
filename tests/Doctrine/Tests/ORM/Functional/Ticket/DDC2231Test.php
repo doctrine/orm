@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectManagerAware;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2231
@@ -30,12 +31,15 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $y1ref);
-        $this->assertFalse($y1ref->__isInitialized__);
+        $this->assertInstanceOf(GhostObjectInterface::class, $y1ref);
+        $this->assertFalse($y1ref->isProxyInitialized());
 
         $id = $y1ref->doSomething();
 
-        $this->assertTrue($y1ref->__isInitialized__);
+        $this->assertFalse($y1ref->isProxyInitialized());
+
+        $y1ref->initializeProxy();
+
         $this->assertEquals($this->_em, $y1ref->om);
     }
 }

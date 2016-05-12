@@ -41,7 +41,7 @@ class DDC1193Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $company = $this->_em->find(get_class($company), $companyId);
 
         $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company), "Company is in identity map.");
-        $this->assertFalse($company->member->__isInitialized__, "Pre-Condition");
+        $this->assertFalse($company->member->isProxyInitialized(), "Pre-Condition");
         $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company->member), "Member is in identity map.");
 
         $this->_em->remove($company);

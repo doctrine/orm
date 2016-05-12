@@ -11,6 +11,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Cache;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2183
@@ -852,7 +853,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertNotNull($state1->getCountry());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state1->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $state1->getCountry());
         $this->assertEquals($countryName, $state1->getCountry()->getName());
         $this->assertEquals($stateId, $state1->getId());
 
@@ -870,7 +871,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertNotNull($state2->getCountry());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $state2->getCountry());
         $this->assertEquals($countryName, $state2->getCountry()->getName());
         $this->assertEquals($stateId, $state2->getId());
     }
@@ -944,7 +945,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state1->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $state1->getCountry());
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $state1->getCities()->get(0));
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1->getCities()->get(0)->getState());
         $this->assertSame($state1, $state1->getCities()->get(0)->getState());
@@ -961,7 +962,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $state2->getCountry());
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $state2->getCities()->get(0));
         $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2->getCities()->get(0)->getState());
         $this->assertSame($state2, $state2->getCities()->get(0)->getState());

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2183
@@ -197,8 +198,8 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::CLASSNAME, $entities[1]);
         $this->assertInstanceOf(Country::CLASSNAME, $entities[0]->getCountry());
         $this->assertInstanceOf(Country::CLASSNAME, $entities[0]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[0]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[1]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[0]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[1]->getCountry());
 
         // load from cache
         $queryCount = $this->getCurrentQueryCount();
@@ -211,8 +212,8 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::CLASSNAME, $entities[1]);
         $this->assertInstanceOf(Country::CLASSNAME, $entities[0]->getCountry());
         $this->assertInstanceOf(Country::CLASSNAME, $entities[1]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[0]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[1]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[0]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[1]->getCountry());
 
         // invalidate cache
         $this->_em->persist(new State('foo', $this->_em->find(Country::CLASSNAME, $this->countries[0]->getId())));
@@ -230,8 +231,8 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::CLASSNAME, $entities[1]);
         $this->assertInstanceOf(Country::CLASSNAME, $entities[0]->getCountry());
         $this->assertInstanceOf(Country::CLASSNAME, $entities[1]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[0]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[1]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[0]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[1]->getCountry());
 
         // load from cache
         $queryCount = $this->getCurrentQueryCount();
@@ -244,7 +245,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::CLASSNAME, $entities[1]);
         $this->assertInstanceOf(Country::CLASSNAME, $entities[0]->getCountry());
         $this->assertInstanceOf(Country::CLASSNAME, $entities[1]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[0]->getCountry());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $entities[1]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[0]->getCountry());
+        $this->assertInstanceOf(GhostObjectInterface::class, $entities[1]->getCountry());
     }
 }

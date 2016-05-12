@@ -20,7 +20,6 @@
 namespace Doctrine\Tests\ORM\Performance;
 
 use Doctrine\Tests\OrmPerformanceTestCase;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -68,18 +67,16 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
     {
         $em              = new MockEntityManager($this->_getEntityManager());
         $proxyFactory    = $em->getProxyFactory();
-        /* @var $user \Doctrine\Common\Proxy\Proxy */
         $user            = $proxyFactory->getProxy($entityName, array('id' => 1));
-        $initializer     = $user->__getInitializer();
+        $initializer     = $user->getProxyInitializer();
 
         $this->setMaxRunningTime(5);
         $start = microtime(true);
 
         for ($i = 0; $i < 100000;  $i += 1) {
-            $user->__setInitialized(false);
-            $user->__setInitializer($initializer);
-            $user->__load();
-            $user->__load();
+            $user->setProxyInitializer($initializer);
+            $user->initializeProxy();
+            $user->initializeProxy();
         }
 
         echo __FUNCTION__ . " - " . (microtime(true) - $start) . " seconds with " . $entityName . PHP_EOL;

@@ -25,6 +25,8 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\EntityManager;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging
@@ -103,7 +105,7 @@ class DebugUnitOfWorkListener
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } else {
-                            if ($value instanceof Proxy && !$value->__isInitialized()) {
+                            if ($value instanceof GhostObjectInterface && !$value->isProxyInitialized()) {
                                 fwrite($fh, "[PROXY] ");
                             }
 

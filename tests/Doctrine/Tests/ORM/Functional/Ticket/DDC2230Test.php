@@ -6,6 +6,7 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2230
@@ -40,11 +41,11 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $mergedUser = $this->_em->merge($user);
 
-        /* @var $address \Doctrine\Common\Proxy\Proxy */
+        /* @var $address GhostObjectInterface */
         $address = $mergedUser->address;
 
-        $this->assertInstanceOf('Doctrine\\ORM\\Proxy\\Proxy', $address);
-        $this->assertFalse($address->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $address);
+        $this->assertFalse($address->isProxyInitialized());
     }
 
     public function testNotifyTrackingCalledOnProxyInitialization()
@@ -57,11 +58,11 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $addressProxy = $this->_em->getReference(__NAMESPACE__ . '\\DDC2230Address', $insertedAddress->id);
 
-        /* @var $addressProxy \Doctrine\Common\Proxy\Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
-        $this->assertFalse($addressProxy->__isInitialized());
+        /* @var $addressProxy GhostObjectInterface|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
+        $this->assertFalse($addressProxy->isProxyInitialized());
         $this->assertNull($addressProxy->listener);
 
-        $addressProxy->__load();
+        $addressProxy->initializeProxy();
 
         $this->assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
     }

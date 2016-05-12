@@ -49,7 +49,7 @@ class ProxiesLikeEntitiesTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         // Considering case (a)
         $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', array('id' => 123));
-        $proxy->__isInitialized__ = true;
+        $proxy->setProxyInitializer(null);
         $proxy->id = null;
         $proxy->username = 'ocra';
         $proxy->name = 'Marco';
@@ -70,13 +70,13 @@ class ProxiesLikeEntitiesTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testEntityWithIdentifier()
     {
         $userId = $this->user->getId();
-        /* @var $uninitializedProxy \Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser */
+        /* @var $uninitializedProxy \ProxyManager\Proxy\GhostObjectInterface|\Doctrine\Tests\Models\CMS\CmsUser */
         $uninitializedProxy = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $userId);
         $this->assertInstanceOf('Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser', $uninitializedProxy);
 
         $this->_em->persist($uninitializedProxy);
         $this->_em->flush($uninitializedProxy);
-        $this->assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
+        $this->assertFalse($uninitializedProxy->isProxyInitialized(), 'Proxy didn\'t get initialized during flush operations');
         $this->assertEquals($userId, $uninitializedProxy->getId());
         $this->_em->remove($uninitializedProxy);
         $this->_em->flush();
