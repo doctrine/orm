@@ -344,7 +344,7 @@ Now that we have defined our first entity, let's update the database:
 
     $ vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
 
-Specifying both flags ``--force`` and ``-dump-sql`` prints and executes the DDL
+Specifying both flags ``--force`` and ``--dump-sql`` prints and executes the DDL
 statements.
 
 Now create a new script that will insert products into the database:
