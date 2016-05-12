@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Query\Filter\DefaultFilterFactory;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -132,6 +133,11 @@ use Doctrine\Common\Util\ClassUtils;
     private $filterCollection;
 
     /**
+     * @var Query\Filter\FilterFactoryInterface
+     */
+    private $filterFactory;
+
+    /**
      * @var \Doctrine\ORM\Cache The second level cache regions API.
      */
     private $cache;
@@ -170,6 +176,9 @@ use Doctrine\Common\Util\ClassUtils;
             $cacheFactory   = $cacheConfig->getCacheFactory();
             $this->cache    = $cacheFactory->createCache($this);
         }
+
+        $filtersConfig = $config->getFiltersConfiguration();
+        $this->filterFactory = $filtersConfig->getFilterFactory();
     }
 
     /**
@@ -861,7 +870,10 @@ use Doctrine\Common\Util\ClassUtils;
     public function getFilters()
     {
         if (null === $this->filterCollection) {
-            $this->filterCollection = new FilterCollection($this);
+            if ($this->filterFactory instanceof DefaultFilterFactory) {
+                $this->filterFactory->setEntityManager($this);
+            }
+            $this->filterCollection = new FilterCollection($this, $this->filterFactory);
         }
 
         return $this->filterCollection;

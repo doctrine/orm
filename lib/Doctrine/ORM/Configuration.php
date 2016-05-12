@@ -35,6 +35,8 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Query\Filter\FiltersConfiguration;
+use Doctrine\ORM\Query\Filter\FiltersConfigurationInterface;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 
@@ -870,6 +872,30 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['secondLevelCacheConfiguration'])
             ? $this->_attributes['secondLevelCacheConfiguration']
             : null;
+    }
+
+    /**
+     * @since 2.6
+     */
+    public function setFiltersConfiguration(FiltersConfigurationInterface $filtersConfiguration)
+    {
+        $this->_attributes['filtersConfiguration'] = $filtersConfiguration;
+    }
+
+    /**
+     * Gets filters configuration.
+     *
+     * @since 2.6
+     *
+     * @return FiltersConfigurationInterface
+     */
+    public function getFiltersConfiguration()
+    {
+        if ( ! isset($this->_attributes['filtersConfiguration'])) {
+            $this->_attributes['filtersConfiguration'] = new FiltersConfiguration($this);
+        }
+
+        return $this->_attributes['filtersConfiguration'];
     }
 
     /**

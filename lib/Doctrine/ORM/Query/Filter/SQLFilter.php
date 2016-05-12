@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Query\Filter;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 
 /**
@@ -32,7 +31,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @abstract
  */
-abstract class SQLFilter
+abstract class SQLFilter implements FilterInterface
 {
     /**
      * The entity manager.
@@ -122,7 +121,7 @@ abstract class SQLFilter
 
         return true;
     }
-    
+
     /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *
@@ -142,14 +141,4 @@ abstract class SQLFilter
     {
         return $this->em->getConnection();
     }
-
-    /**
-     * Gets the SQL query part to add to a query.
-     *
-     * @param ClassMetaData $targetEntity
-     * @param string        $targetTableAlias
-     *
-     * @return string The constraint SQL if there is available, empty string otherwise.
-     */
-    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Filter\FilterFactoryInterface;
 
 /**
  * Collection class for all the query filters.
@@ -72,14 +73,21 @@ class FilterCollection
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
     /**
+     * @var FilterFactoryInterface
+     */
+    private $filterFactory;
+
+    /**
      * Constructor.
      *
      * @param EntityManagerInterface $em
+     * @param FilterFactoryInterface $filterFactory
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, FilterFactoryInterface $filterFactory)
     {
         $this->em = $em;
         $this->config = $em->getConfiguration();
+        $this->filterFactory = $filterFactory;
     }
 
     /**
@@ -108,9 +116,7 @@ class FilterCollection
         }
 
         if ( ! $this->isEnabled($name)) {
-            $filterClass = $this->config->getFilterClassName($name);
-
-            $this->enabledFilters[$name] = new $filterClass($this->em);
+            $this->enabledFilters[$name] = $this->filterFactory->createFromName($name);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
@@ -176,16 +182,16 @@ class FilterCollection
 
     /**
      * Checks if a filter is enabled.
-     * 
+     *
      * @param string $name Name of the filter.
-     * 
+     *
      * @return boolean True if the filter is enabled, false otherwise.
      */
     public function isEnabled($name)
     {
         return isset($this->enabledFilters[$name]);
     }
-    
+
     /**
      * @return boolean True, if the filter collection is clean.
      */
