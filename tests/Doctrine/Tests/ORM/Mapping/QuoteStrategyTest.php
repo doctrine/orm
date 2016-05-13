@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmTestCase;
@@ -137,6 +138,17 @@ class QuoteStrategyTest extends OrmTestCase
         $this->assertEquals('column_name_1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
         $this->assertEquals('COLUMN_NAME_2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
         $this->assertEquals('COLUMNNAME_3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
+    }
+
+    public function testOracleColumnAlias()
+    {
+        $quoteStrategy = new DefaultQuoteStrategy();
+        $platform = new OraclePlatform();
+
+        $this->assertSame(
+            'THIS_IS_A_29_CHAR_STRING_XX_0',
+            $quoteStrategy->getColumnAlias('X_THIS_IS_A_29_CHAR_STRING_XX', 0, $platform)
+        );
     }
 
     public function testQuoteIdentifierJoinColumns()
