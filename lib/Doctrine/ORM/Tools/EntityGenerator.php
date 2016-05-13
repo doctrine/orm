@@ -1663,30 +1663,32 @@ public function __construct(<params>)
                 $column[] = 'type="' . $fieldType . '"';
             }
 
-            if (isset($fieldMapping['length'])) {
+            if (isset($fieldMapping['length']) && $fieldMapping['length']) {
                 $column[] = 'length=' . $fieldMapping['length'];
             }
 
-            if (isset($fieldMapping['precision'])) {
+            if (isset($fieldMapping['precision']) && $fieldMapping['precision']) {
                 $column[] = 'precision=' .  $fieldMapping['precision'];
             }
 
-            if (isset($fieldMapping['scale'])) {
+            if (isset($fieldMapping['scale']) && $fieldMapping['scale']) {
                 $column[] = 'scale=' . $fieldMapping['scale'];
             }
 
-            if (isset($fieldMapping['nullable'])) {
+            if (isset($fieldMapping['nullable']) && $fieldMapping['nullable']) {
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
+            }
+
+            if (isset($fieldMapping['unique']) && $fieldMapping['unique']) {
+                $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
             }
 
             $options = [];
 
-            if (isset($fieldMapping['options']['default']) && $fieldMapping['options']['default']) {
-                $options[] = '"default"="' . $fieldMapping['options']['default'] .'"';
-            }
-
-            if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
-                $options[] = '"unsigned"=true';
+            if (isset($fieldMapping['options']) && $fieldMapping['options']) {
+                foreach ($fieldMapping['options'] as $key => $value) {
+                    $options[] = sprintf('"%s"=%s', $key, str_replace("'", '"', var_export($value, true)));
+                }
             }
 
             if (isset($fieldMapping['options']['fixed']) && $fieldMapping['options']['fixed']) {
@@ -1711,10 +1713,6 @@ public function __construct(<params>)
 
             if (isset($fieldMapping['columnDefinition'])) {
                 $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
-            }
-
-            if (isset($fieldMapping['unique'])) {
-                $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
             }
 
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Column(' . implode(', ', $column) . ')';
