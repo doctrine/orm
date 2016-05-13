@@ -3,13 +3,14 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional Query tests.
  *
  * @author robo
  */
-class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class QueryDqlFunctionTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

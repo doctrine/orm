@@ -4,20 +4,21 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional Query tests.
  *
  * @author robo
  */
-class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class QueryTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -391,7 +392,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
-            $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSql());
+            $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
@@ -754,7 +755,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NoResultException".');
-        } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
+        } catch (UnexpectedResultException $exc) {
             $this->assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
         }
 
@@ -767,7 +768,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NonUniqueResultException".');
-        } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
+        } catch (UnexpectedResultException $exc) {
             $this->assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
         }
     }

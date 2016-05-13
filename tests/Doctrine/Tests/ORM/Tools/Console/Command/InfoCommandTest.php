@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Helper\HelperSet;

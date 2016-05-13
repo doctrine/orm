@@ -23,9 +23,9 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->user->name = "Benjamin";
         $this->user->status = "active";
 
-        $this->phone = new CmsPhoneNumber();
+        $this->phone = new CmsPhonenumber();
         $this->phone->phonenumber = '0123456789';
-        $this->user->addPhoneNumber($this->phone);
+        $this->user->addPhonenumber($this->phone);
 
         $this->_em->persist($this->user);
         $this->_em->persist($this->phone);

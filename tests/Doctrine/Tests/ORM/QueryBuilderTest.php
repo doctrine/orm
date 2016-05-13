@@ -27,6 +27,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -36,7 +37,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
  * @author      Roman Borschel <roman@code-factory.org
  * @since       2.0
  */
-class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
+class QueryBuilderTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -50,7 +51,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     protected function assertValidQueryBuilder(QueryBuilder $qb, $expectedDql)
     {
-        $dql = $qb->getDql();
+        $dql = $qb->getDQL();
         $q = $qb->getQuery();
 
         $this->assertEquals($expectedDql, $dql);
@@ -631,7 +632,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-           ->where($qb->expr()->orx('u.username = :username', 'u.username = :username2'));
+           ->where($qb->expr()->orX('u.username = :username', 'u.username = :username2'));
 
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter('username', 'jwage'));
@@ -787,7 +788,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $q1 = $qb->getQuery();
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDql());
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDQL());
         $this->assertEquals(1, count($q1->getParameters()));
 
         // add another condition and construct a second query
@@ -796,7 +797,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $q2 = $qb->getQuery();
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDql());
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDQL());
         $this->assertTrue($q1 !== $q2); // two different, independent queries
         $this->assertEquals(2, count($q2->getParameters()));
         $this->assertEquals(1, count($q1->getParameters())); // $q1 unaffected
@@ -842,7 +843,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('u.username = ?1', (string)$qb->getDQLPart('where'));
         $this->assertEquals(1, count($qb->getDQLPart('orderBy')));
 
-        $qb->resetDqlPart('where')->resetDqlPart('orderBy');
+        $qb->resetDQLPart('where')->resetDQLPart('orderBy');
 
         $this->assertNull($qb->getDQLPart('where'));
         $this->assertEquals(0, count($qb->getDQLPart('orderBy')));

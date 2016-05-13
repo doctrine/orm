@@ -5,8 +5,9 @@ namespace Doctrine\Tests\ORM\Tools;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\EntityRepositoryGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
 
-class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class EntityRepositoryGeneratorTest extends OrmTestCase
 {
     /**
      * @var EntityGenerator
@@ -54,7 +55,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
             if ($file->isFile()) {
                 \unlink($file->getPathname());
             } elseif ($file->getBasename() === '.') {
-                $dirs[] = $file->getRealpath();
+                $dirs[] = $file->getRealPath();
             }
         }
 

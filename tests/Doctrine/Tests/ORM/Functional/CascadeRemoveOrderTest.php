@@ -3,11 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group CascadeRemoveOrderTest
  */
-class CascadeRemoveOrderTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

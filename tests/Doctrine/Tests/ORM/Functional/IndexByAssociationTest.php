@@ -5,14 +5,15 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\StockExchange\Stock;
 use Doctrine\Tests\Models\StockExchange\Market;
 use Doctrine\Tests\Models\StockExchange\Bond;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-250
  */
-class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class IndexByAssociationTest extends OrmFunctionalTestCase
 {
     /**
-     * @var Doctrine\Tests\Models\StockExchange\Market
+     * @var Market
      */
     private $market;
 

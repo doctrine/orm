@@ -1,9 +1,7 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Taxi\Car,
-    Doctrine\Tests\Models\Taxi\Driver,
-    Doctrine\Tests\Models\Taxi\Ride,
+use Doctrine\Tests\Models\Taxi\Ride,
     Doctrine\Tests\Models\Taxi\PaidRide;
 
 /**

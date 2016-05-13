@@ -6,8 +6,9 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\OrmTestCase;
 
-class BasicEntityPersisterCompositeTypeParametersTest extends \Doctrine\Tests\OrmTestCase
+class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
     /**
      * @var BasicEntityPersister

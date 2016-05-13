@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class SequenceEmulatedIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
 {
     /**
      * {@inheritdoc}

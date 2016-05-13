@@ -3,11 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Base class for testing a many-to-many association mapping (without inheritance).
  */
-class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctionalTestCase
+class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 {
     protected $_firstField;
     protected $_secondField;

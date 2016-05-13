@@ -13,12 +13,13 @@ use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionMethod;
 
 /**
  * @group DDC-1613
  */
-class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PaginationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

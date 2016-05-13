@@ -2,15 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Mapping\ClassMetaData,
+use Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for FilterCollection
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
+class FilterCollectionTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager

@@ -2,7 +2,10 @@
 
 namespace Doctrine\Tests\ORM;
 
-class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\OrmTestCase;
+
+class EntityManagerTest extends OrmTestCase
 {
     private $_em;
 
@@ -54,7 +57,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreateNativeQuery()
     {
-        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm = new ResultSetMapping();
         $query = $this->_em->createNativeQuery('SELECT foo', $rsm);
 
         $this->assertSame('SELECT foo', $query->getSql());
@@ -65,7 +68,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCreateNamedNativeQuery()
     {
-        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm = new ResultSetMapping();
         $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
         
         $query = $this->_em->createNamedNativeQuery('foo');

@@ -6,21 +6,21 @@ use Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
     Doctrine\Tests\Models\Company\CompanyOrganization,
-    Doctrine\Tests\Models\Company\CompanyEvent,
     Doctrine\Tests\Models\Company\CompanyAuction,
-    Doctrine\Tests\Models\Company\CompanyRaffle,
-    Doctrine\Tests\Models\Company\CompanyCar;
+    Doctrine\Tests\Models\Company\CompanyRaffle;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  *
  * @author robo
  */
-class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ClassTableInheritanceTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('company');
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -82,7 +82,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setParameter(1, 'NewName', 'string');
         $query->setParameter(2, 'NewDepartment');
         $query->setParameter(3, 100000);
-        $query->getSql();
+        $query->getSQL();
         $numUpdated = $query->execute();
         $this->assertEquals(1, $numUpdated);
 

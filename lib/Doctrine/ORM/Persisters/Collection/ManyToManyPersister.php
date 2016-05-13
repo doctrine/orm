@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
@@ -740,7 +739,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $valueVisitor->dispatch($expression);
 
-        list($values, $types) = $valueVisitor->getParamsAndTypes();
+        list(, $types) = $valueVisitor->getParamsAndTypes();
 
         return $types;
     }

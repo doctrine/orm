@@ -4,8 +4,13 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SingleTableInheritanceTest extends OrmFunctionalTestCase
 {
     private $salesPerson;
     private $engineers = array();
@@ -21,30 +26,30 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function persistRelatedEmployees()
     {
-        $this->salesPerson = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $this->salesPerson = new CompanyEmployee();
         $this->salesPerson->setName('Poor Sales Guy');
         $this->salesPerson->setDepartment('Sales');
         $this->salesPerson->setSalary(100);
 
-        $engineer1 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer1 = new CompanyEmployee();
         $engineer1->setName('Roman B.');
         $engineer1->setDepartment('IT');
         $engineer1->setSalary(100);
         $this->engineers[] = $engineer1;
 
-        $engineer2 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer2 = new CompanyEmployee();
         $engineer2->setName('Jonathan W.');
         $engineer2->setDepartment('IT');
         $engineer2->setSalary(100);
         $this->engineers[] = $engineer2;
 
-        $engineer3 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer3 = new CompanyEmployee();
         $engineer3->setName('Benjamin E.');
         $engineer3->setDepartment('IT');
         $engineer3->setSalary(100);
         $this->engineers[] = $engineer3;
 
-        $engineer4 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer4 = new CompanyEmployee();
         $engineer4->setName('Guilherme B.');
         $engineer4->setDepartment('IT');
         $engineer4->setSalary(100);
@@ -61,14 +66,14 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->persistRelatedEmployees();
 
-        $this->fix = new \Doctrine\Tests\Models\Company\CompanyFixContract();
+        $this->fix = new CompanyFixContract();
         $this->fix->setFixPrice(1000);
         $this->fix->setSalesPerson($this->salesPerson);
         $this->fix->addEngineer($this->engineers[0]);
         $this->fix->addEngineer($this->engineers[1]);
         $this->fix->markCompleted();
 
-        $this->flex = new \Doctrine\Tests\Models\Company\CompanyFlexContract();
+        $this->flex = new CompanyFlexContract();
         $this->flex->setSalesPerson($this->salesPerson);
         $this->flex->setHoursWorked(100);
         $this->flex->setPricePerHour(100);
@@ -77,7 +82,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->flex->addEngineer($this->engineers[3]);
         $this->flex->markCompleted();
 
-        $this->ultra = new \Doctrine\Tests\Models\Company\CompanyFlexUltraContract();
+        $this->ultra = new CompanyFlexUltraContract();
         $this->ultra->setSalesPerson($this->salesPerson);
         $this->ultra->setHoursWorked(150);
         $this->ultra->setPricePerHour(150);
@@ -96,7 +101,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->persistRelatedEmployees();
 
-        $fixContract = new \Doctrine\Tests\Models\Company\CompanyFixContract();
+        $fixContract = new CompanyFixContract();
         $fixContract->setFixPrice(1000);
         $fixContract->setSalesPerson($this->salesPerson);
 
@@ -115,7 +120,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->persistRelatedEmployees();
 
-        $ultraContract = new \Doctrine\Tests\Models\Company\CompanyFlexUltraContract();
+        $ultraContract = new CompanyFlexUltraContract();
         $ultraContract->setSalesPerson($this->salesPerson);
         $ultraContract->setHoursWorked(100);
         $ultraContract->setPricePerHour(50);

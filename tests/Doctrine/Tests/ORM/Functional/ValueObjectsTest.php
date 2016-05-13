@@ -1,11 +1,12 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-93
  */
-class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ValueObjectsTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {

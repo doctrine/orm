@@ -6,8 +6,9 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
+use Doctrine\Tests\OrmTestCase;
 
-class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
+class BasicInheritanceMappingTest extends OrmTestCase
 {
     /**
      * @var ClassMetadataFactory

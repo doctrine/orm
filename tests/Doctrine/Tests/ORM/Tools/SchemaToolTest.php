@@ -6,8 +6,9 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use Doctrine\Tests\OrmTestCase;
 
-class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
+class SchemaToolTest extends OrmTestCase
 {
     public function testAddUniqueIndexForUniqueFieldAnnotation()
     {

@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Decorator;
 
-use Doctrine\ORM\Decorator\EntityManagerDecorator;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase

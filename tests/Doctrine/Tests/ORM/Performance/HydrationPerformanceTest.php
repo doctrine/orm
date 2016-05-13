@@ -2,9 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Performance;
 
+use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
+use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
+use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\Tests\Mocks\HydratorMockStatement,
     Doctrine\ORM\Query\ResultSetMapping,
     Doctrine\ORM\Query;
+use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
  * Tests to prevent serious performance regressions.
@@ -15,7 +19,7 @@ use Doctrine\Tests\Mocks\HydratorMockStatement,
  * @author robo
  * @group performance
  */
-class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
+class HydrationPerformanceTest extends OrmPerformanceTestCase
 {
     /**
      * Times for comparison:
@@ -66,7 +70,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
         $this->setMaxRunningTime(1);
         $s = microtime(true);
@@ -124,7 +128,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->_em);
 
         $this->setMaxRunningTime(2);
         $s = microtime(true);
@@ -198,7 +202,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->_em);
 
         $this->setMaxRunningTime(3);
         $s = microtime(true);
@@ -254,7 +258,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
 
         $this->setMaxRunningTime(3);
         $s = microtime(true);
@@ -310,7 +314,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
 
         $this->setMaxRunningTime(5);
         $s = microtime(true);
@@ -382,7 +386,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
 
         $this->setMaxRunningTime(1);
         $s = microtime(true);
@@ -447,7 +451,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
 
         $this->setMaxRunningTime(1);
         $s = microtime(true);

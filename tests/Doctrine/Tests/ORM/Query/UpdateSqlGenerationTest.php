@@ -22,6 +22,7 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
@@ -37,7 +38,7 @@ use Doctrine\DBAL\Types\Type as DBALType;
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
  */
-class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
+class UpdateSqlGenerationTest extends OrmTestCase
 {
     private $_em;
 

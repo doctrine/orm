@@ -5,7 +5,12 @@ namespace Doctrine\Tests;
 use Doctrine\Common\Annotations;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Version;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -93,7 +98,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         Annotations\AnnotationRegistry::registerFile(__DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
 
-        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver($reader, (array) $paths);
     }
 
     /**
@@ -117,7 +122,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             ? self::getSharedMetadataCacheImpl()
             : new ArrayCache();
 
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
 
         $config->setMetadataCacheImpl($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
@@ -130,7 +135,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         if ($this->isSecondLevelCacheEnabled) {
 
-            $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+            $cacheConfig    = new CacheConfiguration();
             $cache          = $this->getSharedSecondLevelCacheDriverImpl();
             $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
 
@@ -151,10 +156,10 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         if (is_array($conn)) {
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
+            $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerMock::create($conn, $config, $eventManager);
     }
 
     protected function enableSecondLevelCache($log = true)

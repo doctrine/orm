@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\ORM\ORMException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests that an entity with a OneToOne relationship defined as the id, with a version field can be created.
@@ -13,7 +14,7 @@ use Doctrine\ORM\ORMException;
  *
  * @group VersionedOneToOne
  */
-class VersionedOneToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class VersionedOneToOneTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

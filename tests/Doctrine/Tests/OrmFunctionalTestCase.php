@@ -2,7 +2,15 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -599,7 +607,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if ( ! isset(static::$_sharedConn)) {
             static::$_sharedConn = TestUtil::getConnection();
 
-            if (static::$_sharedConn->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
+            if (static::$_sharedConn->getDriver() instanceof SqliteDriver) {
                 $forceCreateTables = true;
             }
         }
@@ -614,7 +622,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if ( ! $this->_em) {
             $this->_em = $this->_getEntityManager();
-            $this->_schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+            $this->_schemaTool = new SchemaTool($this->_em);
         }
 
         $classes = array();
@@ -652,20 +660,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
                 self::$_metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL'];
             } else {
-                self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+                self::$_metadataCacheImpl = new ArrayCache();
             }
         }
 
         if (is_null(self::$_queryCacheImpl)) {
-            self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            self::$_queryCacheImpl = new ArrayCache();
         }
 
-        $this->_sqlLoggerStack = new \Doctrine\DBAL\Logging\DebugStack();
+        $this->_sqlLoggerStack = new DebugStack();
         $this->_sqlLoggerStack->enabled = false;
 
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');
@@ -675,7 +683,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
 
-            $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+            $cacheConfig    = new CacheConfiguration();
             $cache          = $this->getSharedSecondLevelCacheDriverImpl();
             $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
 
@@ -721,10 +729,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['debug_uow_listener'])) {
-            $evm->addEventListener(array('onFlush'), new \Doctrine\ORM\Tools\DebugUnitOfWorkListener());
+            $evm->addEventListener(array('onFlush'), new DebugUnitOfWorkListener());
         }
 
-        return \Doctrine\ORM\EntityManager::create($conn, $config);
+        return EntityManager::create($conn, $config);
     }
 
     /**

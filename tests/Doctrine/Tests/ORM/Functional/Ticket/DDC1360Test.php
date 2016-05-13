@@ -15,7 +15,7 @@ class DDC1360Test extends OrmFunctionalTestCase
             $this->markTestSkipped("PostgreSQL only test.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSQL(array(
+        $sql = $this->_schemaTool->getCreateSchemaSql(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1360DoubleQuote')
         ));
 

@@ -1,9 +1,10 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime, Doctrine\DBAL\Types\Type;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1193Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1193Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

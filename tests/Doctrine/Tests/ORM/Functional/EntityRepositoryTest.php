@@ -2,19 +2,22 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @author robo
  */
-class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class EntityRepositoryTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -291,7 +294,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
-                  ->find(1, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ);
+                  ->find(1, LockMode::PESSIMISTIC_READ);
     }
 
     /**
@@ -303,7 +306,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
-                  ->find(1, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+                  ->find(1, LockMode::PESSIMISTIC_WRITE);
     }
 
     /**
@@ -315,7 +318,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
-                  ->find(1, \Doctrine\DBAL\LockMode::OPTIMISTIC);
+                  ->find(1, LockMode::OPTIMISTIC);
     }
 
     /**
@@ -336,7 +339,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
 
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
-        $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId, \Doctrine\DBAL\LockMode::OPTIMISTIC);
+        $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId, LockMode::OPTIMISTIC);
     }
 
     /**
@@ -671,7 +674,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = array_pop($this->_sqlLoggerStack->queries);
         $this->assertEquals(array(1,2,3), $query['params'][0]);
-        $this->assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
+        $this->assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
 
     /**

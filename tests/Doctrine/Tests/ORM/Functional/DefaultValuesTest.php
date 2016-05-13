@@ -1,15 +1,17 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests basic operations on entities with default values.
  *
  * @author robo
  */
-class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DefaultValuesTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(

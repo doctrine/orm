@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\Mocks\CacheRegionMock;
 use Doctrine\ORM\Cache\DefaultQueryCache;
@@ -11,7 +12,6 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\ORM\Cache\EntityCacheEntry;
@@ -542,7 +542,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
 }
 
-class CacheFactoryDefaultQueryCacheTest extends \Doctrine\ORM\Cache\DefaultCacheFactory
+class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
 {
     private $queryCache;
     private $region;
@@ -565,6 +565,6 @@ class CacheFactoryDefaultQueryCacheTest extends \Doctrine\ORM\Cache\DefaultCache
 
     public function getTimestampRegion()
     {
-        return new \Doctrine\Tests\Mocks\TimestampRegionMock();
+        return new TimestampRegionMock();
     }
 }

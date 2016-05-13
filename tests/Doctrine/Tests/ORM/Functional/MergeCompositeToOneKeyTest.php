@@ -4,8 +4,9 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\MixedToOneIdentity\CompositeToOneKeyState;
 use Doctrine\Tests\Models\MixedToOneIdentity\Country;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class MergeCompositeToOneKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}

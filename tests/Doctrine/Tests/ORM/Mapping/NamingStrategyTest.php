@@ -6,11 +6,12 @@ use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-559
  */
-class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
+class NamingStrategyTest extends OrmTestCase
 {
     /**
      * @return DefaultNamingStrategy

@@ -1,15 +1,18 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  *
  * @author robo
  */
-class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
+class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
@@ -156,19 +159,23 @@ class CTIRelated2
     private $ctiChildren;
 
 
-    public function __construct() {
-        $this->ctiChildren = new \Doctrine\Common\Collections\ArrayCollection;
+    public function __construct()
+    {
+        $this->ctiChildren = new ArrayCollection();
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function addCTIChild(CTIChild $child) {
+    public function addCTIChild(CTIChild $child)
+    {
         $this->ctiChildren->add($child);
     }
 
-    public function getCTIChildren() {
+    public function getCTIChildren()
+    {
         return $this->ctiChildren;
     }
 }

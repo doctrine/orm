@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Performance;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
  * Description of InsertPerformanceTest
@@ -10,7 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
  * @author robo
  * @group performance
  */
-class UnitOfWorkPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
+class UnitOfWorkPerformanceTest extends OrmPerformanceTestCase
 {
     protected function setUp()
     {

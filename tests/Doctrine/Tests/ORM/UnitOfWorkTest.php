@@ -12,14 +12,16 @@ use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\OrmTestCase;
 use stdClass;
 
 /**
  * UnitOfWork tests.
  */
-class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
+class UnitOfWorkTest extends OrmTestCase
 {
     /**
      * SUT
@@ -198,7 +200,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
 
-        $ph = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
 
         $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($ph));
@@ -210,7 +212,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork->registerManaged($ph, array('phonenumber' => '12345'), array());
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
         $this->assertFalse($persister->isExistsCalled());
-        $ph2 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $ph2 = new CmsPhonenumber();
         $ph2->phonenumber = '12345';
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
         $this->assertFalse($persister->isExistsCalled());

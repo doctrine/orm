@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\Models\DDC964;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 /**
  * @Entity
  * @AssociationOverrides({

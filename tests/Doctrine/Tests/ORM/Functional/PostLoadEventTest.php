@@ -8,13 +8,14 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * PostLoadEventTest
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PostLoadEventTest extends OrmFunctionalTestCase
 {
     /**
      * @var integer

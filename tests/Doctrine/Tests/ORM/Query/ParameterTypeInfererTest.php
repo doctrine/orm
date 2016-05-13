@@ -21,9 +21,10 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Tests\OrmTestCase;
 use PDO;
 
-class ParameterTypeInfererTest extends \Doctrine\Tests\OrmTestCase
+class ParameterTypeInfererTest extends OrmTestCase
 {
 
     public function providerParameterTypeInferer()

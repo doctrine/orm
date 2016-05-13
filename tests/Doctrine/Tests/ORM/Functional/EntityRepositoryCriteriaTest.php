@@ -23,11 +23,12 @@ use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Tweet\Tweet;
 use Doctrine\Tests\Models\Tweet\User;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @author Josiah <josiah@jjs.id.au>
  */
-class EntityRepositoryCriteriaTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

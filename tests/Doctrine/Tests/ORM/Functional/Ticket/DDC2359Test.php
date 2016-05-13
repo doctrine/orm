@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-
 /**
  * @group DDC-2359
  */

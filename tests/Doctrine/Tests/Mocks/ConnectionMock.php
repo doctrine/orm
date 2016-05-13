@@ -1,11 +1,12 @@
 <?php
 
 namespace Doctrine\Tests\Mocks;
+use Doctrine\DBAL\Connection;
 
 /**
  * Mock class for Connection.
  */
-class ConnectionMock extends \Doctrine\DBAL\Connection
+class ConnectionMock extends Connection
 {
     /**
      * @var mixed

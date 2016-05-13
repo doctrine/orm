@@ -3,13 +3,13 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsAddress,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-many association mapping with orphan removal.
  */
-class OneToManyOrphanRemovalTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
 {
     protected $userId;
 

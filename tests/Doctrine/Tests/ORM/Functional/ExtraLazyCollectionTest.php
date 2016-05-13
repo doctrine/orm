@@ -3,6 +3,10 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC2504\DDC2504ChildClass;
 use Doctrine\Tests\Models\DDC2504\DDC2504OtherClass;
 use Doctrine\Tests\Models\Tweet\Tweet;
@@ -99,7 +103,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
 
-        $newGroup = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $newGroup = new CmsGroup();
         $newGroup->name = "Test4";
 
         $user->addGroup($newGroup);
@@ -277,7 +281,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         // Test One to Many existence with state new
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->topic = "Testnew";
         $article->text = "blub";
 
@@ -295,7 +299,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many existence with state managed
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->topic = "How to not fail anymore on tests";
         $article->text = "That is simple! Just write more tests!";
 
@@ -414,7 +418,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many existence with state new
-        $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group = new CmsGroup();
         $group->name = "A New group!";
 
         $queryCount = $this->getCurrentQueryCount();
@@ -434,7 +438,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many existence with state managed
-        $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group = new CmsGroup();
         $group->name = "My managed group";
 
         $this->_em->persist($group);
@@ -461,7 +465,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        $newUser = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $newUser = new CmsUser();
         $newUser->name = "A New group!";
 
         $queryCount = $this->getCurrentQueryCount();
@@ -488,7 +492,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
         // Test One to Many removal with Entity state as new
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->topic = "Testnew";
         $article->text = "blub";
 
@@ -510,7 +514,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test One to Many removal with Entity state as managed
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->topic = "How to not fail anymore on tests";
         $article->text = "That is simple! Just write more tests!";
 
@@ -642,7 +646,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many removal with Entity state as new
-        $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group = new CmsGroup();
         $group->name = "A New group!";
 
         $queryCount = $this->getCurrentQueryCount();
@@ -664,7 +668,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         // Test Many to Many removal with Entity state as managed
-        $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group = new CmsGroup();
         $group->name = "A New group!";
 
         $this->_em->persist($group);
@@ -693,7 +697,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a managed entity should cause one query to be executed.");
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        $newUser = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $newUser = new CmsUser();
         $newUser->name = "A New group!";
 
         $queryCount = $this->getCurrentQueryCount();
@@ -711,7 +715,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
 
-        $newGroup = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $newGroup = new CmsGroup();
         $newGroup->name = "Test4";
 
         $user->addGroup($newGroup);
@@ -735,7 +739,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
         /* @var $user CmsUser */
 
-        $newGroup = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $newGroup = new CmsGroup();
         $newGroup->name = "Test4";
 
         $user->addGroup($newGroup);
@@ -947,22 +951,22 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
     private function loadFixture()
     {
-        $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $user1 = new CmsUser();
         $user1->username = "beberlei";
         $user1->name = "Benjamin";
         $user1->status = "active";
 
-        $user2 = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $user2 = new CmsUser();
         $user2->username = "jwage";
         $user2->name = "Jonathan";
         $user2->status = "active";
 
-        $user3 = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $user3 = new CmsUser();
         $user3->username = "romanb";
         $user3->name = "Roman";
         $user3->status = "active";
 
-        $user4 = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $user4 = new CmsUser();
         $user4->username = "gblanco";
         $user4->name = "Guilherme";
         $user4->status = "active";
@@ -972,13 +976,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->persist($user3);
         $this->_em->persist($user4);
 
-        $group1 = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group1 = new CmsGroup();
         $group1->name = "Test1";
 
-        $group2 = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group2 = new CmsGroup();
         $group2->name = "Test2";
 
-        $group3 = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group3 = new CmsGroup();
         $group3->name = "Test3";
 
         $user1->addGroup($group1);
@@ -993,12 +997,12 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->persist($group2);
         $this->_em->persist($group3);
 
-        $article1 = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article1 = new CmsArticle();
         $article1->topic = "Test1";
         $article1->text = "Test1";
         $article1->setAuthor($user1);
 
-        $article2 = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article2 = new CmsArticle();
         $article2->topic = "Test2";
         $article2->text = "Test2";
         $article2->setAuthor($user1);
@@ -1006,10 +1010,10 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->persist($article1);
         $this->_em->persist($article2);
 
-        $phonenumber1 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $phonenumber1 = new CmsPhonenumber();
         $phonenumber1->phonenumber = '12345';
 
-        $phonenumber2 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $phonenumber2 = new CmsPhonenumber();
         $phonenumber2->phonenumber = '67890';
 
         $this->_em->persist($phonenumber1);

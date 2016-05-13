@@ -19,7 +19,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
 
@@ -33,7 +33,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
 
@@ -47,7 +47,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1 FROM Author a0_", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
 
@@ -64,7 +64,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0, m0_.author_id AS sclr_1 FROM MyBlogPost m0_ ORDER BY m0_.author_id ASC", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
     
@@ -81,7 +81,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id)", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
 
@@ -95,7 +95,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         $this->assertEquals(
             "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id) ORDER BY m0_.title ASC", 
-            $limitQuery->getSql()
+            $limitQuery->getSQL()
         );
     }
 }

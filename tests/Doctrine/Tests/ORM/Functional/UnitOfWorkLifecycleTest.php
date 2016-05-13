@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class UnitOfWorkLifecycleTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

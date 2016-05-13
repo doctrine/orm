@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
@@ -13,8 +15,9 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
+use Doctrine\Tests\OrmTestCase;
 
-class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
+class ClassMetadataFactoryTest extends OrmTestCase
 {
     public function testGetMetadataForSingleClass()
     {
@@ -219,7 +222,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     protected function _createEntityManager($metadataDriver, $conn = null)
     {
         $driverMock = new DriverMock();
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
@@ -251,7 +254,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         // Self-made metadata
         $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
-        $cm1->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm1->initializeReflection(new RuntimeReflectionService());
         $cm1->setPrimaryTable(array('name' => '`group`'));
         // Add a mapped field
         $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
