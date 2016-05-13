@@ -961,7 +961,9 @@ class ClassMetadata implements ClassMetadataInterface
             $this->name = $this->rootEntityName = $this->reflClass->getName();
         }
 
-        $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
+        if ( ! isset($this->table['name'])) {
+            $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
+        }
     }
 
     /**
