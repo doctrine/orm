@@ -1363,7 +1363,7 @@ class ClassMetadata implements ClassMetadataInterface
     protected function validateAndCompleteFieldMapping(array &$mapping)
     {
         $mapping['declaringClass'] = $this;
-        $mapping['tableName']      = $this->getTableName();
+        $mapping['tableName']      = ! $this->isMappedSuperclass ? $this->getTableName() : null;
 
         // Check mandatory fields
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
@@ -1588,7 +1588,7 @@ class ClassMetadata implements ClassMetadataInterface
                     }
                 }
 
-                $joinColumn['tableName'] = $this->getTableName();
+                $joinColumn['tableName'] = ! $this->isMappedSuperclass ? $this->getTableName() : null;
 
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name);
@@ -3300,17 +3300,13 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function inlineEmbeddable($property, ClassMetadata $embeddable)
     {
-        foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
-                ? $fieldMapping['originalClass']
-                : $embeddable->name;
+        foreach ($embeddable->fieldMappings as $fieldName => $fieldMapping) {
+            $fieldMapping['fieldName']     = $property . "." . $fieldName;
+            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
+            $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldName;
             $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
                 : $property;
-            $fieldMapping['originalField'] = isset($fieldMapping['originalField'])
-                ? $fieldMapping['originalField']
-                : $fieldMapping['fieldName'];
-            $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
@@ -3350,11 +3346,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getSequenceName(AbstractPlatform $platform)
     {
-        $sequencePrefix = $this->getSequencePrefix($platform);
-        $columnName     = $this->getSingleIdentifierColumnName();
-        $sequenceName   = $sequencePrefix . '_' . $columnName . '_seq';
-
-        return $sequenceName;
+        return sprintf('%s_%s_seq', $this->getSequencePrefix($platform), $this->getSingleIdentifierColumnName());
     }
 
     /**
