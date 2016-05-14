@@ -309,7 +309,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $this->switchPersisterContext($offset, $limit);
 
-        $baseTableAlias = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias = $this->getSQLTableAlias($this->class->getTableName());
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
         if ($assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {
@@ -321,7 +321,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             : $this->getSelectConditionSQL($criteria, $assoc);
 
         // If the current class in the root entity, add the filters
-        if ($filterSql = $this->generateFilterConditionSQL($this->em->getClassMetadata($this->class->rootEntityName), $this->getSQLTableAlias($this->class->rootEntityName))) {
+        $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+        $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
+
+        if ($filterSql = $this->generateFilterConditionSQL($rootClass, $tableAlias)) {
             $conditionSql .= $conditionSql
                 ? ' AND ' . $filterSql
                 : $filterSql;
@@ -373,14 +376,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function getCountSQL($criteria = array())
     {
         $tableName      = $this->quoteStrategy->getTableName($this->class, $this->platform);
-        $baseTableAlias = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias = $this->getSQLTableAlias($this->class->getTableName());
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
         $conditionSql = ($criteria instanceof Criteria)
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria);
 
-        $filterSql = $this->generateFilterConditionSQL($this->em->getClassMetadata($this->class->rootEntityName), $this->getSQLTableAlias($this->class->rootEntityName));
+        $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+        $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
+        $filterSql  = $this->generateFilterConditionSQL($rootClass, $tableAlias);
 
         if ('' !== $filterSql) {
             $conditionSql = $conditionSql
@@ -403,14 +408,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $joinSql            = '';
         $identifierColumns  = $this->class->getIdentifierColumnNames();
-        $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias     = $this->getSQLTableAlias($this->class->getTableName());
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
-            $conditions     = array();
-            $tableAlias     = $this->getSQLTableAlias($parentClassName);
-            $parentClass    = $this->em->getClassMetadata($parentClassName);
-            $joinSql       .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
+            $conditions   = array();
+            $parentClass  = $this->em->getClassMetadata($parentClassName);
+            $tableAlias   = $this->getSQLTableAlias($parentClass->getTableName());
+            $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumns as $idColumn) {
                 $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
@@ -437,7 +442,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $columnList         = array();
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $discrColumnType    = $this->class->discriminatorColumn['type'];
-        $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias     = $this->getSQLTableAlias($this->class->getTableName());
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
 
         $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
@@ -473,16 +478,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column (DO NOT ALIAS, see AbstractEntityInheritancePersister#processSQLResult).
-        $tableAlias = ($this->class->rootEntityName == $this->class->name)
-            ? $baseTableAlias
-            : $this->getSQLTableAlias($this->class->rootEntityName);
+        $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+        $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
 
         $columnList[] = $tableAlias . '.' . $discrColumn;
 
         // sub tables
         foreach ($this->class->subClasses as $subClassName) {
             $subClass   = $this->em->getClassMetadata($subClassName);
-            $tableAlias = $this->getSQLTableAlias($subClassName);
+            $tableAlias = $this->getSQLTableAlias($subClass->getTableName());
 
             // Add subclass columns
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
@@ -584,7 +588,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->class->parentClasses as $parentClassName) {
             $conditions   = array();
             $parentClass  = $this->em->getClassMetadata($parentClassName);
-            $tableAlias   = $this->getSQLTableAlias($parentClassName);
+            $tableAlias   = $this->getSQLTableAlias($parentClass->getTableName());
             $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
 
@@ -599,7 +603,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->class->subClasses as $subClassName) {
             $conditions  = array();
             $subClass    = $this->em->getClassMetadata($subClassName);
-            $tableAlias  = $this->getSQLTableAlias($subClassName);
+            $tableAlias  = $this->getSQLTableAlias($subClass->getTableName());
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumn as $idColumn) {
