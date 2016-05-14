@@ -1474,10 +1474,18 @@ class BasicEntityPersister implements EntityPersister
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
         $fieldMapping = $class->fieldMappings[$field];
+
+//        $m = $fieldMapping['declaringClass'];
+//        $fieldMapping['declaringClass'] = $m->name;
+//
+//        var_dump($fieldMapping);
+//
+//        $fieldMapping['declaringClass'] = $m;
+
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
         $sql          = sprintf(
             '%s.%s',
-            $this->getSQLTableAlias($class->getTableName(), ($alias == 'r' ? '' : $alias)),
+            $this->getSQLTableAlias($fieldMapping['tableName'], ($alias == 'r' ? '' : $alias)),
             $this->quoteStrategy->getColumnName($field, $class, $this->platform)
         );
 
