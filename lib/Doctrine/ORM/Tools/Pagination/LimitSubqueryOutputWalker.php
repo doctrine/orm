@@ -441,18 +441,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private function generateSqlAliasReplacements() : array
     {
-        $aliasMap = $searchPatterns = $replacements = $metadataList = [];
-
-        // Generate DQL alias -> SQL table alias mapping
-        foreach (\array_keys($this->rsm->aliasMap) as $dqlAlias) {
-            $metadataList[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
-            $aliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
-        }
+        $searchPatterns = $replacements = [];
 
         // Generate search patterns for each field's path expression in the order by clause
         foreach ($this->rsm->fieldMappings as $fieldAlias => $fieldName) {
             $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
-            $class                 = $metadataList[$dqlAliasForFieldAlias];
+            $class                 = $this->queryComponents[$dqlAliasForFieldAlias]['metadata'];
 
             // If the field is from a joined child table, we won't be ordering on it.
             if ( ! isset($class->fieldMappings[$fieldName])) {
@@ -461,26 +455,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             $fieldMapping = $class->fieldMappings[$fieldName];
 
-            // Get the proper column name as will appear in the select list
-            $columnName = $this->quoteStrategy->getColumnName(
-                $fieldName,
-                $metadataList[$dqlAliasForFieldAlias],
-                $this->em->getConnection()->getDatabasePlatform()
-            );
-
-            // Get the SQL table alias for the entity and field
-            $sqlTableAliasForFieldAlias = $aliasMap[$dqlAliasForFieldAlias];
-
-            if ($fieldMapping['declaringClass']->name !== $class->name) {
-                // Field was declared in a parent class, so we need to get the proper SQL table alias
-                // for the joined parent table.
-                if ( ! $fieldMapping['declaringClass']->isMappedSuperclass) {
-                    $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($fieldMapping['declaringClass']->getTableName(), $dqlAliasForFieldAlias);
-                }
-            }
+            // Get the SQL table alias for the entity and field and the column name as will appear in the select list
+            $tableAlias = $this->getSQLTableAlias($fieldMapping['tableName'], $dqlAliasForFieldAlias);
+            $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->em->getConnection()->getDatabasePlatform());
 
             // Compose search and replace patterns
-            $searchPatterns[] = \sprintf(self::ORDER_BY_PATH_EXPRESSION, $sqlTableAliasForFieldAlias, $columnName);
+            $searchPatterns[] = \sprintf(self::ORDER_BY_PATH_EXPRESSION, $tableAlias, $columnName);
             $replacements[]   = $fieldAlias;
         }
 
