@@ -63,10 +63,20 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
         self::assertEquals(['UserParent'], $cm->parentClasses);
         self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
-        self::assertEquals(['name' => 'disc', 'type' => Type::getType('integer'), 'fieldName' => 'disc'], $cm->discriminatorColumn);
+        self::assertEquals(
+            [
+                'name'      => 'disc',
+                'type'      => Type::getType('integer'),
+                'fieldName' => 'disc',
+                'tableName' => 'CmsUser',
+            ],
+            $cm->discriminatorColumn
+        );
         self::assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
         self::assertEquals(1, count($cm->associationMappings));
+
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
+
         self::assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
         self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
         self::assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
