@@ -137,11 +137,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
-            if ( ! empty($parent->customGeneratorDefinition)) {
+            if ( ! empty($parent->customGeneratorDefinition) && empty($class->customGeneratorDefinition)) {
                 $class->setCustomGeneratorDefinition($parent->customGeneratorDefinition);
             }
 
-            if ($parent->isMappedSuperclass) {
+            if ($parent->isMappedSuperclass && empty($class->customRepositoryClassName)) {
                 $class->setCustomRepositoryClass($parent->customRepositoryClassName);
             }
         }
@@ -234,6 +234,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addDefaultDiscriminatorMap($class);
         }
 
+        $this->completeRuntimeMetadata($class, $parent);
+
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
 
@@ -241,6 +243,42 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $this->validateRuntimeMetadata($class, $parent);
+    }
+
+    /**
+     * @param ClassMetadata               $class
+     * @param ClassMetadataInterface|null $parent
+     *
+     * @return void
+     */
+    protected function completeRuntimeMetadata($class, $parent)
+    {
+        if ( ! $parent || ! $parent->isMappedSuperclass || $class->isMappedSuperclass) {
+            return;
+        }
+
+        $tableName = $class->getTableName();
+
+        // Resolve column table names
+        foreach ($class->fieldMappings as &$mapping) {
+            $mapping['tableName'] = $mapping['tableName'] ?? $tableName;
+        }
+
+        // Resolve association join column table names
+        foreach ($class->associationMappings as &$mapping) {
+            if (isset($mapping['joinColumns'])) {
+                foreach ($mapping['joinColumns'] as &$joinColumn) {
+                    $joinColumn['tableName'] = $joinColumn['tableName'] ?? $tableName;
+                }
+            }
+        }
+
+        // Resolve embedded table names
+        foreach ($class->embeddedClasses as &$mapping) {
+            if ( ! isset($mapping['tableName'])) {
+                $mapping['tableName'] = $mapping['tableName'] ?? $tableName;
+            }
+        }
     }
 
     /**
@@ -396,8 +434,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if ( ! isset($mapping['tableName']) || ! $mapping['tableName']) {
-                $mapping['tableName'] = $subClass->getTableName();
+            if ( ! isset($mapping['tableName'])) {
+                $mapping['tableName'] = ! $parentClass->isMappedSuperclass ? $parentClass->getTableName() : null;
             }
 
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
@@ -438,11 +476,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             // Resolve which table owns the join columns in a to-one mapping
             if (isset($mapping['joinColumns'])) {
                 foreach ($mapping['joinColumns'] as &$joinColumn) {
-                    if (isset($joinColumn['tableName']) && $joinColumn['tableName']) {
-                        continue;
+                    if ( ! isset($joinColumn['tableName'])) {
+                        $joinColumn['tableName'] = ! $parentClass->isMappedSuperclass ? $tableName : null;
                     }
-
-                    $joinColumn['tableName'] = $tableName;
                 }
             }
 
@@ -455,12 +491,20 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    /**
+     * Adds inherited embedded mappings to the subclass mapping.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     *
+     * @return void
+     */
     private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
-            $embeddedClass['tableName'] = ( ! isset($mapping['tableName']) && ! $parentClass->isMappedSuperclass)
-                ? $parentClass->getTableName()
-                : $subClass->getTableName();
+            if ( ! isset($embeddedClass['tableName'])) {
+                $embeddedClass['tableName'] = ! $parentClass->isMappedSuperclass ? $parentClass->getTableName() : null;
+            }
 
             if ( ! isset($embeddedClass['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $embeddedClass['inherited'] = $parentClass->name;
