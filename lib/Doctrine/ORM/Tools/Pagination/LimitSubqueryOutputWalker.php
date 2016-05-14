@@ -447,10 +447,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 // Field was declared in a parent class, so we need to get the proper SQL table alias
                 // for the joined parent table.
                 if ( ! $fieldMapping['declaringClass']->isMappedSuperclass) {
-                    $sqlTableAliasForFieldAlias = $this->getSQLTableAlias(
-                        $fieldMapping['declaringClass']->getTableName(),
-                        $dqlAliasForFieldAlias
-                    );
+                    $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($fieldMapping['declaringClass']->getTableName(), $dqlAliasForFieldAlias);
                 }
             }
 

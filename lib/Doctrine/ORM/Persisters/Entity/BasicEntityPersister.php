@@ -782,7 +782,7 @@ class BasicEntityPersister implements EntityPersister
 
             // unset the old value and set the new sql aliased value here. By definition
             // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
-            $identifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
+            $identifier[$this->getSQLTableAlias($targetClass->getTableName()) . "." . $targetKeyColumn] =
                 $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
 
             unset($identifier[$targetKeyColumn]);
@@ -1052,7 +1052,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if ($orderBy) {
-            $orderBySql = $this->getOrderBySQL($orderBy, $this->getSQLTableAlias($this->class->name));
+            $orderBySql = $this->getOrderBySQL($orderBy, $this->getSQLTableAlias($this->class->getTableName()));
         }
 
         $conditionSql = ($criteria instanceof Criteria)
@@ -1070,7 +1070,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $columnList = $this->getSelectColumnsSQL();
-        $tableAlias = $this->getSQLTableAlias($this->class->name);
+        $tableAlias = $this->getSQLTableAlias($this->class->getTableName());
         $filterSql  = $this->generateFilterConditionSQL($this->class, $tableAlias);
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
@@ -1100,7 +1100,7 @@ class BasicEntityPersister implements EntityPersister
     public function getCountSQL($criteria = [])
     {
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
-        $tableAlias = $this->getSQLTableAlias($this->class->name);
+        $tableAlias = $this->getSQLTableAlias($this->class->getTableName());
 
         $conditionSql = ($criteria instanceof Criteria)
             ? $this->getSelectConditionCriteriaSQL($criteria)
@@ -1136,7 +1136,6 @@ class BasicEntityPersister implements EntityPersister
         $orderByList = [];
 
         foreach ($orderBy as $fieldName => $orientation) {
-
             $orientation = strtoupper(trim($orientation));
 
             if ($orientation != 'ASC' && $orientation != 'DESC') {
@@ -1144,11 +1143,12 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (isset($this->class->fieldMappings[$fieldName])) {
-                $tableAlias = isset($this->class->fieldMappings[$fieldName]['inherited'])
-                    ? $this->getSQLTableAlias($this->class->fieldMappings[$fieldName]['inherited'])
-                    : $baseTableAlias;
-
+                $class         = isset($this->class->fieldMappings[$fieldName]['inherited'])
+                    ? $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]['inherited'])
+                    : $this->class;
+                $tableAlias    = $this->getSQLTableAlias($class->getTableName());
                 $columnName    = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
+
                 $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
 
                 continue;
@@ -1159,9 +1159,10 @@ class BasicEntityPersister implements EntityPersister
                     throw ORMException::invalidFindByInverseAssociation($this->class->name, $fieldName);
                 }
 
-                $tableAlias = isset($this->class->associationMappings[$fieldName]['inherited'])
-                    ? $this->getSQLTableAlias($this->class->associationMappings[$fieldName]['inherited'])
-                    : $baseTableAlias;
+                $class      = isset($this->class->associationMappings[$fieldName]['inherited'])
+                    ? $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited'])
+                    : $this->class;
+                $tableAlias = $this->getSQLTableAlias($class->getTableName());
 
                 foreach ($this->class->associationMappings[$fieldName]['joinColumns'] as $joinColumn) {
                     $columnName    = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1258,18 +1259,24 @@ class BasicEntityPersister implements EntityPersister
                 $association = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
             }
 
-            $joinTableAlias = $this->getSQLTableAlias($eagerEntity->name, $assocAlias);
+            $joinTableAlias = $this->getSQLTableAlias($eagerEntity->getTableName(), $assocAlias);
             $joinTableName  = $this->quoteStrategy->getTableName($eagerEntity, $this->platform);
 
             if ($assoc['isOwningSide']) {
-                $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
                 $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
 
+                $sourceClass = $this->em->getClassMetadata($association['sourceEntity']);
+                $targetClass = $this->em->getClassMetadata($association['targetEntity']);
+                $tableAlias  = $this->getSQLTableAlias($targetClass->getTableName(), $assocAlias);
+
                 foreach ($association['joinColumns'] as $joinColumn) {
-                    $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
-                    $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
-                    $joinCondition[] = $this->getSQLTableAlias($association['sourceEntity'])
-                                        . '.' . $sourceCol . ' = ' . $tableAlias . '.' . $targetCol;
+                    $joinCondition[] = sprintf(
+                        '%s.%s = %s.%s',
+                        $this->getSQLTableAlias($sourceClass->getTableName()),
+                        $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform),
+                        $tableAlias,
+                        $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform)
+                    );
                 }
 
                 // Add filter SQL
@@ -1278,15 +1285,19 @@ class BasicEntityPersister implements EntityPersister
                 }
 
             } else {
-
                 $this->currentPersisterContext->selectJoinSql .= ' LEFT JOIN';
 
-                foreach ($association['joinColumns'] as $joinColumn) {
-                    $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
-                    $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
+                $sourceClass = $this->em->getClassMetadata($association['sourceEntity']);
+                $targetClass = $this->em->getClassMetadata($association['targetEntity']);
 
-                    $joinCondition[] = $this->getSQLTableAlias($association['sourceEntity'], $assocAlias) . '.' . $sourceCol . ' = '
-                        . $this->getSQLTableAlias($association['targetEntity']) . '.' . $targetCol;
+                foreach ($association['joinColumns'] as $joinColumn) {
+                    $joinCondition[] = sprintf(
+                        '%s.%s = %s.%s',
+                        $this->getSQLTableAlias($sourceClass->getTableName(), $assocAlias),
+                        $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform),
+                        $this->getSQLTableAlias($targetClass->getTableName()),
+                        $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform)
+                    );
                 }
             }
 
@@ -1318,7 +1329,7 @@ class BasicEntityPersister implements EntityPersister
         $columnList    = [];
         $targetClass   = $this->em->getClassMetadata($assoc['targetEntity']);
         $isIdentifier  = isset($assoc['id']) && $assoc['id'] === true;
-        $sqlTableAlias = $this->getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias));
+        $sqlTableAlias = $this->getSQLTableAlias($class->getTableName(), ($alias == 'r' ? '' : $alias));
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1345,7 +1356,7 @@ class BasicEntityPersister implements EntityPersister
     {
         $conditions         = [];
         $association        = $manyToMany;
-        $sourceTableAlias   = $this->getSQLTableAlias($this->class->name);
+        $sourceTableAlias   = $this->getSQLTableAlias($this->class->getTableName());
 
         if ( ! $manyToMany['isOwningSide']) {
             $targetEntity   = $this->em->getClassMetadata($manyToMany['targetEntity']);
@@ -1462,12 +1473,11 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $tableAlias   = $alias == 'r' ? '' : $alias;
         $fieldMapping = $class->fieldMappings[$field];
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
         $sql          = sprintf(
             '%s.%s',
-            $this->getSQLTableAlias($class->name, $tableAlias),
+            $this->getSQLTableAlias($class->getTableName(), ($alias == 'r' ? '' : $alias)),
             $this->quoteStrategy->getColumnName($field, $class, $this->platform)
         );
 
@@ -1479,26 +1489,24 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the SQL table alias for the given class name.
      *
-     * @param string $className
+     * @param string $tableName
      * @param string $assocName
      *
      * @return string The SQL table alias.
-     *
-     * @todo Reconsider. Binding table aliases to class names is not such a good idea.
      */
-    protected function getSQLTableAlias($className, $assocName = '')
+    protected function getSQLTableAlias($tableName, $assocName = '')
     {
-        if ($assocName) {
-            $className .= '#' . $assocName;
+        if ($tableName) {
+            $tableName .= '#' . $assocName;
         }
 
-        if (isset($this->currentPersisterContext->sqlTableAliases[$className])) {
-            return $this->currentPersisterContext->sqlTableAliases[$className];
+        if (isset($this->currentPersisterContext->sqlTableAliases[$tableName])) {
+            return $this->currentPersisterContext->sqlTableAliases[$tableName];
         }
 
         $tableAlias = 't' . $this->currentPersisterContext->sqlAliasCounter++;
 
-        $this->currentPersisterContext->sqlTableAliases[$className] = $tableAlias;
+        $this->currentPersisterContext->sqlTableAliases[$tableName] = $tableAlias;
 
         return $tableAlias;
     }
@@ -1546,7 +1554,7 @@ class BasicEntityPersister implements EntityPersister
         return $this->platform->appendLockHint(
             'FROM '
             . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
-            . $this->getSQLTableAlias($this->class->name),
+            . $this->getSQLTableAlias($this->class->getTableName()),
             $lockMode
         );
     }
@@ -1653,11 +1661,13 @@ class BasicEntityPersister implements EntityPersister
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
         if (isset($this->class->fieldMappings[$field])) {
-            $className = (isset($this->class->fieldMappings[$field]['inherited']))
-                ? $this->class->fieldMappings[$field]['inherited']
-                : $this->class->name;
+            $class     = isset($this->class->fieldMappings[$field]['inherited'])
+                ? $this->em->getClassMetadata($this->class->fieldMappings[$field]['inherited'])
+                : $this->class;
+            $tableAlias = $this->getSQLTableAlias($class->getTableName());
+            $columnName = $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
 
-            return [$this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $this->class, $this->platform)];
+            return [$tableAlias . '.' . $columnName];
         }
 
         if (isset($this->class->associationMappings[$field])) {
@@ -1686,14 +1696,18 @@ class BasicEntityPersister implements EntityPersister
                     throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
                 }
 
-                $className  = (isset($association['inherited']))
-                    ? $association['inherited']
-                    : $this->class->name;
+                $class      = isset($association['inherited'])
+                    ? $this->em->getClassMetadata($association['inherited'])
+                    : $this->class;
+                $tableAlias = $this->getSQLTableAlias($class->getTableName());
 
                 foreach ($association['joinColumns'] as $joinColumn) {
-                    $columns[] = $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                    $columnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+
+                    $columns[] = $tableAlias . '.' . $columnName;
                 }
             }
+
             return $columns;
         }
 
@@ -1771,7 +1785,10 @@ class BasicEntityPersister implements EntityPersister
         $parameters  = [];
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-        $tableAlias  = $this->getSQLTableAlias(isset($owningAssoc['inherited']) ? $owningAssoc['inherited'] : $this->class->name);
+        $class       = isset($owningAssoc['inherited'])
+            ? $this->em->getClassMetadata($owningAssoc['inherited'])
+            : $this->class;
+        $tableAlias  = $this->getSQLTableAlias($class->getTableName());
 
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if ($sourceClass->containsForeignIdentifier) {
@@ -1779,12 +1796,14 @@ class BasicEntityPersister implements EntityPersister
                 $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
                 if (isset($sourceClass->associationMappings[$field])) {
+                    $targetClass = $this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity']);
+
                     $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
+                    $value = $value[$targetClass->identifier[0]];
                 }
 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
-                $parameters[]                                   = [
+                $parameters[] = [
                     'value' => $value,
                     'field' => $field,
                     'class' => $sourceClass,
@@ -1974,7 +1993,7 @@ class BasicEntityPersister implements EntityPersister
             return false;
         }
 
-        $alias = $this->getSQLTableAlias($this->class->name);
+        $alias = $this->getSQLTableAlias($this->class->getTableName());
 
         $sql = 'SELECT 1 '
              . $this->getLockTablesSql(null)
