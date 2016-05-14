@@ -403,19 +403,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause)
     {
-        $dqlAliasToSqlTableAliasMap
-            = $searchPatterns
-            = $replacements
-            = $dqlAliasToClassMap
-            = $selectListAdditions
-            = $orderByItems
-            = [];
-
-        // Generate DQL alias -> SQL table alias mapping
-        foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
-            $dqlAliasToClassMap[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
-            $dqlAliasToSqlTableAliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
-        }
+        $searchPatterns = $replacements = [];
 
         // Pattern to find table path expressions in the order by clause
         $fieldSearchPattern = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
@@ -423,7 +411,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Generate search patterns for each field's path expression in the order by clause
         foreach($this->rsm->fieldMappings as $fieldAlias => $fieldName) {
             $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
-            $class                 = $dqlAliasToClassMap[$dqlAliasForFieldAlias];
+            $class                 = $this->queryComponents[$dqlAliasForFieldAlias]['metadata'];
 
             // If the field is from a joined child table, we won't be ordering
             // on it.
@@ -433,28 +421,16 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             $fieldMapping = $class->fieldMappings[$fieldName];
 
-            // Get the proper column name as will appear in the select list
-            $columnName = $this->quoteStrategy->getColumnName(
-                $fieldName,
-                $dqlAliasToClassMap[$dqlAliasForFieldAlias],
-                $this->em->getConnection()->getDatabasePlatform()
-            );
-
-            // Get the SQL table alias for the entity and field
-            $sqlTableAliasForFieldAlias = $dqlAliasToSqlTableAliasMap[$dqlAliasForFieldAlias];
-
-            if ($fieldMapping['declaringClass']->name !== $class->name) {
-                // Field was declared in a parent class, so we need to get the proper SQL table alias
-                // for the joined parent table.
-                if ( ! $fieldMapping['declaringClass']->isMappedSuperclass) {
-                    $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($fieldMapping['declaringClass']->getTableName(), $dqlAliasForFieldAlias);
-                }
-            }
+            // Get the SQL table alias for the entity and field and the column name as will appear in the select list
+            $tableAlias = $this->getSQLTableAlias($fieldMapping['tableName'], $dqlAliasForFieldAlias);
+            $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->em->getConnection()->getDatabasePlatform());
 
             // Compose search/replace patterns
-            $searchPatterns[] = sprintf($fieldSearchPattern, $sqlTableAliasForFieldAlias, $columnName);
-            $replacements[] = $fieldAlias;
+            $searchPatterns[] = sprintf($fieldSearchPattern, $tableAlias, $columnName);
+            $replacements[]   = $fieldAlias;
         }
+
+        $orderByItems = [];
 
         foreach($orderByClause->orderByItems as $orderByItem) {
             // Walk order by item to get string representation of it
