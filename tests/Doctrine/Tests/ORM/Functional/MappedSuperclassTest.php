@@ -14,8 +14,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class MappedSuperclassTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('directorytree');
+
         parent::setUp();
     }
 
@@ -39,7 +41,7 @@ class MappedSuperclassTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $cleanFile = $this->_em->find(get_class($file), $file->getId());
+        $cleanFile = $this->_em->find(File::class, $file->getId());
 
         self::assertInstanceOf(Directory::class, $cleanFile->getParent());
         self::assertInstanceOf(Proxy::class, $cleanFile->getParent());

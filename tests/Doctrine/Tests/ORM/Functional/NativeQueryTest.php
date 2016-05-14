@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Parameter;
@@ -96,7 +96,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
-        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, Type::getType('integer'));
+        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, DBALType::getType('integer'));
 
         $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
 
