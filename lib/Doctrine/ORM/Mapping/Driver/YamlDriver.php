@@ -181,14 +181,22 @@ class YamlDriver extends FileDriver
                     $discrColumn = $element['discriminatorColumn'];
                     $metadata->setDiscriminatorColumn(
                         [
-                            'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
-                            'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null
+                            'name'             => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
+                            'type'             => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                            'length'           => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
+                            'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null,
+                            'tableName'        => $metadata->table['name'],
                         ]
                     );
                 } else {
-                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
+                    $metadata->setDiscriminatorColumn(
+                        [
+                            'name'      => 'dtype',
+                            'type'      => 'string',
+                            'length'    => 255,
+                            'tableName' => $metadata->table['name'],
+                        ]
+                    );
                 }
 
                 // Evaluate discriminatorMap
