@@ -82,21 +82,17 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
 
             // Foreign key columns
-            foreach ($subClass->associationMappings as $assoc) {
-                if ( ! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE) || isset($assoc['inherited'])) {
+            foreach ($subClass->associationMappings as $mapping) {
+                if ( ! $mapping['isOwningSide'] || ! ($mapping['type'] & ClassMetadata::TO_ONE) || isset($mapping['inherited'])) {
                     continue;
                 }
 
-                $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
-                $declaringClass = isset($assoc['inherited'])
-                    ? $this->em->getClassMetadata($assoc['inherited'])
-                    : $this->class;
+                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
-                    $targetColumn = $assoc['sourceToTargetKeyColumns'][$srcColumn];
-                    $type         = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+                foreach ($mapping['joinColumns'] as $joinColumn) {
+                    $type = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-                    $columnList[] = $this->getSelectJoinColumnSQL($srcColumn, $declaringClass, $type);
+                    $columnList[] = $this->getSelectJoinColumnSQL($joinColumn['tableName'], $joinColumn['name'], $type);
                 }
             }
         }

@@ -190,6 +190,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'name'      => 'discr',
                 'type'      => Type::getType('string'),
                 'length'    => '124',
+                'tableName' => 'CmsUser',
             ],
             $this->cm->discriminatorColumn
         );
@@ -225,6 +226,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'fieldName'      => 'name',
                 'type'           => Type::getType('string'),
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ],
             $this->cm->fieldMappings['name']
         );
@@ -244,6 +246,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'fieldName'      => 'name',
                 'type'           => Type::getType('string'),
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ],
             $this->cm->fieldMappings['name']
         );
@@ -271,6 +274,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'nullable'         => true,
                 'unique'           => true,
                 'declaringClass'   => $this->cm,
+                'tableName'        => 'CmsUser',
             ],
             $this->cm->fieldMappings['name']
         );
@@ -291,6 +295,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'id'             => true,
                 'type'           => Type::getType('integer'),
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ],
             $this->cm->fieldMappings['id']
         );
@@ -309,6 +314,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'options'        => ['unsigned' => true],
                 'columnName'     => 'state',
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ],
             $this->cm->fieldMappings['state']
         );
@@ -346,12 +352,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'fetch' => 4,
                     'joinColumns' => [
                         0 => [
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => false,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ],
                     ],
                     'type' => 2,
@@ -409,12 +416,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'fetch' => 4,
                     'joinColumns' => [
                         0 => [
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => false,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ],
                     ],
                     'type' => 2,
@@ -464,12 +472,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'fetch' => 4,
                     'joinColumns' => [
                         0 => [
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => true,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => true,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ],
                     ],
                     'type' => 1,
@@ -520,12 +529,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'id' => true,
                     'joinColumns' => [
                         0 => [
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => false,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ],
                     ],
                     'type' => 1,
@@ -720,12 +730,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'fetch' => 2,
                     'joinColumns' => [
                         0 => [
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => true,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => true,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ],
                     ],
                     'type' => 1,
