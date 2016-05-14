@@ -8,16 +8,17 @@ use Doctrine\Tests\ORM\Mapping\Dog;
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
 $metadata->setDiscriminatorColumn(
     [
-   'name' => 'dtype',
-   'type' => 'string',
-   'length' => 255,
-   'fieldName' => 'dtype',
+       'name'      => 'dtype',
+       'type'      => 'string',
+       'length'    => 255,
+       'fieldName' => 'dtype',
+       'tableName' => $metadata->getTableName(),
     ]
 );
 $metadata->setDiscriminatorMap(
     [
-   'cat' => Cat::class,
-   'dog' => Dog::class,
+        'cat' => Cat::class,
+        'dog' => Dog::class,
     ]
 );
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
@@ -32,7 +33,6 @@ $metadata->mapField(
    'unique' => false,
    'id' => true,
    'columnName' => 'id',
-    ]
-);
+  ]);
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 $metadata->setCustomGeneratorDefinition(["class" => "stdClass"]);
