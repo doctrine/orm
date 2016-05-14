@@ -124,6 +124,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         /* @var $class ClassMetadata */
         /* @var $parent ClassMetadata */
         if ($parent) {
+            if ($parent->isInheritanceTypeSingleTable()) {
+                $class->setPrimaryTable($parent->table);
+            }
+
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
             $class->setIdGeneratorType($parent->generatorType);
@@ -253,7 +257,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function completeRuntimeMetadata($class, $parent)
     {
-        if ( ! $parent || ! $parent->isMappedSuperclass || $class->isMappedSuperclass) {
+        if ( ! $parent) {
+            return;
+        }
+
+        if ( ! $parent->isMappedSuperclass) {
+            return;
+        }
+
+        if ($class->isMappedSuperclass) {
             return;
         }
 
@@ -482,7 +494,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
             }
 
-            //$subclassMapping = $mapping;
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
