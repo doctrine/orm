@@ -58,16 +58,16 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     abstract protected function getDiscriminatorColumnTableName();
 
     /**
-     * @param string        $field The field name.
-     * @param ClassMetadata $class The class that declares this field. The table this class is
-     *                             mapped to must own the column for the given field.
-     * @param Type          $type
+     * @param string $tableName The class that declares this field. The table this class is
+     *                          mapped to must own the column for the given field.
+     * @param string $field     The field name.
+     * @param Type   $type
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($field, ClassMetadata $class, $type)
+    protected function getSelectJoinColumnSQL($tableName, $field, $type)
     {
-        $tableAlias  = $this->getSQLTableAlias($class->getTableName());
+        $tableAlias  = $this->getSQLTableAlias($tableName);
         $columnAlias = $this->getSQLColumnAlias($field);
         $sql         = sprintf('%s.%s', $tableAlias, $field);
 

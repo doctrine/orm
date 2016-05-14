@@ -358,8 +358,11 @@ class ClassMetadata implements ClassMetadataInterface
      * The type of the mapped field. Can be one of Doctrine's mapping types or a
      * custom mapping type.
      *
-     * - <b>columnName</b> (string, optional)
-     * The column name. Optional. Defaults to the field name.
+     * - <b>tableName</b> (string)
+     * The table name. Defaults to the entity table name.
+     *
+     * - <b>columnName</b> (string)
+     * The column name. Defaults to the field name.
      *
      * - <b>length</b> (integer, optional)
      * The database length of the column. Optional. Default value taken from
@@ -372,6 +375,9 @@ class ClassMetadata implements ClassMetadataInterface
      * - <b>nullable</b> (boolean, optional)
      * Whether the column is nullable. Defaults to FALSE.
      *
+     * - <b>unique</b> (boolean, optional, schema-only)
+     * Whether a unique constraint should be generated for the column. Defaults to FALSE.
+     *
      * - <b>columnDefinition</b> (string, optional, schema-only)
      * The SQL fragment that is used when generating the DDL for the column.
      *
@@ -380,9 +386,6 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
-     *
-     * - <b>'unique'</b> (string, optional, schema-only)
-     * Whether a unique constraint should be generated for the column.
      *
      * @var array
      */
@@ -1360,6 +1363,7 @@ class ClassMetadata implements ClassMetadataInterface
     protected function validateAndCompleteFieldMapping(array &$mapping)
     {
         $mapping['declaringClass'] = $this;
+        $mapping['tableName']      = $this->getTableName();
 
         // Check mandatory fields
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
@@ -1583,6 +1587,8 @@ class ClassMetadata implements ClassMetadataInterface
                         $uniqueConstraintColumns[] = $joinColumn['name'];
                     }
                 }
+
+                $joinColumn['tableName'] = $this->getTableName();
 
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name);
@@ -2355,6 +2361,7 @@ class ClassMetadata implements ClassMetadataInterface
         if (isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateAssociationMapping($this->name, $mapping['fieldName']);
         }
+
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -2727,33 +2734,39 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function setDiscriminatorColumn($columnDef)
     {
-        if ($columnDef !== null) {
-            if ( ! isset($columnDef['name'])) {
-                throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name);
-            }
-
-            if (isset($this->fieldNames[$columnDef['name']])) {
-                throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
-            }
-
-            if ( ! isset($columnDef['fieldName'])) {
-                $columnDef['fieldName'] = $columnDef['name'];
-            }
-
-            $type = isset($columnDef['type'])
-                ? $columnDef['type']
-                : 'string';
-
-            if ( ! ($type instanceof Type)) {
-                $columnDef['type'] = Type::getType($type);
-            }
-
-            if (in_array($columnDef['type']->getName(), array("boolean", "array", "object", "datetime", "time", "date"))) {
-                throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']->getName());
-            }
-
-            $this->discriminatorColumn = $columnDef;
+        if ($columnDef === null) {
+            return;
         }
+
+        if ( ! isset($columnDef['name'])) {
+            throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name);
+        }
+
+        if (isset($this->fieldNames[$columnDef['name']])) {
+            throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
+        }
+
+        $columnDef['tableName'] = isset($columnDef['tableName'])
+            ? $columnDef['tableName']
+            : $this->table['name'];
+
+        if ( ! isset($columnDef['fieldName'])) {
+            $columnDef['fieldName'] = $columnDef['name'];
+        }
+
+        $type = isset($columnDef['type'])
+            ? $columnDef['type']
+            : 'string';
+
+        if ( ! ($type instanceof Type)) {
+            $columnDef['type'] = Type::getType($type);
+        }
+
+        if (in_array($columnDef['type']->getName(), array("boolean", "array", "object", "datetime", "time", "date"))) {
+            throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']->getName());
+        }
+
+        $this->discriminatorColumn = $columnDef;
     }
 
     /**
