@@ -1145,7 +1145,7 @@ class SqlWalker implements TreeWalker
             case ($joinDeclaration instanceof AST\RangeVariableDeclaration):
                 $class      = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
                 $dqlAlias   = $joinDeclaration->aliasIdentificationVariable;
-                $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
+                $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
                 $conditions = [];
 
                 if ($join->conditionalExpression) {
@@ -1780,7 +1780,7 @@ class SqlWalker implements TreeWalker
             $filterClauses = [];
             foreach ($this->rootAliases as $dqlAlias) {
                 $class = $this->queryComponents[$dqlAlias]['metadata'];
-                $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
+                $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
                 if ($filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
                     $filterClauses[] = $filterExpr;
