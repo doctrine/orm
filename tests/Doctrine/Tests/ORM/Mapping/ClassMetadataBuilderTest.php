@@ -200,6 +200,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'name'      => 'discr',
                 'type'      => Type::getType('string'),
                 'length'    => '124',
+                'tableName' => 'CmsUser',
             ),
             $this->cm->discriminatorColumn
         );
@@ -210,7 +211,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         self::assertIsFluent($this->builder->addDiscriminatorMapClass('test', 'Doctrine\Tests\Models\CMS\CmsUser'));
         self::assertIsFluent($this->builder->addDiscriminatorMapClass('test2', 'Doctrine\Tests\Models\CMS\CmsGroup'));
 
-        self::assertEquals(array('test' => 'Doctrine\Tests\Models\CMS\CmsUser', 'test2' => 'Doctrine\Tests\Models\CMS\CmsGroup'), $this->cm->discriminatorMap);
+        self::assertEquals(
+            array(
+                'test' => 'Doctrine\Tests\Models\CMS\CmsUser',
+                'test2' => 'Doctrine\Tests\Models\CMS\CmsGroup'
+            ),
+            $this->cm->discriminatorMap
+        );
         self::assertEquals('test', $this->cm->discriminatorValue);
     }
 
@@ -235,6 +242,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'fieldName'      => 'name',
                 'type'           => Type::getType('string'),
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ),
             $this->cm->fieldMappings['name']
         );
@@ -254,6 +262,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'fieldName'      => 'name',
                 'type'           => Type::getType('string'),
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ),
             $this->cm->fieldMappings['name']
         );
@@ -281,6 +290,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'nullable'         => true,
                 'unique'           => true,
                 'declaringClass'   => $this->cm,
+                'tableName'        => 'CmsUser',
             ),
             $this->cm->fieldMappings['name']
         );
@@ -301,6 +311,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'id'             => true,
                 'type'           => Type::getType('integer'),
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ),
             $this->cm->fieldMappings['id']
         );
@@ -319,6 +330,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'options'        => array('unsigned' => true),
                 'columnName'     => 'state',
                 'declaringClass' => $this->cm,
+                'tableName'      => 'CmsUser',
             ),
             $this->cm->fieldMappings['state']
         );
@@ -356,12 +368,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'fetch' => 4,
                     'joinColumns' => array (
                         0 => array (
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => false,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ),
                     ),
                     'type' => 2,
@@ -419,12 +432,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'fetch' => 4,
                     'joinColumns' => array(
                         0 => array(
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => false,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ),
                     ),
                     'type' => 2,
@@ -480,12 +494,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'fetch' => 4,
                     'joinColumns' => array (
                         0 => array (
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => true,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => true,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ),
                     ),
                     'type' => 1,
@@ -542,12 +557,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'id' => true,
                     'joinColumns' => array(
                         0 => array(
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => false,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ),
                     ),
                     'type' => 1,
@@ -707,8 +723,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'isOwningSide' => false,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                     'fetch' => 2,
-                    'cascade' => array(
-                    ),
+                    'cascade' => array(),
                     'isCascadeRemove' => false,
                     'isCascadePersist' => false,
                     'isCascadeRefresh' => false,
@@ -753,12 +768,13 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'fetch' => 2,
                     'joinColumns' => array (
                         0 => array (
-                            'name' => 'group_id',
+                            'name'                 => 'group_id',
                             'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => true,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                            'nullable'             => true,
+                            'unique'               => true,
+                            'onDelete'             => 'CASCADE',
+                            'columnDefinition'     => NULL,
+                            'tableName'            => 'CmsUser',
                         ),
                     ),
                     'type' => 1,

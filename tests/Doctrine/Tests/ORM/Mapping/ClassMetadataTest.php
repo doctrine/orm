@@ -47,13 +47,30 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         self::assertInstanceOf('ReflectionClass', $cm->reflClass);
         self::assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         self::assertEquals('UserParent', $cm->rootEntityName);
-        self::assertEquals(array('Doctrine\Tests\Models\CMS\One', 'Doctrine\Tests\Models\CMS\Two', 'Doctrine\Tests\Models\CMS\Three'), $cm->subClasses);
+        self::assertEquals(
+            array(
+                'Doctrine\Tests\Models\CMS\One',
+                'Doctrine\Tests\Models\CMS\Two',
+                'Doctrine\Tests\Models\CMS\Three'
+            ),
+            $cm->subClasses
+        );
         self::assertEquals(array('UserParent'), $cm->parentClasses);
         self::assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->customRepositoryClassName);
-        self::assertEquals(array('name' => 'disc', 'type' => Type::getType('integer'), 'fieldName' => 'disc'), $cm->discriminatorColumn);
+        self::assertEquals(
+            array(
+                'name'      => 'disc',
+                'type'      => Type::getType('integer'),
+                'fieldName' => 'disc',
+                'tableName' => 'CmsUser',
+            ),
+            $cm->discriminatorColumn
+        );
         self::assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
         self::assertEquals(1, count($cm->associationMappings));
+
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
+
         self::assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
         self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
         self::assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $oneOneMapping['targetEntity']);

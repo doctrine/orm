@@ -237,7 +237,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 constant(sprintf('%s::INHERITANCE_TYPE_%s', ClassMetadata::class, $inheritanceTypeAnnot->value))
             );
 
-            if ($metadata->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorColumn::class])) {
                     $discrColumnAnnot = $classAnnotations[Annotation\DiscriminatorColumn::class];
@@ -247,9 +247,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         'type'             => $discrColumnAnnot->type ?: 'string',
                         'length'           => $discrColumnAnnot->length ?: 255,
                         'columnDefinition' => $discrColumnAnnot->columnDefinition,
+                        'tableName'        => $metadata->table['name'],
                     ));
                 } else {
-                    $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
+                    $metadata->setDiscriminatorColumn(array(
+                        'name'      => 'dtype',
+                        'type'      => 'string',
+                        'length'    => 255,
+                        'tableName' => $metadata->table['name'],
+                    ));
                 }
 
                 // Evaluate DiscriminatorMap annotation

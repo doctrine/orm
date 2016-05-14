@@ -166,13 +166,19 @@ class XmlDriver extends FileDriver
                     $discrColumn = $xmlRoot->{'discriminator-column'};
 
                     $metadata->setDiscriminatorColumn(array(
-                        'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                        'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                        'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
-                        'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null
+                        'name'             => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
+                        'type'             => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                        'length'           => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
+                        'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
+                        'tableName'        => $metadata->table['name'],
                     ));
                 } else {
-                    $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
+                    $metadata->setDiscriminatorColumn(array(
+                        'name'      => 'dtype',
+                        'type'      => 'string',
+                        'length'    => 255,
+                        'tableName' => $metadata->table['name'],
+                    ));
                 }
 
                 // Evaluate <discriminator-map...>
