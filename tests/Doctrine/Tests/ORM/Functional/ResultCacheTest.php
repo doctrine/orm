@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -146,7 +146,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $cache = new ArrayCache();
         $rsm   = new ResultSetMapping();
 
-        $rsm->addScalarResult('id', 'u', Type::getType('integer'));
+        $rsm->addScalarResult('id', 'u', DBALType::getType('integer'));
 
         $query = $this->_em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
 
