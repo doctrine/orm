@@ -186,7 +186,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertArrayHasKey('id', $metadata->fieldMappings);
         self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
         self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        self::assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
+        self::assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
 
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
