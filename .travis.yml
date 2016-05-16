@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 5.6
   - 7.0
   - nightly
   - hhvm
@@ -13,7 +12,6 @@ env:
 
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
-  - if [[ $TRAVIS_PHP_VERSION != '7.0' && $TRAVIS_PHP_VERSION != 'hhvm' ]]; then phpenv config-rm xdebug.ini; fi
   - composer self-update
   - composer install --prefer-source
 
@@ -27,10 +25,6 @@ after_script:
 
 matrix:
   include:
-    - php: 5.6
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
     - php: 7.0
       env: DB=mariadb
       addons:
@@ -39,11 +33,6 @@ matrix:
       env: DB=mariadb
       addons:
         mariadb: 5.5
-
-    - php: 5.6
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
     - php: 7.0
       env: DB=mariadb
       addons:
