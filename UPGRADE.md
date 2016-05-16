@@ -1,3 +1,60 @@
+# Upgrade to 3.0
+
+## BC Break: Removed ``ClassMetadata::getTypeOfColumn()``
+
+Better alternative is to use ``PersisterHelper::getTypeOfColumn()``
+
+## BC Break: Removed ``ClassMetadata::$fieldMappings[$fieldName]['requireSQLConversion']``
+
+ORM Type SQL conversion is now always being applied, minimizing the risks of erorr prone code in ORM internals
+
+## BC Break: Removed ``ClassMetadata::$columnNames``
+
+If your code relies on this property, you should search/replace from this:
+
+    $metadata->columnNames[$fieldName]
+
+To this:
+
+    $metadata->fieldMappings[$fieldName]['columnName']
+
+## BC Break: Renamed ``ClassMetadata::setIdentifierValues()`` to ``ClassMetadata::assignIdentifier()``
+
+Provides a more meaningful name to method.
+
+## BC Break: Removed ``ClassMetadata::$namespace``
+
+The namespace property in ClassMetadata was only used when using association 
+classes in the same namespace and it was used to speedup ClassMetadata 
+creation purposes. Namespace could be easily inferred by asking ``\ReflectionClass``
+which was already stored internally.
+
+## BC Break: Removed ``Doctrine\ORM\Mapping\ClassMetadataInfo``
+
+There was no reason to keep a blank class. All references are now pointing
+to ``Doctrine\ORM\Mapping\ClassMetadata``. 
+
+## BC Break: Annotations classes namespace change
+
+All Annotations classes got moved from ``Doctrine\ORM\Mapping`` into a more 
+pertinent namespace ``Doctrine\ORM\Annotation``. This change was done to add
+room for Metadata namespace refactoring.
+
+## Minor BC break: Mappings now store DBAL\Type instances instead of strings
+
+This lead to manual ``ResultSetMapping`` building instances to also hold Types in meta results.
+Example:
+
+    $rsm->addMetaResult('e ', 'e_discr', 'discr', false, Type::getType('string'));
+
+## Enhancement: Mappings now store their declaring ClassMetadata
+
+Every field, association or embedded now contains a pointer to its declaring ClassMetadata.
+
+## Enhancement: Mappings now store their corresponding table name
+
+Every field, association join column or inline embedded field/association holds a reference to its owning table name.
+
 # Upgrade to 2.5
 
 ## Minor BC BREAK: query cache key time is now a float
