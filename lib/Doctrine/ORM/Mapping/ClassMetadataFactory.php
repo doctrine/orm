@@ -166,7 +166,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->completeIdGeneratorMapping($class);
         }
 
-        if ( ! $class->isMappedSuperclass) {
+        /*if ( ! $class->isMappedSuperclass) {
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
                 if (isset($embeddableClass['inherited'])) {
                     continue;
@@ -198,7 +198,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 unset($this->embeddablesActiveNesting[$class->name]);
             }
-        }
+        }*/
 
         if ($parent) {
             if ($parent->isInheritanceTypeSingleTable()) {
@@ -286,11 +286,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         // Resolve embedded table names
-        foreach ($class->embeddedClasses as &$mapping) {
+        /*foreach ($class->embeddedClasses as &$mapping) {
             if ( ! isset($mapping['tableName'])) {
                 $mapping['tableName'] = $mapping['tableName'] ?? $tableName;
             }
-        }
+        }*/
     }
 
     /**
@@ -512,7 +512,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
+        /*foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
             if ( ! isset($embeddedClass['tableName'])) {
                 $embeddedClass['tableName'] = ! $parentClass->isMappedSuperclass ? $parentClass->getTableName() : null;
             }
@@ -522,7 +522,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $subClass->embeddedClasses[$field] = $embeddedClass;
-        }
+        }*/
     }
 
     /**
@@ -534,7 +534,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
     {
-        foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
+        /*foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
             if (isset($embeddableClass['inherited'])) {
                 continue;
             }
@@ -552,7 +552,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     'originalField' => $embeddableClass['originalField'] ?: $property,
                 ]
             );
-        }
+        }*/
     }
 
     /**
