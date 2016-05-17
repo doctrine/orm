@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 /**
+ * @group embedded
  * @group DDC-93
  */
 class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase

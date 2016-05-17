@@ -395,6 +395,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group embedded
      * @group DDC-3305
      */
     public function testRejectsEmbeddableWithoutValidClassName()
@@ -420,6 +421,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group embedded
      * @group DDC-4006
      */
     public function testInheritsIdGeneratorMappingFromEmbeddable()

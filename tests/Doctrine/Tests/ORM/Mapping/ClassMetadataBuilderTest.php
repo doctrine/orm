@@ -44,6 +44,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->builder = new ClassMetadataBuilder($this->cm);
     }
 
+    /**
+     * @group embedded
+     */
     public function testSetMappedSuperClass()
     {
         self::assertIsFluent($this->builder->setMappedSuperClass());
@@ -51,6 +54,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         self::assertFalse($this->cm->isEmbeddedClass);
     }
 
+    /**
+     * @group embedded
+     */
     public function testSetEmbedable()
     {
         self::assertIsFluent($this->builder->setEmbeddable());
@@ -58,6 +64,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         self::assertFalse($this->cm->isMappedSuperclass);
     }
 
+    /**
+     * @group embedded
+     */
     public function testAddEmbeddedWithOnlyRequiredParams()
     {
         self::assertIsFluent($this->builder->addEmbedded('name', 'Doctrine\Tests\Models\ValueObjects\Name'));
@@ -76,6 +85,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group embedded
+     */
     public function testAddEmbeddedWithPrefix()
     {
         self::assertIsFluent($this->builder->addEmbedded('name', 'Doctrine\Tests\Models\ValueObjects\Name', 'nm_'));
@@ -94,6 +106,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group embedded
+     */
     public function testCreateEmbeddedWithoutExtraParams()
     {
         $embeddedBuilder = $this->builder->createEmbedded('name', 'Doctrine\Tests\Models\ValueObjects\Name');
@@ -114,6 +129,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group embedded
+     */
     public function testCreateEmbeddedWithColumnPrefix()
     {
         $embeddedBuilder = $this->builder->createEmbedded('name', 'Doctrine\Tests\Models\ValueObjects\Name');
