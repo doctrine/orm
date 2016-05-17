@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+/**
+ * @group embedded
+ */
 class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     function testNestedEmbeddablesAreHydratedWithProperClass()

@@ -631,9 +631,9 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (isset($this->class->embeddedClasses[$field])) {
+            /*if (isset($this->class->embeddedClasses[$field])) {
                 continue;
-            }
+            }*/
 
             $newVal = $change[1];
 
@@ -1454,9 +1454,9 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (isset($this->class->embeddedClasses[$name])) {
+            /*if (isset($this->class->embeddedClasses[$name])) {
                 continue;
-            }
+            }*/
 
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
@@ -1811,14 +1811,10 @@ class BasicEntityPersister implements EntityPersister
         $parameters  = [];
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-<<<<<<< HEAD
-        $tableAlias  = $this->getSQLTableAlias($owningAssoc['inherited'] ?? $this->class->name);
-=======
         $class       = isset($owningAssoc['inherited'])
             ? $this->em->getClassMetadata($owningAssoc['inherited'])
             : $this->class;
         $tableAlias  = $this->getSQLTableAlias($class->getTableName());
->>>>>>> Switched getSQLTableAlias to use table names instead of class names
 
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if ($sourceClass->containsForeignIdentifier) {
