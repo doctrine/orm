@@ -8,6 +8,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
+ * @group embedded
  * @group DDC-93
  */
 class ValueObjectsTest extends OrmFunctionalTestCase
