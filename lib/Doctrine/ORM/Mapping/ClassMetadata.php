@@ -346,6 +346,11 @@ class ClassMetadata implements ClassMetadataInterface
     public $generatorType = self::GENERATOR_TYPE_NONE;
 
     /**
+     * @var array
+     */
+    public $properties = [];
+
+    /**
      * READ-ONLY: The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
@@ -2313,6 +2318,49 @@ class ClassMetadata implements ClassMetadataInterface
             || $type == self::INHERITANCE_TYPE_SINGLE_TABLE
             || $type == self::INHERITANCE_TYPE_JOINED
             || $type == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+    }
+
+    /**
+     * @param string $fieldName
+     * @param Type   $type
+     * @param array  $mapping
+     *
+     * @throws MappingException
+     */
+    public function addProperty($fieldName, Type $type, array $mapping = [])
+    {
+        $property = new FieldMetadata($this, $fieldName, $type);
+
+        assert(! isset($this->properties[$fieldName]), MappingException::duplicateProperty($property));
+
+        $property->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
+        $property->setColumnName($mapping['columnName'] ?? $this->namingStrategy->propertyToColumnName($fieldName, $this->name));
+        $property->setPrimaryKey(isset($mapping['id']) && $mapping['id'] === true);
+
+        // Check for already declared column
+        if (isset($this->fieldNames[$property->getColumnName()]) ||
+            ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $property->getColumnName())) {
+            throw MappingException::duplicateColumnName($this->name, $property->getColumnName());
+        }
+
+        $this->fieldNames[$property->getColumnName()] = $fieldName;
+
+        // Complete id mapping
+        if (isset($mapping['id']) && $mapping['id'] === true) {
+            assert($this->versionField !== $fieldName, MappingException::cannotVersionIdField($this->name, $fieldName));
+            assert(! $type->canRequireSQLConversion(), MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property));
+
+            if ( ! in_array($fieldName, $this->identifier)) {
+                $this->identifier[] = $fieldName;
+            }
+
+            // Check for composite key
+            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
+                $this->isIdentifierComposite = true;
+            }
+        }
+
+        $this->properties[$fieldName] = $property;
     }
 
     /**

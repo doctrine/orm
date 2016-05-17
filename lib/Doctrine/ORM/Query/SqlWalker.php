@@ -1297,13 +1297,9 @@ class SqlWalker implements TreeWalker
                 $fieldMapping = $class->fieldMappings[$fieldName];
                 $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
                 $resultAlias  = $selectExpression->fieldIdentificationVariable ?: $fieldName;
-                $tableName    = ($class->isInheritanceTypeJoined())
-                    ? $this->em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName)
-                    : $class->getTableName();
-
                 $col          = sprintf(
                     '%s.%s',
-                    $this->getSQLTableAlias($tableName, $dqlAlias),
+                    $this->getSQLTableAlias($fieldMapping['tableName'], $dqlAlias),
                     $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
                 );
 

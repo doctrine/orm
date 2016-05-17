@@ -282,11 +282,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testBooleanValuesForOptionIsSetCorrectly(ClassMetadata $class)
     {
-        $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
-        $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
+        $idOptions = $class->getProperty('id')->getOptions();
+        $nameOptions = $class->getProperty('name')->getOptions();
 
-        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['fixed']);
-        $this->assertFalse($class->fieldMappings['name']['options']['fixed']);
+        self::assertInternalType('bool', $idOptions['unsigned']);
+        self::assertFalse($idOptions['unsigned']);
+        self::assertInternalType('bool', $nameOptions['fixed']);
+        self::assertFalse($nameOptions['fixed']);
 
         return $class;
     }
