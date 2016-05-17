@@ -682,8 +682,9 @@ class BasicEntityPersister implements EntityPersister
                 $targetColumn = $joinColumn['referencedColumnName'];
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
-                $this->quotedColumns[$sourceColumn]  = $quotedColumn;
-                $this->columnTypes[$sourceColumn]    = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+                $this->quotedColumns[$sourceColumn] = $quotedColumn;
+                $this->columnTypes[$sourceColumn]   = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+
                 $result[$owningTable][$sourceColumn] = $newValId
                     ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
                     : null;
@@ -1810,14 +1811,10 @@ class BasicEntityPersister implements EntityPersister
         $parameters  = [];
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-<<<<<<< HEAD
-        $tableAlias  = $this->getSQLTableAlias($owningAssoc['inherited'] ?? $this->class->name);
-=======
         $class       = isset($owningAssoc['inherited'])
             ? $this->em->getClassMetadata($owningAssoc['inherited'])
             : $this->class;
         $tableAlias  = $this->getSQLTableAlias($class->getTableName());
->>>>>>> Switched getSQLTableAlias to use table names instead of class names
 
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if ($sourceClass->containsForeignIdentifier) {
