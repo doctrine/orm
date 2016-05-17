@@ -727,7 +727,7 @@ public function __construct(<params>)
 
         $fieldMappings = array_merge($requiredFields, $optionalFields);
 
-        foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
+        /*foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
             $paramType = '\\' . ltrim($embeddedClass['class'], '\\');
             $paramVariable = '$' . $fieldName;
 
@@ -735,12 +735,12 @@ public function __construct(<params>)
             $paramVariables[] = $paramVariable;
             $params[] = $paramType . ' ' . $paramVariable;
             $fields[] = '$this->' . $fieldName . ' = ' . $paramVariable . ';';
-        }
+        }*/
 
         foreach ($fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
+            /*if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
-            }
+            }*/
 
             $fieldType  = $fieldMapping['type']->getName();
             $mappedType = $this->getType($fieldType);
@@ -1171,9 +1171,9 @@ public function __construct(<params>)
         $methods = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
+            /*if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
-            }
+            }*/
 
             $fieldType = $fieldMapping['type']->getName();
             $nullableField = $this->nullableFieldExpression($fieldMapping);
@@ -1189,7 +1189,7 @@ public function __construct(<params>)
             }
         }
 
-        foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
+        /*foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
                 continue;
             }
@@ -1203,7 +1203,7 @@ public function __construct(<params>)
             if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $embeddedClass['class'])) {
                 $methods[] = $code;
             }
-        }
+        }*/
 
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping['type'] & ClassMetadata::TO_ONE) {
@@ -1312,11 +1312,11 @@ public function __construct(<params>)
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
-                $metadata->isInheritedField($fieldMapping['fieldName']) ||
+                $metadata->isInheritedField($fieldMapping['fieldName']) /*||
                 (
                     isset($fieldMapping['declaredField']) &&
                     isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-                )
+                )*/
             ) {
                 continue;
             }
@@ -1338,14 +1338,14 @@ public function __construct(<params>)
     {
         $lines = [];
 
-        foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
+        /*foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
             if (isset($embeddedClass['declaredField']) || $this->hasProperty($fieldName, $metadata)) {
                 continue;
             }
 
             $lines[] = $this->generateEmbeddedPropertyDocBlock($embeddedClass);
             $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldName . ";\n";
-        }
+        }*/
 
         return implode("\n", $lines);
     }
