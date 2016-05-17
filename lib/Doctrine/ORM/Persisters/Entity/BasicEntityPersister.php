@@ -612,9 +612,9 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (isset($this->class->embeddedClasses[$field])) {
+            /*if (isset($this->class->embeddedClasses[$field])) {
                 continue;
-            }
+            }*/
 
             $newVal = $change[1];
 
@@ -1433,9 +1433,9 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (isset($this->class->embeddedClasses[$name])) {
+            /*if (isset($this->class->embeddedClasses[$name])) {
                 continue;
-            }
+            }*/
 
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];

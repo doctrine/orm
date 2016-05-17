@@ -64,6 +64,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         self::assertTrue($class->associationMappings['article']['id']);
     }
 
+    /**
+     * @group embedded
+     */
     public function testEmbeddableMapping()
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\ValueObjects\Name');
@@ -72,9 +75,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     }
 
     /**
+     * @group embedded
      * @group DDC-3293
      * @group DDC-3477
-     * @group 1238
+     * @group DDC-1238
      */
     public function testEmbeddedMappingsWithUseColumnPrefix()
     {
@@ -93,9 +97,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     }
 
     /**
+     * @group embedded
      * @group DDC-3293
      * @group DDC-3477
-     * @group 1238
+     * @group DDC-1238
      */
     public function testEmbeddedMappingsWithFalseUseColumnPrefix()
     {
@@ -112,6 +117,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         );
     }
 
+    /**
+     * @group embedded
+     */
     public function testEmbeddedMapping()
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\ValueObjects\Person');

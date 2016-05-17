@@ -281,7 +281,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var array
      */
-    public $embeddedClasses = array();
+    //public $embeddedClasses = array();
 
     /**
      * READ-ONLY: The named queries allowed to be called directly from Repository.
@@ -801,7 +801,7 @@ class ClassMetadata implements ClassMetadataInterface
             'associationMappings',
             'fieldMappings',
             'fieldNames',
-            'embeddedClasses',
+            //'embeddedClasses',
             'identifier',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
@@ -912,7 +912,7 @@ class ClassMetadata implements ClassMetadataInterface
 
         $parentReflFields = array();
 
-        foreach ($this->embeddedClasses as $property => $embeddedClass) {
+        /*foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
                 $parentReflFields[$property] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$embeddedClass['declaredField']],
@@ -928,17 +928,17 @@ class ClassMetadata implements ClassMetadataInterface
 
             $parentReflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
             $this->reflFields[$property] = $reflService->getAccessibleProperty($this->name, $property);
-        }
+        }*/
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
+            /*if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
                     $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
                     $mapping['originalClass']
                 );
                 continue;
-            }
+            }*/
 
             $this->reflFields[$field] = $reflService->getAccessibleProperty($mapping['declaringClass']->name, $field);
         }
@@ -2254,7 +2254,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritedEmbeddedClass($fieldName)
     {
-        return isset($this->embeddedClasses[$fieldName]['inherited']);
+        //return isset($this->embeddedClasses[$fieldName]['inherited']);
     }
 
     /**
@@ -3329,7 +3329,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function mapEmbedded(array $mapping)
     {
-        $this->assertFieldNotMapped($mapping['fieldName']);
+        /*$this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = array(
             'class'          => $this->fullyQualifiedClassName($mapping['class']),
@@ -3337,7 +3337,7 @@ class ClassMetadata implements ClassMetadataInterface
             'declaredField'  => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
             'originalField'  => isset($mapping['originalField']) ? $mapping['originalField'] : null,
             'declaringClass' => $this,
-        );
+        );*/
     }
 
     /**
@@ -3348,7 +3348,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function inlineEmbeddable($property, ClassMetadata $embeddable)
     {
-        foreach ($embeddable->fieldMappings as $fieldName => $fieldMapping) {
+        /*foreach ($embeddable->fieldMappings as $fieldName => $fieldMapping) {
             $fieldMapping['fieldName']     = $property . "." . $fieldName;
             $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
             $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldName;
@@ -3368,7 +3368,7 @@ class ClassMetadata implements ClassMetadataInterface
             }
 
             $this->mapField($fieldMapping);
-        }
+        }*/
     }
 
     /**
@@ -3377,9 +3377,9 @@ class ClassMetadata implements ClassMetadataInterface
      */
     private function assertFieldNotMapped($fieldName)
     {
-        if (isset($this->fieldMappings[$fieldName]) ||
-            isset($this->associationMappings[$fieldName]) ||
-            isset($this->embeddedClasses[$fieldName])) {
+        if (isset($this->fieldMappings[$fieldName])
+            || isset($this->associationMappings[$fieldName])
+            /*|| isset($this->embeddedClasses[$fieldName])*/) {
             throw MappingException::duplicateFieldMapping($this->name, $fieldName);
         }
     }

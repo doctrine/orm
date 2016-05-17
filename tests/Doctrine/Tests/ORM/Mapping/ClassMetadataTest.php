@@ -1159,6 +1159,9 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(__NAMESPACE__ . '\\MyArrayObjectEntity', $classMetadata->newInstance());
     }
 
+    /**
+     * @group embedded
+     */
     public function testWakeupReflectionWithEmbeddableAndStaticReflectionService()
     {
         $classMetadata = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
