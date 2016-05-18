@@ -371,6 +371,20 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param PropertyMetadata $propertyMetadata
+     *
+     * @return MappingException
+     */
+    public static function duplicateProperty(PropertyMetadata $propertyMetadata)
+    {
+        return new self(sprintf(
+            'Property "%s" in "%s" was already declared, but it must be declared only once',
+            $propertyMetadata->getFieldName(),
+            $propertyMetadata->getDeclaringClass()->getName()
+        ));
+    }
+
+    /**
      * @param string $entity    The entity's name.
      * @param string $fieldName The name of the field that was already declared.
      *
@@ -550,6 +564,23 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function cannotVersionIdField($className, $fieldName)
     {
         return new self("Setting Id field '$fieldName' as versionable in entity class '$className' is not supported.");
+    }
+
+    /**
+     * @param PropertyMetadata $propertyMetadata
+     *
+     * @return MappingException
+     */
+    public static function sqlConversionNotAllowedForPrimaryKeyProperties(PropertyMetadata $propertyMetadata)
+    {
+        return new self(sprintf(
+            'It is not possible to set id field "%s" to type "%s" in entity class "%s". ' .
+            'The type "%s" requires conversion SQL which is not allowed for identifiers.',
+            $propertyMetadata->getFieldName(),
+            $propertyMetadata->getTypeName(),
+            $propertyMetadata->getDeclaringClass()->getName(),
+            $propertyMetadata->getTypeName()
+        ));
     }
 
     /**

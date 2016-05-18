@@ -2364,23 +2364,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Adds a mapped field to the class.
-     *
-     * @param array $mapping The field mapping.
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    public function mapField(array $mapping)
-    {
-        $this->validateAndCompleteFieldMapping($mapping);
-        $this->assertFieldNotMapped($mapping['fieldName']);
-
-        $this->fieldMappings[$mapping['fieldName']] = $mapping;
-    }
-
-    /**
      * INTERNAL:
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.

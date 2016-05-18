@@ -302,4 +302,23 @@ class FieldMetadata implements PropertyMetadata
     {
         return $this->isUnique;
     }
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return [
+            'tableName'        => $this->tableName,
+            'columnName'       => $this->columnName,
+            'columnDefinition' => $this->columnDefinition,
+            'length'           => $this->length,
+            'scale'            => $this->scale,
+            'precision'        => $this->precision,
+            'options'          => $this->options,
+            'id'               => $this->isPrimaryKey,
+            'nullable'         => $this->isNullable,
+            'unique'           => $this->isUnique,
+        ];
+    }
 }
