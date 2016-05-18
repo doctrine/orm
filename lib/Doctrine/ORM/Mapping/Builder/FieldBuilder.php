@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM\Mapping\Builder;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Field Builder
@@ -33,6 +34,16 @@ class FieldBuilder
      * @var ClassMetadataBuilder
      */
     private $builder;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var Type
+     */
+    private $type;
 
     /**
      * @var array
@@ -61,12 +72,14 @@ class FieldBuilder
 
     /**
      * @param ClassMetadataBuilder $builder
-     * @param array                $mapping
+     * @param string               $name
+     * @param Type                 $type
      */
-    public function __construct(ClassMetadataBuilder $builder, array $mapping)
+    public function __construct(ClassMetadataBuilder $builder, $name, Type $type)
     {
         $this->builder = $builder;
-        $this->mapping = $mapping;
+        $this->name    = $name;
+        $this->type    = $type;
     }
 
     /**
@@ -282,7 +295,8 @@ class FieldBuilder
             $cm->setVersionMapping($this->mapping);
         }
 
-        $cm->mapField($this->mapping);
+        $cm->addProperty($this->name, $this->type, $this->mapping);
+        
         if ($this->sequenceDef) {
             $cm->setSequenceGeneratorDefinition($this->sequenceDef);
         }

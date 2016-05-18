@@ -1,15 +1,16 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 
-$metadata->mapField(array(
-   'id'                 => true,
-   'fieldName'          => 'id',
+/* @var $metadata ClassMetadata */
+$metadata->addProperty('id', Type::getType('string'), array(
+   'id' => true,
 ));
 
 $metadata->setDiscriminatorColumn(array(
-    'name'              => "dtype",
-    'columnDefinition'  => "ENUM('ONE','TWO')"
+    'name'             => "dtype",
+    'columnDefinition' => "ENUM('ONE','TWO')"
 ));
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

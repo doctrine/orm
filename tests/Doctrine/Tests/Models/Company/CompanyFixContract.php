@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Models\Company;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * @Entity
@@ -30,10 +31,8 @@ class CompanyFixContract extends CompanyContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
-            'type'      => 'integer',
-            'name'      => 'fixPrice',
-            'fieldName' => 'fixPrice',
+        $metadata->addProperty('fixPrice', Type::getType('integer'), array(
+            'columnName' => 'fixPrice',
         ));
     }
 }

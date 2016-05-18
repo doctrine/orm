@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * @MappedSuperclass
@@ -79,19 +80,14 @@ class DDC3579User
         return $this->groups;
     }
 
-    public static function loadMetadata($metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->addProperty('id', Type::getType('integer'), array(
            'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
            'columnName' => 'user_id',
-           'length'     => 150,
         ));
 
-        $metadata->mapField(array(
-            'fieldName' => 'name',
-            'type'      => 'string',
+        $metadata->addProperty('name', Type::getType('string'), array(
             'columnName'=> 'user_name',
             'nullable'  => true,
             'unique'    => false,

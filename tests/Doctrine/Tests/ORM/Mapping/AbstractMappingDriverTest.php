@@ -1116,38 +1116,44 @@ class User
     {
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
-           'name' => 'cms_users',
-           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
-          ));
+            'name'    => 'cms_users',
+            'options' => array(
+                'foo' => 'bar',
+                'baz' => array('key' => 'val')
+            ),
+        ));
+
         $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
+
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
-        $metadata->mapField(array(
-           'id' => true,
-           'fieldName' => 'id',
-           'type' => 'integer',
-           'columnName' => 'id',
-           'options' => array('foo' => 'bar'),
-          ));
-        $metadata->mapField(array(
-           'fieldName' => 'name',
-           'type' => 'string',
-           'length' => 50,
-           'unique' => true,
-           'nullable' => true,
-           'columnName' => 'name',
-           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
-          ));
-        $metadata->mapField(array(
-           'fieldName' => 'email',
-           'type' => 'string',
-           'columnName' => 'user_email',
-           'columnDefinition' => 'CHAR(32) NOT NULL',
-          ));
+
+        $metadata->addProperty('id', Type::getType('integer'), array(
+            'id'      => true,
+            'options' => array('foo' => 'bar'),
+        ));
+
+        $metadata->addProperty('name', Type::getType('string'), array(
+            'length'   => 50,
+            'unique'   => true,
+            'nullable' => true,
+            'options'  => array(
+                'foo' => 'bar',
+                'baz' => array('key' => 'val')
+            ),
+        ));
+
+        $metadata->addProperty('email', Type::getType('string'), array(
+            'columnName'       => 'user_email',
+            'columnDefinition' => 'CHAR(32) NOT NULL',
+        ));
+
         $mapping = array('fieldName' => 'version', 'type' => 'integer');
+
         $metadata->setVersionMapping($mapping);
-        $metadata->mapField($mapping);
+        $metadata->addProperty('version', Type::getType('integer'));
+        
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(
            'fieldName' => 'address',
@@ -1322,15 +1328,13 @@ class DDC1170Entity
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
-           'id'                 => true,
-           'fieldName'          => 'id',
-           'columnDefinition'   => 'INT unsigned NOT NULL',
+        $metadata->addProperty('id', Type::getType('integer'), array(
+           'id'               => true,
+           'columnDefinition' => 'INT unsigned NOT NULL',
         ));
 
-        $metadata->mapField(array(
-            'fieldName'         => 'value',
-            'columnDefinition'  => 'VARCHAR(255) NOT NULL'
+        $metadata->addProperty('value', Type::getType('string'), array(
+            'columnDefinition' => 'VARCHAR(255) NOT NULL',
         ));
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1355,9 +1359,8 @@ class DDC807Entity
 
    public static function loadMetadata(ClassMetadata $metadata)
     {
-         $metadata->mapField(array(
-           'id'                 => true,
-           'fieldName'          => 'id',
+         $metadata->addProperty('id', Type::getType('string'), array(
+           'id' => true,
         ));
 
         $metadata->setDiscriminatorColumn(array(
@@ -1392,21 +1395,21 @@ class Comment
     public static function loadMetadata(ClassMetadata $metadata)
     {
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+
         $metadata->setPrimaryTable(array(
             'indexes' => array(
-                array('columns' => array('content'), 'flags' => array('fulltext'), 'options' => array('where' => 'content IS NOT NULL'))
+                array(
+                    'columns' => array('content'),
+                    'flags'   => array('fulltext'),
+                    'options' => array('where' => 'content IS NOT NULL')
+                ),
             )
         ));
 
-        $metadata->mapField(array(
-            'fieldName' => 'content',
-            'type' => 'text',
-            'scale' => 0,
-            'length' => NULL,
-            'unique' => false,
+        $metadata->addProperty('content', Type::getType('text'), array(
+            'length'   => NULL,
+            'unique'   => false,
             'nullable' => false,
-            'precision' => 0,
-            'columnName' => 'content',
         ));
     }
 }
@@ -1430,9 +1433,8 @@ class SingleTableEntityNoDiscriminatorColumnMapping
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->addProperty('id', Type::getType('string'), array(
             'id' => true,
-            'fieldName' => 'id',
         ));
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1462,9 +1464,9 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
+        // @todo: String != Integer and this should not work
+        $metadata->addProperty('id', Type::getType('string'), array(
             'id' => true,
-            'fieldName' => 'id',
         ));
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1473,5 +1475,6 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
 
 class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1
     extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}
+
 class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2
     extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}

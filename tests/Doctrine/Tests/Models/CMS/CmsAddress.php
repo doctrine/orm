@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Models\CMS;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * CmsAddress
@@ -128,20 +129,16 @@ class CmsAddress
            'name' => 'company_person',
         ));
 
-        $metadata->mapField(array (
-            'id'        => true,
-            'fieldName' => 'id',
-            'type'      => 'integer',
+        $metadata->addProperty('id', Type::getType('integer'), array (
+            'id' => true,
         ));
 
-        $metadata->mapField(array (
-            'fieldName' => 'zip',
-            'length'    => 50,
+        $metadata->addProperty('zip', Type::getType('string'), array (
+            'length' => 50,
         ));
 
-        $metadata->mapField(array (
-            'fieldName' => 'city',
-            'length'    => 50,
+        $metadata->addProperty('city', Type::getType('string'), array (
+            'length' => 50,
         ));
 
         $metadata->mapOneToOne(array(

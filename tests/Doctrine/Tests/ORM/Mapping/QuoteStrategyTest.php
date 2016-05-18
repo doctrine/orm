@@ -59,8 +59,8 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->mapField(array('fieldName' => 'name', 'columnName' => '`name`'));
-        $cm->mapField(array('fieldName' => 'id', 'columnName' => 'id'));
+        $cm->addProperty('name', Type::getType('string'), array('columnName' => '`name`'));
+        $cm->addProperty('id', Type::getType('string'));
         
         self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
         self::assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
@@ -112,16 +112,14 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
 
-        $cm1->mapField(array(
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => '`id`',
+        $cm1->addProperty('id', Type::getType('string'), array(
+            'id'         => true,
+            'columnName' => '`id`',
         ));
 
-        $cm2->mapField(array(
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => 'id',
+        $cm2->addProperty('id', Type::getType('string'), array(
+            'id'         => true,
+            'columnName' => 'id',
         ));
 
         self::assertEquals(array('"id"'), $this->strategy->getIdentifierColumnNames($cm1, $this->platform));

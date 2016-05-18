@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 
@@ -25,12 +26,8 @@ class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
     public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = array(
-            'fieldName' => 'about',
-            'type' => 'string',
-            'length' => 255
-        );
-        $classMetadata->mapField($field);
+
+        $classMetadata->addProperty('about', Type::getType('string'), ['length' => 255]);
     }
 }
 

@@ -20,9 +20,10 @@
 
 namespace Doctrine\Tests\Models\DDC889;
 
+use Doctrine\DBAL\Types\Type;
+
 class DDC889Class extends DDC889SuperClass
 {
-
     /**
      * @Id
      * @Column(type="integer")
@@ -33,11 +34,8 @@ class DDC889Class extends DDC889SuperClass
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
-           'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
-           'columnName' => 'id',
+        $metadata->addProperty('id', Type::getType('integer'), array(
+            'id' => true,
         ));
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);

@@ -1,17 +1,15 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 
-$metadata->mapField(array(
+/* @var $metadata ClassMetadata */
+$metadata->addProperty('id', Type::getType('integer'), array(
    'id'         => true,
-   'fieldName'  => 'id',
-   'type'       => 'integer',
    'columnName' => 'user_id',
-   'length'     => 150,
 ));
-$metadata->mapField(array(
-    'fieldName' => 'name',
-    'type'      => 'string',
+
+$metadata->addProperty('name', Type::getType('string'), array(
     'columnName'=> 'user_name',
     'nullable'  => true,
     'unique'    => false,
