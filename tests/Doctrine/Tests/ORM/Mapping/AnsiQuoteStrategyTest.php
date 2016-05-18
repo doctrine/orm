@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmTestCase;
@@ -48,8 +49,9 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $class->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
-        $class->mapField(array('fieldName' => 'id', 'columnName' => 'id', 'id' => true));
+
+        $class->addProperty('id', Type::getType('string'), array('id' => true));
+        $class->addProperty('name', Type::getType('string'));
 
         self::assertEquals('id' ,$this->strategy->getColumnName('id', $class, $this->platform));
         self::assertEquals('name' ,$this->strategy->getColumnName('name', $class, $this->platform));
@@ -84,10 +86,8 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
 
-        $class->mapField(array(
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => 'id',
+        $class->addProperty('id', Type::getType('integer'), array(
+            'id' => true,
         ));
 
         self::assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($class, $this->platform));

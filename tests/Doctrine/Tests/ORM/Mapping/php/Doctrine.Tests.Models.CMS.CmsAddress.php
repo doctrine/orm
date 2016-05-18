@@ -1,23 +1,23 @@
 <?php
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
+
+/* @var $metadata ClassMetadata */
 $metadata->setPrimaryTable(array(
    'name' => 'company_person',
 ));
 
-$metadata->mapField(array (
-    'id'        => true,
-    'fieldName' => 'id',
-    'type'      => 'integer',
+$metadata->addProperty('id', Type::getType('integer'), array(
+    'id' => true,
 ));
 
-$metadata->mapField(array (
-    'fieldName' => 'zip',
-    'length'    => 50,
+$metadata->addProperty('zip', Type::getType('string'), array(
+    'length' => 50,
 ));
 
-$metadata->mapField(array (
-    'fieldName' => 'city',
-    'length'    => 50,
+$metadata->addProperty('city', Type::getType('string'), array(
+    'length' => 50,
 ));
 
 $metadata->mapOneToOne(array(

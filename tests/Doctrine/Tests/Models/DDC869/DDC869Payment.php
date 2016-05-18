@@ -19,6 +19,7 @@
  */
 
 namespace Doctrine\Tests\Models\DDC869;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * @MappedSuperclass(repositoryClass = "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository")
@@ -39,17 +40,14 @@ class DDC869Payment
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField(array(
-           'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
-           'columnName' => 'id',
+        $metadata->addProperty('id', Type::getType('integer'), array(
+           'id' => true,
         ));
-        $metadata->mapField(array(
-           'fieldName'  => 'value',
-           'type'       => 'float',
-        ));
+
+        $metadata->addProperty('value', Type::getType('float'));
+
         $metadata->isMappedSuperclass = true;
+
         $metadata->setCustomRepositoryClass("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
     }

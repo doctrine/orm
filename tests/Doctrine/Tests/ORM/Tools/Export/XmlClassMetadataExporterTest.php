@@ -21,6 +21,7 @@
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
@@ -48,10 +49,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->mapField(array(
-            "fieldName" => 'id',
-            "type" => 'integer',
-            "columnName" => 'id',
+        $metadata->addProperty('id', Type::getType('integer'), array(
             "id" => true,
         ));
 
@@ -90,11 +88,9 @@ XML;
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->mapField(array(
-            "fieldName" => 'myField',
-            "type" => 'string',
+        $metadata->addProperty('myField', Type::getType('string'), array(
             "columnName" => 'my_field',
-            "options" => array(
+            "options"    => array(
                 "default" => "default_string",
                 "comment" => "The comment for the field",
             ),

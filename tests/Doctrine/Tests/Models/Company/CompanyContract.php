@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Models\Company;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * @Entity
@@ -140,16 +141,12 @@ abstract class CompanyContract
             'tableName' => $metadata->getTableName(),
         ));
 
-        $metadata->mapField(array(
-            'id'        => true,
-            'name'      => 'id',
-            'fieldName' => 'id',
+        $metadata->addProperty('id', Type::getType('integer'), array(
+            'id' => true,
         ));
 
-        $metadata->mapField(array(
-            'type'      => 'boolean',
-            'name'      => 'completed',
-            'fieldName' => 'completed',
+        $metadata->addProperty('completed', Type::getType('boolean'), array(
+            'columnName' => 'completed',
         ));
 
         $metadata->setDiscriminatorMap(array(
