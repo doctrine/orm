@@ -1,20 +1,22 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->mapField(
+/* @var $metadata ClassMetadata */
+$metadata->addProperty(
+    'id',
+    Type::getType('string'),
     [
-   'id'                 => true,
-   'fieldName'          => 'id',
-   'columnDefinition'   => 'INT unsigned NOT NULL',
+        'id'               => true,
+        'columnDefinition' => 'INT unsigned NOT NULL',
     ]
 );
 
-$metadata->mapField(
-    [
-    'fieldName'         => 'value',
-    'columnDefinition'  => 'VARCHAR(255) NOT NULL'
-    ]
+$metadata->addProperty(
+    'value',
+    Type::getType('string'),
+    ['columnDefinition' => 'VARCHAR(255) NOT NULL']
 );
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

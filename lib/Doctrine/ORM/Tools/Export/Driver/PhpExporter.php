@@ -82,15 +82,13 @@ class PhpExporter extends AbstractExporter
             }
         }
 
-        $lines = array_merge($lines, $this->processEntityListeners($metadata));
-
-        foreach ($metadata->fieldMappings as $fieldMapping) {
-            // We need to override the value we'll blindly var_export() later
-            $fieldMapping['type'] = $fieldMapping['type']->getName();
-
-            unset($fieldMapping['declaringClass']);
-
-            $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
+        foreach ($metadata->properties as $property) {
+            $lines[] = sprintf(
+                '$metadata->addProperty("%s", Type::getType("%s"), %s)',
+                $property->getFieldName(),
+                $property->getType()->getName(),
+                $this->_varExport($property->getMapping())
+            );
         }
 
         if ( ! $metadata->isIdentifierComposite && $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {

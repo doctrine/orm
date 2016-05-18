@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -308,12 +309,9 @@ class ClassMetadataBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function addField($name, $type, array $mapping = [])
+    public function addProperty($name, $type, array $mapping = [])
     {
-        $mapping['fieldName'] = $name;
-        $mapping['type'] = $type;
-
-        $this->cm->mapField($mapping);
+        $this->cm->addProperty($name, Type::getType($type), $mapping);
 
         return $this;
     }
@@ -328,13 +326,7 @@ class ClassMetadataBuilder
      */
     public function createField($name, $type)
     {
-        return new FieldBuilder(
-            $this,
-            [
-                'fieldName' => $name,
-                'type'      => $type
-            ]
-        );
+        return new FieldBuilder($this, $name, Type::getType($type));
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
@@ -29,14 +30,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->mapField(
-            [
-            "fieldName" => 'id',
-            "type" => 'integer',
-            "columnName" => 'id',
-            "id" => true,
-            ]
-        );
+        $metadata->addProperty('id', Type::getType('integer'), ["id" => true]);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
         $metadata->setSequenceGeneratorDefinition(
@@ -75,15 +69,15 @@ XML;
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'myField',
+            Type::getType('string'),
             [
-            "fieldName" => 'myField',
-            "type" => 'string',
-            "columnName" => 'my_field',
-            "options" => [
-                "default" => "default_string",
-                "comment" => "The comment for the field",
-            ],
+                "columnName" => 'my_field',
+                "options"    => [
+                    "default" => "default_string",
+                    "comment" => "The comment for the field",
+                ],
             ]
         );
 

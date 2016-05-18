@@ -1,39 +1,29 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 
+/* @var $metadata ClassMetadata */
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
 $metadata->setTableName('company_contracts');
+
 $metadata->setDiscriminatorColumn(
     [
-    'name' => 'discr',
-    'type' => 'string',
-    ]
-);
-
-$metadata->mapField(
-    [
-    'id'        => true,
-    'name'      => 'id',
-    'fieldName' => 'id',
-    ]
-);
-
-$metadata->mapField(
-    [
-    'type'      => 'boolean',
-    'name'      => 'completed',
-    'fieldName' => 'completed',
+        'name' => 'discr',
+        'type' => 'string',
     ]
 );
 
 $metadata->setDiscriminatorMap(
     [
-    "fix"       => "CompanyFixContract",
-    "flexible"  => "CompanyFlexContract",
-    "flexultra" => "CompanyFlexUltraContract"
+        "fix"       => "CompanyFixContract",
+        "flexible"  => "CompanyFlexContract",
+        "flexultra" => "CompanyFlexUltraContract"
     ]
 );
+
+$metadata->addProperty('id', Type::getType('string'), ['id' => true]);
+$metadata->addProperty('completed', Type::getType('boolean'));
 
 $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

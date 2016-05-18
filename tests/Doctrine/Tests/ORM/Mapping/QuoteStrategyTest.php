@@ -65,8 +65,8 @@ class QuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata(CmsUser::class);
-        $cm->mapField(['fieldName' => 'name', 'columnName' => '`name`']);
-        $cm->mapField(['fieldName' => 'id', 'columnName' => 'id']);
+        $cm->addProperty('name', Type::getType('string'), ['columnName' => '`name`']);
+        $cm->addProperty('id', Type::getType('string'));
 
         self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
         self::assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
@@ -120,19 +120,21 @@ class QuoteStrategyTest extends OrmTestCase
         $cm1 = $this->createClassMetadata(CmsAddress::class);
         $cm2 = $this->createClassMetadata(CmsAddress::class);
 
-        $cm1->mapField(
+        $cm1->addProperty(
+            'id',
+            Type::getType('string'),
             [
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => '`id`',
+                'id'         => true,
+                'columnName' => '`id`',
             ]
         );
 
-        $cm2->mapField(
+        $cm2->addProperty(
+            'id',
+            Type::getType('string'),
             [
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => 'id',
+                'id'         => true,
+                'columnName' => 'id',
             ]
         );
 
