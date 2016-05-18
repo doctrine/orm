@@ -1,57 +1,59 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->mapField(
+/* @var $metadata ClassMetadata */
+$metadata->addProperty(
+    'id',
+    Type::getType('integer'),
     [
-   'id'         => true,
-   'fieldName'  => 'id',
-   'type'       => 'integer',
-   'columnName' => 'user_id',
-   'length'     => 150,
+       'id'         => true,
+       'columnName' => 'user_id',
     ]
 );
-$metadata->mapField(
+
+$metadata->addProperty(
+    'name',
+    Type::getType('string'),
     [
-    'fieldName' => 'name',
-    'type'      => 'string',
-    'columnName'=> 'user_name',
-    'nullable'  => true,
-    'unique'    => false,
-    'length'    => 250,
+        'columnName'=> 'user_name',
+        'nullable'  => true,
+        'unique'    => false,
+        'length'    => 250,
     ]
 );
 
 $metadata->mapManyToOne(
     [
-   'fieldName'      => 'address',
-   'targetEntity'   => 'DDC964Address',
-   'cascade'        => ['persist','merge'],
-   'joinColumn'     => ['name'=>'address_id', 'referencedColumnMame'=>'id'],
+       'fieldName'    => 'address',
+       'targetEntity' => 'DDC964Address',
+       'cascade'      => ['persist','merge'],
+       'joinColumn'   => ['name'=>'address_id', 'referencedColumnMame'=>'id'],
     ]
 );
 
 $metadata->mapManyToMany(
     [
-   'fieldName'      => 'groups',
-   'targetEntity'   => 'DDC964Group',
-   'inversedBy'     => 'users',
-   'cascade'        => ['persist','merge','detach'],
-   'joinTable'      => [
-        'name'          => 'ddc964_users_groups',
-        'joinColumns'   => [
-            [
-            'name'=>'user_id',
-            'referencedColumnName'=>'id',
-            ]
-        ],
-        'inverseJoinColumns'=> [
-            [
-            'name'=>'group_id',
-            'referencedColumnName'=>'id',
+        'fieldName'    => 'groups',
+        'targetEntity' => 'DDC964Group',
+        'inversedBy'   => 'users',
+        'cascade'      => ['persist','merge','detach'],
+        'joinTable'    => [
+            'name'        => 'ddc964_users_groups',
+            'joinColumns' => [
+                [
+                    'name'                 => 'user_id',
+                    'referencedColumnName' => 'id',
+                ]
+            ],
+            'inverseJoinColumns' => [
+                [
+                    'name'                 => 'group_id',
+                    'referencedColumnName' => 'id',
+                ]
             ]
         ]
-   ]
     ]
 );
 

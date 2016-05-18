@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Mapping\Cat;
 use Doctrine\Tests\ORM\Mapping\Dog;
@@ -15,24 +16,27 @@ $metadata->setDiscriminatorColumn(
        'tableName' => $metadata->getTableName(),
     ]
 );
+
 $metadata->setDiscriminatorMap(
     [
         'cat' => Cat::class,
         'dog' => Dog::class,
     ]
 );
+
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
-$metadata->mapField(
+
+$metadata->addProperty(
+    'id',
+    Type::getType('string'),
     [
-   'fieldName' => 'id',
-   'type' => 'string',
-   'length' => NULL,
-   'precision' => 0,
-   'scale' => 0,
-   'nullable' => false,
-   'unique' => false,
-   'id' => true,
-   'columnName' => 'id',
-  ]);
+        'length'   => NULL,
+        'nullable' => false,
+        'unique'   => false,
+        'id'       => true,
+    ]
+);
+
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+
 $metadata->setCustomGeneratorDefinition(["class" => "stdClass"]);

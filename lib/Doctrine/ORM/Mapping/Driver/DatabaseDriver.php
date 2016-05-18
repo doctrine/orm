@@ -351,31 +351,28 @@ class DatabaseDriver implements MappingDriver
             $allForeignKeys = array_merge($allForeignKeys, $foreignKey->getLocalColumns());
         }
 
-        $ids           = [];
-        $fieldMappings = [];
+        $ids = [];
 
         foreach ($columns as $column) {
             if (in_array($column->getName(), $allForeignKeys)) {
                 continue;
             }
 
+            $fieldName    = $this->getFieldNameForColumn($tableName, $column->getName(), false);
             $fieldMapping = $this->buildFieldMapping($tableName, $column);
 
             if ($primaryKeys && in_array($column->getName(), $primaryKeys)) {
                 $fieldMapping['id'] = true;
+
                 $ids[] = $fieldMapping;
             }
 
-            $fieldMappings[] = $fieldMapping;
+            $metadata->addProperty($fieldName, $column->getType(), $fieldMapping);
         }
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) == 1) {
             $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-        }
-
-        foreach ($fieldMappings as $fieldMapping) {
-            $metadata->mapField($fieldMapping);
         }
     }
 
@@ -390,14 +387,13 @@ class DatabaseDriver implements MappingDriver
     private function buildFieldMapping($tableName, Column $column)
     {
         $fieldMapping = [
-            'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
             'columnName' => $column->getName(),
             'type'       => $column->getType()->getName(),
             'nullable'   => ( ! $column->getNotnull()),
         ];
 
         // Type specific elements
-        switch ($fieldMapping['type']) {
+        switch ($column->getType()->getName()) {
             case Type::TARRAY:
             case Type::BLOB:
             case Type::GUID:

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
@@ -268,45 +269,45 @@ class YamlDriver extends FileDriver
         }
 
         $associationIds = [];
+
         if (isset($element['id'])) {
             // Evaluate identifier settings
             foreach ($element['id'] as $name => $idElement) {
                 if (isset($idElement['associationKey']) && $idElement['associationKey'] == true) {
                     $associationIds[$name] = true;
+
                     continue;
                 }
 
-                $mapping = [
-                    'id' => true,
-                    'fieldName' => $name
-                ];
-
-                if (isset($idElement['type'])) {
-                    $mapping['type'] = $idElement['type'];
-                }
+                $fieldName    = $name;
+                $fieldType    = Type::getType($idElement['type'] ?? 'string');
+                $fieldMapping = ['id' => true];
 
                 if (isset($idElement['column'])) {
-                    $mapping['columnName'] = $idElement['column'];
+                    $fieldMapping['columnName'] = $idElement['column'];
                 }
 
                 if (isset($idElement['length'])) {
-                    $mapping['length'] = $idElement['length'];
+                    $fieldMapping['length'] = $idElement['length'];
                 }
 
                 if (isset($idElement['columnDefinition'])) {
-                    $mapping['columnDefinition'] = $idElement['columnDefinition'];
+                    $fieldMapping['columnDefinition'] = $idElement['columnDefinition'];
                 }
 
                 if (isset($idElement['options'])) {
-                    $mapping['options'] = $idElement['options'];
+                    $fieldMapping['options'] = $idElement['options'];
                 }
 
-                $metadata->mapField($mapping);
+                $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
                 if (isset($idElement['generator'])) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                        . strtoupper($idElement['generator']['strategy'])));
+                    $generatorStrategy = strtoupper($idElement['generator']['strategy']);
+                    $generatorType     = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatorStrategy);
+
+                    $metadata->setIdGeneratorType($generatorType);
                 }
+
                 // Check for SequenceGenerator/TableGenerator definition
                 if (isset($idElement['sequenceGenerator'])) {
                     $metadata->setSequenceGeneratorDefinition($idElement['sequenceGenerator']);
@@ -325,24 +326,26 @@ class YamlDriver extends FileDriver
 
         // Evaluate fields
         if (isset($element['fields'])) {
-            foreach ($element['fields'] as $name => $fieldMapping) {
+            foreach ($element['fields'] as $fieldName => $fieldMapping) {
+                $params  = explode('(', $fieldMapping['type']);
+                $mapping = $this->columnToArray($fieldMapping);
 
-                $mapping = $this->columnToArray($name, $fieldMapping);
-
-                if (isset($fieldMapping['id'])) {
-                    $mapping['id'] = true;
+                if (isset($mapping['id'])) {
                     if (isset($fieldMapping['generator']['strategy'])) {
-                        $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                            . strtoupper($fieldMapping['generator']['strategy'])));
+                        $generatorStrategy = strtoupper($fieldMapping['generator']['strategy']);
+                        $generatorType     = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatorStrategy);
+
+                        $metadata->setIdGeneratorType($generatorType);
                     }
                 }
 
                 if (isset($mapping['version'])) {
                     $metadata->setVersionMapping($mapping);
+
                     unset($mapping['version']);
                 }
 
-                $metadata->mapField($mapping);
+                $metadata->addProperty($fieldName, Type::getType(trim($params[0])), $mapping);
             }
         }
 
@@ -353,6 +356,7 @@ class YamlDriver extends FileDriver
                     'class' => $embeddedMapping['class'],
                     'columnPrefix' => isset($embeddedMapping['columnPrefix']) ? $embeddedMapping['columnPrefix'] : null,
                 ];
+
                 $metadata->mapEmbedded($mapping);
             }
         }
@@ -727,21 +731,20 @@ class YamlDriver extends FileDriver
      *
      * @return  array
      */
-    private function columnToArray($fieldName, $column)
+    private function columnToArray($column)
     {
-        $mapping = [
-            'fieldName' => $fieldName
-        ];
+        $mapping = [];
 
         if (isset($column['type'])) {
             $params = explode('(', $column['type']);
 
-            $column['type']  = trim($params[0]);
-            $mapping['type'] = $column['type'];
-
             if (isset($params[1])) {
                 $column['length'] = (integer) substr($params[1], 0, strlen($params[1]) - 1);
             }
+        }
+
+        if (isset($column['length'])) {
+            $mapping['length'] = (integer) $column['length'];
         }
 
         if (isset($column['column'])) {
@@ -766,6 +769,10 @@ class YamlDriver extends FileDriver
 
         if (isset($column['options'])) {
             $mapping['options'] = $column['options'];
+        }
+
+        if (isset($column['id']) && $column['id']) {
+            $mapping['id'] = $column['id'];
         }
 
         if (isset($column['nullable'])) {

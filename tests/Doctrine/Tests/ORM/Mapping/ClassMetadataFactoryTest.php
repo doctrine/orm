@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -264,21 +265,26 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cm1 = new ClassMetadata(TestEntity1::class);
         $cm1->initializeReflection(new RuntimeReflectionService());
         $cm1->setPrimaryTable(['name' => '`group`']);
+
         // Add a mapped field
-        $cm1->mapField(['fieldName' => 'name', 'type' => 'string']);
+        $cm1->addProperty('id', Type::getType('integer'), ['id' => true]);
+
         // Add a mapped field
-        $cm1->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+        $cm1->addProperty('name', Type::getType('string'));
+
         // and a mapped association
         $cm1->mapOneToOne(['fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this']);
+
         // and an association on the owning side
         $joinColumns = [
             ['name' => 'other_id', 'referencedColumnName' => 'id']
         ];
-        $cm1->mapOneToOne(
-            ['fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns]
-        );
+
+        $cm1->mapOneToOne(['fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns]);
+
         // and an id generator type
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+
         return $cm1;
     }
 

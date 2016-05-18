@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
@@ -330,7 +331,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     throw MappingException::propertyTypeIsRequired($className, $property->getName());
                 }
 
-                $mapping = $this->columnToArray($property->getName(), $columnAnnot);
+                $mapping = $this->columnToArray($columnAnnot);
 
                 if ($idAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Id::class)) {
                     $mapping['id'] = true;
@@ -346,7 +347,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $metadata->setVersionMapping($mapping);
                 }
 
-                $metadata->mapField($mapping);
+                $metadata->addProperty($property->getName(), Type::getType($columnAnnot->type), $mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
                 if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Annotation\SequenceGenerator::class)) {
@@ -500,7 +501,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $attributeOverridesAnnot = $classAnnotations[Annotation\AttributeOverrides::class];
 
             foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
-                $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
+                $attributeOverride = $this->columnToArray($attributeOverrideAnnot->column);
 
                 $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);
             }
@@ -646,11 +647,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @return array
      */
-    private function columnToArray($fieldName, Annotation\Column $column)
+    private function columnToArray(Annotation\Column $column)
     {
         $mapping = [
-            'fieldName' => $fieldName,
-            'type'      => $column->type,
             'scale'     => $column->scale,
             'length'    => $column->length,
             'unique'    => $column->unique,
