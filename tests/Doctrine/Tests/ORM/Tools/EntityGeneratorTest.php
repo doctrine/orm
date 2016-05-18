@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Tools;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -67,41 +68,34 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->table['uniqueConstraints']['name_uniq'] = ['columns' => ['name']];
         $metadata->table['indexes']['status_idx'] = ['columns' => ['status']];
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'name',
+            Type::getType('string'),
             [
-                'fieldName' => 'name',
-                'type'      => 'string',
-                'length'    => null,
-                'scale'     => 0,
-                'precision' => 0,
-                'nullable'  => false,
-                'unique'    => false,
+                'length'   => null,
+                'nullable' => false,
+                'unique'   => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'status',
+            Type::getType('string'),
             [
-                'fieldName' => 'status',
-                'type'      => 'string',
-                'length'    => null,
-                'scale'     => 0,
-                'precision' => 0,
-                'nullable'  => false,
-                'unique'    => false,
-                'options'   => ['default' => 'published'],
+                'length'   => null,
+                'nullable' => false,
+                'unique'   => false,
+                'options'  => ['default' => 'published'],
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'id',
+            Type::getType('integer'),
             [
-                'fieldName' => 'id',
-                'type'      => 'integer',
-                'id'        => true,
-                'length'    => null,
-                'scale'     => 0,
-                'precision' => 0,
-                'nullable'  => false,
-                'unique'    => false,
+                'id'       => true,
+                'nullable' => false,
+                'unique'   => false,
             ]
         );
 
@@ -160,9 +154,9 @@ class EntityGeneratorTest extends OrmTestCase
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
             $metadata->mapEmbedded(
                 [
-                'fieldName'    => $fieldName,
-                'class'        => $embeddedClass->name,
-                'columnPrefix' => null,
+                    'fieldName'    => $fieldName,
+                    'class'        => $embeddedClass->name,
+                    'columnPrefix' => null,
                 ]
             );
         }
@@ -177,22 +171,22 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata = new ClassMetadata($this->_namespace . '\EntityType');
         $metadata->table['name'] = 'entity_type';
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'id',
+            Type::getType('integer'),
             [
-                'fieldName' => 'id',
-                'type'      => 'integer',
                 'id'        => true,
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            $field['fieldName'],
+            Type::getType($field['dbType']),
             [
-            'fieldName' => $field['fieldName'],
-            'type'      => $field['dbType'],
-            'nullable'  => false,
-            'unique'    => false,
+                'nullable'  => false,
+                'unique'    => false,
             ]
         );
 
@@ -211,46 +205,46 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata = new ClassMetadata($this->_namespace . '\EntityGeneratorIsbn');
         $metadata->isEmbeddedClass = true;
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'prefix',
+            Type::getType('integer'),
             [
-                'fieldName' => 'prefix',
-                'type'      => 'integer',
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'groupNumber',
+            Type::getType('integer'),
             [
-                'fieldName' => 'groupNumber',
-                'type'      => 'integer',
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'publisherNumber',
+            Type::getType('integer'),
             [
-                'fieldName' => 'publisherNumber',
-                'type'      => 'integer',
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'titleNumber',
+            Type::getType('integer'),
             [
-                'fieldName' => 'titleNumber',
-                'type'      => 'integer',
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'checkDigit',
+            Type::getType('integer'),
             [
-                'fieldName' => 'checkDigit',
-                'type'      => 'integer',
                 'nullable'  => false,
                 'unique'    => false,
             ]
@@ -280,37 +274,37 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->isEmbeddedClass = true;
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'field1',
+            Type::getType('integer'),
             [
-                'fieldName' => 'field1',
-                'type'      => 'integer',
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'field2',
+            Type::getType('integer'),
             [
-                'fieldName' => 'field2',
-                'type'      => 'integer',
                 'nullable'  => true,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'field3',
+            Type::getType('datetime'),
             [
-                'fieldName' => 'field3',
-                'type'      => 'datetime',
                 'nullable'  => false,
                 'unique'    => false,
             ]
         );
 
-        $metadata->mapField(
+        $metadata->addProperty(
+            'field4',
+            Type::getType('datetime'),
             [
-                'fieldName' => 'field4',
-                'type'      => 'datetime',
                 'nullable'  => true,
                 'unique'    => false,
             ]
@@ -418,7 +412,7 @@ class EntityGeneratorTest extends OrmTestCase
     {
         $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
 
-        $metadata->mapField(['fieldName' => 'test', 'type' => 'string']);
+        $metadata->addProperty('test', Type::getType('string'));
 
         $testEmbeddableMetadata = $this->generateTestEmbeddableFixture();
 
@@ -661,8 +655,10 @@ class EntityGeneratorTest extends OrmTestCase
     {
         $metadata = new ClassMetadata($this->_namespace . '\DDC1784Entity');
 
-        $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+        $metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
+
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+
         $metadata->setSequenceGeneratorDefinition(
             [
                 'sequenceName'      => 'DDC1784_ID_SEQ',
@@ -696,8 +692,10 @@ class EntityGeneratorTest extends OrmTestCase
     {
         $metadata = new ClassMetadata($this->_namespace . '\DDC2079Entity');
 
-        $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+        $metadata->addProperty('id', Type::getType('integer'), array('id' => true));
+
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+
         $metadata->mapManyToMany(
             [
                 'fieldName'     => 'centroCustos',

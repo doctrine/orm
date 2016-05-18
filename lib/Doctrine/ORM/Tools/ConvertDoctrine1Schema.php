@@ -153,13 +153,11 @@ class ConvertDoctrine1Schema
         }
 
         if ( ! $id) {
-            $fieldMapping = [
-                'fieldName' => 'id',
+            $metadata->addProperty('id', Type::getType('integer'), [
                 'columnName' => 'id',
-                'type' => 'integer',
-                'id' => true
-            ];
-            $metadata->mapField($fieldMapping);
+                'id'         => true,
+            ]);
+
             $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         }
     }
@@ -208,15 +206,11 @@ class ConvertDoctrine1Schema
             throw ToolsException::couldNotMapDoctrine1Type($column['type']);
         }
 
+        $fieldName    = isset($column['alias']) ? $column['alias'] : $name;
+        $fieldType    = Type::getType($column['type']);
         $fieldMapping = [];
 
-        if (isset($column['primary'])) {
-            $fieldMapping['id'] = true;
-        }
-
-        $fieldMapping['fieldName'] = isset($column['alias']) ? $column['alias'] : $name;
         $fieldMapping['columnName'] = $column['name'];
-        $fieldMapping['type'] = $column['type'];
 
         if (isset($column['length'])) {
             $fieldMapping['length'] = $column['length'];
@@ -230,7 +224,11 @@ class ConvertDoctrine1Schema
             }
         }
 
-        $metadata->mapField($fieldMapping);
+        if (isset($column['primary'])) {
+            $fieldMapping['id'] = true;
+        }
+
+        $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
         if (isset($column['autoincrement'])) {
             $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

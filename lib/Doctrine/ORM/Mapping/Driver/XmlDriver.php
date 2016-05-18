@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\DBAL\Types\Type;
 use SimpleXMLElement;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
@@ -215,6 +216,7 @@ class XmlDriver extends FileDriver
         // Evaluate <indexes...>
         if (isset($xmlRoot->indexes)) {
             $metadata->table['indexes'] = [];
+
             foreach ($xmlRoot->indexes->index as $indexXml) {
                 $index = ['columns' => explode(',', (string) $indexXml['columns'])];
 
@@ -256,21 +258,20 @@ class XmlDriver extends FileDriver
             $metadata->table['options'] = $this->_parseOptions($xmlRoot->options->children());
         }
 
-        // The mapping assignment is done in 2 times as a bug might occurs on some php/xml lib versions
-        // The internal SimpleXmlIterator get resetted, to this generate a duplicate field exception
-        $mappings = [];
-
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
-            foreach ($xmlRoot->field as $fieldMapping) {
-                $mapping = $this->columnToArray($fieldMapping);
+            foreach ($xmlRoot->field as $mapping) {
+                $fieldName    = (string) $mapping['name'];
+                $fieldType    = Type::getType((string) $mapping['type']);
+                $fieldMapping = $this->columnToArray($mapping);
 
-                if (isset($mapping['version'])) {
-                    $metadata->setVersionMapping($mapping);
-                    unset($mapping['version']);
+                if (isset($fieldMapping['version'])) {
+                    $metadata->setVersionMapping($fieldMapping);
+
+                    unset($fieldMapping['version']);
                 }
 
-                $metadata->mapField($mapping);
+                $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
             }
         }
 
@@ -294,14 +295,6 @@ class XmlDriver extends FileDriver
             }
         }
 
-        foreach ($mappings as $mapping) {
-            if (isset($mapping['version'])) {
-                $metadata->setVersionMapping($mapping);
-            }
-
-            $metadata->mapField($mapping);
-        }
-
         // Evaluate <id ...> mappings
         $associationIds = [];
 
@@ -312,32 +305,27 @@ class XmlDriver extends FileDriver
                 continue;
             }
 
-            $mapping = [
-                'id' => true,
-                'fieldName' => (string) $idElement['name']
-            ];
-
-            if (isset($idElement['type'])) {
-                $mapping['type'] = (string) $idElement['type'];
-            }
+            $fieldName    = (string) $idElement['name'];
+            $fieldType    = Type::getType(isset($idElement['type']) ? (string) $idElement['type'] : 'string');
+            $fieldMapping = ['id' => true];
 
             if (isset($idElement['length'])) {
-                $mapping['length'] = (string) $idElement['length'];
+                $fieldMapping['length'] = (string) $idElement['length'];
             }
 
             if (isset($idElement['column'])) {
-                $mapping['columnName'] = (string) $idElement['column'];
+                $fieldMapping['columnName'] = (string) $idElement['column'];
             }
 
             if (isset($idElement['column-definition'])) {
-                $mapping['columnDefinition'] = (string) $idElement['column-definition'];
+                $fieldMapping['columnDefinition'] = (string) $idElement['column-definition'];
             }
 
             if (isset($idElement->options)) {
-                $mapping['options'] = $this->_parseOptions($idElement->options->children());
+                $fieldMapping['options'] = $this->_parseOptions($idElement->options->children());
             }
 
-            $metadata->mapField($mapping);
+            $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
             if (isset($idElement->generator)) {
                 $strategy = isset($idElement->generator['strategy'])
@@ -761,13 +749,7 @@ class XmlDriver extends FileDriver
      */
     private function columnToArray(SimpleXMLElement $fieldMapping)
     {
-        $mapping = [
-            'fieldName' => (string) $fieldMapping['name'],
-        ];
-
-        if (isset($fieldMapping['type'])) {
-            $mapping['type'] = (string) $fieldMapping['type'];
-        }
+        $mapping = [];
 
         if (isset($fieldMapping['column'])) {
             $mapping['columnName'] = (string) $fieldMapping['column'];
