@@ -1,17 +1,8 @@
 <?php
 
-$metadata->mapField(
-    [
-    'type'      => 'integer',
-    'name'      => 'hoursWorked',
-    'fieldName' => 'hoursWorked',
-    ]
-);
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 
-$metadata->mapField(
-    [
-    'type'      => 'integer',
-    'name'      => 'pricePerHour',
-    'fieldName' => 'pricePerHour',
-    ]
-);
+/* @var $metadata ClassMetadata */
+$metadata->addProperty('hoursWorked', Type::getType('integer'), ['columnName' => 'hoursWorked']);
+$metadata->addProperty('pricePerHour', Type::getType('integer'), ['columnName' => 'pricePerHour']);

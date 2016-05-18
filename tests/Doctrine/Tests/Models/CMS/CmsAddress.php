@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\DBAL\Types\Type;
+
 /**
  * CmsAddress
  *
@@ -130,57 +132,53 @@ class CmsAddress
             ]
         );
 
-        $metadata->mapField(
-            [
-            'id'        => true,
-            'fieldName' => 'id',
-            'type'      => 'integer',
-            ]
+        $metadata->addProperty(
+            'id',
+            Type::getType('integer'),
+            ['id' => true]
         );
 
-        $metadata->mapField(
-            [
-            'fieldName' => 'zip',
-            'length'    => 50,
-            ]
+        $metadata->addProperty(
+            'zip',
+            Type::getType('string'),
+            ['length' => 50]
         );
 
-        $metadata->mapField(
-            [
-            'fieldName' => 'city',
-            'length'    => 50,
-            ]
+        $metadata->addProperty(
+            'city',
+            Type::getType('string'),
+            ['length' => 50]
         );
 
         $metadata->mapOneToOne(
             [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser',
-            'joinColumns'   => [['referencedColumnName' => 'id']]
+                'fieldName'    => 'user',
+                'targetEntity' => 'CmsUser',
+                'joinColumns'  => [['referencedColumnName' => 'id']]
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'find-all',
-            'query'             => 'SELECT id, country, city FROM cms_addresses',
-            'resultSetMapping'  => 'mapping-find-all',
+                'name'             => 'find-all',
+                'query'            => 'SELECT id, country, city FROM cms_addresses',
+                'resultSetMapping' => 'mapping-find-all',
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'find-by-id',
-            'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
-            'resultClass'       => CmsAddress::class,
+                'name'        => 'find-by-id',
+                'query'       => 'SELECT * FROM cms_addresses WHERE id = ?',
+                'resultClass' => CmsAddress::class,
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'count',
-            'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
-            'resultSetMapping'  => 'mapping-count',
+                'name'              => 'count',
+                'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
+                'resultSetMapping'  => 'mapping-count',
             ]
         );
 
@@ -225,12 +223,10 @@ class CmsAddress
 
         $metadata->addSqlResultSetMapping(
             [
-            'name' => 'mapping-count',
-            'columns' => [
-                [
-                    'name' => 'count',
-                ],
-            ]
+                'name' => 'mapping-count',
+                'columns' => [
+                    ['name' => 'count'],
+                ]
             ]
         );
 

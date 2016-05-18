@@ -1,25 +1,29 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
+/* @var $metadata ClassMetadata */
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+
 $metadata->setPrimaryTable(
     [
-   'indexes' => [
-       ['columns' => ['content'], 'flags' => ['fulltext'], 'options'=> ['where' => 'content IS NOT NULL']]
-   ]
+       'indexes' => [
+           [
+               'columns' => ['content'],
+               'flags'   => ['fulltext'],
+               'options' => ['where' => 'content IS NOT NULL'],
+           ],
+       ]
     ]
 );
 
-$metadata->mapField(
+$metadata->addProperty(
+    'content',
+    Type::getType('text'),
     [
-    'fieldName' => 'content',
-    'type' => 'text',
-    'scale' => 0,
-    'length' => NULL,
-    'unique' => false,
-    'nullable' => false,
-    'precision' => 0,
-    'columnName' => 'content',
+        'length'   => NULL,
+        'unique'   => false,
+        'nullable' => false,
     ]
 );

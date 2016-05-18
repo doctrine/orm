@@ -1,33 +1,32 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->mapField(
+/* @var $metadata ClassMetadata */
+$metadata->addProperty(
+    'id',
+    Type::getType('integer'),
     [
-   'id'         => true,
-   'fieldName'  => 'id',
-   'type'       => 'integer',
-   'columnName' => 'user_id',
-   'length'     => 150,
+        'id'         => true,
+        'columnName' => 'user_id',
     ]
 );
 
-$metadata->mapField(
+$metadata->addProperty(
+    'name',
+    Type::getType('string'),
     [
-    'fieldName' => 'name',
-    'type'      => 'string',
-    'columnName'=> 'user_name',
-    'nullable'  => true,
-    'unique'    => false,
-    'length'    => 250,
+        'columnName' => 'user_name',
+        'nullable'   => true,
+        'unique'     => false,
+        'length'     => 250,
     ]
 );
 
-$metadata->mapManyToMany(
-    [
-   'fieldName'      => 'groups',
-   'targetEntity'   => 'DDC3579Group'
-    ]
-);
+$metadata->mapManyToMany(array(
+    'fieldName'      => 'groups',
+    'targetEntity'   => 'DDC3579Group'
+));
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

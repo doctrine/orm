@@ -1,16 +1,10 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->mapField(
-    [
-   'id'         => true,
-   'fieldName'  => 'id',
-    ]
-);
-$metadata->mapField(
-    [
-   'fieldName'  => 'name'
-    ]
-);
+/* @var $metadata ClassMetadata */
+$metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
+$metadata->addProperty('name', Type::getType('string'));
+
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

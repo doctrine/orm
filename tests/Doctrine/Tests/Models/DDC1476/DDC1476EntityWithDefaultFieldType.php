@@ -2,12 +2,13 @@
 
 namespace Doctrine\Tests\Models\DDC1476;
 
+use Doctrine\DBAL\Types\Type;
+
 /**
  * @Entity()
  */
 class DDC1476EntityWithDefaultFieldType
 {
-
     /**
      * @Id
      * @Column()
@@ -15,7 +16,7 @@ class DDC1476EntityWithDefaultFieldType
      */
     protected $id;
 
-    /** @column() */
+    /** @Column() */
     protected $name;
 
     /**
@@ -44,17 +45,8 @@ class DDC1476EntityWithDefaultFieldType
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField(
-            [
-           'id'         => true,
-           'fieldName'  => 'id',
-            ]
-        );
-        $metadata->mapField(
-            [
-           'fieldName'  => 'name',
-            ]
-        );
+        $metadata->addProperty('id', Type::getType('string'), ['id' => true]);
+        $metadata->addProperty('name', Type::getType('string'));
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
     }

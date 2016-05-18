@@ -89,15 +89,21 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Explicit Nullable
-        $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50]);
+        $cm->addProperty('status', Type::getType('string'), [
+            'nullable' => true,
+            'length'   => 50,
+        ]);
+
         self::assertTrue($cm->isNullable('status'));
 
         // Explicit Not Nullable
-        $cm->mapField(['fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50]);
+        $cm->addProperty('username', Type::getType('string'), ['nullable' => false, 'length' => 50]);
+
         self::assertFalse($cm->isNullable('username'));
 
         // Implicit Not Nullable
-        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
+        $cm->addProperty('name', Type::getType('string'), ['length' => 50]);
+
         self::assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
     }
 
@@ -241,10 +247,11 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
+        $cm->addProperty('name', Type::getType('string'));
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
-        $cm->mapField(['fieldName' => 'username', 'columnName' => 'name']);
+
+        $cm->addProperty('username', Type::getType('string'), ['columnName' => 'name']);
     }
 
     public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
@@ -252,7 +259,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
+        $cm->addProperty('name', Type::getType('string'));
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
         $cm->setDiscriminatorColumn(['name' => 'name']);
@@ -266,7 +273,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setDiscriminatorColumn(['name' => 'name']);
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
-        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
+
+        $cm->addProperty('name', Type::getType('string'));
     }
 
     public function testDuplicateFieldAndAssociationMapping1_ThrowsException()
@@ -274,7 +282,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
+        $cm->addProperty('name', Type::getType('string'));
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
         $cm->mapOneToOne(['fieldName' => 'name', 'targetEntity' => 'CmsUser']);
@@ -288,7 +296,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapOneToOne(['fieldName' => 'name', 'targetEntity' => 'CmsUser']);
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
-        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
+
+        $cm->addProperty('name', Type::getType('string'));
     }
 
     /**
@@ -424,8 +433,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapField(['fieldName' => 'name']);
-        $cm->mapField(['fieldName' => 'username']);
+        $cm->addProperty('name', Type::getType('string'));
+        $cm->addProperty('username', Type::getType('string'));
 
         $cm->setIdentifier(['name', 'username']);
         self::assertTrue($cm->isIdentifierComposite);
@@ -555,14 +564,13 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapField(['fieldName' => '']);
+        $cm->addProperty('', Type::getType('string'));
     }
 
     public function testRetrievalOfNamedQueries()
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-
 
         self::assertEquals(0, count($cm->getNamedQueries()));
 
@@ -1060,8 +1068,8 @@ class ClassMetadataTest extends OrmTestCase
 
         $metadata->initializeReflection(new RuntimeReflectionService());
 
-        $metadata->mapField(['fieldName'=>'country']);
-        $metadata->mapField(['fieldName'=>'city']);
+        $metadata->addProperty('country', Type::getType('string'));
+        $metadata->addProperty('city', Type::getType('string'));
 
         self::assertEquals(
             $metadata->fieldNames,
@@ -1109,7 +1117,8 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(DDC964Guest::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapField(['fieldName' => 'name']);
+
+        $cm->addProperty('name', Type::getType('string'));
 
         $cm->setAttributeOverride('invalidPropertyName', []);
     }
@@ -1123,9 +1132,9 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(DDC964Guest::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapField(['fieldName' => 'name', 'type'=>'string']);
+        $cm->addProperty('name', Type::getType('string'));
 
-        $cm->setAttributeOverride('name', ['type'=>'date']);
+        $cm->setAttributeOverride('name', ['type' => 'date']);
     }
 
     /**
@@ -1253,15 +1262,14 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        $field = [
-            'fieldName' => 'test.embeddedProperty',
-            'type' => 'string',
+        $mapping = [
             'originalClass' => TestEntity1::class,
             'declaredField' => 'test',
             'originalField' => 'embeddedProperty'
         ];
 
-        $classMetadata->mapField($field);
+        $classMetadata->addProperty('test.embeddedProperty', Type::getType('string'), $mapping);
+
         $classMetadata->wakeupReflection(new StaticReflectionService());
 
         self::assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getReflectionProperties());
@@ -1272,9 +1280,9 @@ class ClassMetadataTest extends OrmTestCase
         $metadata = new ClassMetadata(CMS\CmsUser::class);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
-        $metadata->mapField(['fieldName' => 'status', 'type' => 'string', 'columnName' => 'foo']);
-        $metadata->mapField(['fieldName' => 'username', 'type' => 'string', 'columnName' => 'bar']);
-        $metadata->mapField(['fieldName' => 'name', 'type' => 'string', 'columnName' => 'baz']);
+        $metadata->addProperty('status', Type::getType('string'), ['columnName' => 'foo']);
+        $metadata->addProperty('username', Type::getType('string'), ['columnName' => 'bar']);
+        $metadata->addProperty('name', Type::getType('string'), ['columnName' => 'baz']);
 
         self::assertSame(['foo', 'baz'], $metadata->getColumnNames(['status', 'name']));
     }

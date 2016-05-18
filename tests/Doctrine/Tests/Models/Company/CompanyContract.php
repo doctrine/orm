@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\DBAL\Types\Type;
+
 /**
  * @Entity
  * @Table(name="company_contracts")
@@ -142,27 +144,23 @@ abstract class CompanyContract
             ]
         );
 
-        $metadata->mapField(
-            [
-            'id'        => true,
-            'name'      => 'id',
-            'fieldName' => 'id',
-            ]
+        $metadata->addProperty(
+            'id',
+            Type::getType('integer'),
+            ['id' => true]
         );
 
-        $metadata->mapField(
-            [
-            'type'      => 'boolean',
-            'name'      => 'completed',
-            'fieldName' => 'completed',
-            ]
+        $metadata->addProperty(
+            'completed',
+            Type::getType('boolean'),
+            ['columnName' => 'completed']
         );
 
         $metadata->setDiscriminatorMap(
             [
-            "fix"       => "CompanyFixContract",
-            "flexible"  => "CompanyFlexContract",
-            "flexultra" => "CompanyFlexUltraContract"
+                "fix"       => "CompanyFixContract",
+                "flexible"  => "CompanyFlexContract",
+                "flexultra" => "CompanyFlexUltraContract"
             ]
         );
 

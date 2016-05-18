@@ -1,116 +1,97 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 
-$metadata->setPrimaryTable(
-    [
-   'name' => 'company_person',
-    ]
-);
+/* @var $metadata ClassMetadata */
+$metadata->setPrimaryTable(['name' => 'company_person']);
 
-$metadata->mapField(
-    [
-    'id'        => true,
-    'fieldName' => 'id',
-    'type'      => 'integer',
-    ]
-);
-
-$metadata->mapField(
-    [
-    'fieldName' => 'zip',
-    'length'    => 50,
-    ]
-);
-
-$metadata->mapField(
-    [
-    'fieldName' => 'city',
-    'length'    => 50,
-    ]
-);
+$metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
+$metadata->addProperty('zip', Type::getType('string'), ['length' => 50]);
+$metadata->addProperty('city', Type::getType('string'), ['length' => 50]);
 
 $metadata->mapOneToOne(
     [
-    'fieldName'     => 'user',
-    'targetEntity'  => 'CmsUser',
-    'joinColumns'   => [['referencedColumnName' => 'id']]
+        'fieldName'     => 'user',
+        'targetEntity'  => 'CmsUser',
+        'joinColumns'   => [['referencedColumnName' => 'id']]
     ]
 );
 
 $metadata->addNamedNativeQuery(
     [
-    'name'              => 'find-all',
-    'query'             => 'SELECT id, country, city FROM cms_addresses',
-    'resultSetMapping'  => 'mapping-find-all',
+        'name'              => 'find-all',
+        'query'             => 'SELECT id, country, city FROM cms_addresses',
+        'resultSetMapping'  => 'mapping-find-all',
     ]
 );
 
 $metadata->addNamedNativeQuery(
     [
-    'name'              => 'find-by-id',
-    'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
-    'resultClass'       => CmsAddress::class,
+        'name'              => 'find-by-id',
+        'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
+        'resultClass'       => CmsAddress::class,
     ]
 );
 
 $metadata->addNamedNativeQuery(
     [
-    'name'              => 'count',
-    'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
-    'resultSetMapping'  => 'mapping-count',
+        'name'              => 'count',
+        'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
+        'resultSetMapping'  => 'mapping-count',
     ]
 );
 
 
 $metadata->addSqlResultSetMapping(
     [
-    'name'      => 'mapping-find-all',
-    'columns'   => [],
-    'entities'  => [
-        [
-        'fields' => [
-          [
-            'name'      => 'id',
-            'column'    => 'id',
-          ],
-          [
-            'name'      => 'city',
-            'column'    => 'city',
-          ],
-          [
-            'name'      => 'country',
-            'column'    => 'country',
-          ],
+        'name'      => 'mapping-find-all',
+        'columns'   => [],
+        'entities'  => [
+            [
+                'fields' => [
+                    [
+                        'name'   => 'id',
+                        'column' => 'id',
+                    ],
+                    [
+                        'name'   => 'city',
+                        'column' => 'city',
+                    ],
+                    [
+                        'name'   => 'country',
+                        'column' => 'country',
+                    ],
+                ],
+                'entityClass' => CmsAddress::class,
+            ],
         ],
-        'entityClass' => CmsAddress::class,
-        ],
-    ],
     ]
 );
 
 $metadata->addSqlResultSetMapping(
     [
-    'name'      => 'mapping-without-fields',
-    'columns'   => [],
-    'entities'  => [
-        [
-        'entityClass' => CmsAddress::class,
-        'fields' => []
+        'name'      => 'mapping-without-fields',
+        'columns'   => [],
+        'entities'  => [
+            [
+                'entityClass' => CmsAddress::class,
+                'fields' => []
+            ]
         ]
     ]
-    ]
 );
 
 $metadata->addSqlResultSetMapping(
     [
-    'name' => 'mapping-count',
-    'columns' => [
-        [
-            'name' => 'count',
-        ],
-    ]
+        'name' => 'mapping-count',
+        'columns' => [
+            [
+                'name' => 'count',
+            ],
+        ]
     ]
 );
 

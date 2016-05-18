@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\DBAL\Types\Type;
+
 /**
  * @Entity
  * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
@@ -31,13 +33,12 @@ class CompanyFlexUltraContract extends CompanyFlexContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField(
-            [
-            'type'      => 'integer',
-            'name'      => 'maxPrice',
-            'fieldName' => 'maxPrice',
-            ]
+        $metadata->addProperty(
+            'maxPrice',
+            Type::getType('integer'),
+            ['columnName' => 'maxPrice']
         );
+
         $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
         $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
 
