@@ -2,6 +2,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Types\Type;
 
 interface PropertyMetadata
@@ -63,4 +64,9 @@ interface PropertyMetadata
      * @return boolean
      */
     public function isField();
+
+    /**
+     * @param ReflectionService $reflectionService
+     */
+    public function wakeupReflection(ReflectionService $reflectionService);
 }

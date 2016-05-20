@@ -2,6 +2,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
@@ -86,12 +87,7 @@ class FieldMetadata implements PropertyMetadata
      */
     public function __construct(ClassMetadata $currentClass, $fieldName, Type $type)
     {
-        $reflection = $currentClass->getReflectionClass()->getProperty($fieldName);
-
-        $reflection->setAccessible(true);
-
         $this->declaringClass = $currentClass;
-        $this->reflection     = $reflection;
         $this->fieldName      = $fieldName;
         $this->type           = $type;
     }
@@ -326,6 +322,14 @@ class FieldMetadata implements PropertyMetadata
     public function isField()
     {
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function wakeupReflection(ReflectionService $reflectionService)
+    {
+        $this->reflection = $reflectionService->getAccessibleProperty($this->getDeclaringClass()->name, $this->fieldName);
     }
 
     /**
