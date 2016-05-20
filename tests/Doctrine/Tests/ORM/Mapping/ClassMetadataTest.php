@@ -1220,7 +1220,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
 
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->setSequenceGeneratorDefinition(['sequenceName' => '`foo`']);
+        $cm->setSequenceGeneratorDefinition(['sequenceName' => 'foo']);
 
         self::assertSame(
             ['sequenceName' => 'foo', 'quoted' => true, 'allocationSize' => '1', 'initialValue' => '1'],

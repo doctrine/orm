@@ -737,7 +737,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         'sequenceName'   => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
                         'allocationSize' => 1,
                         'initialValue'   => 1,
-                        'quoted'         => true,
                     ];
 
                     $class->setSequenceGeneratorDefinition($definition);

@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\Quote;
 
 /**
  * @Entity
- * @Table(name="`quote-address`")
+ * @Table(name="quote-address")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"simple" = Address::class, "full" = FullAddress::class})
@@ -15,21 +15,20 @@ class Address
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="`address-id`")
+     * @Column(type="integer", name="address-id")
      */
     public $id;
 
     /**
-     * @Column(name="`address-zip`")
+     * @Column(name="address-zip")
      */
     public $zip;
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="address")
-     * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
+     * @JoinColumn(name="user-id", referencedColumnName="user-id")
      */
     public $user;
-
 
     public function setUser(User $user) {
         if ($this->user !== $user) {
@@ -37,7 +36,6 @@ class Address
             $user->setAddress($this);
         }
     }
-
 
     public function getId()
     {
