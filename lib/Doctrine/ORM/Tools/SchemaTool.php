@@ -664,34 +664,34 @@ class SchemaTool
                 // Only add the column to the table if it does not exist already.
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
-                $fieldMapping = $definingClass->getFieldMapping($referencedFieldName);
-                $columnDef    = null;
+                $property  = $definingClass->getProperty($referencedFieldName);
+                $columnDef = null;
 
                 if (isset($joinColumn['columnDefinition'])) {
                     $columnDef = $joinColumn['columnDefinition'];
-                } elseif (isset($fieldMapping['columnDefinition'])) {
-                    $columnDef = $fieldMapping['columnDefinition'];
+                } elseif ($property->getColumnDefinition()) {
+                    $columnDef = $property->getColumnDefinition();
                 }
 
                 $columnOptions = ['notnull' => false, 'columnDefinition' => $columnDef];
-                $columnType    = $fieldMapping['type']->getName();
+                $columnType    = $property->getTypeName();
 
                 if (isset($joinColumn['nullable'])) {
                     $columnOptions['notnull'] = !$joinColumn['nullable'];
                 }
 
-                if (isset($fieldMapping['options'])) {
-                    $columnOptions['options'] = $fieldMapping['options'];
+                if ($property->getOptions()) {
+                    $columnOptions['options'] = $property->getOptions();
                 }
 
                 switch ($columnType) {
                     case 'string':
-                        $columnOptions['length'] = ($fieldMapping['length'] !== null) ? $fieldMapping['length'] : 255;
+                        $columnOptions['length'] = is_int($property->getLength()) ? $property->getLength() : 255;
                         break;
 
                     case 'decimal':
-                        $columnOptions['scale'] = $fieldMapping['scale'];
-                        $columnOptions['precision'] = $fieldMapping['precision'];
+                        $columnOptions['scale'] = $property->getScale();
+                        $columnOptions['precision'] = $property->getPrecision();
                         break;
                 }
 
