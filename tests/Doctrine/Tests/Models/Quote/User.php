@@ -6,19 +6,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
- * @Table(name="`quote-user`")
+ * @Table(name="quote-user")
  */
 class User
 {
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="`user-id`")
+     * @Column(type="integer", name="user-id")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="`user-name`")
+     * @Column(type="string", name="user-name")
      */
     public $name;
 
@@ -28,24 +28,24 @@ class User
     public $phones;
 
     /**
-     * @JoinColumn(name="`address-id`", referencedColumnName="`address-id`")
+     * @JoinColumn(name="address-id", referencedColumnName="address-id")
      * @OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
      */
     public $address;
 
     /**
      * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
-     * @JoinTable(name="`quote-users-groups`",
+     * @JoinTable(name="quote-users-groups",
      *      joinColumns={
      *          @JoinColumn(
-     *              name="`user-id`",
-     *              referencedColumnName="`user-id`"
+     *              name="user-id",
+     *              referencedColumnName="user-id"
      *          )
      *      },
      *      inverseJoinColumns={
      *          @JoinColumn(
-     *              name="`group-id`",
-     *              referencedColumnName="`group-id`"
+     *              name="group-id",
+     *              referencedColumnName="group-id"
      *          )
      *      }
      * )
