@@ -1354,76 +1354,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Validates & completes the given field mapping.
-     *
-     * @param array $mapping The field mapping to validate & complete.
-     *
-     * @return array The validated and completed field mapping.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteFieldMapping(array &$mapping)
-    {
-        $mapping['declaringClass'] = $this;
-        $mapping['tableName']      = ! $this->isMappedSuperclass ? $this->getTableName() : null;
-
-        // Check mandatory fields
-        if ( ! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
-            throw MappingException::missingFieldName($this->name);
-        }
-
-        $type = isset($mapping['type'])
-            ? $mapping['type']
-            : 'string'; // Default to string
-
-        if ( ! ($type instanceof Type)) {
-            $mapping['type'] = Type::getType($type);
-        }
-
-        // Complete fieldName and columnName mapping
-        if ( ! isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->name);
-        }
-
-        if ('`' === $mapping['columnName'][0]) {
-            $mapping['columnName']  = trim($mapping['columnName'], '`');
-            $mapping['quoted']      = true;
-        }
-
-        if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping['columnName'])) {
-            throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
-        }
-
-        $this->fieldNames[$mapping['columnName']] = $mapping['fieldName'];
-
-        // Complete id mapping
-        if (isset($mapping['id']) && true === $mapping['id']) {
-            if ($this->versionField == $mapping['fieldName']) {
-                throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName']);
-            }
-
-            if ( ! in_array($mapping['fieldName'], $this->identifier)) {
-                $this->identifier[] = $mapping['fieldName'];
-            }
-
-            // Check for composite key
-            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
-                $this->isIdentifierComposite = true;
-            }
-        }
-
-        if ($mapping['type']->canRequireSQLConversion()) {
-            if (isset($mapping['id']) && true === $mapping['id']) {
-                 throw MappingException::sqlConversionNotAllowedForIdentifiers(
-                    $this->name,
-                    $mapping['fieldName'],
-                    $mapping['type']
-                );
-            }
-        }
-    }
-
-    /**
      * Validates & completes the basic mapping information that is common to all
      * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
      *
@@ -2200,7 +2130,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritedField($fieldName)
     {
-        return $this->properties[$fieldName] instanceof InheritedFieldMetadata;
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof InheritedFieldMetadata;
     }
 
     /**
@@ -2351,17 +2282,69 @@ class ClassMetadata implements ClassMetadataInterface
             assert($this->versionField !== $fieldName, MappingException::cannotVersionIdField($this->name, $fieldName));
             assert(! $type->canRequireSQLConversion(), MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property));
 
-            if ( ! in_array($fieldName, $this->identifier)) {
+            if (! in_array($fieldName, $this->identifier)) {
                 $this->identifier[] = $fieldName;
             }
 
             // Check for composite key
-            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
+            if (! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
             }
         }
 
         $this->properties[$fieldName] = $property;
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a field mapping without completing/validating it.
+     * This is mainly used to add inherited field mappings to derived classes.
+     *
+     * @param ClassMetadata $declaringClass
+     * @param string        $fieldName
+     *
+     * @return void
+     */
+    public function addInheritedProperty(ClassMetadata $declaringClass, $fieldName)
+    {
+        $property          = $declaringClass->getProperty($fieldName);
+        $inheritedProperty = new InheritedFieldMetadata($this, $declaringClass, $fieldName, $property->getType());
+
+        if ( ! $declaringClass->isMappedSuperclass) {
+            $inheritedProperty->setTableName($property->getTableName());
+        }
+
+        //if ( ! $property->getTableName() && ! $this->isMappedSuperclass) {
+        //    $inheritedProperty->setTableName($this->getTableName());
+        //}
+
+        $inheritedProperty->setColumnName($property->getColumnName());
+        $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
+        $inheritedProperty->setPrimaryKey($property->isPrimaryKey());
+        $inheritedProperty->setNullable($property->isNullable());
+        $inheritedProperty->setUnique($property->isUnique());
+        $inheritedProperty->setLength($property->getLength());
+        $inheritedProperty->setScale($property->getScale());
+        $inheritedProperty->setPrecision($property->getPrecision());
+        $inheritedProperty->setOptions($property->getOptions());
+
+        $this->fieldNames[$property->getColumnName()] = $fieldName;
+        $this->properties[$fieldName] = $inheritedProperty;
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a field mapping without completing/validating it.
+     * This is mainly used to add inherited field mappings to derived classes.
+     *
+     * @param array $fieldMapping
+     *
+     * @return void
+     */
+    public function addInheritedFieldMapping(array $fieldMapping)
+    {
+        //$this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        //$this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
     }
 
     /**
@@ -2382,21 +2365,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $this->associationMappings[$mapping['fieldName']] = $mapping;
-    }
-
-    /**
-     * INTERNAL:
-     * Adds a field mapping without completing/validating it.
-     * This is mainly used to add inherited field mappings to derived classes.
-     *
-     * @param array $fieldMapping
-     *
-     * @return void
-     */
-    public function addInheritedFieldMapping(array $fieldMapping)
-    {
-        //$this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        //$this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
     }
 
     /**

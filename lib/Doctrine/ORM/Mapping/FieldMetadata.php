@@ -2,6 +2,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
 class FieldMetadata implements PropertyMetadata
@@ -79,20 +80,28 @@ class FieldMetadata implements PropertyMetadata
     /**
      * FieldMetadata constructor.
      *
-     * @param ClassMetadata $declaringClass
+     * @param ClassMetadata $currentClass
      * @param string        $fieldName
      * @param Type          $type
      */
-    public function __construct(ClassMetadata $declaringClass, $fieldName, Type $type)
+    public function __construct(ClassMetadata $currentClass, $fieldName, Type $type)
     {
-        $reflection = $declaringClass->getReflectionClass()->getProperty($fieldName);
+        $reflection = $currentClass->getReflectionClass()->getProperty($fieldName);
 
         $reflection->setAccessible(true);
 
-        $this->declaringClass = $declaringClass;
+        $this->declaringClass = $currentClass;
         $this->reflection     = $reflection;
         $this->fieldName      = $fieldName;
         $this->type           = $type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCurrentClass()
+    {
+        return $this->declaringClass;
     }
 
     /**
@@ -301,6 +310,36 @@ class FieldMetadata implements PropertyMetadata
     public function isUnique()
     {
         return $this->isUnique;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAssociation()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isField()
+    {
+        return true;
+    }
+
+    /**
+     * @param AbstractPlatform   $platform
+     * @param QuoteStrategy|null $quoteStrategy
+     *
+     * @return string
+     */
+    public function getQuotedColumnName(AbstractPlatform $platform, QuoteStrategy $quoteStrategy = null)
+    {
+        return $quoteStrategy
+            ? $quoteStrategy->getColumnName($this->fieldName, $this->declaringClass, $platform)
+            : $platform->quoteIdentifier($this->columnName)
+        ;
     }
 
     /**
