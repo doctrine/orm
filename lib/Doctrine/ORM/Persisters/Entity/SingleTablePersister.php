@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -73,8 +74,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Regular columns
-            foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                if (isset($mapping['inherited'])) {
+            foreach ($subClass->getProperties() as $fieldName => $property) {
+                if ($property instanceof InheritedFieldMetadata) {
                     continue;
                 }
 

@@ -20,6 +20,9 @@
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -110,7 +113,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
 
-                if ((isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited'])) ||
+                if ((($property = $class->getProperty($field)) !== null && ! ($property instanceof InheritedFieldMetadata)) ||
                     (isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited']))) {
                     $newValue = $updateItem->newValue;
 
