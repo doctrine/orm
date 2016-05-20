@@ -24,9 +24,11 @@ $metadata->addProperty(
     ]
 );
 
-$metadata->mapManyToMany(array(
+$metadata->mapManyToMany(
+    [
     'fieldName'      => 'groups',
     'targetEntity'   => 'DDC3579Group'
-));
+    ]
+);
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

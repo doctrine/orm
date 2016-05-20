@@ -34,9 +34,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->fieldMappings[$fieldName]['quoted'])
-            ? $platform->quoteIdentifier($class->fieldMappings[$fieldName]['columnName'])
-            : $class->fieldMappings[$fieldName]['columnName'];
+        return $platform->quoteIdentifier($class->getProperty($fieldName)->getColumnName());
     }
 
     /**
@@ -119,7 +117,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $quotedColumnNames = [];
 
         foreach ($class->identifier as $fieldName) {
-            if (isset($class->fieldMappings[$fieldName])) {
+            if ($class->getProperty($fieldName) !== null) {
                 $quotedColumnNames[] = $this->getColumnName($fieldName, $class, $platform);
 
                 continue;

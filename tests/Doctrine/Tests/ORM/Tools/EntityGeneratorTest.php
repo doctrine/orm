@@ -692,7 +692,7 @@ class EntityGeneratorTest extends OrmTestCase
     {
         $metadata = new ClassMetadata($this->_namespace . '\DDC2079Entity');
 
-        $metadata->addProperty('id', Type::getType('integer'), array('id' => true));
+        $metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
 

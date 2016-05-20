@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
@@ -27,6 +28,9 @@ use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
+use Doctrine\ORM\Mapping\PropertyMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
@@ -187,11 +191,11 @@ class SchemaTool
                 // Add all non-inherited fields as columns
                 $pkColumns = [];
 
-                foreach ($class->fieldMappings as $fieldName => $mapping) {
-                    if ( ! isset($mapping['inherited'])) {
-                        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
+                foreach ($class->getProperties() as $fieldName => $property) {
+                    if ( ! ($property instanceof InheritedFieldMetadata)) {
+                        $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
 
-                        $this->gatherColumn($class, $mapping, $table);
+                        $this->gatherColumn($class, $property, $table);
 
                         if ($class->isIdentifier($fieldName)) {
                             $pkColumns[] = $columnName;
@@ -209,19 +213,14 @@ class SchemaTool
                     $inheritedKeyColumns = [];
 
                     foreach ($class->identifier as $identifierField) {
-                        $idMapping = $class->fieldMappings[$identifierField];
+                        $idProperty = $class->getProperty($identifierField);
 
-                        if (isset($idMapping['inherited'])) {
-                            $this->gatherColumn($class, $idMapping, $table);
-
-                            $columnName = $this->quoteStrategy->getColumnName(
-                                $identifierField,
-                                $class,
-                                $this->platform
-                            );
+                        if ($idProperty instanceof InheritedFieldMetadata) {
+                            $column     = $this->gatherColumn($class, $idProperty, $table);
+                            $columnName = $column->getQuotedName($this->platform);
 
                             // TODO: This seems rather hackish, can we optimize it?
-                            $table->getColumn($columnName)->setAutoincrement(false);
+                            $column->setAutoincrement(false);
 
                             $pkColumns[] = $columnName;
                             $inheritedKeyColumns[] = $columnName;
@@ -253,9 +252,13 @@ class SchemaTool
             $pkColumns = [];
 
             foreach ($class->identifier as $identifierField) {
-                if (isset($class->fieldMappings[$identifierField])) {
+                if (($property = $class->getProperty($identifierField)) !== null) {
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
-                } elseif (isset($class->associationMappings[$identifierField])) {
+
+                    continue;
+                }
+
+                if (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Annotation\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
 
@@ -395,15 +398,15 @@ class SchemaTool
     {
         $pkColumns = [];
 
-        foreach ($class->fieldMappings as $mapping) {
+        foreach ($class->getProperties() as $property) {
             if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
                 continue;
             }
 
-            $this->gatherColumn($class, $mapping, $table);
+            $this->gatherColumn($class, $property, $table);
 
-            if ($class->isIdentifier($mapping['fieldName'])) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
+            if ($property->isPrimaryKey()) {
+                $pkColumns[] = $this->quoteStrategy->getColumnName($property->getFieldName(), $class, $this->platform);
             }
         }
     }
@@ -411,83 +414,82 @@ class SchemaTool
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
-     * @param ClassMetadata $class   The class that owns the field mapping.
-     * @param array         $mapping The field mapping.
+     * @param ClassMetadata $classMetadata The class that owns the field mapping.
+     * @param FieldMetadata $fieldMetadata The field mapping.
      * @param Table         $table
      *
-     * @return void
+     * @return Column The portable column definition as required by the DBAL.
      */
-    private function gatherColumn($class, array $mapping, Table $table)
+    private function gatherColumn($classMetadata, FieldMetadata $fieldMetadata, Table $table)
     {
-        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
-        $columnType = $mapping['type']->getName();
+        $fieldName  = $fieldMetadata->getFieldName();
+        $columnName = $this->quoteStrategy->getColumnName($fieldName, $classMetadata, $this->platform);
+        $columnType = $fieldMetadata->getTypeName();
 
         $options = [
-            'length'          => isset($mapping['length']) ? $mapping['length'] : null,
-            'notnull'         => isset($mapping['nullable']) ? ! $mapping['nullable'] : true,
+            'length'          => $fieldMetadata->getLength(),
+            'notnull'         => ! $fieldMetadata->isNullable(),
             'platformOptions' => [
-                'version' => ($class->isVersioned && $class->versionField === $mapping['fieldName']),
+                'version' => ($classMetadata->isVersioned && $classMetadata->versionField === $fieldName),
             ],
         ];
 
-        if ($class->isInheritanceTypeSingleTable() && count($class->parentClasses) > 0) {
+        if ($classMetadata->isInheritanceTypeSingleTable() && count($classMetadata->parentClasses) > 0) {
             $options['notnull'] = false;
         }
 
-        if (strtolower($columnType) == 'string' && null === $options['length']) {
+        if (strtolower($columnType) === 'string' && null === $options['length']) {
             $options['length'] = 255;
         }
 
-        if (isset($mapping['precision'])) {
-            $options['precision'] = $mapping['precision'];
+        if (is_int($fieldMetadata->getPrecision())) {
+            $options['precision'] = $fieldMetadata->getPrecision();
         }
 
-        if (isset($mapping['scale'])) {
-            $options['scale'] = $mapping['scale'];
+        if (is_int($fieldMetadata->getScale())) {
+            $options['scale'] = $fieldMetadata->getScale();
         }
 
-        if (isset($mapping['default'])) {
-            $options['default'] = $mapping['default'];
+        if ($fieldMetadata->getColumnDefinition()) {
+            $options['columnDefinition'] = $fieldMetadata->getColumnDefinition();
         }
 
-        if (isset($mapping['columnDefinition'])) {
-            $options['columnDefinition'] = $mapping['columnDefinition'];
-        }
+        $fieldOptions = $fieldMetadata->getOptions();
 
-        if (isset($mapping['options'])) {
+        if ($fieldOptions) {
             $knownOptions = ['comment', 'unsigned', 'fixed', 'default'];
 
             foreach ($knownOptions as $knownOption) {
-                if (array_key_exists($knownOption, $mapping['options'])) {
-                    $options[$knownOption] = $mapping['options'][$knownOption];
+                if (array_key_exists($knownOption, $fieldOptions)) {
+                    $options[$knownOption] = $fieldOptions[$knownOption];
 
-                    unset($mapping['options'][$knownOption]);
+                    unset($fieldOptions[$knownOption]);
                 }
             }
 
-            $options['customSchemaOptions'] = $mapping['options'];
+            $options['customSchemaOptions'] = $fieldOptions;
         }
 
-        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == [$mapping['fieldName']]) {
+        if ($classMetadata->isIdGeneratorIdentity() && $classMetadata->getIdentifierFieldNames() == [$fieldName]) {
             $options['autoincrement'] = true;
         }
 
-        if ($class->isInheritanceTypeJoined() && $class->name !== $class->rootEntityName) {
+        if ($classMetadata->isInheritanceTypeJoined() && $classMetadata->name !== $classMetadata->rootEntityName) {
             $options['autoincrement'] = false;
+        }
+
+        if ($fieldMetadata->isUnique()) {
+            $table->addUniqueIndex([$columnName]);
         }
 
         if ($table->hasColumn($columnName)) {
             // required in some inheritance scenarios
             $table->changeColumn($columnName, $options);
-        } else {
-            $table->addColumn($columnName, $columnType, $options);
+
+            return $table->getColumn($columnName);
         }
 
-        $isUnique = isset($mapping['unique']) ? $mapping['unique'] : false;
-
-        if ($isUnique) {
-            $table->addUniqueIndex([$columnName]);
-        }
+        return $table->addColumn($columnName, $columnType, $options);
     }
 
     /**

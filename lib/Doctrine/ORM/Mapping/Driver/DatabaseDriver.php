@@ -453,7 +453,7 @@ class DatabaseDriver implements MappingDriver
                 'targetEntity' => $this->getClassNameForTable($foreignTableName),
             ];
 
-            if (isset($metadata->fieldMappings[$associationMapping['fieldName']])) {
+            if ($metadata->getProperty($associationMapping['fieldName'])) {
                 $associationMapping['fieldName'] .= '2'; // "foo" => "foo2"
             }
 

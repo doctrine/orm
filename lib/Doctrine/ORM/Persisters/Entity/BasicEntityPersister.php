@@ -27,6 +27,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -334,7 +335,7 @@ class BasicEntityPersister implements EntityPersister
     protected function fetchVersionValue($versionedClass, array $id)
     {
         $versionField = $versionedClass->versionField;
-        $fieldMapping = $versionedClass->fieldMappings[$versionField];
+        $property     = $versionedClass->getProperty($versionField);
         $tableName    = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
         $identifier   = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
         $columnName   = $this->quoteStrategy->getColumnName($versionField, $versionedClass, $this->platform);
@@ -348,7 +349,7 @@ class BasicEntityPersister implements EntityPersister
 
         $value = $this->conn->fetchColumn($sql, array_values($flatId));
 
-        return $fieldMapping['type']->convertToPHPValue($value, $this->platform);
+        return $property->getType()->convertToPHPValue($value, $this->platform);
     }
 
     /**
@@ -401,10 +402,10 @@ class BasicEntityPersister implements EntityPersister
 
             switch (true) {
                 case isset($this->class->fieldNames[$columnName]):
-                    $fieldName    = $this->class->fieldNames[$columnName];
-                    $fieldMapping = $this->class->fieldMappings[$fieldName];
-                    $column       = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
-                    $placeholder  = $fieldMapping['type']->convertToDatabaseValueSQL('?', $this->platform);
+                    $fieldName   = $this->class->fieldNames[$columnName];
+                    $property    = $this->class->getProperty($fieldName);
+                    $column      = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
+                    $placeholder = $property->getType()->convertToDatabaseValueSQL('?', $this->platform);
 
                     break;
 
@@ -425,7 +426,7 @@ class BasicEntityPersister implements EntityPersister
         foreach ($this->class->identifier as $idField) {
             if ( ! isset($this->class->associationMappings[$idField])) {
                 $params[]   = $identifier[$idField];
-                $types[]    = $this->class->fieldMappings[$idField]['type'];
+                $types[]    = $this->class->getProperty($idField)->getType();
                 $where[]    = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
 
                 continue;
@@ -433,30 +434,32 @@ class BasicEntityPersister implements EntityPersister
 
             $params[]       = $identifier[$idField];
             $where[]        = $this->class->associationMappings[$idField]['joinColumns'][0]['name'];
+
             $targetMapping  = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
+            $property       = $targetMapping->getProperty($targetMapping->identifier[0]);
 
-            switch (true) {
-                case (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])):
-                    $types[] = $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
-                    break;
+            if ($property) {
+                $types[] = $property->getType();
 
-                case (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])):
-                    $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
-                    break;
-
-                default:
-                    throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+                continue;
             }
 
+            if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
+                $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
+
+                continue;
+            }
+
+            throw ORMException::unrecognizedField($targetMapping->identifier[0]);
         }
 
         if ($versioned) {
             $versionField       = $this->class->versionField;
-            $versionFieldType   = $this->class->fieldMappings[$versionField]['type'];
+            $versionFieldType   = $this->class->getProperty($versionField)->getType();
             $versionColumn      = $this->quoteStrategy->getColumnName($versionField, $this->class, $this->platform);
 
             $where[]    = $versionColumn;
-            $types[]    = $this->class->fieldMappings[$versionField]['type'];
+            $types[]    = $versionFieldType;
             $params[]   = $this->class->reflFields[$versionField]->getValue($entity);
 
             switch ($versionFieldType->getName()) {
@@ -556,14 +559,14 @@ class BasicEntityPersister implements EntityPersister
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
         $types      = array_map(function ($identifier) use ($class, $self) {
-            if (isset($class->fieldMappings[$identifier])) {
-                return $class->fieldMappings[$identifier]['type'];
+            if (($property = $class->getProperty($identifier)) !== null) {
+                return $property->getType();
             }
 
             $targetMapping = $self->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
 
-            if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
-                return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
+            if (($property = $targetMapping->getProperty($targetMapping->identifier[0])) !== null) {
+                return $property->getType();
             }
 
             if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
@@ -621,10 +624,10 @@ class BasicEntityPersister implements EntityPersister
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
-                $fieldMapping = $this->class->fieldMappings[$field];
-                $columnName   = $fieldMapping['columnName'];
+                $property   = $this->class->getProperty($field);
+                $columnName = $property->getColumnName();
 
-                $this->columnTypes[$columnName] = $fieldMapping['type'];
+                $this->columnTypes[$columnName] = $property->getType();
 
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
@@ -1143,9 +1146,9 @@ class BasicEntityPersister implements EntityPersister
                 throw ORMException::invalidOrientation($this->class->name, $fieldName);
             }
 
-            if (isset($this->class->fieldMappings[$fieldName])) {
-                $class         = isset($this->class->fieldMappings[$fieldName]['inherited'])
-                    ? $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]['inherited'])
+            if (($property = $this->class->getProperty($fieldName)) !== null) {
+                $class         = ($property instanceof InheritedFieldMetadata)
+                    ? $property->getDeclaringClass()
                     : $this->class;
                 $tableAlias    = $this->getSQLTableAlias($class->getTableName());
                 $columnName    = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
@@ -1404,9 +1407,9 @@ class BasicEntityPersister implements EntityPersister
             $placeholder = '?';
 
             if (isset($this->class->fieldNames[$column])) {
-                $fieldName    = $this->class->fieldNames[$column];
-                $fieldMapping = $this->class->fieldMappings[$fieldName];
-                $placeholder  = $fieldMapping['type']->convertToDatabaseValueSQL('?', $this->platform);
+                $fieldName   = $this->class->fieldNames[$column];
+                $property    = $this->class->getProperty($fieldName);
+                $placeholder = $property->getType()->convertToDatabaseValueSQL('?', $this->platform);
             }
 
             $values[] = $placeholder;
@@ -1453,9 +1456,9 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
+            if (! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
                 $columns[]                = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
-                $this->columnTypes[$name] = $this->class->fieldMappings[$name]['type'];
+                $this->columnTypes[$name] = $this->class->getProperty($name)->getType();
             }
         }
 
@@ -1474,7 +1477,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $fieldMapping = $class->fieldMappings[$field];
+        $property = $class->getProperty($field);
 
 //        $m = $fieldMapping['declaringClass'];
 //        $fieldMapping['declaringClass'] = $m->name;
@@ -1483,16 +1486,16 @@ class BasicEntityPersister implements EntityPersister
 //
 //        $fieldMapping['declaringClass'] = $m;
 
-        $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
+        $columnAlias  = $this->getSQLColumnAlias($property->getColumnName());
         $sql          = sprintf(
             '%s.%s',
-            $this->getSQLTableAlias($fieldMapping['tableName'], ($alias == 'r' ? '' : $alias)),
+            $this->getSQLTableAlias($property->getTableName(), ($alias == 'r' ? '' : $alias)),
             $this->quoteStrategy->getColumnName($field, $class, $this->platform)
         );
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        return $fieldMapping['type']->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
+        return $property->getType()->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 
     /**
@@ -1607,9 +1610,8 @@ class BasicEntityPersister implements EntityPersister
         foreach ($columns as $column) {
             $placeholder = '?';
 
-            if (isset($this->class->fieldMappings[$field])) {
-                $fieldMapping = $this->class->fieldMappings[$field];
-                $placeholder  = $fieldMapping['type']->convertToDatabaseValueSQL($placeholder, $this->platform);
+            if (($property = $this->class->getProperty($field)) !== null) {
+                $placeholder = $property->getType()->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
             if (null !== $comparison) {
@@ -1669,9 +1671,9 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
-        if (isset($this->class->fieldMappings[$field])) {
-            $class     = isset($this->class->fieldMappings[$field]['inherited'])
-                ? $this->em->getClassMetadata($this->class->fieldMappings[$field]['inherited'])
+        if (($property = $this->class->getProperty($field)) !== null) {
+            $class     = ($property instanceof InheritedFieldMetadata)
+                ? $property->getDeclaringClass()
                 : $this->class;
             $tableAlias = $this->getSQLTableAlias($class->getTableName());
             $columnName = $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
@@ -1901,11 +1903,13 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getTypes($field, $value, ClassMetadata $class)
     {
-        $types = [];
+        $property    = $class->getProperty($field);
+        $hasProperty = $property !== null;
+        $types       = [];
 
         switch (true) {
-            case (isset($class->fieldMappings[$field])):
-                $types = array_merge($types, [$class->fieldMappings[$field]['type']]);
+            case $hasProperty:
+                $types = array_merge($types, [$property->getType()]);
                 break;
 
             case (isset($class->associationMappings[$field])):

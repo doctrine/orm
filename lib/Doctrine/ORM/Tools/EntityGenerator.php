@@ -22,6 +22,9 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
+use Doctrine\ORM\Mapping\PropertyMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -715,17 +718,17 @@ public function __construct(<params>)
         $requiredFields = [];
         $optionalFields = [];
 
-        foreach ($metadata->fieldMappings as $fieldMapping) {
-            if (empty($fieldMapping['nullable'])) {
-                $requiredFields[] = $fieldMapping;
+        foreach ($metadata->getProperties() as $property) {
+            if (! $property->isNullable()) {
+                $requiredFields[] = $property;
 
                 continue;
             }
 
-            $optionalFields[] = $fieldMapping;
+            $optionalFields[] = $property;
         }
 
-        $fieldMappings = array_merge($requiredFields, $optionalFields);
+        $mappings = array_merge($requiredFields, $optionalFields);
 
         /*foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
             $paramType = '\\' . ltrim($embeddedClass['class'], '\\');
@@ -737,29 +740,30 @@ public function __construct(<params>)
             $fields[] = '$this->' . $fieldName . ' = ' . $paramVariable . ';';
         }*/
 
-        foreach ($fieldMappings as $fieldMapping) {
+        foreach ($mappings as $property) {
             /*if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }*/
 
-            $fieldType  = $fieldMapping['type']->getName();
+            $fieldName  = $property->getFieldName();
+            $fieldType  = $property->getTypeName();
             $mappedType = $this->getType($fieldType);
-            $param      = '$' . $fieldMapping['fieldName'];
+            $param      = '$' . $fieldName;
 
-            $paramTypes[] = $mappedType . (!empty($fieldMapping['nullable']) ? '|null' : '');
+            $paramTypes[] = $mappedType . ($property->isNullable() ? '|null' : '');
             $paramVariables[] = $param;
 
             if ($fieldType === 'datetime') {
                 $param = $mappedType . ' ' . $param;
             }
 
-            if (!empty($fieldMapping['nullable'])) {
+            if ($property->isNullable()) {
                 $param .= ' = null';
             }
 
             $params[] = $param;
 
-            $fields[] = '$this->' . $fieldMapping['fieldName'] . ' = $' . $fieldMapping['fieldName'] . ';';
+            $fields[] = '$this->' . $fieldName . ' = $' . $fieldName . ';';
         }
 
         $maxParamTypeLength = max(array_map('strlen', $paramTypes));
@@ -1170,21 +1174,20 @@ public function __construct(<params>)
     {
         $methods = [];
 
-        foreach ($metadata->fieldMappings as $fieldMapping) {
+        foreach ($metadata->getProperties() as $fieldName => $property) {
             /*if (isset($fieldMapping['declaredField']) && isset($metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }*/
 
-            $fieldType = $fieldMapping['type']->getName();
-            $nullableField = $this->nullableFieldExpression($fieldMapping);
+            $fieldType = $property->getTypeName();
 
-            if (( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] || $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) &&
+            if (( ! $property->isPrimaryKey() || $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) &&
                 ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
-                $code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldType, $nullableField)) {
+                $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $fieldType, null)) {
                 $methods[] = $code;
             }
 
-            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldType, $nullableField)) {
+            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $fieldType, null)) {
                 $methods[] = $code;
             }
         }
@@ -1310,9 +1313,9 @@ public function __construct(<params>)
     {
         $lines = [];
 
-        foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
-                $metadata->isInheritedField($fieldMapping['fieldName']) /*||
+        foreach ($metadata->getProperties() as $fieldName => $property) {
+            if ($this->hasProperty($fieldName, $metadata) ||
+                $property instanceof InheritedFieldMetadata /*||
                 (
                     isset($fieldMapping['declaredField']) &&
                     isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
@@ -1321,9 +1324,11 @@ public function __construct(<params>)
                 continue;
             }
 
-            $lines[] = $this->generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldMapping['fieldName']
-                     . (isset($fieldMapping['options']['default']) ? ' = ' . var_export($fieldMapping['options']['default'], true) : null) . ";\n";
+            $options = $property->getOptions();
+
+            $lines[] = $this->generateFieldMappingPropertyDocBlock($property, $metadata);
+            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldName
+                     . (isset($options['default']) ? ' = ' . var_export($options['default'], true) : null) . ";\n";
         }
 
         return implode("\n", $lines);
@@ -1623,14 +1628,14 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array         $fieldMapping
+     * @param FieldMetadata $propertyMetadata
      * @param ClassMetadata $metadata
      *
      * @return string
      */
-    protected function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadata $metadata)
+    protected function generateFieldMappingPropertyDocBlock(FieldMetadata $propertyMetadata, ClassMetadata $metadata)
     {
-        $fieldType = $fieldMapping['type']->getName();
+        $fieldType = $propertyMetadata->getTypeName();
 
         $lines = [];
 
@@ -1642,39 +1647,40 @@ public function __construct(<params>)
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
 
-            $column = [];
-            if (isset($fieldMapping['columnName'])) {
-                $column[] = 'name="' . $fieldMapping['columnName'] . '"';
+            $column = ['type="' . $fieldType . '"'];
+
+            if ($propertyMetadata->getColumnName()) {
+                $column[] = 'name="' . $propertyMetadata->getColumnName() . '"';
             }
 
-            if (isset($fieldMapping['type'])) {
-                $column[] = 'type="' . $fieldType . '"';
+            if (is_int($propertyMetadata->getLength())) {
+                $column[] = 'length=' . $propertyMetadata->getLength();
             }
 
-            if (isset($fieldMapping['length']) && $fieldMapping['length']) {
-                $column[] = 'length=' . $fieldMapping['length'];
+            if (is_int($propertyMetadata->getPrecision())) {
+                $column[] = 'precision=' .  $propertyMetadata->getPrecision();
             }
 
-            if (isset($fieldMapping['precision']) && $fieldMapping['precision']) {
-                $column[] = 'precision=' .  $fieldMapping['precision'];
+            if (is_int($propertyMetadata->getScale())) {
+                $column[] = 'scale=' .  $propertyMetadata->getScale();
             }
 
-            if (isset($fieldMapping['scale']) && $fieldMapping['scale']) {
-                $column[] = 'scale=' . $fieldMapping['scale'];
+            if ($propertyMetadata->isNullable()) {
+                $column[] = 'nullable=' .  var_export($propertyMetadata->isNullable(), true);
             }
 
-            if (isset($fieldMapping['nullable']) && $fieldMapping['nullable']) {
-                $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
+            if ($propertyMetadata->isUnique()) {
+                $column[] = 'unique=' . var_export($propertyMetadata->isUnique(), true);
             }
 
-            if (isset($fieldMapping['unique']) && $fieldMapping['unique']) {
-                $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
+            if ($propertyMetadata->getColumnDefinition()) {
+                $column[] = 'columnDefinition="' . $propertyMetadata->getColumnDefinition() . '"';
             }
 
             $options = [];
 
-            if (isset($fieldMapping['options']) && $fieldMapping['options']) {
-                foreach ($fieldMapping['options'] as $key => $value) {
+            if ($propertyMetadata->getOptions()) {
+                foreach ($propertyMetadata->getOptions() as $key => $value) {
                     $options[] = sprintf('"%s"=%s', $key, str_replace("'", '"', var_export($value, true)));
                 }
             }
@@ -1683,13 +1689,9 @@ public function __construct(<params>)
                 $column[] = 'options={'.implode(',', $options).'}';
             }
 
-            if (isset($fieldMapping['columnDefinition'])) {
-                $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
-            }
-
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Column(' . implode(', ', $column) . ')';
 
-            if (isset($fieldMapping['id']) && $fieldMapping['id']) {
+            if ($propertyMetadata->isPrimaryKey()) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
 
                 if ($generatorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
@@ -1715,7 +1717,7 @@ public function __construct(<params>)
                 }
             }
 
-            if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+            if ($metadata->versionField === $propertyMetadata->getFieldName()) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Version';
             }
         }
@@ -1822,17 +1824,13 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array $fieldMapping
+     * @param PropertyMetadata $property
      *
      * @return string|null
      */
-    private function nullableFieldExpression(array $fieldMapping)
+    private function nullableFieldExpression(PropertyMetadata $property)
     {
-        if (isset($fieldMapping['nullable']) && true === $fieldMapping['nullable']) {
-            return 'null';
-        }
-
-        return null;
+        return $property->isNullable() ? 'null' : null;
     }
 
     /**
