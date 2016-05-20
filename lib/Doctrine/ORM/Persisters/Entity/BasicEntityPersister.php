@@ -627,7 +627,7 @@ class BasicEntityPersister implements EntityPersister
 
                 $this->columnTypes[$columnName] = $property->getType();
 
-                $result[$this->getOwningTable($field)][$columnName] = $newVal;
+                $result[$property->getTableName()][$columnName] = $newVal;
 
                 continue;
             }
@@ -1432,7 +1432,7 @@ class BasicEntityPersister implements EntityPersister
         $columns = array();
 
         foreach ($this->class->reflFields as $name => $field) {
-            if ($this->class->isVersioned && $this->class->versionField == $name) {
+            if ($this->class->isVersioned && $this->class->versionField === $name) {
                 continue;
             }
 

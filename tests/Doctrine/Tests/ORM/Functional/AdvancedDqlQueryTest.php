@@ -2,10 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Company\CompanyEmployee,
-    Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyPerson,
-    Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyCar;
 
 /**
  * Functional Query tests.
@@ -17,6 +16,7 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->generateFixture();
