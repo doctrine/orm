@@ -158,6 +158,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if ($parentClass !== $rootClass) {
                 $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClassName);
+
                 $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
             }
         }
@@ -179,9 +180,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if ($isPostInsertId) {
                 $generatedId = $idGenerator->generate($this->em, $entity);
-                $id = [
-                    $this->class->identifier[0] => $generatedId
-                ];
+                $id          = [$this->class->identifier[0] => $generatedId];
+
                 $postInsertIds[] = [
                     'generatedId' => $generatedId,
                     'entity' => $entity,
@@ -525,7 +525,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->class->reflFields as $name => $field) {
             $property = $this->class->getProperty($name);
 
-            if (($property instanceof InheritedFieldMetadata && ! $property->isPrimaryKey())
+            if (($property instanceof InheritedFieldMetadata)
                 || isset($this->class->associationMappings[$name]['inherited'])
                 || ($this->class->isVersioned && $this->class->versionField === $name)
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
