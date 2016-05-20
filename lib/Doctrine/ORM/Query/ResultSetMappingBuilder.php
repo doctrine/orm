@@ -406,7 +406,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                         $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
                     }
                 } else {
-                    if ( ! isset($classMetadata->fieldMappings[$fieldName])) {
+                    if ( ! $classMetadata->getProperty($fieldName)) {
                         throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
                     }
 
@@ -451,7 +451,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
             if (isset($this->fieldMappings[$columnName])) {
                 $class = $this->em->getClassMetadata($this->declaringClasses[$columnName]);
-                $sql  .= $class->fieldMappings[$this->fieldMappings[$columnName]]['columnName'];
+                $sql  .= $class->getProperty($this->fieldMappings[$columnName])->getColumnName();
             } else if (isset($this->metaMappings[$columnName])) {
                 $sql .= $this->metaMappings[$columnName];
             } else if (isset($this->discriminatorColumns[$dqlAlias])) {

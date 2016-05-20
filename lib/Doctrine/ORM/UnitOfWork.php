@@ -2565,8 +2565,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($data as $field => $value) {
-            if (isset($class->fieldMappings[$field])) {
-                $class->reflFields[$field]->setValue($entity, $value);
+            if (($property = $class->getProperty($field)) !== null) {
+                $property->setValue($entity, $value);
             }
         }
 
@@ -3109,12 +3109,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
     {
-        $oid   = spl_object_hash($entity);
-        $class = $this->em->getClassMetadata(get_class($entity));
-
+        $oid          = spl_object_hash($entity);
+        $class        = $this->em->getClassMetadata(get_class($entity));
         $isAssocField = isset($class->associationMappings[$propertyName]);
 
-        if ( ! $isAssocField && ! isset($class->fieldMappings[$propertyName])) {
+        if ( ! $isAssocField && ! $class->getProperty($propertyName)) {
             return; // ignore non-persistent fields
         }
 

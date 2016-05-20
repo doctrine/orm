@@ -35,7 +35,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
      */
     public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return $class->fieldMappings[$fieldName]['columnName'];
+        return $class->getProperty($fieldName)->getColumnName();
     }
 
     /**
