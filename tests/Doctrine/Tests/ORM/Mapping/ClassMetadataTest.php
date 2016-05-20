@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\FieldMetadata;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -195,15 +196,13 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSetInvalidVersionMapping_ThrowsException()
     {
-        $field = array();
-        $field['fieldName'] = 'foo';
-        $field['type'] = 'string';
-
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new RuntimeReflectionService());
-
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
-        $cm->setVersionMapping($field);
+
+        $metadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $property = new FieldMetadata($metadata, 'foo', Type::getType('string'));
+
+        $metadata->initializeReflection(new RuntimeReflectionService());
+        $metadata->setVersionMapping($property);
     }
 
     public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()

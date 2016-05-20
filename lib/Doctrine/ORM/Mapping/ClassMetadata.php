@@ -2306,6 +2306,8 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $this->properties[$fieldName] = $property;
+
+        return $property;
     }
 
     /**
@@ -3017,24 +3019,26 @@ class ClassMetadata implements ClassMetadataInterface
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @param array $mapping The version field mapping array.
+     * @param FieldMetadata $fieldMetadata
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function setVersionMapping(array &$mapping)
+    public function setVersionMapping(FieldMetadata $fieldMetadata)
     {
-        $this->isVersioned = true;
-        $this->versionField = $mapping['fieldName'];
+        $this->isVersioned  = true;
+        $this->versionField = $fieldMetadata->getFieldName();
 
-        if ( ! isset($mapping['default'])) {
-            if (in_array($mapping['type'], array('integer', 'bigint', 'smallint'))) {
-                $mapping['default'] = 1;
-            } else if ($mapping['type'] == 'datetime') {
-                $mapping['default'] = 'CURRENT_TIMESTAMP';
+        $options = $fieldMetadata->getOptions();
+
+        if ( ! isset($options['default'])) {
+            if (in_array($fieldMetadata->getTypeName(), array('integer', 'bigint', 'smallint'))) {
+                $fieldMetadata->setOptions(array_merge($options, ['default' => 1]));
+            } else if ($fieldMetadata->getTypeName() === 'datetime') {
+                $fieldMetadata->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
             } else {
-                throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
+                throw MappingException::unsupportedOptimisticLockingType($this->name, $this->versionField, $fieldMetadata->getType());
             }
         }
     }
