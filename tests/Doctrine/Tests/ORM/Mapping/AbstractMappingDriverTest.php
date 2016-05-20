@@ -1203,12 +1203,11 @@ class User
         ]
         );
 
-        $mapping = ['fieldName' => 'version', 'type' => 'integer'];
+        $property = $metadata->addProperty('version', Type::getType('integer'));
 
-        $metadata->setVersionMapping($mapping);
-        $metadata->addProperty('version', Type::getType('integer'));
-
+        $metadata->setVersionMapping($property);
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+
         $metadata->mapOneToOne(
             [
                'fieldName' => 'address',
