@@ -264,14 +264,13 @@ class XmlDriver extends FileDriver
                 $fieldName    = (string) $mapping['name'];
                 $fieldType    = Type::getType((string) $mapping['type']);
                 $fieldMapping = $this->columnToArray($mapping);
+                $property     = $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
                 if (isset($fieldMapping['version'])) {
-                    $metadata->setVersionMapping($fieldMapping);
+                    $metadata->setVersionMapping($property);
 
                     unset($fieldMapping['version']);
                 }
-
-                $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
             }
         }
 

@@ -287,15 +287,18 @@ class FieldBuilder
     public function build()
     {
         $cm = $this->builder->getClassMetadata();
+
         if ($this->generatedValue) {
-            $cm->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue));
+            $cm->setIdGeneratorType(
+                constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue)
+            );
         }
+
+        $property = $cm->addProperty($this->name, $this->type, $this->mapping);
 
         if ($this->version) {
-            $cm->setVersionMapping($this->mapping);
+            $cm->setVersionMapping($property);
         }
-
-        $cm->addProperty($this->name, $this->type, $this->mapping);
         
         if ($this->sequenceDef) {
             $cm->setSequenceGeneratorDefinition($this->sequenceDef);
