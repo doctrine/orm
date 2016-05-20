@@ -288,23 +288,20 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         // Evaluate annotations on properties/fields
-        /* @var $property \ReflectionProperty */
-        foreach ($class->getProperties() as $property) {
-            if ($metadata->isMappedSuperclass && ! $property->isPrivate()
-                ||
-                $metadata->isInheritedField($property->name)
-                ||
-                $metadata->isInheritedAssociation($property->name)
-                ||
-                $metadata->isInheritedEmbeddedClass($property->name)) {
+        /* @var $reflProperty \ReflectionProperty */
+        foreach ($class->getProperties() as $reflProperty) {
+            if (($metadata->isMappedSuperclass && ! $reflProperty->isPrivate())
+                || $metadata->isInheritedField($reflProperty->name)
+                || $metadata->isInheritedAssociation($reflProperty->name)
+                || $metadata->isInheritedEmbeddedClass($reflProperty->name)) {
                 continue;
             }
 
             $mapping = [];
-            $mapping['fieldName'] = $property->getName();
+            $mapping['fieldName'] = $reflProperty->getName();
 
             // Evaluate @Cache annotation
-            if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Cache::class)) !== null) {
+            if (($cacheAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Cache::class)) !== null) {
                 $mapping['cache'] = $metadata->getAssociationCacheDefaults(
                     $mapping['fieldName'],
                     [
@@ -316,9 +313,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = [];
 
-            if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($property, Annotation\JoinColumn::class)) {
+            if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumn::class)) {
                 $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
-            } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($property, Annotation\JoinColumns::class)) {
+            } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumns::class)) {
                 foreach ($joinColumnsAnnot->value as $joinColumn) {
                     $joinColumns[] = $this->joinColumnToArray($joinColumn);
                 }
@@ -326,31 +323,31 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             // Field can only be annotated with one of:
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
-            if ($columnAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Column::class)) {
+            if ($columnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Column::class)) {
                 if ($columnAnnot->type == null) {
-                    throw MappingException::propertyTypeIsRequired($className, $property->getName());
+                    throw MappingException::propertyTypeIsRequired($className, $reflProperty->getName());
                 }
 
                 $mapping = $this->columnToArray($columnAnnot);
 
-                if ($idAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Id::class)) {
+                if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
                     $mapping['id'] = true;
                 }
 
-                if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($property, Annotation\GeneratedValue::class)) {
+                if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\GeneratedValue::class)) {
                     $metadata->setIdGeneratorType(
                         constant(sprintf('%s::GENERATOR_TYPE_%s', ClassMetadata::class, $generatedValueAnnot->strategy))
                     );
                 }
 
-                if ($this->reader->getPropertyAnnotation($property, Annotation\Version::class)) {
-                    $metadata->setVersionMapping($mapping);
+                $property = $metadata->addProperty($reflProperty->getName(), Type::getType($columnAnnot->type), $mapping);
+
+                if ($this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class)) {
+                    $metadata->setVersionMapping($property);
                 }
 
-                $metadata->addProperty($property->getName(), Type::getType($columnAnnot->type), $mapping);
-
                 // Check for SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Annotation\SequenceGenerator::class)) {
+                if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\SequenceGenerator::class)) {
                     $metadata->setSequenceGeneratorDefinition(
                         [
                             'sequenceName' => $seqGeneratorAnnot->sequenceName,
@@ -358,17 +355,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
                             'initialValue' => $seqGeneratorAnnot->initialValue
                         ]
                     );
-                } else if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
+                } else if ($this->reader->getPropertyAnnotation($reflProperty, 'Doctrine\ORM\Mapping\TableGenerator')) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
-                } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Annotation\CustomIdGenerator::class)) {
-                    $metadata->setCustomGeneratorDefinition(
-                        [
-                            'class' => $customGeneratorAnnot->class
-                        ]
-                    );
+                } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\CustomIdGenerator::class)) {
+                    $metadata->setCustomGeneratorDefinition(['class' => $customGeneratorAnnot->class]);
                 }
-            } else if ($oneToOneAnnot = $this->reader->getPropertyAnnotation($property, Annotation\OneToOne::class)) {
-                if ($idAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Id::class)) {
+            } else if ($oneToOneAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OneToOne::class)) {
+                if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
                     $mapping['id'] = true;
                 }
 
@@ -380,7 +373,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $oneToOneAnnot->fetch);
                 $metadata->mapOneToOne($mapping);
-            } else if ($oneToManyAnnot = $this->reader->getPropertyAnnotation($property, Annotation\OneToMany::class)) {
+            } else if ($oneToManyAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OneToMany::class)) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
@@ -388,13 +381,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $oneToManyAnnot->fetch);
 
-                if ($orderByAnnot = $this->reader->getPropertyAnnotation($property, Annotation\OrderBy::class)) {
+                if ($orderByAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OrderBy::class)) {
                     $mapping['orderBy'] = $orderByAnnot->value;
                 }
 
                 $metadata->mapOneToMany($mapping);
-            } else if ($manyToOneAnnot = $this->reader->getPropertyAnnotation($property, Annotation\ManyToOne::class)) {
-                if ($idAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Id::class)) {
+            } else if ($manyToOneAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\ManyToOne::class)) {
+                if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
                     $mapping['id'] = true;
                 }
 
@@ -404,10 +397,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
                 $metadata->mapManyToOne($mapping);
-            } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($property, Annotation\ManyToMany::class)) {
+            } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\ManyToMany::class)) {
                 $joinTable = [];
 
-                if ($joinTableAnnot = $this->reader->getPropertyAnnotation($property, Annotation\JoinTable::class)) {
+                if ($joinTableAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinTable::class)) {
                     $joinTable = [
                         'name' => $joinTableAnnot->name,
                         'schema' => $joinTableAnnot->schema
@@ -431,12 +424,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
 
-                if ($orderByAnnot = $this->reader->getPropertyAnnotation($property, Annotation\OrderBy::class)) {
+                if ($orderByAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OrderBy::class)) {
                     $mapping['orderBy'] = $orderByAnnot->value;
                 }
 
                 $metadata->mapManyToMany($mapping);
-            } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, Annotation\Embedded::class)) {
+            } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Embedded::class)) {
                 $mapping['class'] = $embeddedAnnot->class;
                 $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
 
