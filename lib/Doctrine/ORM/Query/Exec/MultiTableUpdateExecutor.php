@@ -20,9 +20,7 @@
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\InheritedFieldMetadata;
-use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Utility\PersisterHelper;
