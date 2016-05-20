@@ -276,8 +276,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         );
 
         $this->region->addReturn('get', $entry);
-        $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $data[0]));
-        $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $data[1]));
+        $this->region->addReturn('getMultiple', array(
+            new EntityCacheEntry(Country::CLASSNAME, $data[0]),
+            new EntityCacheEntry(Country::CLASSNAME, $data[1])
+        ));
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
@@ -434,8 +436,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $entry->time = time() - 100;
 
         $this->region->addReturn('get', $entry);
-        $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $entities[0]));
-        $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $entities[1]));
+        $this->region->addReturn('getMultiple', array(
+            new EntityCacheEntry(Country::CLASSNAME, $entities[0]),
+            new EntityCacheEntry(Country::CLASSNAME, $entities[1])
+        ));
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
@@ -457,8 +461,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         );
 
         $this->region->addReturn('get', $entry);
-        $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $data[0]));
-        $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $data[1]));
+        $this->region->addReturn('getMultiple', array(
+            new EntityCacheEntry(Country::CLASSNAME, $data[0]),
+            new EntityCacheEntry(Country::CLASSNAME, $data[1])
+        ));
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
@@ -475,7 +481,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         ));
 
         $this->region->addReturn('get', $entry);
-        $this->region->addReturn('get', null);
+        $this->region->addReturn('getMultiple', [null]);
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
