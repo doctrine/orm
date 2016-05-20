@@ -348,7 +348,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @var array
      */
-    public $properties = [];
+    protected $properties = [];
 
     /**
      * READ-ONLY: The field mappings of the class.
@@ -799,7 +799,7 @@ class ClassMetadata implements ClassMetadataInterface
         // This metadata is always serialized/cached.
         $serialized = [
             'associationMappings',
-            'fieldMappings',
+            'properties',
             'fieldNames',
             //'embeddedClasses',
             'identifier',
@@ -935,7 +935,7 @@ class ClassMetadata implements ClassMetadataInterface
             $this->reflFields[$property] = $fieldRefl;
         }*/
 
-        foreach ($this->fieldMappings as $field => $mapping) {
+        foreach ($this->properties as $field => $property) {
             /*if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
@@ -945,7 +945,7 @@ class ClassMetadata implements ClassMetadataInterface
                 continue;
             }*/
 
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($mapping['declaringClass']->name, $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($property->getDeclaringClass()->name, $field);
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
@@ -1193,8 +1193,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getColumnName($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName])
-            ? $this->fieldMappings[$fieldName]['columnName']
+        return isset($this->properties[$fieldName])
+            ? $this->properties[$fieldName]->getColumnName()
             : $fieldName;
     }
 
@@ -1204,17 +1204,17 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @param string $fieldName The field name.
      *
-     * @return array The field mapping.
+     * @return PropertyMetadata The field mapping.
      *
      * @throws MappingException
      */
     public function getFieldMapping($fieldName)
     {
-        if ( ! isset($this->fieldMappings[$fieldName])) {
+        if ( ! isset($this->properties[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
 
-        return $this->fieldMappings[$fieldName];
+        return $this->properties[$fieldName];
     }
 
     /**
@@ -1840,7 +1840,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function hasField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]);
+        return isset($this->properties[$fieldName]);
     }
 
     /**
@@ -1869,8 +1869,8 @@ class ClassMetadata implements ClassMetadataInterface
         $columnNames = [];
 
         foreach ($this->identifier as $idProperty) {
-            if (isset($this->fieldMappings[$idProperty])) {
-                $columnNames[] = $this->fieldMappings[$idProperty]['columnName'];
+            if (($property = $this->getProperty($idProperty)) !== null) {
+                $columnNames[] = $property->getColumnName();
 
                 continue;
             }
@@ -2010,8 +2010,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getTypeOfField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName])
-            ? $this->fieldMappings[$fieldName]['type']
+        return isset($this->properties[$fieldName])
+            ? $this->properties[$fieldName]->getType()
             : null;
     }
 
@@ -2154,48 +2154,31 @@ class ClassMetadata implements ClassMetadataInterface
      * Sets the override for a mapped field.
      *
      * @param string $fieldName
+     * @param Type   $type
      * @param array  $overrideMapping
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function setAttributeOverride($fieldName, array $overrideMapping)
+    public function setAttributeOverride($fieldName, Type $type, array $overrideMapping)
     {
-        if ( ! isset($this->fieldMappings[$fieldName])) {
+        $property = $this->getProperty($fieldName);
+
+        if ( ! $property) {
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
-        $mapping = $this->fieldMappings[$fieldName];
-
-        if (isset($mapping['id'])) {
-            $overrideMapping['id'] = $mapping['id'];
-        }
-
-        $type = isset($overrideMapping['type'])
-            ? $overrideMapping['type']
-            : $mapping['type'];
-
-        if ( ! ($type instanceof Type)) {
-            $type = Type::getType($type);
-        }
-
-        $overrideMapping['type'] = $type;
-
-        if ( ! isset($overrideMapping['fieldName'])) {
-            $overrideMapping['fieldName'] = $mapping['fieldName'];
-        }
-
-        if ($overrideMapping['type'] !== $mapping['type']) {
+        if ($type !== $property->getType()) {
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
         }
 
-        unset($this->fieldMappings[$fieldName]);
-        unset($this->fieldNames[$mapping['columnName']]);
+        $overrideMapping['id'] = $property->isPrimaryKey();
 
-        $this->validateAndCompleteFieldMapping($overrideMapping);
+        unset($this->properties[$fieldName]);
+        unset($this->fieldNames[$property->getColumnName()]);
 
-        $this->fieldMappings[$fieldName] = $overrideMapping;
+        $this->addProperty($fieldName, $type, $overrideMapping);
     }
 
     /**
@@ -2217,7 +2200,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritedField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]['inherited']);
+        return $this->properties[$fieldName] instanceof InheritedFieldMetadata;
     }
 
     /**
@@ -2321,6 +2304,24 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
+     * @return array<PropertyMetadata>
+     */
+    public function getProperties()
+    {
+        return $this->properties;
+    }
+
+    /**
+     * @param string $fieldName
+     *
+     * @return PropertyMetadata|null
+     */
+    public function getProperty($fieldName)
+    {
+        return $this->properties[$fieldName] ?? null;
+    }
+
+    /**
      * @param string $fieldName
      * @param Type   $type
      * @param array  $mapping
@@ -2394,8 +2395,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addInheritedFieldMapping(array $fieldMapping)
     {
-        $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        $this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
+        //$this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        //$this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
     }
 
     /**
@@ -3097,7 +3098,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getFieldNames()
     {
-        return array_keys($this->fieldMappings);
+        return array_keys($this->properties);
     }
 
     /**
@@ -3144,10 +3145,8 @@ class ClassMetadata implements ClassMetadataInterface
         $quotedColumnNames = [];
 
         foreach ($this->identifier as $idProperty) {
-            if (isset($this->fieldMappings[$idProperty])) {
-                $quotedColumnNames[] = isset($this->fieldMappings[$idProperty]['quoted'])
-                    ? $platform->quoteIdentifier($this->fieldMappings[$idProperty]['columnName'])
-                    : $this->fieldMappings[$idProperty]['columnName'];
+            if (isset($this->properties[$idProperty])) {
+                $quotedColumnNames[] = $this->getQuotedColumnName($idProperty, $platform);
 
                 continue;
             }
@@ -3181,9 +3180,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getQuotedColumnName($field, $platform)
     {
-        return isset($this->fieldMappings[$field]['quoted'])
-            ? $platform->quoteIdentifier($this->fieldMappings[$field]['columnName'])
-            : $this->fieldMappings[$field]['columnName'];
+        return $platform->quoteIdentifier($this->properties[$field]->getColumnName());
     }
 
     /**
@@ -3347,7 +3344,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     private function assertFieldNotMapped($fieldName)
     {
-        if (isset($this->fieldMappings[$fieldName])
+        if (isset($this->properties[$fieldName])
             || isset($this->associationMappings[$fieldName])
             /*|| isset($this->embeddedClasses[$fieldName])*/) {
             throw MappingException::duplicateFieldMapping($this->name, $fieldName);
