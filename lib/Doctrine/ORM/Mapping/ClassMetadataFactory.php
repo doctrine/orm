@@ -445,17 +445,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        /*foreach ($parentClass->fieldMappings as $mapping) {
-            if ( ! isset($mapping['tableName'])) {
-                $mapping['tableName'] = ! $parentClass->isMappedSuperclass ? $parentClass->getTableName() : null;
-            }
-
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
-                $mapping['inherited'] = $parentClass->name;
-            }
-
-            $subClass->addInheritedFieldMapping($mapping);
-        }*/
+        foreach ($parentClass->getProperties() as $property) {
+            $subClass->addInheritedProperty($property->getDeclaringClass(), $property->getFieldName());
+        }
 
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;

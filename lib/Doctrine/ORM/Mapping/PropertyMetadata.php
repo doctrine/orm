@@ -53,4 +53,14 @@ interface PropertyMetadata
      * @return boolean
      */
     public function isPrimaryKey();
+
+    /**
+     * @return boolean
+     */
+    public function isAssociation();
+
+    /**
+     * @return boolean
+     */
+    public function isField();
 }
