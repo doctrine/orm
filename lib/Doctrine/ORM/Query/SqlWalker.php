@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -629,11 +630,14 @@ class SqlWalker implements TreeWalker
     {
         $class = $this->queryComponents[$identificationVariable]['metadata'];
 
-        if (
-            $fieldName !== null && $class->isInheritanceTypeJoined() &&
-            isset($class->fieldMappings[$fieldName]['inherited'])
-        ) {
-            $class = $this->em->getClassMetadata($class->fieldMappings[$fieldName]['inherited']);
+        if (!$fieldName) {
+            return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
+        }
+
+        $property = $class->getProperty($fieldName);
+
+        if ($class->isInheritanceTypeJoined() && $property instanceof InheritedFieldMetadata) {
+            $class = $property->getDeclaringClass();
         }
 
         return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
@@ -1295,25 +1299,25 @@ class SqlWalker implements TreeWalker
                 $dqlAlias     = $expr->identificationVariable;
                 $qComp        = $this->queryComponents[$dqlAlias];
                 $class        = $qComp['metadata'];
-                $fieldMapping = $class->fieldMappings[$fieldName];
-                $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
+                $property     = $class->getProperty($fieldName);
+                $columnAlias  = $this->getSQLColumnAlias($property->getColumnName());
                 $resultAlias  = $selectExpression->fieldIdentificationVariable ?: $fieldName;
                 $col          = sprintf(
                     '%s.%s',
-                    $this->getSQLTableAlias($fieldMapping['tableName'], $dqlAlias),
+                    $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
                     $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
                 );
 
                 $sql .= sprintf(
                     '%s AS %s',
-                    $fieldMapping['type']->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform()),
+                    $property->getType()->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform()),
                     $columnAlias
                 );
 
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldMapping['type']);
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $property->getType());
                     $this->scalarFields[$dqlAlias][$fieldName] = $columnAlias;
                 }
 
@@ -1387,21 +1391,21 @@ class SqlWalker implements TreeWalker
                 $sqlParts = array();
 
                 // Select all fields from the queried class
-                foreach ($class->fieldMappings as $fieldName => $mapping) {
+                foreach ($class->getProperties() as $fieldName => $property) {
                     if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet)) {
                         continue;
                     }
 
-                    $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
+                    $columnAlias = $this->getSQLColumnAlias($property->getColumnName());
                     $col         = sprintf(
                         '%s.%s',
-                        $this->getSQLTableAlias($mapping['tableName'], $dqlAlias),
+                        $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
                         $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
                     );
 
                     $sqlParts[] = sprintf(
                         '%s AS %s',
-                        $mapping['type']->convertToPHPValueSQL($col, $this->platform),
+                        $property->getType()->convertToPHPValueSQL($col, $this->platform),
                         $columnAlias
                     );
 
@@ -1418,21 +1422,21 @@ class SqlWalker implements TreeWalker
                     foreach ($class->subClasses as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 
-                        foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                            if (isset($mapping['inherited']) || ($partialFieldSet && !in_array($fieldName, $partialFieldSet))) {
+                        foreach ($subClass->getProperties() as $fieldName => $property) {
+                            if ($property instanceof InheritedFieldMetadata || ($partialFieldSet && !in_array($fieldName, $partialFieldSet))) {
                                 continue;
                             }
 
-                            $columnAlias = $this->getSQLColumnAlias($mapping['columnName']);
+                            $columnAlias = $this->getSQLColumnAlias($property->getColumnName());
                             $col         = sprintf(
                                 '%s.%s',
-                                $this->getSQLTableAlias($mapping['tableName'], $dqlAlias),
+                                $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
                                 $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform)
                             );
 
                             $sqlParts[] = sprintf(
                                 '%s AS %s',
-                                $mapping['type']->convertToPHPValueSQL($col, $this->platform),
+                                $property->getType()->convertToPHPValueSQL($col, $this->platform),
                                 $columnAlias
                             );
 
@@ -1544,7 +1548,7 @@ class SqlWalker implements TreeWalker
                     $dqlAlias  = $e->identificationVariable;
                     $qComp     = $this->queryComponents[$dqlAlias];
                     $class     = $qComp['metadata'];
-                    $fieldType = $class->fieldMappings[$e->field]['type'];
+                    $fieldType = $class->getProperty($e->field)->getType();
 
                     $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;

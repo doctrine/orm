@@ -407,16 +407,13 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
             $class                 = $this->queryComponents[$dqlAliasForFieldAlias]['metadata'];
 
-            // If the field is from a joined child table, we won't be ordering
-            // on it.
-            if ( ! isset($class->fieldMappings[$fieldName])) {
+            // If the field is from a joined child table, we won't be ordering on it.
+            if (($property = $class->getProperty($fieldName)) === null) {
                 continue;
             }
 
-            $fieldMapping = $class->fieldMappings[$fieldName];
-
             // Get the SQL table alias for the entity and field and the column name as will appear in the select list
-            $tableAlias = $this->getSQLTableAlias($fieldMapping['tableName'], $dqlAliasForFieldAlias);
+            $tableAlias = $this->getSQLTableAlias($property->getTableName(), $dqlAliasForFieldAlias);
             $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->em->getConnection()->getDatabasePlatform());
 
             // Compose search/replace patterns
@@ -506,12 +503,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping
         $sqlIdentifier = [];
 
-        foreach ($rootIdentifier as $property) {
-            if (isset($rootClass->fieldMappings[$property])) {
-                foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
+        foreach ($rootIdentifier as $identifier) {
+            if (($property = $rootClass->getProperty($identifier)) !== null) {
+                foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
-                        $sqlIdentifier[$property] = array(
-                            'type'  => $rootClass->fieldMappings[$property]['type'],
+                        $sqlIdentifier[$identifier] = array(
+                            'type'  => $property->getType(),
                             'alias' => $alias,
                         );
                     }

@@ -90,7 +90,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             );
         }
 
-        $this->_getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->fieldMappings[$identifier]['type']);
+        $this->_getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->getProperty($identifier)->getType());
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
