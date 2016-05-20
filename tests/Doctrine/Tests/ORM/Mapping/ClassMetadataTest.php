@@ -1219,7 +1219,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->setSequenceGeneratorDefinition(['sequenceName' => '`foo`']);
+        $cm->setSequenceGeneratorDefinition(['sequenceName' => 'foo']);
 
         self::assertEquals(['sequenceName' => 'foo', 'quoted' => true], $cm->sequenceGeneratorDefinition);
     }

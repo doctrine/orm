@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -65,7 +66,7 @@ class QuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata(CmsUser::class);
-        $cm->addProperty('name', Type::getType('string'), ['columnName' => '`name`']);
+        $cm->addProperty('name', Type::getType('string'), ['columnName' => 'name']);
         $cm->addProperty('id', Type::getType('string'));
 
         self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
@@ -75,7 +76,7 @@ class QuoteStrategyTest extends OrmTestCase
     public function testGetTableName()
     {
         $cm = $this->createClassMetadata(CmsUser::class);
-        $cm->setPrimaryTable(['name'=>'`cms_user`']);
+        $cm->setPrimaryTable(['name'=>'cms_user']);
         self::assertEquals('"cms_user"', $this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata(CmsUser::class);
@@ -91,23 +92,19 @@ class QuoteStrategyTest extends OrmTestCase
 
         $cm1->mapManyToMany(
             [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser',
-            'inversedBy'    => 'users',
-            'joinTable'     => [
-                'name'  => '`cmsaddress_cmsuser`'
-            ]
+                'fieldName'     => 'user',
+                'targetEntity'  => 'CmsUser',
+                'inversedBy'    => 'users',
+                'joinTable'     => ['name'  => 'cmsaddress_cmsuser']
             ]
         );
 
         $cm2->mapManyToMany(
             [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser',
-            'inversedBy'    => 'users',
-            'joinTable'     => [
-                    'name'  => 'cmsaddress_cmsuser'
-            ]
+                'fieldName'     => 'user',
+                'targetEntity'  => 'CmsUser',
+                'inversedBy'    => 'users',
+                'joinTable'     => ['name'  => 'cmsaddress_cmsuser']
             ]
         );
 
@@ -125,7 +122,7 @@ class QuoteStrategyTest extends OrmTestCase
             Type::getType('string'),
             [
                 'id'         => true,
-                'columnName' => '`id`',
+                'columnName' => 'id',
             ]
         );
 
@@ -158,14 +155,10 @@ class QuoteStrategyTest extends OrmTestCase
 
         $cm->mapOneToOne(
             [
-            'id'            => true,
-            'fieldName'     => 'article',
-            'targetEntity'  => DDC117Article::class,
-            'joinColumns'    => [
-                [
-                'name'  => '`article`'
-                ]
-            ],
+                'id'            => true,
+                'fieldName'     => 'article',
+                'targetEntity'  => DDC117Article::class,
+                'joinColumns'    => [['name'  => 'article']],
             ]
         );
 
@@ -178,14 +171,10 @@ class QuoteStrategyTest extends OrmTestCase
 
         $cm->mapOneToOne(
             [
-            'id'            => true,
-            'fieldName'     => 'article',
-            'targetEntity'  => DDC117Article::class,
-            'joinColumns'    => [
-                [
-                'name'  => '`article`'
-                ]
-            ],
+                'id'            => true,
+                'fieldName'     => 'article',
+                'targetEntity'  => DDC117Article::class,
+                'joinColumns'    => [['name'  => 'article']],
             ]
         );
 
@@ -199,14 +188,10 @@ class QuoteStrategyTest extends OrmTestCase
 
         $cm->mapOneToOne(
             [
-            'id'            => true,
-            'fieldName'     => 'article',
-            'targetEntity'  => DDC117Article::class,
-            'joinColumns'    => [
-                [
-                'name'  => '`article`'
-                ]
-            ],
+                'id'            => true,
+                'fieldName'     => 'article',
+                'targetEntity'  => DDC117Article::class,
+                'joinColumns'    => [['name'  => 'article']],
             ]
         );
 
