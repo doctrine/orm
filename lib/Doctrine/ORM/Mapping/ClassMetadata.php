@@ -945,6 +945,8 @@ class ClassMetadata implements ClassMetadataInterface
                 continue;
             }*/
 
+            $property->wakeupReflection($reflService);
+
             $this->reflFields[$field] = $reflService->getAccessibleProperty($property->getDeclaringClass()->name, $field);
         }
 

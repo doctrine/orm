@@ -629,7 +629,7 @@ class BasicEntityPersister implements EntityPersister
 
                 $this->columnTypes[$columnName] = $property->getType();
 
-                $result[$property->getTableName()][$columnName] = $newVal;
+                $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
                 continue;
             }
