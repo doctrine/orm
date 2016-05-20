@@ -423,7 +423,7 @@ class SchemaTool
         $pkColumns = [];
 
         foreach ($class->getProperties() as $property) {
-            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
+            if ($class->isInheritanceTypeSingleTable() && $property instanceof InheritedFieldMetadata) {
                 continue;
             }
 
@@ -452,7 +452,7 @@ class SchemaTool
 
         $options = [
             'length'          => $fieldMetadata->getLength(),
-            'notnull'         => ! $fieldMetadata->isNullable(),
+            'notnull'         => $fieldMetadata->isNullable(),
             'platformOptions' => [
                 'version' => ($classMetadata->isVersioned && $classMetadata->versionField === $fieldName),
             ],
