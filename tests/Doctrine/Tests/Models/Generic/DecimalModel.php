@@ -14,12 +14,12 @@ class DecimalModel
      */
     public $id;
     /**
-     * @Column(name="`decimal`", type="decimal", scale=2, precision=5)
+     * @Column(name="decimal", type="decimal", scale=2, precision=5)
      */
     public $decimal;
 
     /**
-     * @Column(name="`high_scale`", type="decimal", scale=4, precision=14)
+     * @Column(name="high_scale", type="decimal", scale=4, precision=14)
      */
     public $highScale;
 }

@@ -93,20 +93,20 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="`ddc-1719-simple-entity`")
+ * @Table(name="ddc-1719-simple-entity")
  */
 class DDC1719SimpleEntity
 {
 
     /**
      * @Id
-     * @Column(type="integer", name="`simple-entity-id`")
+     * @Column(type="integer", name="simple-entity-id")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="`simple-entity-value`")
+     * @Column(type="string", name="simple-entity-value")
      */
     public $value;
 

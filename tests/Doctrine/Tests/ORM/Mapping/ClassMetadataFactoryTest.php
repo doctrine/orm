@@ -264,7 +264,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // Self-made metadata
         $cm1 = new ClassMetadata(TestEntity1::class);
         $cm1->initializeReflection(new RuntimeReflectionService());
-        $cm1->setPrimaryTable(['name' => '`group`']);
+        $cm1->setPrimaryTable(['name' => 'group']);
 
         // Add a mapped field
         $cm1->addProperty('id', Type::getType('integer'), ['id' => true]);

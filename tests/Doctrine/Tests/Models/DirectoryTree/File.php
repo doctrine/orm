@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\DirectoryTree;
 
 /**
  * @Entity
- * @Table(name="`file`")
+ * @Table(name="file")
  */
 class File extends AbstractContentItem
 {

@@ -34,7 +34,7 @@ class DDC1151Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="`User`")
+ * @Table(name="User")
  */
 class DDC1151User
 {
@@ -47,7 +47,7 @@ class DDC1151User
 
 /**
  * @Entity
- * @Table(name="`Group`")
+ * @Table(name="Group")
  */
 class DDC1151Group
 {
