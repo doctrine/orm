@@ -272,8 +272,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $tableName = $class->getTableName();
 
         // Resolve column table names
-        foreach ($class->fieldMappings as &$mapping) {
-            $mapping['tableName'] = $mapping['tableName'] ?? $tableName;
+        foreach ($class->getProperties() as $property) {
+            $property->setTableName($property->getTableName() ?? $tableName);
         }
 
         // Resolve association join column table names
@@ -445,7 +445,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->fieldMappings as $mapping) {
+        /*foreach ($parentClass->fieldMappings as $mapping) {
             if ( ! isset($mapping['tableName'])) {
                 $mapping['tableName'] = ! $parentClass->isMappedSuperclass ? $parentClass->getTableName() : null;
             }
@@ -455,7 +455,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $subClass->addInheritedFieldMapping($mapping);
-        }
+        }*/
 
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
@@ -711,16 +711,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
                 if ($this->getTargetPlatform()->usesSequenceEmulatedIdentityColumns()) {
                     $columnName     = $class->getSingleIdentifierColumnName();
-                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
                     $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
                     $definition     = [
-                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName)
+                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'quotes'       => true,
                     ];
-
-                    if ($quoted) {
-                        $definition['quoted'] = true;
-                    }
 
                     $sequenceName = $this
                         ->em
@@ -729,7 +725,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         ->getSequenceName($definition, $class, $this->getTargetPlatform());
                 }
 
-                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type']->getName() === 'bigint')
+                $generator = ($fieldName && $class->getProperty($fieldName)->getTypeName() === 'bigint')
                     ? new BigIntegerIdentityGenerator($sequenceName)
                     : new IdentityGenerator($sequenceName);
 
@@ -744,17 +740,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ( ! $definition) {
                     $fieldName      = $class->getSingleIdentifierFieldName();
                     $sequenceName   = $class->getSequenceName($this->getTargetPlatform());
-                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
 
                     $definition = [
                         'sequenceName'   => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
                         'allocationSize' => 1,
                         'initialValue'   => 1,
+                        'quoted'         => true,
                     ];
-
-                    if ($quoted) {
-                        $definition['quoted'] = true;
-                    }
 
                     $class->setSequenceGeneratorDefinition($definition);
                 }

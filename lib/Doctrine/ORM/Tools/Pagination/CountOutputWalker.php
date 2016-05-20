@@ -109,21 +109,21 @@ class CountOutputWalker extends SqlWalker
 
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping
         $sqlIdentifier = [];
-        foreach ($rootIdentifier as $property) {
-            if (isset($rootClass->fieldMappings[$property])) {
-                foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
+        foreach ($rootIdentifier as $identifier) {
+            if (($property = $rootClass->getProperty($identifier)) !== null) {
+                foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
-                        $sqlIdentifier[$property] = $alias;
+                        $sqlIdentifier[$identifier] = $alias;
                     }
                 }
             }
 
-            if (isset($rootClass->associationMappings[$property])) {
-                $joinColumn = $rootClass->associationMappings[$property]['joinColumns'][0]['name'];
+            if (isset($rootClass->associationMappings[$identifier])) {
+                $joinColumn = $rootClass->associationMappings[$identifier]['joinColumns'][0]['name'];
 
                 foreach (array_keys($this->rsm->metaMappings, $joinColumn) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
-                        $sqlIdentifier[$property] = $alias;
+                        $sqlIdentifier[$identifier] = $alias;
                     }
                 }
             }

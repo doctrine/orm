@@ -126,14 +126,14 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        $fields = $metadata->fieldMappings;
-        $id = [];
+        $properties = $metadata->getProperties();
+        $id         = [];
 
-        foreach ($fields as $name => $field) {
-            if (isset($field['id']) && $field['id']) {
-                $id[$name] = $field;
+        foreach ($properties as $name => $property) {
+            if ($property->isPrimaryKey()) {
+                $id[$name] = $property;
 
-                unset($fields[$name]);
+                unset($properties[$name]);
             }
         }
 
@@ -151,26 +151,20 @@ class XmlExporter extends AbstractExporter
         }
 
         if ($id) {
-            foreach ($id as $field) {
+            foreach ($id as $property) {
                 $idXml = $root->addChild('id');
 
-                $idXml->addAttribute('name', $field['fieldName']);
+                $idXml->addAttribute('name', $property->getFieldName());
+                $idXml->addAttribute('type', $property->getTypeName());
+                $idXml->addAttribute('column', $property->getColumnName());
 
-                if (isset($field['type'])) {
-                    $idXml->addAttribute('type', $field['type']->getName());
+                if (is_int($property->getLength())) {
+                    $idXml->addAttribute('length', $property->getLength());
                 }
 
-                if (isset($field['columnName'])) {
-                    $idXml->addAttribute('column', $field['columnName']);
-                }
-
-                if (isset($field['length'])) {
-                    $idXml->addAttribute('length', $field['length']);
-                }
-
-                if (isset($field['associationKey']) && $field['associationKey']) {
+                /*if (isset($field['associationKey']) && $field['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
-                }
+                }*/
 
                 if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
                     $generatorXml = $idXml->addChild('generator');
@@ -182,51 +176,44 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ($fields) {
-            foreach ($fields as $field) {
+        if ($properties) {
+            foreach ($properties as $property) {
                 $fieldXml = $root->addChild('field');
 
-                $fieldXml->addAttribute('name', $field['fieldName']);
-                $fieldXml->addAttribute('type', $field['type']->getName());
+                $fieldXml->addAttribute('name', $property->getFieldName());
+                $fieldXml->addAttribute('type', $property->getTypeName());
+                $fieldXml->addAttribute('column', $property->getColumnName());
+                $fieldXml->addAttribute('nullable', $property->isNullable() ? 'true' : 'false');
+                $fieldXml->addAttribute('unique', $property->isUnique() ? 'true' : 'false');
 
-                if (isset($field['columnName'])) {
-                    $fieldXml->addAttribute('column', $field['columnName']);
+                if (is_int($property->getLength())) {
+                    $fieldXml->addAttribute('length', $property->getLength());
                 }
 
-                if (isset($field['length'])) {
-                    $fieldXml->addAttribute('length', $field['length']);
+                if (is_int($property->getPrecision())) {
+                    $fieldXml->addAttribute('precision', $property->getPrecision());
                 }
 
-                if (isset($field['precision'])) {
-                    $fieldXml->addAttribute('precision', $field['precision']);
+                if (is_int($property->getScale())) {
+                    $fieldXml->addAttribute('scale', $property->getScale());
                 }
 
-                if (isset($field['scale'])) {
-                    $fieldXml->addAttribute('scale', $field['scale']);
+                if ($metadata->versionField === $property->getFieldName()) {
+                    $fieldXml->addAttribute('version', 'true');
                 }
 
-                if (isset($field['unique']) && $field['unique']) {
-                    $fieldXml->addAttribute('unique', $field['unique'] ? 'true' : 'false');
+                if ($property->getColumnDefinition()) {
+                    $fieldXml->addAttribute('column-definition', $property->getColumnDefinition());
                 }
 
-                if (isset($field['options'])) {
+                if ($property->getOptions()) {
                     $optionsXml = $fieldXml->addChild('options');
-                    foreach ($field['options'] as $key => $value) {
+
+                    foreach ($property->getOptions() as $key => $value) {
                         $optionXml = $optionsXml->addChild('option', $value);
+
                         $optionXml->addAttribute('name', $key);
                     }
-                }
-
-                if (isset($field['version'])) {
-                    $fieldXml->addAttribute('version', $field['version']);
-                }
-
-                if (isset($field['columnDefinition'])) {
-                    $fieldXml->addAttribute('column-definition', $field['columnDefinition']);
-                }
-
-                if (isset($field['nullable'])) {
-                    $fieldXml->addAttribute('nullable', $field['nullable'] ? 'true' : 'false');
                 }
             }
         }

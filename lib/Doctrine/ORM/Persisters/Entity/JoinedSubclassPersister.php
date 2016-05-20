@@ -20,6 +20,8 @@
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritedFieldMetadata;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
@@ -74,13 +76,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     private function getVersionedClassMetadata()
     {
-        if (isset($this->class->fieldMappings[$this->class->versionField]['inherited'])) {
-            $definingClassName = $this->class->fieldMappings[$this->class->versionField]['inherited'];
+        $property = $this->class->getProperty($this->class->versionField);
 
-            return $this->em->getClassMetadata($definingClassName);
-        }
-
-        return $this->class;
+        return ($property instanceof InheritedFieldMetadata)
+            ? $property->getDeclaringClass()
+            : $this->class;
     }
 
     /**
@@ -98,13 +98,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->owningTableMap[$fieldName];
         }
 
+        $property    = $this->class->getProperty($fieldName);
+        $isInherited = $property instanceof InheritedFieldMetadata;
+
         switch (true) {
             case isset($this->class->associationMappings[$fieldName]['inherited']):
                 $cm = $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']);
                 break;
 
-            case isset($this->class->fieldMappings[$fieldName]['inherited']):
-                $cm = $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]['inherited']);
+            case $isInherited:
+                $cm = $property->getDeclaringClass();
                 break;
 
             default:
@@ -449,9 +452,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
 
         // Add regular columns
-        foreach ($this->class->fieldMappings as $fieldName => $mapping) {
-            $class = isset($mapping['inherited'])
-                ? $this->em->getClassMetadata($mapping['inherited'])
+        foreach ($this->class->getProperties() as $fieldName => $property) {
+            $class = ($property instanceof InheritedFieldMetadata)
+                ? $property->getDeclaringClass()
                 : $this->class;
 
             $columnList[] = $this->getSelectColumnSQL($fieldName, $class);
@@ -480,8 +483,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $subClass   = $this->em->getClassMetadata($subClassName);
 
             // Add subclass columns
-            foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                if (isset($mapping['inherited'])) {
+            foreach ($subClass->getProperties() as $fieldName => $property) {
+                if ($property instanceof InheritedFieldMetadata) {
                     continue;
                 }
 
@@ -520,9 +523,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             : [];
 
         foreach ($this->class->reflFields as $name => $field) {
-            if ((isset($this->class->fieldMappings[$name]['inherited']) && ! isset($this->class->fieldMappings[$name]['id']))
+            $property = $this->class->getProperty($name);
+
+            if (($property instanceof InheritedFieldMetadata && ! $property->isPrimaryKey())
                 || isset($this->class->associationMappings[$name]['inherited'])
-                || ($this->class->isVersioned && $this->class->versionField == $name)
+                || ($this->class->isVersioned && $this->class->versionField === $name)
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;
             }
@@ -535,9 +540,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     }
                 }
             } else if ($this->class->name != $this->class->rootEntityName ||
-                    ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
+                    ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
                 $columns[]                  = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
-                $this->columnTypes[$name]   = $this->class->fieldMappings[$name]['type'];
+                $this->columnTypes[$name]   = $property->getType();
             }
         }
 

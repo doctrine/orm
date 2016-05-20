@@ -680,7 +680,7 @@ class Parser
             $class = $this->queryComponents[$expr->identificationVariable]['metadata'];
 
             foreach ($expr->partialFieldSet as $field) {
-                if (isset($class->fieldMappings[$field])) {
+                if ($class->getProperty($field)) {
                     continue;
                 }
 
@@ -766,7 +766,7 @@ class Parser
             }
 
             // Check if field or association exists
-            if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
+            if ( ! isset($class->associationMappings[$field]) && ! $class->getProperty($field)) {
                 $this->semanticalError(
                     'Class ' . $class->name . ' has no field or association named ' . $field,
                     $deferredItem['token']
