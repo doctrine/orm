@@ -89,28 +89,29 @@ class YamlExporter extends AbstractExporter
             $array['options'] = $metadata->table['options'];
         }
 
-        $fieldMappings = $metadata->fieldMappings;
+        $properties = $metadata->getProperties();
+        $mappings   = [];
+        $ids        = [];
 
-        $ids = [];
-        foreach ($fieldMappings as $name => $fieldMapping) {
-            $fieldMapping['column'] = $fieldMapping['columnName'];
-            $fieldMapping['type']   = $fieldMapping['type']->getName();
+        foreach ($properties as $name => $property) {
+            $mapping = [
+                'column' => $property->getColumnName(),
+                'type'   => $property->getTypeName(),
+            ];
 
-            unset($fieldMapping['columnName'], $fieldMapping['fieldName']);
-
-            if ($fieldMapping['column'] == $name) {
-                unset($fieldMapping['column']);
+            if ($mapping['column'] === $name) {
+                unset($mapping['column']);
             }
 
-            if (isset($fieldMapping['id']) && $fieldMapping['id']) {
-                $ids[$name] = $fieldMapping;
+            if (isset($mapping['id']) && $mapping['id']) {
+                $ids[$name] = $mapping;
 
-                unset($fieldMappings[$name]);
+                unset($mappings[$name]);
 
                 continue;
             }
 
-            $fieldMappings[$name] = $fieldMapping;
+            $mappings[$name] = $mapping;
         }
 
         if ( ! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
@@ -119,12 +120,12 @@ class YamlExporter extends AbstractExporter
 
         $array['id'] = $ids;
 
-        if ($fieldMappings) {
+        if ($mappings) {
             if ( ! isset($array['fields'])) {
                 $array['fields'] = [];
             }
-            
-            $array['fields'] = array_merge($array['fields'], $fieldMappings);
+
+            $array['fields'] = array_merge($array['fields'], $mappings);
         }
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
