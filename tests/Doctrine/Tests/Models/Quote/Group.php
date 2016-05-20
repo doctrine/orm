@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\Quote;
 
 /**
  * @Entity
- * @Table(name="`quote-group`")
+ * @Table(name="quote-group")
  */
 class Group
 {
@@ -12,12 +12,12 @@ class Group
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="`group-id`")
+     * @Column(type="integer", name="group-id")
      */
     public $id;
 
     /**
-     * @Column(name="`group-name`")
+     * @Column(name="group-name")
      */
     public $name;
 
@@ -25,7 +25,7 @@ class Group
      * @var Group
      *
      * @ManyToOne(targetEntity="Group", cascade={"persist"})
-     * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
+     * @JoinColumn(name="parent-id", referencedColumnName="group-id")
      */
     public $parent;
 

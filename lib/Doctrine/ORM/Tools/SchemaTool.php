@@ -643,10 +643,12 @@ class SchemaTool
             );
 
             if ( ! $definingClass) {
-                throw new \Doctrine\ORM\ORMException(
-                    "Column name `".$joinColumn['referencedColumnName']."` referenced for relation from ".
-                    $mapping['sourceEntity'] . " towards ". $mapping['targetEntity'] . " does not exist."
-                );
+                throw new \Doctrine\ORM\ORMException(sprintf(
+                    'Column name "%s" referenced for relation from %s towards %s does not exist.',
+                    $joinColumn['referencedColumnName'],
+                    $mapping['sourceEntity'],
+                    $mapping['targetEntity']
+                ));
             }
 
             $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
