@@ -1153,10 +1153,9 @@ class User
             'columnDefinition' => 'CHAR(32) NOT NULL',
         ));
 
-        $mapping = array('fieldName' => 'version', 'type' => 'integer');
+        $property = $metadata->addProperty('version', Type::getType('integer'));
 
-        $metadata->setVersionMapping($mapping);
-        $metadata->addProperty('version', Type::getType('integer'));
+        $metadata->setVersionMapping($property);
         
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(
