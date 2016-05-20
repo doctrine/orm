@@ -10,13 +10,13 @@ class NumericEntity
 {
     /**
      * @Id
-     * @Column(type="integer", name="`1:1`")
+     * @Column(type="integer", name="1:1")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="`2:2`")
+     * @Column(type="string", name="2:2")
      */
     public $value;
 
