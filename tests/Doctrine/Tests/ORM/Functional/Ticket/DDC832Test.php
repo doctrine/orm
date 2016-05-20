@@ -119,7 +119,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="`LIKE`")
+ * @Table(name="LIKE")
  */
 class DDC832Like
 {
@@ -145,7 +145,7 @@ class DDC832Like
 
 /**
  * @Entity
- * @Table(name="`INDEX`")
+ * @Table(name="INDEX")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({"like" = "DDC832JoinedIndex", "fuzzy" = "DDC832JoinedTreeIndex"})
@@ -174,7 +174,7 @@ class DDC832JoinedIndex
 
 /**
  * @Entity
- * @Table(name="`TREE_INDEX`")
+ * @Table(name="TREE_INDEX")
  */
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {

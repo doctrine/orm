@@ -1121,7 +1121,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->setSequenceGeneratorDefinition(array('sequenceName' => '`foo`'));
+        $cm->setSequenceGeneratorDefinition(array('sequenceName' => 'foo'));
 
         self::assertEquals(array('sequenceName' => 'foo', 'quoted' => true), $cm->sequenceGeneratorDefinition);
     }

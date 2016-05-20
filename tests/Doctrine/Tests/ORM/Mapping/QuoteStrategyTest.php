@@ -59,7 +59,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->addProperty('name', Type::getType('string'), array('columnName' => '`name`'));
+        $cm->addProperty('name', Type::getType('string'), array('columnName' => 'name'));
         $cm->addProperty('id', Type::getType('string'));
         
         self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
@@ -69,7 +69,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     public function testGetTableName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->setPrimaryTable(array('name'=>'`cms_user`'));
+        $cm->setPrimaryTable(array('name'=>'cms_user'));
         self::assertEquals('"cms_user"' ,$this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
@@ -88,7 +88,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             'targetEntity'  => 'CmsUser',
             'inversedBy'    => 'users',
             'joinTable'     => array(
-                'name'  => '`cmsaddress_cmsuser`'
+                'name'  => 'cmsaddress_cmsuser'
             )
         ));
         
@@ -114,7 +114,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 
         $cm1->addProperty('id', Type::getType('string'), array(
             'id'         => true,
-            'columnName' => '`id`',
+            'columnName' => 'id',
         ));
 
         $cm2->addProperty('id', Type::getType('string'), array(
@@ -145,7 +145,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
             'joinColumns'    => array(array(
-                'name'  => '`article`'
+                'name'  => 'article'
             )),
         ));
 
@@ -161,7 +161,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
             'joinColumns'    => array(array(
-                'name'  => '`article`'
+                'name'  => 'article'
             )),
         ));
 
@@ -178,7 +178,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
             'joinColumns'    => array(array(
-                'name'  => '`article`'
+                'name'  => 'article'
             )),
         ));
 

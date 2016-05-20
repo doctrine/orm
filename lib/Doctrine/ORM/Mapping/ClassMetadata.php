@@ -1438,14 +1438,7 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         // Mandatory and optional attributes for either side
-        if ( ! $mapping['mappedBy']) {
-            if (isset($mapping['joinTable']) && $mapping['joinTable']) {
-                if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] === '`') {
-                    $mapping['joinTable']['name']   = trim($mapping['joinTable']['name'], '`');
-                    $mapping['joinTable']['quoted'] = true;
-                }
-            }
-        } else {
+        if ($mapping['mappedBy']) {
             $mapping['isOwningSide'] = false;
         }
 
@@ -1533,16 +1526,6 @@ class ClassMetadata implements ClassMetadataInterface
 
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
-                }
-
-                if ($joinColumn['name'][0] === '`') {
-                    $joinColumn['name']   = trim($joinColumn['name'], '`');
-                    $joinColumn['quoted'] = true;
-                }
-
-                if ($joinColumn['referencedColumnName'][0] === '`') {
-                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
-                    $joinColumn['quoted']               = true;
                 }
 
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
@@ -1662,16 +1645,6 @@ class ClassMetadata implements ClassMetadataInterface
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
 
-                if ($joinColumn['name'][0] === '`') {
-                    $joinColumn['name']   = trim($joinColumn['name'], '`');
-                    $joinColumn['quoted'] = true;
-                }
-
-                if ($joinColumn['referencedColumnName'][0] === '`') {
-                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
-                    $joinColumn['quoted']               = true;
-                }
-
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
@@ -1687,16 +1660,6 @@ class ClassMetadata implements ClassMetadataInterface
 
                 if (empty($inverseJoinColumn['referencedColumnName'])) {
                     $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
-                }
-
-                if ($inverseJoinColumn['name'][0] === '`') {
-                    $inverseJoinColumn['name']   = trim($inverseJoinColumn['name'], '`');
-                    $inverseJoinColumn['quoted'] = true;
-                }
-
-                if ($inverseJoinColumn['referencedColumnName'][0] === '`') {
-                    $inverseJoinColumn['referencedColumnName']  = trim($inverseJoinColumn['referencedColumnName'], '`');
-                    $inverseJoinColumn['quoted']                = true;
                 }
 
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
@@ -2209,11 +2172,6 @@ class ClassMetadata implements ClassMetadataInterface
                 list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
             }
 
-            if ($table['name'][0] === '`') {
-                $table['name']          = trim($table['name'], '`');
-                $this->table['quoted']  = true;
-            }
-
             $this->table['name'] = $table['name'];
         }
 
@@ -2286,7 +2244,7 @@ class ClassMetadata implements ClassMetadataInterface
 
         // Check for already declared column
         if (isset($this->fieldNames[$property->getColumnName()]) ||
-            ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $property->getColumnName())) {
+            ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] === $property->getColumnName())) {
             throw MappingException::duplicateColumnName($this->name, $property->getColumnName());
         }
 
@@ -3009,11 +2967,6 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::missingSequenceName($this->name);
         }
 
-        if ($definition['sequenceName'][0] == '`') {
-            $definition['sequenceName']   = trim($definition['sequenceName'], '`');
-            $definition['quoted'] = true;
-        }
-
         $this->sequenceGeneratorDefinition = $definition;
     }
 
@@ -3142,9 +3095,7 @@ class ClassMetadata implements ClassMetadataInterface
             $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
             $assocQuotedColumnNames = array_map(
                 function ($joinColumn) use ($platform) {
-                    return isset($joinColumn['quoted'])
-                        ? $platform->quoteIdentifier($joinColumn['name'])
-                        : $joinColumn['name'];
+                    return $platform->quoteIdentifier($joinColumn['name']);
                 },
                 $joinColumns
             );
@@ -3181,9 +3132,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getQuotedTableName($platform)
     {
-        return isset($this->table['quoted'])
-            ? $platform->quoteIdentifier($this->table['name'])
-            : $this->table['name'];
+        return $platform->quoteIdentifier($this->table['name']);
     }
 
     /**
@@ -3198,9 +3147,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getQuotedJoinTableName(array $assoc, $platform)
     {
-        return isset($assoc['joinTable']['quoted'])
-            ? $platform->quoteIdentifier($assoc['joinTable']['name'])
-            : $assoc['joinTable']['name'];
+        return $platform->quoteIdentifier($assoc['joinTable']['name']);
     }
 
     /**
@@ -3209,7 +3156,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function isAssociationInverseSide($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-        && ! $this->associationMappings[$fieldName]['isOwningSide'];
+            && ! $this->associationMappings[$fieldName]['isOwningSide'];
     }
 
     /**

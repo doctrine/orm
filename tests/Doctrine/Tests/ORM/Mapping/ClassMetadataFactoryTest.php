@@ -256,7 +256,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         $cm1->initializeReflection(new RuntimeReflectionService());
 
-        $cm1->setPrimaryTable(array('name' => '`group`'));
+        $cm1->setPrimaryTable(array('name' => 'group'));
 
         // Add a mapped field
         $cm1->addProperty('id', Type::getType('integer'), array('id' => true));
