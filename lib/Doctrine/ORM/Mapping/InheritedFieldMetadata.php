@@ -33,4 +33,12 @@ class InheritedFieldMetadata extends FieldMetadata
     {
         return $this->currentClass;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isInherited()
+    {
+        return false;
+    }
 }
