@@ -1672,10 +1672,7 @@ class BasicEntityPersister implements EntityPersister
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
         if (($property = $this->class->getProperty($field)) !== null) {
-            $class     = ($property instanceof InheritedFieldMetadata)
-                ? $property->getDeclaringClass()
-                : $this->class;
-            $tableAlias = $this->getSQLTableAlias($class->getTableName());
+            $tableAlias = $this->getSQLTableAlias($property->getTableName());
             $columnName = $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
 
             return [$tableAlias . '.' . $columnName];

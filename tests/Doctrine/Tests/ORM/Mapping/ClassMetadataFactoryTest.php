@@ -304,61 +304,46 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $addressMetadata    = $cmf->getMetadataFor(Quote\Address::class);
 
         // Phone Class Metadata
-        self::assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
-        self::assertEquals('phone-number', $phoneMetadata->fieldMappings['number']['columnName']);
+        self::assertNotNull($phoneMetadata->getProperty('number'));
+        self::assertEquals('phone-number', $phoneMetadata->getProperty('number')->getColumnName());
 
         $user = $phoneMetadata->associationMappings['user'];
-        self::assertTrue($user['joinColumns'][0]['quoted']);
+
         self::assertEquals('user-id', $user['joinColumns'][0]['name']);
         self::assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
 
-        // User Group Metadata
-        self::assertTrue($groupMetadata->fieldMappings['id']['quoted']);
-        self::assertTrue($groupMetadata->fieldMappings['name']['quoted']);
+        // Address Class Metadata
+        self::assertNotNull($addressMetadata->getProperty('id'));
+        self::assertNotNull($addressMetadata->getProperty('zip'));
+        self::assertEquals('address-id', $addressMetadata->getProperty('id')->getColumnName());
+        self::assertEquals('address-zip', $addressMetadata->getProperty('zip')->getColumnName());
 
-        self::assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
-        self::assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
+        // User Class Metadata
+        self::assertNotNull($userMetadata->getProperty('id'));
+        self::assertNotNull($userMetadata->getProperty('name'));
+        self::assertEquals('user-id', $userMetadata->getProperty('id')->getColumnName());
+        self::assertEquals('user-name', $userMetadata->getProperty('name')->getColumnName());
 
         $user = $groupMetadata->associationMappings['parent'];
-        self::assertTrue($user['joinColumns'][0]['quoted']);
+
         self::assertEquals('parent-id', $user['joinColumns'][0]['name']);
         self::assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
 
-        // Address Class Metadata
-        self::assertTrue($addressMetadata->fieldMappings['id']['quoted']);
-        self::assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
-
-        self::assertEquals('address-id', $addressMetadata->fieldMappings['id']['columnName']);
-        self::assertEquals('address-zip', $addressMetadata->fieldMappings['zip']['columnName']);
-
         $user = $addressMetadata->associationMappings['user'];
 
-        self::assertTrue($user['joinColumns'][0]['quoted']);
         self::assertEquals('user-id', $user['joinColumns'][0]['name']);
         self::assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
 
-        // User Class Metadata
-        self::assertTrue($userMetadata->fieldMappings['id']['quoted']);
-        self::assertTrue($userMetadata->fieldMappings['name']['quoted']);
-
-        self::assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
-        self::assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
-
         $address = $userMetadata->associationMappings['address'];
 
-        self::assertTrue($address['joinColumns'][0]['quoted']);
         self::assertEquals('address-id', $address['joinColumns'][0]['name']);
         self::assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
 
         $groups = $userMetadata->associationMappings['groups'];
 
-        self::assertTrue($groups['joinTable']['quoted']);
-        self::assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
         self::assertEquals('quote-users-groups', $groups['joinTable']['name']);
         self::assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['name']);
         self::assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['referencedColumnName']);
-
-        self::assertTrue($groups['joinTable']['inverseJoinColumns'][0]['quoted']);
         self::assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
         self::assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
     }

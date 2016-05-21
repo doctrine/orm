@@ -55,7 +55,12 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass(Annotation\InvalidColumn::class, $cm);
-        self::assertEquals('string', $cm->fieldMappings['id']['type']->getName());
+
+        self::assertNotNull($cm->getProperty('id'));
+
+        $idProperty = $cm->getProperty('id');
+
+        self::assertEquals('string', $idProperty->getTypeName());
     }
 
     /**
@@ -250,8 +255,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $metadataWithoutOverride = $factory->getMetadataFor(DDC1872ExampleEntityWithoutOverride::class);
         $metadataWithOverride = $factory->getMetadataFor(DDC1872ExampleEntityWithOverride::class);
 
-        self::assertEquals('trait_foo', $metadataWithoutOverride->fieldMappings['foo']['columnName']);
-        self::assertEquals('foo_overridden', $metadataWithOverride->fieldMappings['foo']['columnName']);
+        self::assertNotNull($metadataWithoutOverride->getProperty('foo'));
+        self::assertNotNull($metadataWithOverride->getProperty('foo'));
+
+        $fooPropertyWithoutOverride = $metadataWithoutOverride->getProperty('foo');
+        $fooPropertyWithOverride    = $metadataWithOverride->getProperty('foo');
+
+        self::assertEquals('trait_foo', $fooPropertyWithoutOverride->getColumnName());
+        self::assertEquals('foo_overridden', $fooPropertyWithOverride->getColumnName());
+
         self::assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
         self::assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
     }
