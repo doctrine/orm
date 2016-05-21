@@ -44,7 +44,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadata = $this->convertToClassMetadata([$project, $user], []);
 
-        self::assertTrue(isset($metadata['Ddc2059Project']->fieldMappings['user']));
+        self::assertNotNull($metadata['Ddc2059Project']->getProperty('user'));
         self::assertTrue(isset($metadata['Ddc2059Project']->associationMappings['user2']));
     }
 
@@ -64,19 +64,26 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $metadatas = $this->extractClassMetadata(["DbdriverFoo"]);
 
         self::assertArrayHasKey('DbdriverFoo', $metadatas);
+
         $metadata = $metadatas['DbdriverFoo'];
 
-        self::assertArrayHasKey('id', $metadata->fieldMappings);
-        self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
-        self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        self::assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
+        self::assertNotNull($metadata->getProperty('id'));
 
-        self::assertArrayHasKey('bar', $metadata->fieldMappings);
-        self::assertEquals('bar', $metadata->fieldMappings['bar']['fieldName']);
-        self::assertEquals('bar', strtolower($metadata->fieldMappings['bar']['columnName']));
-        self::assertEquals('string', $metadata->fieldMappings['bar']['type']->getName());
-        self::assertEquals(200, $metadata->fieldMappings['bar']['length']);
-        self::assertTrue($metadata->fieldMappings['bar']['nullable']);
+        $idProperty = $metadata->getProperty('id');
+
+        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getColumnName());
+        self::assertEquals('integer', $idProperty->getTypeName());
+
+        self::assertNotNull($metadata->getProperty('bar'));
+
+        $barProperty = $metadata->getProperty('bar');
+
+        self::assertEquals('bar', $barProperty->getFieldName());
+        self::assertEquals('bar', $barProperty->getColumnName());
+        self::assertEquals('string', $barProperty->getTypeName());
+        self::assertEquals(200, $barProperty->getLength());
+        self::assertTrue($barProperty->isNullable());
     }
 
     public function testLoadMetadataWithForeignKeyFromDatabase()
@@ -102,10 +109,11 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $metadatas = $this->extractClassMetadata(["DbdriverBar", "DbdriverBaz"]);
 
         self::assertArrayHasKey('DbdriverBaz', $metadatas);
+
         $bazMetadata = $metadatas['DbdriverBaz'];
 
-        self::assertArrayNotHasKey('barId', $bazMetadata->fieldMappings, "The foreign Key field should not be inflected as 'barId' field, its an association.");
-        self::assertArrayHasKey('id', $bazMetadata->fieldMappings);
+        self::assertNull($bazMetadata->getProperty('barId'), "The foreign Key field should not be inflected, as 'barId' field is an association.");
+        self::assertNotNull($bazMetadata->getProperty('id'));
 
         $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
 
@@ -184,29 +192,54 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadata = $metadatas['DbdriverFoo'];
 
-        self::assertArrayHasKey('id', $metadata->fieldMappings);
-        self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
-        self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        self::assertEquals('integer', $metadata->fieldMappings['id']['type']->getName());
+        self::assertNotNull($metadata->getProperty('id'));
+
+        $idProperty = $metadata->getProperty('id');
+
+        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getColumnName());
+        self::assertEquals('integer', $idProperty->getTypeName());
 
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
         if ( ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform AND
              ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform) {
-            self::assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
-            self::assertTrue($metadata->fieldMappings['columnUnsigned']['options']['unsigned']);
+            self::assertNotNull($metadata->getProperty('columnUnsigned'));
+
+            $columnUnsignedProperty = $metadata->getProperty('columnUnsigned');
+            $columnUnsignedOptions  = $columnUnsignedProperty->getOptions();
+
+            self::assertArrayHasKey('unsigned', $columnUnsignedOptions);
+            self::assertTrue($columnUnsignedOptions['unsigned']);
         }
 
-        self::assertArrayHasKey('columnComment', $metadata->fieldMappings);
-        self::assertEquals('test_comment', $metadata->fieldMappings['columnComment']['options']['comment']);
+        // Check comment
+        self::assertNotNull($metadata->getProperty('columnComment'));
+        
+        $columnCommentProperty = $metadata->getProperty('columnComment');
+        $columnCommentOptions  = $columnCommentProperty->getOptions();
 
-        self::assertArrayHasKey('columnDefault', $metadata->fieldMappings);
-        self::assertEquals('test_default', $metadata->fieldMappings['columnDefault']['options']['default']);
+        self::assertArrayHasKey('comment', $columnCommentOptions);
+        self::assertEquals('test_comment', $columnCommentOptions['comment']);
 
-        self::assertArrayHasKey('columnDecimal', $metadata->fieldMappings);
-        self::assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
-        self::assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
+        // Check default
+        self::assertNotNull($metadata->getProperty('columnDefault'));
 
+        $columnDefaultProperty = $metadata->getProperty('columnDefault');
+        $columnDefaultOptions  = $columnDefaultProperty->getOptions();
+
+        self::assertArrayHasKey('default', $columnDefaultOptions);
+        self::assertEquals('test_default', $columnCommentOptions['default']);
+
+        // Check decimal
+        self::assertNotNull($metadata->getProperty('columnDecimal'));
+
+        $columnDecimalProperty = $metadata->getProperty('columnDecimal');
+
+        self::assertEquals(4, $columnDecimalProperty->getPrecision());
+        self::assertEquals(3, $columnDecimalProperty->getScale());
+
+        // Check indexes
         self::assertTrue( ! empty($metadata->table['indexes']['index1']['columns']));
         self::assertEquals(
             ['column_index1','column_index2'],
