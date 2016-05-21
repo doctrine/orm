@@ -33,15 +33,16 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
+
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $classPage = new ClassMetadata(File::class);
         $classPage = $factory->getMetadataFor(File::class);
+
         self::assertEquals(File::class, $classPage->associationMappings['parentDirectory']['sourceEntity']);
 
-        $classDirectory = new ClassMetadata(Directory::class);
         $classDirectory = $factory->getMetadataFor(Directory::class);
+
         self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
@@ -65,17 +66,17 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $unique   = $metadata->table['uniqueConstraints'][0]['columns'];
         $indexes  = $metadata->table['indexes'][0]['columns'];
 
-        $nameField  = $metadata->fieldMappings['name'];
-        $valueField = $metadata->fieldMappings['value'];
-
         self::assertEquals('name', $unique[0]);
         self::assertEquals('value', $unique[1]);
 
         self::assertEquals('value', $indexes[0]);
         self::assertEquals('name', $indexes[1]);
 
-        self::assertEquals(255, $nameField['length']);
-        self::assertEquals(255, $valueField['length']);
+        $nameField  = $metadata->getProperty('name');
+        $valueField = $metadata->getProperty('value');
+
+        self::assertEquals(255, $nameField->getLength());
+        self::assertEquals(255, $valueField->getLength());
     }
 
 }

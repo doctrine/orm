@@ -65,14 +65,16 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $userClass = $cmf->getMetadataFor('User');
 
         self::assertEquals(2, count($metadata));
-        self::assertEquals('Profile', $profileClass->name);
-        self::assertEquals('User', $userClass->name);
-        self::assertEquals(4, count($profileClass->fieldMappings));
-        self::assertEquals(5, count($userClass->fieldMappings));
-        self::assertEquals('text', $userClass->fieldMappings['clob']['type']->getName());
-        self::assertEquals('test_alias', $userClass->fieldMappings['theAlias']['columnName']);
-        self::assertEquals('theAlias', $userClass->fieldMappings['theAlias']['fieldName']);
 
+        self::assertEquals('User', $userClass->name);
+        self::assertEquals(5, count($userClass->getProperties()));
+        self::assertNotNull($userClass->getProperty('clob'));
+        self::assertNotNull($userClass->getProperty('theAlias'));
+        self::assertEquals('text', $userClass->getProperty('clob')->getTypeName());
+        self::assertEquals('test_alias', $userClass->getProperty('theAlias')->getColumnName());
+
+        self::assertEquals('Profile', $profileClass->name);
+        self::assertEquals(4, count($profileClass->getProperties()));
         self::assertEquals('Profile', $profileClass->associationMappings['User']['sourceEntity']);
         self::assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
 

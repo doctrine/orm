@@ -351,52 +351,6 @@ class ClassMetadata implements ClassMetadataInterface
     protected $properties = [];
 
     /**
-     * READ-ONLY: The field mappings of the class.
-     * Keys are field names and values are mapping definitions.
-     *
-     * The mapping definition array has the following values:
-     *
-     * - <b>fieldName</b> (string)
-     * The name of the field in the Entity.
-     *
-     * - <b>type</b> (Type)
-     * The type of the mapped field. Can be one of Doctrine's mapping types or a
-     * custom mapping type.
-     *
-     * - <b>tableName</b> (string)
-     * The table name. Defaults to the entity table name.
-     *
-     * - <b>columnName</b> (string)
-     * The column name. Defaults to the field name.
-     *
-     * - <b>length</b> (integer, optional)
-     * The database length of the column. Optional. Default value taken from
-     * the type.
-     *
-     * - <b>id</b> (boolean, optional)
-     * Marks the field as the primary key of the entity. Multiple fields of an
-     * entity can have the id attribute, forming a composite key.
-     *
-     * - <b>nullable</b> (boolean, optional)
-     * Whether the column is nullable. Defaults to FALSE.
-     *
-     * - <b>unique</b> (boolean, optional, schema-only)
-     * Whether a unique constraint should be generated for the column. Defaults to FALSE.
-     *
-     * - <b>columnDefinition</b> (string, optional, schema-only)
-     * The SQL fragment that is used when generating the DDL for the column.
-     *
-     * - <b>precision</b> (integer, optional, schema-only)
-     * The precision of a decimal column. Only valid if the column type is decimal.
-     *
-     * - <b>scale</b> (integer, optional, schema-only)
-     * The scale of a decimal column. Only valid if the column type is decimal.
-     *
-     * @var array
-     */
-    public $fieldMappings = [];
-
-    /**
      * READ-ONLY: An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
      *
@@ -2296,21 +2250,6 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * INTERNAL:
-     * Adds a field mapping without completing/validating it.
-     * This is mainly used to add inherited field mappings to derived classes.
-     *
-     * @param array $fieldMapping
-     *
-     * @return void
-     */
-    public function addInheritedFieldMapping(array $fieldMapping)
-    {
-        //$this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        //$this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
-    }
-
-    /**
-     * INTERNAL:
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
      *
@@ -2937,8 +2876,7 @@ class ClassMetadata implements ClassMetadataInterface
      * array(
      *     'sequenceName'   => 'name',
      *     'allocationSize' => 20,
-     *     'initialValue'   => 1
-     *     'quoted'         => 1
+     *     'initialValue'   => 1,
      * )
      * </code>
      *
@@ -3056,85 +2994,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
-     *
-     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
-     *
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
-     * @return array
-     */
-    public function getQuotedIdentifierColumnNames($platform)
-    {
-        $quotedColumnNames = [];
-
-        foreach ($this->identifier as $idProperty) {
-            if (isset($this->properties[$idProperty])) {
-                $quotedColumnNames[] = $this->getQuotedColumnName($idProperty, $platform);
-
-                continue;
-            }
-
-            // Association defined as Id field
-            $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
-            $assocQuotedColumnNames = array_map(
-                function ($joinColumn) use ($platform) {
-                    return $platform->quoteIdentifier($joinColumn['name']);
-                },
-                $joinColumns
-            );
-
-            $quotedColumnNames = array_merge($quotedColumnNames, $assocQuotedColumnNames);
-        }
-
-        return $quotedColumnNames;
-    }
-
-    /**
-     * Gets the (possibly quoted) column name of a mapped field for safe use  in an SQL statement.
-     *
-     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
-     *
-     * @param string                                    $field
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getQuotedColumnName($field, $platform)
-    {
-        return $platform->quoteIdentifier($this->properties[$field]->getColumnName());
-    }
-
-    /**
-     * Gets the (possibly quoted) primary table name of this class for safe use in an SQL statement.
-     *
-     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
-     *
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getQuotedTableName($platform)
-    {
-        return $platform->quoteIdentifier($this->table['name']);
-    }
-
-    /**
-     * Gets the (possibly quoted) name of the join table.
-     *
-     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
-     *
-     * @param array                                     $assoc
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getQuotedJoinTableName(array $assoc, $platform)
-    {
-        return $platform->quoteIdentifier($assoc['joinTable']['name']);
     }
 
     /**

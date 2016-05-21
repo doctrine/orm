@@ -167,9 +167,13 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testIdentifierIsExported($class)
     {
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_IDENTITY, $class->generatorType, "Generator Type wrong");
+        self::assertNotNull($class->getProperty('id'));
+
+        $property = $class->getProperty('id');
+
+        self::assertTrue($property->isPrimaryKey());
         self::assertEquals(['id'], $class->identifier);
-        self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_IDENTITY, $class->generatorType, "Generator Type wrong");
 
         return $class;
     }
@@ -180,22 +184,30 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testFieldsAreExported($class)
     {
-        self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
-        self::assertEquals('id', $class->fieldMappings['id']['fieldName']);
-        self::assertEquals('integer', $class->fieldMappings['id']['type']->getName());
-        self::assertEquals('id', $class->fieldMappings['id']['columnName']);
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
+        self::assertNotNull($class->getProperty('email'));
 
-        self::assertEquals('name', $class->fieldMappings['name']['fieldName']);
-        self::assertEquals('string', $class->fieldMappings['name']['type']->getName());
-        self::assertEquals(50, $class->fieldMappings['name']['length']);
-        self::assertEquals('name', $class->fieldMappings['name']['columnName']);
+        $idProperty = $class->getProperty('id');
+        $nameProperty = $class->getProperty('name');
+        $emailProperty = $class->getProperty('email');
 
-        self::assertEquals('email', $class->fieldMappings['email']['fieldName']);
-        self::assertEquals('string', $class->fieldMappings['email']['type']->getName());
-        self::assertEquals('user_email', $class->fieldMappings['email']['columnName']);
-        self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
+        self::assertTrue($idProperty->isPrimaryKey());
+        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('integer', $idProperty->getTypeName());
+        self::assertEquals('id', $idProperty->getColumnName());
 
-        self::assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
+        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('string', $nameProperty->getTypeName());
+        self::assertEquals('name', $nameProperty->getColumnName());
+        self::assertEquals(50, $nameProperty->getLength());
+
+        self::assertEquals('email', $emailProperty->getFieldName());
+        self::assertEquals('string', $emailProperty->getTypeName());
+        self::assertEquals('user_email', $emailProperty->getColumnName());
+        self::assertEquals('CHAR(32) NOT NULL', $emailProperty->getColumnDefinition());
+        self::assertArrayHasKey('unsigned', $emailProperty->getOptions());
+        self::assertEquals(true, $emailProperty->getOptions()['unsigned']);
 
         return $class;
     }

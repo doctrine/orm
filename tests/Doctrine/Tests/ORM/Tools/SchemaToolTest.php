@@ -68,16 +68,19 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $avatar = $em->getClassMetadata(ForumAvatar::class);
-        $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
-        $user = $em->getClassMetadata(ForumUser::class);
+        $avatar     = $em->getClassMetadata(ForumAvatar::class);
+        $idProperty = $avatar->getProperty('id');
 
+        $idProperty->setColumnDefinition($customColumnDef);
+
+        $user    = $em->getClassMetadata(ForumUser::class);
         $classes = [$avatar, $user];
-
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
+        $schema  = $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertTrue($schema->hasTable('forum_users'));
+
         $table = $schema->getTable("forum_users");
+
         self::assertTrue($table->hasColumn('avatar_id'));
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }

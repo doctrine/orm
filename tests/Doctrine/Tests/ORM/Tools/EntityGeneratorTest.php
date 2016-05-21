@@ -457,37 +457,6 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /**
-     * @group embedded
-     * @group DDC-3152
-     */
-    public function testDoesNotRegenerateExistingMethodsWithDifferentCase()
-    {
-        $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
-
-        // Workaround to change existing fields case (just to simulate the use case)
-        $metadata->fieldMappings['status']['fieldName'] = 'STATUS';
-        $metadata->embeddedClasses['ISBN'] = $metadata->embeddedClasses['isbn'];
-        unset($metadata->embeddedClasses['isbn']);
-
-        // Should not throw a PHP fatal error
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
-
-        self::assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
-
-        $this->newInstance($metadata);
-        $reflClass = new \ReflectionClass($metadata->name);
-
-        self::assertTrue($reflClass->hasProperty('status'));
-        self::assertTrue($reflClass->hasProperty('STATUS'));
-        self::assertTrue($reflClass->hasProperty('isbn'));
-        self::assertTrue($reflClass->hasProperty('ISBN'));
-        self::assertTrue($reflClass->hasMethod('getStatus'));
-        self::assertTrue($reflClass->hasMethod('setStatus'));
-        self::assertTrue($reflClass->hasMethod('getIsbn'));
-        self::assertTrue($reflClass->hasMethod('setIsbn'));
-    }
-
-    /**
      * @group DDC-2121
      */
     public function testMethodDocBlockShouldStartWithBackSlash()
