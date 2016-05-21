@@ -13,7 +13,7 @@ namespace Doctrine\Tests\Models\DDC3579;
  */
 class DDC3579Admin extends DDC3579User
 {
-    public static function loadMetadata($metadata)
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->setAssociationOverride('groups', [
             'inversedBy' => 'admins'

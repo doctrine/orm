@@ -26,7 +26,8 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
                 ]
             );
         } catch (\Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
+            // Automatically mark failure
+            self::fail($e->getMessage());
         }
     }
 
