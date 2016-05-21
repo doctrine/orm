@@ -255,17 +255,19 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testAddField()
     {
+        self::assertNull($this->cm->getProperty('name'));
+
         self::assertIsFluent($this->builder->addProperty('name', 'string'));
-        self::assertEquals(
-            array(
-                'columnName'     => 'name',
-                'fieldName'      => 'name',
-                'type'           => Type::getType('string'),
-                'declaringClass' => $this->cm,
-                'tableName'      => 'CmsUser',
-            ),
-            $this->cm->fieldMappings['name']
-        );
+
+        self::assertNotNull($this->cm->getProperty('name'));
+
+        $property = $this->cm->getProperty('name');
+
+        self::assertEquals('name', $property->getFieldName());
+        self::assertEquals($this->cm, $property->getDeclaringClass());
+        self::assertEquals('string', $property->getTypeName());
+        self::assertEquals('CmsUser', $property->getTableName());
+        self::assertEquals('name', $property->getColumnName());
     }
 
     public function testCreateField()
@@ -273,19 +275,19 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $fieldBuilder = $this->builder->createField('name', 'string');
 
         self::assertInstanceOf('Doctrine\ORM\Mapping\Builder\FieldBuilder', $fieldBuilder);
-        self::assertFalse(isset($this->cm->fieldMappings['name']));
+        self::assertNull($this->cm->getProperty('name'));
 
         self::assertIsFluent($fieldBuilder->build());
-        self::assertEquals(
-            array(
-                'columnName'     => 'name',
-                'fieldName'      => 'name',
-                'type'           => Type::getType('string'),
-                'declaringClass' => $this->cm,
-                'tableName'      => 'CmsUser',
-            ),
-            $this->cm->fieldMappings['name']
-        );
+
+        self::assertNotNull($this->cm->getProperty('name'));
+
+        $property = $this->cm->getProperty('name');
+
+        self::assertEquals('name', $property->getFieldName());
+        self::assertEquals($this->cm, $property->getDeclaringClass());
+        self::assertEquals('string', $property->getTypeName());
+        self::assertEquals('CmsUser', $property->getTableName());
+        self::assertEquals('name', $property->getColumnName());
     }
 
     public function testCreateVersionedField()
@@ -299,21 +301,20 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->isVersionField()
             ->build();
 
-        self::assertEquals(
-            array(
-                'columnDefinition' => 'foobar',
-                'columnName'       => 'username',
-                'default'          => 1,
-                'fieldName'        => 'name',
-                'length'           => 124,
-                'type'             => Type::getType('integer'),
-                'nullable'         => true,
-                'unique'           => true,
-                'declaringClass'   => $this->cm,
-                'tableName'        => 'CmsUser',
-            ),
-            $this->cm->fieldMappings['name']
-        );
+        self::assertNotNull($this->cm->getProperty('name'));
+
+        $property = $this->cm->getProperty('name');
+
+        self::assertEquals('name', $property->getFieldName());
+        self::assertEquals($this->cm, $property->getDeclaringClass());
+        self::assertEquals('integer', $property->getTypeName());
+        self::assertEquals('CmsUser', $property->getTableName());
+        self::assertEquals('username', $property->getColumnName());
+        self::assertEquals('foobar', $property->getColumnDefinition());
+        self::assertEquals(124, $property->getLength());
+        self::assertTrue($property->isNullable());
+        self::assertTrue($property->isUnique());
+        self::assertEquals(['default' => 1], $property->getOptions());
     }
 
     public function testCreatePrimaryField()
@@ -323,18 +324,17 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->generatedValue()
             ->build();
 
+        self::assertNotNull($this->cm->getProperty('name'));
+
+        $property = $this->cm->getProperty('name');
+
         self::assertEquals(array('id'), $this->cm->identifier);
-        self::assertEquals(
-            array(
-                'columnName'     => 'id',
-                'fieldName'      => 'id',
-                'id'             => true,
-                'type'           => Type::getType('integer'),
-                'declaringClass' => $this->cm,
-                'tableName'      => 'CmsUser',
-            ),
-            $this->cm->fieldMappings['id']
-        );
+        self::assertEquals('id', $property->getFieldName());
+        self::assertEquals($this->cm, $property->getDeclaringClass());
+        self::assertEquals('integer', $property->getTypeName());
+        self::assertEquals('CmsUser', $property->getTableName());
+        self::assertEquals('id', $property->getColumnName());
+        self::assertTrue($property->isPrimaryKey());
     }
 
     public function testCreateUnsignedOptionField()
@@ -343,17 +343,16 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->option('unsigned', true)
             ->build();
 
-        self::assertEquals(
-            array(
-                'fieldName'      => 'state',
-                'type'           => Type::getType('integer'),
-                'options'        => array('unsigned' => true),
-                'columnName'     => 'state',
-                'declaringClass' => $this->cm,
-                'tableName'      => 'CmsUser',
-            ),
-            $this->cm->fieldMappings['state']
-        );
+        self::assertNotNull($this->cm->getProperty('name'));
+
+        $property = $this->cm->getProperty('name');
+
+        self::assertEquals('state', $property->getFieldName());
+        self::assertEquals($this->cm, $property->getDeclaringClass());
+        self::assertEquals('integer', $property->getTypeName());
+        self::assertEquals('CmsUser', $property->getTableName());
+        self::assertEquals('state', $property->getColumnName());
+        self::assertEquals(['unsigned' => true], $property->getOptions());
     }
 
     public function testAddLifecycleEvent()

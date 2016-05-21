@@ -1,8 +1,8 @@
 <?php
+
 /**
  * @author Marc Pantel <pantel.m@gmail.com>
  */
-
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
