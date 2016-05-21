@@ -53,6 +53,11 @@ interface PropertyMetadata
     /**
      * @return boolean
      */
+    public function isInherited();
+
+    /**
+     * @return boolean
+     */
     public function isPrimaryKey();
 
     /**

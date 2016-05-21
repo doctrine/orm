@@ -80,6 +80,7 @@ class FieldBuilder
         $this->builder = $builder;
         $this->name    = $name;
         $this->type    = $type;
+        $this->mapping = [];
     }
 
     /**

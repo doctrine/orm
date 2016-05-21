@@ -423,12 +423,12 @@ class SchemaTool
     private function gatherColumn($classMetadata, FieldMetadata $fieldMetadata, Table $table)
     {
         $fieldName  = $fieldMetadata->getFieldName();
-        $columnName = $this->quoteStrategy->getColumnName($fieldName, $classMetadata, $this->platform);
+        $columnName = $fieldMetadata->getColumnName();
         $columnType = $fieldMetadata->getTypeName();
 
         $options = [
             'length'          => $fieldMetadata->getLength(),
-            'notnull'         => $fieldMetadata->isNullable(),
+            'notnull'         => ! $fieldMetadata->isNullable(),
             'platformOptions' => [
                 'version' => ($classMetadata->isVersioned && $classMetadata->versionField === $fieldName),
             ],
@@ -478,18 +478,22 @@ class SchemaTool
             $options['autoincrement'] = false;
         }
 
+        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $classMetadata, $this->platform);
+
+        if ($table->hasColumn($quotedColumnName)) {
+            // required in some inheritance scenarios
+            $table->changeColumn($quotedColumnName, $options);
+
+            $column = $table->getColumn($quotedColumnName);
+        } else {
+            $column = $table->addColumn($quotedColumnName, $columnType, $options);
+        }
+
         if ($fieldMetadata->isUnique()) {
             $table->addUniqueIndex([$columnName]);
         }
 
-        if ($table->hasColumn($columnName)) {
-            // required in some inheritance scenarios
-            $table->changeColumn($columnName, $options);
-
-            return $table->getColumn($columnName);
-        }
-
-        return $table->addColumn($columnName, $columnType, $options);
+        return $column;
     }
 
     /**
