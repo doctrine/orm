@@ -1194,14 +1194,15 @@ public function __construct(<params>)
             }*/
 
             $fieldType = $property->getTypeName();
+            $nullable = $this->nullableFieldExpression($property);
 
             if (( ! $property->isPrimaryKey() || $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) &&
                 ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
-                $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $fieldType, null)) {
+                $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $fieldType, $nullable)) {
                 $methods[] = $code;
             }
 
-            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $fieldType, null)) {
+            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $fieldType, $nullable)) {
                 $methods[] = $code;
             }
         }
@@ -1654,7 +1655,7 @@ public function __construct(<params>)
         $lines[] = $this->spaces . '/**';
         $lines[] = $this->spaces . ' * @var '
             . $this->getType($fieldType)
-            . ($this->nullableFieldExpression($fieldMapping) ? '|null' : '');
+            . ($propertyMetadata->isNullable() ? '|null' : '');
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
