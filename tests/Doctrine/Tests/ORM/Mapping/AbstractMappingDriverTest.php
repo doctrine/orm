@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
@@ -157,11 +158,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFieldMappings($class)
     {
-        self::assertEquals(4, count($class->fieldMappings));
-        self::assertTrue(isset($class->fieldMappings['id']));
-        self::assertTrue(isset($class->fieldMappings['name']));
-        self::assertTrue(isset($class->fieldMappings['email']));
-        self::assertTrue(isset($class->fieldMappings['version']));
+        self::assertEquals(4, count($class->getProperties()));
+
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
+        self::assertNotNull($class->getProperty('email'));
+        self::assertNotNull($class->getProperty('version'));
 
         return $class;
     }
@@ -174,8 +176,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         self::assertTrue($class->isVersioned);
         self::assertEquals("version", $class->versionField);
-
-        self::assertFalse(isset($class->fieldMappings['version']['version']));
     }
 
     /**
@@ -184,9 +184,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFieldMappingsColumnNames($class)
     {
-        self::assertEquals("id", $class->fieldMappings['id']['columnName']);
-        self::assertEquals("name", $class->fieldMappings['name']['columnName']);
-        self::assertEquals("user_email", $class->fieldMappings['email']['columnName']);
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
+        self::assertNotNull($class->getProperty('email'));
+
+        self::assertEquals("id", $class->getProperty('id')->getColumnName());
+        self::assertEquals("name", $class->getProperty('name')->getColumnName());
+        self::assertEquals("user_email", $class->getProperty('email')->getColumnName());
 
         return $class;
     }
@@ -197,10 +201,14 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testStringFieldMappings($class)
     {
-        self::assertEquals('string', $class->fieldMappings['name']['type']->getName());
-        self::assertEquals(50, $class->fieldMappings['name']['length']);
-        self::assertTrue($class->fieldMappings['name']['nullable']);
-        self::assertTrue($class->fieldMappings['name']['unique']);
+        self::assertNotNull($class->getProperty('name'));
+
+        $property = $class->getProperty('name');
+
+        self::assertEquals('string', $property->getTypeName());
+        self::assertEquals(50, $property->getLength());
+        self::assertTrue($property->isNullable());
+        self::assertTrue($property->isUnique());
 
         return $class;
     }
@@ -211,8 +219,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFieldOptions($class)
     {
+        self::assertNotNull($class->getProperty('name'));
+
+        $property = $class->getProperty('name');
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
-        self::assertEquals($expected, $class->fieldMappings['name']['options']);
+
+        self::assertEquals($expected, $property->getOptions());
 
         return $class;
     }
@@ -223,7 +235,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testIdFieldOptions($class)
     {
-        self::assertEquals(array('foo' => 'bar'), $class->fieldMappings['id']['options']);
+        self::assertNotNull($class->getProperty('id'));
+
+        $property = $class->getProperty('id');
+        $expected = array('foo' => 'bar');
+
+        self::assertEquals($expected, $property->getOptions());
 
         return $class;
     }
@@ -234,8 +251,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testIdentifier($class)
     {
+        self::assertNotNull($class->getProperty('id'));
+
+        $property = $class->getProperty('id');
+
+        self::assertEquals('integer', $property->getTypeName());
         self::assertEquals(array('id'), $class->identifier);
-        self::assertEquals('integer', $class->fieldMappings['id']['type']->getName());
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
         return $class;
@@ -356,7 +377,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testColumnDefinition($class)
     {
-        self::assertEquals("CHAR(32) NOT NULL", $class->fieldMappings['email']['columnDefinition']);
+        self::assertNotNull($class->getProperty('email'));
+
+        $property = $class->getProperty('email');
+
+        self::assertEquals("CHAR(32) NOT NULL", $property->getColumnDefinition());
         self::assertEquals("INT NULL", $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
 
         return $class;
@@ -402,30 +427,30 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassWithRepository()
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $em      = $this->_getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
+        $class   = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
 
-
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
-
-        self::assertTrue(isset($class->fieldMappings['id']));
-        self::assertTrue(isset($class->fieldMappings['value']));
-        self::assertTrue(isset($class->fieldMappings['creditCardNumber']));
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('value'));
+        self::assertNotNull($class->getProperty('creditCardNumber'));
         self::assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-        self::assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository",
-             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment"));
+        self::assertInstanceOf(
+            "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository",
+            $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment")
+        );
         self::assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
-
-
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
 
-        self::assertTrue(isset($class->fieldMappings['id']));
-        self::assertTrue(isset($class->fieldMappings['value']));
-        self::assertTrue(isset($class->fieldMappings['serialNumber']));
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('value'));
+        self::assertNotNull($class->getProperty('serialNumber'));
         self::assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-        self::assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository",
-             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment"));
+        self::assertInstanceOf(
+            "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository",
+            $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")
+        );
         self::assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
     }
 
@@ -434,35 +459,26 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testDefaultFieldType()
     {
-        $factory    = $this->createClassMetadataFactory();
-        $class      = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
+        $factory = $this->createClassMetadataFactory();
+        $class   = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
 
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
 
-        self::assertArrayHasKey('id', $class->fieldMappings);
-        self::assertArrayHasKey('name', $class->fieldMappings);
+        $idProperty = $class->getProperty('id');
+        $nameProperty = $class->getProperty('name');
 
+        self::assertInstanceOf(FieldMetadata::class, $idProperty);
+        self::assertInstanceOf(FieldMetadata::class, $nameProperty);
 
-        self::assertArrayHasKey('type', $class->fieldMappings['id']);
-        self::assertArrayHasKey('type', $class->fieldMappings['name']);
+        self::assertEquals('string', $idProperty->getTypeName());
+        self::assertEquals('string', $nameProperty->getTypeName());
 
-        self::assertEquals('string', $class->fieldMappings['id']['type']->getName());
-        self::assertEquals('string', $class->fieldMappings['name']['type']->getName());
+        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('name', $nameProperty->getFieldName());
 
-
-
-        self::assertArrayHasKey('fieldName', $class->fieldMappings['id']);
-        self::assertArrayHasKey('fieldName', $class->fieldMappings['name']);
-
-        self::assertEquals('id', $class->fieldMappings['id']['fieldName']);
-        self::assertEquals('name', $class->fieldMappings['name']['fieldName']);
-
-
-
-        self::assertArrayHasKey('columnName', $class->fieldMappings['id']);
-        self::assertArrayHasKey('columnName', $class->fieldMappings['name']);
-
-        self::assertEquals('id', $class->fieldMappings['id']['columnName']);
-        self::assertEquals('name', $class->fieldMappings['name']['columnName']);
+        self::assertEquals('id', $idProperty->getColumnName());
+        self::assertEquals('name', $nameProperty->getColumnName());
 
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
@@ -474,15 +490,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC1170Entity');
 
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('value'));
 
-        self::assertArrayHasKey('id', $class->fieldMappings);
-        self::assertArrayHasKey('value', $class->fieldMappings);
-
-        self::assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
-        self::assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
-
-        self::assertEquals("INT unsigned NOT NULL", $class->fieldMappings['id']['columnDefinition']);
-        self::assertEquals("VARCHAR(255) NOT NULL", $class->fieldMappings['value']['columnDefinition']);
+        self::assertEquals("INT unsigned NOT NULL", $class->getProperty('id')->getColumnDefinition());
+        self::assertEquals("VARCHAR(255) NOT NULL", $class->getProperty('value')->getColumnDefinition());
     }
 
     /**
@@ -493,9 +505,10 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $em         = $this->_getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
 
-
         self::assertInstanceOf('Doctrine\ORM\Mapping\DefaultNamingStrategy', $em->getConfiguration()->getNamingStrategy());
+
         $em->getConfiguration()->setNamingStrategy(new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER));
+
         self::assertInstanceOf('Doctrine\ORM\Mapping\UnderscoreNamingStrategy', $em->getConfiguration()->getNamingStrategy());
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
@@ -665,6 +678,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertCount(1, $personMetadata->getSqlResultSetMappings());
 
         $mapping = $personMetadata->getSqlResultSetMapping('mappingFetchAll');
+
         self::assertEquals(array(),$mapping['columns']);
         self::assertEquals('mappingFetchAll', $mapping['name']);
         self::assertEquals('discriminator',                            $mapping['entities'][0]['discriminatorColumn']);
@@ -682,7 +696,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory        = $this->createClassMetadataFactory();
         $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
         $guestMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
-
 
         // assert groups association mappings
         self::assertArrayHasKey('groups', $guestMetadata->associationMappings);
@@ -712,7 +725,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertEquals(array('user_id'=>'id'), $guestGroups['relationToSourceKeyColumns']);
         self::assertEquals(array('group_id'=>'id'), $guestGroups['relationToTargetKeyColumns']);
         self::assertEquals(array('user_id','group_id'), $guestGroups['joinTableColumns']);
-
 
         self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
         self::assertEquals('adminuser_id', $adminGroups['joinTable']['joinColumns'][0]['name']);
@@ -749,7 +761,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertEquals(array('address_id'=>'address_id'), $guestAddress['joinColumnFieldNames']);
         self::assertEquals(array('id'=>'address_id'), $guestAddress['targetToSourceKeyColumns']);
 
-
         self::assertEquals('adminaddress_id', $adminAddress['joinColumns'][0]['name']);
         self::assertEquals(array('adminaddress_id'=>'id'), $adminAddress['sourceToTargetKeyColumns']);
         self::assertEquals(array('adminaddress_id'=>'adminaddress_id'), $adminAddress['joinColumnFieldNames']);
@@ -780,34 +791,52 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
 
         $factory       = $this->createClassMetadataFactory();
-        $guestMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
         $adminMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
 
-        self::assertTrue($adminMetadata->fieldMappings['id']['id']);
-        self::assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
-        self::assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
         self::assertEquals(array('user_id'=>'id','user_name'=>'name'), $adminMetadata->fieldNames);
-        self::assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
+
+        self::assertNotNull($adminMetadata->getProperty('id'));
+
+        $idProperty = $adminMetadata->getProperty('id');
+
+        self::assertTrue($idProperty->isPrimaryKey());
+        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('user_id', $idProperty->getColumnName());
+        self::assertEquals(150, $idProperty->getLength());
+
+        self::assertNotNull($adminMetadata->getProperty('name'));
+
+        $nameProperty = $adminMetadata->getProperty('name');
+
+        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('user_name', $nameProperty->getColumnName());
+        self::assertEquals(250, $nameProperty->getLength());
+        self::assertTrue($nameProperty->isNullable());
+        self::assertFalse($nameProperty->isUnique());
 
 
-        self::assertEquals('name', $adminMetadata->fieldMappings['name']['fieldName']);
-        self::assertEquals('user_name', $adminMetadata->fieldMappings['name']['columnName']);
-        self::assertEquals(250, $adminMetadata->fieldMappings['name']['length']);
-        self::assertTrue($adminMetadata->fieldMappings['name']['nullable']);
-        self::assertFalse($adminMetadata->fieldMappings['name']['unique']);
+        $guestMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
 
-
-        self::assertTrue($guestMetadata->fieldMappings['id']['id']);
-        self::assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
-        self::assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
         self::assertEquals(array('guest_id'=>'id','guest_name'=>'name'), $guestMetadata->fieldNames);
-        self::assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
 
-        self::assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);
-        self::assertEquals('guest_name', $guestMetadata->fieldMappings['name']['columnName']);
-        self::assertEquals(240, $guestMetadata->fieldMappings['name']['length']);
-        self::assertFalse($guestMetadata->fieldMappings['name']['nullable']);
-        self::assertTrue($guestMetadata->fieldMappings['name']['unique']);
+        self::assertNotNull($guestMetadata->getProperty('id'));
+
+        $idProperty = $guestMetadata->getProperty('id');
+
+        self::assertTrue($idProperty->isPrimaryKey());
+        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('guest_id', $idProperty->getColumnName());
+        self::assertEquals(140, $idProperty->getLength());
+
+        self::assertNotNull($guestMetadata->getProperty('name'));
+
+        $nameProperty = $guestMetadata->getProperty('name');
+
+        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('guest_name', $nameProperty->getColumnName());
+        self::assertEquals(240, $nameProperty->getLength());
+        self::assertFalse($nameProperty->isNullable());
+        self::assertTrue($nameProperty->isUnique());
     }
 
     /**
