@@ -2,9 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\Driver\XmlDriver,
-    Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
 
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {

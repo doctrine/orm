@@ -22,7 +22,8 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Type')
             ));
         } catch (\Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
+            // Automatically mark failure
+            self::fail($e->getMessage());
         }
     }
 

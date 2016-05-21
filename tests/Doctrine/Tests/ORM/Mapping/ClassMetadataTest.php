@@ -85,22 +85,25 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Explicit Nullable
-        $cm->addProperty('status', Type::getType('string'), [
+        $property = $cm->addProperty('status', Type::getType('string'), [
             'nullable' => true,
             'length'   => 50,
         ]);
 
-        self::assertTrue($cm->isNullable('status'));
+        self::assertTrue($property->isNullable());
 
         // Explicit Not Nullable
-        $cm->addProperty('username', Type::getType('string'), ['nullable' => false, 'length' => 50]);
+        $property = $cm->addProperty('username', Type::getType('string'), [
+            'nullable' => false,
+            'length'   => 50,
+        ]);
 
-        self::assertFalse($cm->isNullable('username'));
+        self::assertFalse($property->isNullable());
 
         // Implicit Not Nullable
-        $cm->addProperty('name', Type::getType('string'), ['length' => 50]);
+        $property = $cm->addProperty('name', Type::getType('string'), ['length' => 50]);
 
-        self::assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
+        self::assertFalse($property->isNullable(), "By default a field should not be nullable.");
     }
 
     /**
@@ -408,18 +411,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $cm->setIdentifier(array('name', 'username'));
         self::assertTrue($cm->isIdentifierComposite);
-    }
-
-    /**
-     * @group DDC-944
-     */
-    public function testMappingNotFound()
-    {
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "No mapping found for field 'foo' on class 'Doctrine\Tests\Models\CMS\CmsUser'.");
-        $cm->getFieldMapping('foo');
     }
 
     /**
