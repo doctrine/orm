@@ -311,6 +311,14 @@ class FieldMetadata implements PropertyMetadata
     /**
      * {@inheritdoc}
      */
+    public function isInherited()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isAssociation()
     {
         return false;

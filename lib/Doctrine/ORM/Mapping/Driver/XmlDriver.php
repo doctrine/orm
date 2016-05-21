@@ -579,8 +579,6 @@ class XmlDriver extends FileDriver
                 foreach ($overrideElement->field as $field) {
                     $mapping = $this->columnToArray($field);
 
-                    $mapping['fieldName'] = $fieldName;
-
                     $metadata->setAttributeOverride($fieldName, $mapping);
                 }
             }
