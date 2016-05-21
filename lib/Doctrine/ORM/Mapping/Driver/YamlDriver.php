@@ -263,34 +263,18 @@ class YamlDriver extends FileDriver
 
         if (isset($element['id'])) {
             // Evaluate identifier settings
-            foreach ($element['id'] as $name => $idElement) {
-                if (isset($idElement['associationKey']) && $idElement['associationKey'] == true) {
-                    $associationIds[$name] = true;
+            foreach ($element['id'] as $fieldName => $idElement) {
+                if (isset($idElement['associationKey']) && $idElement['associationKey']) {
+                    $associationIds[$fieldName] = true;
 
                     continue;
                 }
 
-                $fieldName    = $name;
-                $fieldType    = Type::getType($idElement['type'] ?? 'string');
-                $fieldMapping = array('id' => true);
+                $mapping = $this->columnToArray($idElement);
 
-                if (isset($idElement['column'])) {
-                    $fieldMapping['columnName'] = $idElement['column'];
-                }
+                $mapping['id'] = true;
 
-                if (isset($idElement['length'])) {
-                    $fieldMapping['length'] = $idElement['length'];
-                }
-
-                if (isset($idElement['columnDefinition'])) {
-                    $fieldMapping['columnDefinition'] = $idElement['columnDefinition'];
-                }
-
-                if (isset($idElement['options'])) {
-                    $fieldMapping['options'] = $idElement['options'];
-                }
-
-                $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
+                $metadata->addProperty($fieldName, Type::getType($mapping['type']), $mapping);
 
                 if (isset($idElement['generator'])) {
                     $generatorStrategy = strtoupper($idElement['generator']['strategy']);
@@ -316,7 +300,6 @@ class YamlDriver extends FileDriver
         // Evaluate fields
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $fieldName => $fieldMapping) {
-                $params  = explode('(', $fieldMapping['type']);
                 $mapping = $this->columnToArray($fieldMapping);
 
                 if (isset($mapping['id'])) {
@@ -328,7 +311,7 @@ class YamlDriver extends FileDriver
                     }
                 }
 
-                $property = $metadata->addProperty($fieldName, Type::getType(trim($params[0])), $mapping);
+                $property = $metadata->addProperty($fieldName, Type::getType($mapping['type']), $mapping);
 
                 if (isset($mapping['version'])) {
                     $metadata->setVersionMapping($property);
@@ -631,6 +614,7 @@ class YamlDriver extends FileDriver
 
             foreach ($element['attributeOverride'] as $fieldName => $attributeOverrideElement) {
                 $mapping = $this->columnToArray($fieldName, $attributeOverrideElement);
+
                 $metadata->setAttributeOverride($fieldName, $mapping);
             }
         }
@@ -715,7 +699,9 @@ class YamlDriver extends FileDriver
      */
     private function columnToArray($column)
     {
-        $mapping = array();
+        $mapping = array(
+            'type' => 'string',
+        );
 
         if (isset($column['type'])) {
             $params = explode('(', $column['type']);
@@ -723,11 +709,15 @@ class YamlDriver extends FileDriver
             if (isset($params[1])) {
                 $column['length'] = (integer) substr($params[1], 0, strlen($params[1]) - 1);
             }
+
+            $mapping['type'] = trim($params[0]);
         }
 
         if (isset($column['length'])) {
             $mapping['length'] = (integer) $column['length'];
         }
+        
+        
 
         if (isset($column['column'])) {
             $mapping['columnName'] = $column['column'];

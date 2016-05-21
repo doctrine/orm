@@ -1106,45 +1106,11 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Checks if the field is unique.
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return boolean TRUE if the field is unique, FALSE otherwise.
-     */
-    public function isUniqueField($fieldName)
-    {
-        $mapping = $this->getFieldMapping($fieldName);
-
-        if ($mapping !== false) {
-            return isset($mapping['unique']) && $mapping['unique'] == true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks if the field is not null.
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return boolean TRUE if the field is not null, FALSE otherwise.
-     */
-    public function isNullable($fieldName)
-    {
-        $mapping = $this->getFieldMapping($fieldName);
-
-        if ($mapping !== false) {
-            return isset($mapping['nullable']) && $mapping['nullable'] == true;
-        }
-
-        return false;
-    }
-
-    /**
      * Gets a column name for a field name.
      * If the column name for the field cannot be found, the given field name
      * is returned.
+     *
+     * @todo remove
      *
      * @param string $fieldName The field name.
      *
@@ -1155,25 +1121,6 @@ class ClassMetadata implements ClassMetadataInterface
         return isset($this->properties[$fieldName])
             ? $this->properties[$fieldName]->getColumnName()
             : $fieldName;
-    }
-
-    /**
-     * Gets the mapping of a (regular) field that holds some data but not a
-     * reference to another object.
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return PropertyMetadata The field mapping.
-     *
-     * @throws MappingException
-     */
-    public function getFieldMapping($fieldName)
-    {
-        if ( ! isset($this->properties[$fieldName])) {
-            throw MappingException::mappingNotFound($this->name, $fieldName);
-        }
-
-        return $this->properties[$fieldName];
     }
 
     /**
@@ -1862,22 +1809,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets the type of a field.
-     *
-     * @param string $fieldName
-     *
-     * @return \Doctrine\DBAL\Types\Type|string|null
-     *
-     * @todo 3.0 Remove this. PersisterHelper should fix it somehow
-     */
-    public function getTypeOfField($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            ? $this->properties[$fieldName]->getType()
-            : null;
-    }
-
-    /**
      * Gets the name of the primary table.
      *
      * @return string
@@ -2054,19 +1985,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Checks whether a mapped field is inherited from an entity superclass.
-     *
-     * @param string $fieldName
-     *
-     * @return bool TRUE if the field is inherited, FALSE otherwise.
-     */
-    public function isInheritedField($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            && $this->properties[$fieldName] instanceof InheritedFieldMetadata;
-    }
-
-    /**
      * Checks whether a mapped association field is inherited from a superclass.
      *
      * @param string $fieldName
@@ -2194,7 +2112,14 @@ class ClassMetadata implements ClassMetadataInterface
 
         $property->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
         $property->setColumnName($mapping['columnName'] ?? $this->namingStrategy->propertyToColumnName($fieldName, $this->name));
-        $property->setPrimaryKey(isset($mapping['id']) && $mapping['id'] === true);
+        $property->setPrimaryKey(isset($mapping['id']) && $mapping['id']);
+        $property->setNullable(isset($mapping['nullable']) && $mapping['nullable']);
+        $property->setUnique(isset($mapping['unique']) && $mapping['unique']);
+        $property->setColumnDefinition($mapping['columnDefinition'] ?? null);
+        $property->setLength($mapping['length'] ?? null);
+        $property->setScale($mapping['scale'] ?? null);
+        $property->setPrecision($mapping['precision'] ?? null);
+        $property->setOptions($mapping['options'] ?? []);
 
         // Check for already declared column
         if (isset($this->fieldNames[$property->getColumnName()]) ||
@@ -2205,7 +2130,7 @@ class ClassMetadata implements ClassMetadataInterface
         $this->fieldNames[$property->getColumnName()] = $fieldName;
 
         // Complete id mapping
-        if (isset($mapping['id']) && $mapping['id'] === true) {
+        if (isset($mapping['id']) && $mapping['id']) {
             assert($this->versionField !== $fieldName, MappingException::cannotVersionIdField($this->name, $fieldName));
             assert(! $type->canRequireSQLConversion(), MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property));
 
