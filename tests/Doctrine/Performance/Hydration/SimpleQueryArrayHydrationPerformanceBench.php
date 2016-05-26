@@ -75,7 +75,7 @@ final class SimpleQueryArrayHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__name', 'name');
     }
 
-    public function benchSimpleQueryScalarHydrationPerformance()
+    public function benchHydration()
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }

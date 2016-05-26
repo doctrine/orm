@@ -88,7 +88,7 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
     }
 
-    public function benchSimpleQueryScalarHydrationPerformance()
+    public function benchHydration()
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
