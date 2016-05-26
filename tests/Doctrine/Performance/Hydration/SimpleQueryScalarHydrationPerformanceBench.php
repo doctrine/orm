@@ -32,8 +32,6 @@ final class SimpleQueryScalarHydrationPerformanceBench
 
     public function init()
     {
-        $entityManager = EntityManagerFactory::getEntityManager([]);
-
         $resultSet = [
             [
                 'u__id'       => '1',
@@ -65,7 +63,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
-        $this->hydrator = new ScalarHydrator($entityManager);
+        $this->hydrator = new ScalarHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping;
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');

@@ -33,8 +33,6 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
 
     public function init()
     {
-        $entityManager = EntityManagerFactory::getEntityManager([]);
-
         $resultSet = [
             [
                 'u__id'       => '1',
@@ -56,7 +54,7 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
-        $this->hydrator = new ObjectHydrator($entityManager);
+        $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping;
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
