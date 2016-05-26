@@ -727,8 +727,6 @@ class YamlDriver extends FileDriver
             $mapping['length'] = (integer) $column['length'];
         }
 
-
-
         if (isset($column['column'])) {
             $mapping['columnName'] = $column['column'];
         }

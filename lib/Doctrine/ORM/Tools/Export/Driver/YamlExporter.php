@@ -95,17 +95,28 @@ class YamlExporter extends AbstractExporter
 
         foreach ($properties as $name => $property) {
             $mapping = [
-                'column' => $property->getColumnName(),
-                'type'   => $property->getTypeName(),
+                'column'           => $property->getColumnName(),
+                'type'             => $property->getTypeName(),
+                'columnDefinition' => $property->getColumnDefinition(),
+                'length'           => $property->getLength(),
+                'scale'            => $property->getScale(),
+                'precision'        => $property->getPrecision(),
+                'options'          => $property->getOptions(),
+                'id'               => $property->isPrimaryKey(),
+                'nullable'         => $property->isNullable(),
+                'unique'           => $property->isUnique(),
             ];
 
             if ($mapping['column'] === $name) {
                 unset($mapping['column']);
             }
 
-            if (isset($mapping['id']) && $mapping['id']) {
+            $mapping = array_filter($mapping);
+
+            if (isset($mapping['id']) && $mapping['id'] === true) {
                 $ids[$name] = $mapping;
 
+                unset($mapping['id']);
                 unset($mappings[$name]);
 
                 continue;
@@ -186,7 +197,13 @@ class YamlExporter extends AbstractExporter
                     'orphanRemoval' => $associationMapping['orphanRemoval'],
                 ];
 
-                $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
+                if (count($associationMapping['joinColumns']) > 1) {
+                    $oneToOneMappingArray['joinColumns'] = $associationMapping['joinColumns'];
+                } else {
+                    $oneToOneMappingArray['joinColumn'] = reset($associationMapping['joinColumns']);
+                }
+
+                $associationMappingArray = array_filter(array_merge($associationMappingArray, $oneToOneMappingArray));
 
                 if ($associationMapping['type'] & ClassMetadata::ONE_TO_ONE) {
                     $array['oneToOne'][$name] = $associationMappingArray;
