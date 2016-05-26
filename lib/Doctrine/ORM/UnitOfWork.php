@@ -626,7 +626,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 if ( ! isset($class->associationMappings[$propName])) {
-                    $changeSet[$propName] = array(null, $actualValue);
+                    $changeSet[$propName] = array(null, (!$actualValue instanceof DoctrineValueObject) ?: $actualValue->toPhpValue());
 
                     continue;
                 }
@@ -634,7 +634,7 @@ class UnitOfWork implements PropertyChangedListener
                 $assoc = $class->associationMappings[$propName];
 
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                    $changeSet[$propName] = array(null, $actualValue);
+                    $changeSet[$propName] = array(null, (!$actualValue instanceof DoctrineValueObject) ?: $actualValue->toPhpValue());
                 }
             }
 
@@ -659,6 +659,14 @@ class UnitOfWork implements PropertyChangedListener
                 // skip if value haven't changed
                 if ($orgValue === $actualValue) {
                     continue;
+                }
+
+                if ($actualValue instanceof DoctrineValueObject) {
+                    if ($actualValue->equals($orgValue)) {
+                        continue;
+                    }
+
+                    $changeSet[$propName] = array($orgValue, $actualValue->toPhpValue());
                 }
 
                 // if regular field
