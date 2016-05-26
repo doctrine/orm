@@ -18,7 +18,6 @@ use Doctrine\Tests\OrmTestCase;
  */
 class QuoteStrategyTest extends OrmTestCase
 {
-
     /**
      * @var \Doctrine\ORM\Mapping\DefaultQuoteStrategy
      */

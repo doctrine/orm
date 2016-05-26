@@ -55,9 +55,7 @@ $metadata->addProperty(
     ]
 );
 
-$mapping = ['fieldName' => 'version', 'type' => 'integer'];
-$metadata->setVersionMapping($mapping);
-$metadata->addProperty('version', Type::getType('integer'));
+$metadata->setVersionMapping($metadata->addProperty('version', Type::getType('integer')));
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
