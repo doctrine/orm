@@ -19,6 +19,11 @@ final class SimpleInsertPerformanceBench
      */
     private $entityManager;
 
+    /**
+     * @var CMS\CmsUser[]
+     */
+    private $users;
+
     public function init()
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
@@ -31,11 +36,6 @@ final class SimpleInsertPerformanceBench
             CMS\CmsArticle::class,
             CMS\CmsComment::class,
         ]);
-    }
-
-    public function benchHydration()
-    {
-        $batchSize = 20;
 
         for ($i = 1; $i <= 10000; ++$i) {
             $user           = new CMS\CmsUser;
@@ -43,9 +43,16 @@ final class SimpleInsertPerformanceBench
             $user->username = 'user' . $i;
             $user->name     = 'Mr.Smith-' . $i;
 
+            $this->users[$i] = $user;
+        }
+    }
+
+    public function benchHydration()
+    {
+        foreach ($this->users as $key => $user) {
             $this->entityManager->persist($user);
 
-            if (! ($i % $batchSize)) {
+            if (! ($key % 20)) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
