@@ -32,8 +32,6 @@ final class SimpleQueryArrayHydrationPerformanceBench
 
     public function init()
     {
-        $entityManager = EntityManagerFactory::getEntityManager([]);
-
         $resultSet = [
             [
                 'u__id'       => '1',
@@ -65,7 +63,7 @@ final class SimpleQueryArrayHydrationPerformanceBench
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
-        $this->hydrator = new ArrayHydrator($entityManager);
+        $this->hydrator = new ArrayHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping;
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
