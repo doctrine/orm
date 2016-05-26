@@ -45,16 +45,17 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
 {
     protected function _createEntityManager($metadataDriver)
     {
-        $driverMock = new DriverMock();
         $config = new \Doctrine\ORM\Configuration();
+
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
-        $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        $driverMock   = new DriverMock();
+        $eventManager = new EventManager();
+        $connection   = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+
+        return EntityManagerMock::create($connection, $config, $eventManager);
     }
 
     public function testTest()
