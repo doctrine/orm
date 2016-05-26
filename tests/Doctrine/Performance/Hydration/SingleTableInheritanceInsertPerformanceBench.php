@@ -10,7 +10,7 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 /**
  * @BeforeMethods({"init"})
  */
-final class InheritanceInsertPerformanceBench
+final class SingleTableInheritanceInsertPerformanceBench
 {
     /**
      * @var EntityManagerInterface
