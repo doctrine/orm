@@ -1942,14 +1942,13 @@ class ClassMetadata implements ClassMetadataInterface
      * Sets the override for a mapped field.
      *
      * @param string $fieldName
-     * @param Type   $type
      * @param array  $overrideMapping
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function setAttributeOverride($fieldName, Type $type, array $overrideMapping)
+    public function setAttributeOverride($fieldName, array $overrideMapping)
     {
         $property = $this->getProperty($fieldName);
 
@@ -1957,16 +1956,28 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
-        if ($type !== $property->getType()) {
-            throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
-        }
-
         $overrideMapping['id'] = $property->isPrimaryKey();
 
         unset($this->properties[$fieldName]);
         unset($this->fieldNames[$property->getColumnName()]);
 
-        $this->addProperty($fieldName, $type, $overrideMapping);
+        $this->addProperty($fieldName, $property->getType(), $overrideMapping);
+    }
+
+    /**
+     * Gets the type of a field.
+     *
+     * @param string $fieldName
+     *
+     * @return \Doctrine\DBAL\Types\Type|string|null
+     *
+     * @todo 3.0 Remove this. PersisterHelper should fix it somehow
+     */
+    public function getTypeOfField($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            ? $this->properties[$fieldName]->getType()
+            : null;
     }
 
     /**
@@ -1977,6 +1988,19 @@ class ClassMetadata implements ClassMetadataInterface
     public function isRootEntity()
     {
         return $this->name == $this->rootEntityName;
+    }
+
+    /**
+     * Checks whether a mapped field is inherited from an entity superclass.
+     *
+     * @param string $fieldName
+     *
+     * @return bool TRUE if the field is inherited, FALSE otherwise.
+     */
+    public function isInheritedField($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof InheritedFieldMetadata;
     }
 
     /**
