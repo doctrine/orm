@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @group DDC-2183
- * @group performance
  */
 class SecondLevelCacheTest extends OrmFunctionalTestCase
 {
