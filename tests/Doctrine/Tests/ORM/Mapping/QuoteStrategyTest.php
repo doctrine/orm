@@ -2,8 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
-use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 {
-
     /**
      * @var \Doctrine\ORM\Mapping\DefaultQuoteStrategy
      */

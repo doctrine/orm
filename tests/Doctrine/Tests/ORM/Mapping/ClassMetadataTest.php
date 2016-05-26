@@ -1025,22 +1025,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @group DDC-964
-     * @expectedException        Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage The column type of attribute 'name' on class 'Doctrine\Tests\Models\DDC964\DDC964Guest' could not be changed.
-     */
-    public function testInvalidOverrideAttributeFieldTypeException()
-    {
-        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC964\DDC964Guest');
-
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addProperty('name', Type::getType('string'));
-
-        $cm->setAttributeOverride('name', array('type'=>'date'));
-    }
-
-    /**
      * @group DDC-1955
      *
      * @expectedException        Doctrine\ORM\Mapping\MappingException
@@ -1114,7 +1098,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $cm->setSequenceGeneratorDefinition(array('sequenceName' => 'foo'));
 
-        self::assertEquals(array('sequenceName' => 'foo', 'quoted' => true), $cm->sequenceGeneratorDefinition);
+        self::assertEquals(array('sequenceName' => 'foo'), $cm->sequenceGeneratorDefinition);
     }
 
     /**

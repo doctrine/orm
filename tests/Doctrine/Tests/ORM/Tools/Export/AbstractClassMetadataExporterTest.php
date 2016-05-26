@@ -51,16 +51,17 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     protected function _createEntityManager($metadataDriver)
     {
-        $driverMock = new DriverMock();
         $config = new \Doctrine\ORM\Configuration();
+
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
-        $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        $driverMock   = new DriverMock();
+        $eventManager = new EventManager();
+        $connection   = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+
+        return EntityManagerMock::create($connection, $config, $eventManager);
     }
 
     protected function _createMetadataDriver($type, $path)
@@ -158,8 +159,10 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testTableIsExported($class)
     {
         self::assertEquals('cms_users', $class->table['name']);
-        self::assertEquals(array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
-            $class->table['options']);
+        self::assertEquals(
+            array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
+            $class->table['options']
+        );
 
         return $class;
     }
@@ -201,10 +204,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
         self::assertNotNull($class->getProperty('email'));
+        self::assertNotNull($class->getProperty('age'));
 
         $idProperty = $class->getProperty('id');
         $nameProperty = $class->getProperty('name');
         $emailProperty = $class->getProperty('email');
+        $ageProperty = $class->getProperty('age');
 
         self::assertTrue($idProperty->isPrimaryKey());
         self::assertEquals('id', $idProperty->getFieldName());
@@ -220,8 +225,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         self::assertEquals('string', $emailProperty->getTypeName());
         self::assertEquals('user_email', $emailProperty->getColumnName());
         self::assertEquals('CHAR(32) NOT NULL', $emailProperty->getColumnDefinition());
-        self::assertArrayHasKey('unsigned', $emailProperty->getOptions());
-        self::assertEquals(true, $emailProperty->getOptions()['unsigned']);
+
+        self::assertEquals('age', $ageProperty->getFieldName());
+        self::assertEquals('integer', $ageProperty->getTypeName());
+        self::assertEquals('age', $ageProperty->getColumnName());
+        self::assertArrayHasKey('unsigned', $ageProperty->getOptions());
+        self::assertEquals(true, $ageProperty->getOptions()['unsigned']);
 
         return $class;
     }
