@@ -7,7 +7,6 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 
 /**
- * @group performance
  * @group DDC-2602
  */
 class DDC2602Test extends \Doctrine\Tests\OrmPerformanceTestCase
@@ -46,14 +45,10 @@ class DDC2602Test extends \Doctrine\Tests\OrmPerformanceTestCase
         // Set maximum seconds this can run
         $this->setMaxRunningTime(1);
 
-        $s = microtime(true);
-
-        $query = $this->_em->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Performance\DDC2602User u JOIN u.biography b');
-        $query->getResult();
-
-        $e = microtime(true);
-
-        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
+        $this
+            ->_em
+            ->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Performance\DDC2602User u JOIN u.biography b')
+            ->getResult();
     }
 
     private function loadFixture()
