@@ -34,8 +34,6 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
 
     public function init()
     {
-        $entityManager = EntityManagerFactory::getEntityManager([]);
-
         $resultSet = [
             [
                 'u__id'          => '1',
@@ -75,7 +73,7 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
-        $this->hydrator = new ArrayHydrator($entityManager);
+        $this->hydrator = new ArrayHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping;
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
