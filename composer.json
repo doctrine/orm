@@ -36,7 +36,10 @@
         "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
     },
     "autoload-dev": {
-        "psr-4": { "Doctrine\\Tests\\": "tests/Doctrine/Tests" }
+        "psr-4": {
+            "Doctrine\\Tests\\": "tests/Doctrine/Tests",
+            "Doctrine\\Performance\\": "tests/Doctrine/Performance"
+        }
     },
     "bin": ["bin/doctrine"],
     "extra": {
