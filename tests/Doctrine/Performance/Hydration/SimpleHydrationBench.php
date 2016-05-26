@@ -51,7 +51,7 @@ final class SimpleHydrationBench
         $this->repository = $this->entityManager->getRepository(CmsUser::class);
     }
 
-    public function benchSimpleFindOperationHydration()
+    public function benchHydration()
     {
         $this->repository->findAll();
     }
