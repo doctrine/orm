@@ -261,9 +261,9 @@ class XmlDriver extends FileDriver
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $mapping) {
-                $fieldName    = (string) $mapping['name'];
-                $fieldType    = Type::getType((string) $mapping['type']);
                 $fieldMapping = $this->columnToArray($mapping);
+                $fieldName    = (string) $mapping['name'];
+                $fieldType    = Type::getType((string) $fieldMapping['type']);
                 $property     = $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
                 if (isset($fieldMapping['version'])) {
@@ -305,24 +305,10 @@ class XmlDriver extends FileDriver
             }
 
             $fieldName    = (string) $idElement['name'];
-            $fieldType    = Type::getType(isset($idElement['type']) ? (string) $idElement['type'] : 'string');
-            $fieldMapping = ['id' => true];
+            $fieldMapping = $this->columnToArray($idElement);
+            $fieldType    = Type::getType((string) $fieldMapping['type']);
 
-            if (isset($idElement['length'])) {
-                $fieldMapping['length'] = (string) $idElement['length'];
-            }
-
-            if (isset($idElement['column'])) {
-                $fieldMapping['columnName'] = (string) $idElement['column'];
-            }
-
-            if (isset($idElement['column-definition'])) {
-                $fieldMapping['columnDefinition'] = (string) $idElement['column-definition'];
-            }
-
-            if (isset($idElement->options)) {
-                $fieldMapping['options'] = $this->_parseOptions($idElement->options->children());
-            }
+            $fieldMapping['id'] = true;
 
             $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
@@ -746,7 +732,19 @@ class XmlDriver extends FileDriver
      */
     private function columnToArray(SimpleXMLElement $fieldMapping)
     {
-        $mapping = [];
+        $mapping = [
+            'type' => 'string',
+        ];
+
+        if (isset($fieldMapping['type'])) {
+            $params = explode('(', (string) $fieldMapping['type']);
+
+            if (isset($params[1])) {
+                $fieldMapping['length'] = (integer) substr($params[1], 0, strlen($params[1]) - 1);
+            }
+
+            $mapping['type'] = trim($params[0]);
+        }
 
         if (isset($fieldMapping['column'])) {
             $mapping['columnName'] = (string) $fieldMapping['column'];
