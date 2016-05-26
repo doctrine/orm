@@ -12,7 +12,7 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 /**
  * @BeforeMethods({"init"})
  */
-final class SimpleInsertPerformanceTest
+final class SimpleInsertPerformanceBench
 {
     /**
      * @var EntityManagerInterface
