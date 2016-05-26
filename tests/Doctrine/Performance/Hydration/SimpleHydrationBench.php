@@ -5,7 +5,7 @@ namespace Doctrine\Performance\Hydration;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS;
 
 /**
  * @BeforeMethods({"init"})
@@ -25,18 +25,18 @@ final class SimpleHydrationBench
     public function init()
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
-            \Doctrine\Tests\Models\CMS\CmsUser::class,
-            \Doctrine\Tests\Models\CMS\CmsPhonenumber::class,
-            \Doctrine\Tests\Models\CMS\CmsAddress::class,
-            \Doctrine\Tests\Models\CMS\CmsEmail::class,
-            \Doctrine\Tests\Models\CMS\CmsGroup::class,
-            \Doctrine\Tests\Models\CMS\CmsTag::class,
-            \Doctrine\Tests\Models\CMS\CmsArticle::class,
-            \Doctrine\Tests\Models\CMS\CmsComment::class,
+            CMS\CmsUser::class,
+            CMS\CmsPhonenumber::class,
+            CMS\CmsAddress::class,
+            CMS\CmsEmail::class,
+            CMS\CmsGroup::class,
+            CMS\CmsTag::class,
+            CMS\CmsArticle::class,
+            CMS\CmsComment::class,
         ]);
 
         for ($i = 2; $i < 10000; ++$i) {
-            $user = new CmsUser();
+            $user = new CMS\CmsUser();
 
             $user->status   = 'developer';
             $user->username = 'jwage' . $i;
@@ -48,7 +48,7 @@ final class SimpleHydrationBench
         $this->entityManager->flush();
         $this->entityManager->clear();
 
-        $this->repository = $this->entityManager->getRepository(CmsUser::class);
+        $this->repository = $this->entityManager->getRepository(CMS\CmsUser::class);
     }
 
     public function benchHydration()
