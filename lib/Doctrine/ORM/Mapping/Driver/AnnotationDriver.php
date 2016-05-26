@@ -291,7 +291,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         /* @var $reflProperty \ReflectionProperty */
         foreach ($class->getProperties() as $reflProperty) {
             if (($metadata->isMappedSuperclass && ! $reflProperty->isPrivate())
-                || (($property = $metadata->getProperty($reflProperty->name)) !== null && $property->isInherited())
+                || $metadata->isInheritedField($reflProperty->name)
                 || $metadata->isInheritedAssociation($reflProperty->name)
                 || $metadata->isInheritedEmbeddedClass($reflProperty->name)) {
                 continue;
