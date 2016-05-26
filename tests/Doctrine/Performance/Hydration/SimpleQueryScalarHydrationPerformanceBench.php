@@ -36,31 +36,31 @@ final class SimpleQueryScalarHydrationPerformanceBench
 
         $resultSet = [
             [
-                'u__id' => '1',
-                'u__status' => 'developer',
+                'u__id'       => '1',
+                'u__status'   => 'developer',
                 'u__username' => 'romanb',
-                'u__name' => 'Roman',
+                'u__name'     => 'Roman',
             ],
             [
-                'u__id' => '1',
-                'u__status' => 'developer',
+                'u__id'       => '1',
+                'u__status'   => 'developer',
                 'u__username' => 'romanb',
-                'u__name' => 'Roman',
+                'u__name'     => 'Roman',
             ],
             [
-                'u__id' => '2',
-                'u__status' => 'developer',
+                'u__id'       => '2',
+                'u__status'   => 'developer',
                 'u__username' => 'romanb',
-                'u__name' => 'Roman',
+                'u__name'     => 'Roman',
             ]
         ];
 
         for ($i = 4; $i < 10000; ++$i) {
             $resultSet[] = [
-                'u__id' => $i,
-                'u__status' => 'developer',
+                'u__id'       => $i,
+                'u__status'   => 'developer',
                 'u__username' => 'jwage',
-                'u__name' => 'Jonathan',
+                'u__name'     => 'Jonathan',
             ];
         }
 
