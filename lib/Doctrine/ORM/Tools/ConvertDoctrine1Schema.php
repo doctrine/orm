@@ -330,11 +330,12 @@ class ConvertDoctrine1Schema
                 $method = 'mapOneToMany';
             }
 
-            $associationMapping = [];
-            $associationMapping['fieldName'] = $relation['alias'];
-            $associationMapping['targetEntity'] = $relation['class'];
-            $associationMapping['mappedBy'] = $relation['foreignAlias'];
-            $associationMapping['joinColumns'] = $joinColumns;
+            $associationMapping = [
+                'fieldName'    => $relation['alias'],
+                'targetEntity' => $relation['class'],
+                'mappedBy'     => $relation['foreignAlias'],
+                'joinColumns'  => $joinColumns,
+            ];
 
             $metadata->$method($associationMapping);
         }
