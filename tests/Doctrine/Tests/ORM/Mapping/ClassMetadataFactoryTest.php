@@ -55,7 +55,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertSame($cm1, $cmMap1);
         self::assertEquals('group', $cmMap1->table['name']);
-        self::assertTrue($cmMap1->table['quoted']);
         self::assertEquals(array(), $cmMap1->parentClasses);
         self::assertTrue($cmMap1->hasField('name'));
     }

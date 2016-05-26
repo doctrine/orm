@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmTestCase;
@@ -12,7 +13,6 @@ use Doctrine\Tests\OrmTestCase;
  */
 class QuoteStrategyTest extends OrmTestCase
 {
-
     /**
      * @var \Doctrine\ORM\Mapping\DefaultQuoteStrategy
      */

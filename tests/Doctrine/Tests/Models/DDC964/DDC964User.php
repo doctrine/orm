@@ -14,7 +14,7 @@ class DDC964User
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
+     * @Column(type="integer", name="user_id")
      */
     protected $id;
 

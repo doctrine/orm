@@ -6,11 +6,7 @@ namespace Doctrine\Tests\Models\DDC964;
  * @Entity
  * @AttributeOverrides({
  *      @AttributeOverride(name="id",
- *          column=@Column(
- *              name     = "guest_id",
- *              type     = "integer",
-                length   = 140
- *          )
+ *          column=@Column(name="guest_id")
  *      ),
  *      @AttributeOverride(name="name",
  *          column=@Column(
@@ -27,9 +23,7 @@ class DDC964Guest extends DDC964User
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
         $metadata->setAttributeOverride('id', array(
-            'columnName'    => 'guest_id',
-            'type'          => 'integer',
-            'length'        => 140,
+            'columnName' => 'guest_id',
         ));
 
         $metadata->setAttributeOverride('name',array(
