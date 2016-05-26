@@ -120,9 +120,9 @@ EOT
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],
                 [$this->formatField('Association mappings:', '')],
-                $this->formatMappings($metadata->associationMappings),
+                $this->formatAssociationMappings($metadata->associationMappings),
                 [$this->formatField('Field mappings:', '')],
-                $this->formatMappings($metadata->getProperties())
+                $this->formatPropertyMappings($metadata->getProperties())
             )
         );
 
@@ -261,7 +261,30 @@ EOT
      *
      * @return array
      */
-    private function formatMappings(array $propertyMappings)
+    private function formatAssociationMappings(array $propertyMappings)
+    {
+        $output = [];
+
+        foreach ($propertyMappings as $propertyName => $mapping) {
+            $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
+
+            foreach ($mapping as $field => $value) {
+                $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
+            }
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Format the property mappings
+     *
+     * @param array $propertyMappings
+     *
+     * @return array
+     */
+    private function formatPropertyMappings(array $propertyMappings)
     {
         $output = [];
 
@@ -271,7 +294,7 @@ EOT
             $output[] = $this->formatField('    type', $this->formatValue($property->getTypeName()));
             $output[] = $this->formatField('    tableName', $this->formatValue($property->getTableName()));
             $output[] = $this->formatField('    columnName', $this->formatValue($property->getColumnName()));
-            $output[] = $this->formatField('    columnDescription', $this->formatValue($property->getColumnDescription()));
+            $output[] = $this->formatField('    columnDefinition', $this->formatValue($property->getColumnDefinition()));
             $output[] = $this->formatField('    isPrimaryKey', $this->formatValue($property->isPrimaryKey()));
             $output[] = $this->formatField('    isNullable', $this->formatValue($property->isNullable()));
             $output[] = $this->formatField('    isUnique', $this->formatValue($property->isUnique()));

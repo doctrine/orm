@@ -43,6 +43,7 @@ class PhpExporter extends AbstractExporter
         $lines = [];
         $lines[] = '<?php';
         $lines[] = null;
+        $lines[] = 'use Doctrine\DBAL\Types\Type;';
         $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadata;';
         $lines[] = null;
 
@@ -82,9 +83,9 @@ class PhpExporter extends AbstractExporter
             }
         }
 
-        foreach ($metadata->properties as $property) {
+        foreach ($metadata->getProperties() as $property) {
             $lines[] = sprintf(
-                '$metadata->addProperty("%s", Type::getType("%s"), %s)',
+                '$metadata->addProperty("%s", Type::getType("%s"), %s);',
                 $property->getFieldName(),
                 $property->getType()->getName(),
                 $this->_varExport($property->getMapping())
