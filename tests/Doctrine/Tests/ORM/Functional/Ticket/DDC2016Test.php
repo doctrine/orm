@@ -25,7 +25,7 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $metadata = $this->_em->getClassMetadata(DDC2016User::class);
+        $metadata = $this->_em->getClassMetadata(DDC2016User::CLASS_NAME);
         $uow      = $this->_em->getUnitOfWork();
 
         $username = new DDC2016Username('validUser');
@@ -35,8 +35,8 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->getRepository(DDC2016User::class)->find($user->id);
-        $this->assertInstanceOf(DDC2016User::class, $user);
+        $user = $this->_em->getRepository(DDC2016User::CLASS_NAME)->find($user->id);
+        $this->assertInstanceOf(DDC2016User::CLASS_NAME, $user);
 
         /*
          * Call the getter which validate the DB value with Value Object and set the doctrine property to
@@ -47,7 +47,7 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
          * Because we set the property, computeChangeSet will detect as a change and will update the entity.
          */
         $username = $user->getUsername();
-        $this->assertInstanceOf(DDC2016Username::class, $username);
+        $this->assertInstanceOf(DDC2016Username::CLASS_NAME, $username);
 
         $uow->computeChangeSet($metadata, $user);
         $changeset = $uow->getEntityChangeSet($user);
@@ -73,16 +73,16 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $changeSet = $uow->getEntityChangeSet($user);
 
         /*
-         * Changeset should hold the dbValue not the ValueObject.
+         * Changeset should hold the ValueObject.
          */
-        $this->assertInternalType('string', $changeSet['username'][1]);
+        $this->assertInstanceOf(DC2016UsernameVo::CLASS_NAME, $changeSet['username'][1]);
 
         $this->_em->flush();
         $this->_em->clear();
 
         $user = $this->_em->getRepository(DC2016UserWithVo::class)->find($user->id);
         $this->assertInstanceOf(DC2016UserWithVo::class, $user);
-        $this->assertEquals($txtUser, $user->getUsername()->toPhpValue());
+        $this->assertEquals($txtUser, (string)$user->getUsername());
 
         $username = $user->getUsername();
         $this->assertInstanceOf(DC2016UsernameVo::class, $username);
@@ -130,16 +130,16 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2016User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DC2016UserWithVo'),
+            $this->_em->getClassMetadata(DDC2016User::CLASS_NAME),
+            $this->_em->getClassMetadata(DC2016UserWithVo::CLASS_NAME),
         ));
     }
 
     protected function tearDown()
     {
         $this->_schemaTool->dropSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2016User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DC2016UserWithVo'),
+            $this->_em->getClassMetadata(DDC2016User::CLASS_NAME),
+            $this->_em->getClassMetadata(DC2016UserWithVo::CLASS_NAME),
         ));
 
         parent::tearDown();
@@ -152,6 +152,8 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2016User
 {
+    const CLASS_NAME = __CLASS__;
+
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
@@ -199,6 +201,8 @@ class DDC2016User
  */
 class DDC2016Username
 {
+    const CLASS_NAME = __CLASS__;
+
     /**
      * @var string
      */
@@ -234,18 +238,20 @@ class DDC2016Username
     {
         return $this->username;
     }
+
+    public function __toString()
+    {
+        return $this->getUsername();
+    }
 }
 
 class DC2016UsernameVo extends DDC2016Username implements DoctrineValueObject
 {
-    public $test = 'valami';
-
     /**
-     * @return mixed
+     * @return string
      */
-    public function toPhpValue()
+    public function __toString()
     {
-//        return $this->test;
         return $this->getUsername();
     }
 
@@ -257,7 +263,7 @@ class DC2016UsernameVo extends DDC2016Username implements DoctrineValueObject
     public function equals($value)
     {
         if ($value instanceof DoctrineValueObject) {
-            return $this->getUsername() == $value->toPhpValue();
+            return $this->getUsername() == (string)$value;
         }
 
         return $this->getUsername() == $value;
@@ -269,6 +275,8 @@ class DC2016UsernameVo extends DDC2016Username implements DoctrineValueObject
  */
 class DC2016UserWithVo
 {
+    const CLASS_NAME =  __CLASS__;
+
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
