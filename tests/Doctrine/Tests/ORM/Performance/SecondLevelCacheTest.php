@@ -10,6 +10,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
+ * @group performance
  * @group DDC-2183
  */
 class SecondLevelCacheTest extends OrmFunctionalTestCase
