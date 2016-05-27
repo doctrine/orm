@@ -458,11 +458,12 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
-            $sqlTableAlias = ($this->useSqlTableAliases)
+            $quotedColumnName = $this->platform->quoteIdentifier($class->discriminatorColumn['name']);
+            $sqlTableAlias    = ($this->useSqlTableAliases)
                 ? $this->getSQLTableAlias($class->discriminatorColumn['tableName'], $dqlAlias) . '.'
                 : '';
 
-            $sqlParts[] = $sqlTableAlias . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
+            $sqlParts[] = $sqlTableAlias . $quotedColumnName . ' IN (' . implode(', ', $values) . ')';
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -684,7 +685,7 @@ class SqlWalker implements TreeWalker
                     $sql .= $this->getSQLTableAlias($mapping['joinColumns'][0]['tableName'], $dqlAlias) . '.';
                 }
 
-                $sql .= $mapping['joinColumns'][0]['name'];
+                $sql .= $this->quoteStrategy->getJoinColumnName($mapping['joinColumns'][0], $class, $this->platform);
                 break;
 
             default:
@@ -731,13 +732,14 @@ class SqlWalker implements TreeWalker
 
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                 // Add discriminator columns to SQL
-                $rootClass   = $this->em->getClassMetadata($class->rootEntityName);
-                $discrColumn = $rootClass->discriminatorColumn;
-                $tblAlias    = $this->getSQLTableAlias($discrColumn['tableName'], $dqlAlias);
-                $discrColumn = $rootClass->discriminatorColumn;
-                $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
+                $rootClass        = $this->em->getClassMetadata($class->rootEntityName);
+                $discrColumn      = $rootClass->discriminatorColumn;
+                $tblAlias         = $this->getSQLTableAlias($discrColumn['tableName'], $dqlAlias);
+                $discrColumn      = $rootClass->discriminatorColumn;
+                $columnAlias      = $this->getSQLColumnAlias($discrColumn['name']);
+                $quotedColumnName = $this->platform->quoteIdentifier($discrColumn['name']);
 
-                $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
+                $sqlSelectExpressions[] = $tblAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
 
                 $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
                 $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName'], false, $discrColumn['type']);
@@ -761,13 +763,13 @@ class SqlWalker implements TreeWalker
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
                     $sqlTableAlias = $this->getSQLTableAlias($joinColumn['tableName'], $dqlAlias);
-                    $columnName    = $joinColumn['name'];
-                    $columnAlias   = $this->getSQLColumnAlias($columnName);
+                    $columnName    = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                    $columnAlias   = $this->getSQLColumnAlias($joinColumn['name']);
                     $columnType    = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                     $sqlSelectExpressions[] = $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
 
-                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $isIdentifier, $columnType);
+                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $joinColumn['name'], $isIdentifier, $columnType);
                 }
             }
 
@@ -789,13 +791,13 @@ class SqlWalker implements TreeWalker
                         $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
-                            $columnName  = $joinColumn['name'];
-                            $columnAlias = $this->getSQLColumnAlias($columnName);
+                            $columnName  = $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform);
+                            $columnAlias = $this->getSQLColumnAlias($joinColumn['name']);
                             $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                             $sqlSelectExpressions[] = $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
 
-                            $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $subClass->isIdentifier($columnName), $columnType);
+                            $this->rsm->addMetaResult($dqlAlias, $columnAlias, $joinColumn['name'], $subClass->isIdentifier($joinColumn['name']), $columnType);
                         }
                     }
                 }
