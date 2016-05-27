@@ -8,6 +8,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
+ * @group performance
  * @group DDC-2602
  */
 class DDC2602Test extends OrmFunctionalTestCase

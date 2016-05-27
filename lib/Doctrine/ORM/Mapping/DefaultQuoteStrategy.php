@@ -103,8 +103,8 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $quotedColumnNames = [];
 
         foreach ($class->identifier as $fieldName) {
-            if ($class->getProperty($fieldName) !== null) {
-                $quotedColumnNames[] = $this->getColumnName($fieldName, $class, $platform);
+            if (($property = $class->getProperty($fieldName)) !== null) {
+                $quotedColumnNames[] = $platform->quoteIdentifier($property->getColumnName());
 
                 continue;
             }
