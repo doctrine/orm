@@ -61,7 +61,7 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testDoctrineNotMarkAsChangedIfVOImplementsDoctrineValueObjectInterface()
     {
-        $metadata = $this->_em->getClassMetadata(DC2016UserWithVo::class);
+        $metadata = $this->_em->getClassMetadata(DC2016UserWithVo::CLASS_NAME);
         $uow      = $this->_em->getUnitOfWork();
 
         $txtUser  = 'validUser';
@@ -80,12 +80,12 @@ class DDC2016Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->getRepository(DC2016UserWithVo::class)->find($user->id);
-        $this->assertInstanceOf(DC2016UserWithVo::class, $user);
+        $user = $this->_em->getRepository(DC2016UserWithVo::CLASS_NAME)->find($user->id);
+        $this->assertInstanceOf(DC2016UserWithVo::CLASS_NAME, $user);
         $this->assertEquals($txtUser, (string)$user->getUsername());
 
         $username = $user->getUsername();
-        $this->assertInstanceOf(DC2016UsernameVo::class, $username);
+        $this->assertInstanceOf(DC2016UsernameVo::CLASS_NAME, $username);
 
         $uow->computeChangeSet($metadata, $user);
         $changeSet = $uow->getEntityChangeSet($user);
