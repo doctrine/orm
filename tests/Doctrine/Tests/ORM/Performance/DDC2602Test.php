@@ -7,6 +7,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 
 /**
+ * @group performance
  * @group DDC-2602
  */
 class DDC2602Test extends \Doctrine\Tests\OrmPerformanceTestCase
