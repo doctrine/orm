@@ -193,7 +193,7 @@ class SchemaTool
 
                 foreach ($class->getProperties() as $fieldName => $property) {
                     if ( ! ($property instanceof InheritedFieldMetadata)) {
-                        $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                        $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                         $this->gatherColumn($class, $property, $table);
 
@@ -253,7 +253,7 @@ class SchemaTool
 
             foreach ($class->identifier as $identifierField) {
                 if (($property = $class->getProperty($identifierField)) !== null) {
-                    $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
+                    $pkColumns[] = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                     continue;
                 }
@@ -406,7 +406,7 @@ class SchemaTool
             $this->gatherColumn($class, $property, $table);
 
             if ($property->isPrimaryKey()) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($property->getFieldName(), $class, $this->platform);
+                $pkColumns[] = $this->quoteStrategy->getColumnName($property, $this->platform);
             }
         }
     }
@@ -478,7 +478,7 @@ class SchemaTool
             $options['autoincrement'] = false;
         }
 
-        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $classMetadata, $this->platform);
+        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldMetadata, $this->platform);
 
         if ($table->hasColumn($quotedColumnName)) {
             // required in some inheritance scenarios

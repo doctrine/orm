@@ -128,15 +128,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setPrimaryTable($parent->table);
             }
 
-            $class->setInheritanceType($parent->inheritanceType);
-            $class->setDiscriminatorColumn($parent->discriminatorColumn);
-            $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
+
+            $class->setInheritanceType($parent->inheritanceType);
+            $class->setIdGeneratorType($parent->generatorType);
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
+            $class->setDiscriminatorColumn($parent->discriminatorColumn);
             $class->setDiscriminatorMap($parent->discriminatorMap);
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);

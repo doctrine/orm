@@ -6,6 +6,8 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
+        $this->enableQuotes = true;
+
         parent::setUp();
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();
@@ -34,6 +36,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
         $sm = $this->_em->getConnection()->getSchemaManager();
+
         $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
         $sm->dropTable($platform->quoteIdentifier('LIKE'));
