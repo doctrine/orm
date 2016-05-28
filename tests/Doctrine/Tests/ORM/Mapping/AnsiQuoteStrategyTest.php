@@ -18,7 +18,6 @@ use Doctrine\Tests\OrmTestCase;
  */
 class AnsiQuoteStrategyTest extends OrmTestCase
 {
-
     /**
      * @var \Doctrine\ORM\Mapping\DefaultQuoteStrategy
      */
@@ -53,11 +52,11 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $class = $this->createClassMetadata(CmsUser::class);
-        $class->addProperty('id', Type::getType('string'), ['id' => true]);
-        $class->addProperty('name', Type::getType('string'));
+        $idProperty   = $class->addProperty('id', Type::getType('string'), ['id' => true]);
+        $nameProperty = $class->addProperty('name', Type::getType('string'));
 
-        self::assertEquals('id' ,$this->strategy->getColumnName('id', $class, $this->platform));
-        self::assertEquals('name' ,$this->strategy->getColumnName('name', $class, $this->platform));
+        self::assertEquals('id' ,$this->strategy->getColumnName($idProperty, $this->platform));
+        self::assertEquals('name' ,$this->strategy->getColumnName($nameProperty, $this->platform));
     }
 
     public function testGetTableName()
@@ -65,7 +64,8 @@ class AnsiQuoteStrategyTest extends OrmTestCase
         $class = $this->createClassMetadata(CmsUser::class);
 
         $class->setPrimaryTable(['name'=>'cms_user']);
-        self::assertEquals('cms_user' ,$this->strategy->getTableName($class, $this->platform));
+
+        self::assertEquals('cms_user', $this->strategy->getTableName($class, $this->platform));
     }
 
     public function testJoinTableName()

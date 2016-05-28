@@ -334,11 +334,10 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function fetchVersionValue($versionedClass, array $id)
     {
-        $versionField = $versionedClass->versionField;
-        $property     = $versionedClass->getProperty($versionField);
-        $tableName    = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
-        $identifier   = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
-        $columnName   = $this->quoteStrategy->getColumnName($versionField, $versionedClass, $this->platform);
+        $property   = $versionedClass->getProperty($versionedClass->versionField);
+        $tableName  = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+        $identifier = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
+        $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
 
         // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
@@ -404,7 +403,7 @@ class BasicEntityPersister implements EntityPersister
                 case isset($this->class->fieldNames[$columnName]):
                     $fieldName   = $this->class->fieldNames[$columnName];
                     $property    = $this->class->getProperty($fieldName);
-                    $column      = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
+                    $column      = $this->quoteStrategy->getColumnName($property, $this->platform);
                     $placeholder = $property->getType()->convertToDatabaseValueSQL('?', $this->platform);
 
                     break;
@@ -425,9 +424,11 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($this->class->identifier as $idField) {
             if ( ! isset($this->class->associationMappings[$idField])) {
+                $property = $this->class->getProperty($idField);
+
                 $params[]   = $identifier[$idField];
-                $types[]    = $this->class->getProperty($idField)->getType();
-                $where[]    = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
+                $types[]    = $property->getType();
+                $where[]    = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                 continue;
             }
@@ -454,9 +455,10 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if ($versioned) {
-            $versionField       = $this->class->versionField;
-            $versionFieldType   = $this->class->getProperty($versionField)->getType();
-            $versionColumn      = $this->quoteStrategy->getColumnName($versionField, $this->class, $this->platform);
+            $versionField     = $this->class->versionField;
+            $versionProperty  = $this->class->getProperty($versionField);
+            $versionFieldType = $versionProperty->getType();
+            $versionColumn    = $this->quoteStrategy->getColumnName($versionProperty, $this->platform);
 
             $where[]    = $versionColumn;
             $types[]    = $versionFieldType;
@@ -1151,7 +1153,7 @@ class BasicEntityPersister implements EntityPersister
                     ? $property->getDeclaringClass()
                     : $this->class;
                 $tableAlias    = $this->getSQLTableAlias($class->getTableName());
-                $columnName    = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
+                $columnName    = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                 $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
 
@@ -1394,7 +1396,9 @@ class BasicEntityPersister implements EntityPersister
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if (empty($columns)) {
-            $identityColumn  = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
+            $property        = $this->class->getProperty($this->class->identifier[0]);
+            $identityColumn  = $this->quoteStrategy->getColumnName($property, $this->platform);
+
             $this->insertSql = $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
 
             return $this->insertSql;
@@ -1457,8 +1461,10 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
-                $columns[]                = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
-                $this->columnTypes[$name] = $this->class->getProperty($name)->getType();
+                $property = $this->class->getProperty($name);
+
+                $columns[]                = $this->quoteStrategy->getColumnName($property, $this->platform);
+                $this->columnTypes[$name] = $property->getType();
             }
         }
 
@@ -1490,7 +1496,7 @@ class BasicEntityPersister implements EntityPersister
         $sql          = sprintf(
             '%s.%s',
             $this->getSQLTableAlias($property->getTableName(), ($alias == 'r' ? '' : $alias)),
-            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
+            $this->quoteStrategy->getColumnName($property, $this->platform)
         );
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
@@ -1673,7 +1679,7 @@ class BasicEntityPersister implements EntityPersister
     {
         if (($property = $this->class->getProperty($field)) !== null) {
             $tableAlias = $this->getSQLTableAlias($property->getTableName());
-            $columnName = $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
+            $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
 
             return [$tableAlias . '.' . $columnName];
         }
