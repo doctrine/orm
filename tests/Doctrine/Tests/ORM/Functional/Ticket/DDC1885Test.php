@@ -11,7 +11,6 @@ use Doctrine\Tests\Models\Quote\User;
  */
 class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     /**
      * @var \Doctrine\Tests\Models\Quote\User
      */
@@ -19,8 +18,8 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp() : void
     {
-        $this->useModelSet('quote');
-
+        $this->enableQuotes = true;
+        
         parent::setUp();
 
         $user           = new User();

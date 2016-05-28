@@ -441,6 +441,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private function generateSqlAliasReplacements() : array
     {
+        $platform       = $this->em->getConnection()->getDatabasePlatform();
         $searchPatterns = $replacements = [];
 
         // Generate search patterns for each field's path expression in the order by clause
@@ -455,7 +456,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             // Get the SQL table alias for the entity and field and the column name as will appear in the select list
             $tableAlias = $this->getSQLTableAlias($property->getTableName(), $dqlAliasForFieldAlias);
-            $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->em->getConnection()->getDatabasePlatform());
+            $columnName = $this->quoteStrategy->getColumnName($property, $platform);
 
             // Compose search and replace patterns
             $searchPatterns[] = \sprintf(self::ORDER_BY_PATH_EXPRESSION, $tableAlias, $columnName);
