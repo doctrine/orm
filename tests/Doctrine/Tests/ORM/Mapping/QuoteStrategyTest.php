@@ -38,6 +38,7 @@ class QuoteStrategyTest extends OrmTestCase
     private function createClassMetadata($className)
     {
         $cm = new ClassMetadata($className);
+
         $cm->initializeReflection(new RuntimeReflectionService());
 
         return $cm;
@@ -60,23 +61,28 @@ class QuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->addProperty('name', Type::getType('string'), array('columnName' => 'name'));
-        $cm->addProperty('id', Type::getType('string'));
+
+        $idProperty   = $cm->addProperty('id', Type::getType('string'));
+        $nameProperty = $cm->addProperty('name', Type::getType('string'), array('columnName' => 'name'));
         
-        self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
-        self::assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
+        self::assertEquals('id', $this->strategy->getColumnName($idProperty, $this->platform));
+        self::assertEquals('"name"', $this->strategy->getColumnName($nameProperty, $this->platform));
     }
 
     public function testGetTableName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
         $cm->setPrimaryTable(array('name'=>'cms_user'));
-        self::assertEquals('"cms_user"' ,$this->strategy->getTableName($cm, $this->platform));
+
+        self::assertEquals('"cms_user"', $this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->initializeReflection(new RuntimeReflectionService);
         $cm->setPrimaryTable(array('name'=>'cms_user'));
-        self::assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
+
+        self::assertEquals('cms_user', $this->strategy->getTableName($cm, $this->platform));
     }
     
     public function testJoinTableName()
