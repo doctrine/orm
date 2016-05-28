@@ -411,7 +411,8 @@ class SqlWalker implements TreeWalker
             $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
 
             foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
-                $columnName = $this->quoteStrategy->getColumnName($fieldName, $qComp['metadata'], $this->platform);
+                $property   = $qComp['metadata']->getProperty($fieldName);
+                $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
                 $tableName  = ($qComp['metadata']->isInheritanceTypeJoined())
                     ? $persister->getOwningTable($fieldName)
                     : $qComp['metadata']->getTableName();
@@ -653,14 +654,15 @@ class SqlWalker implements TreeWalker
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $fieldName = $pathExpr->field;
-                $dqlAlias = $pathExpr->identificationVariable;
-                $class = $this->queryComponents[$dqlAlias]['metadata'];
+                $dqlAlias  = $pathExpr->identificationVariable;
+                $class     = $this->queryComponents[$dqlAlias]['metadata'];
+                $property  = $class->getProperty($fieldName);
 
                 if ($this->useSqlTableAliases) {
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                $sql .= $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                $sql .= $this->quoteStrategy->getColumnName($property, $this->platform);
                 break;
 
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
@@ -1306,7 +1308,7 @@ class SqlWalker implements TreeWalker
                 $col          = sprintf(
                     '%s.%s',
                     $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
-                    $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
+                    $this->quoteStrategy->getColumnName($property, $this->platform)
                 );
 
                 $sql .= sprintf(
@@ -1401,7 +1403,7 @@ class SqlWalker implements TreeWalker
                     $col         = sprintf(
                         '%s.%s',
                         $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
-                        $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform)
+                        $this->quoteStrategy->getColumnName($property, $this->platform)
                     );
 
                     $sqlParts[] = sprintf(
@@ -1432,7 +1434,7 @@ class SqlWalker implements TreeWalker
                             $col         = sprintf(
                                 '%s.%s',
                                 $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
-                                $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform)
+                                $this->quoteStrategy->getColumnName($property, $this->platform)
                             );
 
                             $sqlParts[] = sprintf(
@@ -1927,7 +1929,8 @@ class SqlWalker implements TreeWalker
             $sqlParts    = [];
 
             foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $this->platform);
+                $property     = $class->getProperty($class->fieldNames[$targetColumn]);
+                $targetColumn = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                 $sqlParts[] = $sourceTableAlias . '.' . $targetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
             }
@@ -1961,9 +1964,11 @@ class SqlWalker implements TreeWalker
             $joinSqlParts = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($targetClass->fieldNames[$joinColumn['referencedColumnName']], $targetClass, $this->platform);
+                $property     = $class->getProperty($targetClass->fieldNames[$joinColumn['referencedColumnName']]);
+                $sourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                $targetColumn = $this->quoteStrategy->getColumnName($property, $this->platform);
 
-                $joinSqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $targetTableAlias . '.' . $targetColumn;
+                $joinSqlParts[] = $joinTableAlias . '.' . $sourceColumn . ' = ' . $targetTableAlias . '.' . $targetColumn;
             }
 
             $sql .= implode(' AND ', $joinSqlParts);
@@ -1973,9 +1978,11 @@ class SqlWalker implements TreeWalker
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$joinColumn['referencedColumnName']], $class, $this->platform);
+                $property     = $class->getProperty($class->fieldNames[$joinColumn['referencedColumnName']]);
+                $sourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                $targetColumn = $this->quoteStrategy->getColumnName($property, $this->platform);
 
-                $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $sourceTableAlias . '.' . $targetColumn;
+                $sqlParts[] = $joinTableAlias . '.' . $sourceColumn . ' = ' . $sourceTableAlias . '.' . $targetColumn;
             }
 
             foreach ($this->quoteStrategy->getIdentifierColumnNames($targetClass, $this->platform) as $targetColumnName) {

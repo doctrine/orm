@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\User as QuoteUser;
 use Doctrine\Tests\Models\Tweet\Tweet;
@@ -18,8 +19,11 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
+        $this->enableQuotes = true;
+
         $this->useModelSet('tweet');
         $this->useModelSet('quote');
+
         parent::setUp();
     }
 

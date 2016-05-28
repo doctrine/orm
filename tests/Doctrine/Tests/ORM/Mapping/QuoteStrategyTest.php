@@ -43,6 +43,7 @@ class QuoteStrategyTest extends OrmTestCase
     private function createClassMetadata($className)
     {
         $cm = new ClassMetadata($className);
+
         $cm->initializeReflection(new RuntimeReflectionService());
 
         return $cm;
@@ -65,22 +66,27 @@ class QuoteStrategyTest extends OrmTestCase
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata(CmsUser::class);
-        $cm->addProperty('name', Type::getType('string'), ['columnName' => 'name']);
-        $cm->addProperty('id', Type::getType('string'));
 
-        self::assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
-        self::assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
+        $idProperty   = $cm->addProperty('id', Type::getType('string'));
+        $nameProperty = $cm->addProperty('name', Type::getType('string'), ['columnName' => 'name']);
+
+        self::assertEquals('id', $this->strategy->getColumnName($idProperty, $this->platform));
+        self::assertEquals('"name"', $this->strategy->getColumnName($nameProperty, $this->platform));
     }
 
     public function testGetTableName()
     {
         $cm = $this->createClassMetadata(CmsUser::class);
+
         $cm->setPrimaryTable(['name'=>'cms_user']);
+
         self::assertEquals('"cms_user"', $this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->initializeReflection(new RuntimeReflectionService);
         $cm->setPrimaryTable(['name'=>'cms_user']);
+
         self::assertEquals('cms_user', $this->strategy->getTableName($cm, $this->platform));
     }
 

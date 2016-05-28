@@ -1646,13 +1646,14 @@ public function __construct(<params>)
             . ($propertyMetadata->isNullable() ? '|null' : '');
 
         if ($this->generateAnnotations) {
+            $column  = [];
             $lines[] = $this->spaces . ' *';
-
-            $column = ['type="' . $fieldType . '"'];
 
             if ($propertyMetadata->getColumnName()) {
                 $column[] = 'name="' . $propertyMetadata->getColumnName() . '"';
             }
+
+            $column[] = 'type="' . $fieldType . '"';
 
             if (is_int($propertyMetadata->getLength())) {
                 $column[] = 'length=' . $propertyMetadata->getLength();

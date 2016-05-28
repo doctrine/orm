@@ -6,8 +6,12 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
+        $this->enableQuotes = true;
+
         parent::setUp();
+
         $platform = $this->_em->getConnection()->getDatabasePlatform();
+
         if ($platform->getName() == "oracle") {
             $this->markTestSkipped('Doesnt run on Oracle.');
         }
@@ -30,7 +34,9 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
         $platform = $this->_em->getConnection()->getDatabasePlatform();
+
         $sm = $this->_em->getConnection()->getSchemaManager();
+
         $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
         $sm->dropTable($platform->quoteIdentifier('LIKE'));

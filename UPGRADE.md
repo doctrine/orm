@@ -1,12 +1,24 @@
 # Upgrade to 3.0
 
-## BC Break: Removed ``ClassMetadata::getTypeOfColumn()``
+## BC Break: Removed methods in ``ClassMetadata``
 
-Better alternative is to use ``PersisterHelper::getTypeOfColumn()``
+* ``ClassMetadata::getFieldMapping`` => Use ``ClassMetadata::getProperty()`` and its methods
+* ``ClassMetadata::getQuotedColumnName`` => Use ``ClassMetadata::getProperty()::getQuotedColumnName()``
+* ``ClassMetadata::getQuotedTableName``
+* ``ClassMetadata::getQuotedJoinTableName``
+* ``ClassMetadata::getQuotedIdentifierColumnNames``
+* ``ClassMetadata::isUniqueField`` => Use ``ClassMetadata::getProperty()::isUnique()``
+* ``ClassMetadata::isNullable`` => Use ``ClassMetadata::getProperty()::isNullable()``
+* ``ClassMetadata::getTypeOfColumn()`` => Use ``PersisterHelper::getTypeOfColumn()``
+
+## BC Break: Removed ``quoted`` index from table, field and sequence mappings
+
+All conversions are now being called, always. Implement your own ``Doctrine\ORM\Mapping\QuoteStrategy`` to manipulate
+to your custom desired behavior.
 
 ## BC Break: Removed ``ClassMetadata::$fieldMappings[$fieldName]['requireSQLConversion']``
 
-ORM Type SQL conversion is now always being applied, minimizing the risks of erorr prone code in ORM internals
+ORM Type SQL conversion is now always being applied, minimizing the risks of error prone code in ORM internals
 
 ## BC Break: Removed ``ClassMetadata::$columnNames``
 
@@ -16,7 +28,7 @@ If your code relies on this property, you should search/replace from this:
 
 To this:
 
-    $metadata->fieldMappings[$fieldName]['columnName']
+    $metadata->getProperty($fieldName)->getColumnName()
 
 ## BC Break: Renamed ``ClassMetadata::setIdentifierValues()`` to ``ClassMetadata::assignIdentifier()``
 
@@ -54,6 +66,7 @@ Every field, association or embedded now contains a pointer to its declaring Cla
 ## Enhancement: Mappings now store their corresponding table name
 
 Every field, association join column or inline embedded field/association holds a reference to its owning table name.
+
 
 # Upgrade to 2.5
 
@@ -205,6 +218,7 @@ From now on, the resultset will look like this:
 
 Added way to access the underlying QueryBuilder#from() method's 'indexBy' parameter when using EntityRepository#createQueryBuilder()
 
+
 # Upgrade to 2.4
 
 ## BC BREAK: Compatibility Bugfix in PersistentCollection#matching()
@@ -248,6 +262,7 @@ Before 2.4 it generates the SQL:
 Now parenthesis are considered, the previous DQL will generate:
 
     SELECT 100 / (2 * 2) FROM my_entity
+
 
 # Upgrade to 2.3
 
@@ -317,6 +332,7 @@ Also, following mapping drivers have been deprecated, please use their replaceme
  *  `Doctrine\ORM\Mapping\Driver\DriverChain`       => `Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain`
  *  `Doctrine\ORM\Mapping\Driver\PHPDriver`         => `Doctrine\Common\Persistence\Mapping\Driver\PHPDriver`
  *  `Doctrine\ORM\Mapping\Driver\StaticPHPDriver`   => `Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver`
+
 
 # Upgrade to 2.2
 
@@ -401,6 +417,7 @@ Also, Doctrine 2.2 now is around 10-15% faster than 2.1.
 
 Previously EntityManager#find(null) returned null. It now throws an exception.
 
+
 # Upgrade to 2.1
 
 ## Interface for EntityRepository
@@ -425,6 +442,7 @@ The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory 
 
 This is already done inside the ``$config->newDefaultAnnotationDriver``, so everything should automatically work if you are using this method. You can verify if everything still works by executing a console command such as schema-validate that loads all metadata into memory.
 
+
 # Update from 2.0-BETA3 to 2.0-BETA4
 
 ## XML Driver <change-tracking-policy /> element demoted to attribute
@@ -432,6 +450,7 @@ This is already done inside the ``$config->newDefaultAnnotationDriver``, so ever
 We changed how the XML Driver allows to define the change-tracking-policy. The working case is now:
 
     <entity change-tracking-policy="DEFERRED_IMPLICT" />
+
 
 # Update from 2.0-BETA2 to 2.0-BETA3
 
@@ -495,9 +514,11 @@ don't loose anything through this.
 The default allocation size for sequences has been changed from 10 to 1. This step was made
 to not cause confusion with users and also because it is partly some kind of premature optimization.
 
+
 # Update from 2.0-BETA1 to 2.0-BETA2
 
 There are no backwards incompatible changes in this release.
+
 
 # Upgrade from 2.0-ALPHA4 to 2.0-BETA1
 
@@ -568,7 +589,6 @@ to your entities. This information will be used by all console commands to
 access all entities.
 
 Xml and Yaml Drivers work as before!
-
 
 ## New inversedBy attribute
 
@@ -665,6 +685,7 @@ The Collection interface in the Common package has been updated with some missin
 that were present only on the default implementation, ArrayCollection. Custom collection
 implementations need to be updated to adhere to the updated interface.
 
+
 # Upgrade from 2.0-ALPHA3 to 2.0-ALPHA4
 
 ## CLI Controller changes
@@ -701,6 +722,8 @@ With new required method AbstractTask::buildDocumentation, its implementation de
     database schema without deleting any unused tables, sequences or foreign keys.
     * Use "doctrine schema-tool --complete-update" to do a full incremental update of
     your schema.
+
+
 # Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
 
 This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you

@@ -260,9 +260,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         foreach ($parameters as $parameter) {
             list($name, $value) = $parameter;
-            $field = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
-            $whereClauses[]     = sprintf('te.%s = ?', $field);
-            $params[]           = $value;
+
+            $field = $this->quoteStrategy->getColumnName($targetClass->getProperty($name), $this->platform);
+
+            $whereClauses[] = sprintf('te.%s = ?', $field);
+            $params[]       = $value;
         }
 
         $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
@@ -752,14 +754,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
     private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass)
     {
         $orderings = $criteria->getOrderings();
+
         if ($orderings) {
             $orderBy = [];
+
             foreach ($orderings as $name => $direction) {
-                $field = $this->quoteStrategy->getColumnName(
-                    $name,
-                    $targetClass,
-                    $this->platform
-                );
+                $field = $this->quoteStrategy->getColumnName($targetClass->getProperty($name), $this->platform);
+                
                 $orderBy[] = $field . ' ' . $direction;
             }
 

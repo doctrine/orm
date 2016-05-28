@@ -32,9 +32,9 @@ class DefaultQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
+    public function getColumnName(FieldMetadata $fieldMetadata, AbstractPlatform $platform)
     {
-        return $platform->quoteIdentifier($class->getProperty($fieldName)->getColumnName());
+        return $fieldMetadata->getQuotedColumnName($platform);
     }
 
     /**
@@ -104,7 +104,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
         foreach ($class->identifier as $fieldName) {
             if (($property = $class->getProperty($fieldName)) !== null) {
-                $quotedColumnNames[] = $platform->quoteIdentifier($property->getColumnName());
+                $quotedColumnNames[] = $property->getQuotedColumnName($platform);
 
                 continue;
             }

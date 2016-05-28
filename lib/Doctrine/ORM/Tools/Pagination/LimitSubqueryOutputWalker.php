@@ -403,6 +403,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause)
     {
+        $platform       = $this->em->getConnection()->getDatabasePlatform();
         $searchPatterns = $replacements = [];
 
         // Pattern to find table path expressions in the order by clause
@@ -420,7 +421,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             // Get the SQL table alias for the entity and field and the column name as will appear in the select list
             $tableAlias = $this->getSQLTableAlias($property->getTableName(), $dqlAliasForFieldAlias);
-            $columnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->em->getConnection()->getDatabasePlatform());
+            $columnName = $this->quoteStrategy->getColumnName($property, $platform);
 
             // Compose search/replace patterns
             $searchPatterns[] = sprintf($fieldSearchPattern, $tableAlias, $columnName);
