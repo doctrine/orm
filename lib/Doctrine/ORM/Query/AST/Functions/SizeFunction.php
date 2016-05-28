@@ -70,9 +70,11 @@ class SizeFunction extends FunctionNode
             foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
+                $property = $class->getProperty($class->fieldNames[$targetColumn]);
+
                 $sql .= $targetTableAlias . '.' . $sourceColumn
                       . ' = '
-                      . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $platform);
+                      . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($property, $platform);
             }
         } else { // many-to-many
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
@@ -96,9 +98,8 @@ class SizeFunction extends FunctionNode
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
-                $sourceColumnName = $quoteStrategy->getColumnName(
-                    $class->fieldNames[$joinColumn['referencedColumnName']], $class, $platform
-                );
+                $property         = $class->getProperty($class->fieldNames[$joinColumn['referencedColumnName']]);
+                $sourceColumnName = $quoteStrategy->getColumnName($property, $platform);
 
                 $sql .= $joinTableAlias . '.' . $joinColumn['name']
                       . ' = '
