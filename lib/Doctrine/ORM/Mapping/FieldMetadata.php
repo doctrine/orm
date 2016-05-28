@@ -346,12 +346,9 @@ class FieldMetadata implements PropertyMetadata
      *
      * @return string
      */
-    public function getQuotedColumnName(AbstractPlatform $platform, QuoteStrategy $quoteStrategy = null)
+    public function getQuotedColumnName(AbstractPlatform $platform)
     {
-        return $quoteStrategy
-            ? $quoteStrategy->getColumnName($this->fieldName, $this->declaringClass, $platform)
-            : $platform->quoteIdentifier($this->columnName)
-        ;
+        return $platform->quoteIdentifier($this->columnName);
     }
 
     /**

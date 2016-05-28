@@ -33,9 +33,9 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
+    public function getColumnName(FieldMetadata $fieldMetadata, AbstractPlatform $platform)
     {
-        return $class->getProperty($fieldName)->getColumnName();
+        return $fieldMetadata->getColumnName();
     }
 
     /**
@@ -83,7 +83,29 @@ class AnsiQuoteStrategy implements QuoteStrategy
      */
     public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return $class->identifier;
+        $columnNames = array();
+
+        foreach ($class->identifier as $fieldName) {
+            if (($property = $class->getProperty($fieldName)) !== null) {
+                $columnNames[] = $property->getColumnName();
+
+                continue;
+            }
+
+            // Association defined as Id field
+            $joinColumns      = $class->associationMappings[$fieldName]['joinColumns'];
+            $assocColumnNames = array_map(
+                function ($joinColumn)
+                {
+                    return $joinColumn['name'];
+                },
+                $joinColumns
+            );
+
+            $columnNames = array_merge($columnNames, $assocColumnNames);
+        }
+
+        return $columnNames;
     }
 
     /**

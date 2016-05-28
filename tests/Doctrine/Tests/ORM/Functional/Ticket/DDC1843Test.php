@@ -10,9 +10,10 @@ use Doctrine\Tests\Models\Quote\Group;
  */
 class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
+        $this->enableQuotes = true;
+        
         parent::setUp();
 
         try {

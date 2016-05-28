@@ -18,6 +18,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     protected function setup()
     {
+        $this->enableQuotes = true;
+
         parent::setup();
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();

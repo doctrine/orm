@@ -6,6 +6,8 @@ use Doctrine\Common\Annotations;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Version;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -25,6 +27,11 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @var \Doctrine\Common\Cache\Cache|null
      */
     private static $_queryCacheImpl = null;
+
+    /**
+     * @var bool
+     */
+    protected $enableQuotes = false;
 
     /**
      * @var bool
@@ -119,6 +126,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $config = new \Doctrine\ORM\Configuration();
 
+        $config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
         $config->setMetadataCacheImpl($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
