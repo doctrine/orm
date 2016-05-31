@@ -314,7 +314,7 @@ class YamlDriver extends FileDriver
                 $property = $metadata->addProperty($fieldName, Type::getType($mapping['type']), $mapping);
 
                 if (isset($mapping['version'])) {
-                    $metadata->setVersionMapping($property);
+                    $metadata->setVersionMetadata($property);
                 }
             }
         }

@@ -13,6 +13,11 @@ interface PropertyMetadata
     public function getDeclaringClass();
 
     /**
+     * @return ClassMetadata
+     */
+    public function getCurrentClass();
+
+    /**
      * @param object $object
      * @param mixed  $value
      */

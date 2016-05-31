@@ -1180,7 +1180,7 @@ class User
 
         $property = $metadata->addProperty('version', Type::getType('integer'));
 
-        $metadata->setVersionMapping($property);
+        $metadata->setVersionMetadata($property);
         
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(

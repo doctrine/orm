@@ -23,8 +23,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
-use Doctrine\ORM\Mapping\PropertyMetadata;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadata instances.
@@ -1316,7 +1314,7 @@ public function __construct(<params>)
 
         foreach ($metadata->getProperties() as $fieldName => $property) {
             if ($this->hasProperty($fieldName, $metadata) ||
-                $property instanceof InheritedFieldMetadata /*||
+                $property->isInherited() /*||
                 (
                     isset($fieldMapping['declaredField']) &&
                     isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
