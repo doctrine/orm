@@ -27,7 +27,6 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -1149,11 +1148,8 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (($property = $this->class->getProperty($fieldName)) !== null) {
-                $class         = ($property instanceof InheritedFieldMetadata)
-                    ? $property->getDeclaringClass()
-                    : $this->class;
-                $tableAlias    = $this->getSQLTableAlias($class->getTableName());
-                $columnName    = $this->quoteStrategy->getColumnName($property, $this->platform);
+                $tableAlias = $this->getSQLTableAlias($property->getTableName());
+                $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                 $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
 
