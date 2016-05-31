@@ -22,10 +22,8 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
-use Doctrine\ORM\Mapping\PropertyMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadata instances.
@@ -1330,7 +1328,7 @@ public function __construct(<params>)
         foreach ($metadata->getProperties() as $fieldName => $property) {
             if (/*isset($property['declaredField'], $metadata->embeddedClasses[$property['declaredField']]) ||*/
                 $this->hasProperty($fieldName, $metadata) ||
-                $property instanceof InheritedFieldMetadata
+                $property->isInherited()
             ) {
                 continue;
             }
@@ -1862,11 +1860,11 @@ public function __construct(<params>)
     }
 
     /**
-     * @param PropertyMetadata $property
+     * @param FieldMetadata $property
      *
      * @return string|null
      */
-    private function nullableFieldExpression(PropertyMetadata $property)
+    private function nullableFieldExpression(FieldMetadata $property)
     {
         return $property->isNullable() ? 'null' : null;
     }
