@@ -541,7 +541,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var boolean
      */
-    public $isVersioned;
+    public $isVersioned = false;
 
     /**
      * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
@@ -1991,19 +1991,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Checks whether a mapped field is inherited from an entity superclass.
-     *
-     * @param string $fieldName
-     *
-     * @return bool TRUE if the field is inherited, FALSE otherwise.
-     */
-    public function isInheritedField($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            && $this->properties[$fieldName] instanceof InheritedFieldMetadata;
-    }
-
-    /**
      * Checks whether a mapped association field is inherited from a superclass.
      *
      * @param string $fieldName
@@ -2181,7 +2168,8 @@ class ClassMetadata implements ClassMetadataInterface
     public function addInheritedProperty(ClassMetadata $declaringClass, $fieldName)
     {
         $property          = $declaringClass->getProperty($fieldName);
-        $inheritedProperty = new InheritedFieldMetadata($this, $declaringClass, $fieldName, $property->getType());
+        $inheritedProperty = new FieldMetadata($this, $fieldName, $property->getType());
+
 
         if ( ! $declaringClass->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
@@ -2191,6 +2179,7 @@ class ClassMetadata implements ClassMetadataInterface
         //    $inheritedProperty->setTableName($this->getTableName());
         //}
 
+        $inheritedProperty->setDeclaringClass($declaringClass);
         $inheritedProperty->setColumnName($property->getColumnName());
         $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
         $inheritedProperty->setPrimaryKey($property->isPrimaryKey());
@@ -2862,7 +2851,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
-    public function setVersionMapping(FieldMetadata $fieldMetadata)
+    public function setVersionMetadata(FieldMetadata $fieldMetadata)
     {
         $this->isVersioned  = true;
         $this->versionField = $fieldMetadata->getFieldName();

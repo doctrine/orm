@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -637,7 +636,7 @@ class SqlWalker implements TreeWalker
 
         $property = $class->getProperty($fieldName);
 
-        if ($class->isInheritanceTypeJoined() && $property instanceof InheritedFieldMetadata) {
+        if ($class->isInheritanceTypeJoined() && $property->isInherited()) {
             $class = $property->getDeclaringClass();
         }
 
@@ -1426,7 +1425,7 @@ class SqlWalker implements TreeWalker
                         $subClass = $this->em->getClassMetadata($subClassName);
 
                         foreach ($subClass->getProperties() as $fieldName => $property) {
-                            if ($property instanceof InheritedFieldMetadata || ($partialFieldSet && !in_array($fieldName, $partialFieldSet))) {
+                            if ($property->isInherited() || ($partialFieldSet && !in_array($fieldName, $partialFieldSet))) {
                                 continue;
                             }
 

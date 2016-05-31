@@ -291,7 +291,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         /* @var $reflProperty \ReflectionProperty */
         foreach ($class->getProperties() as $reflProperty) {
             if (($metadata->isMappedSuperclass && ! $reflProperty->isPrivate())
-                || $metadata->isInheritedField($reflProperty->name)
+                || (($property = $metadata->getProperty($reflProperty->name)) !== null && $property->isInherited())
                 || $metadata->isInheritedAssociation($reflProperty->name)
                 || $metadata->isInheritedEmbeddedClass($reflProperty->name)) {
                 continue;
@@ -343,7 +343,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $property = $metadata->addProperty($reflProperty->getName(), Type::getType($columnAnnot->type), $mapping);
 
                 if ($this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class)) {
-                    $metadata->setVersionMapping($property);
+                    $metadata->setVersionMetadata($property);
                 }
 
                 // Check for SequenceGenerator/TableGenerator definition
