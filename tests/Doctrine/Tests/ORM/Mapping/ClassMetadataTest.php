@@ -210,7 +210,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
-        $metadata->setVersionMapping($property);
+        $metadata->setVersionMetadata($property);
     }
 
     public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()

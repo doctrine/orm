@@ -14,6 +14,11 @@ class FieldMetadata implements PropertyMetadata
     private $declaringClass;
 
     /**
+     * @var ClassMetadata
+     */
+    private $currentClass;
+
+    /**
      * @var \ReflectionProperty
      */
     private $reflection;
@@ -88,6 +93,7 @@ class FieldMetadata implements PropertyMetadata
     public function __construct(ClassMetadata $currentClass, $fieldName, Type $type)
     {
         $this->declaringClass = $currentClass;
+        $this->currentClass   = $currentClass;
         $this->fieldName      = $fieldName;
         $this->type           = $type;
     }
@@ -97,7 +103,7 @@ class FieldMetadata implements PropertyMetadata
      */
     public function getCurrentClass()
     {
-        return $this->declaringClass;
+        return $this->currentClass;
     }
 
     /**
@@ -106,6 +112,22 @@ class FieldMetadata implements PropertyMetadata
     public function getDeclaringClass()
     {
         return $this->declaringClass;
+    }
+
+    /**
+     * @param ClassMetadata $declaringClass
+     */
+    public function setDeclaringClass(ClassMetadata $declaringClass)
+    {
+        $this->declaringClass = $declaringClass;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isInherited()
+    {
+        return $this->declaringClass !== $this->currentClass;
     }
 
     /**
@@ -306,14 +328,6 @@ class FieldMetadata implements PropertyMetadata
     public function isUnique()
     {
         return $this->isUnique;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isInherited()
-    {
-        return false;
     }
 
     /**

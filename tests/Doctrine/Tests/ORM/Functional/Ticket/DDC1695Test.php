@@ -7,11 +7,19 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function setUp()
     {
+        $this->enableQuotes = true;
+
+        parent::setUp();
+
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() != "sqlite") {
             $this->markTestSkipped("Only with sqlite");
         }
+    }
+
+    public function testIssue()
+    {
         $dql = "SELECT n.smallText, n.publishDate FROM " . __NAMESPACE__ . "\\DDC1695News n";
         $sql = $this->_em->createQuery($dql)->getSQL();
 

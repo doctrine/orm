@@ -6,7 +6,6 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
 use Doctrine\Tests\OrmTestCase;
 
@@ -56,8 +55,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertNotNull($class->getProperty('mapped1'));
         self::assertNotNull($class->getProperty('mapped2'));
 
-        self::assertNotInstanceOf(InheritedFieldMetadata::class, $class->getProperty('mapped1'));
-        self::assertNotInstanceOf(InheritedFieldMetadata::class, $class->getProperty('mapped2'));
+        self::assertFalse($class->getProperty('mapped1')->isInherited());
+        self::assertFalse($class->getProperty('mapped2')->isInherited());
 
         self::assertNull($class->getProperty('transient'));
 

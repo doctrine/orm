@@ -21,8 +21,6 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
-use Doctrine\ORM\Mapping\PropertyMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
@@ -192,7 +190,7 @@ class SchemaTool
                 $pkColumns = array();
 
                 foreach ($class->getProperties() as $fieldName => $property) {
-                    if ( ! ($property instanceof InheritedFieldMetadata)) {
+                    if (! $property->isInherited()) {
                         $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
 
                         $this->gatherColumn($class, $property, $table);
@@ -215,7 +213,7 @@ class SchemaTool
                     foreach ($class->identifier as $identifierField) {
                         $idProperty = $class->getProperty($identifierField);
 
-                        if ($idProperty instanceof InheritedFieldMetadata) {
+                        if ($idProperty->isInherited()) {
                             $column     = $this->gatherColumn($class, $idProperty, $table);
                             $columnName = $column->getQuotedName($this->platform);
 
@@ -226,6 +224,7 @@ class SchemaTool
                             $inheritedKeyColumns[] = $columnName;
                         }
                     }
+
                     if ( ! empty($inheritedKeyColumns)) {
                         // Add a FK constraint on the ID column
                         $table->addForeignKeyConstraint(
@@ -400,7 +399,7 @@ class SchemaTool
         $pkColumns = array();
 
         foreach ($class->getProperties() as $property) {
-            if ($class->isInheritanceTypeSingleTable() && $property instanceof InheritedFieldMetadata) {
+            if ($class->isInheritanceTypeSingleTable() && $property->isInherited()) {
                 continue;
             }
 

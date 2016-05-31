@@ -39,7 +39,7 @@ $metadata->addProperty('email', Type::getType('string'), array(
     'columnDefinition' => 'CHAR(32) NOT NULL',
 ));
 
-$metadata->setVersionMapping($metadata->addProperty('version', Type::getType('integer')));
+$metadata->setVersionMetadata($metadata->addProperty('version', Type::getType('integer')));
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
