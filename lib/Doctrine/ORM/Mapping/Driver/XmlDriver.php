@@ -267,7 +267,7 @@ class XmlDriver extends FileDriver
                 $property     = $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
 
                 if (isset($fieldMapping['version'])) {
-                    $metadata->setVersionMapping($property);
+                    $metadata->setVersionMetadata($property);
 
                     unset($fieldMapping['version']);
                 }
