@@ -29,8 +29,6 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\InheritedFieldMetadata;
-use Doctrine\ORM\Mapping\PropertyMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
@@ -190,7 +188,7 @@ class SchemaTool
             } elseif ($class->isInheritanceTypeJoined()) {
                 // Add all non-inherited fields as columns
                 foreach ($class->getProperties() as $fieldName => $property) {
-                    if ( ! ($property instanceof InheritedFieldMetadata)) {
+                    if (! $property->isInherited()) {
                         $this->gatherColumn($class, $property, $table);
                     }
                 }
@@ -208,7 +206,7 @@ class SchemaTool
                     foreach ($class->identifier as $identifierField) {
                         $idProperty = $class->getProperty($identifierField);
 
-                        if ($idProperty instanceof InheritedFieldMetadata) {
+                        if ($idProperty->isInherited()) {
                             $column     = $this->gatherColumn($class, $idProperty, $table);
                             $columnName = $column->getQuotedName($this->platform);
 
@@ -423,7 +421,7 @@ class SchemaTool
         $pkColumns = [];
 
         foreach ($class->getProperties() as $property) {
-            if ($class->isInheritanceTypeSingleTable() && $property instanceof InheritedFieldMetadata) {
+            if ($class->isInheritanceTypeSingleTable() && $property->isInherited()) {
                 continue;
             }
 
