@@ -298,7 +298,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->setTableName('foo.bar');
+        $cm->setPrimaryTable([
+            'schema' => 'foo',
+            'name'   => 'bar',
+        ]);
 
         self::assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
     }

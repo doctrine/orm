@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\ListenersInvoker;
 
 /**
  * @group DDC-1707
@@ -25,11 +26,13 @@ class DDC1707Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testPostLoadOnChild()
     {
-        $class  = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1707Child');
-        $entity = new DDC1707Child();
-        $event  = new LifecycleEventArgs($entity, $this->_em);
+        $class   = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1707Child');
+        $entity  = new DDC1707Child();
+        $event   = new LifecycleEventArgs($entity, $this->_em);
+        $invoker = new ListenersInvoker($this->_em);
+        $invoke  = $invoker->getSubscribedSystems($class, \Doctrine\ORM\Events::postLoad);
 
-        $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::postLoad, $entity, $event);
+        $invoker->invoke($class, \Doctrine\ORM\Events::postLoad, $entity, $event, $invoke);
 
         self::assertTrue($entity->postLoad);
     }

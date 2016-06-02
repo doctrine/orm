@@ -1835,8 +1835,13 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getTemporaryIdTableName()
     {
+        $schema = empty($this->getSchemaName())
+            ? ''
+            : $this->getSchemaName() . '_'
+        ;
+
         // replace dots with underscores because PostgreSQL creates temporary tables in a special schema
-        return str_replace('.', '_', $this->getTableName() . '_id_tmp');
+        return $schema . $this->getTableName() . '_id_tmp';
     }
 
     /**
@@ -2020,20 +2025,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Sets the name of the primary table the class is mapped to.
-     *
-     * @param string $tableName The table name.
-     *
-     * @return void
-     *
-     * @deprecated Use {@link setPrimaryTable}.
-     */
-    public function setTableName($tableName)
-    {
-        $this->table['name'] = $tableName;
-    }
-
-    /**
      * Sets the primary table definition. The provided array supports the
      * following structure:
      *
@@ -2119,8 +2110,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $property = new FieldMetadata($this, $fieldName, $type);
 
-        assert(! isset($this->properties[$fieldName]), MappingException::duplicateProperty($property));
-
         $property->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
         $property->setColumnName($mapping['columnName'] ?? $this->namingStrategy->propertyToColumnName($fieldName, $this->name));
         $property->setPrimaryKey(isset($mapping['id']) && $mapping['id']);
@@ -2132,13 +2121,13 @@ class ClassMetadata implements ClassMetadataInterface
         $property->setPrecision($mapping['precision'] ?? null);
         $property->setOptions($mapping['options'] ?? []);
 
+        assert(! isset($this->properties[$fieldName]), MappingException::duplicateProperty($property));
+
         // Check for already declared column
         if (isset($this->fieldNames[$property->getColumnName()]) ||
             ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] === $property->getColumnName())) {
             throw MappingException::duplicateColumnName($this->name, $property->getColumnName());
         }
-
-        $this->fieldNames[$property->getColumnName()] = $fieldName;
 
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id']) {
@@ -2155,6 +2144,7 @@ class ClassMetadata implements ClassMetadataInterface
             }
         }
 
+        $this->fieldNames[$property->getColumnName()] = $fieldName;
         $this->properties[$fieldName] = $property;
 
         return $property;
@@ -2453,24 +2443,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function setCustomRepositoryClass($repositoryClassName)
     {
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
-    }
-
-    /**
-     * Dispatches the lifecycle event of the given entity to the registered
-     * lifecycle callbacks and lifecycle listeners.
-     *
-     * @deprecated Deprecated since version 2.4 in favor of \Doctrine\ORM\Event\ListenersInvoker
-     *
-     * @param string $lifecycleEvent The lifecycle event.
-     * @param object $entity         The Entity on which the event occurred.
-     *
-     * @return void
-     */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
-    {
-        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
-            $entity->$callback();
-        }
     }
 
     /**

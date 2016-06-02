@@ -252,9 +252,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         foreach ($mapping[$sourceRelationMode] as $key => $value) {
             $whereClauses[] = sprintf('t.%s = ?', $key);
-            $params[] = $ownerMetadata->containsForeignIdentifier
-                ? $id[$ownerMetadata->getFieldForColumn($value)]
-                : $id[$ownerMetadata->fieldNames[$value]];
+            $params[] = $id[$ownerMetadata->getFieldForColumn($value)];
         }
 
         $parameters = $this->expandCriteriaParameters($criteria);
@@ -419,9 +417,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params      = array();
 
         foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
-            $params[] = isset($sourceClass->fieldNames[$refColumnName])
-                ? $identifier[$sourceClass->fieldNames[$refColumnName]]
-                : $identifier[$sourceClass->getFieldForColumn($columnName)];
+            $params[] = $identifier[$sourceClass->getFieldForColumn($refColumnName)];
         }
 
         return $params;
@@ -631,9 +627,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             if (isset($mapping[$sourceRelationMode][$joinTableColumn])) {
                 $column         = $mapping[$sourceRelationMode][$joinTableColumn];
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
-                $params[]       = $sourceClass->containsForeignIdentifier
-                    ? $id[$sourceClass->getFieldForColumn($column)]
-                    : $id[$sourceClass->fieldNames[$column]];
+                $params[]       = $id[$sourceClass->getFieldForColumn($column)];
                 $types[]        = PersisterHelper::getTypeOfColumn($column, $sourceClass, $this->em);
             } elseif ( ! $joinNeeded) {
                 $column = $mapping[$targetRelationMode][$joinTableColumn];
