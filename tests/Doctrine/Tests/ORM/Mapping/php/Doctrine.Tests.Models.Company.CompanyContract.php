@@ -5,7 +5,7 @@ use Doctrine\DBAL\Types\Type;
 
 /* @var $metadata ClassMetadata */
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
-$metadata->setTableName('company_contracts');
+$metadata->setPrimaryTable(['name' => 'company_contracts']);
 
 $metadata->setDiscriminatorColumn(
     [

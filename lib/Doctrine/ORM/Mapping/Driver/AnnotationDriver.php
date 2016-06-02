@@ -254,7 +254,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                             'type'             => $discrColumnAnnot->type ?: 'string',
                             'length'           => $discrColumnAnnot->length ?: 255,
                             'columnDefinition' => $discrColumnAnnot->columnDefinition,
-                            'tableName'        => $metadata->table['name'],
+                            'tableName'        => $metadata->getTableName(),
                         ]
                     );
                 } else {
@@ -263,7 +263,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                             'name'      => 'dtype',
                             'type'      => 'string',
                             'length'    => 255,
-                            'tableName' => $metadata->table['name'],
+                            'tableName' => $metadata->getTableName(),
                         ]
                     );
                 }

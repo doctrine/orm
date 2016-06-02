@@ -2611,13 +2611,13 @@ class UnitOfWork implements PropertyChangedListener
                             $class->reflFields[$field]->setValue($entity, $data[$field]);
                             $targetClass->reflFields[$assoc['mappedBy']]->setValue($data[$field], $entity);
 
-                            continue 2;
+                            break;
                         }
 
                         // Inverse side of x-to-one can never be lazy
                         $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
 
-                        continue 2;
+                        break;
                     }
 
                     // use the entity association
@@ -2625,7 +2625,7 @@ class UnitOfWork implements PropertyChangedListener
                         $class->reflFields[$field]->setValue($entity, $data[$field]);
                         $this->originalEntityData[$oid][$field] = $data[$field];
 
-                        continue;
+                        break;
                     }
 
                     $associatedId = [];
@@ -2633,20 +2633,15 @@ class UnitOfWork implements PropertyChangedListener
                     // TODO: Is this even computed right in all cases of composite keys?
                     foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                         $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
+                        $targetField     = $targetClass->getFieldForColumn($targetColumn);
 
-                        if ($joinColumnValue !== null) {
-                            if ($targetClass->containsForeignIdentifier) {
-                                $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
-                            } else {
-                                $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
-                            }
-                        } elseif ($targetClass->containsForeignIdentifier
-                            && in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)
-                        ) {
+                        if ($joinColumnValue === null && in_array($targetField, $targetClass->identifier, true)) {
                             // the missing key is part of target's entity primary key
                             $associatedId = [];
                             break;
                         }
+
+                        $associatedId[$targetField] = $joinColumnValue;
                     }
 
                     if ( ! $associatedId) {
@@ -2654,7 +2649,7 @@ class UnitOfWork implements PropertyChangedListener
                         $class->reflFields[$field]->setValue($entity, null);
                         $this->originalEntityData[$oid][$field] = null;
 
-                        continue;
+                        break;
                     }
 
                     if ( ! isset($hints['fetchMode'][$class->name][$field])) {

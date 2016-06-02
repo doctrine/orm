@@ -178,7 +178,7 @@ class XmlDriver extends FileDriver
                             'type'             => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
                             'length'           => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
                             'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
-                            'tableName'        => $metadata->table['name'],
+                            'tableName'        => $metadata->getTableName(),
                         ]
                     );
                 } else {
@@ -187,7 +187,7 @@ class XmlDriver extends FileDriver
                             'name'      => 'dtype',
                             'type'      => 'string',
                             'length'    => 255,
-                            'tableName' => $metadata->table['name'],
+                            'tableName' => $metadata->getTableName(),
                         ]
                     );
                 }
