@@ -43,7 +43,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return $class->table['name'];
+        return $class->getTableName();
     }
 
     /**

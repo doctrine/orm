@@ -44,13 +44,14 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        $tableName = $class->table['name'];
+        $schemaName = $class->getSchemaName();
+        $tableName  = $class->getTableName();
 
-        if ( ! empty($class->table['schema'])) {
-            $tableName = $class->table['schema'] . '.' . $class->table['name'];
+        if ( ! empty($schemaName)) {
+            $tableName = $schemaName . '.' . $tableName;
 
             if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-                $tableName = $class->table['schema'] . '__' . $class->table['name'];
+                $tableName = $schemaName . '__' . $class->getTableName();
             }
         }
 
