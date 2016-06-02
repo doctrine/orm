@@ -46,7 +46,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertEquals($expectedTableName, $classMetadata->table['name']);
         self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
+        if ($platform->supportsSchemas()) {
             $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
         } else {
             $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
@@ -68,8 +68,11 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testPersistenceOfEntityWithSchemaMapping($className)
     {
+        $classMetadata = $this->_em->getClassMetadata($className);
+        $repository    = $this->_em->getRepository($className);
+
         try {
-            $this->_schemaTool->createSchema([$this->_em->getClassMetadata($className)]);
+            $this->_schemaTool->createSchema([$classMetadata]);
         } catch (ToolsException $e) {
             // table already exists
         }
@@ -78,7 +81,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        self::assertCount(1, $this->_em->getRepository($className)->findAll());
+        self::assertCount(1, $repository->findAll());
     }
 
     /**

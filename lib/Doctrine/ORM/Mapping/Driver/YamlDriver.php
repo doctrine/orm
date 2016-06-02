@@ -185,7 +185,7 @@ class YamlDriver extends FileDriver
                             'type'             => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
                             'length'           => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
                             'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null,
-                            'tableName'        => $metadata->table['name'],
+                            'tableName'        => $metadata->getTableName(),
                         ]
                     );
                 } else {
@@ -194,7 +194,7 @@ class YamlDriver extends FileDriver
                             'name'      => 'dtype',
                             'type'      => 'string',
                             'length'    => 255,
-                            'tableName' => $metadata->table['name'],
+                            'tableName' => $metadata->getTableName(),
                         ]
                     );
                 }
