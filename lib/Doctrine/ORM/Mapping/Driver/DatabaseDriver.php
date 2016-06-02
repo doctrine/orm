@@ -316,7 +316,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildIndexes(ClassMetadata $metadata)
     {
-        $tableName = $metadata->table['name'];
+        $tableName = $metadata->getTableName();
         $indexes   = $this->tables[$tableName]->getIndexes();
 
         foreach ($indexes as $index) {
@@ -341,7 +341,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildFieldMappings(ClassMetadata $metadata)
     {
-        $tableName      = $metadata->table['name'];
+        $tableName      = $metadata->getTableName();
         $columns        = $this->tables[$tableName]->getColumns();
         $primaryKeys    = $this->getTablePrimaryKeys($this->tables[$tableName]);
         $foreignKeys    = $this->getTableForeignKeys($this->tables[$tableName]);
@@ -439,7 +439,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildToOneAssociationMappings(ClassMetadata $metadata)
     {
-        $tableName   = $metadata->table['name'];
+        $tableName   = $metadata->getTableName();
         $primaryKeys = $this->getTablePrimaryKeys($this->tables[$tableName]);
         $foreignKeys = $this->getTableForeignKeys($this->tables[$tableName]);
 

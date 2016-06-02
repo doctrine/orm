@@ -2,11 +2,18 @@
 
 ## BC Break: Removed methods in ``ClassMetadata``
 
+* ``ClassMetadata::getTypeOfField`` (to be removed, part of Common API)
+
+## BC Break: Removed methods in ``ClassMetadata``
+
+* ``ClassMetadata::setTableName`` => Use ``ClassMetadata::setPrimaryTable(['name' => ...])``
 * ``ClassMetadata::getFieldMapping`` => Use ``ClassMetadata::getProperty()`` and its methods
 * ``ClassMetadata::getQuotedColumnName`` => Use ``ClassMetadata::getProperty()::getQuotedColumnName()``
 * ``ClassMetadata::getQuotedTableName``
 * ``ClassMetadata::getQuotedJoinTableName``
 * ``ClassMetadata::getQuotedIdentifierColumnNames``
+* ``ClassMetadata::invokeLifecycleCallbacks``
+* ``ClassMetadata::isInheritedField`` => Use ``ClassMetadata::getProperty()::isInherited()``
 * ``ClassMetadata::isUniqueField`` => Use ``ClassMetadata::getProperty()::isUnique()``
 * ``ClassMetadata::isNullable`` => Use ``ClassMetadata::getProperty()::isNullable()``
 * ``ClassMetadata::getTypeOfColumn()`` => Use ``PersisterHelper::getTypeOfColumn()``
