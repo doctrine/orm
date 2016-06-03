@@ -2418,6 +2418,13 @@ class UnitOfWork implements PropertyChangedListener
                     $this->doDetach($entity, $visited, false);
                 }
             }
+
+            foreach ($this->entityInsertions as $hash => $entity) {
+                if (get_class($entity) != $entityName) {
+                    continue;
+                }
+                unset($this->entityInsertions[$hash]);
+            }
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
