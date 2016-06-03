@@ -2390,24 +2390,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->visitedCollections =
             $this->orphanRemovals = array();
         } else {
-            $visited = array();
-
-            foreach ($this->identityMap as $className => $entities) {
-                if ($className !== $entityName) {
-                    continue;
-                }
-
-                foreach ($entities as $entity) {
-                    $this->doDetach($entity, $visited, false);
-                }
-            }
-
-            foreach ($this->entityInsertions as $hash => $entity) {
-                if (get_class($entity) != $entityName) {
-                    continue;
-                }
-                unset($this->entityInsertions[$hash]);
-            }
+            $this->clearIdentityMap($entityName);
+            $this->clearIdentityInsertions($entityName);
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
@@ -3469,5 +3453,35 @@ class UnitOfWork implements PropertyChangedListener
     public function hydrationComplete()
     {
         $this->hydrationCompleteHandler->hydrationComplete();
+    }
+
+    /**
+     * @param $entityName
+     */
+    private function clearIdentityMap($entityName)
+    {
+        $visited = array();
+
+        foreach ($this->identityMap as $className => $entities) {
+            if ($className !== $entityName) {
+                continue;
+            }
+
+            foreach ($entities as $entity) {
+                $this->doDetach($entity, $visited, false);
+            }
+        }
+    }
+
+    /**
+     * @param $entityName
+     */
+    private function clearIdentityInsertions($entityName)
+    {
+        foreach ($this->entityInsertions as $hash => $entity) {
+            if (get_class($entity) === $entityName) {
+                unset($this->entityInsertions[$hash]);
+            }
+        }
     }
 }
