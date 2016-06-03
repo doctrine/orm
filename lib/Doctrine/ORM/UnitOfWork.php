@@ -2391,7 +2391,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->orphanRemovals = array();
         } else {
             $this->clearIdentityMap($entityName);
-            $this->clearIdentityInsertions($entityName);
+            $this->clearEntityInsertions($entityName);
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
@@ -3476,7 +3476,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * @param $entityName
      */
-    private function clearIdentityInsertions($entityName)
+    private function clearEntityInsertions($entityName)
     {
         foreach ($this->entityInsertions as $hash => $entity) {
             if (get_class($entity) === $entityName) {
