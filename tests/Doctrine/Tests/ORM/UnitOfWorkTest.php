@@ -323,6 +323,27 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
     }
 
+    public function testPersistedEntityAndClearManager()
+    {
+        $entity1     = new ForumUser();
+        $entity1->id = 123;
+
+        $entity2     = new ForumAvatar();
+        $entity2->id = 456;
+
+        $this->_unitOfWork->persist($entity1);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+
+        $this->_unitOfWork->persist($entity2);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
+
+        $this->_unitOfWork->clear(ForumAvatar::class);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
+        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
+        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
+    }
+
     /**
      * Data Provider
      *
