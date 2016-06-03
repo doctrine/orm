@@ -323,7 +323,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em, is_object($entity) ? [$entity] : $entity));
         }
 
         // Compute changes done since last commit.
@@ -575,7 +575,7 @@ class UnitOfWork implements PropertyChangedListener
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::preFlush) & ~ListenersInvoker::INVOKE_MANAGER;
 
         if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-            $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em), $invoke);
+            $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em, is_object($entity) ? [$entity] : $entity), $invoke);
         }
 
         $actualData = array();

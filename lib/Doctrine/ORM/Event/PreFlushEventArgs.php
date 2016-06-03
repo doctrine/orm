@@ -39,13 +39,20 @@ class PreFlushEventArgs extends EventArgs
     private $em;
 
     /**
+     * @var null|array
+     */
+    private $entities;
+
+    /**
      * Constructor.
      *
      * @param EntityManagerInterface $em
+     * @param null|array             $entities
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, array $entities = null)
     {
-        $this->em = $em;
+        $this->em       = $em;
+        $this->entities = $entities;
     }
 
     /**
@@ -54,5 +61,21 @@ class PreFlushEventArgs extends EventArgs
     public function getEntityManager()
     {
         return $this->em;
+    }
+
+    /**
+     * @return bool true if flushed for a specific set of entities (explicit flush).
+     */
+    public function hasEntities()
+    {
+        return null !== $this->entities;
+    }
+
+    /**
+     * @return null|array entities being flushed in an explicit flush.
+     */
+    public function getEntities()
+    {
+        return $this->entities;
     }
 }
