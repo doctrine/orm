@@ -86,7 +86,7 @@ class PhpExporter extends AbstractExporter
         foreach ($metadata->getProperties() as $property) {
             $lines[] = sprintf(
                 '$metadata->addProperty("%s", Type::getType("%s"), %s);',
-                $property->getFieldName(),
+                $property->getName(),
                 $property->getType()->getName(),
                 $this->_varExport($property->getMapping())
             );

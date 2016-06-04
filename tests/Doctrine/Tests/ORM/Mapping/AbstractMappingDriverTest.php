@@ -515,8 +515,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('string', $idProperty->getTypeName());
         self::assertEquals('string', $nameProperty->getTypeName());
 
-        self::assertEquals('id', $idProperty->getFieldName());
-        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getName());
+        self::assertEquals('name', $nameProperty->getName());
 
         self::assertEquals('id', $idProperty->getColumnName());
         self::assertEquals('name', $nameProperty->getColumnName());
@@ -848,7 +848,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $idProperty = $adminMetadata->getProperty('id');
 
         self::assertTrue($idProperty->isPrimaryKey());
-        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getName());
         self::assertEquals('user_id', $idProperty->getColumnName());
         self::assertEquals(150, $idProperty->getLength());
 
@@ -856,7 +856,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $nameProperty = $adminMetadata->getProperty('name');
 
-        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('name', $nameProperty->getName());
         self::assertEquals('user_name', $nameProperty->getColumnName());
         self::assertEquals(250, $nameProperty->getLength());
         self::assertTrue($nameProperty->isNullable());
@@ -871,7 +871,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $idProperty = $guestMetadata->getProperty('id');
 
         self::assertTrue($idProperty->isPrimaryKey());
-        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getName());
         self::assertEquals('guest_id', $idProperty->getColumnName());
         self::assertEquals(140, $idProperty->getLength());
 
@@ -879,7 +879,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $nameProperty = $guestMetadata->getProperty('name');
 
-        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('name', $nameProperty->getName());
         self::assertEquals('guest_name', $nameProperty->getColumnName());
         self::assertEquals(240, $nameProperty->getLength());
         self::assertFalse($nameProperty->isNullable());
