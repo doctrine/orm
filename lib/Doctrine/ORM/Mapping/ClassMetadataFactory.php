@@ -447,7 +447,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->getProperties() as $property) {
-            $subClass->addInheritedProperty($property->getDeclaringClass(), $property->getFieldName());
+            $subClass->addInheritedProperty($property);
         }
 
         foreach ($parentClass->reflFields as $name => $field) {

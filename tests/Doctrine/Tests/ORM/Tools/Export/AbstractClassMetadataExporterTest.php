@@ -201,21 +201,21 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $ageProperty = $class->getProperty('age');
 
         self::assertTrue($idProperty->isPrimaryKey());
-        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getName());
         self::assertEquals('integer', $idProperty->getTypeName());
         self::assertEquals('id', $idProperty->getColumnName());
 
-        self::assertEquals('name', $nameProperty->getFieldName());
+        self::assertEquals('name', $nameProperty->getName());
         self::assertEquals('string', $nameProperty->getTypeName());
         self::assertEquals('name', $nameProperty->getColumnName());
         self::assertEquals(50, $nameProperty->getLength());
 
-        self::assertEquals('email', $emailProperty->getFieldName());
+        self::assertEquals('email', $emailProperty->getName());
         self::assertEquals('string', $emailProperty->getTypeName());
         self::assertEquals('user_email', $emailProperty->getColumnName());
         self::assertEquals('CHAR(32) NOT NULL', $emailProperty->getColumnDefinition());
 
-        self::assertEquals('age', $ageProperty->getFieldName());
+        self::assertEquals('age', $ageProperty->getName());
         self::assertEquals('integer', $ageProperty->getTypeName());
         self::assertEquals('age', $ageProperty->getColumnName());
         self::assertArrayHasKey('unsigned', $ageProperty->getOptions());

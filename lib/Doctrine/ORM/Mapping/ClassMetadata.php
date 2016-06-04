@@ -2077,7 +2077,7 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * @return array<PropertyMetadata>
+     * @return array<Property>
      */
     public function getProperties()
     {
@@ -2087,7 +2087,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @param string $fieldName
      *
-     * @return PropertyMetadata|null
+     * @return Property|null
      */
     public function getProperty($fieldName)
     {
@@ -2150,26 +2150,25 @@ class ClassMetadata implements ClassMetadataInterface
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
      *
-     * @param ClassMetadata $declaringClass
-     * @param string        $fieldName
+     * @param Property $property
      *
      * @return void
      */
-    public function addInheritedProperty(ClassMetadata $declaringClass, $fieldName)
+    public function addInheritedProperty(Property $property)
     {
-        $property          = $declaringClass->getProperty($fieldName);
-        $inheritedProperty = new FieldMetadata($this, $fieldName, $property->getType());
-
+        $declaringClass    = $property->getDeclaringClass();
+        $fieldName         = $property->getName();
+        $inheritedProperty = new FieldMetadata($declaringClass, $fieldName, $property->getType());
 
         if ( ! $declaringClass->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
         }
 
-        //if ( ! $property->getTableName() && ! $this->isMappedSuperclass) {
+        //if ($declaringClass->isMappedSuperclass && ! $this->isMappedSuperclass) {
         //    $inheritedProperty->setTableName($this->getTableName());
         //}
 
-        $inheritedProperty->setDeclaringClass($declaringClass);
+        $inheritedProperty->setCurrentClass($this);
         $inheritedProperty->setColumnName($property->getColumnName());
         $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
         $inheritedProperty->setPrimaryKey($property->isPrimaryKey());
@@ -2826,7 +2825,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function setVersionMetadata(FieldMetadata $fieldMetadata)
     {
         $this->isVersioned  = true;
-        $this->versionField = $fieldMetadata->getFieldName();
+        $this->versionField = $fieldMetadata->getName();
 
         $options = $fieldMetadata->getOptions();
 
