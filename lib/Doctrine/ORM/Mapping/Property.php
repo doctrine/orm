@@ -5,7 +5,7 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Types\Type;
 
-interface PropertyMetadata
+interface Property
 {
     /**
      * @return ClassMetadata
@@ -16,6 +16,11 @@ interface PropertyMetadata
      * @return ClassMetadata
      */
     public function getCurrentClass();
+
+    /**
+     * @return ClassMetadata
+     */
+    public function setCurrentClass(ClassMetadata $currentClass);
 
     /**
      * @param object $object
@@ -33,7 +38,7 @@ interface PropertyMetadata
     /**
      * @return string
      */
-    public function getFieldName();
+    public function getName();
 
     /**
      * @return Type
@@ -44,36 +49,6 @@ interface PropertyMetadata
      * @return string
      */
     public function getTypeName();
-
-    /**
-     * @param string $tableName
-     */
-    public function setTableName($tableName);
-
-    /**
-     * @return string
-     */
-    public function getTableName();
-
-    /**
-     * @return boolean
-     */
-    public function isInherited();
-
-    /**
-     * @return boolean
-     */
-    public function isPrimaryKey();
-
-    /**
-     * @return boolean
-     */
-    public function isAssociation();
-
-    /**
-     * @return boolean
-     */
-    public function isField();
 
     /**
      * @param ReflectionService $reflectionService

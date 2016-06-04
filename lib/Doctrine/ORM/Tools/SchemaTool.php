@@ -421,7 +421,7 @@ class SchemaTool
      */
     private function gatherColumn($classMetadata, FieldMetadata $fieldMetadata, Table $table)
     {
-        $fieldName  = $fieldMetadata->getFieldName();
+        $fieldName  = $fieldMetadata->getName();
         $columnName = $fieldMetadata->getColumnName();
         $columnType = $fieldMetadata->getTypeName();
 

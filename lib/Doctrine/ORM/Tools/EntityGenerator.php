@@ -748,7 +748,7 @@ public function __construct(<params>)
                 continue;
             }*/
 
-            $fieldName  = $property->getFieldName();
+            $fieldName  = $property->getName();
             $fieldType  = $property->getTypeName();
             $mappedType = $this->getType($fieldType);
             $param      = '$' . $fieldName;
@@ -1728,7 +1728,7 @@ public function __construct(<params>)
                 }
             }
 
-            if ($metadata->versionField === $propertyMetadata->getFieldName()) {
+            if ($metadata->versionField === $propertyMetadata->getName()) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Version';
             }
         }
