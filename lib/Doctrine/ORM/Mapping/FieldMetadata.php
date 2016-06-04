@@ -3,10 +3,9 @@
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
-class FieldMetadata implements PropertyMetadata
+class FieldMetadata extends ColumnMetadata implements Property
 {
     /**
      * @var ClassMetadata
@@ -26,84 +25,22 @@ class FieldMetadata implements PropertyMetadata
     /**
      * @var string
      */
-    private $fieldName;
-
-    /**
-     * @var Type
-     */
-    private $type;
-
-    /**
-     * @var string
-     */
-    private $tableName;
-
-    /**
-     * @var string
-     */
-    private $columnName;
-
-    /**
-     * @var string
-     */
-    private $columnDefinition;
-
-    /**
-     * @var integer
-     */
-    private $length;
-
-    /**
-     * @var integer
-     */
-    private $scale;
-
-    /**
-     * @var integer
-     */
-    private $precision;
-
-    /**
-     * @var array
-     */
-    private $options = [];
-
-    /**
-     * @var boolean
-     */
-    private $isPrimaryKey = false;
-
-    /**
-     * @var boolean
-     */
-    private $isNullable = false;
-
-    /**
-     * @var boolean
-     */
-    private $isUnique = false;
+    private $name;
 
     /**
      * FieldMetadata constructor.
      *
-     * @param ClassMetadata $currentClass
+     * @param ClassMetadata $declaringClass
      * @param string        $fieldName
      * @param Type          $type
      */
-    public function __construct(ClassMetadata $currentClass, $fieldName, Type $type)
+    public function __construct(ClassMetadata $declaringClass, $fieldName, Type $type)
     {
-        $this->declaringClass = $currentClass;
-        $this->currentClass   = $currentClass;
-        $this->fieldName      = $fieldName;
-        $this->type           = $type;
-    }
+        parent::__construct(null, $fieldName, $type);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrentClass()
-    {
-        return $this->currentClass;
+        $this->declaringClass = $declaringClass;
+        $this->currentClass   = $declaringClass;
+        $this->name           = $fieldName;
     }
 
     /**
@@ -115,11 +52,43 @@ class FieldMetadata implements PropertyMetadata
     }
 
     /**
-     * @param ClassMetadata $declaringClass
+     * {@inheritdoc}
      */
-    public function setDeclaringClass(ClassMetadata $declaringClass)
+    public function getName()
     {
-        $this->declaringClass = $declaringClass;
+        return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCurrentClass()
+    {
+        return $this->currentClass;
+    }
+
+    /**
+     * @param ClassMetadata $currentClass
+     */
+    public function setCurrentClass(ClassMetadata $currentClass)
+    {
+        $this->currentClass = $currentClass;
+    }
+
+    /**
+     * @param string $tableName
+     */
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
+    }
+
+    /**
+     * @param string $columnName
+     */
+    public function setColumnName($columnName)
+    {
+        $this->columnName = $columnName;
     }
 
     /**
@@ -149,190 +118,6 @@ class FieldMetadata implements PropertyMetadata
     /**
      * {@inheritdoc}
      */
-    public function getFieldName()
-    {
-        return $this->fieldName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTypeName()
-    {
-        return $this->type->getName();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTableName()
-    {
-        return $this->tableName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setTableName($tableName)
-    {
-        $this->tableName = $tableName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getColumnName()
-    {
-        return $this->columnName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setColumnName($columnName)
-    {
-        $this->columnName = $columnName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getColumnDefinition()
-    {
-        return $this->columnDefinition;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setColumnDefinition($columnDefinition)
-    {
-        $this->columnDefinition = $columnDefinition;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getLength()
-    {
-        return $this->length;
-    }
-
-    /**
-     * @param integer $length
-     */
-    public function setLength($length)
-    {
-        $this->length = $length;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getScale()
-    {
-        return $this->scale;
-    }
-
-    /**
-     * @param integer $scale
-     */
-    public function setScale($scale)
-    {
-        $this->scale = $scale;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getPrecision()
-    {
-        return $this->precision;
-    }
-
-    /**
-     * @param integer $precision
-     */
-    public function setPrecision($precision)
-    {
-        $this->precision = $precision;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
-     * @param array $options
-     */
-    public function setOptions(array $options)
-    {
-        $this->options = $options;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrimaryKey($isPrimaryKey)
-    {
-        $this->isPrimaryKey = $isPrimaryKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPrimaryKey()
-    {
-        return $this->isPrimaryKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setNullable($isNullable)
-    {
-        $this->isNullable = $isNullable;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isNullable()
-    {
-        return $this->isNullable;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUnique($isUnique)
-    {
-        $this->isUnique = $isUnique;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isUnique()
-    {
-        return $this->isUnique;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isAssociation()
     {
         return false;
@@ -351,18 +136,10 @@ class FieldMetadata implements PropertyMetadata
      */
     public function wakeupReflection(ReflectionService $reflectionService)
     {
-        $this->reflection = $reflectionService->getAccessibleProperty($this->getDeclaringClass()->name, $this->fieldName);
-    }
-
-    /**
-     * @param AbstractPlatform   $platform
-     * @param QuoteStrategy|null $quoteStrategy
-     *
-     * @return string
-     */
-    public function getQuotedColumnName(AbstractPlatform $platform)
-    {
-        return $platform->quoteIdentifier($this->columnName);
+        $this->reflection = $reflectionService->getAccessibleProperty(
+            $this->getDeclaringClass()->name,
+            $this->fieldName
+        );
     }
 
     /**
@@ -371,6 +148,8 @@ class FieldMetadata implements PropertyMetadata
     public function getMapping()
     {
         return [
+            'declaringClass'   => $this->declaringClass->name,
+            'currentClass'     => $this->currentClass->name,
             'tableName'        => $this->tableName,
             'columnName'       => $this->columnName,
             'columnDefinition' => $this->columnDefinition,
@@ -378,9 +157,9 @@ class FieldMetadata implements PropertyMetadata
             'scale'            => $this->scale,
             'precision'        => $this->precision,
             'options'          => $this->options,
-            'id'               => $this->isPrimaryKey,
-            'nullable'         => $this->isNullable,
-            'unique'           => $this->isUnique,
+            'id'               => $this->primaryKey,
+            'nullable'         => $this->nullable,
+            'unique'           => $this->unique,
         ];
     }
 }
