@@ -154,7 +154,7 @@ class XmlExporter extends AbstractExporter
             foreach ($id as $field) {
                 $property = $field['property'];
                 $idXml    = $root->addChild('id');
-                $idXml->addAttribute('name', $property->getFieldName());
+                $idXml->addAttribute('name', $property->getName());
                 $idXml->addAttribute('type', $property->getTypeName());
                 $idXml->addAttribute('column', $property->getColumnName());
 
@@ -180,7 +180,7 @@ class XmlExporter extends AbstractExporter
             foreach ($properties as $property) {
                 $fieldXml = $root->addChild('field');
 
-                $fieldXml->addAttribute('name', $property->getFieldName());
+                $fieldXml->addAttribute('name', $property->getName());
                 $fieldXml->addAttribute('type', $property->getTypeName());
                 $fieldXml->addAttribute('column', $property->getColumnName());
 
@@ -204,7 +204,7 @@ class XmlExporter extends AbstractExporter
                     $fieldXml->addAttribute('scale', $property->getScale());
                 }
 
-                if ($metadata->versionField === $property->getFieldName()) {
+                if ($metadata->versionField === $property->getName()) {
                     $fieldXml->addAttribute('version', 'true');
                 }
 
