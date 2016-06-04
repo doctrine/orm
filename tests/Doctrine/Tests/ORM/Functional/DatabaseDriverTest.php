@@ -70,7 +70,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $idProperty = $metadata->getProperty('id');
 
-        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getName());
         self::assertEquals('id', $idProperty->getColumnName());
         self::assertEquals('integer', $idProperty->getTypeName());
 
@@ -78,7 +78,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $barProperty = $metadata->getProperty('bar');
 
-        self::assertEquals('bar', $barProperty->getFieldName());
+        self::assertEquals('bar', $barProperty->getName());
         self::assertEquals('bar', $barProperty->getColumnName());
         self::assertEquals('string', $barProperty->getTypeName());
         self::assertEquals(200, $barProperty->getLength());
@@ -195,7 +195,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $idProperty = $metadata->getProperty('id');
 
-        self::assertEquals('id', $idProperty->getFieldName());
+        self::assertEquals('id', $idProperty->getName());
         self::assertEquals('id', $idProperty->getColumnName());
         self::assertEquals('integer', $idProperty->getTypeName());
 
