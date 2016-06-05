@@ -3477,7 +3477,8 @@ class UnitOfWork implements PropertyChangedListener
     private function clearEntityInsertionsForEntityName($entityName)
     {
         foreach ($this->entityInsertions as $hash => $entity) {
-            if (get_class($entity) === $entityName) {
+            // note: performance optimization - `instanceof` is much faster than a function call
+            if ($entity instanceof $entityName && get_class($entity) === $entityName) {
                 unset($this->entityInsertions[$hash]);
             }
         }
