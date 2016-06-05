@@ -3460,16 +3460,14 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function clearIdentityMapForEntityName($entityName)
     {
-        $visited = array();
+        if (! isset($this->identityMap[$entityName])) {
+            return;
+        }
 
-        foreach ($this->identityMap as $className => $entities) {
-            if ($className !== $entityName) {
-                continue;
-            }
+        $visited = [];
 
-            foreach ($entities as $entity) {
-                $this->doDetach($entity, $visited, false);
-            }
+        foreach ($this->identityMap[$entityName] as $entity) {
+            $this->doDetach($entity, $visited, false);
         }
     }
 
