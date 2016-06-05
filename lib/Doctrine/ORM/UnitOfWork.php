@@ -2407,7 +2407,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->commitOrderCalculator->clear();
             }
         } else {
-            $this->clearIdentityMap($entityName);
+            $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertions($entityName);
         }
 
@@ -3464,9 +3464,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      */
-    private function clearIdentityMap($entityName)
+    private function clearIdentityMapForEntityName($entityName)
     {
         $visited = array();
 
