@@ -339,7 +339,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork->persist($entity2);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
 
-        $this->_unitOfWork->clear(Country::class);
+        $this->_unitOfWork->clear(Country::CLASSNAME);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
         $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
