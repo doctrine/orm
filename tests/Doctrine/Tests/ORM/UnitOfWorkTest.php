@@ -323,6 +323,10 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
     }
 
+    /**
+     * @group 5849
+     * @group 5850
+     */
     public function testPersistedEntityAndClearManager()
     {
         $entity1     = new ForumUser();
