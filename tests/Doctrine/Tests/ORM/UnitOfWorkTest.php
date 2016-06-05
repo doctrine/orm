@@ -14,6 +14,9 @@ use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\GeoNames\City;
+use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\OrmTestCase;
 use stdClass;
 
 /**
@@ -319,6 +322,28 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+    }
+
+    /**
+     * @group 5849
+     * @group 5850
+     */
+    public function testPersistedEntityAndClearManager()
+    {
+        $entity1 = new City(123, 'London');
+        $entity2 = new Country(456, 'United Kingdom');
+
+        $this->_unitOfWork->persist($entity1);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+
+        $this->_unitOfWork->persist($entity2);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
+
+        $this->_unitOfWork->clear(Country::class);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
+        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
+        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
     /**
