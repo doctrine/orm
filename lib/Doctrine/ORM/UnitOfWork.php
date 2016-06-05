@@ -2408,7 +2408,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $this->clearIdentityMapForEntityName($entityName);
-            $this->clearEntityInsertions($entityName);
+            $this->clearEntityInsertionsForEntityName($entityName);
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
@@ -3480,9 +3480,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      */
-    private function clearEntityInsertions($entityName)
+    private function clearEntityInsertionsForEntityName($entityName)
     {
         foreach ($this->entityInsertions as $hash => $entity) {
             if (get_class($entity) === $entityName) {
