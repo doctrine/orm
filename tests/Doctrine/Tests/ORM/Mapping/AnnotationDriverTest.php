@@ -16,7 +16,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cm = new ClassMetadata('stdClass');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
         $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
