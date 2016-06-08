@@ -13,32 +13,35 @@ class DDC2138Test extends OrmFunctionalTestCase
      */
     public function testForeignKeyOnSTIWithMultipleMapping()
     {
-        $em = $this->_em;
-        $schemaTool = new SchemaTool($em);
+        $schema = $this->_schemaTool->getSchemaFromMetadata(
+            [
+                $this->_em->getClassMetadata(DDC2138User::class),
+                $this->_em->getClassMetadata(DDC2138Structure::class),
+                $this->_em->getClassMetadata(DDC2138UserFollowedObject::class),
+                $this->_em->getClassMetadata(DDC2138UserFollowedStructure::class),
+                $this->_em->getClassMetadata(DDC2138UserFollowedUser::class)
+            ]
+        );
 
-        $classes = [
-            $em->getClassMetadata(DDC2138User::class),
-            $em->getClassMetadata(DDC2138Structure::class),
-            $em->getClassMetadata(DDC2138UserFollowedObject::class),
-            $em->getClassMetadata(DDC2138UserFollowedStructure::class),
-            $em->getClassMetadata(DDC2138UserFollowedUser::class)
-        ];
-
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
         self::assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
 
         /* @var $table \Doctrine\DBAL\Schema\Table */
         $table = ($schema->getTable('users_followed_objects'));
+
         self::assertTrue($table->columnsAreIndexed(['object_id']));
         self::assertTrue($table->columnsAreIndexed(['user_id']));
+
         $foreignKeys = $table->getForeignKeys();
+
         self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         /* @var $fk \Doctrine\DBAL\Schema\ForeignKeyConstraint */
         $fk = reset($foreignKeys);
+
         self::assertEquals('users', $fk->getForeignTableName());
 
         $localColumns = $fk->getLocalColumns();
+
         self::assertContains('user_id', $localColumns);
         self::assertCount(1, $localColumns);
     }

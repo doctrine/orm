@@ -27,6 +27,7 @@ use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -244,29 +245,25 @@ class AnnotationDriver extends AbstractAnnotationDriver
             );
 
             if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
+                $discrColumn = new DiscriminatorColumnMetadata();
+
+                $discrColumn->setTableName($metadata->getTableName());
+
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorColumn::class])) {
                     $discrColumnAnnot = $classAnnotations[Annotation\DiscriminatorColumn::class];
 
-                    $metadata->setDiscriminatorColumn(
-                        [
-                            'name'             => $discrColumnAnnot->name,
-                            'type'             => $discrColumnAnnot->type ?: 'string',
-                            'length'           => $discrColumnAnnot->length ?: 255,
-                            'columnDefinition' => $discrColumnAnnot->columnDefinition,
-                            'tableName'        => $metadata->getTableName(),
-                        ]
-                    );
+                    $discrColumn->setColumnName($discrColumnAnnot->name);
+                    $discrColumn->setColumnDefinition($discrColumnAnnot->columnDefinition);
+                    $discrColumn->setType(Type::getType($discrColumnAnnot->type ?: 'string'));
+                    $discrColumn->setLength($discrColumnAnnot->length ?: 255);
                 } else {
-                    $metadata->setDiscriminatorColumn(
-                        [
-                            'name'      => 'dtype',
-                            'type'      => 'string',
-                            'length'    => 255,
-                            'tableName' => $metadata->getTableName(),
-                        ]
-                    );
+                    $discrColumn->setColumnName('dtype');
+                    $discrColumn->setType(Type::getType('string'));
+                    $discrColumn->setLength(255);
                 }
+
+                $metadata->setDiscriminatorColumn($discrColumn);
 
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {

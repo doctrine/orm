@@ -60,8 +60,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertNotNull($class->getProperty('mapped1'));
         self::assertNotNull($class->getProperty('mapped2'));
 
-        self::assertFalse($class->getProperty('mapped1')->isInherited());
-        self::assertFalse($class->getProperty('mapped2')->isInherited());
+        self::assertTrue($class->getProperty('mapped1')->isInherited());
+        self::assertTrue($class->getProperty('mapped2')->isInherited());
 
         self::assertNull($class->getProperty('transient'));
 

@@ -458,12 +458,18 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
-            $quotedColumnName = $this->platform->quoteIdentifier($class->discriminatorColumn['name']);
+            $discrColumn     = $class->discriminatorColumn;
+            $discrColumnType = $discrColumn->getType();
+            $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
             $sqlTableAlias    = ($this->useSqlTableAliases)
-                ? $this->getSQLTableAlias($class->discriminatorColumn['tableName'], $dqlAlias) . '.'
+                ? $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias) . '.'
                 : '';
 
-            $sqlParts[] = $sqlTableAlias . $quotedColumnName . ' IN (' . implode(', ', $values) . ')';
+            $sqlParts[] = sprintf(
+                '%s IN (%s)',
+                $discrColumnType->convertToDatabaseValueSQL($sqlTableAlias . $quotedColumnName, $this->platform),
+                implode(', ', $values)
+            );
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -732,17 +738,21 @@ class SqlWalker implements TreeWalker
 
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                 // Add discriminator columns to SQL
-                $rootClass        = $this->em->getClassMetadata($class->rootEntityName);
-                $discrColumn      = $rootClass->discriminatorColumn;
-                $tblAlias         = $this->getSQLTableAlias($discrColumn['tableName'], $dqlAlias);
-                $discrColumn      = $rootClass->discriminatorColumn;
-                $columnAlias      = $this->getSQLColumnAlias($discrColumn['name']);
-                $quotedColumnName = $this->platform->quoteIdentifier($discrColumn['name']);
+                $discrColumn      = $class->discriminatorColumn;
+                $discrColumnName  = $discrColumn->getColumnName();
+                $discrColumnType  = $discrColumn->getType();
+                $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
+                $sqlTableAlias    = $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias);
+                $sqlColumnAlias   = $this->getSQLColumnAlias($discrColumnName);
 
-                $sqlSelectExpressions[] = $tblAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+                $sqlSelectExpressions[] = sprintf(
+                    '%s AS %s',
+                    $discrColumnType->convertToDatabaseValueSQL($sqlTableAlias . '.' . $quotedColumnName, $this->platform),
+                    $sqlColumnAlias
+                );
 
-                $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName'], false, $discrColumn['type']);
+                $this->rsm->setDiscriminatorColumn($dqlAlias, $sqlColumnAlias);
+                $this->rsm->addMetaResult($dqlAlias, $sqlColumnAlias, $discrColumnName, false, $discrColumnType);
             }
 
             // Add foreign key columns to SQL, if necessary
@@ -2051,20 +2061,15 @@ class SqlWalker implements TreeWalker
      */
     public function walkInstanceOfExpression($instanceOfExpr)
     {
-        $sql = '';
-
-        $dqlAlias = $instanceOfExpr->identificationVariable;
-        $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-
-        if ($class->discriminatorColumn) {
-            $discrClass = $this->em->getClassMetadata($class->rootEntityName);
-        }
-
-        if ($this->useSqlTableAliases) {
-            $sql .= $this->getSQLTableAlias($discrClass->getTableName(), $dqlAlias) . '.';
-        }
-
-        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
+        $dqlAlias         = $instanceOfExpr->identificationVariable;
+        $class            = $this->queryComponents[$dqlAlias]['metadata'];
+        $discrMap         = array_flip($class->discriminatorMap);
+        $discrColumn      = $class->discriminatorColumn;
+        $discrColumnType  = $discrColumn->getType();
+        $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
+        $sqlTableAlias    = $this->useSqlTableAliases
+            ? $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias) . '.'
+            : '';
 
         $sqlParameterList = [];
 
@@ -2078,12 +2083,11 @@ class SqlWalker implements TreeWalker
             }
 
             // Get name from ClassMetadata to resolve aliases.
-            $entityClassName    = $this->em->getClassMetadata($parameter)->name;
+            $entityClass        = $this->em->getClassMetadata($parameter);
+            $entityClassName    = $entityClass->name;
             $discriminatorValue = $class->discriminatorValue;
 
             if ($entityClassName !== $class->name) {
-                $discrMap = array_flip($class->discriminatorMap);
-
                 if ( ! isset($discrMap[$entityClassName])) {
                     throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
                 }
@@ -2094,9 +2098,12 @@ class SqlWalker implements TreeWalker
             $sqlParameterList[] = $this->conn->quote($discriminatorValue);
         }
 
-        $sql .= '(' . implode(', ', $sqlParameterList) . ')';
-
-        return $sql;
+        return sprintf(
+            '%s %sIN (%s)',
+            $discrColumnType->convertToDatabaseValueSQL($sqlTableAlias . $quotedColumnName, $this->platform),
+            ($instanceOfExpr->not ? 'NOT ' : ''),
+            implode(', ', $sqlParameterList)
+        );
     }
 
     /**

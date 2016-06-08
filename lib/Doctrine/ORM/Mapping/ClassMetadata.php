@@ -26,6 +26,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use ReflectionClass;
 use RuntimeException;
@@ -386,7 +389,7 @@ class ClassMetadata implements ClassMetadataInterface
      * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
-     * @var array
+     * @var DiscriminatorColumnMetadata
      */
     public $discriminatorColumn;
 
@@ -1664,29 +1667,37 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Returns an array with all the identifier column names.
+     * Returns an array with identifier column names and their corresponding ColumnMetadata.
      *
      * @return array
      */
-    public function getIdentifierColumnNames()
+    public function getIdentifierColumns(EntityManagerInterface $em)
     {
-        $columnNames = [];
+        $columns = [];
 
         foreach ($this->identifier as $idProperty) {
             if (($property = $this->getProperty($idProperty)) !== null) {
-                $columnNames[] = $property->getColumnName();
+                $columns[$property->getColumnName()] = $property;
 
                 continue;
             }
 
             // Association defined as Id field
-            $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
-            $assocColumnNames = array_map(function ($joinColumn) { return $joinColumn['name']; }, $joinColumns);
+            $assoc       = $this->associationMappings[$idProperty];
+            $targetClass = $em->getClassMetadata($assoc['targetEntity']);
 
-            $columnNames = array_merge($columnNames, $assocColumnNames);
+            foreach ($assoc['joinColumns'] as $joinColumn) {
+                $sourceColumn = $joinColumn['name'];
+                $targetColumn = $joinColumn['referencedColumnName'];
+
+                $columns[$sourceColumn] = array_merge(
+                    $joinColumn,
+                    ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $em)]
+                );
+            }
         }
 
-        return $columnNames;
+        return $columns;
     }
 
     /**
@@ -2103,24 +2114,36 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addProperty($fieldName, Type $type, array $mapping = [])
     {
-        $property = new FieldMetadata($this, $fieldName, $type);
+        $property = new FieldMetadata();
 
+        $property->setCurrentClass($this);
+        $property->setDeclaringClass($this);
+        $property->setName($fieldName);
+        $property->setType($type);
         $property->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
         $property->setColumnName($mapping['columnName'] ?? $this->namingStrategy->propertyToColumnName($fieldName, $this->name));
-        $property->setPrimaryKey(isset($mapping['id']) && $mapping['id']);
-        $property->setNullable(isset($mapping['nullable']) && $mapping['nullable']);
-        $property->setUnique(isset($mapping['unique']) && $mapping['unique']);
         $property->setColumnDefinition($mapping['columnDefinition'] ?? null);
         $property->setLength($mapping['length'] ?? null);
         $property->setScale($mapping['scale'] ?? null);
         $property->setPrecision($mapping['precision'] ?? null);
         $property->setOptions($mapping['options'] ?? []);
+        $property->setPrimaryKey(isset($mapping['id']) && $mapping['id']);
+        $property->setNullable(isset($mapping['nullable']) && $mapping['nullable']);
+        $property->setUnique(isset($mapping['unique']) && $mapping['unique']);
 
-        assert(! isset($this->properties[$fieldName]), MappingException::duplicateProperty($property));
+        // Check for empty field name
+        if (empty($fieldName)) {
+            throw MappingException::missingFieldName($this->name);
+        }
+
+        // Check for duplicated property
+        if (isset($this->properties[$fieldName]) || isset($this->associationMappings[$fieldName])) {
+            throw MappingException::duplicateProperty($property);
+        }
 
         // Check for already declared column
         if (isset($this->fieldNames[$property->getColumnName()]) ||
-            ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] === $property->getColumnName())) {
+            ($this->discriminatorColumn != null && $this->discriminatorColumn->getColumnName() === $property->getColumnName())) {
             throw MappingException::duplicateColumnName($this->name, $property->getColumnName());
         }
 
@@ -2156,11 +2179,14 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addInheritedProperty(Property $property)
     {
-        $declaringClass    = $property->getDeclaringClass();
-        $fieldName         = $property->getName();
-        $inheritedProperty = new FieldMetadata($declaringClass, $fieldName, $property->getType());
+        $inheritedProperty = new FieldMetadata();
 
-        if ( ! $declaringClass->isMappedSuperclass) {
+        $inheritedProperty->setCurrentClass($this);
+        $inheritedProperty->setDeclaringClass($property->getDeclaringClass());
+        $inheritedProperty->setName($property->getName());
+        $inheritedProperty->setType($property->getType());
+
+        if ( ! $property->getDeclaringClass()->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
         }
 
@@ -2179,8 +2205,8 @@ class ClassMetadata implements ClassMetadataInterface
         $inheritedProperty->setPrecision($property->getPrecision());
         $inheritedProperty->setOptions($property->getOptions());
 
-        $this->fieldNames[$property->getColumnName()] = $fieldName;
-        $this->properties[$fieldName] = $inheritedProperty;
+        $this->fieldNames[$property->getColumnName()] = $property->getName();
+        $this->properties[$property->getName()] = $inheritedProperty;
     }
 
     /**
@@ -2529,7 +2555,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Sets the discriminator column definition.
      *
-     * @param array $columnDef
+     * @param DiscriminatorColumnMetadata $discriminatorColumn
      *
      * @return void
      *
@@ -2537,41 +2563,25 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @see getDiscriminatorColumn()
      */
-    public function setDiscriminatorColumn($columnDef)
+    public function setDiscriminatorColumn(DiscriminatorColumnMetadata $discriminatorColumn)
     {
-        if ($columnDef === null) {
-            return;
-        }
-
-        if ( ! isset($columnDef['name'])) {
+        if (empty($discriminatorColumn->getColumnName())) {
             throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name);
         }
 
-        if (isset($this->fieldNames[$columnDef['name']])) {
-            throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
+        if (isset($this->fieldNames[$discriminatorColumn->getColumnName()])) {
+            throw MappingException::duplicateColumnName($this->name, $discriminatorColumn->getColumnName());
         }
 
-        $columnDef['tableName'] = isset($columnDef['tableName'])
-            ? $columnDef['tableName']
-            : $this->table['name'];
+        $discriminatorColumn->setTableName($discriminatorColumn->getTableName() ?? $this->getTableName());
 
-        if ( ! isset($columnDef['fieldName'])) {
-            $columnDef['fieldName'] = $columnDef['name'];
+        $allowedTypeList = ["boolean", "array", "object", "datetime", "time", "date"];
+
+        if (in_array($discriminatorColumn->getTypeName(), $allowedTypeList)) {
+            throw MappingException::invalidDiscriminatorColumnType($this->name, $discriminatorColumn->getTypeName());
         }
 
-        $type = isset($columnDef['type'])
-            ? $columnDef['type']
-            : 'string';
-
-        if ( ! ($type instanceof Type)) {
-            $columnDef['type'] = Type::getType($type);
-        }
-
-        if (in_array($columnDef['type']->getName(), ["boolean", "array", "object", "datetime", "time", "date"])) {
-            throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']->getName());
-        }
-
-        $this->discriminatorColumn = $columnDef;
+        $this->discriminatorColumn = $discriminatorColumn;
     }
 
     /**
