@@ -32,12 +32,12 @@ interface QuoteStrategy
     /**
      * Gets the (possibly quoted) column name for safe use in an SQL statement.
      *
-     * @param FieldMetadata    $fieldMetadata
+     * @param ColumnMetadata   $columnMetadata
      * @param AbstractPlatform $platform
      *
      * @return string
      */
-    public function getColumnName(FieldMetadata $fieldMetadata, AbstractPlatform $platform);
+    public function getColumnName(ColumnMetadata $columnMetadata, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) primary table name for safe use in an SQL statement.

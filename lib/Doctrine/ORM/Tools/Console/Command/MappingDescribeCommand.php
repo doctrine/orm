@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -100,7 +101,10 @@ EOT
                     $this->formatField('SQL result set mappings', $metadata->sqlResultSetMappings),
                     $this->formatField('Identifier', $metadata->identifier),
                     $this->formatField('Inheritance type', $metadata->inheritanceType),
-                    $this->formatField('Discriminator column', $metadata->discriminatorColumn),
+                    $this->formatField('Discriminator column', '')
+                ],
+                $this->formatColumn($metadata->discriminatorColumn),
+                [
                     $this->formatField('Discriminator value', $metadata->discriminatorValue),
                     $this->formatField('Discriminator map', $metadata->discriminatorMap),
                     $this->formatField('Generator type', $metadata->generatorType),
@@ -281,14 +285,34 @@ EOT
         foreach ($propertyMappings as $propertyName => $property) {
             $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
 
-            $output[] = $this->formatField('    type', $this->formatValue($property->getTypeName()));
-            $output[] = $this->formatField('    tableName', $this->formatValue($property->getTableName()));
-            $output[] = $this->formatField('    columnName', $this->formatValue($property->getColumnName()));
-            $output[] = $this->formatField('    columnDefinition', $this->formatValue($property->getColumnDefinition()));
-            $output[] = $this->formatField('    isPrimaryKey', $this->formatValue($property->isPrimaryKey()));
-            $output[] = $this->formatField('    isNullable', $this->formatValue($property->isNullable()));
-            $output[] = $this->formatField('    isUnique', $this->formatValue($property->isUnique()));
+            $output = array_merge($output, $this->formatColumn($property));
         }
+
+        return $output;
+    }
+
+    /**
+     * @param ColumnMetadata|null $columnMetadata
+     *
+     * @return array|string
+     */
+    private function formatColumn(ColumnMetadata $columnMetadata = null)
+    {
+        $output = [];
+
+        if (null === $columnMetadata) {
+            $output[] = '<comment>Null</comment>';
+
+            return $output;
+        }
+
+        $output[] = $this->formatField('    type', $this->formatValue($columnMetadata->getTypeName()));
+        $output[] = $this->formatField('    tableName', $this->formatValue($columnMetadata->getTableName()));
+        $output[] = $this->formatField('    columnName', $this->formatValue($columnMetadata->getColumnName()));
+        $output[] = $this->formatField('    columnDefinition', $this->formatValue($columnMetadata->getColumnDefinition()));
+        $output[] = $this->formatField('    isPrimaryKey', $this->formatValue($columnMetadata->isPrimaryKey()));
+        $output[] = $this->formatField('    isNullable', $this->formatValue($columnMetadata->isNullable()));
+        $output[] = $this->formatField('    isUnique', $this->formatValue($columnMetadata->isUnique()));
 
         return $output;
     }

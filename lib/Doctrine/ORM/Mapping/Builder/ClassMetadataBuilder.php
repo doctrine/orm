@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 
 /**
  * Builder Object for ClassMetadata
@@ -235,13 +236,13 @@ class ClassMetadataBuilder
      */
     public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
     {
-        $this->cm->setDiscriminatorColumn(
-            [
-                'name' => $name,
-                'type' => $type,
-                'length' => $length,
-            ]
-        );
+        $discrColumn = new DiscriminatorColumnMetadata();
+
+        $discrColumn->setColumnName($name);
+        $discrColumn->setType(Type::getType($type));
+        $discrColumn->setLength($length);
+
+        $this->cm->setDiscriminatorColumn($discrColumn);
 
         return $this;
     }
