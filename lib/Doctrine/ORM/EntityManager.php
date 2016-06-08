@@ -22,6 +22,7 @@ namespace Doctrine\ORM;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -420,14 +421,14 @@ use Doctrine\Common\Util\ClassUtils;
                 return null;
             }
 
-            switch (true) {
-                case LockMode::OPTIMISTIC === $lockMode:
+            switch ($lockMode) {
+                case LockMode::OPTIMISTIC:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case LockMode::NONE === $lockMode:
-                case LockMode::PESSIMISTIC_READ === $lockMode:
-                case LockMode::PESSIMISTIC_WRITE === $lockMode:
+                case LockMode::NONE:
+                case LockMode::PESSIMISTIC_READ:
+                case LockMode::PESSIMISTIC_WRITE:
                     $persister = $unitOfWork->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
@@ -438,8 +439,8 @@ use Doctrine\Common\Util\ClassUtils;
 
         $persister = $unitOfWork->getEntityPersister($class->name);
 
-        switch (true) {
-            case LockMode::OPTIMISTIC === $lockMode:
+        switch ($lockMode) {
+            case LockMode::OPTIMISTIC:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
@@ -450,8 +451,8 @@ use Doctrine\Common\Util\ClassUtils;
 
                 return $entity;
 
-            case LockMode::PESSIMISTIC_READ === $lockMode:
-            case LockMode::PESSIMISTIC_WRITE === $lockMode:
+            case LockMode::PESSIMISTIC_READ:
+            case LockMode::PESSIMISTIC_WRITE:
                 if ( ! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
@@ -835,21 +836,16 @@ use Doctrine\Common\Util\ClassUtils;
             throw ORMException::missingMappingDriverImpl();
         }
 
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
-
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
+        if (is_array($conn)) {
+            $conn = DriverManager::getConnection(
+                $conn, $config, ($eventManager ?: new EventManager())
+            );
+        } elseif ($conn instanceof Connection) {
+            if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
+                 throw ORMException::mismatchedEventManager();
+            }
+        } else {
+            throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());
