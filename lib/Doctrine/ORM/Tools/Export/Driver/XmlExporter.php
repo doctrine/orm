@@ -389,6 +389,27 @@ class XmlExporter extends AbstractExporter
             }
         }
 
+        if (0 !== count($metadata->entityListeners)) {
+            $entityListenersXml = $root->addChild('entity-listeners');
+            $entityListenersXmlMap = [];
+
+            foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
+                foreach ($entityListenerConfig as $entityListener) {
+                    if (!isset($entityListenersXmlMap[$entityListener['class']])) {
+                        $entityListenerXml = $entityListenersXml->addChild('entity-listener');
+                        $entityListenerXml->addAttribute('class', $entityListener['class']);
+                        $entityListenersXmlMap[$entityListener['class']] = $entityListenerXml;
+                    } else {
+                        $entityListenerXml = $entityListenersXmlMap[$entityListener['class']];
+                    }
+
+                    $entityListenerCallbackXml = $entityListenerXml->addChild('lifecycle-callback');
+                    $entityListenerCallbackXml->addAttribute('type', $event);
+                    $entityListenerCallbackXml->addAttribute('method', $entityListener['method']);
+                }
+            }
+        }
+
         return $this->_asXml($xml);
     }
 

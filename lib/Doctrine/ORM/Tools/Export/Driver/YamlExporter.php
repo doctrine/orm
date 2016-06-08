@@ -214,6 +214,23 @@ class YamlExporter extends AbstractExporter
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
+        if (0 !== count($metadata->entityListeners)) {
+            $array['entityListeners'] = [];
+
+            foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
+                foreach ($entityListenerConfig as $entityListener) {
+                    if (!isset($array['entityListeners'][$entityListener['class']])) {
+                        $array['entityListeners'][$entityListener['class']] = null;
+                    }
+
+                    if (isset($entityListener['method'])) {
+                        $array['entityListeners'][$entityListener['class']][$event] = [$entityListener['method']];
+                    }
+                }
+
+            }
+        }
+
         return $this->yamlDump(array($metadata->name => $array), 10);
     }
 

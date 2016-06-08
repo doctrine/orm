@@ -77,6 +77,19 @@
             </join-table>
         </many-to-many>
 
+        <entity-listeners>
+            <entity-listener class="Doctrine\Tests\ORM\Tools\Export\UserListener">
+                <lifecycle-callback type="prePersist" method="customPrePersist" />
+                <lifecycle-callback type="postPersist" method="customPostPersist" />
+            </entity-listener>
+            <entity-listener class="Doctrine\Tests\ORM\Tools\Export\GroupListener">
+                <lifecycle-callback type="prePersist" method="prePersist" />
+            </entity-listener>
+            <entity-listener class="Doctrine\Tests\ORM\Tools\Export\AddressListener">
+                <lifecycle-callback type="postPersist" method="customPostPersist" />
+            </entity-listener>
+        </entity-listeners>
+
     </entity>
 
 </doctrine-mapping>

@@ -75,3 +75,11 @@ Doctrine\Tests\ORM\Tools\Export\User:
   lifecycleCallbacks:
     prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
     postPersist: [ doStuffOnPostPersist ] 
+  entityListeners:
+    Doctrine\Tests\ORM\Tools\Export\UserListener:
+       prePersist: [customPrePersist]
+       postPersist: [customPostPersist]
+    Doctrine\Tests\ORM\Tools\Export\GroupListener:
+       prePersist: [prePersist]
+    Doctrine\Tests\ORM\Tools\Export\AddressListener:
+       postPersist: [customPostPersist]

@@ -82,6 +82,16 @@ class PhpExporter extends AbstractExporter
             }
         }
 
+        if (0 !== count($metadata->entityListeners)) {
+            foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
+                foreach ($entityListenerConfig as $entityListener) {
+                    $class = $entityListener['class'];
+                    $method = $entityListener['method'];
+                    $lines[] = "\$metadata->addEntityListener('$event', '$class', '$method');";
+                }
+            }
+        }
+
         foreach ($metadata->fieldMappings as $fieldMapping) {
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
