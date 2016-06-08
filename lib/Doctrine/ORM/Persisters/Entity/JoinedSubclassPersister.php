@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -51,18 +52,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      * @var array
      */
     private $quotedTableMap = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDiscriminatorColumnTableName()
-    {
-        $class = ($this->class->name !== $this->class->rootEntityName)
-            ? $this->em->getClassMetadata($this->class->rootEntityName)
-            : $this->class;
-
-        return $class->getTableName();
-    }
 
     /**
      * This function finds the ClassMetadata instance in an inheritance hierarchy
@@ -166,7 +155,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $paramIndex = 1;
 
             foreach ($insertData[$rootTableName] as $columnName => $value) {
-                $rootTableStmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
+                $type = $this->columns[$columnName] instanceof ColumnMetadata
+                    ? $this->columns[$columnName]->getType()
+                    : $this->columns[$columnName]['type']
+                ;
+
+                $rootTableStmt->bindValue($paramIndex++, $value, $type);
             }
 
             $rootTableStmt->execute();
@@ -197,14 +191,26 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     : [];
 
                 foreach ((array) $id as $idName => $idVal) {
-                    $type = isset($this->columnTypes[$idName]) ? $this->columnTypes[$idName] : Type::getType('string');
+                    $type = Type::getType('string');
+
+                    if (isset($this->columns[$idName])) {
+                        $type = $this->columns[$idName] instanceof ColumnMetadata
+                            ? $this->columns[$idName]->getType()
+                            : $this->columns[$idName]['type']
+                        ;
+                    }
 
                     $stmt->bindValue($paramIndex++, $idVal, $type);
                 }
 
                 foreach ($data as $columnName => $value) {
                     if (!is_array($id) || !isset($id[$columnName])) {
-                        $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
+                        $type = $this->columns[$columnName] instanceof ColumnMetadata
+                            ? $this->columns[$columnName]->getType()
+                            : $this->columns[$columnName]['type']
+                        ;
+
+                        $stmt->bindValue($paramIndex++, $value, $type);
                     }
                 }
 
@@ -237,10 +243,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $isVersioned = $this->class->isVersioned;
 
         foreach ($updateData as $tableName => $data) {
-            $tableName = $this->quotedTableMap[$tableName];
-            $versioned = $isVersioned && $this->getVersionedClassMetadata()->getTableName() === $tableName;
+            $quotedTableName = $this->quotedTableMap[$tableName];
+            $versioned       = $isVersioned && $this->getVersionedClassMetadata()->getTableName() === $tableName;
 
-            $this->updateTable($entity, $tableName, $data, $versioned);
+            $this->updateTable($entity, $quotedTableName, $data, $versioned);
         }
 
         // Make sure the table with the version column is updated even if no columns on that
@@ -267,7 +273,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function delete($entity)
     {
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-        $id         = array_combine($this->class->getIdentifierColumnNames(), $identifier);
+        $id         = array_combine(array_keys($this->class->getIdentifierColumns($this->em)), $identifier);
 
         $this->deleteJoinTableRecords($identifier);
 
@@ -400,7 +406,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getLockTablesSql($lockMode)
     {
         $joinSql            = '';
-        $identifierColumns  = $this->class->getIdentifierColumnNames();
+        $identifierColumns  = $this->class->getIdentifierColumns($this->em);
         $baseTableAlias     = $this->getSQLTableAlias($this->class->getTableName());
 
         // INNER JOIN parent tables
@@ -411,7 +417,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumns as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                $quotedColumnName = $idColumn instanceof ColumnMetadata
+                    ? $this->quoteStrategy->getColumnName($idColumn, $this->platform)
+                    : $this->quoteStrategy->getJoinColumnName($idColumn, $this->em->getClassMetadata($idColumn['targetEntity']), $this->platform)
+                ;
+
+                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
             $joinSql .= implode(' AND ', $conditions);
@@ -432,15 +443,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
-        $columnList         = [];
-        $discrMapping       = $this->class->discriminatorColumn;
-        $discrColumn        = $discrMapping['name'];
-        $discrColumnType    = $discrMapping['type'];
-        $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
-
         $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
-        $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
+
+        $columnList = [];
 
         // Add regular columns
         foreach ($this->class->getProperties() as $fieldName => $property) {
@@ -463,7 +468,18 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column (DO NOT ALIAS, see AbstractEntityInheritancePersister#processSQLResult).
-        $columnList[] = $this->getSQLTableAlias($discrMapping['tableName']) . '.' . $discrColumn;
+        $discrColumn        = $this->class->discriminatorColumn;
+        $discrColumnName    = $discrColumn->getColumnName();
+        $discrColumnType    = $discrColumn->getType();
+        $resultColumnName   = $this->platform->getSQLResultCasing($discrColumnName);
+
+        $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumnName, false, $discrColumnType);
+
+        $columnList[] = $discrColumnType->convertToDatabaseValueSQL(
+            $this->getSQLTableAlias($discrColumn->getTableName()) . '.' . $discrColumnName,
+            $this->platform
+        );
 
         // sub tables
         foreach ($this->class->subClasses as $subClassName) {
@@ -505,9 +521,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getInsertColumnList()
     {
         // Identifier columns must always come first in the column list of subclasses.
-        $columns = $this->class->parentClasses
-            ? $this->class->getIdentifierColumnNames()
+        $columns = [];
+        $parentColumns = $this->class->parentClasses
+            ? $this->class->getIdentifierColumns($this->em)
             : [];
+
+        foreach ($parentColumns as $columnName => $column) {
+            $columns[] = $columnName;
+
+            $this->columns[$columnName] = $column;
+        }
 
         foreach ($this->class->reflFields as $name => $field) {
             $property = $this->class->getProperty($name);
@@ -521,21 +544,44 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
-                if ($assoc['type'] & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
-                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
-                        $columns[] = $sourceCol;
+
+                if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                    $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                        $sourceColumn = $joinColumn['name'];
+                        $targetColumn = $joinColumn['referencedColumnName'];
+
+                        $columns[] = $sourceColumn;
+
+                        $this->columns[$sourceColumn] = array_merge(
+                            $joinColumn,
+                            ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em)]
+                        );
                     }
                 }
-            } else if ($this->class->name != $this->class->rootEntityName ||
-                    ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
-                $columns[]                  = $this->quoteStrategy->getColumnName($property, $this->platform);
-                $this->columnTypes[$name]   = $property->getType();
+
+                continue;
+            }
+
+            if ($this->class->name != $this->class->rootEntityName
+                || ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
+                $columnName = $property->getColumnName();
+
+                $columns[] = $columnName;
+
+                $this->columns[$columnName] = $property;
             }
         }
 
         // Add discriminator column if it is the topmost class.
-        if ($this->class->name == $this->class->rootEntityName) {
-            $columns[] = $this->class->discriminatorColumn['name'];
+        if ($this->class->name === $this->class->rootEntityName) {
+            $discrColumn     = $this->class->discriminatorColumn;
+            $discrColumnName = $discrColumn->getColumnName();
+
+            $columns[] = $discrColumnName;
+
+            $this->columns[$discrColumnName] = $discrColumn;
         }
 
         return $columns;
@@ -557,8 +603,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     private function getJoinSql($baseTableAlias)
     {
-        $joinSql          = '';
-        $identifierColumn = $this->class->getIdentifierColumnNames();
+        $joinSql           = '';
+        $identifierColumns = $this->class->getIdentifierColumns($this->em);
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
@@ -567,9 +613,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias   = $this->getSQLTableAlias($parentClass->getTableName());
             $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
+            foreach ($identifierColumns as $idColumn) {
+                $quotedColumnName = $idColumn instanceof ColumnMetadata
+                    ? $this->quoteStrategy->getColumnName($idColumn, $this->platform)
+                    : $this->quoteStrategy->getJoinColumnName($idColumn, $this->em->getClassMetadata($idColumn['targetEntity']), $this->platform)
+                ;
 
-            foreach ($identifierColumn as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
             $joinSql .= implode(' AND ', $conditions);
@@ -582,8 +632,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias  = $this->getSQLTableAlias($subClass->getTableName());
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumn as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            foreach ($identifierColumns as $idColumn) {
+                $quotedColumnName = $idColumn instanceof ColumnMetadata
+                    ? $this->quoteStrategy->getColumnName($idColumn, $this->platform)
+                    : $this->quoteStrategy->getJoinColumnName($idColumn, $this->em->getClassMetadata($idColumn['targetEntity']), $this->platform)
+                ;
+
+                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
             $joinSql .= implode(' AND ', $conditions);

@@ -131,7 +131,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $config = new Configuration();
 
-        $config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
+        //$config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
         $config->setMetadataCacheImpl($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());

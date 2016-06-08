@@ -129,7 +129,7 @@ class SchemaTool
             isset($processedClasses[$class->name]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
-            ($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName)
+            ($class->isInheritanceTypeSingleTable() && $class->name !== $class->rootEntityName)
         );
     }
 
@@ -361,27 +361,27 @@ class SchemaTool
     private function addDiscriminatorColumnDefinition($class, Table $table)
     {
         $discrColumn     = $class->discriminatorColumn;
-        $discrColumnType = $discrColumn['type']->getName();
+        $discrColumnType = $discrColumn->getTypeName();
         $options         = [
-            'notnull' => isset($discrColumn['notnull']) ? $discrColumn['notnull'] : true,
+            'notnull' => ! $discrColumn->isNullable(),
         ];
 
         switch ($discrColumnType) {
             case 'string':
-                $options['length'] = ($discrColumn['length'] !== null) ? $discrColumn['length'] : 255;
+                $options['length'] = $discrColumn->getLength() ?? 255;
                 break;
 
             case 'decimal':
-                $options['scale'] = $discrColumn['scale'];
-                $options['precision'] = $discrColumn['precision'];
+                $options['scale'] = $discrColumn->getScale();
+                $options['precision'] = $discrColumn->getPrecision();
                 break;
         }
 
-        if (isset($discrColumn['columnDefinition'])) {
-            $options['columnDefinition'] = $discrColumn['columnDefinition'];
+        if (!empty($discrColumn->getColumnDefinition())) {
+            $options['columnDefinition'] = $discrColumn->getColumnDefinition();
         }
 
-        $table->addColumn($discrColumn['name'], $discrColumnType, $options);
+        $table->addColumn($discrColumn->getColumnName(), $discrColumnType, $options);
     }
 
     /**
@@ -592,11 +592,14 @@ class SchemaTool
             return [$class, $referencedFieldName];
         }
 
-        if (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
+        $idColumns        = $class->getIdentifierColumns($this->em);
+        $idColumnNameList = array_keys($idColumns);
+
+        if (in_array($referencedColumnName, $idColumnNameList)) {
             // it seems to be an entity as foreign key
             foreach ($class->getIdentifierFieldNames() as $fieldName) {
                 if ($class->hasAssociation($fieldName)
-                    && $class->getSingleAssociationJoinColumnName($fieldName) == $referencedColumnName) {
+                    && $class->getSingleAssociationJoinColumnName($fieldName) === $referencedColumnName) {
                     return $this->getDefiningClass(
                         $this->em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
                         $class->getSingleAssociationReferencedJoinColumnName($fieldName)

@@ -1,12 +1,10 @@
 <?php
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setPrimaryTable(
-    [
-   'name' => 'company_person',
-    ]
-);
+/** @var ClassMetadata $metadata */
+$metadata->setPrimaryTable(['name' => 'company_person']);
 
 $metadata->addNamedNativeQuery(
     [

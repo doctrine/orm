@@ -45,6 +45,7 @@ class PhpExporter extends AbstractExporter
         $lines[] = null;
         $lines[] = 'use Doctrine\DBAL\Types\Type;';
         $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadata;';
+        $lines[] = 'use Doctrine\ORM\Mapping;';
         $lines[] = null;
 
         if ($metadata->isMappedSuperclass) {
@@ -64,7 +65,20 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->discriminatorColumn) {
-            $lines[] = '$metadata->setDiscriminatorColumn(' . $this->_varExport($metadata->discriminatorColumn) . ');';
+            $discrColumn = $metadata->discriminatorColumn;
+
+            $lines[] = '$discrColumn = new Mapping\DiscriminatorColumnMetadata();';
+            $lines[] = '$discrColumn->setTableName("' . $discrColumn->getTableName() . '");';
+            $lines[] = '$discrColumn->setColumnName("' . $discrColumn->getColumnName() . '");';
+            $lines[] = '$discrColumn->setColumnDefinition("' . $discrColumn->getColumnDefinition() . '");';
+            $lines[] = '$discrColumn->setType(Type::getType("' . $discrColumn->getTypeName() . '"));';
+            $lines[] = '$discrColumn->setLength(' . $discrColumn->getLength() . ');';
+            $lines[] = '$discrColumn->setScale(' . $discrColumn->getScale() . ');';
+            $lines[] = '$discrColumn->setPrecision(' . $discrColumn->getPrecision() . ');';
+            $lines[] = '$discrColumn->setOptions(' . $this->_varExport($discrColumn->getOptions()) . ');';
+            $lines[] = '$discrColumn->setNullable(' . $this->_varExport($discrColumn->isNullable()) . ');';
+            $lines[] = '$discrColumn->setUnique(' . $this->_varExport($discrColumn->isUnique()) . ');';
+            $lines[] = '$metadata->setDiscriminatorColumn($discrColumn);';
         }
 
         if ($metadata->discriminatorMap) {

@@ -703,7 +703,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // different configs.
         $config = new Configuration();
         $config = new \Doctrine\ORM\Configuration();
-        $config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
+        //$config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');

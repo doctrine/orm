@@ -27,6 +27,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -137,25 +138,14 @@ class BasicEntityPersister implements EntityPersister
     protected $queuedInserts = [];
 
     /**
-     * The map of column names to DBAL mapping types of all prepared columns used
-     * when INSERTing or UPDATEing an entity.
+     * The map of column names to DBAL columns used when INSERTing or UPDATEing an entity.
      *
-     * @var array
-     *
-     * @see prepareInsertData($entity)
-     * @see prepareUpdateData($entity)
-     */
-    protected $columnTypes = [];
-
-    /**
-     * The map of quoted column names.
-     *
-     * @var array
+     * @var array<ColumnMetadata>
      *
      * @see prepareInsertData($entity)
      * @see prepareUpdateData($entity)
      */
-    protected $quotedColumns = [];
+    protected $columns = [];
 
     /**
      * The INSERT SQL statement used for entities handled by this persister.
@@ -275,8 +265,13 @@ class BasicEntityPersister implements EntityPersister
             if (isset($insertData[$tableName])) {
                 $paramIndex = 1;
 
-                foreach ($insertData[$tableName] as $column => $value) {
-                    $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$column]);
+                foreach ($insertData[$tableName] as $columnName => $value) {
+                    $type = $this->columns[$columnName] instanceof ColumnMetadata
+                        ? $this->columns[$columnName]->getType()
+                        : $this->columns[$columnName]['type']
+                    ;
+
+                    $stmt->bindValue($paramIndex++, $value, $type);
                 }
             }
 
@@ -395,27 +390,21 @@ class BasicEntityPersister implements EntityPersister
         $params = [];
 
         foreach ($updateData as $columnName => $value) {
-            $placeholder = '?';
-            $column      = $columnName;
+            $column = $this->columns[$columnName];
 
-            switch (true) {
-                case isset($this->class->fieldNames[$columnName]):
-                    $fieldName   = $this->class->fieldNames[$columnName];
-                    $property    = $this->class->getProperty($fieldName);
-                    $column      = $this->quoteStrategy->getColumnName($property, $this->platform);
-                    $placeholder = $property->getType()->convertToDatabaseValueSQL('?', $this->platform);
-
-                    break;
-
-                case isset($this->quotedColumns[$columnName]):
-                    $column = $this->quotedColumns[$columnName];
-
-                    break;
+            if ($column instanceof ColumnMetadata) {
+                $quotedColumnName = $this->quoteStrategy->getColumnName($column, $this->platform);
+                $type             = $column->getType();
+                $placeholder      = $type->convertToDatabaseValueSQL('?', $this->platform);
+            } else {
+                $quotedColumnName = $this->quoteStrategy->getJoinColumnName($column, $this->class, $this->platform);
+                $type             = $column['type'];
+                $placeholder      = '?';
             }
 
-            $params[]   = $value;
-            $set[]      = $column . ' = ' . $placeholder;
-            $types[]    = $this->columnTypes[$columnName];
+            $set[]    = $quotedColumnName . ' = ' . $placeholder;
+            $params[] = $value;
+            $types[]  = $type;
         }
 
         $where      = [];
@@ -609,12 +598,12 @@ class BasicEntityPersister implements EntityPersister
         $result       = [];
         $uow          = $this->em->getUnitOfWork();
 
-        if (($versioned = $this->class->isVersioned) != false) {
+        if (($versioned = $this->class->isVersioned) !== false) {
             $versionField = $this->class->versionField;
         }
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if (isset($versionField) && $versionField == $field) {
+            if (isset($versionField) && $versionField === $field) {
                 continue;
             }
 
@@ -628,7 +617,7 @@ class BasicEntityPersister implements EntityPersister
                 $property   = $this->class->getProperty($field);
                 $columnName = $property->getColumnName();
 
-                $this->columnTypes[$columnName] = $property->getType();
+                $this->columns[$columnName] = $property;
 
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
@@ -667,14 +656,14 @@ class BasicEntityPersister implements EntityPersister
             foreach ($assoc['joinColumns'] as $joinColumn) {
                 $sourceColumn = $joinColumn['name'];
                 $targetColumn = $joinColumn['referencedColumnName'];
-                $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                $targetField  = $targetClass->getFieldForColumn($targetColumn);
 
-                $this->quotedColumns[$sourceColumn] = $quotedColumn;
-                $this->columnTypes[$sourceColumn]   = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
+                $this->columns[$sourceColumn] = array_merge(
+                    $joinColumn,
+                    ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em)]
+                );
 
-                $result[$owningTable][$sourceColumn] = $newValId
-                    ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
-                    : null;
+                $result[$owningTable][$sourceColumn] = $newValId ? $newValId[$targetField] : null;
             }
         }
 
@@ -1400,25 +1389,25 @@ class BasicEntityPersister implements EntityPersister
             return $this->insertSql;
         }
 
-        $values  = [];
-        $columns = array_unique($columns);
+        $quotedColumns = [];
+        $values        = [];
 
-        foreach ($columns as $column) {
-            $placeholder = '?';
+        foreach ($columns as $columnName) {
+            $column = $this->columns[$columnName];
 
-            if (isset($this->class->fieldNames[$column])) {
-                $fieldName   = $this->class->fieldNames[$column];
-                $property    = $this->class->getProperty($fieldName);
-                $placeholder = $property->getType()->convertToDatabaseValueSQL('?', $this->platform);
+            if ($column instanceof ColumnMetadata) {
+                $quotedColumns[] = $this->quoteStrategy->getColumnName($column, $this->platform);
+                $values[] = $column->getType()->convertToDatabaseValueSQL('?', $this->platform);
+            } else {
+                $quotedColumns[] = $this->quoteStrategy->getJoinColumnName($column, $this->class, $this->platform);
+                $values[] = $column['type']->convertToDatabaseValueSQL('?', $this->platform);
             }
-
-            $values[] = $placeholder;
         }
 
-        $columns = implode(', ', $columns);
-        $values  = implode(', ', $values);
+        $quotedColumns = implode(', ', $quotedColumns);
+        $values        = implode(', ', $values);
 
-        $this->insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
+        $this->insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $quotedColumns, $values);
 
         return $this->insertSql;
     }
@@ -1448,8 +1437,18 @@ class BasicEntityPersister implements EntityPersister
                 $assoc = $this->class->associationMappings[$name];
 
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                    $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                        $sourceColumn = $joinColumn['name'];
+                        $targetColumn = $joinColumn['referencedColumnName'];
+
+                        $columns[] = $sourceColumn;
+
+                        $this->columns[$sourceColumn] = array_merge(
+                            $joinColumn,
+                            ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em)]
+                        );
                     }
                 }
 
@@ -1457,10 +1456,12 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
-                $property = $this->class->getProperty($name);
+                $property   = $this->class->getProperty($name);
+                $columnName = $property->getColumnName();
 
-                $columns[]                = $this->quoteStrategy->getColumnName($property, $this->platform);
-                $this->columnTypes[$name] = $property->getType();
+                $columns[] = $columnName;
+
+                $this->columns[$columnName] = $property;
             }
         }
 

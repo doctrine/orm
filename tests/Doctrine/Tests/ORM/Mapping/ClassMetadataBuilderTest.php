@@ -202,16 +202,14 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testSetDiscriminatorColumn()
     {
         self::assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
-        self::assertEquals(
-            [
-                'fieldName' => 'discr',
-                'name'      => 'discr',
-                'type'      => Type::getType('string'),
-                'length'    => '124',
-                'tableName' => 'CmsUser',
-            ],
-            $this->cm->discriminatorColumn
-        );
+        self::assertNotNull($this->cm->discriminatorColumn);
+
+        $discrColumn = $this->cm->discriminatorColumn;
+
+        self::assertEquals('CmsUser', $discrColumn->getTableName());
+        self::assertEquals('discr', $discrColumn->getColumnName());
+        self::assertEquals('string', $discrColumn->getTypeName());
+        self::assertEquals(124, $discrColumn->getLength());
     }
 
     public function testAddDiscriminatorMapClass()
@@ -306,9 +304,9 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->generatedValue()
             ->build();
 
-        self::assertNotNull($this->cm->getProperty('name'));
+        self::assertNotNull($this->cm->getProperty('id'));
 
-        $property = $this->cm->getProperty('name');
+        $property = $this->cm->getProperty('id');
 
         self::assertEquals(['id'], $this->cm->identifier);
         self::assertEquals('id', $property->getName());
@@ -325,9 +323,9 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->option('unsigned', true)
             ->build();
 
-        self::assertNotNull($this->cm->getProperty('name'));
+        self::assertNotNull($this->cm->getProperty('state'));
 
-        $property = $this->cm->getProperty('name');
+        $property = $this->cm->getProperty('state');
 
         self::assertEquals('state', $property->getName());
         self::assertEquals($this->cm, $property->getDeclaringClass());

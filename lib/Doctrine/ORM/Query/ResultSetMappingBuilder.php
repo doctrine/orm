@@ -286,10 +286,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $this->addEntityResult($class->name, $alias);
 
         if ($classMetadata->discriminatorColumn) {
-            $discrColumn = $classMetadata->discriminatorColumn;
+            $discrColumn     = $classMetadata->discriminatorColumn;
+            $discrColumnName = $discrColumn->getColumnName();
+            $discrColumnType = $discrColumn->getType();
 
-            $this->setDiscriminatorColumn($alias, $discrColumn['name']);
-            $this->addMetaResult($alias, $discrColumn['name'], $discrColumn['fieldName'], false, $discrColumn['type']);
+            $this->setDiscriminatorColumn($alias, $discrColumnName);
+            $this->addMetaResult($alias, $discrColumnName, $discrColumnName, false, $discrColumnType);
         }
 
         foreach ($classMetadata->getColumnNames() as $key => $columnName) {
@@ -379,11 +381,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
     public function addNamedNativeQueryEntityResultMapping(ClassMetadata $classMetadata, array $entityMapping, $alias)
     {
         if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
-            $discriminatorColumn = $entityMapping['discriminatorColumn'];
-            $discriminatorType   = $classMetadata->discriminatorColumn['type'];
+            $discrColumn     = $classMetadata->discriminatorColumn;
+            $discrColumnName = $entityMapping['discriminatorColumn'];
+            $discrColumnType = $discrColumn->getType();
 
-            $this->setDiscriminatorColumn($alias, $discriminatorColumn);
-            $this->addMetaResult($alias, $discriminatorColumn, $discriminatorColumn, false, $discriminatorType);
+            $this->setDiscriminatorColumn($alias, $discrColumnName);
+            $this->addMetaResult($alias, $discrColumnName, $discrColumnName, false, $discrColumnType);
         }
 
         if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {

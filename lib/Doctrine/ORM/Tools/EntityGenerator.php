@@ -1136,9 +1136,9 @@ public function __construct(<params>)
 
             $columnDefinition = sprintf(
                 'name="%s", type="%s", length=%d',
-                $discrColumn['name'],
-                $discrColumn['type']->getName(),
-                $discrColumn['length']
+                $discrColumn->getColumnName(),
+                $discrColumn->getTypeName(),
+                $discrColumn->getLength()
             );
 
             return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
