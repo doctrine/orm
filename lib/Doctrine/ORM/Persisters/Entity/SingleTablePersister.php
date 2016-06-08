@@ -38,14 +38,6 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getDiscriminatorColumnTableName()
-    {
-        return $this->class->getTableName();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function getSelectColumnsSQL()
     {
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
@@ -58,15 +50,16 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
 
          // Append discriminator column
-        $discrColumn     = $this->class->discriminatorColumn['name'];
-        $discrColumnType = $this->class->discriminatorColumn['type'];
-
-        $columnList[]   = $tableAlias . '.' . $discrColumn;
-
-        $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
+        $discrColumn      = $this->class->discriminatorColumn;
+        $discrColumnName  = $discrColumn->getColumnName();
+        $discrColumnType  = $discrColumn->getType();
+        $resultColumnName = $this->platform->getSQLResultCasing($discrColumnName);
+        $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
 
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumnName, false, $discrColumnType);
+
+        $columnList[] = $discrColumnType->convertToDatabaseValueSQL($tableAlias . '.' . $quotedColumnName, $this->platform);
 
         // Append subclass columns
         foreach ($this->class->subClasses as $subClassName) {
@@ -110,7 +103,12 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $columns = parent::getInsertColumnList();
 
         // Add discriminator column to the INSERT SQL
-        $columns[] = $this->class->discriminatorColumn['name'];
+        $discrColumn     = $this->class->discriminatorColumn;
+        $discrColumnName = $discrColumn->getColumnName();
+
+        $columns[] = $discrColumnName;
+
+        $this->columns[$discrColumnName] = $discrColumn;
 
         return $columns;
     }
@@ -168,11 +166,16 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->conn->quote($discrValues[$subclassName]);
         }
 
-        $values     = implode(', ', $values);
-        $discColumn = $this->class->discriminatorColumn['name'];
-        $tableAlias = $this->getSQLTableAlias($this->class->getTableName());
+        $discrColumn      = $this->class->discriminatorColumn;
+        $discrColumnType  = $discrColumn->getType();
+        $tableAlias       = $this->getSQLTableAlias($discrColumn->getTableName());
+        $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
 
-        return $tableAlias . '.' . $discColumn . ' IN (' . $values . ')';
+        return sprintf(
+            '%s IN (%s)',
+            $discrColumnType->convertToDatabaseValueSQL($tableAlias . '.' . $quotedColumnName, $this->platform),
+            implode(', ', $values)
+        );
     }
 
     /**

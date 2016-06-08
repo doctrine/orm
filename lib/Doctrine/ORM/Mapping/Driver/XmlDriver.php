@@ -19,13 +19,13 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\DBAL\Types\Type;
-use SimpleXMLElement;
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
+use SimpleXMLElement;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -167,30 +167,26 @@ class XmlDriver extends FileDriver
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
 
-            if ($metadata->inheritanceType != Metadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+                $discrColumn = new DiscriminatorColumnMetadata();
+
+                $discrColumn->setTableName($metadata->getTableName());
+
                 // Evaluate <discriminator-column...>
                 if (isset($xmlRoot->{'discriminator-column'})) {
-                    $discrColumn = $xmlRoot->{'discriminator-column'};
+                    $mapping = $xmlRoot->{'discriminator-column'};
 
-                    $metadata->setDiscriminatorColumn(
-                        [
-                            'name'             => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type'             => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length'           => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
-                            'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
-                            'tableName'        => $metadata->getTableName(),
-                        ]
-                    );
+                    $discrColumn->setColumnName(isset($mapping['name']) ? (string) $mapping['name'] : 'dtype');
+                    $discrColumn->setType(Type::getType(isset($mapping['type']) ? (string) $mapping['type'] : 'string'));
+                    $discrColumn->setLength(isset($mapping['length']) ? (string) $mapping['length'] : 255);
+                    $discrColumn->setColumnDefinition(isset($mapping['column-definition']) ? (string) $mapping['column-definition'] : null);
                 } else {
-                    $metadata->setDiscriminatorColumn(
-                        [
-                            'name'      => 'dtype',
-                            'type'      => 'string',
-                            'length'    => 255,
-                            'tableName' => $metadata->getTableName(),
-                        ]
-                    );
+                    $discrColumn->setColumnName('dtype');
+                    $discrColumn->setType(Type::getType('string'));
+                    $discrColumn->setLength(255);
                 }
+
+                $metadata->setDiscriminatorColumn($discrColumn);
 
                 // Evaluate <discriminator-map...>
                 if (isset($xmlRoot->{'discriminator-map'})) {

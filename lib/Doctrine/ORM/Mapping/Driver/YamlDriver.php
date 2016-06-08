@@ -20,10 +20,10 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -176,29 +176,26 @@ class YamlDriver extends FileDriver
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
 
-            if ($metadata->inheritanceType != Metadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+                $discrColumn = new DiscriminatorColumnMetadata();
+
+                $discrColumn->setTableName($metadata->getTableName());
+
                 // Evaluate discriminatorColumn
                 if (isset($element['discriminatorColumn'])) {
-                    $discrColumn = $element['discriminatorColumn'];
-                    $metadata->setDiscriminatorColumn(
-                        [
-                            'name'             => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type'             => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length'           => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
-                            'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null,
-                            'tableName'        => $metadata->getTableName(),
-                        ]
-                    );
+                    $mapping = $element['discriminatorColumn'];
+
+                    $discrColumn->setColumnName(isset($mapping['name']) ? (string) $mapping['name'] : 'dtype');
+                    $discrColumn->setType(Type::getType(isset($mapping['type']) ? (string) $mapping['type'] : 'string'));
+                    $discrColumn->setLength(isset($mapping['length']) ? (string) $mapping['length'] : 255);
+                    $discrColumn->setColumnDefinition(isset($mapping['columnDefinition']) ? (string) $mapping['columnDefinition'] : null);
                 } else {
-                    $metadata->setDiscriminatorColumn(
-                        [
-                            'name'      => 'dtype',
-                            'type'      => 'string',
-                            'length'    => 255,
-                            'tableName' => $metadata->getTableName(),
-                        ]
-                    );
+                    $discrColumn->setColumnName('dtype');
+                    $discrColumn->setType(Type::getType('string'));
+                    $discrColumn->setLength(255);
                 }
+
+                $metadata->setDiscriminatorColumn($discrColumn);
 
                 // Evaluate discriminatorMap
                 if (isset($element['discriminatorMap'])) {
