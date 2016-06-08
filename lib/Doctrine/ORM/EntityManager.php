@@ -821,9 +821,9 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
-     * @param Configuration $config       The Configuration instance to use.
-     * @param EventManager  $eventManager The EventManager instance to use.
+     * @param array|Connection $conn         An array with the connection parameters or an existing Connection instance.
+     * @param Configuration    $config       The Configuration instance to use.
+     * @param EventManager     $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
@@ -844,26 +844,21 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Factory method to create Connection instances.
      *
-     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
-     * @param Configuration $config       The Configuration instance to use.
-     * @param EventManager  $eventManager The EventManager instance to use.
+     * @param array|Connection $conn         An array with the connection parameters or an existing Connection instance.
+     * @param Configuration    $config       The Configuration instance to use.
+     * @param EventManager     $eventManager The EventManager instance to use.
      *
      * @return Connection
      *
-     * @throws ORMException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \InvalidArgumentException
      */
     protected static function createConnection($conn, Configuration $config, EventManager $eventManager = null)
     {
         if (is_array($conn)) {
-            $conn = DriverManager::getConnection(
+            return DriverManager::getConnection(
                 $conn, $config, ($eventManager ?: new EventManager())
             );
-        } elseif ($conn instanceof Connection) {
-            if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                throw ORMException::mismatchedEventManager();
-            }
-        } else {
+        } elseif ( ! $conn instanceof Connection) {
             throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
