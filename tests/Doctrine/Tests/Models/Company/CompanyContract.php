@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\Models\Company;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity
@@ -135,11 +136,14 @@ abstract class CompanyContract
     {
         $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
         $metadata->setPrimaryTable(array('name' => 'company_contracts'));
-        $metadata->setDiscriminatorColumn(array(
-            'name'      => 'discr',
-            'type'      => 'string',
-            'tableName' => $metadata->getTableName(),
-        ));
+
+        $discrColumn = new Mapping\DiscriminatorColumnMetadata();
+
+        $discrColumn->setTableName($metadata->getTableName());
+        $discrColumn->setColumnName('discr');
+        $discrColumn->setType(Type::getType('string'));
+
+        $metadata->setDiscriminatorColumn($discrColumn);
 
         $metadata->addProperty('id', Type::getType('integer'), array(
             'id' => true,

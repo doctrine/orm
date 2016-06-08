@@ -15,8 +15,27 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PhraseType'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Definition'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Lemma'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Type')
+            ));
+        } catch (\Exception $e) {
+            // Automatically mark failure
+            self::fail($e->getMessage());
+        }
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        try {
+            $this->_schemaTool->dropSchema(array(
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PhraseType'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Definition'),
@@ -148,7 +167,6 @@ class Lemma {
 	private $lemma;
 
 	/**
-	 * @var kateglo\application\utilities\collections\ArrayCollection
 	 * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
 	 */
 	private $types;
@@ -156,7 +174,6 @@ class Lemma {
 	public function __construct() {
 		$this->types = new ArrayCollection();
 	}
-
 
 	/**
 	 *
@@ -184,8 +201,6 @@ class Lemma {
 	}
 
 	/**
-     *
-     * @param kateglo\application\models\Type $type
      * @return void
      */
 	public function addType(Type $type){
@@ -196,8 +211,6 @@ class Lemma {
     }
 
     /**
-     *
-     * @param kateglo\application\models\Type $type
      * @return void
      */
     public function removeType(Type $type)

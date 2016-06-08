@@ -4,7 +4,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
 
 /* @var $metadata ClassMetadata */
-$metadata->addProperty('id', Type::getType('integer'), array(
+$metadata->addProperty('id', Type::getType('string'), array(
    'id' => true,
 ));
 

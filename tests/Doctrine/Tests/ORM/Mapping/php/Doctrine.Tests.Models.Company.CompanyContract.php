@@ -1,17 +1,20 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 
 /* @var $metadata ClassMetadata */
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
 
 $metadata->setPrimaryTable(['name' => 'company_contracts']);
 
-$metadata->setDiscriminatorColumn(array(
-    'name' => 'discr',
-    'type' => 'string',
-));
+$discrColumn = new Mapping\DiscriminatorColumnMetadata();
+
+$discrColumn->setColumnName('discr');
+$discrColumn->setType(Type::getType('string'));
+
+$metadata->setDiscriminatorColumn($discrColumn);
 
 $metadata->setDiscriminatorMap(array(
     "fix"       => "CompanyFixContract",

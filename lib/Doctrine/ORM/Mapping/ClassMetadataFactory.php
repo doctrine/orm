@@ -137,8 +137,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
-            $class->setDiscriminatorColumn($parent->discriminatorColumn);
-            $class->setDiscriminatorMap($parent->discriminatorMap);
+
+            if ($parent->discriminatorColumn) {
+                $class->setDiscriminatorColumn($parent->discriminatorColumn);
+                $class->setDiscriminatorMap($parent->discriminatorMap);
+            }
+
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
@@ -318,7 +322,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // verify inheritance
         if ( ! $class->isMappedSuperclass && ! $class->isInheritanceTypeNone()) {
             if ( ! $parent) {
-                if (count($class->discriminatorMap) == 0) {
+                if (count($class->discriminatorMap) === 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);
                 }
 
@@ -326,7 +330,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
             }
-        } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
+        } else if ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
         }

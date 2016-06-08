@@ -13,32 +13,33 @@ class DDC2138Test extends OrmFunctionalTestCase
      */
     public function testForeignKeyOnSTIWithMultipleMapping()
     {
-        $em = $this->_em;
-        $schemaTool = new SchemaTool($em);
+        $schema = $this->_schemaTool->getSchemaFromMetadata(array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2138User'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2138Structure'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedObject'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedStructure'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedUser')
+        ));
 
-        $classes = array(
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138User'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138Structure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedObject'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedStructure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedUser')
-        );
-
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
         self::assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
 
         /* @var $table \Doctrine\DBAL\Schema\Table */
         $table = ($schema->getTable('users_followed_objects'));
+
         self::assertTrue($table->columnsAreIndexed(array('object_id')));
         self::assertTrue($table->columnsAreIndexed(array('user_id')));
+
         $foreignKeys = $table->getForeignKeys();
+
         self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         /* @var $fk \Doctrine\DBAL\Schema\ForeignKeyConstraint */
         $fk = reset($foreignKeys);
+
         self::assertEquals('users', $fk->getForeignTableName());
 
         $localColumns = $fk->getLocalColumns();
+
         self::assertContains('user_id', $localColumns);
         self::assertCount(1, $localColumns);
     }

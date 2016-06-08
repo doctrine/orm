@@ -1,8 +1,24 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
 class ColumnMetadata
@@ -63,21 +79,7 @@ class ColumnMetadata
     protected $unique = false;
 
     /**
-     * ColumnMetadata constructor.
-     *
-     * @param string $tableName
-     * @param string $fieldName
-     * @param Type   $type
-     */
-    public function __construct($tableName, $fieldName, Type $type)
-    {
-        $this->tableName = $tableName;
-        $this->fieldName = $fieldName;
-        $this->type      = $type;
-    }
-
-    /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getTableName()
     {
@@ -85,7 +87,15 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $tableName
+     */
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
+    }
+
+    /**
+     * @return string
      */
     public function getColumnName()
     {
@@ -93,7 +103,15 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $columnName
+     */
+    public function setColumnName($columnName)
+    {
+        $this->columnName = $columnName;
+    }
+
+    /**
+     * @return Type
      */
     public function getType()
     {
@@ -101,7 +119,15 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param Type $type
+     */
+    public function setType(Type $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
      */
     public function getTypeName()
     {
@@ -109,7 +135,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getColumnDefinition()
     {
@@ -117,7 +143,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $columnDefinition
      */
     public function setColumnDefinition($columnDefinition)
     {
@@ -189,7 +215,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param boolean $isPrimaryKey
      */
     public function setPrimaryKey($isPrimaryKey)
     {
@@ -197,7 +223,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @return boolean
      */
     public function isPrimaryKey()
     {
@@ -205,7 +231,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param boolean $isNullable
      */
     public function setNullable($isNullable)
     {
@@ -213,7 +239,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @return boolean
      */
     public function isNullable()
     {
@@ -221,7 +247,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @param boolean $isUnique
      */
     public function setUnique($isUnique)
     {
@@ -229,7 +255,7 @@ class ColumnMetadata
     }
 
     /**
-     * {@inheritdoc}
+     * @return boolean
      */
     public function isUnique()
     {
