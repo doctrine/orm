@@ -30,6 +30,10 @@ Doctrine\Tests\ORM\Tools\Export\User:
       inversedBy: user
       orphanRemoval: true
       fetch: EAGER
+    cart:
+      targetEntity: Doctrine\Tests\ORM\Tools\Export\Cart
+      mappedBy: user
+      cascade: [ remove ]
   manyToOne:
     mainGroup:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Group

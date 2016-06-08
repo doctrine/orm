@@ -57,6 +57,18 @@ $metadata->mapOneToOne(array(
    'orphanRemoval' => true,
    'fetch' => ClassMetadataInfo::FETCH_EAGER,
   ));
+$metadata->mapOneToOne(array(
+    'fieldName' => 'cart',
+    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Cart',
+    'mappedBy' => 'user',
+    'cascade' =>
+        array(
+            0 => 'persist',
+        ),
+    'inversedBy' => NULL,
+    'orphanRemoval' => false,
+    'fetch' => ClassMetadataInfo::FETCH_EAGER,
+));
 $metadata->mapOneToMany(array(
    'fieldName' => 'phonenumbers',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Phonenumber',
