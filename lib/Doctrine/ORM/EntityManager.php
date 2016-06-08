@@ -821,7 +821,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param array|Connection $conn         An array with the connection parameters or an existing Connection instance.
+     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
      * @param Configuration    $config       The Configuration instance to use.
      * @param EventManager     $eventManager The EventManager instance to use.
      *
@@ -830,21 +830,21 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($conn, Configuration $config, EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, EventManager $eventManager = null)
     {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
 
-        $conn = static::createConnection($conn, $config, $eventManager);
+        $connection = static::createConnection($connection, $config, $eventManager);
 
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        return new EntityManager($connection, $config, $connection->getEventManager());
     }
 
     /**
      * Factory method to create Connection instances.
      *
-     * @param array|Connection $conn         An array with the connection parameters or an existing Connection instance.
+     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
      * @param Configuration    $config       The Configuration instance to use.
      * @param EventManager     $eventManager The EventManager instance to use.
      *
@@ -852,17 +852,17 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @throws \InvalidArgumentException
      */
-    protected static function createConnection($conn, Configuration $config, EventManager $eventManager = null)
+    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
     {
-        if (is_array($conn)) {
-            return DriverManager::getConnection(
-                $conn, $config, ($eventManager ?: new EventManager())
-            );
-        } elseif ( ! $conn instanceof Connection) {
-            throw new \InvalidArgumentException("Invalid argument: " . $conn);
+        if (is_array($connection)) {
+            return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
         }
 
-        return $conn;
+        if ( ! $connection instanceof Connection) {
+            throw new \InvalidArgumentException("Invalid argument: " . $connection);
+        }
+
+        return $connection;
     }
 
     /**
