@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -245,14 +246,19 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         // 1) Build temporary table DDL
         $tempTable         = $this->platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
-        $idColumnNames     = $rootClass->getIdentifierColumnNames();
-        $idColumnList      = implode(', ', $idColumnNames);
+        $idColumns         = $rootClass->getIdentifierColumns($this->em);
+        $idColumnNameList  = implode(', ', array_keys($idColumns));
         $columnDefinitions = [];
 
-        foreach ($idColumnNames as $idColumnName) {
-            $columnDefinitions[$idColumnName] = array(
+        foreach ($idColumns as $columnName => $column) {
+            $type = $column instanceof ColumnMetadata
+                ? $column->getType()
+                : $column['type']
+            ;
+
+            $columnDefinitions[$columnName] = array(
                 'notnull' => true,
-                'type'    => PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em),
+                'type'    => $type,
             );
         }
 
@@ -267,7 +273,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
         )->setParameter('owner', $collection->getOwner());
 
-        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $query->getSQL();
+        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ') ' . $query->getSQL();
         $parameters = array_values($sourceClass->getIdentifierValues($collection->getOwner()));
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
@@ -276,8 +282,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         foreach (array_reverse($classNames) as $className) {
             $tableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($className), $this->platform);
-            $statement = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnList . ')'
-                . ' IN (SELECT ' . $idColumnList . ' FROM ' . $tempTable . ')';
+            $statement = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnNameList . ')'
+                . ' IN (SELECT ' . $idColumnNameList . ' FROM ' . $tempTable . ')';
 
             $this->conn->executeUpdate($statement);
         }

@@ -1,18 +1,20 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 
 /* @var ClassMetadata $metadata */
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
 
-$metadata->setDiscriminatorColumn(array(
-    'name'      => 'dtype',
-    'type'      => 'string',
-    'length'    => 255,
-    'fieldName' => 'dtype',
-    'tableName' => $metadata->getTableName(),
-));
+$discrColumn = new Mapping\DiscriminatorColumnMetadata();
+
+$discrColumn->setTableName($metadata->getTableName());
+$discrColumn->setColumnName('dtype');
+$discrColumn->setType(Type::getType('string'));
+$discrColumn->setLength(255);
+
+$metadata->setDiscriminatorColumn($discrColumn);
 
 $metadata->setDiscriminatorMap(array(
     'cat' => 'Doctrine\\Tests\\ORM\\Mapping\\Cat',
@@ -21,7 +23,7 @@ $metadata->setDiscriminatorMap(array(
 
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
-$metadata->addProperty('id', Type::getType('string'), array(
+$metadata->addProperty('id', Type::getType('integer'), array(
     'length'   => NULL,
     'nullable' => false,
     'unique'   => false,

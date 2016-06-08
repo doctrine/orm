@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -70,15 +71,15 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
         $rootClass       = $em->getClassMetadata($primaryClass->rootEntityName);
 
-        $tempTable      = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
-        $idColumnNames  = $rootClass->getIdentifierColumnNames();
-        $idColumnList   = implode(', ', $idColumnNames);
+        $tempTable        = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
+        $idColumns        = $rootClass->getIdentifierColumns($em);
+        $idColumnNameList = implode(', ', array_keys($idColumns));
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $primaryDqlAlias);
 
-        $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
-                . ' SELECT t0.' . implode(', t0.', $idColumnNames);
+        $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
+                . ' SELECT t0.' . implode(', t0.', array_keys($idColumns));
 
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
         $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
@@ -90,25 +91,31 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         }
 
         // 2. Create ID subselect statement used in DELETE ... WHERE ... IN (subselect)
-        $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
+        $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
 
         // 3. Create and store DELETE statements
         $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
         foreach (array_reverse($classNames) as $className) {
             $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className), $platform);
             $this->_sqlStatements[] = 'DELETE FROM ' . $tableName
-                    . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
+                    . ' WHERE (' . $idColumnNameList . ') IN (' . $idSubselect . ')';
         }
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = array();
 
-        foreach ($idColumnNames as $idColumnName) {
-            $columnDefinitions[$idColumnName] = array(
+        foreach ($idColumns as $columnName => $column) {
+            $type = $column instanceof ColumnMetadata
+                ? $column->getType()
+                : $column['type']
+            ;
+
+            $columnDefinitions[$columnName] = array(
                 'notnull' => true,
-                'type'    => PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em),
+                'type'    => $type,
             );
         }
+
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
         $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
@@ -29,14 +30,20 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
+        $discrColumn = new DiscriminatorColumnMetadata();
+
+        $discrColumn->setColumnName('disc');
+        $discrColumn->setType(Type::getType('integer'));
+
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");
-        $cm->setDiscriminatorColumn(array('name' => 'disc', 'type' => 'integer'));
+        $cm->setDiscriminatorColumn($discrColumn);
         $cm->mapOneToOne(array('fieldName' => 'phonenumbers', 'targetEntity' => 'CmsAddress', 'mappedBy' => 'foo'));
         $cm->markReadOnly();
         $cm->addNamedQuery(array('name' => 'dql', 'query' => 'foo'));
+
         self::assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
@@ -58,15 +65,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         );
         self::assertEquals(array('UserParent'), $cm->parentClasses);
         self::assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->customRepositoryClassName);
-        self::assertEquals(
-            array(
-                'name'      => 'disc',
-                'type'      => Type::getType('integer'),
-                'fieldName' => 'disc',
-                'tableName' => 'CmsUser',
-            ),
-            $cm->discriminatorColumn
-        );
+        self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
         self::assertEquals(1, count($cm->associationMappings));
 
@@ -202,7 +201,12 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
         $metadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $property = new FieldMetadata($metadata, 'foo', Type::getType('string'));
+        $property = new FieldMetadata();
+
+        $property->setDeclaringClass($metadata);
+        $property->setCurrentClass($metadata);
+        $property->setName('foo');
+        $property->setType(Type::getType('string'));
 
         $metadata->initializeReflection(new RuntimeReflectionService());
         $metadata->setVersionMetadata($property);
@@ -252,7 +256,14 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->addProperty('name', Type::getType('string'));
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
-        $cm->setDiscriminatorColumn(array('name' => 'name'));
+
+        $discrColumn = new DiscriminatorColumnMetadata();
+
+        $discrColumn->setColumnName('name');
+        $discrColumn->setType(Type::getType('string'));
+        $discrColumn->setLength(255);
+
+        $cm->setDiscriminatorColumn($discrColumn);
     }
 
     public function testDuplicateColumnName_DiscriminatorColumn2_ThrowsMappingException()
@@ -260,7 +271,13 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->setDiscriminatorColumn(array('name' => 'name'));
+        $discrColumn = new DiscriminatorColumnMetadata();
+
+        $discrColumn->setColumnName('name');
+        $discrColumn->setType(Type::getType('string'));
+        $discrColumn->setLength(255);
+
+        $cm->setDiscriminatorColumn($discrColumn);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
 
@@ -919,17 +936,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
                 )
             ),
         ));
-    }
-
-    /**
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Discriminator column name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
-     */
-    public function testNameIsMandatoryForDiscriminatorColumnsMappingException()
-    {
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->setDiscriminatorColumn(array());
     }
 
     /**
