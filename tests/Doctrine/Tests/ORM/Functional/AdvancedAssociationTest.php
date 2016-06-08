@@ -15,14 +15,35 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(Phrase::class),
-                $this->_em->getClassMetadata(PhraseType::class),
-                $this->_em->getClassMetadata(Definition::class),
-                $this->_em->getClassMetadata(Lemma::class),
-                $this->_em->getClassMetadata(Type::class)
+                    $this->_em->getClassMetadata(Phrase::class),
+                    $this->_em->getClassMetadata(PhraseType::class),
+                    $this->_em->getClassMetadata(Definition::class),
+                    $this->_em->getClassMetadata(Lemma::class),
+                    $this->_em->getClassMetadata(Type::class)
+                ]
+            );
+        } catch (\Exception $e) {
+            // Automatically mark failure
+            self::fail($e->getMessage());
+        }
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        try {
+            $this->_schemaTool->dropSchema(
+                [
+                    $this->_em->getClassMetadata(Phrase::class),
+                    $this->_em->getClassMetadata(PhraseType::class),
+                    $this->_em->getClassMetadata(Definition::class),
+                    $this->_em->getClassMetadata(Lemma::class),
+                    $this->_em->getClassMetadata(Type::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -150,7 +171,6 @@ class Lemma {
 	private $lemma;
 
 	/**
-	 * @var kateglo\application\utilities\collections\ArrayCollection
 	 * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
 	 */
 	private $types;
@@ -158,7 +178,6 @@ class Lemma {
 	public function __construct() {
 		$this->types = new ArrayCollection();
 	}
-
 
 	/**
 	 *
@@ -186,8 +205,6 @@ class Lemma {
 	}
 
 	/**
-     *
-     * @param kateglo\application\models\Type $type
      * @return void
      */
 	public function addType(Type $type){
@@ -198,8 +215,6 @@ class Lemma {
     }
 
     /**
-     *
-     * @param kateglo\application\models\Type $type
      * @return void
      */
     public function removeType(Type $type)

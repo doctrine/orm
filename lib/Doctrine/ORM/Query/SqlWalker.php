@@ -458,12 +458,18 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
-            $quotedColumnName = $this->platform->quoteIdentifier($class->discriminatorColumn['name']);
+            $discrColumn     = $class->discriminatorColumn;
+            $discrColumnType = $discrColumn->getType();
+            $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
             $sqlTableAlias    = ($this->useSqlTableAliases)
-                ? $this->getSQLTableAlias($class->discriminatorColumn['tableName'], $dqlAlias) . '.'
+                ? $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias) . '.'
                 : '';
 
-            $sqlParts[] = $sqlTableAlias . $quotedColumnName . ' IN (' . implode(', ', $values) . ')';
+            $sqlParts[] = sprintf(
+                '%s IN (%s)',
+                $discrColumnType->convertToDatabaseValueSQL($sqlTableAlias . $quotedColumnName, $this->platform),
+                implode(', ', $values)
+            );
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -714,11 +720,13 @@ class SqlWalker implements TreeWalker
             $this->query->setHint(self::HINT_DISTINCT, true);
         }
 
-        $addMetaColumns = ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
+        $addMetaColumns = (
+            ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
             $this->query->getHydrationMode() == Query::HYDRATE_OBJECT
-            ||
+        ) || (
             $this->query->getHydrationMode() != Query::HYDRATE_OBJECT &&
-            $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
+            $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS)
+        );
 
         foreach ($this->selectedClasses as $selectedClass) {
             $class       = $selectedClass['class'];
@@ -739,17 +747,21 @@ class SqlWalker implements TreeWalker
 
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                 // Add discriminator columns to SQL
-                $rootClass        = $this->em->getClassMetadata($class->rootEntityName);
-                $discrColumn      = $rootClass->discriminatorColumn;
-                $tblAlias         = $this->getSQLTableAlias($discrColumn['tableName'], $dqlAlias);
-                $discrColumn      = $rootClass->discriminatorColumn;
-                $columnAlias      = $this->getSQLColumnAlias($discrColumn['name']);
-                $quotedColumnName = $this->platform->quoteIdentifier($discrColumn['name']);
+                $discrColumn      = $class->discriminatorColumn;
+                $discrColumnName  = $discrColumn->getColumnName();
+                $discrColumnType  = $discrColumn->getType();
+                $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
+                $sqlTableAlias    = $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias);
+                $sqlColumnAlias   = $this->getSQLColumnAlias($discrColumnName);
 
-                $sqlSelectExpressions[] = $tblAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+                $sqlSelectExpressions[] = sprintf(
+                    '%s AS %s',
+                    $discrColumnType->convertToDatabaseValueSQL($sqlTableAlias . '.' . $quotedColumnName, $this->platform),
+                    $sqlColumnAlias
+                );
 
-                $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName'], false, $discrColumn['type']);
+                $this->rsm->setDiscriminatorColumn($dqlAlias, $sqlColumnAlias);
+                $this->rsm->addMetaResult($dqlAlias, $sqlColumnAlias, $discrColumnName, false, $discrColumnType);
             }
 
             // Add foreign key columns to SQL, if necessary
@@ -2045,23 +2057,22 @@ class SqlWalker implements TreeWalker
      */
     public function walkInstanceOfExpression($instanceOfExpr)
     {
-        $sql = '';
+        $dqlAlias         = $instanceOfExpr->identificationVariable;
+        $class            = $this->queryComponents[$dqlAlias]['metadata'];
+        $discrClass       = $this->em->getClassMetadata($class->rootEntityName);
+        $discrColumn      = $class->discriminatorColumn;
+        $discrColumnType  = $discrColumn->getType();
+        $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
+        $sqlTableAlias    = $this->useSqlTableAliases
+            ? $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias) . '.'
+            : '';
 
-        $dqlAlias = $instanceOfExpr->identificationVariable;
-        $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-
-        if ($class->discriminatorColumn) {
-            $discrClass = $this->em->getClassMetadata($class->rootEntityName);
-        }
-
-        if ($this->useSqlTableAliases) {
-            $sql .= $this->getSQLTableAlias($discrClass->getTableName(), $dqlAlias) . '.';
-        }
-
-        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
-        $sql .= $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr);
-
-        return $sql;
+        return sprintf(
+            '%s %sIN %s',
+            $discrColumnType->convertToDatabaseValueSQL($sqlTableAlias . $quotedColumnName, $this->platform),
+            ($instanceOfExpr->not ? 'NOT ' : ''),
+            $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr)
+        );
     }
 
     /**
@@ -2295,33 +2306,43 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * @param ClassMetadataInfo $rootClass
+     * @param ClassMetadata            $rootClass
      * @param AST\InstanceOfExpression $instanceOfExpr
+     *
      * @return string The list in parentheses of valid child discriminators from the given class
+     *
      * @throws QueryException
      */
-    private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $rootClass, AST\InstanceOfExpression $instanceOfExpr): string
+    private function getChildDiscriminatorsFromClassMetadata(ClassMetadata $rootClass, AST\InstanceOfExpression $instanceOfExpr) : string
     {
         $sqlParameterList = [];
         $discriminators = [];
+
         foreach ($instanceOfExpr->value as $parameter) {
             if ($parameter instanceof AST\InputParameter) {
-                $this->rsm->discriminatorParameters[$parameter->name] = $parameter->name;
-                $sqlParameterList[] = $this->walkInParameter($parameter);
+                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
+
+                $sqlParameterList[] = $this->walkInputParameter($parameter);
+
                 continue;
             }
 
-            $metadata = $this->em->getClassMetadata($parameter);
+            // Get name from ClassMetadata to resolve aliases.
+            $entityClass        = $this->em->getClassMetadata($parameter);
+            $entityClassName    = $entityClass->name;
+            $discriminatorValue = $class->discriminatorValue;
 
-            if ($metadata->getName() !== $rootClass->name && ! $metadata->getReflectionClass()->isSubclassOf($rootClass->name)) {
-                throw QueryException::instanceOfUnrelatedClass($parameter, $rootClass->name);
+            if ($entityClassName !== $rootClass->name) {
+                if (! $entityClass->getReflectionClass()->isSubclassOf($rootClass->name)) {
+                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $rootClass->name);
+                }
+
+                $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($entityClass, $this->em);
             }
-
-            $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($metadata, $this->em);
         }
 
-        foreach (array_keys($discriminators) as $dis) {
-            $sqlParameterList[] = $this->conn->quote($dis);
+        foreach (array_keys($discriminators) as $discriminator) {
+            $sqlParameterList[] = $this->conn->quote($discriminator);
         }
 
         return '(' . implode(', ', $sqlParameterList) . ')';

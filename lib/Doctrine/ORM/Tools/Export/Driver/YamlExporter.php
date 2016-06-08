@@ -62,7 +62,20 @@ class YamlExporter extends AbstractExporter
         }
 
         if ($column = $metadata->discriminatorColumn) {
-            $array['discriminatorColumn'] = $column;
+            $mapping = array(
+                'column'           => $column->getColumnName(),
+                'type'             => $column->getTypeName(),
+                'columnDefinition' => $column->getColumnDefinition(),
+                'length'           => $column->getLength(),
+                'scale'            => $column->getScale(),
+                'precision'        => $column->getPrecision(),
+                'options'          => $column->getOptions(),
+                'id'               => $column->isPrimaryKey(),
+                'nullable'         => $column->isNullable(),
+                'unique'           => $column->isUnique(),
+            );
+
+            $array['discriminatorColumn'] = $mapping;
         }
 
         if ($map = $metadata->discriminatorMap) {
