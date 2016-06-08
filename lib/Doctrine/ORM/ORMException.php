@@ -155,6 +155,14 @@ class ORMException extends Exception
     }
 
     /**
+     * @return ORMException
+     */
+    public static function mismatchedEventManager()
+    {
+        return new self("Cannot use different EventManager instances for EntityManager and Connection.");
+    }
+
+    /**
      * @param string $methodName
      *
      * @return ORMException

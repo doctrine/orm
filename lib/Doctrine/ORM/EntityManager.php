@@ -851,6 +851,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @return Connection
      *
      * @throws \InvalidArgumentException
+     * @throws ORMException
      */
     protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
     {
@@ -860,6 +861,10 @@ use Doctrine\Common\Util\ClassUtils;
 
         if ( ! $connection instanceof Connection) {
             throw new \InvalidArgumentException("Invalid argument: " . $connection);
+        }
+
+        if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
+            throw ORMException::mismatchedEventManager();
         }
 
         return $connection;
