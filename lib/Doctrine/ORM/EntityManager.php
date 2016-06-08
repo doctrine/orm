@@ -836,19 +836,38 @@ use Doctrine\Common\Util\ClassUtils;
             throw ORMException::missingMappingDriverImpl();
         }
 
+        $conn = static::createConnection($conn, $config, $eventManager);
+
+        return new EntityManager($conn, $config, $conn->getEventManager());
+    }
+
+    /**
+     * Factory method to create Connection instances.
+     *
+     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
+     * @param Configuration $config       The Configuration instance to use.
+     * @param EventManager  $eventManager The EventManager instance to use.
+     *
+     * @return Connection
+     *
+     * @throws ORMException
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    protected static function createConnection($conn, Configuration $config, EventManager $eventManager = null)
+    {
         if (is_array($conn)) {
             $conn = DriverManager::getConnection(
                 $conn, $config, ($eventManager ?: new EventManager())
             );
         } elseif ($conn instanceof Connection) {
             if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                 throw ORMException::mismatchedEventManager();
+                throw ORMException::mismatchedEventManager();
             }
         } else {
             throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        return $conn;
     }
 
     /**
