@@ -37,12 +37,15 @@ class UpdateSqlGenerationTest extends OrmTestCase
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            $query        = $this->_em->createQuery($dqlToBeTested);
+            $sqlGenerated = $query->getSql();
+
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
+
+        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     public function testSupportsQueriesWithoutWhere()

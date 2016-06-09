@@ -626,7 +626,7 @@ class YamlDriver extends FileDriver
         if (isset($element['attributeOverride']) && is_array($element['attributeOverride'])) {
 
             foreach ($element['attributeOverride'] as $fieldName => $attributeOverrideElement) {
-                $mapping = $this->columnToArray($fieldName, $attributeOverrideElement);
+                $mapping = $this->columnToArray($attributeOverrideElement);
 
                 $metadata->setAttributeOverride($fieldName, $mapping);
             }
