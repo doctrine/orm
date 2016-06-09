@@ -48,11 +48,15 @@ class DeleteSqlGenerationTest extends OrmTestCase
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+
+            $sqlGenerated = $query->getSql();
+
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
+
+        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     public function testSupportsDeleteWithoutWhereAndFrom()
