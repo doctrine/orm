@@ -30,12 +30,14 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
             $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomTreeWalkerJoin::class])
                   ->useQueryCache(false);
 
-            self::assertEquals($sqlToBeConfirmed, $query->getSql());
+            $sqlGenerated = $query->getSql();
+
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
-
         }
+
+        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     public function testAddsJoin()

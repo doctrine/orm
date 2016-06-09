@@ -1972,6 +1972,21 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
+        $originalMapping = array(
+            'tableName'        => $property->getTableName(),
+            'columnName'       => $property->getColumnName(),
+            'columnDefinition' => $property->getColumnDefinition(),
+            'length'           => $property->getLength(),
+            'scale'            => $property->getScale(),
+            'precision'        => $property->getPrecision(),
+            'options'          => $property->getOptions(),
+            'id'               => $property->isPrimaryKey(),
+            'nullable'         => $property->isNullable(),
+            'unique'           => $property->isUnique(),
+        );
+
+        $overrideMapping = array_replace_recursive($originalMapping, $overrideMapping);
+
         $overrideMapping['id'] = $property->isPrimaryKey();
 
         unset($this->properties[$fieldName]);
