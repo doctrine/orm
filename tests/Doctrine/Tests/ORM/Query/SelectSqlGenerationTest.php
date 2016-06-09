@@ -57,16 +57,12 @@ class SelectSqlGenerationTest extends OrmTestCase
 
             $sqlGenerated = $query->getSQL();
 
-            parent::assertEquals(
-                $sqlToBeConfirmed,
-                $sqlGenerated,
-                sprintf('"%s" is not equal of "%s"', $sqlGenerated, $sqlToBeConfirmed)
-            );
-
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
         }
+
+        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     /**
