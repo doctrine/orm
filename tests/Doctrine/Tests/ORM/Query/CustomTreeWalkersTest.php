@@ -54,10 +54,12 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, $treeWalkers = array(), $outputWalker = null)
     {
         try {
-            self::assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
+            $sqlGenerated = $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker);
         } catch (\Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
+
+        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     public function testSupportsQueriesWithoutWhere()

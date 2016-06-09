@@ -391,11 +391,15 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
-            self::assertEquals('UPDATE cms_users SET name = ?', $query->getSql());
+
+            $sqlGenerated = $query->getSql();
+
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
+
+        self::assertEquals('UPDATE cms_users SET name = ?', $sqlGenerated);
 
         $this->_em->getConfiguration()->setEntityNamespaces(array());
     }
