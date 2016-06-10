@@ -298,7 +298,7 @@ class FieldBuilder
         $property = $cm->addProperty($this->name, $this->type, $this->mapping);
 
         if ($this->version) {
-            $cm->setVersionMetadata($property);
+            $cm->setVersionProperty($property);
         }
         
         if ($this->sequenceDef) {
