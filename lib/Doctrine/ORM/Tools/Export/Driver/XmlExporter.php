@@ -214,7 +214,7 @@ class XmlExporter extends AbstractExporter
                     $fieldXml->addAttribute('scale', $property->getScale());
                 }
 
-                if ($metadata->versionField === $property->getName()) {
+                if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $property->getName()) {
                     $fieldXml->addAttribute('version', 'true');
                 }
 

@@ -135,7 +135,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setInheritanceType($parent->inheritanceType);
             $class->setIdGeneratorType($parent->generatorType);
             $class->setIdentifier($parent->identifier);
-            $class->setVersionField($parent->versionField);
+
+            if ($parent->versionProperty) {
+                $class->setVersionProperty($parent->versionProperty);
+            }
 
             if ($parent->discriminatorColumn) {
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
