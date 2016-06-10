@@ -407,15 +407,10 @@ class SqlWalker implements TreeWalker
                 continue;
             }
 
-            $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
-
             foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
-                $property   = $qComp['metadata']->getProperty($fieldName);
-                $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
-                $tableName  = ($qComp['metadata']->isInheritanceTypeJoined())
-                    ? $persister->getOwningTable($fieldName)
-                    : $qComp['metadata']->getTableName();
-
+                $property      = $qComp['metadata']->getProperty($fieldName);
+                $tableName     = $property->getTableName();
+                $columnName    = $this->quoteStrategy->getColumnName($property, $this->platform);
                 $orderedColumn = $this->getSQLTableAlias($tableName, $dqlAlias) . '.' . $columnName;
 
                 // OrderByClause should replace an ordered relation. see - DDC-2475
@@ -571,7 +566,7 @@ class SqlWalker implements TreeWalker
         }
 
         foreach ($this->selectedClasses as $selectedClass) {
-            if ( ! $selectedClass['class']->isVersioned) {
+            if ( ! $selectedClass['class']->isVersioned()) {
                 throw OptimisticLockException::lockFailed($selectedClass['class']->name);
             }
         }

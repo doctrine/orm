@@ -199,7 +199,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testVersionedField($class)
     {
-        self::assertTrue($class->isVersioned);
+        self::assertTrue($class->isVersioned());
         self::assertEquals("version", $class->versionField);
     }
 

@@ -452,7 +452,7 @@ class SchemaTool
             'length'          => $fieldMetadata->getLength(),
             'notnull'         => ! $fieldMetadata->isNullable(),
             'platformOptions' => [
-                'version' => ($classMetadata->isVersioned && $classMetadata->versionField === $fieldName),
+                'version' => ($classMetadata->versionField === $fieldName),
             ],
         ];
 
