@@ -173,10 +173,15 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testFieldMappings
      * @param ClassMetadata $class
      */
-    public function testVersionedField($class)
+    public function testVersionProperty($class)
     {
         self::assertTrue($class->isVersioned());
-        self::assertEquals("version", $class->versionField);
+        self::assertNotNull($class->versionProperty);
+
+        $versionPropertyName = $class->versionProperty->getName();
+
+        self::assertEquals("version", $versionPropertyName);
+        self::assertNotNull($class->getProperty($versionPropertyName));
     }
 
     /**
@@ -1190,7 +1195,7 @@ class User
 
         $property = $metadata->addProperty('version', Type::getType('integer'));
 
-        $metadata->setVersionMetadata($property);
+        $metadata->setVersionProperty($property);
         
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(

@@ -209,7 +209,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $property->setType(Type::getType('string'));
 
         $metadata->initializeReflection(new RuntimeReflectionService());
-        $metadata->setVersionMetadata($property);
+        $metadata->setVersionProperty($property);
     }
 
     public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()
