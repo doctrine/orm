@@ -539,19 +539,11 @@ class ClassMetadata implements ClassMetadataInterface
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
 
     /**
-     * READ-ONLY: A flag for whether or not instances of this class are to be versioned
-     * with optimistic locking.
-     *
-     * @var boolean
-     */
-    public $isVersioned = false;
-
-    /**
      * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
      *
-     * @var mixed
+     * @var string|null
      */
-    public $versionField;
+    public $versionField = null;
 
     /**
      * @var array
@@ -804,8 +796,7 @@ class ClassMetadata implements ClassMetadataInterface
             $serialized[] = 'containsForeignIdentifier';
         }
 
-        if ($this->isVersioned) {
-            $serialized[] = 'isVersioned';
+        if ($this->isVersioned()) {
             $serialized[] = 'versionField';
         }
 
@@ -2854,7 +2845,6 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function setVersionMetadata(FieldMetadata $fieldMetadata)
     {
-        $this->isVersioned  = true;
         $this->versionField = $fieldMetadata->getName();
 
         $options = $fieldMetadata->getOptions();
@@ -2868,18 +2858,6 @@ class ClassMetadata implements ClassMetadataInterface
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $this->versionField, $fieldMetadata->getType());
             }
         }
-    }
-
-    /**
-     * Sets whether this class is to be versioned for optimistic locking.
-     *
-     * @param boolean $bool
-     *
-     * @return void
-     */
-    public function setVersioned($bool)
-    {
-        $this->isVersioned = $bool;
     }
 
     /**
@@ -2941,6 +2919,14 @@ class ClassMetadata implements ClassMetadataInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVersioned()
+    {
+        return $this->versionField !== null;
     }
 
     /**
