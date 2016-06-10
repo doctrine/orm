@@ -1717,7 +1717,7 @@ public function __construct(<params>)
                 }
             }
 
-            if ($metadata->versionField === $propertyMetadata->getName()) {
+            if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $propertyMetadata->getName()) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Version';
             }
         }

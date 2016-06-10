@@ -344,7 +344,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $property = $metadata->addProperty($reflProperty->getName(), Type::getType($columnAnnot->type), $mapping);
 
                 if ($this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class)) {
-                    $metadata->setVersionMetadata($property);
+                    $metadata->setVersionProperty($property);
                 }
 
                 // Check for SequenceGenerator/TableGenerator definition

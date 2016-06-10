@@ -46,19 +46,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     private $quotedTableMap = [];
 
     /**
-     * This function finds the ClassMetadata instance in an inheritance hierarchy
-     * that is responsible for enabling versioning.
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private function getVersionedClassMetadata()
-    {
-        $property = $this->class->getProperty($this->class->versionField);
-
-        return $property->getDeclaringClass();
-    }
-
-    /**
      * Gets the name of the table that owns the column the given field is mapped to.
      *
      * @param string $fieldName
@@ -231,7 +218,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         foreach ($updateData as $tableName => $data) {
             $quotedTableName = $this->quotedTableMap[$tableName];
-            $versioned       = $isVersioned && $this->getVersionedClassMetadata()->getTableName() === $tableName;
+            $versioned       = $isVersioned && $this->class->versionProperty->getTableName() === $tableName;
 
             $this->updateTable($entity, $quotedTableName, $data, $versioned);
         }
@@ -239,7 +226,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Make sure the table with the version column is updated even if no columns on that
         // table were affected.
         if ($isVersioned) {
-            $versionedClass = $this->getVersionedClassMetadata();
+            $versionedClass = $this->class->versionProperty->getDeclaringClass();
             $versionedTable = $versionedClass->getTableName();
 
             if ( ! isset($updateData[$versionedTable])) {
@@ -519,14 +506,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $this->columns[$columnName] = $column;
         }
 
-        $versionField = $this->class->versionField;
+        $versionPropertyName = $this->class->isVersioned()
+            ? $this->class->versionProperty->getName()
+            : null
+        ;
 
         foreach ($this->class->reflFields as $name => $field) {
             $property = $this->class->getProperty($name);
 
             if (($property && $property->isInherited())
                 || isset($this->class->associationMappings[$name]['inherited'])
-                || ($versionField === $name)
+                || ($versionPropertyName === $name)
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;
             }
@@ -574,15 +564,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         return $columns;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function assignDefaultVersionValue($entity, array $id)
-    {
-        $value = $this->fetchVersionValue($this->getVersionedClassMetadata(), $id);
-        $this->class->setFieldValue($entity, $this->class->versionField, $value);
     }
 
     /**

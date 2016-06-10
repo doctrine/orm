@@ -539,11 +539,11 @@ class ClassMetadata implements ClassMetadataInterface
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
 
     /**
-     * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
+     * READ-ONLY: The field which is used for versioning in optimistic locking (if any).
      *
-     * @var string|null
+     * @var FieldMetadata|null
      */
-    public $versionField = null;
+    public $versionProperty = null;
 
     /**
      * @var array
@@ -797,7 +797,7 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         if ($this->isVersioned()) {
-            $serialized[] = 'versionField';
+            $serialized[] = 'versionProperty';
         }
 
         if ($this->lifecycleCallbacks) {
@@ -2155,7 +2155,10 @@ class ClassMetadata implements ClassMetadataInterface
 
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id']) {
-            assert($this->versionField !== $fieldName, MappingException::cannotVersionIdField($this->name, $fieldName));
+            if ($this->versionProperty !== null && $this->versionProperty->getName() === $fieldName) {
+                throw MappingException::cannotVersionIdField($this->name, $fieldName);
+            }
+
             assert(! $type->canRequireSQLConversion(), MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property));
 
             if (! in_array($fieldName, $this->identifier)) {
@@ -2832,40 +2835,39 @@ class ClassMetadata implements ClassMetadataInterface
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @param FieldMetadata $fieldMetadata
+     * @param VersionFieldMetadata $versionFieldMetadata
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function setVersionMetadata(FieldMetadata $fieldMetadata)
+    public function setVersionProperty(FieldMetadata $versionFieldMetadata)
     {
-        $this->versionField = $fieldMetadata->getName();
+        $this->versionProperty = $versionFieldMetadata;
 
-        $options = $fieldMetadata->getOptions();
+        $options = $versionFieldMetadata->getOptions();
 
-        if ( ! isset($options['default'])) {
-            if (in_array($fieldMetadata->getTypeName(), ['integer', 'bigint', 'smallint'])) {
-                $fieldMetadata->setOptions(array_merge($options, ['default' => 1]));
-            } else if ($fieldMetadata->getTypeName() === 'datetime') {
-                $fieldMetadata->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
-            } else {
-                throw MappingException::unsupportedOptimisticLockingType($this->name, $this->versionField, $fieldMetadata->getType());
-            }
+        if (isset($options['default'])) {
+            return;
         }
-    }
 
-    /**
-     * Sets the name of the field that is to be used for versioning if this class is
-     * versioned for optimistic locking.
-     *
-     * @param string $versionField
-     *
-     * @return void
-     */
-    public function setVersionField($versionField)
-    {
-        $this->versionField = $versionField;
+        if (in_array($versionFieldMetadata->getTypeName(), ['integer', 'bigint', 'smallint'])) {
+            $versionFieldMetadata->setOptions(array_merge($options, ['default' => 1]));
+
+            return;
+        }
+
+        if ($versionFieldMetadata->getTypeName() === 'datetime') {
+            $versionFieldMetadata->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
+
+            return;
+        }
+
+        throw MappingException::unsupportedOptimisticLockingType(
+            $this->name,
+            $versionFieldMetadata->getName(),
+            $versionFieldMetadata->getType()
+        );
     }
 
     /**
@@ -2921,7 +2923,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isVersioned()
     {
-        return $this->versionField !== null;
+        return $this->versionProperty !== null;
     }
 
     /**

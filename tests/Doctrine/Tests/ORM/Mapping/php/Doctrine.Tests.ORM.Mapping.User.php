@@ -55,7 +55,7 @@ $metadata->addProperty(
     ]
 );
 
-$metadata->setVersionMetadata($metadata->addProperty('version', Type::getType('integer')));
+$metadata->setVersionProperty($metadata->addProperty('version', Type::getType('integer')));
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
