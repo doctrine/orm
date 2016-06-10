@@ -39,14 +39,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
 class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 {
     /**
-     * Map that maps column names to the table names that own them.
-     * This is mainly a temporary cache, used during a single request.
-     *
-     * @var array
-     */
-    private $owningTableMap = [];
-
-    /**
      * Map of table to quoted table names.
      *
      * @var array
@@ -77,10 +69,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     public function getOwningTable($fieldName)
     {
-        if (isset($this->owningTableMap[$fieldName])) {
-            return $this->owningTableMap[$fieldName];
-        }
-
         $property = $this->class->getProperty($fieldName);
 
         switch (true) {
@@ -100,7 +88,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $tableName        = $cm->getTableName();
         $quotedTableName  = $this->quoteStrategy->getTableName($cm, $this->platform);
 
-        $this->owningTableMap[$fieldName] = $tableName;
         $this->quotedTableMap[$tableName] = $quotedTableName;
 
         return $tableName;
@@ -177,7 +164,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
             }
 
-            if ($this->class->isVersioned) {
+            if ($this->class->isVersioned()) {
                 $this->assignDefaultVersionValue($entity, $id);
             }
 
@@ -240,7 +227,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return;
         }
 
-        $isVersioned = $this->class->isVersioned;
+        $isVersioned = $this->class->isVersioned();
 
         foreach ($updateData as $tableName => $data) {
             $quotedTableName = $this->quotedTableMap[$tableName];
@@ -532,12 +519,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $this->columns[$columnName] = $column;
         }
 
+        $versionField = $this->class->versionField;
+
         foreach ($this->class->reflFields as $name => $field) {
             $property = $this->class->getProperty($name);
 
             if (($property && $property->isInherited())
                 || isset($this->class->associationMappings[$name]['inherited'])
-                || ($this->class->isVersioned && $this->class->versionField === $name)
+                || ($versionField === $name)
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;
             }
