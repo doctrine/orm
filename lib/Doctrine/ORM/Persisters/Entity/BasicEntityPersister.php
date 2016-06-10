@@ -290,7 +290,7 @@ class BasicEntityPersister implements EntityPersister
                 $id = $this->class->getIdentifierValues($entity);
             }
 
-            if ($this->class->isVersioned) {
+            if ($this->class->isVersioned()) {
                 $this->assignDefaultVersionValue($entity, $id);
             }
         }
@@ -357,7 +357,7 @@ class BasicEntityPersister implements EntityPersister
             return;
         }
 
-        $isVersioned     = $this->class->isVersioned;
+        $isVersioned     = $this->class->isVersioned();
         $quotedTableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);
@@ -594,16 +594,12 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function prepareUpdateData($entity)
     {
-        $versionField = null;
-        $result       = [];
         $uow          = $this->em->getUnitOfWork();
-
-        if (($versioned = $this->class->isVersioned) !== false) {
-            $versionField = $this->class->versionField;
-        }
+        $versionField = $this->class->versionField;
+        $result       = [];
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if (isset($versionField) && $versionField === $field) {
+            if ($versionField === $field) {
                 continue;
             }
 
@@ -611,15 +607,17 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }*/
 
-            $newVal = $change[1];
+            $owningTable = $this->getOwningTable($field);
+            $newVal      = $change[1];
 
-            if ( ! isset($this->class->associationMappings[$field])) {
-                $property   = $this->class->getProperty($field);
+            if (($property = $this->class->getProperty($field)) !== null) {
+                // @todo this should be used instead
+                //$tableName  = $property->getTableName();
                 $columnName = $property->getColumnName();
 
                 $this->columns[$columnName] = $property;
 
-                $result[$this->getOwningTable($field)][$columnName] = $newVal;
+                $result[$owningTable][$columnName] = $newVal;
 
                 continue;
             }
@@ -651,7 +649,6 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-            $owningTable = $this->getOwningTable($field);
 
             foreach ($assoc['joinColumns'] as $joinColumn) {
                 $sourceColumn = $joinColumn['name'];
@@ -1422,10 +1419,11 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getInsertColumnList()
     {
-        $columns = [];
+        $versionField = $this->class->versionField;
+        $columns      = [];
 
         foreach ($this->class->reflFields as $name => $field) {
-            if ($this->class->isVersioned && $this->class->versionField === $name) {
+            if ($versionField === $name) {
                 continue;
             }
 
