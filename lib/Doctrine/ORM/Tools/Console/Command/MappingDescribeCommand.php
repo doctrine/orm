@@ -117,7 +117,7 @@ EOT
                     $this->formatField('Sequence generator definition', $metadata->sequenceGeneratorDefinition),
                     $this->formatField('Table generator definition', $metadata->tableGeneratorDefinition),
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
-                    $this->formatField('Versioned?', $metadata->isVersioned),
+                    $this->formatField('Versioned?', $metadata->isVersioned()),
                     $this->formatField('Version field', $metadata->versionField),
                     $this->formatField('Read only?', $metadata->isReadOnly),
 

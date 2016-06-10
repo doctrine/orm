@@ -1455,7 +1455,7 @@ class UnitOfWork implements PropertyChangedListener
         switch (true) {
             case ($class->isIdentifierNatural()):
                 // Check for a version field, if available, to avoid a db lookup.
-                if ($class->isVersioned) {
+                if ($class->isVersioned()) {
                     return ($class->getFieldValue($entity, $class->versionField))
                         ? self::STATE_DETACHED
                         : self::STATE_NEW;
@@ -1851,7 +1851,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
+            if ($class->isVersioned() && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
                 $reflField          = $class->reflFields[$class->versionField];
                 $managedCopyVersion = $reflField->getValue($managedCopy);
                 $entityVersion      = $reflField->getValue($entity);
@@ -2304,7 +2304,7 @@ class UnitOfWork implements PropertyChangedListener
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
-                if ( ! $class->isVersioned) {
+                if ( ! $class->isVersioned()) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
 

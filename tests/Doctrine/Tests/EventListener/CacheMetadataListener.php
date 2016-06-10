@@ -67,7 +67,7 @@ class CacheMetadataListener
             'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
         ];
 
-        if ($metadata->isVersioned) {
+        if ($metadata->isVersioned()) {
             return;
         }
 
