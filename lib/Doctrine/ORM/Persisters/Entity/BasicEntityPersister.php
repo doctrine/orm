@@ -28,6 +28,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -313,36 +314,37 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function assignDefaultVersionValue($entity, array $id)
     {
-        $value = $this->fetchVersionValue($this->class, $id);
+        $versionProperty = $this->class->versionProperty;
+        $versionValue    = $this->fetchVersionValue($versionProperty, $id);
 
-        $this->class->setFieldValue($entity, $this->class->versionField, $value);
+        $versionProperty->setValue($entity, $versionValue);
     }
 
     /**
      * Fetches the current version value of a versioned entity.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $versionedClass
-     * @param array                               $id
+     * @param \Doctrine\ORM\Mapping\VersionFieldMetadata $versionProperty
+     * @param array                                      $id
      *
      * @return mixed
      */
-    protected function fetchVersionValue($versionedClass, array $id)
+    protected function fetchVersionValue(FieldMetadata $versionProperty, array $id)
     {
-        $property   = $versionedClass->getProperty($versionedClass->versionField);
-        $tableName  = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
-        $identifier = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
-        $columnName = $this->quoteStrategy->getColumnName($property, $this->platform);
+        $versionedClass = $versionProperty->getDeclaringClass();
+        $tableName      = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+        $columnName     = $this->quoteStrategy->getColumnName($versionProperty, $this->platform);
+        $identifier     = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
 
         // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
-        $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
+        $flattenedId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
+        $value       = $this->conn->fetchColumn($sql, array_values($flattenedId));
+        $versionType = $versionProperty->getType();
 
-        $value = $this->conn->fetchColumn($sql, array_values($flatId));
-
-        return $property->getType()->convertToPHPValue($value, $this->platform);
+        return $versionType->convertToPHPValue($value, $this->platform);
     }
 
     /**
@@ -443,24 +445,23 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if ($versioned) {
-            $versionField     = $this->class->versionField;
-            $versionProperty  = $this->class->getProperty($versionField);
-            $versionFieldType = $versionProperty->getType();
-            $versionColumn    = $this->quoteStrategy->getColumnName($versionProperty, $this->platform);
+            $versionProperty   = $this->class->versionProperty;
+            $versionColumnType = $versionProperty->getType();
+            $versionColumnName = $this->quoteStrategy->getColumnName($versionProperty, $this->platform);
 
-            $where[]    = $versionColumn;
-            $types[]    = $versionFieldType;
-            $params[]   = $this->class->reflFields[$versionField]->getValue($entity);
+            $where[]    = $versionColumnName;
+            $types[]    = $versionColumnType;
+            $params[]   = $versionProperty->getValue($entity);
 
-            switch ($versionFieldType->getName()) {
+            switch ($versionColumnType->getName()) {
                 case Type::SMALLINT:
                 case Type::INTEGER:
                 case Type::BIGINT:
-                    $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
+                    $set[] = $versionColumnName . ' = ' . $versionColumnName . ' + 1';
                     break;
 
                 case Type::DATETIME:
-                    $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
+                    $set[] = $versionColumnName . ' = CURRENT_TIMESTAMP';
                     break;
             }
         }
@@ -594,12 +595,15 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function prepareUpdateData($entity)
     {
-        $uow          = $this->em->getUnitOfWork();
-        $versionField = $this->class->versionField;
-        $result       = [];
+        $uow                 = $this->em->getUnitOfWork();
+        $result              = [];
+        $versionPropertyName = $this->class->isVersioned()
+            ? $this->class->versionProperty->getName()
+            : null
+        ;
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if ($versionField === $field) {
+            if ($versionPropertyName === $field) {
                 continue;
             }
 
@@ -1419,11 +1423,14 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getInsertColumnList()
     {
-        $versionField = $this->class->versionField;
-        $columns      = [];
+        $columns             = [];
+        $versionPropertyName = $this->class->isVersioned()
+            ? $this->class->versionProperty->getName()
+            : null
+        ;
 
         foreach ($this->class->reflFields as $name => $field) {
-            if ($versionField === $name) {
+            if ($versionPropertyName === $name) {
                 continue;
             }
 

@@ -610,7 +610,8 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField)) {
+            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
+                && (! $class->isVersioned() || $name !== $class->versionProperty->getName())) {
                 $actualData[$name] = $value;
             }
         }
@@ -939,7 +940,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($class->reflFields as $name => $refProp) {
             if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
-                && ($name !== $class->versionField)
+                && ($class->versionProperty === null || $name !== $class->versionProperty->getName())
                 && ! $class->isCollectionValuedAssociation($name)) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
@@ -1456,7 +1457,7 @@ class UnitOfWork implements PropertyChangedListener
             case ($class->isIdentifierNatural()):
                 // Check for a version field, if available, to avoid a db lookup.
                 if ($class->isVersioned()) {
-                    return ($class->getFieldValue($entity, $class->versionField))
+                    return $class->versionProperty->getValue($entity)
                         ? self::STATE_DETACHED
                         : self::STATE_NEW;
                 }
@@ -1890,9 +1891,8 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $reflField          = $class->reflFields[$class->versionField];
-        $managedCopyVersion = $reflField->getValue($managedCopy);
-        $entityVersion      = $reflField->getValue($entity);
+        $managedCopyVersion = $class->versionProperty->getValue($managedCopy);
+        $entityVersion      = $class->versionProperty->getValue($entity);
 
         // Throw exception if versions don't match.
         if ($managedCopyVersion == $entityVersion) {
@@ -2329,7 +2329,7 @@ class UnitOfWork implements PropertyChangedListener
                     $entity->__load();
                 }
 
-                $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
+                $entityVersion = $class->versionProperty->getValue($entity);
 
                 if ($entityVersion != $lockVersion) {
                     throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
