@@ -441,7 +441,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
-                if ( ! $class->isVersioned) {
+                if ( ! $class->isVersioned()) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
 
