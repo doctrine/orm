@@ -118,7 +118,7 @@ EOT
                     $this->formatField('Table generator definition', $metadata->tableGeneratorDefinition),
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
                     $this->formatField('Versioned?', $metadata->isVersioned()),
-                    $this->formatField('Version field', $metadata->versionField),
+                    $this->formatField('Version field', ($metadata->isVersioned() ? $metadata->versionProperty->getName() : '')),
                     $this->formatField('Read only?', $metadata->isReadOnly),
 
                     $this->formatEntityListeners($metadata->entityListeners),
