@@ -2202,16 +2202,13 @@ class ClassMetadata implements ClassMetadataInterface
     public function addInheritedProperty(Property $property)
     {
         $inheritedProperty = new FieldMetadata();
+        $declaringClass    = $property->getDeclaringClass();
 
-        if ( ! $property->getDeclaringClass()->isMappedSuperclass) {
+        if ( ! $declaringClass->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
         }
 
-        //if ($declaringClass->isMappedSuperclass && ! $this->isMappedSuperclass) {
-        //    $inheritedProperty->setTableName($this->getTableName());
-        //}
-
-        $inheritedProperty->setDeclaringClass($property->getDeclaringClass());
+        $inheritedProperty->setDeclaringClass($declaringClass);
         $inheritedProperty->setName($property->getName());
         $inheritedProperty->setType($property->getType());
         $inheritedProperty->setColumnName($property->getColumnName());
