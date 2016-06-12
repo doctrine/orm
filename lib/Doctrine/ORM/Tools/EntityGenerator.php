@@ -1314,7 +1314,7 @@ public function __construct(<params>)
 
         foreach ($metadata->getProperties() as $fieldName => $property) {
             if ($this->hasProperty($fieldName, $metadata) ||
-                $property->isInherited() /*||
+                $metadata->isInheritedProperty($fieldName) /*||
                 (
                     isset($fieldMapping['declaredField']) &&
                     isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
