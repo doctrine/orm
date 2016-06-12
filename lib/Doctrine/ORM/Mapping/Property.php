@@ -30,16 +30,6 @@ interface Property
     public function getDeclaringClass();
 
     /**
-     * @return ClassMetadata
-     */
-    public function getCurrentClass();
-
-    /**
-     * @return ClassMetadata
-     */
-    public function setCurrentClass(ClassMetadata $currentClass);
-
-    /**
      * @param object $object
      * @param mixed  $value
      */

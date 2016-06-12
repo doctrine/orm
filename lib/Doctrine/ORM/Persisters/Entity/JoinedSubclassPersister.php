@@ -63,7 +63,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $cm = $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']);
                 break;
 
-            case ($property && $property->isInherited()):
+            case ($property && $this->class->isInheritedProperty($fieldName)):
                 $cm = $property->getDeclaringClass();
                 break;
 
@@ -459,7 +459,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add subclass columns
             foreach ($subClass->getProperties() as $fieldName => $property) {
-                if ($property->isInherited()) {
+                if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
 
@@ -512,7 +512,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->class->reflFields as $name => $field) {
             $property = $this->class->getProperty($name);
 
-            if (($property && $property->isInherited())
+            if (($property && $this->class->isInheritedProperty($name))
                 || isset($this->class->associationMappings[$name]['inherited'])
                 || ($versionPropertyName === $name)
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
