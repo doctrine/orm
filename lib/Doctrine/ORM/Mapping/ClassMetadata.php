@@ -2018,6 +2018,20 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
+     * Checks whether a mapped field is inherited from a superclass.
+     *
+     * @param string $fieldName
+     *
+     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     */
+    public function isInheritedProperty($fieldName)
+    {
+        $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
+
+        return ! ($declaringClass->name === $this->name);
+    }
+
+    /**
      * Checks whether a mapped association field is inherited from a superclass.
      *
      * @param string $fieldName
@@ -2127,7 +2141,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $property = new FieldMetadata();
 
-        $property->setCurrentClass($this);
         $property->setDeclaringClass($this);
         $property->setName($fieldName);
         $property->setType($type);
@@ -2195,11 +2208,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $inheritedProperty = new FieldMetadata();
 
-        $inheritedProperty->setCurrentClass($this);
-        $inheritedProperty->setDeclaringClass($property->getDeclaringClass());
-        $inheritedProperty->setName($property->getName());
-        $inheritedProperty->setType($property->getType());
-
         if ( ! $property->getDeclaringClass()->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
         }
@@ -2208,7 +2216,9 @@ class ClassMetadata implements ClassMetadataInterface
         //    $inheritedProperty->setTableName($this->getTableName());
         //}
 
-        $inheritedProperty->setCurrentClass($this);
+        $inheritedProperty->setDeclaringClass($property->getDeclaringClass());
+        $inheritedProperty->setName($property->getName());
+        $inheritedProperty->setType($property->getType());
         $inheritedProperty->setColumnName($property->getColumnName());
         $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
         $inheritedProperty->setPrimaryKey($property->isPrimaryKey());

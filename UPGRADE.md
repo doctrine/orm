@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC Break: Changed methods in ``ClassMetadata``
+
+* ``ClassMetadata::addInheritedProperty``
+* ``ClassMetadata::setDiscriminatorColumn``
+
 ## BC Break: Removed methods in ``ClassMetadata``
 
 * ``ClassMetadata::getTypeOfField`` (to be removed, part of Common API)
@@ -12,6 +17,9 @@
 * ``ClassMetadata::getQuotedTableName``
 * ``ClassMetadata::getQuotedJoinTableName``
 * ``ClassMetadata::getQuotedIdentifierColumnNames``
+* ``ClassMetadata::getIdentifierColumnNames`` => Use ``ClassMetadata::getIdentifierColumns($entityManager)``
+* ``ClassMetadata::setVersionMetadata`` => Use ``ClassMetadata::setVersionProperty``
+* ``ClassMetadata::setVersioned``
 * ``ClassMetadata::invokeLifecycleCallbacks``
 * ``ClassMetadata::isInheritedField`` => Use ``ClassMetadata::getProperty()::isInherited()``
 * ``ClassMetadata::isUniqueField`` => Use ``ClassMetadata::getProperty()::isUnique()``
@@ -20,8 +28,8 @@
 
 ## BC Break: Removed ``quoted`` index from table, field and sequence mappings
 
-All conversions are now being called, always. Implement your own ``Doctrine\ORM\Mapping\QuoteStrategy`` to manipulate
-to your custom desired behavior.
+Quoting is now always called. Implement your own ``Doctrine\ORM\Mapping\NamingStrategy`` to manipulate
+your schema, tables and column names to your custom desired naming convention.
 
 ## BC Break: Removed ``ClassMetadata::$fieldMappings[$fieldName]['requireSQLConversion']``
 
@@ -47,6 +55,10 @@ The namespace property in ClassMetadata was only used when using association
 classes in the same namespace and it was used to speedup ClassMetadata 
 creation purposes. Namespace could be easily inferred by asking ``\ReflectionClass``
 which was already stored internally.
+
+### BC Break: Removed ``ClassMetadata::$isVersioned``
+
+Switched to a method alternative: ``ClassMetadata::isVersioned()``
 
 ## BC Break: Removed ``Doctrine\ORM\Mapping\ClassMetadataInfo``
 
