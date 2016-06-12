@@ -2,15 +2,15 @@
 
 namespace Doctrine\Tests\ORM\Proxy;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\DriverMock;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 
 /**
  * Test the proxy generator. Its work is generating on-the-fly subclasses of a given model, which implement the Proxy pattern.
@@ -75,7 +75,7 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testSkipAbstractClassesOnGeneration()
     {
         $cm = new ClassMetadata(__NAMESPACE__ . '\\AbstractClass');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         self::assertNotNull($cm->reflClass);
 
         $num = $this->proxyFactory->generateProxyClasses(array($cm));

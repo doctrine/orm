@@ -2,10 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Events;
-use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
-use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -15,7 +13,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonEntityThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
         $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
 
@@ -42,7 +40,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ColumnWithoutType');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);

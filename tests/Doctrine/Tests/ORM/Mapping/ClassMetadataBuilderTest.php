@@ -19,6 +19,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
@@ -40,7 +41,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function setUp()
     {
         $this->cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $this->cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $this->cm->initializeReflection(new RuntimeReflectionService());
         $this->builder = new ClassMetadataBuilder($this->cm);
     }
 

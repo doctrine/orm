@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -39,7 +40,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     private function createClassMetadata($className)
     {
         $class = new ClassMetadata($className);
-        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $class->initializeReflection(new RuntimeReflectionService());
 
         return $class;
     }

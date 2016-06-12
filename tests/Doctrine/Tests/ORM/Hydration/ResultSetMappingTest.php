@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -100,7 +101,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMapping()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->mapOneToOne(array(
             'fieldName'     => 'email',
@@ -185,7 +186,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(array(
             'name'              => 'find-all',
@@ -231,7 +232,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(array(
             'name'              => 'find-all',

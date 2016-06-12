@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -37,7 +38,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata($className);
 
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         return $cm;
     }
@@ -77,7 +78,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setPrimaryTable(array('name'=>'cms_user'));
 
         self::assertEquals('cms_user', $this->strategy->getTableName($cm, $this->platform));
