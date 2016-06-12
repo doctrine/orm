@@ -188,7 +188,7 @@ class SchemaTool
             } elseif ($class->isInheritanceTypeJoined()) {
                 // Add all non-inherited fields as columns
                 foreach ($class->getProperties() as $fieldName => $property) {
-                    if (! $property->isInherited()) {
+                    if (! $class->isInheritedProperty($fieldName)) {
                         $this->gatherColumn($class, $property, $table);
                     }
                 }
@@ -206,7 +206,7 @@ class SchemaTool
                     foreach ($class->identifier as $identifierField) {
                         $idProperty = $class->getProperty($identifierField);
 
-                        if ($idProperty->isInherited()) {
+                        if ($class->isInheritedProperty($identifierField)) {
                             $column     = $this->gatherColumn($class, $idProperty, $table);
                             $columnName = $column->getQuotedName($this->platform);
 
@@ -259,10 +259,9 @@ class SchemaTool
                         );
                     }
 
-                if ( ! empty($pkColumns)) {
-
-                $table->setPrimaryKey($pkColumns);
-}
+                    if ( ! empty($pkColumns)) {
+                        $table->setPrimaryKey($pkColumns);
+                    }
                 }
             } elseif ($class->isInheritanceTypeTablePerClass()) {
                 throw ORMException::notSupported();
@@ -420,8 +419,8 @@ class SchemaTool
     {
         $pkColumns = [];
 
-        foreach ($class->getProperties() as $property) {
-            if ($class->isInheritanceTypeSingleTable() && $property->isInherited()) {
+        foreach ($class->getProperties() as $fieldName => $property) {
+            if ($class->isInheritanceTypeSingleTable() && $class->isInheritedProperty($fieldName)) {
                 continue;
             }
 
