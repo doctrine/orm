@@ -501,6 +501,10 @@ class UnitOfWork implements PropertyChangedListener
             list ($entity, $changeset) = $update;
 
             $this->entityChangeSets[$oid] = $changeset;
+
+//            echo 'Extra update: ';
+//            \Doctrine\Common\Util\Debug::dump($changeset, 3);
+
             $this->getEntityPersister(get_class($entity))->update($entity);
         }
 
@@ -1055,6 +1059,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ( ! empty($this->entityChangeSets[$oid])) {
+//                echo 'Update: ';
+//                \Doctrine\Common\Util\Debug::dump($this->entityChangeSets[$oid], 3);
+
                 $persister->update($entity);
             }
 

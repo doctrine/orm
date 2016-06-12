@@ -30,11 +30,6 @@ class FieldMetadata extends ColumnMetadata implements Property
     private $declaringClass;
 
     /**
-     * @var ClassMetadata
-     */
-    private $currentClass;
-
-    /**
      * @var \ReflectionProperty
      */
     private $reflection;
@@ -63,22 +58,6 @@ class FieldMetadata extends ColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getCurrentClass()
-    {
-        return $this->currentClass;
-    }
-
-    /**
-     * @param ClassMetadata $currentClass
-     */
-    public function setCurrentClass(ClassMetadata $currentClass)
-    {
-        $this->currentClass = $currentClass;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return $this->name;
@@ -90,14 +69,6 @@ class FieldMetadata extends ColumnMetadata implements Property
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isInherited()
-    {
-        return $this->declaringClass !== $this->currentClass;
     }
 
     /**
@@ -150,7 +121,6 @@ class FieldMetadata extends ColumnMetadata implements Property
     {
         return [
             'declaringClass'   => $this->declaringClass->name,
-            'currentClass'     => $this->currentClass->name,
             'tableName'        => $this->tableName,
             'columnName'       => $this->columnName,
             'columnDefinition' => $this->columnDefinition,
