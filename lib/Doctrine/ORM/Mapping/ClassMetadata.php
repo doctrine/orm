@@ -952,7 +952,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function validateAssociations()
     {
         foreach ($this->associationMappings as $mapping) {
-            if ( ! ClassLoader::classExists($mapping['targetEntity']) ) {
+            if ( ! class_exists($mapping['targetEntity'], true)) {
                 throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
             }
         }

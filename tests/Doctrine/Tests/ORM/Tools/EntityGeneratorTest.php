@@ -493,10 +493,8 @@ class EntityGeneratorTest extends OrmTestCase
 
         $book = $this->newInstance($metadata);
 
-        $reflectionService = new RuntimeReflectionService();
-
         $cm = new ClassMetadata($metadata->name);
-        $cm->initializeReflection($reflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $driver->loadMetadataForClass($cm->name, $cm);
 
@@ -534,7 +532,7 @@ class EntityGeneratorTest extends OrmTestCase
         $driver = new AnnotationDriver(new AnnotationReader(), array());
         $cm     = new ClassMetadata($metadata->name);
 
-        $cm->initializeReflection(new RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $driver->loadMetadataForClass($cm->name, $cm);
 
         self::assertTrue($cm->isMappedSuperclass);
