@@ -84,7 +84,7 @@ class QuoteStrategyTest extends OrmTestCase
 
         $cm = new ClassMetadata(CmsUser::class);
 
-        $cm->initializeReflection(new RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setPrimaryTable(['name'=>'cms_user']);
 
         self::assertEquals('cms_user', $this->strategy->getTableName($cm, $this->platform));
