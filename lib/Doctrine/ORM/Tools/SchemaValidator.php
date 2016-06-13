@@ -67,6 +67,10 @@ class SchemaValidator
         $cmf = $this->em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
 
+        if (count($classes) === 0) {
+            return false;
+        }
+
         foreach ($classes as $class) {
             if ($ce = $this->validateClass($class)) {
                 $errors[$class->name] = $ce;

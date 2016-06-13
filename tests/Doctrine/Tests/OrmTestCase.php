@@ -116,22 +116,24 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @return \Doctrine\ORM\EntityManager
      */
-    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
+    protected function _getTestEntityManager($conn = null, $config = null, $eventManager = null, $withSharedMetadata = true)
     {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
             : new ArrayCache();
 
-        $config = new Configuration();
+        if (is_null($config)) {
+            $config = new Configuration();
 
-        $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
-        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
-        $config->setProxyDir(__DIR__ . '/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
-            realpath(__DIR__ . '/Models/Cache')
-        ), true));
+            $config->setMetadataCacheImpl($metadataCache);
+            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
+            $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
+            $config->setProxyDir(__DIR__ . '/Proxies');
+            $config->setProxyNamespace('Doctrine\Tests\Proxies');
+            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
+                realpath(__DIR__ . '/Models/Cache')
+            ), true));
+        }
 
         if ($this->isSecondLevelCacheEnabled) {
 

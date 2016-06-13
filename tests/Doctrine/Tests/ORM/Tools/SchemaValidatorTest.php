@@ -2,9 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\ORM\Configuration;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 class SchemaValidatorTest extends OrmTestCase
 {
@@ -22,6 +25,22 @@ class SchemaValidatorTest extends OrmTestCase
     {
         $this->em = $this->_getTestEntityManager();
         $this->validator = new SchemaValidator($this->em);
+    }
+
+    public function testZeroEntitiesValidation()
+    {
+        // set up entity manager with no mapping files
+        $config = new Configuration();
+        $config->setMetadataDriverImpl(new ZeroEntitiesMappingDriver());
+        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $em = $this->_getTestEntityManager(null, $config, null, true);
+
+        // setup new validator for $em
+        $validator = new SchemaValidator($em);
+
+        $result = $validator->validateMapping();
+        $this->assertFalse($result);
     }
 
     public function testCmsModelSet()
@@ -521,4 +540,19 @@ class DDC3322Three
      * @OrderBy({"oneToOneInverse" = "ASC"})
      */
     private $invalidAssoc;
+}
+
+class ZeroEntitiesMappingDriver implements MappingDriver
+{
+    public function loadMetadataForClass($className, ClassMetadata $metadata) {
+        return;
+    }
+
+    public function getAllClassNames() {
+        return array();
+    }
+
+    public function isTransient($className) {
+        return false;
+    }
 }

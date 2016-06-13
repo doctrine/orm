@@ -76,7 +76,9 @@ EOT
 
         if ($input->getOption('skip-mapping')) {
             $output->writeln('<comment>[Mapping]  Skipped mapping check.</comment>');
-        } elseif ($errors = $validator->validateMapping()) {
+        } elseif (($errors = $validator->validateMapping()) === false) {
+            $output->writeln('<error>[Mapping]  FAIL - No entities defined!</error>');
+        } elseif (count($errors) > 0) {
             foreach ($errors as $className => $errorMessages) {
                 $output->writeln("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>");
 
