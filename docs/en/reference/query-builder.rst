@@ -113,7 +113,7 @@ suggested standard way to build queries:
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->orderBy('u.surname', 'ASC'));
+       ->orderBy('u.surname', 'ASC');
 
 Here is a complete list of helper methods available in ``QueryBuilder``:
 
