@@ -28,6 +28,7 @@ use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -114,6 +115,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $em = $this->getHelper('em')->getEntityManager();
 
         if ($input->getOption('from-database') === true) {
@@ -171,17 +173,17 @@ EOT
 
         if (count($metadata)) {
             foreach ($metadata as $class) {
-                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->name));
+                $io->comment(sprintf('Processing entity "<info>%s</info>"', $class->name));
             }
 
             $exporter->setMetadata($metadata);
             $exporter->export();
 
-            $output->writeln(PHP_EOL . sprintf(
+            $io->text(PHP_EOL . sprintf(
                 'Exporting "<info>%s</info>" mapping information to "<info>%s</info>"', $toType, $destPath
             ));
         } else {
-            $output->writeln('No Metadata Classes to process.');
+            $io->text('No Metadata Classes to process.');
         }
     }
 

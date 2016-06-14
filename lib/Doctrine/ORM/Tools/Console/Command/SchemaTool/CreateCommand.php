@@ -20,8 +20,7 @@
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\Tools\SchemaTool;
 
 /**
@@ -67,17 +66,17 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
+    protected function executeSchemaCommand(SymfonyStyle $io, SchemaTool $schemaTool, array $metadatas)
     {
         if ($input->getOption('dump-sql')) {
             $sqls = $schemaTool->getCreateSchemaSql($metadatas);
-            $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
+            $io->text(implode(';' . PHP_EOL, $sqls) . ';');
         } else {
-            $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
+            $io->warning('ATTENTION: This operation should not be executed in a production environment.');
 
-            $output->writeln('Creating database schema...');
+            $io->comment('Creating database schema...');
             $schemaTool->createSchema($metadatas);
-            $output->writeln('Database schema created successfully!');
+            $io->success('Database schema created successfully!');
         }
 
         return 0;

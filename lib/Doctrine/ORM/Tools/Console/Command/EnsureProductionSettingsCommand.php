@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to ensure that Doctrine is properly configured for a production environment.
@@ -62,6 +63,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $em = $this->getHelper('em')->getEntityManager();
 
         try {
@@ -71,11 +73,11 @@ EOT
                 $em->getConnection()->connect();
             }
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $io->error($e->getMessage());
 
             return 1;
         }
 
-        $output->writeln('<info>Environment is correctly configured for production.</info>');
+        $io->success('Environment is correctly configured for production.');
     }
 }

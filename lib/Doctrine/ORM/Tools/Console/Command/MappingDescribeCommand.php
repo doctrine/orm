@@ -26,6 +26,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Show information about mapped entities.
@@ -62,10 +63,11 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
-        $this->displayEntity($input->getArgument('entityName'), $entityManager, $output);
+        $this->displayEntity($input->getArgument('entityName'), $entityManager, $io);
 
         return 0;
     }
@@ -77,56 +79,47 @@ EOT
      * @param EntityManagerInterface $entityManager
      * @param OutputInterface        $output
      */
-    private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
+    private function displayEntity($entityName, EntityManagerInterface $entityManager, SymfonyStyle $io)
     {
-        $table = new Table($output);
-
-        $table->setHeaders(array('Field', 'Value'));
-
         $metadata = $this->getClassMetadata($entityName, $entityManager);
 
-        array_map(
-            array($table, 'addRow'),
-            array_merge(
-                array(
-                    $this->formatField('Name', $metadata->name),
-                    $this->formatField('Root entity name', $metadata->rootEntityName),
-                    $this->formatField('Custom generator definition', $metadata->customGeneratorDefinition),
-                    $this->formatField('Custom repository class', $metadata->customRepositoryClassName),
-                    $this->formatField('Mapped super class?', $metadata->isMappedSuperclass),
-                    $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
-                    $this->formatField('Parent classes', $metadata->parentClasses),
-                    $this->formatField('Sub classes', $metadata->subClasses),
-                    $this->formatField('Embedded classes', $metadata->subClasses),
-                    $this->formatField('Named queries', $metadata->namedQueries),
-                    $this->formatField('Named native queries', $metadata->namedNativeQueries),
-                    $this->formatField('SQL result set mappings', $metadata->sqlResultSetMappings),
-                    $this->formatField('Identifier', $metadata->identifier),
-                    $this->formatField('Inheritance type', $metadata->inheritanceType),
-                    $this->formatField('Discriminator column', $metadata->discriminatorColumn),
-                    $this->formatField('Discriminator value', $metadata->discriminatorValue),
-                    $this->formatField('Discriminator map', $metadata->discriminatorMap),
-                    $this->formatField('Generator type', $metadata->generatorType),
-                    $this->formatField('Table', $metadata->table),
-                    $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
-                    $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
-                    $this->formatField('Sequence generator definition', $metadata->sequenceGeneratorDefinition),
-                    $this->formatField('Table generator definition', $metadata->tableGeneratorDefinition),
-                    $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
-                    $this->formatField('Versioned?', $metadata->isVersioned),
-                    $this->formatField('Version field', $metadata->versionField),
-                    $this->formatField('Read only?', $metadata->isReadOnly),
+        $io->table(array('Field', 'Value'), array_merge(
+            array(
+                $this->formatField('Name', $metadata->name),
+                $this->formatField('Root entity name', $metadata->rootEntityName),
+                $this->formatField('Custom generator definition', $metadata->customGeneratorDefinition),
+                $this->formatField('Custom repository class', $metadata->customRepositoryClassName),
+                $this->formatField('Mapped super class?', $metadata->isMappedSuperclass),
+                $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
+                $this->formatField('Parent classes', $metadata->parentClasses),
+                $this->formatField('Sub classes', $metadata->subClasses),
+                $this->formatField('Embedded classes', $metadata->subClasses),
+                $this->formatField('Named queries', $metadata->namedQueries),
+                $this->formatField('Named native queries', $metadata->namedNativeQueries),
+                $this->formatField('SQL result set mappings', $metadata->sqlResultSetMappings),
+                $this->formatField('Identifier', $metadata->identifier),
+                $this->formatField('Inheritance type', $metadata->inheritanceType),
+                $this->formatField('Discriminator column', $metadata->discriminatorColumn),
+                $this->formatField('Discriminator value', $metadata->discriminatorValue),
+                $this->formatField('Discriminator map', $metadata->discriminatorMap),
+                $this->formatField('Generator type', $metadata->generatorType),
+                $this->formatField('Table', $metadata->table),
+                $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
+                $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
+                $this->formatField('Sequence generator definition', $metadata->sequenceGeneratorDefinition),
+                $this->formatField('Table generator definition', $metadata->tableGeneratorDefinition),
+                $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
+                $this->formatField('Versioned?', $metadata->isVersioned),
+                $this->formatField('Version field', $metadata->versionField),
+                $this->formatField('Read only?', $metadata->isReadOnly),
 
-                    $this->formatEntityListeners($metadata->entityListeners),
-                ),
-                array($this->formatField('Association mappings:', '')),
-                $this->formatMappings($metadata->associationMappings),
-                array($this->formatField('Field mappings:', '')),
-                $this->formatMappings($metadata->fieldMappings)
-            )
-        );
-
-        $table->render();
+                $this->formatEntityListeners($metadata->entityListeners),
+            ),
+            array($this->formatField('Association mappings:', '')),
+            $this->formatMappings($metadata->associationMappings),
+            array($this->formatField('Field mappings:', '')),
+            $this->formatMappings($metadata->fieldMappings)
+        ));
     }
 
     /**

@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\Tools\SchemaValidator;
 
 /**
@@ -70,35 +71,31 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $em = $this->getHelper('em')->getEntityManager();
         $validator = new SchemaValidator($em);
         $exit = 0;
 
         if ($input->getOption('skip-mapping')) {
-            $output->writeln('<comment>[Mapping]  Skipped mapping check.</comment>');
+            $io->comment('[Mapping]  Skipped mapping check.');
         } elseif ($errors = $validator->validateMapping()) {
             foreach ($errors as $className => $errorMessages) {
-                $output->writeln("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>");
-
-                foreach ($errorMessages as $errorMessage) {
-                    $output->writeln('* ' . $errorMessage);
-                }
-
-                $output->writeln('');
+                $io->error("[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:");
+                $io->listing($errorMessages);
             }
 
             $exit += 1;
         } else {
-            $output->writeln('<info>[Mapping]  OK - The mapping files are correct.</info>');
+            $io->success('[Mapping]  OK - The mapping files are correct.');
         }
 
         if ($input->getOption('skip-sync')) {
-            $output->writeln('<comment>[Database] SKIPPED - The database was not checked for synchronicity.</comment>');
+            $io->comment('[Database] SKIPPED - The database was not checked for synchronicity.');
         } elseif (!$validator->schemaInSyncWithMetadata()) {
-            $output->writeln('<error>[Database] FAIL - The database schema is not in sync with the current mapping file.</error>');
+            $io->error('[Database] FAIL - The database schema is not in sync with the current mapping file.');
             $exit += 2;
         } else {
-            $output->writeln('<info>[Database] OK - The database schema is in sync with the mapping files.</info>');
+            $io->success('<info>[Database] OK - The database schema is in sync with the mapping files.</info>');
         }
 
         return $exit;

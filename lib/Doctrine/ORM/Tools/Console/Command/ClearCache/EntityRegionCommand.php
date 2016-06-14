@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache;
 
@@ -81,6 +82,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io          = new SymfonyStyle($input, $output);
         $em          = $this->getHelper('em')->getEntityManager();
         $entityClass = $input->getArgument('entity-class');
         $entityId    = $input->getArgument('entity-id');
@@ -106,13 +108,13 @@ EOT
 
             $entityRegion->getCache()->flushAll();
 
-            $output->writeln(sprintf('Flushing cache provider configured for entity named <info>"%s"</info>', $entityClass));
+            $io->comment(sprintf('Flushing cache provider configured for entity named <info>"%s"</info>', $entityClass));
 
             return;
         }
 
         if ($input->getOption('all')) {
-            $output->writeln('Clearing <info>all</info> second-level cache entity regions');
+            $io->comment('Clearing <info>all</info> second-level cache entity regions');
 
             $cache->evictEntityRegions();
 
@@ -120,13 +122,13 @@ EOT
         }
 
         if ($entityId) {
-            $output->writeln(sprintf('Clearing second-level cache entry for entity <info>"%s"</info> identified by <info>"%s"</info>', $entityClass, $entityId));
+            $io->comment(sprintf('Clearing second-level cache entry for entity <info>"%s"</info> identified by <info>"%s"</info>', $entityClass, $entityId));
             $cache->evictEntity($entityClass, $entityId);
 
             return;
         }
 
-        $output->writeln(sprintf('Clearing second-level cache for entity <info>"%s"</info>', $entityClass));
+        $io->comment(sprintf('Clearing second-level cache for entity <info>"%s"</info>', $entityClass));
         $cache->evictEntityRegion($entityClass);
     }
 }
