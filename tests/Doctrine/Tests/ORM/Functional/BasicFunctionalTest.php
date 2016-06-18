@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -1118,7 +1119,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->username = 'domnikl';
         $user->status = 'developer';
 
-        $this->setExpectedException('InvalidArgumentException', 'Entity has to be managed or scheduled for removal for single computation');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Entity has to be managed or scheduled for removal for single computation');
+
         $this->_em->flush($user);
     }
 
@@ -1195,7 +1198,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $article1->author = $user;
         $user->articles[] = $article1;
 
-        $this->setExpectedException('InvalidArgumentException', "A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
+
         $this->_em->flush($user);
     }
 
@@ -1291,10 +1296,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->status = 'developer';
         $user->address = $user;
 
-        $this->setExpectedException(
-            'Doctrine\ORM\ORMInvalidArgumentException',
-            'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field '
-            . '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field ' .
+            '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'
         );
 
         $this->_em->persist($user);

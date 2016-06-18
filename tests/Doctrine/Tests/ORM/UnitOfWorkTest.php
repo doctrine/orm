@@ -248,7 +248,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testLockWithoutEntityThrowsException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->_unitOfWork->lock(null, null, null);
     }
 
@@ -273,7 +273,7 @@ class UnitOfWorkTest extends OrmTestCase
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
-        $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException');
+        $this->expectException(\Doctrine\ORM\ORMInvalidArgumentException::class);
 
         $this->_unitOfWork->persist($user);
     }
@@ -301,7 +301,7 @@ class UnitOfWorkTest extends OrmTestCase
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
-        $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException');
+        $this->expectException(\Doctrine\ORM\ORMInvalidArgumentException::class);
 
         $this->_unitOfWork->computeChangeSet($metadata, $user);
     }

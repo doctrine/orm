@@ -1,6 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -228,7 +230,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
     public function testDqlWithNonExistentEmbeddableField()
     {
-        $this->setExpectedException('Doctrine\ORM\Query\QueryException', 'no field or association named address.asdfasdf');
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('no field or association named address.asdfasdf');
 
         $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
             ->execute();
@@ -236,8 +239,9 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     
     public function testPartialDqlWithNonExistentEmbeddableField()
     {
-        $this->setExpectedException('Doctrine\ORM\Query\QueryException', "no mapped field named 'address.asdfasdf'");
-        
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage("no mapped field named 'address.asdfasdf'");
+
         $this->_em->createQuery("SELECT PARTIAL p.{id,address.asdfasdf} FROM " . __NAMESPACE__ . "\\DDC93Person p")
             ->execute();
     }
@@ -297,8 +301,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
      */
     public function testThrowsExceptionOnInfiniteEmbeddableNesting($embeddableClassName, $declaredEmbeddableClassName)
     {
-        $this->setExpectedException(
-            'Doctrine\ORM\Mapping\MappingException',
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
             sprintf(
                 'Infinite nesting detected for embedded property %s::nested. ' .
                 'You cannot embed an embeddable from the same type inside an embeddable.',

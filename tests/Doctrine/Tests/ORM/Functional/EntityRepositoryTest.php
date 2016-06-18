@@ -4,6 +4,9 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -291,7 +294,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testPessimisticReadLockWithoutTransaction_ThrowsException()
     {
-        $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
+        $this->expectException(TransactionRequiredException::class);
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
                   ->find(1, LockMode::PESSIMISTIC_READ);
@@ -303,7 +306,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testPessimisticWriteLockWithoutTransaction_ThrowsException()
     {
-        $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
+        $this->expectException(TransactionRequiredException::class);
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
                   ->find(1, LockMode::PESSIMISTIC_WRITE);
@@ -315,7 +318,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testOptimisticLockUnversionedEntity_ThrowsException()
     {
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
+        $this->expectException(OptimisticLockException::class);
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
                   ->find(1, LockMode::OPTIMISTIC);
@@ -338,7 +341,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
 
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
+        $this->expectException(OptimisticLockException::class);
+
         $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId, LockMode::OPTIMISTIC);
     }
 
@@ -360,7 +364,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testInvalidMagicCall()
     {
-        $this->setExpectedException('BadMethodCallException');
+        $this->expectException(\BadMethodCallException::class);
 
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repos->foo();
@@ -374,7 +378,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         list($userId, $addressId) = $this->loadAssociatedFixture();
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $this->setExpectedException('Doctrine\ORM\ORMException', "You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage("You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
+
         $user = $repos->findBy(array('address' => $addressId));
     }
 
@@ -460,7 +466,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $repos->createNamedQuery('invalidNamedQuery');
     }
@@ -658,7 +664,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testInvalidOrientation()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'Invalid order by orientation specified for Doctrine\Tests\Models\CMS\CmsUser#username');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('Invalid order by orientation specified for Doctrine\Tests\Models\CMS\CmsUser#username');
 
         $repo = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repo->findBy(array('status' => 'test'), array('username' => 'INVALID'));
@@ -918,7 +925,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByFieldInjectionPrevented()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repository->findBy(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test'));
@@ -929,7 +937,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindOneByFieldInjectionPrevented()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repository->findOneBy(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test'));
@@ -940,7 +949,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingInjectionPrevented()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized field: ');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $result     = $repository->matching(new Criteria(
@@ -956,7 +966,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindInjectionPrevented()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'Unrecognized identifier fields: ');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('Unrecognized identifier fields: ');
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repository->find(array('username = ?; DELETE FROM cms_users; SELECT 1 WHERE 1' => 'test', 'id' => 1));

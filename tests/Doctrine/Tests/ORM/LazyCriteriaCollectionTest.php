@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use stdClass;
 
 /**
@@ -33,7 +34,7 @@ class LazyCriteriaCollectionTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->persister              = $this->getMock('Doctrine\ORM\Persisters\Entity\EntityPersister');
+        $this->persister              = $this->createMock(EntityPersister::class);
         $this->criteria               = new Criteria();
         $this->lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
     }

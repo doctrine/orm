@@ -613,7 +613,9 @@ class EntityGeneratorTest extends OrmTestCase
             $this->assertEquals($expected, $actual);
         }
 
-        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided InheritanceType: INVALID');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid provided InheritanceType: INVALID');
+
         $method->invoke($this->_generator, 'INVALID');
     }
 
@@ -640,7 +642,9 @@ class EntityGeneratorTest extends OrmTestCase
             $this->assertEquals($expected, $actual);
         }
 
-        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided ChangeTrackingPolicy: INVALID');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid provided ChangeTrackingPolicy: INVALID');
+
         $method->invoke($this->_generator, 'INVALID');
     }
 
@@ -667,7 +671,9 @@ class EntityGeneratorTest extends OrmTestCase
             $this->assertEquals($expected, $actual);
         }
 
-        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided IdGeneratorType: INVALID');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid provided IdGeneratorType: INVALID');
+
         $method->invoke($this->_generator, 'INVALID');
     }
 

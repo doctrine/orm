@@ -83,10 +83,8 @@ class CountWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
         $query->getSQL();
     }

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Proxy;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -56,7 +57,8 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $identifier = array('id' => 42);
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
+        $persister  = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(array('load'))->disableOriginalConstructor()->getMock();
+
         $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
         $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
@@ -89,7 +91,7 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized()
     {
-        $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
+        $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(array('load'))->disableOriginalConstructor()->getMock();
         $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
         /* @var $proxy \Doctrine\Common\Proxy\Proxy */
@@ -116,7 +118,7 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized()
     {
-        $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load'), array(), '', false);
+        $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(array('load'))->disableOriginalConstructor()->getMock();
         $this->uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
         /* @var $proxy \Doctrine\Common\Proxy\Proxy */

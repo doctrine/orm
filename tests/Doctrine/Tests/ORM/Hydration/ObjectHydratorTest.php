@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -1004,7 +1005,11 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
 
         // mocking the proxy factory
-        $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
+        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
+                             ->setMethods(array('getProxy'))
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
         $proxyFactory->expects($this->once())
                      ->method('getProxy')
                      ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), array('id' => 42))
@@ -1049,7 +1054,11 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
 
         // mocking the proxy factory
-        $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
+        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
+                             ->setMethods(array('getProxy'))
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
         $proxyFactory->expects($this->once())
                      ->method('getProxy')
                      ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), array('id' => 42))

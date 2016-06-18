@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -66,11 +67,11 @@ class DefaultRegionTest extends AbstractRegionTest
     public function testEvictAllWithGenericCacheThrowsUnsupportedException()
     {
         /* @var $cache \Doctrine\Common\Cache\Cache */
-        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+        $cache = $this->createMock(Cache::class);
 
         $region = new DefaultRegion('foo', $cache);
 
-        $this->setExpectedException('BadMethodCallException');
+        $this->expectException(\BadMethodCallException::class);
 
         $region->evictAll();
     }

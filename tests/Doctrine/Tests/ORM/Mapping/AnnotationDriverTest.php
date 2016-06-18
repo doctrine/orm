@@ -2,11 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\MappingException;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -20,7 +22,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $reader = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 
@@ -157,9 +159,12 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "It is illegal to put an inverse side one-to-many or many-to-many association on ".
-            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'");
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            "It is illegal to put an inverse side one-to-many or many-to-many association on " .
+            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
+        );
+
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\UsingInvalidMappedSuperClass');
     }
 
@@ -175,9 +180,12 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "It is not supported to define inheritance information on a mapped ".
-            "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'.");
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            "It is not supported to define inheritance information on a mapped " .
+            "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'."
+        );
+
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence');
     }
 
@@ -224,8 +232,9 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\Common\Annotations\AnnotationException',
-            '[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
+        $this->expectException(AnnotationException::class);
+        $this->expectExceptionMessage('[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
+
         $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
 

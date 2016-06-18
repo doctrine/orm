@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -22,7 +23,9 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->setExpectedException("Doctrine\ORM\ORMInvalidArgumentException", "A managed+dirty entity Doctrine\Tests\Models\CMS\CmsUser");
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage('A managed+dirty entity Doctrine\Tests\Models\CMS\CmsUser');
+
         $this->_em->getUnitOfWork()->scheduleForInsert($user);
     }
 
@@ -37,7 +40,9 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 
         $this->_em->remove($user);
 
-        $this->setExpectedException("Doctrine\ORM\ORMInvalidArgumentException", "Removed entity Doctrine\Tests\Models\CMS\CmsUser");
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage('Removed entity Doctrine\Tests\Models\CMS\CmsUser');
+
         $this->_em->getUnitOfWork()->scheduleForInsert($user);
     }
 
@@ -50,7 +55,9 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 
         $this->_em->getUnitOfWork()->scheduleForInsert($user);
 
-        $this->setExpectedException("Doctrine\ORM\ORMInvalidArgumentException", "Entity Doctrine\Tests\Models\CMS\CmsUser");
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage('Entity Doctrine\Tests\Models\CMS\CmsUser');
+
         $this->_em->getUnitOfWork()->scheduleForInsert($user);
     }
 
@@ -58,7 +65,9 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
     {
         $user = new CmsUser();
 
-        $this->setExpectedException("Doctrine\ORM\ORMInvalidArgumentException", "The given entity of type 'Doctrine\Tests\Models\CMS\CmsUser' (Doctrine\Tests\Models\CMS\CmsUser@");
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage("The given entity of type 'Doctrine\Tests\Models\CMS\CmsUser' (Doctrine\Tests\Models\CMS\CmsUser@");
+
         $this->_em->getUnitOfWork()->registerManaged($user, array(), array());
     }
 
@@ -66,7 +75,9 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
     {
         $user = new CmsUser();
 
-        $this->setExpectedException("Doctrine\ORM\ORMInvalidArgumentException", "Only managed entities can be marked or checked as read only. But Doctrine\Tests\Models\CMS\CmsUser@");
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage('Only managed entities can be marked or checked as read only. But Doctrine\Tests\Models\CMS\CmsUser@');
+
         $this->_em->getUnitOfWork()->markReadOnly($user);
     }
 }

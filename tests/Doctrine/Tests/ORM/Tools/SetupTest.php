@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Version;
 use Doctrine\Tests\OrmTestCase;
@@ -97,9 +98,7 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureCacheCustomInstance()
     {
-        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
-        $cache->expects($this->never())->method('setNamespace');
-
+        $cache  = $this->createMock(Cache::class);
         $config = Setup::createConfiguration(array(), true, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());

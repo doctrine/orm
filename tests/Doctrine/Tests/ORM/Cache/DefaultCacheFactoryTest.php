@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
 use \Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -39,9 +41,10 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->em               = $this->_getTestEntityManager();
         $this->regionsConfig    = new RegionsConfiguration;
         $arguments              = array($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
-        $this->factory          = $this->getMock('\Doctrine\ORM\Cache\DefaultCacheFactory', array(
-            'getRegion'
-        ), $arguments);
+        $this->factory          = $this->getMockBuilder(DefaultCacheFactory::class)
+                                       ->setMethods(array('getRegion'))
+                                       ->setConstructorArgs($arguments)
+                                       ->getMock();
     }
 
     public function testImplementsCacheFactory()
@@ -284,7 +287,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion()
     {
         /* @var $cache \Doctrine\Common\Cache\Cache */
-        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+        $cache = $this->createMock(Cache::class);
 
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 
@@ -300,7 +303,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     public function testBuildsMultiGetCacheRegionFromGenericCacheRegion()
     {
         /* @var $cache \Doctrine\Common\Cache\CacheProvider */
-        $cache = $this->getMockForAbstractClass('Doctrine\Common\Cache\CacheProvider');
+        $cache = $this->getMockForAbstractClass(CacheProvider::class);
 
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 

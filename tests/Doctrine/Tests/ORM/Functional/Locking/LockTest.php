@@ -3,7 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -47,7 +49,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
+        $this->expectException(OptimisticLockException::class);
+
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
@@ -64,7 +67,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
+        $this->expectException(OptimisticLockException::class);
+
         $this->_em->lock($user, LockMode::OPTIMISTIC);
     }
 
@@ -75,7 +79,9 @@ class LockTest extends OrmFunctionalTestCase
     public function testLockUnmanagedEntity_ThrowsException() {
         $article = new CmsArticle();
 
-        $this->setExpectedException('InvalidArgumentException', 'Entity Doctrine\Tests\Models\CMS\CmsArticle');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Entity Doctrine\Tests\Models\CMS\CmsArticle');
+
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
@@ -91,7 +97,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
+        $this->expectException(TransactionRequiredException::class);
+
         $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
     }
 
@@ -107,7 +114,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
+        $this->expectException(TransactionRequiredException::class);
+
         $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
     }
 
@@ -181,7 +189,9 @@ class LockTest extends OrmFunctionalTestCase
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'";
 
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException', 'The optimistic lock on an entity failed.');
+        $this->expectException(OptimisticLockException::class);
+        $this->expectExceptionMessage('The optimistic lock on an entity failed.');
+
         $sql = $this->_em->createQuery($dql)->setHint(
             Query::HINT_LOCK_MODE, LockMode::OPTIMISTIC
         )->getSQL();

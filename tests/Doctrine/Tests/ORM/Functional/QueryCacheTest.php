@@ -3,6 +3,10 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -105,7 +109,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
+        $cache = $this->createMock(Cache::class);
 
         $query->setQueryCacheDriver($cache);
 
@@ -123,18 +127,23 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $sqlExecMock = $this->getMock('Doctrine\ORM\Query\Exec\AbstractSqlExecutor', array('execute'));
+        $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
+                            ->setMethods(array('execute'))
+                            ->getMock();
+
         $sqlExecMock->expects($this->once())
                     ->method('execute')
                     ->will($this->returnValue( 10 ));
 
-        $parserResultMock = $this->getMock('Doctrine\ORM\Query\ParserResult');
+        $parserResultMock = $this->createMock(ParserResult::class);
         $parserResultMock->expects($this->once())
                          ->method('getSqlExecutor')
                          ->will($this->returnValue($sqlExecMock));
 
-        $cache = $this->getMock('Doctrine\Common\Cache\CacheProvider',
-                array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'));
+        $cache = $this->getMockBuilder(CacheProvider::class)
+                      ->setMethods(array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'))
+                      ->getMock();
+
         $cache->expects($this->at(0))->method('doFetch')->will($this->returnValue(1));
         $cache->expects($this->at(1))
               ->method('doFetch')
