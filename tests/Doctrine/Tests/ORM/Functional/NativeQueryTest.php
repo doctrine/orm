@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Query\Parameter;
@@ -324,7 +325,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'ResultSetMapping builder does not currently support your inheritance scheme.');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
+
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\Company\CompanyContract', 'c');
     }
@@ -351,10 +354,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
-        $this->setExpectedException(
-            "Doctrine\ORM\Internal\Hydration\HydrationException",
-            "The parent object of entity result with alias 'a' was not found. The parent alias is 'un'."
-        );
+        $this->expectException(HydrationException::class);
+        $this->expectExceptionMessage("The parent object of entity result with alias 'a' was not found. The parent alias is 'un'.");
+
         $users = $query->getResult();
     }
 

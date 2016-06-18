@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle,
@@ -118,10 +120,8 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testUsingUnknownQueryParameterShouldThrowException()
     {
-        $this->setExpectedException(
-            "Doctrine\ORM\Query\QueryException",
-            "Invalid parameter: token 2 is not defined in the query."
-        );
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Invalid parameter: token 2 is not defined in the query.');
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
         $q->setParameter(2, 'jwage');
@@ -130,10 +130,8 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testTooManyParametersShouldThrowException()
     {
-        $this->setExpectedException(
-            "Doctrine\ORM\Query\QueryException",
-            "Too many parameters: the query defines 1 parameters and you bound 2"
-        );
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
         $q->setParameter(1, 'jwage');
@@ -144,10 +142,8 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testTooFewParametersShouldThrowException()
     {
-        $this->setExpectedException(
-            "Doctrine\ORM\Query\QueryException",
-            "Too few parameters: the query defines 1 parameters but you only bound 0"
-        );
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Too few parameters: the query defines 1 parameters but you only bound 0');
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
 
@@ -156,7 +152,7 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testInvalidInputParameterThrowsException()
     {
-        $this->setExpectedException("Doctrine\ORM\Query\QueryException");
+        $this->expectException(QueryException::class);
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?');
         $q->setParameter(1, 'jwage');
@@ -505,7 +501,8 @@ class QueryTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
 
-        $this->setExpectedException('Doctrine\ORM\NonUniqueResultException');
+        $this->expectException(NonUniqueResultException::class);
+        
         $fetchedUser = $query->getOneOrNullResult();
     }
 

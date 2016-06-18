@@ -528,7 +528,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this
             ->builder
@@ -624,7 +624,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testThrowsExceptionOnCreateManyToManyWithIdentity()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder->createManyToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                           ->makePrimaryKey()
@@ -677,7 +677,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testThrowsExceptionOnCreateOneToManyWithIdentity()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                 ->makePrimaryKey()
@@ -775,7 +775,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testExceptionOnOrphanRemovalOnManyToOne()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder
             ->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')

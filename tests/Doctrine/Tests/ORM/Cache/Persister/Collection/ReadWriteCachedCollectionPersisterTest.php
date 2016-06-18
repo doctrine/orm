@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
@@ -40,7 +41,9 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
      */
     protected function createRegion()
     {
-        return $this->getMock('Doctrine\ORM\Cache\ConcurrentRegion', $this->regionMockMethods);
+        return $this->getMockBuilder(ConcurrentRegion::class)
+                    ->setMethods($this->regionMockMethods)
+                    ->getMock();
     }
 
     public function testDeleteShouldLockItem()

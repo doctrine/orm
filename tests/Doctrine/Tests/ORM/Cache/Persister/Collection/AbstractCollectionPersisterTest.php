@@ -80,10 +80,9 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em                   = $this->_getTestEntityManager();
         $this->region               = $this->createRegion();
-        $this->collectionPersister  = $this->getMock(
-            'Doctrine\ORM\Persisters\Collection\CollectionPersister',
-            $this->collectionPersisterMockMethods
-        );
+        $this->collectionPersister  = $this->getMockBuilder(CollectionPersister::class)
+                                           ->setMethods($this->collectionPersisterMockMethods)
+                                           ->getMock();
     }
 
     /**
@@ -91,7 +90,9 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
      */
     protected function createRegion()
     {
-        return $this->getMock('Doctrine\ORM\Cache\Region', $this->regionMockMethods);
+        return $this->getMockBuilder(Region::class)
+                    ->setMethods($this->regionMockMethods)
+                    ->getMock();
     }
 
     /**

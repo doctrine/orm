@@ -13,6 +13,7 @@ use Doctrine\ORM\Query as ORMQuery;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -76,7 +77,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = array(), array $queryParams = array())
     {
-        $this->setExpectedException($expectedException);
+        $this->expectException($expectedException);
 
         $query = $this->_em->createQuery($dqlToBeTested);
 
@@ -429,7 +430,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testJoinOnClause_NotYetSupported_ThrowsException()
     {
-        $this->setExpectedException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
 
         $sql = $this->_em->createQuery(
             "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a ON a.topic LIKE '%foo%'"

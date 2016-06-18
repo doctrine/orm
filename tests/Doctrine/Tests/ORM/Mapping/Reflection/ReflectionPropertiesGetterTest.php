@@ -90,7 +90,7 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
     public function testPropertyGetterWillSkipPropertiesNotRetrievedByTheRuntimeReflectionService()
     {
         /* @var $reflectionService ReflectionService|\PHPUnit_Framework_MockObject_MockObject */
-        $reflectionService = $this->getMock('Doctrine\Common\Persistence\Mapping\ReflectionService');
+        $reflectionService = $this->createMock(ReflectionService::class);
 
         $reflectionService
             ->expects($this->exactly(2))
@@ -113,7 +113,7 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
     public function testPropertyGetterWillSkipClassesNotRetrievedByTheRuntimeReflectionService()
     {
         /* @var $reflectionService ReflectionService|\PHPUnit_Framework_MockObject_MockObject */
-        $reflectionService = $this->getMock('Doctrine\Common\Persistence\Mapping\ReflectionService');
+        $reflectionService = $this->createMock(ReflectionService::class);
 
         $reflectionService
             ->expects($this->once())

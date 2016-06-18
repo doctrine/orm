@@ -20,9 +20,11 @@
 namespace Doctrine\Tests\ORM\Internal;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit_Framework_TestCase;
 use stdClass;
 
@@ -53,8 +55,8 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->listenersInvoker = $this->getMock('Doctrine\ORM\Event\ListenersInvoker', array(), array(), '', false);
-        $this->entityManager    = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $this->listenersInvoker = $this->createMock(ListenersInvoker::class);
+        $this->entityManager    = $this->createMock(EntityManagerInterface::class);
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
@@ -66,7 +68,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testDefersPostLoadOfEntity($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata      = $this->createMock(ClassMetadata::class);
         $entity        = new stdClass();
         $entityManager = $this->entityManager;
 
@@ -104,7 +106,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 
         $this
@@ -131,8 +133,8 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     {
         /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
         /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata1      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
-        $metadata2      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata1      = $this->createMock(ClassMetadata::class);
+        $metadata2      = $this->createMock(ClassMetadata::class);
         $entity1        = new stdClass();
         $entity2        = new stdClass();
         $entityManager  = $this->entityManager;
@@ -168,7 +170,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners()
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 
         $this

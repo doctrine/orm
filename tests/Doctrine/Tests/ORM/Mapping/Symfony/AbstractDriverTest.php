@@ -18,6 +18,7 @@
 */
 
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 
 /**
  * @group DDC-1418
@@ -47,10 +48,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
-        $this->setExpectedException(
-            'Doctrine\Common\Persistence\Mapping\MappingException',
-            "No mapping file found named"
-        );
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No mapping file found named');
 
         $driver = $this->getDriver(array(
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
@@ -61,10 +60,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingNamespaceNotFound()
     {
-        $this->setExpectedException(
-            'Doctrine\Common\Persistence\Mapping\MappingException',
-            "No mapping file found named 'Foo".$this->getFileExtension()."' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'."
-        );
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'.");
 
         $driver = $this->getDriver(array(
             'MyNamespace\MySubnamespace\Entity' => $this->dir,

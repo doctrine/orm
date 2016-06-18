@@ -20,6 +20,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -90,7 +91,9 @@ class CustomTreeWalkersTest extends OrmTestCase
 
     public function testSetUnknownQueryComponentThrowsException()
     {
-        $this->setExpectedException("Doctrine\ORM\Query\QueryException", "Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage("Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
+
         $this->generateSql(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             array(),

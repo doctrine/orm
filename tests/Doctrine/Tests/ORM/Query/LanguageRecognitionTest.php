@@ -84,7 +84,7 @@ class LanguageRecognitionTest extends OrmTestCase
      */
     public function testRejectsInvalidDQL($dql)
     {
-        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
 
         $this->_em->getConfiguration()->setEntityNamespaces(array(
             'Unknown' => 'Unknown',

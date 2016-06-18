@@ -8,6 +8,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -520,7 +521,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
 
         $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
     }
@@ -532,7 +534,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $factory = $this->createClassMetadataFactory();
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.');
+
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
     }
 

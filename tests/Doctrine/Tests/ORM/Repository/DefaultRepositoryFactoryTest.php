@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Repository;
 
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use PHPUnit_Framework_TestCase;
 
@@ -32,7 +35,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->configuration     = $this->getMock('Doctrine\\ORM\\Configuration');
+        $this->configuration     = $this->createMock(Configuration::class);
         $this->entityManager     = $this->createEntityManager();
         $this->repositoryFactory = new DefaultRepositoryFactory();
 
@@ -122,10 +125,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
     public function buildClassMetadata($className)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata|\PHPUnit_Framework_MockObject_MockObject */
-        $metadata = $this
-            ->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $metadata = $this->createMock(ClassMetadata::class);
 
         $metadata->expects($this->any())->method('getName')->will($this->returnValue($className));
 
@@ -139,7 +139,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
      */
     private function createEntityManager()
     {
-        $entityManager = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
 
         $entityManager
             ->expects($this->any())

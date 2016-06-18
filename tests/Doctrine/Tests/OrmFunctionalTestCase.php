@@ -742,7 +742,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @throws \Exception
      */
-    protected function onNotSuccessfulTest(\Exception $e)
+    protected function onNotSuccessfulTest($e)
     {
         if ($e instanceof \PHPUnit_Framework_AssertionFailedError) {
             throw $e;

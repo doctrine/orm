@@ -1,6 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;
 use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
@@ -67,7 +69,9 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $dql = 'SELECT t FROM Doctrine\Tests\Models\Navigation\NavPhotos t WHERE t.poi = ?1';
 
-        $this->setExpectedException('Doctrine\ORM\Query\QueryException', 'A single-valued association path expression to an entity with a composite primary key is not supported.');
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('A single-valued association path expression to an entity with a composite primary key is not supported.');
+
         $sql = $this->_em->createQuery($dql)->getSQL();
     }
 
@@ -133,13 +137,17 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
+
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('key1' => 100));
     }
 
     public function testUnrecognizedIdentifierFieldsOnGetReference()
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', "Unrecognized identifier fields: 'key1'");
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
+
         $poi = $this->_em->getReference('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 10, 'long' => 20, 'key1' => 100));
     }
 

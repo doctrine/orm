@@ -1083,7 +1083,8 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testWhereAppend()
     {
-        $this->setExpectedException('InvalidArgumentException', "Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
 
         $qb = $this->_em->createQueryBuilder()
             ->add('where', 'u.foo = ?1')
