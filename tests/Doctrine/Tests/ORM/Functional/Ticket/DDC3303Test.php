@@ -12,6 +12,13 @@ class DDC3303Test extends OrmFunctionalTestCase
         $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3303Employee::class)]);
     }
 
+    /**
+     * @group 4097
+     * @group 4277
+     * @group 5867
+     *
+     * When using an embedded field in an inheritance, private properties should also be inherited.
+     */
     public function testEmbeddedObjectsAreAlsoInherited()
     {
         $employee = new DDC3303Employee(
