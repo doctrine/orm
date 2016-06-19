@@ -4,7 +4,7 @@ php:
   - 5.5
   - 5.6
   - 7.0
-  - 7.1
+  - nightly
   - hhvm
 
 env:
@@ -64,6 +64,8 @@ matrix:
   exclude:
     - php: hhvm
       env: DB=pgsql  # driver for PostgreSQL currently unsupported by HHVM, requires 3rd party dependency
+  allow_failures:
+    - php: nightly
 
 sudo: false
 
