@@ -9,7 +9,7 @@ class DDC3303Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3303Employee::class)]);
+        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3303Employee::CLASSNAME)]);
     }
 
     /**
@@ -31,7 +31,7 @@ class DDC3303Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        self::assertEquals($employee, $this->_em->find(DDC3303Employee::class, 'John Doe'));
+        self::assertEquals($employee, $this->_em->find(DDC3303Employee::CLASSNAME, 'John Doe'));
     }
 }
 
@@ -79,6 +79,8 @@ class DDC3303Address
  */
 class DDC3303Employee extends DDC3303Person
 {
+    const CLASSNAME = __CLASS__;
+
     /** @Column(type="string") @var string */
     private $company;
 
