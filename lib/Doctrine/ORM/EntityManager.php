@@ -421,14 +421,14 @@ use Doctrine\Common\Util\ClassUtils;
                 return null;
             }
 
-            switch ($lockMode) {
-                case LockMode::OPTIMISTIC:
+            switch (true) {
+                case LockMode::OPTIMISTIC === $lockMode:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case LockMode::NONE:
-                case LockMode::PESSIMISTIC_READ:
-                case LockMode::PESSIMISTIC_WRITE:
+                case LockMode::NONE === $lockMode:
+                case LockMode::PESSIMISTIC_READ === $lockMode:
+                case LockMode::PESSIMISTIC_WRITE === $lockMode:
                     $persister = $unitOfWork->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
@@ -439,8 +439,8 @@ use Doctrine\Common\Util\ClassUtils;
 
         $persister = $unitOfWork->getEntityPersister($class->name);
 
-        switch ($lockMode) {
-            case LockMode::OPTIMISTIC:
+        switch (true) {
+            case LockMode::OPTIMISTIC === $lockMode:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
@@ -451,8 +451,8 @@ use Doctrine\Common\Util\ClassUtils;
 
                 return $entity;
 
-            case LockMode::PESSIMISTIC_READ:
-            case LockMode::PESSIMISTIC_WRITE:
+            case LockMode::PESSIMISTIC_READ === $lockMode:
+            case LockMode::PESSIMISTIC_WRITE === $lockMode:
                 if ( ! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
