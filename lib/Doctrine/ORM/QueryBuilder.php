@@ -469,14 +469,15 @@ class QueryBuilder
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
-     *         ->join('u.articles','a';
+     *         ->join('u.articles','a');
      *
      *     $qb->getAllAliases(); // array('u','a')
      * </code>
      * @return array
      */
-    public function getAllAliases() {
-        return array_merge($this->getRootAliases(),array_keys($this->joinRootAliases));
+    public function getAllAliases()
+    {
+        return array_merge($this->getRootAliases(), array_keys($this->joinRootAliases));
     }
 
     /**
