@@ -314,12 +314,13 @@ class UnitOfWork implements PropertyChangedListener
      * 5) All entity deletions
      *
      * @param null|object|array $entity
+     * @param boolean           $leaveUnflushedChanges allows you to keep changes stored with notify policy
      *
      * @return void
      *
      * @throws \Exception
      */
-    public function commit($entity = null)
+    public function commit($entity = null, $leaveUnflushedChanges)
     {
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
@@ -418,16 +419,58 @@ class UnitOfWork implements PropertyChangedListener
         $this->dispatchPostFlushEvent();
 
         // Clear up
-        $this->entityInsertions =
-        $this->entityUpdates =
-        $this->entityDeletions =
-        $this->extraUpdates =
-        $this->entityChangeSets =
-        $this->collectionUpdates =
-        $this->collectionDeletions =
-        $this->visitedCollections =
-        $this->scheduledForSynchronization =
-        $this->orphanRemovals = array();
+        if($leaveUnflushedChanges) {
+            $this->clearUp($entity);
+        } else {
+            $this->clearUp();
+        }
+    }
+
+    /**
+     * Clears only given entities related data, so you won't meet case when you flushed one entity some where
+     * and your changes stored in UOW with propertyChanged are lost.
+     *
+     * @param null|object|array $entity
+     */
+    private function clearUp($entity = null)
+    {
+        if($entity && is_array($entity)) {
+            foreach($entity as $singleEntity) {
+                $this->clearUpSingle($singleEntity);
+            }
+        } elseif($entity) {
+            $this->clearUpSingle($entity);
+        } else {
+            $this->entityInsertions =
+            $this->entityUpdates =
+            $this->entityDeletions =
+            $this->extraUpdates =
+            $this->entityChangeSets =
+            $this->collectionUpdates =
+            $this->collectionDeletions =
+            $this->visitedCollections =
+            $this->scheduledForSynchronization =
+            $this->orphanRemovals = array();
+        }
+    }
+
+    /**
+     * @param null|object|array $entity
+     */
+    private function clearUpSingle($entity) {
+        $oid = spl_object_hash($entity);
+        unset(
+            $this->entityInsertions[$oid],
+            $this->entityUpdates[$oid],
+            $this->entityDeletions[$oid],
+            $this->extraUpdates[$oid],
+            $this->entityChangeSets[$oid],
+            $this->collectionUpdates[$oid],
+            $this->collectionDeletions[$oid],
+            $this->visitedCollections[$oid],
+            $this->scheduledForSynchronization[$oid],
+            $this->orphanRemovals[$oid]
+        );
     }
 
     /**
