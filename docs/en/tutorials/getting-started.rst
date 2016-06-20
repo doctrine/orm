@@ -17,7 +17,7 @@ This guide is designed for beginners that haven't worked with Doctrine ORM
 before. There are some prerequesites for the tutorial that have to be
 installed:
 
-- PHP 5.4 or above
+- PHP (latest stable version)
 - Composer Package Manager (`Install Composer
   <http://getcomposer.org/doc/00-intro.md>`_)
 
