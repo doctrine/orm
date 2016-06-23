@@ -87,9 +87,20 @@ class DefaultCollectionHydrator implements CollectionHydrator
             return null;
         }
 
-        /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
-        foreach ($entityEntries as $index => $entityEntry) {
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+        if (isset($assoc['indexBy'])) {
+            /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
+            foreach ($entityEntries as $entityEntry) {
+                $entity = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+
+                $entityClassMetadata = $this->em->getClassMetadata($entityEntry->class);
+                $index = $entityClassMetadata->getFieldValue($entity, $assoc['indexBy']);
+                $list[$index] = $entity;
+            }
+        } else {
+            /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
+            foreach ($entityEntries as $index => $entityEntry) {
+                $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+            }
         }
 
         array_walk($list, function($entity, $index) use ($collection) {
