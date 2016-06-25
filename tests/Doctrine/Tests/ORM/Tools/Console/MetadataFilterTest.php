@@ -77,6 +77,23 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(1, $metadatas);
     }
 
+    public function testFilterWithString2()
+    {
+        $originalMetadatas = array(
+            $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::CLASSNAME),
+            $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::CLASSNAME),
+            $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::CLASSNAME),
+        );
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityFoo');
+
+        $this->assertContains($metadataFoo, $metadatas);
+        $this->assertContains($metadataFooBar, $metadatas);
+        $this->assertNotContains($metadataBar, $metadatas);
+        $this->assertCount(2, $metadatas);
+    }
+
     public function testFilterWithArray()
     {
         $originalMetadatas = array(
@@ -94,6 +111,31 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertContains($metadataAaa, $metadatas);
         $this->assertNotContains($metadataBbb, $metadatas);
         $this->assertContains($metadataCcc, $metadatas);
+        $this->assertCount(2, $metadatas);
+    }
+
+    public function testFilterWithRegex()
+    {
+        $originalMetadatas = array(
+            $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::CLASSNAME),
+            $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::CLASSNAME),
+            $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::CLASSNAME),
+        );
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, 'Foo$');
+
+        $this->assertContains($metadataFoo, $metadatas);
+        $this->assertNotContains($metadataFooBar, $metadatas);
+        $this->assertNotContains($metadataBar, $metadatas);
+        $this->assertCount(1, $metadatas);
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, 'Bar$');
+
+        $this->assertNotContains($metadataFoo, $metadatas);
+        $this->assertContains($metadataFooBar, $metadatas);
+        $this->assertContains($metadataBar, $metadatas);
         $this->assertCount(2, $metadatas);
     }
 }
@@ -118,6 +160,33 @@ class MetadataFilterTestEntityBbb
 
 /** @Entity */
 class MetadataFilterTestEntityCcc
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Id @Column(type="integer") */
+    protected $id;
+}
+
+/** @Entity */
+class MetadataFilterTestEntityFoo
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Id @Column(type="integer") */
+    protected $id;
+}
+
+/** @Entity */
+class MetadataFilterTestEntityBar
+{
+    const CLASSNAME = __CLASS__;
+
+    /** @Id @Column(type="integer") */
+    protected $id;
+}
+
+/** @Entity */
+class MetadataFilterTestEntityFooBar
 {
     const CLASSNAME = __CLASS__;
 
