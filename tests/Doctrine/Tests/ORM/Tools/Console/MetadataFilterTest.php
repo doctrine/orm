@@ -29,6 +29,54 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->cmf->setEntityManager($em);
     }
 
+    public function testFilterWithEmptyArray()
+    {
+        $originalMetadatas = array(
+            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
+            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::CLASSNAME),
+        );
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, array());
+
+        $this->assertContains($metadataAaa, $metadatas);
+        $this->assertContains($metadataBbb, $metadatas);
+        $this->assertCount(count($originalMetadatas), $metadatas);
+    }
+
+    public function testFilterWithString()
+    {
+        $originalMetadatas = array(
+            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
+            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::CLASSNAME),
+            $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::CLASSNAME),
+        );
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityAaa');
+
+        $this->assertContains($metadataAaa, $metadatas);
+        $this->assertNotContains($metadataBbb, $metadatas);
+        $this->assertNotContains($metadataCcc, $metadatas);
+        $this->assertCount(1, $metadatas);
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityBbb');
+
+        $this->assertNotContains($metadataAaa, $metadatas);
+        $this->assertContains($metadataBbb, $metadatas);
+        $this->assertNotContains($metadataCcc, $metadatas);
+        $this->assertCount(1, $metadatas);
+
+        $metadatas = $originalMetadatas;
+        $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityCcc');
+
+        $this->assertNotContains($metadataAaa, $metadatas);
+        $this->assertNotContains($metadataBbb, $metadatas);
+        $this->assertContains($metadataCcc, $metadatas);
+        $this->assertCount(1, $metadatas);
+    }
+
     public function testFilterWithArray()
     {
         $originalMetadatas = array(
