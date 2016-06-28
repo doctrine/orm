@@ -69,6 +69,43 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group 5904
+     */
+    public function testCacheNamespaceShouldBeGeneratedWhenCacheIsNotGiven()
+    {
+        $config = Setup::createConfiguration(false, '/foo');
+        $cache  = $config->getMetadataCacheImpl();
+
+        self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
+    }
+
+    /**
+     * @group 5904
+     */
+    public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace()
+    {
+        $config = Setup::createConfiguration(false, '/foo', new ArrayCache());
+        $cache  = $config->getMetadataCacheImpl();
+
+        self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
+    }
+
+    /**
+     * @group 5904
+     */
+    public function testConfiguredCacheNamespaceShouldBeUsedAsPrefixOfGeneratedNamespace()
+    {
+        $originalCache = new ArrayCache();
+        $originalCache->setNamespace('foo');
+
+        $config = Setup::createConfiguration(false, '/foo', $originalCache);
+        $cache  = $config->getMetadataCacheImpl();
+
+        self::assertSame($originalCache, $cache);
+        self::assertSame('foo:dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
+    }
+
+    /**
      * @group DDC-1350
      */
     public function testConfigureProxyDir()
