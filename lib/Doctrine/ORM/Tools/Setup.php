@@ -145,7 +145,7 @@ class Setup
             $cache = new ArrayCache();
         }
 
-        if ($cache instanceof CacheProvider) {
+        if ($cache instanceof CacheProvider && $cache->getNamespace() === '') {
             $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
         }
 
