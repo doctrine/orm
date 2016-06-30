@@ -583,10 +583,7 @@ class ObjectHydrator extends AbstractHydrator
         parent::onClear($eventArgs);
 
         $aliases             = array_keys($this->identifierMap);
-        $this->identifierMap = array();
 
-        foreach ($aliases as $alias) {
-            $this->identifierMap[$alias] = array();
-        }
+        $this->identifierMap = array_fill_keys($aliases, []);
     }
 }
