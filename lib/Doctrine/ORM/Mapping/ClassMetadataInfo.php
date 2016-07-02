@@ -1583,7 +1583,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ($mapping['isOwningSide']) {
-            if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
+            if (empty($mapping['joinColumns'])) {
                 // Apply default join column
                 $mapping['joinColumns'] = array(
                     array(
