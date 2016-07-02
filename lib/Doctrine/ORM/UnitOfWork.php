@@ -1344,9 +1344,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->removeFromIdentityMap($entity);
 
-        if (isset($this->entityUpdates[$oid])) {
-            unset($this->entityUpdates[$oid]);
-        }
+        unset($this->entityUpdates[$oid]);
 
         if ( ! isset($this->entityDeletions[$oid])) {
             $this->entityDeletions[$oid] = $entity;
