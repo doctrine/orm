@@ -1597,8 +1597,8 @@ class ClassMetadataInfo implements ClassMetadata
 
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
-                    if (count($mapping['joinColumns']) == 1) {
-                        if ( ! isset($mapping['id']) || ! $mapping['id']) {
+                    if (count($mapping['joinColumns']) === 1) {
+                        if (empty($mapping['id'])) {
                             $joinColumn['unique'] = true;
                         }
                     } else {
@@ -1643,8 +1643,8 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
         }
 
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
 
         if ($mapping['orphanRemoval']) {
             unset($mapping['unique']);
