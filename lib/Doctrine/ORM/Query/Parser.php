@@ -1172,14 +1172,11 @@ class Parser
      */
     public function SelectClause()
     {
-        $isDistinct = false;
         $this->match(Lexer::T_SELECT);
 
         // Check for DISTINCT
-        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($isDistinct = $this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
-
-            $isDistinct = true;
         }
 
         // Process SelectExpressions (1..N)
@@ -1202,13 +1199,10 @@ class Parser
      */
     public function SimpleSelectClause()
     {
-        $isDistinct = false;
         $this->match(Lexer::T_SELECT);
 
-        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($isDistinct = $this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
-
-            $isDistinct = true;
         }
 
         return new AST\SimpleSelectClause($this->SimpleSelectExpression(), $isDistinct);
@@ -2983,7 +2977,6 @@ class Parser
     public function AggregateExpression()
     {
         $lookaheadType = $this->lexer->lookahead['type'];
-        $isDistinct = false;
 
         if ( ! in_array($lookaheadType, array(Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM))) {
             $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
@@ -2993,9 +2986,8 @@ class Parser
         $functionName = $this->lexer->token['value'];
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
-        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($isDistinct = $this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
-            $isDistinct = true;
         }
 
         $pathExp = $this->SimpleArithmeticExpression();
