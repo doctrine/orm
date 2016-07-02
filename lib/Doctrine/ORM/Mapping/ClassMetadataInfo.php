@@ -1465,8 +1465,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
-        // unset optional indexBy attribute if its empty
-        if ( ! isset($mapping['indexBy']) || !$mapping['indexBy']) {
+        if (empty($mapping['indexBy'])) {
             unset($mapping['indexBy']);
         }
 
