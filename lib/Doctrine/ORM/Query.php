@@ -309,7 +309,9 @@ final class Query extends AbstractQuery
 
         if ($paramCount > $mappingCount) {
             throw QueryException::tooManyParameters($mappingCount, $paramCount);
-        } elseif ($paramCount < $mappingCount) {
+        }
+
+        if ($paramCount < $mappingCount) {
             throw QueryException::tooFewParameters($mappingCount, $paramCount);
         }
 
