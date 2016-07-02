@@ -1783,7 +1783,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
+        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
 
         $this->assertMappingOrderBy($mapping);
 
