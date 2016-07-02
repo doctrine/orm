@@ -1679,11 +1679,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
         $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
-        if (isset($mapping['orderBy'])) {
-            if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
-            }
-        }
+        $this->assertMappingOrderBy($mapping);
 
         return $mapping;
     }
@@ -1789,11 +1785,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
 
-        if (isset($mapping['orderBy'])) {
-            if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
-            }
-        }
+        $this->assertMappingOrderBy($mapping);
 
         return $mapping;
     }
@@ -3387,5 +3379,15 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return $sequencePrefix;
+    }
+
+    /**
+     * @param array $mapping
+     */
+    private function assertMappingOrderBy(array $mapping)
+    {
+        if (isset($mapping['orderBy']) && !is_array($mapping['orderBy'])) {
+            throw new InvalidArgumentException("'orderBy' is expected to be an array, not " . gettype($mapping['orderBy']));
+        }
     }
 }
