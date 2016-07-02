@@ -2438,12 +2438,8 @@ class Parser
      */
     public function ConditionalFactor()
     {
-        $not = false;
-
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-
-            $not = true;
         }
 
         $conditionalPrimary = $this->ConditionalPrimary();
@@ -2622,13 +2618,10 @@ class Parser
      */
     public function CollectionMemberExpression()
     {
-        $not        = false;
         $entityExpr = $this->EntityExpression();
 
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-
-            $not = true;
         }
 
         $this->match(Lexer::T_MEMBER);
@@ -3029,12 +3022,10 @@ class Parser
      */
     public function BetweenExpression()
     {
-        $not = false;
         $arithExpr1 = $this->ArithmeticExpression();
 
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $not = true;
         }
 
         $this->match(Lexer::T_BETWEEN);
@@ -3174,11 +3165,9 @@ class Parser
     public function LikeExpression()
     {
         $stringExpr = $this->StringExpression();
-        $not = false;
 
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $not = true;
         }
 
         $this->match(Lexer::T_LIKE);
@@ -3284,11 +3273,8 @@ class Parser
      */
     public function ExistsExpression()
     {
-        $not = false;
-
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $not = true;
         }
 
         $this->match(Lexer::T_EXISTS);
