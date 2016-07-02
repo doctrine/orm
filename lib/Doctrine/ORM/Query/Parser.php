@@ -2793,22 +2793,19 @@ class Parser
      */
     public function ArithmeticFactor()
     {
-        $sign = null;
-
-        if (($isPlus = $this->lexer->isNextToken(Lexer::T_PLUS)) || $this->lexer->isNextToken(Lexer::T_MINUS)) {
-            $this->match(($isPlus) ? Lexer::T_PLUS : Lexer::T_MINUS);
-            $sign = $isPlus;
+        if ($isPlus = $this->lexer->isNextToken(Lexer::T_PLUS)) {
+            $this->match(Lexer::T_PLUS);
+        } elseif ($this->lexer->isNextToken(Lexer::T_MINUS)) {
+            $this->match(Lexer::T_MINUS);
         }
 
         $primary = $this->ArithmeticPrimary();
 
         // Phase 1 AST optimization: Prevent AST\ArithmeticFactor
         // if only one AST\ArithmeticPrimary is defined
-        if ($sign === null) {
-            return $primary;
-        }
-
-        return new AST\ArithmeticFactor($primary, $sign);
+        return $isPlus
+            ? new AST\ArithmeticFactor($primary, $isPlus)
+            : $primary;
     }
 
     /**
