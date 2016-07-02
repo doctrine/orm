@@ -2848,11 +2848,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->originalEntityData[$oid])) {
-            return $this->originalEntityData[$oid];
-        }
-
-        return array();
+        return isset($this->originalEntityData[$oid])
+            ? $this->originalEntityData[$oid]
+            : [];
     }
 
     /**
