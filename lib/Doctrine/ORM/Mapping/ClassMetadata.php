@@ -1351,25 +1351,22 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         // Cascades
-        $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : [];
-        $allCascades = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $cascadeTypes = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $cascades     = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : [];
 
         if (in_array('all', $cascades)) {
-            $cascades = $allCascades;
-        } elseif (count($cascades) !== count(array_intersect($cascades, $allCascades))) {
+            $cascades = $cascadeTypes;
+        }
+
+        if (count($cascades) !== count(array_intersect($cascades, $cascadeTypes))) {
             throw MappingException::invalidCascadeOption(
-                array_diff($cascades, $allCascades),
+                array_diff($cascades, array_intersect($cascades, $cascadeTypes)),
                 $this->name,
                 $mapping['fieldName']
             );
         }
 
         $mapping['cascade'] = $cascades;
-        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
-        $mapping['isCascadePersist'] = in_array('persist', $cascades);
-        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
         return $mapping;
     }
@@ -1446,9 +1443,12 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
 
         if ($mapping['orphanRemoval']) {
+            if (! in_array('remove', $mapping['cascade'])) {
+                $mapping['cascade'][] = 'remove';
+            }
+
             unset($mapping['unique']);
         }
 
@@ -1478,8 +1478,11 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
 
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
+        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+
+        if ($mapping['orphanRemoval'] && ! in_array('remove', $mapping['cascade'])) {
+            $mapping['cascade'][] = 'remove';
+        }
 
         $this->assertMappingOrderBy($mapping);
 

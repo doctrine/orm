@@ -282,35 +282,22 @@ class XmlExporter extends AbstractExporter
                 $associationMappingXml->addAttribute('fetch', $this->_getFetchModeString($associationMapping['fetch']));
             }
 
-            $cascade = [];
-            if ($associationMapping['isCascadeRemove']) {
-                $cascade[] = 'cascade-remove';
+            $cascades = [];
+
+            foreach (['remove', 'persist', 'refresh', 'merge', 'detach'] as $type) {
+                if (in_array($type, $associationMapping['cascade'])) {
+                    $cascades[] = 'cascade-' . $type;
+                }
             }
 
-            if ($associationMapping['isCascadePersist']) {
-                $cascade[] = 'cascade-persist';
+            if (count($cascades) === 5) {
+                $cascades = ['cascade-all'];
             }
 
-            if ($associationMapping['isCascadeRefresh']) {
-                $cascade[] = 'cascade-refresh';
-            }
-
-            if ($associationMapping['isCascadeMerge']) {
-                $cascade[] = 'cascade-merge';
-            }
-
-            if ($associationMapping['isCascadeDetach']) {
-                $cascade[] = 'cascade-detach';
-            }
-
-            if (count($cascade) === 5) {
-                $cascade  = ['cascade-all'];
-            }
-
-            if ($cascade) {
+            if ($cascades) {
                 $cascadeXml = $associationMappingXml->addChild('cascade');
 
-                foreach ($cascade as $type) {
+                foreach ($cascades as $type) {
                     $cascadeXml->addChild($type);
                 }
             }

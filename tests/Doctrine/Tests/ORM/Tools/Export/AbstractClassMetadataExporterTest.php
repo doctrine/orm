@@ -257,11 +257,11 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
         self::assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
 
-        self::assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        self::assertTrue($class->associationMappings['address']['isCascadePersist']);
-        self::assertFalse($class->associationMappings['address']['isCascadeRefresh']);
-        self::assertFalse($class->associationMappings['address']['isCascadeMerge']);
-        self::assertFalse($class->associationMappings['address']['isCascadeDetach']);
+        self::assertContains('remove', $class->associationMappings['address']['cascade']);
+        self::assertContains('persist', $class->associationMappings['address']['cascade']);
+        self::assertNotContains('refresh', $class->associationMappings['address']['cascade']);
+        self::assertNotContains('merge', $class->associationMappings['address']['cascade']);
+        self::assertNotContains('detach', $class->associationMappings['address']['cascade']);
         self::assertTrue($class->associationMappings['address']['orphanRemoval']);
         self::assertEquals(ClassMetadata::FETCH_EAGER, $class->associationMappings['address']['fetch']);
 
@@ -289,11 +289,11 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
         self::assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
 
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        self::assertContains('remove', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertContains('persist', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertNotContains('refresh', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertContains('merge', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertNotContains('detach', $class->associationMappings['phonenumbers']['cascade']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
         self::assertEquals(ClassMetadata::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
@@ -318,11 +318,11 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertEquals('id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
         self::assertEquals('INT NULL', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
 
-        self::assertTrue($class->associationMappings['groups']['isCascadeRemove']);
-        self::assertTrue($class->associationMappings['groups']['isCascadePersist']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeMerge']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeDetach']);
+        self::assertContains('remove', $class->associationMappings['groups']['cascade']);
+        self::assertContains('persist', $class->associationMappings['groups']['cascade']);
+        self::assertContains('refresh', $class->associationMappings['groups']['cascade']);
+        self::assertContains('merge', $class->associationMappings['groups']['cascade']);
+        self::assertContains('detach', $class->associationMappings['groups']['cascade']);
         self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
 
         return $class;
@@ -352,11 +352,11 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testCascadeIsExported($class)
     {
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        self::assertContains('persist', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertContains('merge', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertContains('remove', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertNotContains('refresh', $class->associationMappings['phonenumbers']['cascade']);
+        self::assertNotContains('detach', $class->associationMappings['phonenumbers']['cascade']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         return $class;
