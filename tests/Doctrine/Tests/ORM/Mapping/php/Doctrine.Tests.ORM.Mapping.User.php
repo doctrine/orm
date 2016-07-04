@@ -68,7 +68,7 @@ $metadata->mapOneToMany(array(
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Phonenumber',
    'cascade' =>
    array(
-   1 => 'persist',
+   0 => 'persist',
    ),
    'mappedBy' => 'user',
    'orphanRemoval' => true,

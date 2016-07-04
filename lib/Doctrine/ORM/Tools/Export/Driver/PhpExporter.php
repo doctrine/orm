@@ -114,7 +114,7 @@ class PhpExporter extends AbstractExporter
             $cascade = array('remove', 'persist', 'refresh', 'merge', 'detach');
 
             foreach ($cascade as $key => $value) {
-                if ( ! $associationMapping['isCascade'.ucfirst($value)]) {
+                if ( ! in_array($value, $associationMapping['cascade'])) {
                     unset($cascade[$key]);
                 }
             }
