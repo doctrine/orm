@@ -290,11 +290,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertTrue($class->associationMappings['address']['isOwningSide']);
         self::assertEquals('user', $class->associationMappings['address']['inversedBy']);
         // Check cascading
-        self::assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        self::assertFalse($class->associationMappings['address']['isCascadePersist']);
-        self::assertFalse($class->associationMappings['address']['isCascadeRefresh']);
-        self::assertFalse($class->associationMappings['address']['isCascadeDetach']);
-        self::assertFalse($class->associationMappings['address']['isCascadeMerge']);
+        self::assertEquals(['remove'], $class->associationMappings['address']['cascade']);
 
         return $class;
     }
@@ -307,12 +303,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         self::assertTrue(isset($class->associationMappings['phonenumbers']));
         self::assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        // Check cascading
+        self::assertEquals(['persist', 'remove'], $class->associationMappings['phonenumbers']['cascade']);
 
         // Test Order By
         self::assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
@@ -329,11 +322,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertTrue(isset($class->associationMappings['groups']));
         self::assertTrue($class->associationMappings['groups']['isOwningSide']);
         // Make sure that cascade-all works as expected
-        self::assertTrue($class->associationMappings['groups']['isCascadeRemove']);
-        self::assertTrue($class->associationMappings['groups']['isCascadePersist']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeDetach']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeMerge']);
+        self::assertEquals(['remove', 'persist', 'refresh', 'merge', 'detach'], $class->associationMappings['groups']['cascade']);
 
         self::assertFalse(isset($class->associationMappings['groups']['orderBy']));
 
@@ -717,11 +706,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertEquals($guestGroups['inversedBy'], $adminGroups['inversedBy']);
         self::assertEquals($guestGroups['isOwningSide'], $adminGroups['isOwningSide']);
         self::assertEquals($guestGroups['fetch'], $adminGroups['fetch']);
-        self::assertEquals($guestGroups['isCascadeRemove'], $adminGroups['isCascadeRemove']);
-        self::assertEquals($guestGroups['isCascadePersist'], $adminGroups['isCascadePersist']);
-        self::assertEquals($guestGroups['isCascadeRefresh'], $adminGroups['isCascadeRefresh']);
-        self::assertEquals($guestGroups['isCascadeMerge'], $adminGroups['isCascadeMerge']);
-        self::assertEquals($guestGroups['isCascadeDetach'], $adminGroups['isCascadeDetach']);
+        self::assertEquals($guestGroups['cascade'], $adminGroups['cascade']);
 
          // assert not override attributes
         self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
@@ -755,11 +740,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         self::assertEquals($guestAddress['inversedBy'], $adminAddress['inversedBy']);
         self::assertEquals($guestAddress['isOwningSide'], $adminAddress['isOwningSide']);
         self::assertEquals($guestAddress['fetch'], $adminAddress['fetch']);
-        self::assertEquals($guestAddress['isCascadeRemove'], $adminAddress['isCascadeRemove']);
-        self::assertEquals($guestAddress['isCascadePersist'], $adminAddress['isCascadePersist']);
-        self::assertEquals($guestAddress['isCascadeRefresh'], $adminAddress['isCascadeRefresh']);
-        self::assertEquals($guestAddress['isCascadeMerge'], $adminAddress['isCascadeMerge']);
-        self::assertEquals($guestAddress['isCascadeDetach'], $adminAddress['isCascadeDetach']);
+        self::assertEquals($guestAddress['cascade'], $adminAddress['cascade']);
 
         // assert override
         self::assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
@@ -1224,7 +1205,7 @@ class User
            'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Phonenumber',
            'cascade' =>
            array(
-           1 => 'persist',
+           0 => 'persist',
            ),
            'mappedBy' => 'user',
            'orphanRemoval' => true,
@@ -1333,11 +1314,10 @@ class Dog extends Animal
  */
 class DDC1170Entity
 {
-
     /**
      * @param string $value
      */
-    function __construct($value = null)
+    public function __construct($value = null)
     {
         $this->value = $value;
     }

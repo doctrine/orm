@@ -398,11 +398,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' => array (
                         'group_id' => 'id',
                     ),
@@ -462,11 +457,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' => array(
                         'group_id' => 'id',
                     ),
@@ -524,11 +514,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' => array (
                         'group_id' => 'id',
                     ),
@@ -587,11 +572,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' => array(
                         'group_id' => 'id',
                     ),
@@ -676,11 +656,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'isOnDeleteCascade' => true,
                     'relationToSourceKeyColumns' => array(
                         'group_id' => 'id',
@@ -740,11 +715,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                     'fetch' => 2,
                     'cascade' => array(),
-                    'isCascadeRemove' => false,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'orphanRemoval' => false,
                     'declaringClass' => $this->cm,
                 ),
@@ -780,7 +750,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 'groups' => array(
                     'fieldName' => 'groups',
                     'targetEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsGroup',
-                    'cascade' => array (),
+                    'cascade' => array (
+                        0 => 'remove'
+                    ),
                     'fetch' => 2,
                     'joinColumns' => array (
                         0 => array (
@@ -798,11 +770,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'sourceToTargetKeyColumns' => array (
                       'group_id' => 'id',
                     ),
@@ -841,12 +808,9 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'isOwningSide' => false,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                     'fetch' => 2,
-                    'cascade' => array(),
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
+                    'cascade' => array(
+                        0 => 'remove'
+                    ),
                     'orphanRemoval' => true,
                     'declaringClass' => $this->cm,
                 ),
@@ -906,11 +870,6 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                     'inversedBy' => NULL,
                     'isOwningSide' => true,
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
-                    'isCascadeRemove' => false,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'isOnDeleteCascade' => true,
                     'relationToSourceKeyColumns' => array(
                         'group_id' => 'id',

@@ -24,11 +24,9 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private function setCascadeMergeFor($class)
     {
         $metadata = $this->_em->getMetadataFactory()->getMetaDataFor($class);
-        foreach ($metadata->associationMappings as $key => $associationMapping) {
-            $metadata->associationMappings[$key]["isCascadePersist"] = false;
-            $metadata->associationMappings[$key]["isCascadeMerge"] = true;
-            $metadata->associationMappings[$key]["isCascadeRemove"] = false;
-            $metadata->associationMappings[$key]["isCascadeDetach"] = false;
+
+        foreach ($metadata->associationMappings as $key => &$associationMapping) {
+            $associationMapping['cascade'] = ['merge'];
         }
     }
 
