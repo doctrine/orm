@@ -76,18 +76,16 @@ $metadata->mapOneToOne(
         'orphanRemoval' => false,
     ]
 );
-
 $metadata->mapOneToMany(
     [
         'fieldName' => 'phonenumbers',
         'targetEntity' => Phonenumber::class,
-        'cascade' => [1 => 'persist'],
+        'cascade' => [0 => 'persist'],
         'mappedBy' => 'user',
         'orphanRemoval' => true,
         'orderBy' => ['number' => 'ASC'],
     ]
 );
-
 $metadata->mapManyToMany(
     [
         'fieldName' => 'groups',

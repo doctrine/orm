@@ -153,30 +153,16 @@ class YamlExporter extends AbstractExporter
         }
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
-            $cascade = [];
+            $cascade = array_filter(
+                $associationMapping['cascade'],
+                function ($cascade) {
+                    return in_array($cascade, ['remove', 'persist', 'refresh', 'merge', 'detach']);
+                }
+            );
 
-            if ($associationMapping['isCascadeRemove']) {
-                $cascade[] = 'remove';
-            }
-
-            if ($associationMapping['isCascadePersist']) {
-                $cascade[] = 'persist';
-            }
-
-            if ($associationMapping['isCascadeRefresh']) {
-                $cascade[] = 'refresh';
-            }
-
-            if ($associationMapping['isCascadeMerge']) {
-                $cascade[] = 'merge';
-            }
-
-            if ($associationMapping['isCascadeDetach']) {
-                $cascade[] = 'detach';
-            }
-            if (count($cascade) === 5) {
-                $cascade = ['all'];
-            }
+            $cascade = count($cascade) !== 5
+                ? $cascade
+                : ['all'];
 
             $associationMappingArray = [
                 'targetEntity' => $associationMapping['targetEntity'],
