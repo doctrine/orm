@@ -1515,6 +1515,7 @@ public function __construct(<params>)
             }
 
             $type = null;
+
             switch ($associationMapping['type']) {
                 case ClassMetadata::ONE_TO_ONE:
                     $type = 'OneToOne';
@@ -1529,6 +1530,7 @@ public function __construct(<params>)
                     $type = 'ManyToMany';
                     break;
             }
+
             $typeOptions = [];
 
             if (isset($associationMapping['targetEntity'])) {
@@ -1546,11 +1548,11 @@ public function __construct(<params>)
             if ($associationMapping['cascade']) {
                 $cascades = [];
 
-                if ($associationMapping['isCascadePersist']) $cascades[] = '"persist"';
-                if ($associationMapping['isCascadeRemove']) $cascades[] = '"remove"';
-                if ($associationMapping['isCascadeDetach']) $cascades[] = '"detach"';
-                if ($associationMapping['isCascadeMerge']) $cascades[] = '"merge"';
-                if ($associationMapping['isCascadeRefresh']) $cascades[] = '"refresh"';
+                foreach (['remove', 'persist', 'refresh', 'merge', 'detach'] as $cascadeType) {
+                    if (in_array($cascadeType, $associationMapping['cascade'])) {
+                        $cascades[] = sprintf('"%s"', $cascadeType);
+                    }
+                }
 
                 if (count($cascades) === 5) {
                     $cascades = ['"all"'];

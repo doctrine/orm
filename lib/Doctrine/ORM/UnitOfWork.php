@@ -881,13 +881,7 @@ class UnitOfWork implements PropertyChangedListener
 
             switch ($state) {
                 case self::STATE_NEW:
-                    if ( ! $assoc['isCascadePersist']) {
-                        /*
-                         * For now just record the details, because this may
-                         * not be an issue if we later discover another pathway
-                         * through the object-graph where cascade-persistence
-                         * is enabled for this object.
-                         */
+                    if ( ! in_array('persist', $assoc['cascade'])) {
                         $this->nonCascadedNewDetectedEntities[\spl_object_hash($entry)] = [$assoc, $entry];
 
                         break;
@@ -1333,7 +1327,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = [$entity, $changeset];
 
         if (isset($this->extraUpdates[$oid])) {
-            list(, $changeset2) = $this->extraUpdates[$oid];
+            [, $changeset2] = $this->extraUpdates[$oid];
 
             $extraUpdate = [$entity, $changeset + $changeset2];
         }
@@ -1990,6 +1984,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
+        /** @var array|Collection $value */
         $value   = $prevClass->reflFields[$assocField]->getValue($previousManagedCopy);
         $value[] = $managedCopy;
 
@@ -2124,7 +2119,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            function ($assoc) { return $assoc['isCascadeRefresh']; }
+            function ($assoc) { return in_array('refresh', $assoc['cascade']); }
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2167,7 +2162,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            function ($assoc) { return $assoc['isCascadeDetach']; }
+            function ($assoc) { return in_array('detach', $assoc['cascade']); }
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2211,7 +2206,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            function ($assoc) { return $assoc['isCascadeMerge']; }
+            function ($assoc) { return in_array('merge', $assoc['cascade']); }
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2250,7 +2245,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            function ($assoc) { return $assoc['isCascadePersist']; }
+            function ($assoc) { return in_array('persist', $assoc['cascade']); }
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2310,7 +2305,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            function ($assoc) { return $assoc['isCascadeRemove']; }
+            function ($assoc) { return in_array('remove', $assoc['cascade']); }
         );
 
         $entitiesToCascade = [];
@@ -3434,7 +3429,7 @@ class UnitOfWork implements PropertyChangedListener
                             continue;
                         }
 
-                        if ( ! $assoc2['isCascadeMerge']) {
+                        if ( ! in_array('merge', $assoc2['cascade'])) {
                             if ($this->getEntityState($other) === self::STATE_DETACHED) {
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId   = $targetClass->getIdentifierValues($other);
@@ -3474,7 +3469,7 @@ class UnitOfWork implements PropertyChangedListener
                         $prop->setValue($managedCopy, $managedCol);
                     }
 
-                    if ($assoc2['isCascadeMerge']) {
+                    if (in_array('merge', $assoc2['cascade'])) {
                         $managedCol->initialize();
 
                         // clear and set dirty a managed collection if its not also the same collection to merge from.

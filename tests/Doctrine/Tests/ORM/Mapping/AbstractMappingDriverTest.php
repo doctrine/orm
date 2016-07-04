@@ -336,11 +336,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertTrue($class->associationMappings['address']['isOwningSide']);
         self::assertEquals('user', $class->associationMappings['address']['inversedBy']);
         // Check cascading
-        self::assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        self::assertFalse($class->associationMappings['address']['isCascadePersist']);
-        self::assertFalse($class->associationMappings['address']['isCascadeRefresh']);
-        self::assertFalse($class->associationMappings['address']['isCascadeDetach']);
-        self::assertFalse($class->associationMappings['address']['isCascadeMerge']);
+        self::assertEquals(['remove'], $class->associationMappings['address']['cascade']);
 
         return $class;
     }
@@ -353,12 +349,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         self::assertTrue(isset($class->associationMappings['phonenumbers']));
         self::assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
-        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        // Check cascading
+        self::assertEquals(['persist', 'remove'], $class->associationMappings['phonenumbers']['cascade']);
 
         // Test Order By
         self::assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
@@ -375,11 +368,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertTrue(isset($class->associationMappings['groups']));
         self::assertTrue($class->associationMappings['groups']['isOwningSide']);
         // Make sure that cascade-all works as expected
-        self::assertTrue($class->associationMappings['groups']['isCascadeRemove']);
-        self::assertTrue($class->associationMappings['groups']['isCascadePersist']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeDetach']);
-        self::assertTrue($class->associationMappings['groups']['isCascadeMerge']);
+        self::assertEquals(['remove', 'persist', 'refresh', 'merge', 'detach'], $class->associationMappings['groups']['cascade']);
 
         self::assertFalse(isset($class->associationMappings['groups']['orderBy']));
 
@@ -754,11 +743,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($guestGroups['inversedBy'], $adminGroups['inversedBy']);
         self::assertEquals($guestGroups['isOwningSide'], $adminGroups['isOwningSide']);
         self::assertEquals($guestGroups['fetch'], $adminGroups['fetch']);
-        self::assertEquals($guestGroups['isCascadeRemove'], $adminGroups['isCascadeRemove']);
-        self::assertEquals($guestGroups['isCascadePersist'], $adminGroups['isCascadePersist']);
-        self::assertEquals($guestGroups['isCascadeRefresh'], $adminGroups['isCascadeRefresh']);
-        self::assertEquals($guestGroups['isCascadeMerge'], $adminGroups['isCascadeMerge']);
-        self::assertEquals($guestGroups['isCascadeDetach'], $adminGroups['isCascadeDetach']);
+        self::assertEquals($guestGroups['cascade'], $adminGroups['cascade']);
 
          // assert not override attributes
         self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
@@ -792,11 +777,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($guestAddress['inversedBy'], $adminAddress['inversedBy']);
         self::assertEquals($guestAddress['isOwningSide'], $adminAddress['isOwningSide']);
         self::assertEquals($guestAddress['fetch'], $adminAddress['fetch']);
-        self::assertEquals($guestAddress['isCascadeRemove'], $adminAddress['isCascadeRemove']);
-        self::assertEquals($guestAddress['isCascadePersist'], $adminAddress['isCascadePersist']);
-        self::assertEquals($guestAddress['isCascadeRefresh'], $adminAddress['isCascadeRefresh']);
-        self::assertEquals($guestAddress['isCascadeMerge'], $adminAddress['isCascadeMerge']);
-        self::assertEquals($guestAddress['isCascadeDetach'], $adminAddress['isCascadeDetach']);
+        self::assertEquals($guestAddress['cascade'], $adminAddress['cascade']);
 
         // assert override
         self::assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
@@ -1260,31 +1241,33 @@ class User
 
         $metadata->mapOneToOne(
             [
-               'fieldName' => 'address',
-               'targetEntity' => Address::class,
-               'cascade' => [0 => 'remove'],
-               'mappedBy' => NULL,
-               'inversedBy' => 'user',
-               'joinColumns' => [
-                   0 => [
-                    'name' => 'address_id',
-                    'referencedColumnName' => 'id',
-                    'onDelete' => 'CASCADE',
-                   ],
-               ],
-               'orphanRemoval' => false,
-           ]
+                'fieldName' => 'address',
+                'targetEntity' => Address::class,
+                'cascade' => [0 => 'remove'],
+                'mappedBy' => null,
+                'inversedBy' => 'user',
+                'joinColumns' => [
+                    0 => [
+                        'name' => 'address_id',
+                        'referencedColumnName' => 'id',
+                        'onDelete' => 'CASCADE',
+                    ],
+                ],
+                'orphanRemoval' => false,
+            ]
         );
+
         $metadata->mapOneToMany(
             [
-               'fieldName' => 'phonenumbers',
-               'targetEntity' => Phonenumber::class,
-               'cascade' => [1 => 'persist'],
-               'mappedBy' => 'user',
-               'orphanRemoval' => true,
-               'orderBy' => ['number' => 'ASC'],
-           ]
+                'fieldName' => 'phonenumbers',
+                'targetEntity' => Phonenumber::class,
+                'cascade' =>[0 => 'persist'],
+                'mappedBy' => 'user',
+                'orphanRemoval' => true,
+                'orderBy' => ['number' => 'ASC'],
+            ]
         );
+
         $metadata->mapManyToMany(
             [
                 'fieldName' => 'groups',
@@ -1300,12 +1283,13 @@ class User
                 'joinTable' => [
                     'name' => 'cms_users_groups',
                     'joinColumns' => [
-                        0 => [
-                            'name' => 'user_id',
-                            'referencedColumnName' => 'id',
-                            'unique' => false,
-                            'nullable' => false,
-                        ],
+                        0 =>
+                            [
+                                'name' => 'user_id',
+                                'referencedColumnName' => 'id',
+                                'unique' => false,
+                                'nullable' => false,
+                            ],
                     ],
                     'inverseJoinColumns' => [
                         0 => [
@@ -1318,12 +1302,22 @@ class User
                 'orderBy' => null,
             ]
         );
+
+        $metadata->table['uniqueConstraints'] = [
+            'search_idx' => [
+                'columns' => ['name', 'user_email'],
+                'options' => ['where' => 'name IS NOT NULL'],
+            ],
+        ];
+
         $metadata->table['uniqueConstraints'] = [
             'search_idx' => ['columns' => ['name', 'user_email'], 'options'=> ['where' => 'name IS NOT NULL']],
         ];
+
         $metadata->table['indexes'] = [
             'name_idx' => ['columns' => ['name']], 0 => ['columns' => ['user_email']]
         ];
+
         $metadata->setSequenceGeneratorDefinition(
             [
                 'sequenceName' => 'tablename_seq',
