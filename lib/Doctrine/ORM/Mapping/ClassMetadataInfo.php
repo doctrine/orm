@@ -1465,8 +1465,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
-        // unset optional indexBy attribute if its empty
-        if ( ! isset($mapping['indexBy']) || !$mapping['indexBy']) {
+        if (empty($mapping['indexBy'])) {
             unset($mapping['indexBy']);
         }
 
@@ -1544,13 +1543,12 @@ class ClassMetadataInfo implements ClassMetadata
         // Cascades
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : array();
 
+        $allCascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         if (in_array('all', $cascades)) {
-            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
-        }
-
-        if (count($cascades) !== count(array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach')))) {
+            $cascades = $allCascades;
+        } elseif (count($cascades) !== count(array_intersect($cascades, $allCascades))) {
             throw MappingException::invalidCascadeOption(
-                array_diff($cascades, array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach'))),
+                array_diff($cascades, $allCascades),
                 $this->name,
                 $mapping['fieldName']
             );
@@ -1585,7 +1583,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ($mapping['isOwningSide']) {
-            if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
+            if (empty($mapping['joinColumns'])) {
                 // Apply default join column
                 $mapping['joinColumns'] = array(
                     array(
@@ -1599,8 +1597,8 @@ class ClassMetadataInfo implements ClassMetadata
 
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
-                    if (count($mapping['joinColumns']) == 1) {
-                        if ( ! isset($mapping['id']) || ! $mapping['id']) {
+                    if (count($mapping['joinColumns']) === 1) {
+                        if (empty($mapping['id'])) {
                             $joinColumn['unique'] = true;
                         }
                     } else {
@@ -1645,8 +1643,8 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
         }
 
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
 
         if ($mapping['orphanRemoval']) {
             unset($mapping['unique']);
@@ -1678,14 +1676,10 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
 
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
 
-        if (isset($mapping['orderBy'])) {
-            if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
-            }
-        }
+        $this->assertMappingOrderBy($mapping);
 
         return $mapping;
     }
@@ -1789,13 +1783,9 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
+        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
 
-        if (isset($mapping['orderBy'])) {
-            if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
-            }
-        }
+        $this->assertMappingOrderBy($mapping);
 
         return $mapping;
     }
@@ -2213,11 +2203,11 @@ class ClassMetadataInfo implements ClassMetadata
             $overrideMapping['id'] = $mapping['id'];
         }
 
-        if ( ! isset($overrideMapping['type']) || $overrideMapping['type'] === null) {
+        if ( ! isset($overrideMapping['type'])) {
             $overrideMapping['type'] = $mapping['type'];
         }
 
-        if ( ! isset($overrideMapping['fieldName']) || $overrideMapping['fieldName'] === null) {
+        if ( ! isset($overrideMapping['fieldName'])) {
             $overrideMapping['fieldName'] = $mapping['fieldName'];
         }
 
@@ -2953,17 +2943,17 @@ class ClassMetadataInfo implements ClassMetadata
     {
         if (isset($this->fieldNames[$columnName])) {
             return $this->fieldNames[$columnName];
-        } else {
-            foreach ($this->associationMappings as $assocName => $mapping) {
-                if ($this->isAssociationWithSingleJoinColumn($assocName) &&
-                    $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
-
-                    return $assocName;
-                }
-            }
-
-            throw MappingException::noFieldNameFoundForColumn($this->name, $columnName);
         }
+
+        foreach ($this->associationMappings as $assocName => $mapping) {
+            if ($this->isAssociationWithSingleJoinColumn($assocName) &&
+                $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
+
+                return $assocName;
+            }
+        }
+
+        throw MappingException::noFieldNameFoundForColumn($this->name, $columnName);
     }
 
     /**
@@ -3389,5 +3379,15 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return $sequencePrefix;
+    }
+
+    /**
+     * @param array $mapping
+     */
+    private function assertMappingOrderBy(array $mapping)
+    {
+        if (isset($mapping['orderBy']) && !is_array($mapping['orderBy'])) {
+            throw new InvalidArgumentException("'orderBy' is expected to be an array, not " . gettype($mapping['orderBy']));
+        }
     }
 }
