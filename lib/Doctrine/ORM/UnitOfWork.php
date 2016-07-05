@@ -1155,9 +1155,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 $joinColumns = reset($assoc['joinColumns']);
-                $isNullable  = isset($joinColumns['nullable']) ? $joinColumns['nullable'] : false;
 
-                $calc->addDependency($targetClass->name, $class->name, $isNullable ? 0 : 1);
+                $calc->addDependency($targetClass->name, $class->name, (int)empty($joinColumns['nullable']));
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
@@ -1344,9 +1343,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->removeFromIdentityMap($entity);
 
-        if (isset($this->entityUpdates[$oid])) {
-            unset($this->entityUpdates[$oid]);
-        }
+        unset($this->entityUpdates[$oid]);
 
         if ( ! isset($this->entityDeletions[$oid])) {
             $this->entityDeletions[$oid] = $entity;
@@ -1568,11 +1565,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $stringIdHash = (string) $idHash;
 
-        if (isset($this->identityMap[$rootClassName][$stringIdHash])) {
-            return $this->identityMap[$rootClassName][$stringIdHash];
-        }
-
-        return false;
+        return isset($this->identityMap[$rootClassName][$stringIdHash])
+            ? $this->identityMap[$rootClassName][$stringIdHash]
+            : false;
     }
 
     /**
@@ -1796,7 +1791,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws ORMInvalidArgumentException If the entity instance is NEW.
      * @throws EntityNotFoundException
      */
-    private function doMerge($entity, array &$visited, $prevManagedCopy = null, $assoc = null)
+    private function doMerge($entity, array &$visited, $prevManagedCopy = null, array $assoc = [])
     {
         $oid = spl_object_hash($entity);
 
@@ -2445,9 +2440,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
-        if (isset($this->collectionUpdates[$coid])) {
-            unset($this->collectionUpdates[$coid]);
-        }
+        unset($this->collectionUpdates[$coid]);
 
         $this->collectionDeletions[$coid] = $coll;
     }
@@ -2854,11 +2847,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->originalEntityData[$oid])) {
-            return $this->originalEntityData[$oid];
-        }
-
-        return array();
+        return isset($this->originalEntityData[$oid])
+            ? $this->originalEntityData[$oid]
+            : [];
     }
 
     /**
@@ -2944,11 +2935,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $idHash = implode(' ', (array) $id);
 
-        if (isset($this->identityMap[$rootClassName][$idHash])) {
-            return $this->identityMap[$rootClassName][$idHash];
-        }
-
-        return false;
+        return isset($this->identityMap[$rootClassName][$idHash])
+            ? $this->identityMap[$rootClassName][$idHash]
+            : false;
     }
 
     /**
@@ -2985,7 +2974,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function size()
     {
-        $countArray = array_map(function ($item) { return count($item); }, $this->identityMap);
+        $countArray = array_map('count', $this->identityMap);
 
         return array_sum($countArray);
     }
