@@ -132,13 +132,21 @@ class ClassMetadataBuilder
     /**
      * Sets the table name.
      *
-     * @param string $name
+     * @param string      $name
+     * @param string|null $schema
+     * @param array       $options
      *
      * @return ClassMetadataBuilder
      */
-    public function setTable($name)
+    public function setTable($name, $schema = null, array $options = [])
     {
-        $this->cm->setPrimaryTable(['name' => $name]);
+        $this->cm->setPrimaryTable(
+            [
+                'name'    => $name,
+                'schema'  => $schema,
+                'options' => $options,
+            ]
+        );
 
         return $this;
     }
@@ -146,18 +154,36 @@ class ClassMetadataBuilder
     /**
      * Adds Index.
      *
-     * @param array  $columns
-     * @param string $name
+     * @param array       $columns
+     * @param string|null $name
+     * @param array       $options
+     * @param array       $flags
      *
      * @return ClassMetadataBuilder
      */
-    public function addIndex(array $columns, $name)
+    public function addIndex(array $columns, $name, array $options = [], array $flags = [])
     {
         if (!isset($this->cm->table['indexes'])) {
             $this->cm->table['indexes'] = [];
         }
 
-        $this->cm->table['indexes'][$name] = ['columns' => $columns];
+        $index = ['columns' => $columns];
+
+        if ( ! empty($options)) {
+            $index['options'] = $options;
+        }
+
+        if ( ! empty($flags)) {
+            $index['flags'] = $flags;
+        }
+
+        if (!$name) {
+            $this->cm->table['indexes'][] = $index;
+
+            return $this;
+        }
+
+        $this->cm->table['indexes'][$name] = $index;
 
         return $this;
     }
@@ -165,20 +191,35 @@ class ClassMetadataBuilder
     /**
      * Adds Unique Constraint.
      *
-     * @param array  $columns
-     * @param string $name
+     * @param array       $columns
+     * @param string|null $name
+     * @param array       $options
      *
      * @return ClassMetadataBuilder
      */
-    public function addUniqueConstraint(array $columns, $name)
+    public function addUniqueConstraint(array $columns, $name, array $options = [])
     {
         if ( ! isset($this->cm->table['uniqueConstraints'])) {
             $this->cm->table['uniqueConstraints'] = [];
         }
 
-        $this->cm->table['uniqueConstraints'][$name] = ['columns' => $columns];
+        $index = ['columns' => $columns];
+
+        if ( ! empty($options)) {
+            $index['options'] = $options;
+        }
+
+        if (!$name) {
+            $this->cm->table['uniqueConstraints'][] = $index;
+
+            return $this;
+        }
+
+        $this->cm->table['uniqueConstraints'][$name] = $index;
 
         return $this;
+
+
     }
 
     /**

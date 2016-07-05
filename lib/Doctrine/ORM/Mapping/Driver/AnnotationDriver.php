@@ -26,6 +26,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -45,7 +46,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * {@inheritDoc}
      */
     protected $entityAnnotationClasses = [
-        Annotation\Entity::class => 1,
+        Annotation\Entity::class           => 1,
         Annotation\MappedSuperclass::class => 2,
     ];
 
@@ -54,7 +55,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
-        $class = $metadata->getReflectionClass();
+        $builder = new ClassMetadataBuilder($metadata);
+        $class   = $metadata->getReflectionClass();
 
         if ( ! $class) {
             // this happens when running annotation driver in combination with
@@ -75,75 +77,57 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         // Evaluate Entity annotation
-        if (isset($classAnnotations[Annotation\Entity::class])) {
-            $entityAnnot = $classAnnotations[Annotation\Entity::class];
-            if ($entityAnnot->repositoryClass !== null) {
-                $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
-            }
+        switch (true) {
+            case isset($classAnnotations[Annotation\Entity::class]):
+                $entityAnnot = $classAnnotations[Annotation\Entity::class];
 
-            if ($entityAnnot->readOnly) {
-                $metadata->markReadOnly();
-            }
-        } else if (isset($classAnnotations[Annotation\MappedSuperclass::class])) {
-            $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
+                if ($entityAnnot->repositoryClass !== null) {
+                    $builder->setCustomRepositoryClass($entityAnnot->repositoryClass);
+                }
 
-            $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
-            $metadata->isMappedSuperclass = true;
-        } else if (isset($classAnnotations[Annotation\Embeddable::class])) {
-            $metadata->isEmbeddedClass = true;
-        } else {
-            throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
+                if ($entityAnnot->readOnly) {
+                    $builder->setReadOnly();
+                }
+
+                break;
+
+            case isset($classAnnotations[Annotation\MappedSuperclass::class]):
+                $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
+
+                $builder->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+                $builder->setMappedSuperClass();
+                break;
+
+            case isset($classAnnotations[Annotation\Embeddable::class]):
+                $builder->setEmbeddable();
+                break;
+
+            default:
+                throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
         // Evaluate Table annotation
         if (isset($classAnnotations[Annotation\Table::class])) {
-            $tableAnnot   = $classAnnotations[Annotation\Table::class];
-            $primaryTable = [
-                'name'   => $tableAnnot->name,
-                'schema' => $tableAnnot->schema
-            ];
+            $tableAnnot = $classAnnotations[Annotation\Table::class];
 
-            if ($tableAnnot->indexes !== null) {
-                foreach ($tableAnnot->indexes as $indexAnnot) {
-                    $index = ['columns' => $indexAnnot->columns];
+            $builder->setTable($tableAnnot->name, $tableAnnot->schema, $tableAnnot->options);
 
-                    if ( ! empty($indexAnnot->flags)) {
-                        $index['flags'] = $indexAnnot->flags;
-                    }
-
-                    if ( ! empty($indexAnnot->options)) {
-                        $index['options'] = $indexAnnot->options;
-                    }
-
-                    if ( ! empty($indexAnnot->name)) {
-                        $primaryTable['indexes'][$indexAnnot->name] = $index;
-                    } else {
-                        $primaryTable['indexes'][] = $index;
-                    }
-                }
+            foreach ($tableAnnot->indexes as $indexAnnot) {
+                $builder->addIndex(
+                    $indexAnnot->columns,
+                    $indexAnnot->name,
+                    $indexAnnot->options,
+                    $indexAnnot->flags
+                );
             }
 
-            if ($tableAnnot->uniqueConstraints !== null) {
-                foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
-                    $uniqueConstraint = ['columns' => $uniqueConstraintAnnot->columns];
-
-                    if ( ! empty($uniqueConstraintAnnot->options)) {
-                        $uniqueConstraint['options'] = $uniqueConstraintAnnot->options;
-                    }
-
-                    if ( ! empty($uniqueConstraintAnnot->name)) {
-                        $primaryTable['uniqueConstraints'][$uniqueConstraintAnnot->name] = $uniqueConstraint;
-                    } else {
-                        $primaryTable['uniqueConstraints'][] = $uniqueConstraint;
-                    }
-                }
+            foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
+                $builder->addUniqueConstraint(
+                    $uniqueConstraintAnnot->columns,
+                    $uniqueConstraintAnnot->name,
+                    $uniqueConstraintAnnot->options
+                );
             }
-
-            if ($tableAnnot->options) {
-                $primaryTable['options'] = $tableAnnot->options;
-            }
-
-            $metadata->setPrimaryTable($primaryTable);
         }
 
         // Evaluate @Cache annotation
@@ -227,12 +211,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
 
-                $metadata->addNamedQuery(
-                    [
-                        'name'  => $namedQuery->name,
-                        'query' => $namedQuery->query
-                    ]
-                );
+                $builder->addNamedQuery($namedQuery->name, $namedQuery->query);
             }
         }
 
