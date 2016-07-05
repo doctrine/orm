@@ -909,7 +909,7 @@ An instance of the ``Doctrine\ORM\Query`` class represents a DQL
 query. You create a Query instance be calling
 ``EntityManager#createQuery($dql)``, passing the DQL query string.
 Alternatively you can create an empty ``Query`` instance and invoke
-``Query#setDql($dql)`` afterwards. Here are some examples:
+``Query#setDQL($dql)`` afterwards. Here are some examples:
 
 .. code-block:: php
 
@@ -919,9 +919,9 @@ Alternatively you can create an empty ``Query`` instance and invoke
     // example1: passing a DQL string
     $q = $em->createQuery('select u from MyProject\Model\User u');
 
-    // example2: using setDql
+    // example2: using setDQL
     $q = $em->createQuery();
-    $q->setDql('select u from MyProject\Model\User u');
+    $q->setDQL('select u from MyProject\Model\User u');
 
 Query Result Formats
 ~~~~~~~~~~~~~~~~~~~~
