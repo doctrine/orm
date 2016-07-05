@@ -38,12 +38,12 @@ final class Table implements Annotation
     /**
      * @var array<\Doctrine\ORM\Annotation\Index>
      */
-    public $indexes;
+    public $indexes = [];
 
     /**
      * @var array<\Doctrine\ORM\Annotation\UniqueConstraint>
      */
-    public $uniqueConstraints;
+    public $uniqueConstraints = [];
 
     /**
      * @var array
