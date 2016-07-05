@@ -290,7 +290,7 @@ use Doctrine\Common\Util\ClassUtils;
         $query = new Query($this);
 
         if ( ! empty($dql)) {
-            $query->setDql($dql);
+            $query->setDQL($dql);
         }
 
         return $query;
@@ -311,7 +311,7 @@ use Doctrine\Common\Util\ClassUtils;
     {
         $query = new NativeQuery($this);
 
-        $query->setSql($sql);
+        $query->setSQL($sql);
         $query->setResultSetMapping($rsm);
 
         return $query;
