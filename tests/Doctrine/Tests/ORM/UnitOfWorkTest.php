@@ -419,7 +419,7 @@ class UnitOfWorkTest extends OrmTestCase
             'empty strings, two fields'      => [$emptyStrings, ' '],
             'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
             'boolean true'                   => [$booleanTrue, '1'],
-            'boolean false'                  => [$booleanTrue, ''],
+            'boolean false'                  => [$booleanFalse, ''],
         ];
     }
 }
