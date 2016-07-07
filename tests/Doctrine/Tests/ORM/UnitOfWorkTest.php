@@ -375,11 +375,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testAddToIdentityMapValidIdentifiers($entity, $idHash)
     {
-        $this->_unitOfWork->registerManaged(
-            $entity,
-            $this->_emMock->getClassMetadata(get_class($entity))->getIdentifierValues($entity),
-            []
-        );
+        $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->addToIdentityMap($entity);
 
         // note: cloning to avoid lookup by spl_object_hash()
@@ -428,20 +424,15 @@ class UnitOfWorkTest extends OrmTestCase
      * @dataProvider entitiesWithInvalidIdentifiersProvider
      *
      * @param object $entity
+     * @param array  $identifier
      *
      * @return void
      */
-    public function testAddToIdentityMapInvalidIdentifiers($entity)
+    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier)
     {
-        $this->_unitOfWork->registerManaged(
-            $entity,
-            $this->_emMock->getClassMetadata(get_class($entity))->getIdentifierValues($entity),
-            []
-        );
-
         $this->expectException(ORMInvalidArgumentException::class);
 
-        $this->_unitOfWork->addToIdentityMap($entity);
+        $this->_unitOfWork->registerManaged($entity, $identifier, []);
     }
 
 
@@ -456,10 +447,10 @@ class UnitOfWorkTest extends OrmTestCase
         $secondNullString->id1 = uniqid('id1', true);
 
         return [
-            'null string, single field'      => [new EntityWithStringIdentifier()],
-            'null strings, two fields'       => [new EntityWithCompositeStringIdentifier()],
-            'first null string, two fields'  => [$firstNullString],
-            'second null string, two fields' => [$secondNullString],
+            'null string, single field'      => [new EntityWithStringIdentifier(), ['id' => null]],
+            'null strings, two fields'       => [new EntityWithCompositeStringIdentifier(), ['id1' => null, 'id2' => null]],
+            'first null string, two fields'  => [$firstNullString, ['id1' => null, 'id2' => $firstNullString->id2]],
+            'second null string, two fields' => [$secondNullString, ['id1' => $secondNullString->id1, 'id2' => null]],
         ];
     }
 }
