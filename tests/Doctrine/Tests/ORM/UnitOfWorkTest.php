@@ -419,6 +419,13 @@ class UnitOfWorkTest extends OrmTestCase
         ];
     }
 
+    public function testRegisteringAManagedInstanceRequiresANonEmptyIdentifier()
+    {
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
+    }
+
     /**
      * @dataProvider entitiesWithInvalidIdentifiersProvider
      *
