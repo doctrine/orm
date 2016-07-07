@@ -193,7 +193,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
 
         $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
-        $this->assertFalse($this->cache->containsEntity(Token::CLASSNAME, $action->id));
+        $this->assertFalse($this->cache->containsEntity(Token::CLASSNAME, $action->name));
 
         $queryCount = $this->getCurrentQueryCount();
         $entity = $this->_em->find(Token::CLASSNAME, $token->token);
@@ -204,7 +204,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(Action::CLASSNAME, $entity->getAction());
         $this->assertEquals('exec', $entity->getAction()->name);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
     public function testPutAndLoadNonCacheableCompositeManyToOne()
@@ -231,9 +231,9 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
 
         $this->assertTrue($this->cache->containsEntity(Token::CLASSNAME, $token->token));
-        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action1->id));
-        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action2->id));
-        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action3->id));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action1->name));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action2->name));
+        $this->assertFalse($this->cache->containsEntity(Action::CLASSNAME, $action3->name));
 
         $queryCount = $this->getCurrentQueryCount();
         /**
@@ -255,8 +255,8 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->assertEquals('login', $entity->getComplexAction()->getAction1()->name);
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertEquals('rememberme', $entity->getComplexAction()->getAction2()->name);
-        $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }
