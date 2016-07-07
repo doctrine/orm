@@ -1402,7 +1402,7 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
-        $idHash    = implode(' ', $identifier);
+        $idHash    = $this->hashIdentifier($identifier);
         $className = $classMetadata->rootEntityName;
 
         if (isset($this->identityMap[$className][$idHash])) {
@@ -1512,7 +1512,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid           = spl_object_hash($entity);
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = $this->hashIdentifier($this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
             throw ORMInvalidArgumentException::entityHasNoIdentity($entity, "remove from identity map");
@@ -1585,7 +1585,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = $this->hashIdentifier($this->entityIdentifiers[$oid]);
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
@@ -2503,7 +2503,7 @@ class UnitOfWork implements PropertyChangedListener
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
-        $idHash = implode(' ', $id);
+        $idHash = $this->hashIdentifier($id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
@@ -2665,7 +2665,7 @@ class UnitOfWork implements PropertyChangedListener
                     // Check identity map first
                     // FIXME: Can break easily with composite keys if join column values are in
                     //        wrong order. The correct order is the one in ClassMetadata#identifier.
-                    $relatedIdHash = implode(' ', $associatedId);
+                    $relatedIdHash = $this->hashIdentifier($associatedId);
 
                     switch (true) {
                         case (isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash])):
@@ -2943,7 +2943,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = implode(' ', (array) $id);
+        $idHash = $this->hashIdentifier((array) $id);
 
         return isset($this->identityMap[$rootClassName][$idHash])
             ? $this->identityMap[$rootClassName][$idHash]
@@ -3338,7 +3338,17 @@ class UnitOfWork implements PropertyChangedListener
             ? $this->entityIdentifiers[$oid2]
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
-        return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+        return $id1 === $id2 || $this->hashIdentifier($id1) === $this->hashIdentifier($id2);
+    }
+
+    /**
+     * @param array $identifier
+     *
+     * @return string
+     */
+    private function hashIdentifier(array $identifier)
+    {
+        return json_encode(array_values(array_map('strval', $identifier)));
     }
 
     /**
