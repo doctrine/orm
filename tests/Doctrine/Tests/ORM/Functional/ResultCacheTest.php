@@ -9,7 +9,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * ResultCacheTest

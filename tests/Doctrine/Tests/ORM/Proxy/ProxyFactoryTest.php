@@ -12,7 +12,6 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\DriverMock;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Tests\OrmTestCase;
 
 /**
