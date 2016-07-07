@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -363,6 +364,101 @@ class UnitOfWorkTest extends OrmTestCase
             [new ArrayCollection()],
         ];
     }
+
+    /**
+     * @dataProvider entitiesWithValidIdentifiersProvider
+     *
+     * @param object $entity
+     * @param string $idHash
+     *
+     * @return void
+     */
+    public function testAddToIdentityMapValidIdentifiers($entity, $idHash)
+    {
+        $this->_unitOfWork->persist($entity);
+        $this->_unitOfWork->addToIdentityMap($entity);
+
+        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
+    }
+
+    public function entitiesWithValidIdentifiersProvider()
+    {
+        $emptyString = new EntityWithStringIdentifier();
+
+        $emptyString->id = '';
+
+        $nonEmptyString = new EntityWithStringIdentifier();
+
+        $nonEmptyString->id = uniqid('id', true);
+
+        $emptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $emptyStrings->id1 = '';
+        $emptyStrings->id2 = '';
+
+        $nonEmptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $nonEmptyStrings->id1 = uniqid('id1', true);
+        $nonEmptyStrings->id2 = uniqid('id2', true);
+
+        $booleanTrue = new EntityWithBooleanIdentifier();
+
+        $booleanTrue->id = true;
+
+        $booleanFalse = new EntityWithBooleanIdentifier();
+
+        $booleanFalse->id = false;
+
+        return [
+            'empty string, single field'     => [$emptyString, ''],
+            'non-empty string, single field' => [$nonEmptyString, $nonEmptyString->id],
+            'empty strings, two fields'      => [$emptyStrings, ' '],
+            'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
+            'boolean true'                   => [$booleanTrue, '1'],
+            'boolean false'                  => [$booleanFalse, ''],
+        ];
+    }
+
+    public function testRegisteringAManagedInstanceRequiresANonEmptyIdentifier()
+    {
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
+    }
+
+    /**
+     * @dataProvider entitiesWithInvalidIdentifiersProvider
+     *
+     * @param object $entity
+     * @param array  $identifier
+     *
+     * @return void
+     */
+    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier)
+    {
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->registerManaged($entity, $identifier, []);
+    }
+
+
+    public function entitiesWithInvalidIdentifiersProvider()
+    {
+        $firstNullString  = new EntityWithCompositeStringIdentifier();
+
+        $firstNullString->id2 = uniqid('id2', true);
+
+        $secondNullString = new EntityWithCompositeStringIdentifier();
+
+        $secondNullString->id1 = uniqid('id1', true);
+
+        return [
+            'null string, single field'      => [new EntityWithStringIdentifier(), ['id' => null]],
+            'null strings, two fields'       => [new EntityWithCompositeStringIdentifier(), ['id1' => null, 'id2' => null]],
+            'first null string, two fields'  => [$firstNullString, ['id1' => null, 'id2' => $firstNullString->id2]],
+            'second null string, two fields' => [$secondNullString, ['id1' => $secondNullString->id1, 'id2' => null]],
+        ];
+    }
 }
 
 /**
@@ -468,4 +564,44 @@ class VersionedAssignedIdentifierEntity
      * @Version @Column(type="integer")
      */
     public $version;
+}
+
+/** @Entity */
+class EntityWithStringIdentifier
+{
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id;
+}
+
+/** @Entity */
+class EntityWithBooleanIdentifier
+{
+    /**
+     * @Id @Column(type="boolean")
+     *
+     * @var bool|null
+     */
+    public $id;
+}
+
+/** @Entity */
+class EntityWithCompositeStringIdentifier
+{
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id1;
+
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id2;
 }

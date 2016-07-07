@@ -460,8 +460,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
             $conn->executeUpdate('DELETE FROM cache_login');
-            $conn->executeUpdate('DELETE FROM cache_complex_action');
             $conn->executeUpdate('DELETE FROM cache_token');
+            $conn->executeUpdate('DELETE FROM cache_complex_action');
             $conn->executeUpdate('DELETE FROM cache_action');
             $conn->executeUpdate('DELETE FROM cache_client');
         }
