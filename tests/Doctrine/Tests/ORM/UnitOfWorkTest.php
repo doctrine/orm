@@ -378,7 +378,6 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->addToIdentityMap($entity);
 
-        // note: cloning to avoid lookup by spl_object_hash()
         self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
     }
 
