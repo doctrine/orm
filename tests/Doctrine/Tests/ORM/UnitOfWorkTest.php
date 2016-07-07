@@ -405,11 +405,21 @@ class UnitOfWorkTest extends OrmTestCase
         $nonEmptyStrings->id1 = uniqid('id1', true);
         $nonEmptyStrings->id2 = uniqid('id2', true);
 
+        $booleanTrue = new EntityWithBooleanIdentifier();
+
+        $booleanTrue->id = true;
+
+        $booleanFalse = new EntityWithBooleanIdentifier();
+
+        $booleanFalse->id = false;
+
         return [
             'empty string, single field'     => [$emptyString, ''],
             'non-empty string, single field' => [$nonEmptyString, $nonEmptyString->id],
             'empty strings, two fields'      => [$emptyStrings, ' '],
             'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
+            'boolean true'                   => [$booleanTrue, '1'],
+            'boolean false'                  => [$booleanTrue, ''],
         ];
     }
 }
