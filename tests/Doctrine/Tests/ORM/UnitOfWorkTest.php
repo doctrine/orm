@@ -637,6 +637,24 @@ class UnitOfWorkTest extends OrmTestCase
             $this->_unitOfWork->tryGetById(['id' => $entity2->id], EntityWithStringIdentifier::class)
         );
     }
+
+    /**
+     * @group 5923
+     *
+     * Note: this test is introduced for BC compliance only. If we expect consumers to always
+     *       pass in the keys of an identifier, then we should change this test so it fails,
+     *       but we'd have to document the BC break.
+     */
+    public function testUnitOfWorkCanFetchByIdentifierWithFlatListOfIdentifierValues()
+    {
+        $entity = new EntityWithStringIdentifier();
+
+        $entity->id = uniqid('id', true);
+
+        $this->_unitOfWork->persist($entity);
+
+        self::assertSame($entity, $this->_unitOfWork->tryGetById([$entity->id], EntityWithStringIdentifier::class));
+    }
 }
 
 /**
