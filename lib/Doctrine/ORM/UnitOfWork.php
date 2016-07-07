@@ -1400,7 +1400,7 @@ class UnitOfWork implements PropertyChangedListener
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
         $identifier    = $this->entityIdentifiers[spl_object_hash($entity)];
 
-        if (in_array(null, $identifier, true)) {
+        if (empty($identifier) || in_array(null, $identifier, true)) {
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
