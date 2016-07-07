@@ -610,6 +610,27 @@ class UnitOfWorkTest extends OrmTestCase
             $this->_unitOfWork->tryGetById(['id1' => ' ', 'id2' => ''],  EntityWithCompositeStringIdentifier::class)
         );
     }
+
+    public function testUnitOfWorkStoresAlsoNonUtf8Identifiers()
+    {
+        $entity1 = new EntityWithStringIdentifier();
+        $entity2 = new EntityWithStringIdentifier();
+
+        $entity1->id = chr(65533);
+        $entity2->id = chr(65534);
+
+        $this->_unitOfWork->persist($entity1);
+        $this->_unitOfWork->persist($entity2);
+
+        self::assertSame(
+            $entity1,
+            $this->_unitOfWork->tryGetById(['id' => $entity1->id], EntityWithStringIdentifier::class)
+        );
+        self::assertSame(
+            $entity2,
+            $this->_unitOfWork->tryGetById(['id' => $entity2->id], EntityWithStringIdentifier::class)
+        );
+    }
 }
 
 /**
