@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -420,6 +421,61 @@ class UnitOfWorkTest extends OrmTestCase
             'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
             'boolean true'                   => [$booleanTrue, '1'],
             'boolean false'                  => [$booleanFalse, ''],
+        ];
+    }
+
+    /**
+     * @dataProvider entitiesWithInvalidIdentifiersProvider
+     *
+     * @param object $entity
+     *
+     * @return void
+     */
+    public function testAddToIdentityMapInvalidIdentifiers($entity)
+    {
+        $this->_unitOfWork->registerManaged(
+            $entity,
+            $this->_emMock->getClassMetadata(get_class($entity))->getIdentifierValues($entity),
+            []
+        );
+
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->addToIdentityMap($entity);
+    }
+
+
+    public function entitiesWithInvalidIdentifiersProvider()
+    {
+        $emptyString = new EntityWithStringIdentifier();
+
+        $emptyString->id = '';
+
+        $nonEmptyString = new EntityWithStringIdentifier();
+
+        $nonEmptyString->id = uniqid('id', true);
+
+        $emptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $emptyStrings->id1 = '';
+        $emptyStrings->id2 = '';
+
+        $nonEmptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $nonEmptyStrings->id1 = uniqid('id1', true);
+        $nonEmptyStrings->id2 = uniqid('id2', true);
+
+        $booleanTrue = new EntityWithBooleanIdentifier();
+
+        $booleanTrue->id = true;
+
+        $booleanFalse = new EntityWithBooleanIdentifier();
+
+        $booleanFalse->id = false;
+
+        return [
+            'null string, single field' => [new EntityWithStringIdentifier()],
+            'null strings, two fieldds' => [new EntityWithCompositeStringIdentifier()],
         ];
     }
 }
