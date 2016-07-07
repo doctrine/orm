@@ -585,6 +585,9 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
     }
 
+    /**
+     * @group 5923
+     */
     public function testUnitOfWorkDoesNotConcatenateIdentifierWithAmbiguousPatterns()
     {
         $entity1 = new EntityWithCompositeStringIdentifier();
@@ -611,6 +614,9 @@ class UnitOfWorkTest extends OrmTestCase
         );
     }
 
+    /**
+     * @group 5923
+     */
     public function testUnitOfWorkStoresAlsoNonUtf8Identifiers()
     {
         $entity1 = new EntityWithStringIdentifier();
