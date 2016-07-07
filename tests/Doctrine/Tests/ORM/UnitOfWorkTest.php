@@ -422,12 +422,15 @@ class UnitOfWorkTest extends OrmTestCase
         $booleanFalse->id = false;
 
         return [
-            'empty string, single field'     => [$emptyString, ''],
-            'non-empty string, single field' => [$nonEmptyString, $nonEmptyString->id],
-            'empty strings, two fields'      => [$emptyStrings, ' '],
-            'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
-            'boolean true'                   => [$booleanTrue, '1'],
-            'boolean false'                  => [$booleanFalse, ''],
+            'empty string, single field'     => [$emptyString, json_encode([''])],
+            'non-empty string, single field' => [$nonEmptyString, json_encode([$nonEmptyString->id])],
+            'empty strings, two fields'      => [$emptyStrings, json_encode(['', ''])],
+            'non-empty strings, two fields'  => [
+                $nonEmptyStrings,
+                json_encode([$nonEmptyStrings->id1, $nonEmptyStrings->id2])
+            ],
+            'boolean true'                   => [$booleanTrue, json_encode(['1'])],
+            'boolean false'                  => [$booleanFalse, json_encode([''])],
         ];
     }
 
@@ -580,6 +583,32 @@ class UnitOfWorkTest extends OrmTestCase
 
         self::assertSame($merged, $persistedEntity);
         self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
+    }
+
+    public function testUnitOfWorkDoesNotConcatenateIdentifierWithAmbiguousPatterns()
+    {
+        $entity1 = new EntityWithCompositeStringIdentifier();
+        $entity2 = new EntityWithCompositeStringIdentifier();
+
+        $entity1->id1 = '';
+        $entity1->id2 = ' ';
+
+        $entity2->id1 = ' ';
+        $entity2->id2 = '';
+
+        $this->_unitOfWork->persist($entity1);
+        $this->_unitOfWork->persist($entity2);
+        $this->_unitOfWork->addToIdentityMap($entity1);
+        $this->_unitOfWork->addToIdentityMap($entity2);
+
+        self::assertSame(
+            $entity1,
+            $this->_unitOfWork->tryGetById(['id1' => '', 'id2' => ' '],  EntityWithCompositeStringIdentifier::class)
+        );
+        self::assertSame(
+            $entity2,
+            $this->_unitOfWork->tryGetById(['id1' => ' ', 'id2' => ''],  EntityWithCompositeStringIdentifier::class)
+        );
     }
 }
 
