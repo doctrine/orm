@@ -363,6 +363,43 @@ class UnitOfWorkTest extends OrmTestCase
             [new ArrayCollection()],
         ];
     }
+
+    /**
+     * @dataProvider entitiesWithValidIdentifiersProvider
+     *
+     * @param object $entity
+     *
+     * @return void
+     */
+    public function testAddToIdentityMapValidIdentifiers($entity)
+    {
+        $this->_unitOfWork->registerManaged(
+            $entity,
+            $this->_emMock->getClassMetadata(get_class($entity))->getIdentifierValues($entity),
+            []
+        );
+        $this->_unitOfWork->addToIdentityMap($entity);
+
+        self::assertInternalType('string', $this->_unitOfWork->getEntityIdentifier($entity));
+        // note: cloning to avoid lookup by spl_object_hash()
+        self::assertTrue($this->_unitOfWork->isInIdentityMap(clone $entity));
+    }
+
+    public function entitiesWithValidIdentifiersProvider()
+    {
+        $emptyString = new EntityWithStringIdentifier();
+
+        $emptyString->id = '';
+
+        $nonEmptyString = new EntityWithStringIdentifier();
+
+        $nonEmptyString->id = uniqid('', true);
+
+        return [
+            'empty string, single field'     => [$emptyString],
+            'non-empty string, single field' => [$nonEmptyString],
+        ];
+    }
 }
 
 /**
@@ -468,4 +505,44 @@ class VersionedAssignedIdentifierEntity
      * @Version @Column(type="integer")
      */
     public $version;
+}
+
+/** @Entity */
+class EntityWithStringIdentifier
+{
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id;
+}
+
+/** @Entity */
+class EntityWithBooleanIdentifier
+{
+    /**
+     * @Id @Column(type="boolean")
+     *
+     * @var bool|null
+     */
+    public $id;
+}
+
+/** @Entity */
+class EntityWithCompositeStringIdentifier
+{
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id1;
+
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id2;
 }
