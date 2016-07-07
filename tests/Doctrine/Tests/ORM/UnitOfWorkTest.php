@@ -393,17 +393,23 @@ class UnitOfWorkTest extends OrmTestCase
 
         $nonEmptyString = new EntityWithStringIdentifier();
 
-        $nonEmptyString->id = uniqid('', true);
+        $nonEmptyString->id = uniqid('id', true);
 
         $emptyStrings = new EntityWithCompositeStringIdentifier();
 
         $emptyStrings->id1 = '';
         $emptyStrings->id2 = '';
 
+        $nonEmptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $nonEmptyStrings->id1 = uniqid('id1', true);
+        $nonEmptyStrings->id2 = uniqid('id2', true);
+
         return [
             'empty string, single field'     => [$emptyString, ''],
             'non-empty string, single field' => [$nonEmptyString, $nonEmptyString->id],
             'empty strings, two fields'      => [$emptyStrings, ' '],
+            'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
         ];
     }
 }
