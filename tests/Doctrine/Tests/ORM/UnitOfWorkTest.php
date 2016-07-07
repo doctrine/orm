@@ -368,10 +368,11 @@ class UnitOfWorkTest extends OrmTestCase
      * @dataProvider entitiesWithValidIdentifiersProvider
      *
      * @param object $entity
+     * @param string $idHash
      *
      * @return void
      */
-    public function testAddToIdentityMapValidIdentifiers($entity)
+    public function testAddToIdentityMapValidIdentifiers($entity, $idHash)
     {
         $this->_unitOfWork->registerManaged(
             $entity,
@@ -380,9 +381,8 @@ class UnitOfWorkTest extends OrmTestCase
         );
         $this->_unitOfWork->addToIdentityMap($entity);
 
-        self::assertInternalType('string', $this->_unitOfWork->getEntityIdentifier($entity));
         // note: cloning to avoid lookup by spl_object_hash()
-        self::assertTrue($this->_unitOfWork->isInIdentityMap(clone $entity));
+        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
     }
 
     public function entitiesWithValidIdentifiersProvider()
@@ -395,9 +395,15 @@ class UnitOfWorkTest extends OrmTestCase
 
         $nonEmptyString->id = uniqid('', true);
 
+        $emptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $emptyStrings->id1 = '';
+        $emptyStrings->id2 = '';
+
         return [
-            'empty string, single field'     => [$emptyString],
-            'non-empty string, single field' => [$nonEmptyString],
+            'empty string, single field'     => [$emptyString, ''],
+            'non-empty string, single field' => [$nonEmptyString, $nonEmptyString->id],
+            'empty strings, two fields'      => [$emptyStrings, ' '],
         ];
     }
 }
