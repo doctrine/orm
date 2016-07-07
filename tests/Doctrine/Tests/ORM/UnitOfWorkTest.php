@@ -422,15 +422,15 @@ class UnitOfWorkTest extends OrmTestCase
         $booleanFalse->id = false;
 
         return [
-            'empty string, single field'     => [$emptyString, json_encode([''])],
-            'non-empty string, single field' => [$nonEmptyString, json_encode([$nonEmptyString->id])],
-            'empty strings, two fields'      => [$emptyStrings, json_encode(['', ''])],
+            'empty string, single field'     => [$emptyString, serialize([''])],
+            'non-empty string, single field' => [$nonEmptyString, serialize([$nonEmptyString->id])],
+            'empty strings, two fields'      => [$emptyStrings, serialize(['', ''])],
             'non-empty strings, two fields'  => [
                 $nonEmptyStrings,
-                json_encode([$nonEmptyStrings->id1, $nonEmptyStrings->id2])
+                serialize([$nonEmptyStrings->id1, $nonEmptyStrings->id2])
             ],
-            'boolean true'                   => [$booleanTrue, json_encode(['1'])],
-            'boolean false'                  => [$booleanFalse, json_encode([''])],
+            'boolean true'                   => [$booleanTrue, serialize(['1'])],
+            'boolean false'                  => [$booleanFalse, serialize([''])],
         ];
     }
 

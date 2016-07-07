@@ -3348,7 +3348,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function hashIdentifier(array $identifier)
     {
-        return json_encode(array_values(array_map('strval', $identifier)));
+        return serialize(array_values(array_map('strval', $identifier)));
     }
 
     /**
