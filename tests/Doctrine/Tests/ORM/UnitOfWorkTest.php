@@ -447,35 +447,19 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function entitiesWithInvalidIdentifiersProvider()
     {
-        $emptyString = new EntityWithStringIdentifier();
+        $firstNullString  = new EntityWithCompositeStringIdentifier();
 
-        $emptyString->id = '';
+        $firstNullString->id2 = uniqid('id2', true);
 
-        $nonEmptyString = new EntityWithStringIdentifier();
+        $secondNullString = new EntityWithCompositeStringIdentifier();
 
-        $nonEmptyString->id = uniqid('id', true);
-
-        $emptyStrings = new EntityWithCompositeStringIdentifier();
-
-        $emptyStrings->id1 = '';
-        $emptyStrings->id2 = '';
-
-        $nonEmptyStrings = new EntityWithCompositeStringIdentifier();
-
-        $nonEmptyStrings->id1 = uniqid('id1', true);
-        $nonEmptyStrings->id2 = uniqid('id2', true);
-
-        $booleanTrue = new EntityWithBooleanIdentifier();
-
-        $booleanTrue->id = true;
-
-        $booleanFalse = new EntityWithBooleanIdentifier();
-
-        $booleanFalse->id = false;
+        $secondNullString->id1 = uniqid('id1', true);
 
         return [
-            'null string, single field' => [new EntityWithStringIdentifier()],
-            'null strings, two fieldds' => [new EntityWithCompositeStringIdentifier()],
+            'null string, single field'      => [new EntityWithStringIdentifier()],
+            'null strings, two fields'       => [new EntityWithCompositeStringIdentifier()],
+            'first null string, two fields'  => [$firstNullString],
+            'second null string, two fields' => [$secondNullString],
         ];
     }
 }
