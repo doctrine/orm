@@ -148,6 +148,20 @@ class ClassMetadataBuilder
     }
 
     /**
+     * @param string      $usage
+     * @param string|null $region
+     */
+    public function setCache($usage, $region = null)
+    {
+        $region = $region ?: strtolower(str_replace('\\', '_', $this->cm->rootEntityName));
+
+        $this->cm->enableCache(array(
+            'usage'  => $usage,
+            'region' => $region,
+        ));
+    }
+
+    /**
      * Adds Index.
      *
      * @param array       $columns

@@ -38,10 +38,10 @@ final class Index implements Annotation
     /**
      * @var array<string>
      */
-    public $flags;
+    public $flags = array();
 
     /**
      * @var array
      */
-    public $options;
+    public $options = array();
 }

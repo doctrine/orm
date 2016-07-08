@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
