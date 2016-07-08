@@ -38,5 +38,5 @@ final class UniqueConstraint implements Annotation
     /**
      * @var array
      */
-    public $options;
+    public $options = [];
 }
