@@ -196,10 +196,10 @@ class YamlExporter extends AbstractExporter
                     'orphanRemoval' => $associationMapping['orphanRemoval'],
                 ];
 
-                if (count($associationMapping['joinColumns']) > 1) {
-                    $oneToOneMappingArray['joinColumns'] = $associationMapping['joinColumns'];
+                if (count($joinColumns) > 1) {
+                    $oneToOneMappingArray['joinColumns'] = $joinColumns;
                 } else {
-                    $oneToOneMappingArray['joinColumn'] = reset($associationMapping['joinColumns']);
+                    $oneToOneMappingArray['joinColumn'] = reset($joinColumns);
                 }
 
                 $associationMappingArray = array_filter(array_merge($associationMappingArray, $oneToOneMappingArray));
