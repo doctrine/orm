@@ -182,6 +182,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'name' => 'users',
                 'indexes' => ['users_idx' => ['columns' => ['username', 'name']]],
                 'uniqueConstraints' => ['users_idx' => ['columns' => ['username', 'name']]],
+                'options' => [],
             ],
             $this->cm->table
         );

@@ -24,6 +24,22 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
     }
 
     /**
+     * @depends testExportDirectoryAndFilesAreCreated
+     */
+    public function testFieldsAreProperlySerialized()
+    {
+        $xml  = simplexml_load_file(__DIR__ . '/export/xml/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
+
+        $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
+
+        $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @nullable='true']");
+        self::assertEquals(1, count($nodes));
+
+        $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @unique='true']");
+        self::assertEquals(1, count($nodes));
+    }
+
+    /**
      * @group DDC-3428
      */
     public function testSequenceGenerator() {

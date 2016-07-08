@@ -225,7 +225,6 @@ class ClassMetadataTest extends OrmTestCase
         $property = new FieldMetadata();
 
         $property->setDeclaringClass($metadata);
-        $property->setCurrentClass($metadata);
         $property->setName('foo');
         $property->setType(Type::getType('string'));
 

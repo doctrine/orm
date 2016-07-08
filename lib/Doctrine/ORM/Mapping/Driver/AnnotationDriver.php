@@ -133,12 +133,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate @Cache annotation
         if (isset($classAnnotations[Annotation\Cache::class])) {
             $cacheAnnot = $classAnnotations[Annotation\Cache::class];
-            $cacheMap   = [
-                'region' => $cacheAnnot->region,
-                'usage'  => constant(sprintf('%s::CACHE_USAGE_%s', ClassMetadata::class, $cacheAnnot->usage)),
-            ];
 
-            $metadata->enableCache($cacheMap);
+            $builder->setCache(
+                constant(sprintf('%s::CACHE_USAGE_%s', ClassMetadata::class, $cacheAnnot->usage)),
+                $cacheAnnot->region
+            );
         }
 
         // Evaluate NamedNativeQueries annotation
