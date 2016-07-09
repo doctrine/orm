@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
@@ -26,16 +26,15 @@ class DefaultRegionTest extends AbstractRegionTest
         self::assertSame($this->cache, $this->region->getCache());
     }
 
+    /**
+     * @requires extension apcu
+     */
     public function testSharedRegion()
     {
-        if ( ! extension_loaded('apc') || false === @apc_cache_info()) {
-            $this->markTestSkipped('The ' . __CLASS__ .' requires the use of APC');
-        }
-
         $key     = new CacheKeyMock('key');
         $entry   = new CacheEntryMock(['value' => 'foo']);
-        $region1 = new DefaultRegion('region1', new ApcCache());
-        $region2 = new DefaultRegion('region2', new ApcCache());
+        $region1 = new DefaultRegion('region1', new ApcuCache());
+        $region2 = new DefaultRegion('region2', new ApcuCache());
 
         self::assertFalse($region1->contains($key));
         self::assertFalse($region2->contains($key));
