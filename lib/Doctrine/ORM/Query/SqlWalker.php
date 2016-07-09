@@ -1965,7 +1965,7 @@ class SqlWalker implements TreeWalker
             $joinSqlParts = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $property     = $class->getProperty($targetClass->fieldNames[$joinColumn['referencedColumnName']]);
+                $property     = $targetClass->getProperty($targetClass->fieldNames[$joinColumn['referencedColumnName']]);
                 $sourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                 $targetColumn = $this->quoteStrategy->getColumnName($property, $this->platform);
 
@@ -1991,7 +1991,7 @@ class SqlWalker implements TreeWalker
                     $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
                 }
 
-                $sqlParts[] = $targetTableAlias . '.' . $targetColumnName . ' IN (' . $entitySql . ')';
+                $sqlParts[] = $targetTableAlias . '.' . $targetColumnName . ' = ' . $entitySql;
             }
 
             $sql .= implode(' AND ', $sqlParts);
