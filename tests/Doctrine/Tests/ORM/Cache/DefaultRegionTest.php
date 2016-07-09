@@ -26,6 +26,9 @@ class DefaultRegionTest extends AbstractRegionTest
         self::assertSame($this->cache, $this->region->getCache());
     }
 
+    /**
+     * @requires extension apcu
+     */
     public function testSharedRegion()
     {
         $cache   = new SharedArrayCache();
