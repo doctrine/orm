@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;
@@ -108,8 +109,12 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
 
-        $dql = 'SELECT t, p, c FROM Doctrine\Tests\Models\Navigation\NavTour t ' .
-               'INNER JOIN t.pois p INNER JOIN p.country c';
+        $dql = 'SELECT t, p, c '
+             . 'FROM Doctrine\Tests\Models\Navigation\NavTour t '
+             . 'INNER JOIN t.pois p '
+             . 'INNER JOIN p.country c'
+        ;
+
         $tours = $this->_em->createQuery($dql)->getResult();
 
         self::assertEquals(1, count($tours));
@@ -122,15 +127,24 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function testCompositeCollectionMemberExpression()
     {
-        $this->markTestSkipped('How to test this?');
+        //$this->markTestSkipped('How to test this?');
 
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
 
-        $dql = 'SELECT t FROM Doctrine\Tests\Models\Navigation\NavTour t, Doctrine\Tests\Models\Navigation\NavPointOfInterest p ' .
-               'WHERE p MEMBER OF t.pois';
-        $tours = $this->_em->createQuery($dql)
-                           ->getResult();
+        $dql = 'SELECT t '
+             . 'FROM Doctrine\Tests\Models\Navigation\NavTour t '
+             . ', Doctrine\Tests\Models\Navigation\NavPointOfInterest p '
+             . 'WHERE p MEMBER OF t.pois'
+        ;
+
+        $query = $this->_em->createQuery($dql);
+
+        var_dump($query->getSQL());
+
+        $tours = $this->_em->createQuery($dql)->getResult();
+
+        Debug::dump($tours);
 
         self::assertEquals(1, count($tours));
     }
