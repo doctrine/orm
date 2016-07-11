@@ -229,7 +229,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $columnDefaultOptions  = $columnDefaultProperty->getOptions();
 
         self::assertArrayHasKey('default', $columnDefaultOptions);
-        self::assertEquals('test_default', $columnCommentOptions['default']);
+        self::assertEquals('test_default', $columnDefaultOptions['default']);
 
         // Check decimal
         self::assertNotNull($metadata->getProperty('columnDecimal'));
