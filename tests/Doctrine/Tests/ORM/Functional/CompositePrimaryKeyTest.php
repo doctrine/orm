@@ -127,8 +127,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function testCompositeCollectionMemberExpression()
     {
-        //$this->markTestSkipped('How to test this?');
-
+        // Test should not throw any kind of exception
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
 
@@ -139,14 +138,9 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         ;
 
         $query = $this->_em->createQuery($dql);
+        $tours = $query->getResult();
 
-        var_dump($query->getSQL());
-
-        $tours = $this->_em->createQuery($dql)->getResult();
-
-        Debug::dump($tours);
-
-        self::assertEquals(1, count($tours));
+        self::assertEquals(0, count($tours));
     }
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails()
