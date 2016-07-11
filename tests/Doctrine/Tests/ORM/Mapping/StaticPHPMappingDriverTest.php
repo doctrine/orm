@@ -12,7 +12,6 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
         return new StaticPHPDriver(__DIR__ . DIRECTORY_SEPARATOR . 'php');
     }
 
-
     /**
      * All class with static::loadMetadata are entities for php driver
      *
@@ -21,23 +20,5 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
         $this->createClassMetadata(DDC889Class::class);
-    }
-
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
-    {
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
-    {
-        $this->markTestIncomplete();
     }
 }
