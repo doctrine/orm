@@ -22,22 +22,4 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
     {
         self::assertInstanceOf(ClassMetadata::class, $this->createClassMetadata(DDC889Class::class));
     }
-
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
-    {
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
-    {
-        $this->markTestIncomplete();
-    }
 }
