@@ -106,8 +106,8 @@ abstract class AbstractExporter
      * Sets the directory to output the mapping files to.
      *
      *     [php]
-     *     $exporter = new YamlExporter($metadata);
-     *     $exporter->setOutputDir(__DIR__ . '/yaml');
+     *     $exporter = new XmlExporter($metadata);
+     *     $exporter->setOutputDir(__DIR__ . '/xml');
      *     $exporter->export();
      *
      * @param string $dir
@@ -166,8 +166,8 @@ abstract class AbstractExporter
      * Sets the directory to output the mapping files to.
      *
      *     [php]
-     *     $exporter = new YamlExporter($metadata, __DIR__ . '/yaml');
-     *     $exporter->setExtension('.yml');
+     *     $exporter = new XmlExporter($metadata, __DIR__ . '/xml');
+     *     $exporter->setExtension('.xml');
      *     $exporter->export();
      *
      * @param string $extension
