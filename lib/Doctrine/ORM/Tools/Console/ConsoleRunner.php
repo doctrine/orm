@@ -107,7 +107,6 @@ final class ConsoleRunner
                 new Command\SchemaTool\UpdateCommand(),
                 new Command\SchemaTool\DropCommand(),
                 new Command\EnsureProductionSettingsCommand(),
-                new Command\ConvertDoctrine1SchemaCommand(),
                 new Command\GenerateRepositoriesCommand(),
                 new Command\GenerateEntitiesCommand(),
                 new Command\GenerateProxiesCommand(),
