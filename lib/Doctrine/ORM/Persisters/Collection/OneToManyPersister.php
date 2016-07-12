@@ -213,7 +213,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $parameters  = [];
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
-            $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $columns[]    = $this->platform->quoteIdentifier($joinColumn['name']);
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
         }
 

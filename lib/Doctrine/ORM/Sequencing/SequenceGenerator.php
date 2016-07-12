@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Id;
+namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 use Serializable;
@@ -28,7 +28,7 @@ use Serializable;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class SequenceGenerator extends AbstractIdGenerator implements Serializable
+class SequenceGenerator extends AbstractGenerator implements Serializable
 {
     /**
      * The allocation size of the sequence.

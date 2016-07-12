@@ -17,13 +17,13 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Id;
+namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 
 /**
- * Special generator for application-assigned identifiers (doesn't really generate anything).
+ * Special generator for application-assigned sequencing (doesn't really generate anything).
  *
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -31,7 +31,7 @@ use Doctrine\ORM\ORMException;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class AssignedGenerator extends AbstractIdGenerator
+class AssignedGenerator extends AbstractGenerator
 {
     /**
      * Returns the identifier assigned to the given entity.

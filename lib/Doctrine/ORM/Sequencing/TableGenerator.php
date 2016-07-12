@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Id;
+namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 
@@ -30,7 +30,7 @@ use Doctrine\ORM\EntityManager;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class TableGenerator extends AbstractIdGenerator
+class TableGenerator extends AbstractGenerator
 {
     /**
      * @var string
