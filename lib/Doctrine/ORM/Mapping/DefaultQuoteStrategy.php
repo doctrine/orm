@@ -31,14 +31,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
 {
     /**
      * {@inheritdoc}
-     */
-    public function getColumnName(ColumnMetadata $columnMetadata, AbstractPlatform $platform)
-    {
-        return $platform->quoteIdentifier($columnMetadata->getColumnName());
-    }
-
-    /**
-     * {@inheritdoc}
      *
      * @todo Table names should be computed in DBAL depending on the platform
      */
@@ -56,30 +48,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
         }
 
         return $platform->quoteIdentifier($tableName);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        return $platform->quoteIdentifier($definition['sequenceName']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        return $platform->quoteIdentifier($joinColumn['name']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        return $platform->quoteIdentifier($joinColumn['referencedColumnName']);
     }
 
     /**

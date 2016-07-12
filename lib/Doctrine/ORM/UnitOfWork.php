@@ -894,7 +894,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! $idGen->isPostInsertGenerator()) {
             $idValue = $idGen->generate($this->em, $entity);
 
-            if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
+            if ( ! $idGen instanceof \Doctrine\ORM\Sequencing\AssignedGenerator) {
                 $idValue = array($class->identifier[0] => $idValue);
 
                 $class->assignIdentifier($entity, $idValue);

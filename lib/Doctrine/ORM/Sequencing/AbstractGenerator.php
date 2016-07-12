@@ -17,26 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Id;
+namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 
-/**
- * Represents an ID generator that uses the database UUID expression
- *
- * @since 2.3
- * @author Maarten de Keizer <m.de.keizer@markei.nl>
- */
-class UuidGenerator extends AbstractIdGenerator
+abstract class AbstractGenerator
 {
     /**
-     * {@inheritDoc}
+     * Generates an identifier for an entity.
+     *
+     * @param EntityManager $em
+     * @param object        $entity
+     *
+     * @return mixed
      */
-    public function generate(EntityManager $em, $entity)
-    {
-        $conn = $em->getConnection();
-        $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
+    abstract public function generate(EntityManager $em, $entity);
 
-        return $conn->query($sql)->fetchColumn(0);
+    /**
+     * Gets whether this generator is a post-insert generator which means that
+     * {@link generate()} must be called after the entity has been inserted
+     * into the database.
+     *
+     * By default, this method returns FALSE. Generators that have this requirement
+     * must override this method and return TRUE.
+     *
+     * @return boolean
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }

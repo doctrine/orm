@@ -1,8 +1,8 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Id;
+namespace Doctrine\Tests\ORM\Sequencing;
 
-use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\Sequencing\SequenceGenerator;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -27,13 +27,13 @@ class SequenceGeneratorTest extends OrmTestCase
             if ($i % 10 == 0) {
                 $this->_em->getConnection()->setFetchOneResult((int)($i / 10) * 10);
             }
+
             $id = $this->_seqGen->generate($this->_em, null);
+
             self::assertEquals($i, $id);
             self::assertEquals((int)($i / 10) * 10 + 10, $this->_seqGen->getCurrentMaxValue());
             self::assertEquals($i + 1, $this->_seqGen->getNextValue());
         }
-
-
     }
 }
 

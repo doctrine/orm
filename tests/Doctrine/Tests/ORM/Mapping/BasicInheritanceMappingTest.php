@@ -157,7 +157,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
 
-        self::assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
+        self::assertInstanceOf('Doctrine\ORM\Sequencing\SequenceGenerator', $class->idGenerator);
         self::assertEquals(
             array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
             $class->sequenceGeneratorDefinition
@@ -173,7 +173,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyD');
 
-        self::assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
+        self::assertInstanceOf('Doctrine\ORM\Sequencing\SequenceGenerator', $class->idGenerator);
         self::assertEquals(
             array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
             $class->sequenceGeneratorDefinition
@@ -189,7 +189,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\MediumSuperclassEntity');
 
-        self::assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
+        self::assertInstanceOf('Doctrine\ORM\Sequencing\SequenceGenerator', $class->idGenerator);
         self::assertEquals(
             array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'),
             $class->sequenceGeneratorDefinition
