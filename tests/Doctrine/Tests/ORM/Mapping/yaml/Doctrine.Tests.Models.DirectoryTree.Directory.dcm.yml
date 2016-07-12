@@ -1,6 +1,0 @@
-Doctrine\Tests\Models\DirectoryTree\Directory:
-  type: entity 
-  fields:
-    path:
-      type: string
-      length: 255
