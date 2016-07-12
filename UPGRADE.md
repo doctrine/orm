@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC Break: Removed ``YAML`` mapping drivers.
+
+If your code relies on ``YamlDriver``  or ``SimpleYamlDriver``, you should change to
+annotation or XML drivers instead.
+
 ## BC Break: Changed methods in ``ClassMetadata``
 
 * ``ClassMetadata::addInheritedProperty``
