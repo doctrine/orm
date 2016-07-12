@@ -1,8 +1,8 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Id;
+namespace Doctrine\Tests\ORM\Sequencing;
 
-use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Sequencing\AssignedGenerator;
 use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmTestCase;
 

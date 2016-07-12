@@ -27,8 +27,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
-use Doctrine\ORM\Id\IdentityGenerator;
+use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\ORMException;
 use ReflectionException;
 
@@ -689,11 +688,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function completeIdGeneratorMapping(ClassMetadata $class)
     {
         $idGenType = $class->generatorType;
+        $platform  = $this->getTargetPlatform();
 
-        if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
-            $idGenType = $this->getTargetPlatform()->prefersSequences()
+        if ($idGenType === ClassMetadata::GENERATOR_TYPE_AUTO) {
+            $idGenType = $platform->prefersSequences()
                 ? ClassMetadata::GENERATOR_TYPE_SEQUENCE
-                : ($this->getTargetPlatform()->prefersIdentityColumns()
+                : ($platform->prefersIdentityColumns()
                     ? ClassMetadata::GENERATOR_TYPE_IDENTITY
                     : ClassMetadata::GENERATOR_TYPE_TABLE
                 );
@@ -708,25 +708,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($this->getTargetPlatform()->usesSequenceEmulatedIdentityColumns()) {
+                if ($platform->usesSequenceEmulatedIdentityColumns()) {
                     $columnName     = $class->getSingleIdentifierColumnName();
-                    $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
-                    $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
-                    $definition     = [
-                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
-                        'quotes'       => true,
-                    ];
-
-                    $sequenceName = $this
-                        ->em
-                        ->getConfiguration()
-                        ->getQuoteStrategy()
-                        ->getSequenceName($definition, $class, $this->getTargetPlatform());
+                    $sequencePrefix = $class->getSequencePrefix($platform);
+                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $columnName);
+                    $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
                 }
 
                 $generator = ($fieldName && $class->getProperty($fieldName)->getTypeName() === 'bigint')
-                    ? new BigIntegerIdentityGenerator($sequenceName)
-                    : new IdentityGenerator($sequenceName);
+                    ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
+                    : new Sequencing\IdentityGenerator($sequenceName)
+                ;
 
                 $class->setIdGenerator($generator);
 
@@ -737,11 +729,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $definition = $class->sequenceGeneratorDefinition;
 
                 if ( ! $definition) {
-                    $fieldName      = $class->getSingleIdentifierFieldName();
-                    $sequenceName   = $class->getSequenceName($this->getTargetPlatform());
+                    $sequenceName   = $class->getSequenceName($platform);
 
                     $definition = [
-                        'sequenceName'   => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'sequenceName'   => $platform->fixSchemaElementName($sequenceName),
                         'allocationSize' => 1,
                         'initialValue'   => 1,
                     ];
@@ -749,23 +740,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $class->setSequenceGeneratorDefinition($definition);
                 }
 
-                $sequenceName = $this
-                    ->em
-                    ->getConfiguration()
-                    ->getQuoteStrategy()
-                    ->getSequenceName($definition, $class, $this->getTargetPlatform());
-
-                $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator($sequenceName, $definition['allocationSize']);
+                $sequenceName      = $platform->quoteIdentifier($definition['sequenceName']);
+                $sequenceGenerator = new Sequencing\SequenceGenerator($sequenceName, $definition['allocationSize']);
 
                 $class->setIdGenerator($sequenceGenerator);
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_NONE:
-                $class->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
+                $class->setIdGenerator(new Sequencing\AssignedGenerator());
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_UUID:
-                $class->setIdGenerator(new \Doctrine\ORM\Id\UuidGenerator());
+                $class->setIdGenerator(new Sequencing\UuidGenerator());
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_TABLE:

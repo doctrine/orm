@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\Sequencing\SequenceGenerator;
 
 /**
  * Mock class for SequenceGenerator.

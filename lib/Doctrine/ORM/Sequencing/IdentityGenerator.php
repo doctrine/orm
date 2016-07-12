@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Id;
+namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 
@@ -26,7 +26,7 @@ use Doctrine\ORM\EntityManager;
  * that automatically get a database-generated, auto-incremented identifier on INSERT.
  * This generator obtains the last insert id after such an insert.
  */
-class IdentityGenerator extends AbstractIdGenerator
+class IdentityGenerator extends AbstractGenerator
 {
     /**
      * The name of the sequence to pass to lastInsertId(), if any.

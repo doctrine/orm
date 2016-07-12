@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\Sequencing\SequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;

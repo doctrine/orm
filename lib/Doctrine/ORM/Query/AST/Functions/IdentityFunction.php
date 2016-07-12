@@ -50,8 +50,8 @@ class IdentityFunction extends FunctionNode
      */
     public function getSql(SqlWalker $sqlWalker)
     {
-        $platform       = $sqlWalker->getEntityManager()->getConnection()->getDatabasePlatform();
-        $quoteStrategy  = $sqlWalker->getEntityManager()->getConfiguration()->getQuoteStrategy();
+        $entityManager  = $sqlWalker->getEntityManager();
+        $platform       = $entityManager->getConnection()->getDatabasePlatform();
         $dqlAlias       = $this->pathExpression->identificationVariable;
         $assocField     = $this->pathExpression->field;
         $qComp          = $sqlWalker->getQueryComponent($dqlAlias);
@@ -84,7 +84,7 @@ class IdentityFunction extends FunctionNode
         $tableName = $sqlWalker->getEntityManager()->getClassMetadata($assoc['sourceEntity'])->getTableName();
 
         $tableAlias = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
-        $columnName  = $quoteStrategy->getJoinColumnName($joinColumn, $targetEntity, $platform);
+        $columnName = $platform->quoteIdentifier($joinColumn['name']);
 
         return $tableAlias . '.' . $columnName;
     }
