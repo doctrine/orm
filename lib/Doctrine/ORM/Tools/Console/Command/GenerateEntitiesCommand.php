@@ -103,10 +103,9 @@ however putting much more logic on the entities you should refrain from using
 the entity-generator and code your entities manually.
 
 <error>Important:</error> Even if you specified Inheritance options in your
-XML or YAML Mapping files the generator cannot generate the base and
-child classes for you correctly, because it doesn't know which
-class is supposed to extend which. You have to adjust the entity
-code manually for inheritance to work!
+XML Mapping files the generator cannot generate the base and child classes
+for you correctly, because it doesn't know which class is supposed to extend
+which. You have to adjust the entity code manually for inheritance to work!
 EOT
         );
     }
