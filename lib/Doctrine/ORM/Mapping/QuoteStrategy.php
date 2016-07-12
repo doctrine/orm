@@ -30,16 +30,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 interface QuoteStrategy
 {
     /**
-     * Gets the (possibly quoted) column name for safe use in an SQL statement.
-     *
-     * @param ColumnMetadata   $columnMetadata
-     * @param AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getColumnName(ColumnMetadata $columnMetadata, AbstractPlatform $platform);
-
-    /**
      * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
      *
      * @param ClassMetadata    $class
@@ -48,17 +38,6 @@ interface QuoteStrategy
      * @return string
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform);
-
-    /**
-     * Gets the (possibly quoted) sequence name for safe use in an SQL statement.
-     *
-     * @param array            $definition
-     * @param ClassMetadata    $class
-     * @param AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) name of the join table.
@@ -70,28 +49,6 @@ interface QuoteStrategy
      * @return string
      */
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform);
-
-    /**
-     * Gets the (possibly quoted) join column name.
-     *
-     * @param array            $joinColumn
-     * @param ClassMetadata    $class
-     * @param AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
-
-    /**
-     * Gets the (possibly quoted) join column name.
-     *
-     * @param array            $joinColumn
-     * @param ClassMetadata    $class
-     * @param AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.

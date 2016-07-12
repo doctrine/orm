@@ -390,8 +390,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             foreach ($identifierColumns as $idColumn) {
                 $quotedColumnName = $idColumn instanceof ColumnMetadata
-                    ? $this->quoteStrategy->getColumnName($idColumn, $this->platform)
-                    : $this->quoteStrategy->getJoinColumnName($idColumn, $this->em->getClassMetadata($idColumn['targetEntity']), $this->platform)
+                    ? $this->platform->quoteIdentifier($idColumn->getColumnName())
+                    : $this->platform->quoteIdentifier($idColumn['name'])
                 ;
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
@@ -583,8 +583,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             foreach ($identifierColumns as $idColumn) {
                 $quotedColumnName = $idColumn instanceof ColumnMetadata
-                    ? $this->quoteStrategy->getColumnName($idColumn, $this->platform)
-                    : $this->quoteStrategy->getJoinColumnName($idColumn, $this->em->getClassMetadata($idColumn['targetEntity']), $this->platform)
+                    ? $this->platform->quoteIdentifier($idColumn->getColumnName())
+                    : $this->platform->quoteIdentifier($idColumn['name'])
                 ;
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
@@ -602,8 +602,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             foreach ($identifierColumns as $idColumn) {
                 $quotedColumnName = $idColumn instanceof ColumnMetadata
-                    ? $this->quoteStrategy->getColumnName($idColumn, $this->platform)
-                    : $this->quoteStrategy->getJoinColumnName($idColumn, $this->em->getClassMetadata($idColumn['targetEntity']), $this->platform)
+                    ? $this->platform->quoteIdentifier($idColumn->getColumnName())
+                    : $this->platform->quoteIdentifier($idColumn['name'])
                 ;
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;

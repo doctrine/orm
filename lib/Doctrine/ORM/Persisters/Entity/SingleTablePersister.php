@@ -54,7 +54,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $discrColumnName  = $discrColumn->getColumnName();
         $discrColumnType  = $discrColumn->getType();
         $resultColumnName = $this->platform->getSQLResultCasing($discrColumnName);
-        $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
+        $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
 
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
         $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumnName, false, $discrColumnType);
@@ -169,7 +169,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $discrColumn      = $this->class->discriminatorColumn;
         $discrColumnType  = $discrColumn->getType();
         $tableAlias       = $this->getSQLTableAlias($discrColumn->getTableName());
-        $quotedColumnName = $this->quoteStrategy->getColumnName($discrColumn, $this->platform);
+        $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
 
         return sprintf(
             '%s IN (%s)',

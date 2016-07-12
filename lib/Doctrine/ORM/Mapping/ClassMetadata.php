@@ -496,7 +496,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var \Doctrine\ORM\Id\AbstractIdGenerator
+     * @var \Doctrine\ORM\Sequencing\AbstractGenerator
      *
      * @todo Remove!
      */
@@ -520,16 +520,6 @@ class ClassMetadata implements ClassMetadataInterface
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
-
-    /**
-     * READ-ONLY: The definition of the table generator of this class. Only used for the
-     * TABLE generation strategy.
-     *
-     * @var array
-     *
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
-     */
-    public $tableGeneratorDefinition;
 
     /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
@@ -2793,7 +2783,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
-     * @param \Doctrine\ORM\Id\AbstractIdGenerator $generator
+     * @param \Doctrine\ORM\Sequencing\AbstractGenerator $generator
      *
      * @return void
      */
