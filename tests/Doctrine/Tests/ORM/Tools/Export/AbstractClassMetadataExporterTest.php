@@ -17,7 +17,6 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
-use Symfony\Component\Yaml\Parser;
 
 /**
  * Test case for ClassMetadataExporter
@@ -59,7 +58,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             'php'        => PHPDriver::class,
             'annotation' => AnnotationDriver::class,
             'xml'        => XmlDriver::class,
-            'yaml'       => YamlDriver::class,
         ];
 
         self::assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
@@ -364,13 +362,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             self::assertEquals(1, count($nodes));
 
             self::assertEquals('cascade-all', $nodes[0]->getName());
-        } else if ($type == 'yaml') {
-            $yaml = new Parser();
-            $value = $yaml->parse(file_get_contents(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
-
-            self::assertTrue(isset($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
-            self::assertEquals(1, count($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
-            self::assertEquals('all', $value[ExportedUser::class]['oneToMany']['interests']['cascade'][0]);
         } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }
