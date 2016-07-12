@@ -29,11 +29,7 @@
     "require-dev": {
         "doctrine/coding-standard": "^1.0",
         "phpunit/phpunit": "^6.5",
-        "squizlabs/php_codesniffer": "^3.2",
-        "symfony/yaml": "~3.4|~4.0"
-    },
-    "suggest": {
-        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
+        "squizlabs/php_codesniffer": "^3.2"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }

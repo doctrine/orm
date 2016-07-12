@@ -19,13 +19,12 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\Common\ClassLoader;
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use Doctrine\ORM\Mapping\Driver\YamlDriver;
 
 /**
  * Convenience class for setting up Doctrine from different installations and configurations.
@@ -51,7 +50,7 @@ class Setup
         $loader = new ClassLoader("Doctrine", $directory);
         $loader->register();
 
-        $loader = new ClassLoader("Symfony\Component", $directory . "/Doctrine");
+        $loader = new ClassLoader('Symfony\Component', $directory . "/Doctrine");
         $loader->register();
     }
 
@@ -88,24 +87,6 @@ class Setup
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
-
-        return $config;
-    }
-
-    /**
-     * Creates a configuration with a yaml metadata driver.
-     *
-     * @param array   $paths
-     * @param boolean $isDevMode
-     * @param string  $proxyDir
-     * @param Cache   $cache
-     *
-     * @return Configuration
-     */
-    public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
-    {
-        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(new YamlDriver($paths));
 
         return $config;
     }
