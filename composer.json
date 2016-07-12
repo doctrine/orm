@@ -25,11 +25,7 @@
         "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {
-        "symfony/yaml": "~3.0|~4.0",
         "phpunit/phpunit": "^6.0"
-    },
-    "suggest": {
-        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
