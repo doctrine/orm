@@ -98,7 +98,7 @@ database cannot detect inverse associations, inheritance types,
 entities with foreign keys as primary keys and many of the
 semantical operations on associations such as cascade.
 
-<comment>Hint:</comment> There is no need to convert YAML or XML mapping files to annotations
+<comment>Hint:</comment> There is no need to convert XML mapping files to annotations
 every time you make changes. All mapping drivers are first class citizens
 in Doctrine 2 and can be used as runtime mapping for the ORM.
 
