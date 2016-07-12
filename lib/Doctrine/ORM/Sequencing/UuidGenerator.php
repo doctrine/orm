@@ -17,50 +17,26 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Id;
+namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 
 /**
- * Id generator that obtains IDs from special "identity" columns. These are columns
- * that automatically get a database-generated, auto-incremented identifier on INSERT.
- * This generator obtains the last insert id after such an insert.
+ * Represents an ID generator that uses the database UUID expression
+ *
+ * @since 2.3
+ * @author Maarten de Keizer <m.de.keizer@markei.nl>
  */
-class BigIntegerIdentityGenerator extends AbstractIdGenerator
+class UuidGenerator extends AbstractGenerator
 {
-    /**
-     * The name of the sequence to pass to lastInsertId(), if any.
-     *
-     * @var string
-     */
-    private $sequenceName;
-
-    /**
-     * Constructor.
-     *
-     * @param string|null $sequenceName The name of the sequence to pass to lastInsertId()
-     *                                  to obtain the last generated identifier within the current
-     *                                  database session/connection, if any.
-     */
-    public function __construct($sequenceName = null)
-    {
-        $this->sequenceName = $sequenceName;
-    }
-
     /**
      * {@inheritDoc}
      */
     public function generate(EntityManager $em, $entity)
     {
-        return (string) $em->getConnection()->lastInsertId($this->sequenceName);
-    }
+        $conn = $em->getConnection();
+        $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isPostInsertGenerator()
-    {
-        return true;
+        return $conn->query($sql)->fetchColumn(0);
     }
 }
-

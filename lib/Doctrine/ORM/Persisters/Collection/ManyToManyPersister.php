@@ -129,8 +129,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
             : $association['joinTable']['joinColumns'];
 
         foreach ($joinColumns as $joinColumn) {
-            $columnName     = $this->quoteStrategy->getJoinColumnName($joinColumn, $sourceClass, $this->platform);
+            $columnName     = $this->platform->quoteIdentifier($joinColumn['name']);
             $referencedName = $joinColumn['referencedColumnName'];
+
             $conditions[]   = 't.' . $columnName . ' = ?';
             $params[]       = $id[$sourceClass->getFieldForColumn($referencedName)];
             $types[]        = PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em);
@@ -260,9 +261,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
             [$name, $value, $operator] = $parameter;
 
 
-            $field  = $this->quoteStrategy->getColumnName($targetClass->getProperty($name), $this->platform);
+            $property   = $targetClass->getProperty($name);
+            $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
-            $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
+            $whereClauses[] = sprintf('te.%s %s ?', $columnName, $operator);
             $params[]       = $value;
         }
 
@@ -367,8 +369,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $conditions = [];
 
         foreach ($joinColumns as $joinColumn) {
-            $joinColumnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
-            $refColumnName  = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $joinColumnName = $this->platform->quoteIdentifier($joinColumn['name']);
+            $refColumnName  = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
 
             $conditions[] = ' t.' . $joinColumnName . ' = ' . 'te.' . $refColumnName;
         }
@@ -389,7 +391,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $columns[] = $this->platform->quoteIdentifier($joinColumn['name']);
         }
 
         return 'DELETE FROM ' . $joinTable
@@ -440,12 +442,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $types       = [];
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $columns[] = $this->platform->quoteIdentifier($joinColumn['name']);
             $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $class, $this->em);
         }
 
         foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $columns[] = $this->platform->quoteIdentifier($joinColumn['name']);
             $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
         }
 
@@ -489,12 +491,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $columns[] = $this->platform->quoteIdentifier($joinColumn['name']);
             $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $class, $this->em);
         }
 
         foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
-            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $columns[] = $this->platform->quoteIdentifier($joinColumn['name']);
             $types[]   = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
         }
 
@@ -755,9 +757,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $orderBy = [];
 
             foreach ($orderings as $name => $direction) {
-                $field = $this->quoteStrategy->getColumnName($targetClass->getProperty($name), $this->platform);
+                $property   = $targetClass->getProperty($name);
+                $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
-                $orderBy[] = $field . ' ' . $direction;
+                $orderBy[] = $columnName . ' ' . $direction;
             }
 
             return ' ORDER BY ' . implode(', ', $orderBy);

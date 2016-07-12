@@ -274,7 +274,7 @@ class SchemaTool
 
             foreach ($class->identifier as $identifierField) {
                 if (($property = $class->getProperty($identifierField)) !== null) {
-                    $pkColumns[] = $this->quoteStrategy->getColumnName($property, $this->platform);
+                    $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
 
                     continue;
                 }
@@ -284,7 +284,7 @@ class SchemaTool
                     $assoc = $class->associationMappings[$identifierField];
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                        $pkColumns[] = $this->platform->quoteIdentifier($joinColumn['name']);
                     }
                 }
             }
@@ -337,15 +337,12 @@ class SchemaTool
 
             $processedClasses[$class->name] = true;
 
-            if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
-                $seqDef     = $class->sequenceGeneratorDefinition;
-                $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
+            if ($class->isIdGeneratorSequence() && $class->name === $class->rootEntityName) {
+                $definition = $class->sequenceGeneratorDefinition;
+                $quotedName = $this->platform->quoteIdentifier($definition['sequenceName']);
+
                 if ( ! $schema->hasSequence($quotedName)) {
-                    $schema->createSequence(
-                        $quotedName,
-                        $seqDef['allocationSize'],
-                        $seqDef['initialValue']
-                    );
+                    $schema->createSequence($quotedName, $definition['allocationSize'], $definition['initialValue']);
                 }
             }
 
@@ -427,7 +424,7 @@ class SchemaTool
             $this->gatherColumn($class, $property, $table);
 
             if ($property->isPrimaryKey()) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($property, $this->platform);
+                $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
             }
         }
     }
@@ -499,7 +496,7 @@ class SchemaTool
             $options['autoincrement'] = false;
         }
 
-        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldMetadata, $this->platform);
+        $quotedColumnName = $this->platform->quoteIdentifier($fieldMetadata->getColumnName());
 
         if ($table->hasColumn($quotedColumnName)) {
             // required in some inheritance scenarios
@@ -679,12 +676,8 @@ class SchemaTool
                 ));
             }
 
-            $quotedColumnName    = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
-            $quotedRefColumnName = $this->quoteStrategy->getReferencedJoinColumnName(
-                $joinColumn,
-                $class,
-                $this->platform
-            );
+            $quotedColumnName       = $this->platform->quoteIdentifier($joinColumn['name']);
+            $quotedRefColumnName    = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
 
             $primaryKeyColumns[] = $quotedColumnName;
             $localColumns[]      = $quotedColumnName;

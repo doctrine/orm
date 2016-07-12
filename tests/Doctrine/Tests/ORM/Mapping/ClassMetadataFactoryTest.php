@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Sequencing\AbstractGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
@@ -476,7 +476,7 @@ class TestEntity1
     private $embedded;
 }
 
-class CustomIdGenerator extends AbstractIdGenerator
+class CustomIdGenerator extends AbstractGenerator
 {
     public function generate(EntityManager $em, $entity)
     {
