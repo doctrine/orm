@@ -421,7 +421,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             // Get the SQL table alias for the entity and field and the column name as will appear in the select list
             $tableAlias = $this->getSQLTableAlias($property->getTableName(), $dqlAliasForFieldAlias);
-            $columnName = $this->quoteStrategy->getColumnName($property, $platform);
+            $columnName = $platform->quoteIdentifier($property->getColumnName());
 
             // Compose search/replace patterns
             $searchPatterns[] = sprintf($fieldSearchPattern, $tableAlias, $columnName);

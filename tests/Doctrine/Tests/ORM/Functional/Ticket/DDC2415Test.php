@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Sequencing\AbstractGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
 
@@ -89,7 +89,7 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
     }
 }
 
-class DDC2415Generator extends AbstractIdGenerator
+class DDC2415Generator extends AbstractGenerator
 {
     public function generate(EntityManager $em, $entity)
     {

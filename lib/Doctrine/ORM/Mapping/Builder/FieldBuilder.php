@@ -265,7 +265,7 @@ class FieldBuilder
 
     /**
      * Set the FQCN of the custom ID generator.
-     * This class must extend \Doctrine\ORM\Id\AbstractIdGenerator.
+     * This class must extend \Doctrine\ORM\Sequencing\AbstractGenerator.
      *
      * @param string $customIdGenerator
      *
