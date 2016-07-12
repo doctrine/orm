@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Tools\Export;
 
 /**
  * Class used for converting your mapping information between the
- * supported formats: yaml, xml, and php/annotation.
+ * supported formats: xml and php/annotation.
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -34,8 +34,6 @@ class ClassMetadataExporter
      */
     private static $_exporterDrivers = [
         'xml' => Driver\XmlExporter::class,
-        'yaml' => Driver\YamlExporter::class,
-        'yml' => Driver\YamlExporter::class,
         'php' => Driver\PhpExporter::class,
         'annotation' => Driver\AnnotationExporter::class
     ];
@@ -56,7 +54,7 @@ class ClassMetadataExporter
     /**
      * Gets an exporter driver instance.
      *
-     * @param string      $type The type to get (yml, xml, etc.).
+     * @param string      $type The type to get (xml, etc.).
      * @param string|null $dest The directory where the exporter will export to.
      *
      * @return Driver\AbstractExporter
