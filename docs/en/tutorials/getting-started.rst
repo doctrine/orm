@@ -616,12 +616,12 @@ domain model to match the requirements:
         }
     }
 
-Whenever an entity is recreated from the database, an Collection
-implementation of the type Doctrine is injected into your entity
-instead of an array. Compared to the ArrayCollection this
-implementation helps the Doctrine ORM understand the changes that
-have happened to the collection which are noteworthy for
-persistence.
+You use Doctrine's ArrayCollections in your Doctrine models, rather
+than plain PHP arrays, so that Doctrine can watch what happens with
+them and act appropriately.  Note that if you dump your entities,
+you'll see a "PersistentCollection" in place of your ArrayCollection,
+which is just an
+internal Doctrine class with the same interface.
 
 .. warning::
 
