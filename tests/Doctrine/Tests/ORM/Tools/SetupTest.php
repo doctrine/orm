@@ -63,14 +63,6 @@ class SetupTest extends OrmTestCase
         self::assertInstanceOf('Doctrine\ORM\Mapping\Driver\XmlDriver', $config->getMetadataDriverImpl());
     }
 
-    public function testYAMLConfiguration()
-    {
-        $config = Setup::createYAMLMetadataConfiguration(array(), true);
-
-        self::assertInstanceOf('Doctrine\ORM\Configuration', $config);
-        self::assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
-    }
-
     /**
      * @group DDC-1350
      */
