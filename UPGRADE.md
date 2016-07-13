@@ -2,7 +2,7 @@
 
 ## BC Break: Removed ``YAML`` mapping drivers.
 
-If your code relies on ``YamlDriver``  or ``SimpleYamlDriver``, you should change to
+If your code relies on ``YamlDriver``  or ``SimpleYamlDriver``, you **MUST** change to
 annotation or XML drivers instead.
 
 ## BC Break: Changed methods in ``ClassMetadata``
