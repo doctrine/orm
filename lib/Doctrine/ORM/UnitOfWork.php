@@ -1010,11 +1010,11 @@ class UnitOfWork implements PropertyChangedListener
         if ($postInsertIds) {
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $id      = $postInsertId['generatedId'];
-                $entity  = $postInsertId['entity'];
-                $oid     = spl_object_hash($entity);
-                $idField = $class->identifier[0];
-                $idType  = $this->em->getClassMetadata(get_class($entity))->fieldMappings[$idField]['type'];
+                $id       = $postInsertId['generatedId'];
+                $entity   = $postInsertId['entity'];
+                $oid      = spl_object_hash($entity);
+                $idField  = $class->identifier[0];
+                $idType   = $this->em->getClassMetadata(get_class($entity))->fieldMappings[$idField]['type'];
                 $mappedId = Types\Type::getType($idType)->convertToPHPValue($id, $platform);
 
                 $class->reflFields[$idField]->setValue($entity, $mappedId);
