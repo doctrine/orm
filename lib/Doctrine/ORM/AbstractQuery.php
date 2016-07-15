@@ -419,9 +419,11 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor($className = ClassUtils::getClass($value))) {
+            if ($this->_em->getClassMetadata($className)->isEmbeddedClass) {
+                return $value;
+            }
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
-
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
