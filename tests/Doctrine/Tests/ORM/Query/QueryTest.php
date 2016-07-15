@@ -9,6 +9,9 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\DDC3597\DDC3597Image;
+use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
 use Doctrine\Tests\OrmTestCase;
 
 class QueryTest extends OrmTestCase
@@ -180,6 +183,24 @@ class QueryTest extends OrmTestCase
         $this->assertEquals(
             'Doctrine\Tests\Models\CMS\CmsAddress',
             $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+        );
+    }
+
+    /**
+     * @group 5936
+     */
+    public function testProcessParameterValueEmbeddable()
+    {
+        $query  = $this->_em->createQuery("SELECT a FROM " . DDC3597Image::class . " a");
+
+        // load class meta data
+        $this->_em->getClassMetadata(DDC3597Image::class);
+        $this->assertTrue($this->_em->getMetadataFactory()->hasMetadataFor(DDC3597Image::class));
+        $this->assertTrue($this->_em->getMetadataFactory()->hasMetadataFor(DDC3597Dimension::class));
+
+        $this->assertInstanceOf(
+            DDC3597Dimension::class,
+            $query->processParameterValue(new DDC3597Dimension())
         );
     }
 
