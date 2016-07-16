@@ -622,6 +622,11 @@ class YamlDriver extends FileDriver
                     $override['inversedBy'] = (string) $associationOverrideElement['inversedBy'];
                 }
 
+                // Check for `fetch`
+                if (isset($associationOverrideElement['fetch'])) {
+                    $override['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $associationOverrideElement['fetch']);
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }

@@ -621,6 +621,11 @@ class XmlDriver extends FileDriver
                     $override['inversedBy'] = (string) $overrideElement->{'inversed-by'}['name'];
                 }
 
+                // Check for `fetch`
+                if (isset($overrideElement['fetch'])) {
+                    $override['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string) $overrideElement['fetch']);
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }

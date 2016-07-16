@@ -28,6 +28,7 @@ use Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 use Doctrine\Tests\Models\DDC3579\DDC3579Admin;
+use Doctrine\Tests\Models\DDC5934\DDC5934Contract;
 use Doctrine\Tests\Models\DDC869\DDC869ChequePayment;
 use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
@@ -814,6 +815,18 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         // assert override
         $this->assertEquals('admins', $adminGroups['inversedBy']);
+    }
+
+    /**
+     * @group DDC-5934
+     */
+    public function testFetchOverrideMapping()
+    {
+        // check override metadata
+        $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
+
+        $this->assertArrayHasKey('members', $contractMetadata->associationMappings);
+        $this->assertSame(ClassMetadata::FETCH_EXTRA_LAZY, $contractMetadata->associationMappings['members']['fetch']);
     }
 
     /**
