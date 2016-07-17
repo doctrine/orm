@@ -222,10 +222,7 @@ class EntityRepository implements ObjectRepository, Selectable
                 break;
 
             default:
-                throw new \BadMethodCallException(
-                    "Undefined method '$method'. The method name must start with ".
-                    "either findBy or findOneBy!"
-                );
+                throw new UnknownEntityRepositoryMethod($this->_entityName, $method);
         }
 
         if (empty($arguments)) {
