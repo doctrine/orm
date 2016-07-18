@@ -18,7 +18,7 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC5684Object')
+            $this->_em->getClassMetadata(DDC5684Object::CLASSNAME)
         ));
     }
 
@@ -39,9 +39,7 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $id = new DDC5684ObjectId();
-        $id->value = $value;
-        return $id;
+        return new DDC5684ObjectId($value);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
@@ -65,6 +63,11 @@ class DDC5684ObjectId
     const CLASSNAME = __CLASS__;
 
     public $value;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
 }
 
 /**
