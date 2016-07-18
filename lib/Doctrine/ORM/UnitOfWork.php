@@ -891,7 +891,11 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
 
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                $idValue = array($class->identifier[0] => $idValue);
+                $platform       = $this->em->getConnection()->getDatabasePlatform();
+                $idField        = $class->identifier[0];
+                $idType         = $this->em->getClassMetadata(get_class($entity))->fieldMappings[$idField]['type'];
+                $mappedIdValue  = Types\Type::getType($idType)->convertToPHPValue($idValue, $platform);
+                $idValue        = array($idField => $mappedIdValue);
 
                 $class->setIdentifierValues($entity, $idValue);
             }
