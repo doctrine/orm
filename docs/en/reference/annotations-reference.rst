@@ -37,6 +37,7 @@ Index
 -  :ref:`@ColumnResult <annref_column_result>`
 -  :ref:`@Cache <annref_cache>`
 -  :ref:`@ChangeTrackingPolicy <annref_changetrackingpolicy>`
+-  :ref:`@CustomIdGenerator <annref_customidgenerator>`
 -  :ref:`@DiscriminatorColumn <annref_discriminatorcolumn>`
 -  :ref:`@DiscriminatorMap <annref_discriminatormap>`
 -  :ref:`@Embeddable <annref_embeddable>`
@@ -232,6 +233,30 @@ Example:
      * @ChangeTrackingPolicy("NOTIFY")
      */
     class User {}
+
+.. _annref_customidgenerator:
+
+@CustomIdGenerator
+~~~~~~~~~~~~~~~~~~~~~
+
+This annotations allows you to specify a user-provided class to generate identifiers. This annotation only works when both :ref:`@Id <annref_id>` and :ref:`@GeneratedValue(strategy="CUSTOM") <annref_generatedvalue>` are specified.
+
+Required attributes:
+
+-  **class**: name of the class which should extend Doctrine\ORM\Id\AbstractIdGenerator
+
+Example:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Id 
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="CUSTOM")
+     * @CustomIdGenerator(class="My\Namespace\MyIdGenerator")
+     */
+    public $id;
 
 .. _annref_discriminatorcolumn:
 
