@@ -22,6 +22,15 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
     }
 
+    protected function tearDown()
+    {
+        $this->_schemaTool->dropSchema(array(
+            $this->_em->getClassMetadata(DDC5684Object::CLASSNAME)
+        ));
+
+        parent::tearDown();
+    }
+
     public function testAutoIncrementIdWithCustomType()
     {
         $object = new DDC5684Object();
@@ -29,6 +38,22 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertInstanceOf(DDC5684ObjectId::CLASSNAME, $object->id);
+    }
+
+    public function testFetchObjectWithAutoIncrementedCustomType()
+    {
+        $object = new DDC5684Object();
+        $this->_em->persist($object);
+        $this->_em->flush();
+
+        $rawId = $object->id->value;
+
+        $this->_em->detach($object);
+
+        $object = $this->_em->find(DDC5684Object::CLASSNAME, new DDC5684ObjectId($rawId));
+
+        $this->assertInstanceOf(DDC5684ObjectId::CLASSNAME, $object->id);
+        $this->assertEquals($rawId, $object->id->value);
     }
 }
 
