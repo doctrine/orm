@@ -93,6 +93,11 @@ class DDC5684ObjectId
     {
         $this->value = $value;
     }
+
+    public function __toString()
+    {
+        return (string) $this->value;
+    }
 }
 
 /**
