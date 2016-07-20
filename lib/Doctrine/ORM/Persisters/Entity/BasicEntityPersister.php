@@ -516,15 +516,25 @@ class BasicEntityPersister implements EntityPersister
                     : $association['joinTable']['inverseJoinColumns'];
             }
 
+            $isOnDeleteCascade = false;
+
             foreach ($joinColumns as $joinColumn) {
                 $keys[] = $this->platform->quoteIdentifier($joinColumn['name']);
+
+                if ($joinColumn['onDelete'] === 'CASCADE') {
+                    $isOnDeleteCascade = true;
+                }
             }
 
             foreach ($otherColumns as $joinColumn) {
                 $otherKeys[] = $this->platform->quoteIdentifier($joinColumn['name']);
+
+                if ($joinColumn['onDelete'] === 'CASCADE') {
+                    $isOnDeleteCascade = true;
+                }
             }
 
-            if (isset($mapping['isOnDeleteCascade'])) {
+            if ($isOnDeleteCascade) {
                 continue;
             }
 

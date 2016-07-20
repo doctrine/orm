@@ -15,8 +15,6 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
-        $this->enableQuotes = true;
-
         parent::setUp();
 
         try {
