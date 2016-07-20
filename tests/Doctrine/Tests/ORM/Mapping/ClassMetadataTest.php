@@ -132,13 +132,17 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToMany(
             [
-            'fieldName' => 'author',
-            'targetEntity' => 'DoctrineGlobal_User',
-            'joinTable' => [
-                'name' => 'bar',
-                'joinColumns' => [['name' => 'bar_id', 'referencedColumnName' => 'id']],
-                'inverseJoinColumns' => [['name' => 'baz_id', 'referencedColumnName' => 'id']],
-            ],
+                'fieldName' => 'author',
+                'targetEntity' => 'DoctrineGlobal_User',
+                'joinTable' => [
+                    'name' => 'bar',
+                    'joinColumns' => [
+                        ['name' => 'bar_id', 'referencedColumnName' => 'id', 'onDelete' => null]
+                    ],
+                    'inverseJoinColumns' => [
+                        ['name' => 'baz_id', 'referencedColumnName' => 'id', 'onDelete' => null]
+                    ],
+                ],
             ]
         );
 
@@ -160,14 +164,16 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'name' => 'cmsuser_cmsgroup',
-                'joinColumns' => [['name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
-                'inverseJoinColumns' => [['name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']]
+                'name'        => 'cmsuser_cmsgroup',
+                'joinColumns' => [
+                    ['name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']
+                ],
+                'inverseJoinColumns' => [
+                    ['name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']
+                ]
             ],
             $assoc['joinTable']
         );
-
-        self::assertTrue($assoc['isOnDeleteCascade']);
     }
 
     public function testSerializeManyToManyJoinTableCascade()
@@ -181,11 +187,12 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        /* @var $assoc \Doctrine\ORM\Mapping\ManyToMany */
         $assoc = $cm->associationMappings['groups'];
         $assoc = unserialize(serialize($assoc));
 
-        self::assertTrue($assoc['isOnDeleteCascade']);
+        foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
+            self::assertEquals('CASCADE', $joinColumn['onDelete']);
+        }
     }
 
     /**
@@ -376,8 +383,12 @@ class ClassMetadataTest extends OrmTestCase
                 'targetEntity' => 'CmsUser',
                 'inversedBy' => 'users',
                 'joinTable' => [
-                    'joinColumns' => [['referencedColumnName' => 'id']],
-                    'inverseJoinColumns' => [['referencedColumnName' => 'id']]
+                    'joinColumns' => [
+                        ['referencedColumnName' => 'id', 'onDelete' => null]
+                    ],
+                    'inverseJoinColumns' => [
+                        ['referencedColumnName' => 'id', 'onDelete' => null]
+                    ]
                 ]
             ]
         );
@@ -393,27 +404,35 @@ class ClassMetadataTest extends OrmTestCase
         // joinColumn's name will be automatically set to user_id
         $cm->mapOneToOne(
             [
-            'fieldName' => 'user',
-            'targetEntity' => 'CmsUser',
-            'joinColumns' => [['referencedColumnName' => 'id']]
+                'fieldName' => 'user',
+                'targetEntity' => 'CmsUser',
+                'joinColumns' => [
+                    ['referencedColumnName' => 'id', 'onDelete' => null]
+                ]
             ]
         );
+
         self::assertEquals('user_id', $cm->associationMappings['user']['joinColumns'][0]['name']);
 
         $cm = new ClassMetadata(CMS\CmsAddress::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToMany(
             [
-            'fieldName' => 'user',
-            'targetEntity' => 'CmsUser',
-            'inversedBy' => 'users',
-            'joinTable' => [
+                'fieldName' => 'user',
+                'targetEntity' => 'CmsUser',
+                'inversedBy' => 'users',
+                'joinTable' => [
                     'name' => 'user_CmsUser',
-                    'joinColumns' => [['referencedColumnName' => 'id']],
-                    'inverseJoinColumns' => [['referencedColumnName' => 'id']]
+                    'joinColumns' => [
+                        ['referencedColumnName' => 'id', 'onDelete' => null]
+                    ],
+                    'inverseJoinColumns' => [
+                        ['referencedColumnName' => 'id', 'onDelete' => null]
+                    ]
                 ]
             ]
         );
+
         self::assertEquals('cmsaddress_id', $cm->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
         self::assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
     }
@@ -451,9 +470,8 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertEquals('CMS_ADDRESS_CMS_USER', $manyToManyMetadata->associationMappings['user']['joinTable']['name']);
 
-        self::assertEquals(['CMS_ADDRESS_ID','CMS_USER_ID'], $manyToManyMetadata->associationMappings['user']['joinTableColumns']);
-        self::assertEquals(['CMS_ADDRESS_ID'=>'ID'], $manyToManyMetadata->associationMappings['user']['relationToSourceKeyColumns']);
-        self::assertEquals(['CMS_USER_ID'=>'ID'], $manyToManyMetadata->associationMappings['user']['relationToTargetKeyColumns']);
+        self::assertEquals(['CMS_ADDRESS_ID' => 'ID'], $manyToManyMetadata->associationMappings['user']['relationToSourceKeyColumns']);
+        self::assertEquals(['CMS_USER_ID' => 'ID'], $manyToManyMetadata->associationMappings['user']['relationToTargetKeyColumns']);
 
         self::assertEquals('CMS_ADDRESS_ID', $manyToManyMetadata->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
         self::assertEquals('CMS_USER_ID', $manyToManyMetadata->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
@@ -1182,12 +1200,16 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(
             [
                 'name' => 'customtypeparent_customtypeparent',
-                'joinColumns' => [['name' => 'customtypeparent_source', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
-                'inverseJoinColumns' => [['name' => 'customtypeparent_target', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
+                'joinColumns' => [
+                    ['name' => 'customtypeparent_source', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']
+                ],
+                'inverseJoinColumns' => [
+                    ['name' => 'customtypeparent_target', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']
+                ],
             ],
             $cm->associationMappings['friendsWithMe']['joinTable']
         );
-        self::assertEquals(['customtypeparent_source', 'customtypeparent_target'], $cm->associationMappings['friendsWithMe']['joinTableColumns']);
+
         self::assertEquals(['customtypeparent_source' => 'id'], $cm->associationMappings['friendsWithMe']['relationToSourceKeyColumns']);
         self::assertEquals(['customtypeparent_target' => 'id'], $cm->associationMappings['friendsWithMe']['relationToTargetKeyColumns']);
     }

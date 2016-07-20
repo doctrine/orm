@@ -141,25 +141,27 @@ class DDC964User
 
         $metadata->mapManyToMany(
             [
-                'fieldName'      => 'groups',
-                'targetEntity'   => 'DDC964Group',
-                'inversedBy'     => 'users',
-                'cascade'        => ['persist','merge','detach'],
-                'joinTable'      => [
-                    'name'          => 'ddc964_users_groups',
-                    'joinColumns'   => [
+               'fieldName'    => 'groups',
+               'targetEntity' => 'DDC964Group',
+               'inversedBy'   => 'users',
+               'cascade'      => ['persist','merge','detach'],
+               'joinTable'    => [
+                    'name'        => 'ddc964_users_groups',
+                    'joinColumns' => [
                         [
-                            'name'=>'user_id',
-                            'referencedColumnName'=>'id',
+                            'name' => 'user_id',
+                            'referencedColumnName' => 'id',
+                            'onDelete' => null,
                         ]
                     ],
-                    'inverseJoinColumns'=> [
+                    'inverseJoinColumns' => [
                         [
-                            'name'=>'group_id',
+                            'name' => 'group_id',
                             'referencedColumnName'=>'id',
+                            'onDelete' => null,
                         ]
                     ]
-                ]
+               ]
             ]
         );
 
