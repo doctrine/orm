@@ -30,14 +30,20 @@ $metadata->mapManyToMany(array(
    'cascade'        => array('persist','merge','detach'),
    'joinTable'      => array(
         'name'          => 'ddc964_users_groups',
-        'joinColumns'   => array(array(
-            'name'=>'user_id',
-            'referencedColumnName'=>'id',
-        )),
-        'inverseJoinColumns'=>array(array(
-            'name'=>'group_id',
-            'referencedColumnName'=>'id',
-        ))
+        'joinColumns'   => array(
+            array(
+                'name'=>'user_id',
+                'referencedColumnName'=>'id',
+                'onDelete' => null,
+            )
+        ),
+        'inverseJoinColumns'=>array(
+            array(
+                'name'=>'group_id',
+                'referencedColumnName'=>'id',
+                'onDelete' => null,
+            )
+        ),
    )
 ));
 

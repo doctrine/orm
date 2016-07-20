@@ -27,6 +27,7 @@ class DDC964Admin extends DDC964User
             'joinColumns'=>array(array(
                 'name' => 'adminaddress_id',
                 'referencedColumnName' => 'id',
+                'onDelete' => null,
             ))
         ));
 

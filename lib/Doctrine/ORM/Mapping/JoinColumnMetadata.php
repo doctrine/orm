@@ -19,36 +19,62 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Types\Type;
-
-interface Property
+class JoinColumnMetadata extends ColumnMetadata
 {
-    /**
-     * @return ClassMetadata
-     */
-    public function getDeclaringClass();
+    /** @var string */
+    private $referencedColumnName;
 
-    /**
-     * @param object $object
-     * @param mixed  $value
-     */
-    public function setValue($object, $value);
+    /** @var string */
+    private $aliasedName;
 
-    /**
-     * @param object $object
-     *
-     * @return mixed
-     */
-    public function getValue($object);
+    /** @var string */
+    private $onDelete;
 
     /**
      * @return string
      */
-    public function getName();
+    public function getReferencedColumnName()
+    {
+        return $this->referencedColumnName;
+    }
 
     /**
-     * @param ReflectionService $reflectionService
+     * @param string $referencedColumnName
      */
-    public function wakeupReflection(ReflectionService $reflectionService);
+    public function setReferencedColumnName($referencedColumnName)
+    {
+        $this->referencedColumnName = $referencedColumnName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAliasedName()
+    {
+        return $this->aliasedName;
+    }
+
+    /**
+     * @param string $aliasedName
+     */
+    public function setAliasedName($aliasedName)
+    {
+        $this->aliasedName = $aliasedName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOnDelete()
+    {
+        return $this->onDelete;
+    }
+
+    /**
+     * @param string $onDelete
+     */
+    public function setOnDelete($onDelete)
+    {
+        $this->onDelete = $onDelete;
+    }
 }

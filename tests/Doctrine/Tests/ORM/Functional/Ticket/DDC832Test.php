@@ -6,8 +6,6 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->enableQuotes = true;
-
         parent::setUp();
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();

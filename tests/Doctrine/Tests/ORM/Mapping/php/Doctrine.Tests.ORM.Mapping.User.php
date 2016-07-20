@@ -98,6 +98,7 @@ $metadata->mapManyToMany(array(
     array(
     'name' => 'user_id',
     'referencedColumnName' => 'id',
+    'onDelete' => null,
     'unique' => false,
     'nullable' => false,
     ),
@@ -108,6 +109,7 @@ $metadata->mapManyToMany(array(
     array(
     'name' => 'group_id',
     'referencedColumnName' => 'id',
+    'onDelete' => null,
     'columnDefinition' => 'INT NULL',
     ),
    ),

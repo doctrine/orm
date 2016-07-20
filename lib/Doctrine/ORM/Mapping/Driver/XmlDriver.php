@@ -686,7 +686,10 @@ class XmlDriver extends FileDriver
     {
         $joinColumn = array(
             'name' => (string) $joinColumnElement['name'],
-            'referencedColumnName' => (string) $joinColumnElement['referenced-column-name']
+            'referencedColumnName' => (string) $joinColumnElement['referenced-column-name'],
+            'onDelete' => isset($joinColumnElement['on-delete'])
+                ? strtoupper((string) $joinColumnElement['on-delete'])
+                : null,
         );
 
         if (isset($joinColumnElement['unique'])) {
@@ -695,10 +698,6 @@ class XmlDriver extends FileDriver
 
         if (isset($joinColumnElement['nullable'])) {
             $joinColumn['nullable'] = $this->evaluateBoolean($joinColumnElement['nullable']);
-        }
-
-        if (isset($joinColumnElement['on-delete'])) {
-            $joinColumn['onDelete'] = (string) $joinColumnElement['on-delete'];
         }
 
         if (isset($joinColumnElement['column-definition'])) {

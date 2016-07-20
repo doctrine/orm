@@ -139,10 +139,12 @@ class DDC964User
                 'joinColumns'   => array(array(
                     'name'=>'user_id',
                     'referencedColumnName'=>'id',
+                    'onDelete' => null,
                 )),
                 'inverseJoinColumns'=>array(array(
                     'name'=>'group_id',
                     'referencedColumnName'=>'id',
+                    'onDelete' => null,
                 ))
            )
         ));

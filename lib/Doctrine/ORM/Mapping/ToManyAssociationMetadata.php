@@ -19,36 +19,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Types\Type;
-
-interface Property
+class ToManyAssociationMetadata extends AssociationMetadata
 {
-    /**
-     * @return ClassMetadata
-     */
-    public function getDeclaringClass();
 
-    /**
-     * @param object $object
-     * @param mixed  $value
-     */
-    public function setValue($object, $value);
-
-    /**
-     * @param object $object
-     *
-     * @return mixed
-     */
-    public function getValue($object);
-
-    /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param ReflectionService $reflectionService
-     */
-    public function wakeupReflection(ReflectionService $reflectionService);
 }

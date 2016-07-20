@@ -144,7 +144,7 @@ class CmsAddress
         $metadata->mapOneToOne(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
-            'joinColumns'   => array(array('referencedColumnName' => 'id'))
+            'joinColumns'   => array(array('referencedColumnName' => 'id', 'onDelete' => null))
         ));
 
         $metadata->addNamedNativeQuery(array (

@@ -231,6 +231,7 @@ class DatabaseDriver implements MappingDriver
                         $associationMapping['joinTable']['joinColumns'][] = array(
                             'name' => $cols[$i],
                             'referencedColumnName' => $fkCols[$i],
+                            'onDelete' => null,
                         );
                     }
 
@@ -241,6 +242,7 @@ class DatabaseDriver implements MappingDriver
                         $associationMapping['joinTable']['inverseJoinColumns'][] = array(
                             'name' => $cols[$i],
                             'referencedColumnName' => $fkCols[$i],
+                            'onDelete' => null,
                         );
                     }
                 } else {
@@ -464,6 +466,7 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['joinColumns'][] = array(
                     'name'                 => $fkColumns[$i],
                     'referencedColumnName' => $fkForeignColumns[$i],
+                    'onDelete' => null,
                 );
             }
 

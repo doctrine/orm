@@ -1381,7 +1381,8 @@ class ClassMetadata implements ClassMetadataInterface
                 $mapping['joinColumns'] = array(
                     array(
                         'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
-                        'referencedColumnName' => $this->namingStrategy->referenceColumnName()
+                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'onDelete' => null,
                     )
                 );
             }
@@ -1521,8 +1522,6 @@ class ClassMetadata implements ClassMetadataInterface
                 );
             }
 
-            $mapping['joinTableColumns'] = array();
-
             foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
@@ -1532,12 +1531,7 @@ class ClassMetadata implements ClassMetadataInterface
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
 
-                if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
-                    $mapping['isOnDeleteCascade'] = true;
-                }
-
                 $mapping['relationToSourceKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
-                $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
 
             foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
@@ -1549,21 +1543,16 @@ class ClassMetadata implements ClassMetadataInterface
                     $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
 
-                if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
-                    $mapping['isOnDeleteCascade'] = true;
-                }
-
                 $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
-                $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }
         }
 
         $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
 
-        if (isset($mapping['orderBy'])) {
-            if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
-            }
+        if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {
+            throw new InvalidArgumentException(
+                "'orderBy' is expected to be an array, not ".gettype($mapping['orderBy'])
+            );
         }
 
         return $mapping;
@@ -1919,7 +1908,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $mapping['joinColumnFieldNames']        = null;
-        $mapping['joinTableColumns']            = null;
         $mapping['sourceToTargetKeyColumns']    = null;
         $mapping['relationToSourceKeyColumns']  = null;
         $mapping['relationToTargetKeyColumns']  = null;

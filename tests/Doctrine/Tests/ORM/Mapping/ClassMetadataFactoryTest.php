@@ -273,7 +273,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         // and an association on the owning side
         $joinColumns = array(
-            array('name' => 'other_id', 'referencedColumnName' => 'id')
+            array('name' => 'other_id', 'referencedColumnName' => 'id', 'onDelete' => null)
         );
 
         $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns));

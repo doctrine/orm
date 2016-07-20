@@ -187,7 +187,6 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(1, count($person1->getFriends()));
         self::assertEquals(1, count($person2->getFriends()));
 
-
         $this->_em->persist($person1);
         $this->_em->persist($person2);
 
@@ -245,7 +244,6 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
             self::assertInstanceOf('Doctrine\Tests\Models\Company\CompanyAuction', $events[1]);
         }
     }
-
 
     public function testLazyLoading2()
     {
@@ -313,8 +311,6 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
      */
     public function testDeleteJoinTableRecords()
     {
-        #$this->markTestSkipped('Nightmare! friends adds both ID 6-7 and 7-6 into two rows of the join table. How to detect this?');
-
         $employee1 = new CompanyEmployee();
         $employee1->setName('gblanco');
         $employee1->setSalary(0);

@@ -315,7 +315,7 @@ class XmlExporter extends AbstractExporter
                     $joinColumnXml->addAttribute('name', $joinColumn['name']);
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
 
-                    if (isset($joinColumn['onDelete'])) {
+                    if (isset($joinColumn['onDelete']) && ! empty($joinColumn['onDelete'])) {
                         $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
                     }
                 }
@@ -328,7 +328,7 @@ class XmlExporter extends AbstractExporter
                     $inverseJoinColumnXml->addAttribute('name', $inverseJoinColumn['name']);
                     $inverseJoinColumnXml->addAttribute('referenced-column-name', $inverseJoinColumn['referencedColumnName']);
 
-                    if (isset($inverseJoinColumn['onDelete'])) {
+                    if (isset($inverseJoinColumn['onDelete']) && ! empty($inverseJoinColumn['onDelete'])) {
                         $inverseJoinColumnXml->addAttribute('on-delete', $inverseJoinColumn['onDelete']);
                     }
 
@@ -355,7 +355,7 @@ class XmlExporter extends AbstractExporter
                     $joinColumnXml->addAttribute('name', $joinColumn['name']);
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
 
-                    if (isset($joinColumn['onDelete'])) {
+                    if (isset($joinColumn['onDelete']) && ! empty($joinColumn['onDelete'])) {
                         $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
                     }
 

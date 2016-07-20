@@ -109,9 +109,11 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
             'cascade'       => array('persist'),
             'inversedBy'    => 'user',
             'orphanRemoval' => false,
-            'joinColumns'   => array(array(
+            'joinColumns'   => array(
+                array(
                     'nullable' => true,
                     'referencedColumnName' => 'id',
+                    'onDelete' => null,
                 )
             )
         ));

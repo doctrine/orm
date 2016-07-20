@@ -11,8 +11,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
-use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -677,7 +675,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // different configs.
         $config = new Configuration();
         $config = new \Doctrine\ORM\Configuration();
-        //$config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');

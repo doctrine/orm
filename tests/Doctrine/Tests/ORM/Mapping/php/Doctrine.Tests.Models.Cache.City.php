@@ -27,6 +27,7 @@ $metadata->mapOneToOne(array(
         array(
             'name' => 'state_id',
             'referencedColumnName' => 'id',
+            'onDelete' => null,
         ),
     ),
 ));
