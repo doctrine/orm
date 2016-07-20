@@ -76,6 +76,7 @@ $metadata->mapOneToOne(
         'orphanRemoval' => false,
     ]
 );
+
 $metadata->mapOneToMany(
     [
         'fieldName' => 'phonenumbers',
@@ -86,6 +87,7 @@ $metadata->mapOneToMany(
         'orderBy' => ['number' => 'ASC'],
     ]
 );
+
 $metadata->mapManyToMany(
     [
         'fieldName' => 'groups',
@@ -104,7 +106,8 @@ $metadata->mapManyToMany(
                 0 => [
                     'name' => 'user_id',
                     'referencedColumnName' => 'id',
-                    'unique' => false,
+                    'onDelete' => null,
+    'unique' => false,
                     'nullable' => false,
                 ],
             ],
@@ -112,6 +115,7 @@ $metadata->mapManyToMany(
                 0 => [
                     'name' => 'group_id',
                     'referencedColumnName' => 'id',
+    'onDelete' => null,
                     'columnDefinition' => 'INT NULL',
                 ],
             ],

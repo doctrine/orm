@@ -35,25 +35,27 @@ $metadata->mapManyToOne(
 
 $metadata->mapManyToMany(
     [
-        'fieldName'    => 'groups',
-        'targetEntity' => 'DDC964Group',
-        'inversedBy'   => 'users',
-        'cascade'      => ['persist','merge','detach'],
-        'joinTable'    => [
-            'name'        => 'ddc964_users_groups',
-            'joinColumns' => [
-                [
-                    'name'                 => 'user_id',
-                    'referencedColumnName' => 'id',
-                ]
-            ],
-            'inverseJoinColumns' => [
-                [
-                    'name'                 => 'group_id',
-                    'referencedColumnName' => 'id',
-                ]
-            ]
-        ]
+       'fieldName'    => 'groups',
+       'targetEntity' => 'DDC964Group',
+       'inversedBy'   => 'users',
+       'cascade'      => ['persist','merge','detach'],
+       'joinTable'    => [
+           'name'        => 'ddc964_users_groups',
+           'joinColumns' => [
+               [
+                   'name'                 => 'user_id',
+                   'referencedColumnName' =>'id',
+                   'onDelete' => null,
+               ]
+           ],
+           'inverseJoinColumns' => [
+               [
+                   'name'=>'group_id',
+                   'referencedColumnName'=>'id',
+                   'onDelete' => null,
+               ]
+           ],
+       ]
     ]
 );
 

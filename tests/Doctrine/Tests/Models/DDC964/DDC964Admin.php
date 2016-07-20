@@ -25,12 +25,13 @@ class DDC964Admin extends DDC964User
     {
         $metadata->setAssociationOverride('address',
             [
-            'joinColumns'=> [
-                [
-                'name' => 'adminaddress_id',
-                'referencedColumnName' => 'id',
+                'joinColumns'=> [
+                    [
+                        'name' => 'adminaddress_id',
+                        'referencedColumnName' => 'id',
+                        'onDelete' => null,
+                    ]
                 ]
-            ]
             ]
         );
 

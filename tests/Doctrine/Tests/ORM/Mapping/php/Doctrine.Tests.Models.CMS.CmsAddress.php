@@ -16,7 +16,9 @@ $metadata->mapOneToOne(
     [
         'fieldName'     => 'user',
         'targetEntity'  => 'CmsUser',
-        'joinColumns'   => [['referencedColumnName' => 'id']]
+        'joinColumns'   => [
+            ['referencedColumnName' => 'id', 'onDelete' => null]
+        ]
     ]
 );
 

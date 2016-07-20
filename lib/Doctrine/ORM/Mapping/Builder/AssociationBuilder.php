@@ -188,7 +188,7 @@ class AssociationBuilder
             'referencedColumnName' => $referencedColumnName,
             'nullable' => $nullable,
             'unique' => $unique,
-            'onDelete' => $onDelete,
+            'onDelete' => $onDelete ? strtoupper($onDelete) : $onDelete,
             'columnDefinition' => $columnDef,
         ];
 

@@ -9,8 +9,6 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->enableQuotes = true;
-
         parent::setUp();
 
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() != "sqlite") {

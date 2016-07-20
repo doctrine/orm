@@ -120,6 +120,7 @@ $metadata->mapManyToMany(
                 0 => [
                     'name' => 'user_id',
                     'referencedColumnName' => 'id',
+                    'onDelete' => null,
                     'unique' => false,
                     'nullable' => false,
                 ],
