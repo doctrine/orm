@@ -1474,7 +1474,7 @@ public function __construct(<params>)
             $joinColumnAnnot[] = 'nullable=' . ($joinColumn['nullable'] ? 'true' : 'false');
         }
 
-        if (isset($joinColumn['onDelete'])) {
+        if (isset($joinColumn['onDelete']) && ! empty($joinColumn['onDelete'])) {
             $joinColumnAnnot[] = 'onDelete="' . ($joinColumn['onDelete'] . '"');
         }
 

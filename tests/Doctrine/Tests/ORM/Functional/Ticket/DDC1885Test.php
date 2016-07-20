@@ -18,8 +18,6 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp() : void
     {
-        $this->enableQuotes = true;
-        
         parent::setUp();
 
         $user           = new User();

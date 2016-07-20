@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 
-class FieldMetadata extends ColumnMetadata implements Property
+class AssociationMetadata implements Property
 {
     /**
      * @var ClassMetadata
@@ -37,6 +37,16 @@ class FieldMetadata extends ColumnMetadata implements Property
      * @var string
      */
     private $name;
+
+    /**
+     * @var string
+     */
+    private $targetEntity;
+
+    /**
+     * @var array
+     */
+    private $cascade = [];
 
     /**
      * {@inheritdoc}
@@ -71,6 +81,38 @@ class FieldMetadata extends ColumnMetadata implements Property
     }
 
     /**
+     * @return string
+     */
+    public function getTargetEntity()
+    {
+        return $this->targetEntity;
+    }
+
+    /**
+     * @param string $targetEntity
+     */
+    public function setTargetEntity($targetEntity)
+    {
+        $this->targetEntity = $targetEntity;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCascade()
+    {
+        return $this->cascade;
+    }
+
+    /**
+     * @param array $cascade
+     */
+    public function setCascade(array $cascade)
+    {
+        $this->cascade = $cascade;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setValue($object, $value)
@@ -91,7 +133,7 @@ class FieldMetadata extends ColumnMetadata implements Property
      */
     public function isAssociation()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -99,7 +141,7 @@ class FieldMetadata extends ColumnMetadata implements Property
      */
     public function isField()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -111,25 +153,5 @@ class FieldMetadata extends ColumnMetadata implements Property
             $this->getDeclaringClass()->name,
             $this->name
         );
-    }
-
-    /**
-     * @return array
-     */
-    public function getMapping()
-    {
-        return [
-            'declaringClass'   => $this->declaringClass->name,
-            'tableName'        => $this->tableName,
-            'columnName'       => $this->columnName,
-            'columnDefinition' => $this->columnDefinition,
-            'length'           => $this->length,
-            'scale'            => $this->scale,
-            'precision'        => $this->precision,
-            'options'          => $this->options,
-            'id'               => $this->primaryKey,
-            'nullable'         => $this->nullable,
-            'unique'           => $this->unique,
-        ];
     }
 }
