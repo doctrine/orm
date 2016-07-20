@@ -752,7 +752,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals(['user_id'=>'id'], $guestGroups['relationToSourceKeyColumns']);
         self::assertEquals(['group_id'=>'id'], $guestGroups['relationToTargetKeyColumns']);
-        self::assertEquals(['user_id','group_id'], $guestGroups['joinTableColumns']);
 
         self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
         self::assertEquals('adminuser_id', $adminGroups['joinTable']['joinColumns'][0]['name']);
@@ -760,8 +759,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals(['adminuser_id'=>'id'], $adminGroups['relationToSourceKeyColumns']);
         self::assertEquals(['admingroup_id'=>'id'], $adminGroups['relationToTargetKeyColumns']);
-        self::assertEquals(['adminuser_id','admingroup_id'], $adminGroups['joinTableColumns']);
-
 
         // assert address association mappings
         self::assertArrayHasKey('address', $guestMetadata->associationMappings);
@@ -1228,10 +1225,13 @@ class User
             ]
         );
 
-        $metadata->addProperty('email', Type::getType('string'), [
-            'columnName'       => 'user_email',
-            'columnDefinition' => 'CHAR(32) NOT NULL',
-        ]
+        $metadata->addProperty(
+            'email',
+            Type::getType('string'),
+            [
+                'columnName'       => 'user_email',
+                'columnDefinition' => 'CHAR(32) NOT NULL',
+            ]
         );
 
         $property = $metadata->addProperty('version', Type::getType('integer'));
@@ -1261,7 +1261,7 @@ class User
             [
                 'fieldName' => 'phonenumbers',
                 'targetEntity' => Phonenumber::class,
-                'cascade' =>[0 => 'persist'],
+                'cascade' => [0 => 'persist'],
                 'mappedBy' => 'user',
                 'orphanRemoval' => true,
                 'orderBy' => ['number' => 'ASC'],
@@ -1283,18 +1283,19 @@ class User
                 'joinTable' => [
                     'name' => 'cms_users_groups',
                     'joinColumns' => [
-                        0 =>
-                            [
-                                'name' => 'user_id',
-                                'referencedColumnName' => 'id',
-                                'unique' => false,
-                                'nullable' => false,
-                            ],
+                        0 => [
+                            'name' => 'user_id',
+                            'referencedColumnName' => 'id',
+                            'onDelete' => null,
+                            'unique' => false,
+                            'nullable' => false,
+                        ],
                     ],
                     'inverseJoinColumns' => [
                         0 => [
                             'name' => 'group_id',
                             'referencedColumnName' => 'id',
+                            'onDelete' => null,
                             'columnDefinition' => 'INT NULL',
                         ],
                     ],

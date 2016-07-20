@@ -8,8 +8,6 @@ use Doctrine\Common\Version;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
-use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
-use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\Tests\Mocks;
@@ -32,11 +30,6 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @var \Doctrine\Common\Cache\Cache|null
      */
     private static $_queryCacheImpl = null;
-
-    /**
-     * @var bool
-     */
-    protected $enableQuotes = false;
 
     /**
      * @var bool
@@ -131,7 +124,6 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $config = new Configuration();
 
-        //$config->setQuoteStrategy($this->enableQuotes ? new DefaultQuoteStrategy() : new AnsiQuoteStrategy());
         $config->setMetadataCacheImpl($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());

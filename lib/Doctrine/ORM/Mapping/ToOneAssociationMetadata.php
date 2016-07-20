@@ -19,36 +19,28 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Types\Type;
-
-interface Property
+class ToOneAssociationMetadata extends AssociationMetadata
 {
     /**
-     * @return ClassMetadata
+     * @var array<JoinColumnMetadata>
      */
-    public function getDeclaringClass();
+    private $joinColumns = [];
 
     /**
-     * @param object $object
-     * @param mixed  $value
+     * @return array
      */
-    public function setValue($object, $value);
+    public function getJoinColumns()
+    {
+        return $this->joinColumns;
+    }
 
     /**
-     * @param object $object
-     *
-     * @return mixed
+     * @param JoinColumnMetadata $joinColumn
      */
-    public function getValue($object);
+    public function addJoinColumns(JoinColumnMetadata $joinColumn)
+    {
+        $this->joinColumns[] = $joinColumn;
+    }
 
-    /**
-     * @return string
-     */
-    public function getName();
 
-    /**
-     * @param ReflectionService $reflectionService
-     */
-    public function wakeupReflection(ReflectionService $reflectionService);
 }

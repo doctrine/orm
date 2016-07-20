@@ -70,7 +70,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
             'referencedColumnName' => $referencedColumnName,
             'nullable' => $nullable,
             'unique' => $unique,
-            'onDelete' => $onDelete,
+            'onDelete' => $onDelete ? strtoupper($onDelete) : $onDelete,
             'columnDefinition' => $columnDef,
         ];
 

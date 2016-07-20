@@ -152,9 +152,9 @@ class CmsAddress
 
         $metadata->mapOneToOne(
             [
-                'fieldName'    => 'user',
-                'targetEntity' => 'CmsUser',
-                'joinColumns'  => [['referencedColumnName' => 'id']]
+                'fieldName'     => 'user',
+                'targetEntity'  => 'CmsUser',
+                'joinColumns'   => [['referencedColumnName' => 'id', 'onDelete' => null]]
             ]
         );
 

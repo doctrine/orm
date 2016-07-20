@@ -110,17 +110,18 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $cm->mapOneToOne(
             [
-            'fieldName'     => 'email',
-            'targetEntity'  => CmsEmail::class,
-            'cascade'       => ['persist'],
-            'inversedBy'    => 'user',
-            'orphanRemoval' => false,
-            'joinColumns'   => [
-                [
-                    'nullable' => true,
-                    'referencedColumnName' => 'id',
+                'fieldName'     => 'email',
+                'targetEntity'  => CmsEmail::class,
+                'cascade'       => ['persist'],
+                'inversedBy'    => 'user',
+                'orphanRemoval' => false,
+                'joinColumns'   => [
+                    [
+                        'nullable' => true,
+                        'referencedColumnName' => 'id',
+                        'onDelete' => null,
+                    ]
                 ]
-            ]
             ]
         );
 
