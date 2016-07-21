@@ -16,7 +16,13 @@ This chapter is split into three different sections.
 - :ref:`association_mapping_defaults` are explained that simplify the use-case examples.
 - :ref:`collections` are introduced that contain entities in associations.
 
-One tip for working with relations is to read the relation from left to right, where the left word referece to the current class.
+One tip for working with relations is to read the relation from left to right, where the left word refers to the current Entity. For example:
+
+- OneToMany - One instance of the current Entity has Many instances (references) to the refered Entity.
+- ManyToOne - Many instances of the current Entity refer to One instance of the refered Entity.
+- OneToOne - One instance of the current Entity refers to One instance of the refered Entity.
+
+See below for all the possible relations. 
 
 To gain a full understanding of associations you should also read about :doc:`owning and
 inverse sides of associations <unitofwork-associations>`
