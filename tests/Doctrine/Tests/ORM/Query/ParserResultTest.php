@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 
 class ParserResultTest extends \PHPUnit_Framework_TestCase
@@ -25,7 +26,7 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->parserResult->getSqlExecutor());
 
-        $executor = $this->getMock('Doctrine\ORM\Query\Exec\AbstractSqlExecutor', array('execute'));
+        $executor = $this->getMockBuilder(AbstractSqlExecutor::class)->setMethods(array('execute'))->getMock();
         $this->parserResult->setSqlExecutor($executor);
         $this->assertSame($executor, $this->parserResult->getSqlExecutor());
     }

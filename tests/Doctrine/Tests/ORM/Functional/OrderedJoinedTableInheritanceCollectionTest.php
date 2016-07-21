@@ -3,15 +3,17 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class OrderedJoinedTableInheritanceCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(

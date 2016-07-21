@@ -22,6 +22,7 @@ namespace Doctrine\ORM;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -289,7 +290,7 @@ use Doctrine\Common\Util\ClassUtils;
         $query = new Query($this);
 
         if ( ! empty($dql)) {
-            $query->setDql($dql);
+            $query->setDQL($dql);
         }
 
         return $query;
@@ -310,7 +311,7 @@ use Doctrine\Common\Util\ClassUtils;
     {
         $query = new NativeQuery($this);
 
-        $query->setSql($sql);
+        $query->setSQL($sql);
         $query->setResultSetMapping($rsm);
 
         return $query;
@@ -820,39 +821,53 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
-     * @param Configuration $config       The Configuration instance to use.
-     * @param EventManager  $eventManager The EventManager instance to use.
+     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration    $config       The Configuration instance to use.
+     * @param EventManager     $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($conn, Configuration $config, EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, EventManager $eventManager = null)
     {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
 
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
+        $connection = static::createConnection($connection, $config, $eventManager);
 
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
+        return new EntityManager($connection, $config, $connection->getEventManager());
+    }
 
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
+    /**
+     * Factory method to create Connection instances.
+     *
+     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration    $config       The Configuration instance to use.
+     * @param EventManager     $eventManager The EventManager instance to use.
+     *
+     * @return Connection
+     *
+     * @throws \InvalidArgumentException
+     * @throws ORMException
+     */
+    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
+    {
+        if (is_array($connection)) {
+            return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
         }
 
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        if ( ! $connection instanceof Connection) {
+            throw new \InvalidArgumentException("Invalid argument: " . $connection);
+        }
+
+        if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
+            throw ORMException::mismatchedEventManager();
+        }
+
+        return $connection;
     }
 
     /**

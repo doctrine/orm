@@ -7,12 +7,13 @@ use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
  * Inverse side is not present.
  */
-class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
     private $product;
     private $shipping;

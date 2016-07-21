@@ -1,7 +1,10 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC448Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC448Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

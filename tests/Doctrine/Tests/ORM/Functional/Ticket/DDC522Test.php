@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Company\CompanyPerson;
-
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
  * fields they're used on without causing issues.

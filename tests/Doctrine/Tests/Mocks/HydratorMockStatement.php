@@ -2,13 +2,15 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Driver\Statement;
+
 /**
  * This class is a mock of the Statement interface that can be passed in to the Hydrator
  * to test the hydration standalone with faked result sets.
  *
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
+class HydratorMockStatement implements \IteratorAggregate, Statement
 {
     /**
      * @var array

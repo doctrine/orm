@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\Expr\MappingVisitor;
+use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
@@ -702,6 +703,31 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return array($quotedJoinTable, $whereClauses, $params, $types);
+    }
+
+    /**
+     * Expands Criteria Parameters by walking the expressions and grabbing all
+     * parameters and types from it.
+     *
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
+     * @return array
+     */
+    private function expandCriteriaParameters(Criteria $criteria)
+    {
+        $expression = $criteria->getWhereExpression();
+
+        if ($expression === null) {
+            return array();
+        }
+
+        $valueVisitor = new SqlValueVisitor();
+
+        $valueVisitor->dispatch($expression);
+
+        list(, $types) = $valueVisitor->getParamsAndTypes();
+
+        return $types;
     }
 
     /**

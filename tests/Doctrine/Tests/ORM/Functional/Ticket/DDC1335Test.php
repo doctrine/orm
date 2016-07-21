@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
-
 /**
  * @group DDC-1335
  */

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Tests of the commit order calculation.
@@ -12,7 +13,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * can have many valid orderings, so you may want to build a graph that has only
  * 1 valid order to simplify your tests.
  */
-class CommitOrderCalculatorTest extends \Doctrine\Tests\OrmTestCase
+class CommitOrderCalculatorTest extends OrmTestCase
 {
     private $_calc;
 

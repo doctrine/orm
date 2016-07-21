@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Test that Doctrine ORM correctly works with the ObjectManagerAware and PersistentObject
@@ -10,7 +11,7 @@ use Doctrine\Common\Persistence\PersistentObject;
  *
  * @group DDC-1448
  */
-class PersistentObjectTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PersistentObjectTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

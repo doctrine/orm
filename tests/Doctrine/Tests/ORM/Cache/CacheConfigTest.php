@@ -2,8 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\CacheFactory;
+use Doctrine\ORM\Cache\QueryCacheValidator;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-2183
@@ -42,7 +45,7 @@ class CacheConfigTest extends DoctrineTestCase
 
     public function testSetGetCacheLogger()
     {
-        $logger = $this->getMock('Doctrine\ORM\Cache\Logging\CacheLogger');
+        $logger = $this->createMock(CacheLogger::class);
 
         $this->assertNull($this->config->getCacheLogger());
 
@@ -53,7 +56,7 @@ class CacheConfigTest extends DoctrineTestCase
 
     public function testSetGetCacheFactory()
     {
-        $factory = $this->getMock('Doctrine\ORM\Cache\CacheFactory');
+        $factory = $this->createMock(CacheFactory::class);
 
         $this->assertNull($this->config->getCacheFactory());
 
@@ -64,7 +67,7 @@ class CacheConfigTest extends DoctrineTestCase
 
     public function testSetGetQueryValidator()
     {
-        $validator = $this->getMock('Doctrine\ORM\Cache\QueryCacheValidator');
+        $validator = $this->createMock(QueryCacheValidator::class);
 
         $this->assertInstanceOf('Doctrine\ORM\Cache\TimestampQueryCacheValidator', $this->config->getQueryValidator());
 

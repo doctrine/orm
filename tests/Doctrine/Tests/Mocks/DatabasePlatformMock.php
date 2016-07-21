@@ -2,10 +2,12 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
  * Mock class for DatabasePlatform.
  */
-class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
+class DatabasePlatformMock extends AbstractPlatform
 {
     /**
      * @var string

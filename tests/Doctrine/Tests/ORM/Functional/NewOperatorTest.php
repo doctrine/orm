@@ -7,11 +7,12 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1574
  */
-class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class NewOperatorTest extends OrmFunctionalTestCase
 {
     /**
      * @var array

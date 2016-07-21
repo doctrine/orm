@@ -827,17 +827,13 @@ class Parser
             return;
         }
 
-        $foundRootEntity = false;
-
         foreach ($this->identVariableExpressions as $dqlAlias => $expr) {
             if (isset($this->queryComponents[$dqlAlias]) && $this->queryComponents[$dqlAlias]['parent'] === null) {
-                $foundRootEntity = true;
+                return;
             }
         }
 
-        if ( ! $foundRootEntity) {
-            $this->semanticalError('Cannot select entity through identification variables without choosing at least one root entity alias.');
-        }
+        $this->semanticalError('Cannot select entity through identification variables without choosing at least one root entity alias.');
     }
 
     /**
@@ -2953,7 +2949,7 @@ class Parser
     /**
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      *
-     * @return \Doctrine\ORM\Query\AST\SingleValuedAssociationPathExpression |
+     * @return \Doctrine\ORM\Query\AST\PathExpression |
      *         \Doctrine\ORM\Query\AST\SimpleEntityExpression
      */
     public function EntityExpression()

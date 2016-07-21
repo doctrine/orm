@@ -233,8 +233,8 @@ class DefaultQueryCache implements QueryCache
 
         $data        = array();
         $entityName  = reset($rsm->aliasMap);
+        $rootAlias   = key($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
-        $metadata    = $this->em->getClassMetadata($entityName);
         $persister   = $this->uow->getEntityPersister($entityName);
 
         if ( ! ($persister instanceof CachedPersister)) {
@@ -245,10 +245,11 @@ class DefaultQueryCache implements QueryCache
 
         foreach ($result as $index => $entity) {
             $identifier                     = $this->uow->getEntityIdentifier($entity);
+            $entityKey                      = new EntityCacheKey($entityName, $identifier);
             $data[$index]['identifier']     = $identifier;
             $data[$index]['associations']   = array();
 
-            if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey = new EntityCacheKey($entityName, $identifier))) {
+            if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey)) {
                 // Cancel put result if entity put fail
                 if ( ! $persister->storeEntityCache($entity, $entityKey)) {
                     return false;
@@ -261,65 +262,168 @@ class DefaultQueryCache implements QueryCache
 
             // @TODO - move to cache hydration components
             foreach ($rsm->relationMap as $alias => $name) {
-                $metadata = $this->em->getClassMetadata($rsm->aliasMap[$rsm->parentAliasMap[$alias]]);
-                $assoc = $metadata->associationMappings[$name];
+                $parentAlias  = $rsm->parentAliasMap[$alias];
+                $parentClass  = $rsm->aliasMap[$parentAlias];
+                $metadata     = $this->em->getClassMetadata($parentClass);
+                $assoc        = $metadata->associationMappings[$name];
+                $assocValue   = $this->getAssociationValue($rsm, $alias, $entity);
 
-                if (($assocValue = $metadata->getFieldValue($entity, $name)) === null || $assocValue instanceof Proxy) {
+                if ($assocValue === null) {
                     continue;
                 }
 
-                $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
-                $assocRegion     = $assocPersister->getCacheRegion();
-                $assocMetadata   = $assocPersister->getClassMetadata();
-
-                // Handle *-to-one associations
-                if ($assoc['type'] & ClassMetadata::TO_ONE) {
-
-                    $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
-
-                    if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
-
-                        // Cancel put result if association entity put fail
-                        if ( ! $assocPersister->storeEntityCache($assocValue, $entityKey)) {
-                            return false;
-                        }
+                // root entity association
+                if ($rootAlias === $parentAlias) {
+                    // Cancel put result if association put fail
+                    if ( ($assocInfo = $this->storeAssociationCache($key, $assoc, $assocValue)) === null) {
+                        return false;
                     }
 
-                    $data[$index]['associations'][$name] = array(
-                        'targetEntity'  => $assocMetadata->rootEntityName,
-                        'identifier'    => $assocIdentifier,
-                        'type'          => $assoc['type']
-                    );
+                    $data[$index]['associations'][$name] = $assocInfo;
 
                     continue;
                 }
 
-                // Handle *-to-many associations
-                $list = array();
-
-                foreach ($assocValue as $assocItemIndex => $assocItem) {
-                    $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
-
-                    if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier))) {
-
-                        // Cancel put result if entity put fail
-                        if ( ! $assocPersister->storeEntityCache($assocItem, $entityKey)) {
-                            return false;
-                        }
+                // store single nested association
+                if ( ! is_array($assocValue)) {
+                    // Cancel put result if association put fail
+                    if ($this->storeAssociationCache($key, $assoc, $assocValue) === null) {
+                        return false;
                     }
 
-                    $list[$assocItemIndex] = $assocIdentifier;
+                    continue;
                 }
 
-                $data[$index]['associations'][$name] = array(
-                    'targetEntity'  => $assocMetadata->rootEntityName,
-                    'type'          => $assoc['type'],
-                    'list'          => $list,
-                );
+                // store array of nested association
+                foreach ($assocValue as $aVal) {
+                    // Cancel put result if association put fail
+                    if ($this->storeAssociationCache($key, $assoc, $aVal) === null) {
+                        return false;
+                    }
+                }
             }
         }
 
         return $this->region->put($key, new QueryCacheEntry($data));
+    }
+
+    /**
+     * @param \Doctrine\ORM\Cache\QueryCacheKey $key
+     * @param array                             $assoc
+     * @param mixed                             $assocValue
+     *
+     * @return array|null
+     */
+    private function storeAssociationCache(QueryCacheKey $key, array $assoc, $assocValue)
+    {
+        $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+        $assocMetadata  = $assocPersister->getClassMetadata();
+        $assocRegion    = $assocPersister->getCacheRegion();
+
+        // Handle *-to-one associations
+        if ($assoc['type'] & ClassMetadata::TO_ONE) {
+            $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
+            $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
+
+            if ( ! $assocValue instanceof Proxy && ($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey)) {
+                // Entity put fail
+                if ( ! $assocPersister->storeEntityCache($assocValue, $entityKey)) {
+                    return null;
+                }
+            }
+
+            return array(
+                'targetEntity'  => $assocMetadata->rootEntityName,
+                'identifier'    => $assocIdentifier,
+                'type'          => $assoc['type']
+            );
+        }
+
+        // Handle *-to-many associations
+        $list = array();
+
+        foreach ($assocValue as $assocItemIndex => $assocItem) {
+            $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
+            $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
+
+            if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey)) {
+                // Entity put fail
+                if ( ! $assocPersister->storeEntityCache($assocItem, $entityKey)) {
+                    return null;
+                }
+            }
+
+            $list[$assocItemIndex] = $assocIdentifier;
+        }
+
+        return array(
+            'targetEntity'  => $assocMetadata->rootEntityName,
+            'type'          => $assoc['type'],
+            'list'          => $list,
+        );
+    }
+
+    /**
+     * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
+     * @param string                               $assocAlias
+     * @param object                               $entity
+     *
+     * @return array|object
+     */
+    private function getAssociationValue(ResultSetMapping $rsm, $assocAlias, $entity)
+    {
+        $path  = array();
+        $alias = $assocAlias;
+
+        while (isset($rsm->parentAliasMap[$alias])) {
+            $parent = $rsm->parentAliasMap[$alias];
+            $field  = $rsm->relationMap[$alias];
+            $class  = $rsm->aliasMap[$parent];
+
+            array_unshift($path, array(
+                'field'  => $field,
+                'class'  => $class
+            ));
+
+            $alias = $parent;
+        }
+
+        return $this->getAssociationPathValue($entity, $path);
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $path
+     *
+     * @return array|object|null
+     */
+    private function getAssociationPathValue($value, array $path)
+    {
+        $mapping  = array_shift($path);
+        $metadata = $this->em->getClassMetadata($mapping['class']);
+        $assoc    = $metadata->associationMappings[$mapping['field']];
+        $value    = $metadata->getFieldValue($value, $mapping['field']);
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (empty($path)) {
+            return $value;
+        }
+
+        // Handle *-to-one associations
+        if ($assoc['type'] & ClassMetadata::TO_ONE) {
+            return $this->getAssociationPathValue($value, $path);
+        }
+
+        $values = array();
+
+        foreach ($value as $item) {
+            $values[] = $this->getAssociationPathValue($item, $path);
+        }
+
+        return $values;
     }
 
     /**

@@ -105,7 +105,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertEQuals(1, count($user1->groups->getInsertDiff()));
+        $this->assertCount(1, $user1->groups->getInsertDiff());
 
         $this->_em->persist($group3);
         $this->_em->flush();

@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1757Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1757Test extends OrmFunctionalTestCase
 {
     public function testFailingCase()
     {

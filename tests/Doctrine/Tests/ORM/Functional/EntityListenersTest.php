@@ -3,11 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
 * @group DDC-1955
 */
-class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class EntityListenersTest extends OrmFunctionalTestCase
 {
 
     /**

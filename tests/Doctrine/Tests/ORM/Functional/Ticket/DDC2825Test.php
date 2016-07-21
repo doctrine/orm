@@ -16,9 +16,9 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 

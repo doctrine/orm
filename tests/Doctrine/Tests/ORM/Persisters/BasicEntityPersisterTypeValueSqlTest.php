@@ -9,8 +9,9 @@ use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Tests\OrmTestCase;
 
-class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
+class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
     /**
      * @var BasicEntityPersister

@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
-
 class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

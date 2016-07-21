@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @group
@@ -13,9 +12,9 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(array(

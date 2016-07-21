@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC144Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();

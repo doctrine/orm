@@ -9,8 +9,9 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\OrmTestCase;
 
-class QueryTest extends \Doctrine\Tests\OrmTestCase
+class QueryTest extends OrmTestCase
 {
     /** @var EntityManager */
     protected $_em = null;
@@ -73,7 +74,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $cloned = clone $query;
 
-        $this->assertEquals($dql, $cloned->getDql());
+        $this->assertEquals($dql, $cloned->getDQL());
         $this->assertEquals(0, count($cloned->getParameters()));
         $this->assertFalse($cloned->getHint('foo'));
     }
@@ -91,7 +92,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
           ->setParameters(new ArrayCollection(array(new Parameter(2, 'baz'))))
           ->setResultCacheDriver(null)
           ->setResultCacheId('foo')
-          ->setDql('foo')
+          ->setDQL('foo')
           ->setFirstResult(10)
           ->setMaxResults(10);
 

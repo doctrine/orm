@@ -1,10 +1,9 @@
 language: php
 
 php:
-  - 5.4
-  - 5.5
   - 5.6
   - 7.0
+  - nightly
   - hhvm
 
 env:
@@ -28,14 +27,6 @@ after_script:
 
 matrix:
   include:
-    - php: 5.4
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
-    - php: 5.5
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
     - php: 5.6
       env: DB=mariadb
       addons:
@@ -49,14 +40,6 @@ matrix:
       addons:
         mariadb: 5.5
 
-    - php: 5.4
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: 5.5
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
     - php: 5.6
       env: DB=mariadb
       addons:
@@ -72,6 +55,8 @@ matrix:
   exclude:
     - php: hhvm
       env: DB=pgsql  # driver for PostgreSQL currently unsupported by HHVM, requires 3rd party dependency
+  allow_failures:
+    - php: nightly
 
 sudo: false
 

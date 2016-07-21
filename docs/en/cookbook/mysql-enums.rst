@@ -98,7 +98,7 @@ For example for the previous enum type:
 
         public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
-            return "ENUM('visible', 'invisible') COMMENT '(DC2Type:enumvisibility)'";
+            return sprintf("ENUM('visible', 'invisible') COMMENT '(DC2Type:%s)'", self::ENUM_VISIBILITY);
         }
 
         public function convertToPHPValue($value, AbstractPlatform $platform)

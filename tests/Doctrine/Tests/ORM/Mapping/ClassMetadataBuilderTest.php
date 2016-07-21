@@ -19,13 +19,15 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-659
  */
-class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
+class ClassMetadataBuilderTest extends OrmTestCase
 {
     /**
      * @var ClassMetadata
@@ -39,7 +41,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function setUp()
     {
         $this->cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $this->cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $this->cm->initializeReflection(new RuntimeReflectionService());
         $this->builder = new ClassMetadataBuilder($this->cm);
     }
 
@@ -526,7 +528,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this
             ->builder
@@ -622,7 +624,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testThrowsExceptionOnCreateManyToManyWithIdentity()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder->createManyToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                           ->makePrimaryKey()
@@ -675,7 +677,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testThrowsExceptionOnCreateOneToManyWithIdentity()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                 ->makePrimaryKey()
@@ -773,7 +775,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testExceptionOnOrphanRemovalOnManyToOne()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder
             ->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')

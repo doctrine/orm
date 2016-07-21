@@ -49,7 +49,7 @@ By default Doctrine assumes that you are working with a default timezone. Each D
 is created by Doctrine will be assigned the timezone that is currently the default, either through
 the ``date.timezone`` ini setting or by calling ``date_default_timezone_set()``.
 
-This is very important to handle correctly if your application runs on different serves or is moved from one to another server
+This is very important to handle correctly if your application runs on different servers or is moved from one to another server
 (with different timezone settings). You have to make sure that the timezone is the correct one
 on all this systems.
 

@@ -12,9 +12,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2230Test extends OrmFunctionalTestCase
 {
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(array(

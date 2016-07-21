@@ -2,10 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Cache\Action;
 use Doctrine\Tests\Models\Cache\Address;
 use Doctrine\Tests\Models\Cache\Client;
-use Doctrine\Tests\Models\Cache\ComplexAction;
 use Doctrine\Tests\Models\Cache\Person;
 use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Traveler;

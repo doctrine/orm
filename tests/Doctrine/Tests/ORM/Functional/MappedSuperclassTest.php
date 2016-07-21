@@ -1,13 +1,16 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\Models\DirectoryTree\Directory;
+use Doctrine\Tests\Models\DirectoryTree\File;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * MappedSuperclassTest
  *
  * @author robo
  */
-class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class MappedSuperclassTest extends OrmFunctionalTestCase
 {
     protected function setUp() {
         $this->useModelSet('directorytree');
@@ -16,15 +19,15 @@ class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCRUD()
     {
-        $root = new \Doctrine\Tests\Models\DirectoryTree\Directory();
+        $root = new Directory();
         $root->setName('Root');
         $root->setPath('/root');
 
-        $directory = new \Doctrine\Tests\Models\DirectoryTree\Directory($root);
+        $directory = new Directory($root);
         $directory->setName('TestA');
         $directory->setPath('/root/dir');
 
-        $file = new \Doctrine\Tests\Models\DirectoryTree\File($directory);
+        $file = new File($directory);
         $file->setName('test-b.html');
 
         $this->_em->persist($root);

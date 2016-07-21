@@ -3,10 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsGroup,
     Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Basic many-to-many association tests.
@@ -14,7 +16,7 @@ use Doctrine\Tests\Models\CMS\CmsUser,
  *
  * @author robo
  */
-class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -53,8 +55,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $groups = $result[0]->getGroups();
         $this->assertEquals('Developers_0', $groups[0]->getName());
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
 
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups);
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups[0]->getUsers());

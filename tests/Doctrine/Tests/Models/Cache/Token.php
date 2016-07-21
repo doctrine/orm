@@ -36,7 +36,7 @@ class Token
 
     /**
      * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumn(name="action_id", referencedColumnName="id")
+     * @JoinColumn(name="action_name", referencedColumnName="name")
      * @var array
      */
     public $action;
@@ -44,8 +44,8 @@ class Token
     /**
      * @ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
      * @JoinColumns({
-     *   @JoinColumn(name="complex_action1_id", referencedColumnName="action1_id"),
-     *   @JoinColumn(name="complex_action2_id", referencedColumnName="action2_id")
+     *   @JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
+     *   @JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")
      * })
      * @var ComplexAction
      */

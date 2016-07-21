@@ -3,14 +3,15 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DBAL483Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        $conn = $this->_em->getConnection();
+        $this->_em->getConnection();
 
         $this->schemaTool = new Tools\SchemaTool($this->_em);
     }

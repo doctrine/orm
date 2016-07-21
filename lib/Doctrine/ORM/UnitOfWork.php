@@ -49,7 +49,6 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
-use Doctrine\ORM\Cache\AssociationCacheEntry;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -1156,9 +1155,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 $joinColumns = reset($assoc['joinColumns']);
-                $isNullable  = isset($joinColumns['nullable']) ? $joinColumns['nullable'] : false;
 
-                $calc->addDependency($targetClass->name, $class->name, $isNullable ? 0 : 1);
+                $calc->addDependency($targetClass->name, $class->name, (int)empty($joinColumns['nullable']));
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
@@ -1281,7 +1279,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = array($entity, $changeset);
 
         if (isset($this->extraUpdates[$oid])) {
-            list($ignored, $changeset2) = $this->extraUpdates[$oid];
+            list(, $changeset2) = $this->extraUpdates[$oid];
 
             $extraUpdate = array($entity, $changeset + $changeset2);
         }
@@ -1345,9 +1343,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->removeFromIdentityMap($entity);
 
-        if (isset($this->entityUpdates[$oid])) {
-            unset($this->entityUpdates[$oid]);
-        }
+        unset($this->entityUpdates[$oid]);
 
         if ( ! isset($this->entityDeletions[$oid])) {
             $this->entityDeletions[$oid] = $entity;
@@ -1402,12 +1398,13 @@ class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap($entity)
     {
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[spl_object_hash($entity)]);
+        $identifier    = $this->entityIdentifiers[spl_object_hash($entity)];
 
-        if ($idHash === '') {
+        if (empty($identifier) || in_array(null, $identifier, true)) {
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
+        $idHash    = implode(' ', $identifier);
         $className = $classMetadata->rootEntityName;
 
         if (isset($this->identityMap[$className][$idHash])) {
@@ -1569,11 +1566,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $stringIdHash = (string) $idHash;
 
-        if (isset($this->identityMap[$rootClassName][$stringIdHash])) {
-            return $this->identityMap[$rootClassName][$stringIdHash];
-        }
-
-        return false;
+        return isset($this->identityMap[$rootClassName][$stringIdHash])
+            ? $this->identityMap[$rootClassName][$stringIdHash]
+            : false;
     }
 
     /**
@@ -1797,7 +1792,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws ORMInvalidArgumentException If the entity instance is NEW.
      * @throws EntityNotFoundException
      */
-    private function doMerge($entity, array &$visited, $prevManagedCopy = null, $assoc = null)
+    private function doMerge($entity, array &$visited, $prevManagedCopy = null, array $assoc = [])
     {
         $oid = spl_object_hash($entity);
 
@@ -2391,17 +2386,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->visitedCollections =
             $this->orphanRemovals = array();
         } else {
-            $visited = array();
-
-            foreach ($this->identityMap as $className => $entities) {
-                if ($className !== $entityName) {
-                    continue;
-                }
-
-                foreach ($entities as $entity) {
-                    $this->doDetach($entity, $visited, false);
-                }
-            }
+            $this->clearIdentityMapForEntityName($entityName);
+            $this->clearEntityInsertionsForEntityName($entityName);
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
@@ -2455,9 +2441,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
-        if (isset($this->collectionUpdates[$coid])) {
-            unset($this->collectionUpdates[$coid]);
-        }
+        unset($this->collectionUpdates[$coid]);
 
         $this->collectionDeletions[$coid] = $coll;
     }
@@ -2864,11 +2848,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->originalEntityData[$oid])) {
-            return $this->originalEntityData[$oid];
-        }
-
-        return array();
+        return isset($this->originalEntityData[$oid])
+            ? $this->originalEntityData[$oid]
+            : [];
     }
 
     /**
@@ -2954,11 +2936,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $idHash = implode(' ', (array) $id);
 
-        if (isset($this->identityMap[$rootClassName][$idHash])) {
-            return $this->identityMap[$rootClassName][$idHash];
-        }
-
-        return false;
+        return isset($this->identityMap[$rootClassName][$idHash])
+            ? $this->identityMap[$rootClassName][$idHash]
+            : false;
     }
 
     /**
@@ -2995,7 +2975,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function size()
     {
-        $countArray = array_map(function ($item) { return count($item); }, $this->identityMap);
+        $countArray = array_map('count', $this->identityMap);
 
         return array_sum($countArray);
     }
@@ -3463,5 +3443,34 @@ class UnitOfWork implements PropertyChangedListener
     public function hydrationComplete()
     {
         $this->hydrationCompleteHandler->hydrationComplete();
+    }
+
+    /**
+     * @param string $entityName
+     */
+    private function clearIdentityMapForEntityName($entityName)
+    {
+        if (! isset($this->identityMap[$entityName])) {
+            return;
+        }
+
+        $visited = [];
+
+        foreach ($this->identityMap[$entityName] as $entity) {
+            $this->doDetach($entity, $visited, false);
+        }
+    }
+
+    /**
+     * @param string $entityName
+     */
+    private function clearEntityInsertionsForEntityName($entityName)
+    {
+        foreach ($this->entityInsertions as $hash => $entity) {
+            // note: performance optimization - `instanceof` is much faster than a function call
+            if ($entity instanceof $entityName && get_class($entity) === $entityName) {
+                unset($this->entityInsertions[$hash]);
+            }
+        }
     }
 }

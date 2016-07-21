@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use PDO;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 

@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * @group DDC-1514

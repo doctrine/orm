@@ -75,13 +75,6 @@ We automatically run your pull request through [Travis CI](http://www.travis-ci.
 against SQLite, MySQL and PostgreSQL. If you break the tests, we cannot merge your code,
 so please make sure that your code is working before opening up a Pull-Request.
 
-## DoctrineBot, Tickets and Jira
-
-DoctrineBot will synchronize your Pull-Request into our [Jira](http://www.doctrine-project.org).
-Make sure to add any existing Jira ticket into the Pull-Request Title, for example:
-
-    "[DDC-123] My Pull Request"
-
 ## Getting merged
 
 Please allow us time to review your pull requests. We will give our best to review

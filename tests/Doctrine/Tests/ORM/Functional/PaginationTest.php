@@ -13,12 +13,13 @@ use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionMethod;
 
 /**
  * @group DDC-1613
  */
-class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PaginationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -73,10 +74,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(false);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
+
         $this->assertCount(3, $paginator);
     }
 
@@ -494,7 +494,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
+
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
         $dqlAsc = $dql . " ASC, d.name";
         $dqlDesc = $dql . " DESC, d.name";
@@ -551,7 +553,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
+
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
 
         $this->iterateWithOrderAscWithLimit(false, true, $dql, "name");
@@ -594,10 +598,8 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
         $paginator = new Paginator($query);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
         count($paginator);
     }

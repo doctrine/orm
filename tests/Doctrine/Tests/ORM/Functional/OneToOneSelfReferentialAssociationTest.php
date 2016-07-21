@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -13,7 +14,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * for receiving support.
  * Inverse side is not present.
  */
-class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
     private $customer;
     private $mentor;

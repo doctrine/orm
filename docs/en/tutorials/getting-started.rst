@@ -17,7 +17,7 @@ This guide is designed for beginners that haven't worked with Doctrine ORM
 before. There are some prerequesites for the tutorial that have to be
 installed:
 
-- PHP 5.4 or above
+- PHP (latest stable version)
 - Composer Package Manager (`Install Composer
   <http://getcomposer.org/doc/00-intro.md>`_)
 
@@ -51,7 +51,7 @@ Entities are PHP Objects that can be identified over many requests
 by a unique identifier or primary key. These classes don't need to extend any
 abstract base class or interface. An entity class must not be final
 or contain final methods. Additionally it must not implement
-**clone** nor **wakeup**, unless it `does so safely <../cookbook/implementing-wakeup-or-clone.rst>`_.
+**clone** nor **wakeup**, unless it :doc:`does so safely <../cookbook/implementing-wakeup-or-clone>`.
 
 An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
@@ -62,7 +62,7 @@ An Example Model: Bug Tracker
 
 For this Getting Started Guide for Doctrine we will implement the
 Bug Tracker domain model from the
-`Zend\_Db\_Table <http://framework.zend.com/manual/en/zend.db.table.html>`_
+`Zend\_Db\_Table <http://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
 documentation. Reading their documentation we can extract the
 requirements:
 
@@ -157,7 +157,7 @@ The second block consists of the instantiation of the ORM
 ``Configuration`` object using the Setup helper. It assumes a bunch
 of defaults that you don't have to bother about for now. You can
 read up on the configuration details in the
-`reference chapter on configuration <../reference/configuration.rst>`_.
+:doc:`reference chapter on configuration <../reference/configuration>`.
 
 The third block shows the configuration options required to connect
 to a database, in my case a file-based sqlite database. All the
@@ -344,7 +344,7 @@ Now that we have defined our first entity, let's update the database:
 
     $ vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
 
-Specifying both flags ``--force`` and ``-dump-sql`` prints and executes the DDL
+Specifying both flags ``--force`` and ``--dump-sql`` prints and executes the DDL
 statements.
 
 Now create a new script that will insert products into the database:
@@ -616,12 +616,12 @@ domain model to match the requirements:
         }
     }
 
-Whenever an entity is recreated from the database, an Collection
-implementation of the type Doctrine is injected into your entity
-instead of an array. Compared to the ArrayCollection this
-implementation helps the Doctrine ORM understand the changes that
-have happened to the collection which are noteworthy for
-persistence.
+You use Doctrine's ArrayCollections in your Doctrine models, rather
+than plain PHP arrays, so that Doctrine can watch what happens with
+them and act appropriately.  Note that if you dump your entities,
+you'll see a "PersistentCollection" in place of your ArrayCollection,
+which is just an
+internal Doctrine class with the same interface.
 
 .. warning::
 

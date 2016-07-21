@@ -5,9 +5,11 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
+use Doctrine\Tests\OrmTestCase;
 
-class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
+class BasicInheritanceMappingTest extends OrmTestCase
 {
     /**
      * @var ClassMetadataFactory
@@ -25,7 +27,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetMetadataForTransientClassThrowsException()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TransientBaseClass');
     }
@@ -121,12 +123,13 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnmappedEntityInHierarchy()
     {
-        $this->setExpectedException(
-            'Doctrine\ORM\Mapping\MappingException',
-            'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+              'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
             . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
             . ' Alternatively you can make \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' an abstract class to'
-            . ' avoid this exception from occurring.');
+            . ' avoid this exception from occurring.'
+        );
 
         $this->cmf->getMetadataFor(__NAMESPACE__ . '\\HierarchyE');
     }

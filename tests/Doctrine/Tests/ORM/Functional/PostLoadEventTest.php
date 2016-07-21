@@ -8,13 +8,14 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * PostLoadEventTest
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PostLoadEventTest extends OrmFunctionalTestCase
 {
     /**
      * @var integer
@@ -35,7 +36,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testLoadedEntityUsingFindShouldTriggerEvent()
     {
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // CmsUser and CmsAddres, because it's a ToOne inverse side on CmsUser
         $mockListener
@@ -52,7 +53,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testLoadedEntityUsingQueryShouldTriggerEvent()
     {
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // CmsUser and CmsAddres, because it's a ToOne inverse side on CmsUser
         $mockListener
@@ -72,7 +73,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testLoadedAssociationToOneShouldTriggerEvent()
     {
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // CmsUser (root), CmsAddress (ToOne inverse side), CmsEmail (joined association)
         $mockListener
@@ -92,7 +93,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testLoadedAssociationToManyShouldTriggerEvent()
     {
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // CmsUser (root), CmsAddress (ToOne inverse side), 2 CmsPhonenumber (joined association)
         $mockListener
@@ -115,7 +116,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $eventManager = $this->_em->getEventManager();
 
         // Should not be invoked during getReference call
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         $mockListener
             ->expects($this->never())
@@ -129,7 +130,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Now deactivate original listener and attach new one
         $eventManager->removeEventListener(array(Events::postLoad), $mockListener);
 
-        $mockListener2 = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener2 = $this->createMock(PostLoadListener::class);
 
         $mockListener2
             ->expects($this->exactly(2))
@@ -146,7 +147,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $eventManager = $this->_em->getEventManager();
 
         // Should not be invoked during getReference call
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // CmsUser (partially loaded), CmsAddress (inverse ToOne), 2 CmsPhonenumber
         $mockListener
@@ -166,7 +167,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
 
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // CmsEmail (proxy)
         $mockListener
@@ -187,7 +188,7 @@ class PostLoadEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
 
-        $mockListener = $this->getMock('Doctrine\Tests\ORM\Functional\PostLoadListener');
+        $mockListener = $this->createMock(PostLoadListener::class);
 
         // 2 CmsPhonenumber (proxy)
         $mockListener

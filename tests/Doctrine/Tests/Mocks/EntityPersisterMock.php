@@ -3,11 +3,13 @@
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
  * EntityPersister implementation used for mocking during tests.
  */
-class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPersister
+class EntityPersisterMock extends BasicEntityPersister
 {
     /**
      * @var array
@@ -52,7 +54,7 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\Entity\BasicEntityPer
     public function addInsert($entity)
     {
         $this->inserts[] = $entity;
-        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
+        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == ClassMetadata::GENERATOR_TYPE_IDENTITY
                 || $this->class->isIdGeneratorIdentity()) {
             $id = $this->identityColumnValueCounter++;
             $this->postInsertIds[] = array(
