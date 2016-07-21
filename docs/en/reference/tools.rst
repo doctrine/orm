@@ -395,6 +395,7 @@ to yml:
 .. code-block:: php
 
     <?php
+    $cme = new ClassMetadataExporter();
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
     $exporter->setMetadata($metadata);
     $exporter->export();
