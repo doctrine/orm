@@ -557,6 +557,12 @@ class SchemaTool
                     $blacklistedFks
                 );
 
+                if (isset($foreignClass->table['options'])) {
+                    foreach ($foreignClass->table['options'] as $key => $val) {
+                        $theJoinTable->addOption($key, $val);
+                    }
+                }
+
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
             }
         }
