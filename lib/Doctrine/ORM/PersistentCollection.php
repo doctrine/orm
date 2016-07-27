@@ -646,7 +646,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @throws \RuntimeException
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria, $or = false)
     {
         if ($this->isDirty) {
             $this->initialize();
@@ -665,7 +665,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $builder         = Criteria::expr();
         $ownerExpression = $builder->eq($this->backRefFieldName, $this->owner);
         $expression      = $criteria->getWhereExpression();
-        $expression      = $expression ? $builder->andX($expression, $ownerExpression) : $ownerExpression;
+
+        if ($expression) {
+            $expression = $or ? $builder->orX($expression, $ownerExpression) : $builder->andX($expression, $ownerExpression);
+        } else {
+            $expression = $ownerExpression;
+        }
 
         $criteria = clone $criteria;
         $criteria->where($expression);
