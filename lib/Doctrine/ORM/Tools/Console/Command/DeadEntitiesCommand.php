@@ -87,46 +87,44 @@ EOT
             try {
                 $tableName = array_search($className, $tableNames);
                 $keys = $schema->listTableForeignKeys($tableName);
-                $output->writeln('<info>'.$className.'</info> '.count($keys).' foreign key(s)');
+                $output->writeln('<info>'.$className.'('.$tableName.')'.'</info> '.count($keys).' foreign key(s)');
                 $assoc = $entityManager->getClassMetadata($className)->getAssociationMappings();
                 foreach($assoc as $a) {
-                    if(array_key_exists('joinColumns', $a)) {
-                        $output->writeln('<info>'.$a['sourceEntity'].'->'.$a['targetEntity'].'</info> ');
-                        if(array_key_exists('sourceEntity', $a)
-                          && array_key_exists($a['sourceEntity'], $entity)
-                          && $entity[$a['sourceEntity']] != null
-                          && !is_array($entity[$a['sourceEntity']])) {
-                            $entity[$a['sourceEntity']] = array();
+                    if(array_key_exists('sourceToTargetKeyColumns', $a)) {
+                        $output->writeln('-> Entity: '.$a['targetEntity'].'('.array_search($a['targetEntity'], $tableNames).')');
+                        foreach ($a['joinColumnFieldNames'] as $column => $field) {
+                            $output->writeln("\tField: $field($column)");
                         }
-                        foreach($a['joinColumns'] as $k) {
-                            $output->writeln("\t".$k['name'].'->'.$k['referencedColumnName']);
-                            $entity[$a['sourceEntity']][$k['name']] = $a['targetEntity'].'.'.$k['referencedColumnName'];
+                        foreach($a['sourceToTargetKeyColumns'] as $fcolumn => $ffield) {
+                            $output->writeln("\t\tForeign key: $ffield($fcolumn)");
                         }
                     }
                 }
-/*
-                $output->writeln('ENTITY '.__LINE__.' '.print_r($entity, true));
-                $foreignCols = array_key_exists($tableName, $assoc) ? $assoc[$table_name]['sourceToTargetKeyColums'] : null;
-                $output->writeln('### '.__LINE__.' '.print_r($foreignCols, true));
+                continue;
+                $output->writeln($tableNames[$tableName].'->'.array_keys($assoc)[0]);
+
+                $foreignCols = array_key_exists($tableName, $assoc) ? $assoc[$tableName]['sourceToTargetKeyColums'] : null;
+                $foreignCols = $assoc[$tableName];
+                $foreignCols = $foreignCols['sourceToTargetKeyColums'];
                 $cols = '';
                 $dqlCols = '';
-//                foreach($foreignCols as $col) {
-//                    $cols .= $col . ', ';
-//                    $dqlCols .= '_inner.'.$col . ', ';
-//                }
+                foreach($foreignCols as $col) {
+                    $cols .= $col . ', ';
+                    $dqlCols .= '_inner.'.$col . ', ';
+                }
                 $cols = substr($cols, 0, strlen($cols) - 2);
                 $dqlCols = substr($dqlCols, 0, strlen($dqlCols) - 2);
-                $output->writeln(__LINE__.' '."\t".$field.' -> '.$tableNames[$key->getForeignTableName()].'('.$cols.')');
+                //$output->writeln("\t".$field.' -> '.$tableNames[$key->getForeignTableName()].'('.$cols.')');
                 $dql =
-                    "SELECT ".$dqlCols." AS $tableName \n".
-                    "  FROM ".$className." _inner \n".
-                    "  LEFT JOIN ".$key->getForeignTableName()." _outer \n".
-                    "  WITH _inner.".$field." = _outer \n".
+                    "SELECT _inner \n".
+                    "  FROM ".$entity[0]['table']." _inner \n".
+                    "  LEFT JOIN ".$entity[0]['foreignTable']." _outer \n".
+                    "  WITH _inner.".$entity[0]['foreignColumn']." = _outer \n".
                     " WHERE ";
                 $where = '';
-                foreach($foreignCols as $col) {
-                    $where .= '_outer.'.$col.' IS NULL OR ';
-                }
+                //foreach($foreignCols as $col) {
+                    $where .= '_outer.'.$entity[0]['foreignColumn'].' IS NULL OR ';
+                //}
                 $dql .= substr($where, 0, strlen($where) - 4);
 
                 $output->writeln('<warn>'.$dql.'</warn>');
@@ -137,7 +135,6 @@ EOT
                         $output->writeln("\t".$className.' id with missing '.$field.': '.$val[$key]);
                     }
                 }
-*/
             } catch (MappingException $e) {
                 $output->writeln("<error>[FAIL]</error> ".$className);
                 $output->writeln(sprintf("<comment>%s</comment>", $e->getMessage()));
