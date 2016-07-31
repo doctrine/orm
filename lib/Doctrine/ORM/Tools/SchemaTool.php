@@ -358,23 +358,26 @@ class SchemaTool
     {
         $discrColumn = $class->discriminatorColumn;
 
-        if ( ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)
-        ) {
-            $discrColumn['type'] = 'string';
-            $discrColumn['length'] = 255;
+        //the discriminator might already be defined by an association or a column
+        if (!($table->hasColumn($discrColumn['name']))) {
+            if ( ! isset($discrColumn['type']) ||
+                (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)
+            ) {
+                $discrColumn['type'] = 'string';
+                $discrColumn['length'] = 255;
+            }
+
+            $options = array(
+                'length'    => isset($discrColumn['length']) ? $discrColumn['length'] : null,
+                'notnull'   => true
+            );
+
+            if (isset($discrColumn['columnDefinition'])) {
+                $options['columnDefinition'] = $discrColumn['columnDefinition'];
+            }
+
+            $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
         }
-
-        $options = array(
-            'length'    => isset($discrColumn['length']) ? $discrColumn['length'] : null,
-            'notnull'   => true
-        );
-
-        if (isset($discrColumn['columnDefinition'])) {
-            $options['columnDefinition'] = $discrColumn['columnDefinition'];
-        }
-
-        $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
     }
 
     /**
