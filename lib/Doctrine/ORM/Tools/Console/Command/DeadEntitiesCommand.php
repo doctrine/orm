@@ -89,18 +89,28 @@ EOT
                 $keys = $schema->listTableForeignKeys($tableName);
                 $output->writeln('<info>'.$className.'('.$tableName.')'.'</info> '.count($keys).' foreign key(s)');
                 $assoc = $entityManager->getClassMetadata($className)->getAssociationMappings();
+                $output->writeln(print_r($assoc, true));
                 foreach($assoc as $a) {
                     if(array_key_exists('sourceToTargetKeyColumns', $a)) {
                         $output->writeln('-> Entity: '.$a['targetEntity'].'('.array_search($a['targetEntity'], $tableNames).')');
+                        $sourceFields = array();
+                        $sourceColumns = array();
                         foreach ($a['joinColumnFieldNames'] as $column => $field) {
                             $output->writeln("\tField: $field($column)");
+                            $sourceFields[] = $field;
+                            $sourceColumns[] = $column;
                         }
+                        $targetFields = array();
+                        $targetColumns = array();
                         foreach($a['sourceToTargetKeyColumns'] as $fcolumn => $ffield) {
                             $output->writeln("\t\tForeign key: $ffield($fcolumn)");
+                            $targetFields[] = $ffield;
+                            $targetColumns[] = $fcolumn;
                         }
+                        $missing = $this->findMissingEntities($a['sourceEntity'], $a['targetEntity'], $a['fieldName'], $output);
                     }
                 }
-                continue;
+                /*
                 $output->writeln($tableNames[$tableName].'->'.array_keys($assoc)[0]);
 
                 $foreignCols = array_key_exists($tableName, $assoc) ? $assoc[$tableName]['sourceToTargetKeyColums'] : null;
@@ -135,6 +145,7 @@ EOT
                         $output->writeln("\t".$className.' id with missing '.$field.': '.$val[$key]);
                     }
                 }
+                */
             } catch (MappingException $e) {
                 $output->writeln("<error>[FAIL]</error> ".$className);
                 $output->writeln(sprintf("<comment>%s</comment>", $e->getMessage()));
@@ -146,5 +157,23 @@ EOT
 
         return $failure ? 1 : 0;
     }
-}
 
+    private function findMissingEntities($sourceEntity, $targetEntity, $fieldName, $output) {
+        $dql = "SELECT _inner, _outer\n"
+              ."  FROM $sourceEntity _inner\n"
+              ."  LEFT JOIN $targetEntity _outer\n"
+              ."  WITH _inner.$fieldName = _outer\n"
+              ." WHERE _outer.id IS NULL";
+
+        $entityManager = $this->getHelper('em')->getEntityManager();
+        $query = $entityManager->createQuery($dql);
+        $ret = $query->getResult();
+
+        foreach($ret as $key) {
+            if($key == null) {
+                continue;
+            }
+            $output->writeln("\t".$targetEntity.' id with missing reference '.$key->getId());
+        }
+    }
+}
