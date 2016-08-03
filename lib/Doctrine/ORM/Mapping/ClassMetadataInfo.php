@@ -965,10 +965,19 @@ class ClassMetadataInfo implements ClassMetadata
                 : $reflService->getAccessibleProperty($this->name, $field);
         }
 
-        foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+        foreach ($this->associationMappings as $assoc => $mapping) {
+            if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
+                $this->reflFields[$assoc] = new ReflectionEmbeddedProperty(
+                    $parentReflFields[$mapping['declaredField']],
+                    $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
+                    $mapping['originalClass']
+                );
+                continue;
+            }
+
+            $this->reflFields[$assoc] = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $assoc)
+                : $reflService->getAccessibleProperty($this->name, $assoc);
         }
     }
 
@@ -3322,6 +3331,38 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $this->mapField($fieldMapping);
+        }
+
+        foreach ($embeddable->associationMappings as $assocMapping) {
+            if (!($assocMapping['type'] & ClassMetadata::MANY_TO_ONE)) {
+                continue;
+            }
+            $assocMapping['originalClass'] = isset($assocMapping['originalClass'])
+                ? $assocMapping['originalClass']
+                : $embeddable->name;
+            $assocMapping['declaredField'] = isset($assocMapping['declaredField'])
+                ? $property . '.' . $assocMapping['declaredField']
+                : $property;
+            $assocMapping['originalField'] = isset($assocMapping['originalField'])
+                ? $assocMapping['originalField']
+                : $assocMapping['fieldName'];
+            $assocMapping['fieldName']     = $property . "." . $assocMapping['fieldName'];
+
+            foreach ($assocMapping['joinColumns'] as &$column) {
+                if (!empty($this->embeddedClasses[$property]['columnPrefix'])) {
+                    $column['name'] = $this->embeddedClasses[$property]['columnPrefix'] . $column['name'];
+                } elseif ($this->embeddedClasses[$property]['columnPrefix'] !== false) {
+                    $column['name'] = $this->namingStrategy
+                        ->embeddedFieldToColumnName(
+                            $property,
+                            $column['name'],
+                            $this->reflClass->name,
+                            $embeddable->reflClass->name
+                        );
+                }
+            }
+
+            $this->mapManyToOne($assocMapping);
         }
     }
 
