@@ -23,6 +23,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
+use Doctrine\ORM\Query\QueryException;
 
 /**
  * Show information about dead entities.
@@ -89,7 +90,6 @@ EOT
                 $keys = $schema->listTableForeignKeys($tableName);
                 $output->writeln('<info>'.$className.'('.$tableName.')'.'</info> '.count($keys).' foreign key(s)');
                 $assoc = $entityManager->getClassMetadata($className)->getAssociationMappings();
-                $output->writeln(print_r($assoc, true));
                 foreach($assoc as $a) {
                     if(array_key_exists('sourceToTargetKeyColumns', $a)) {
                         $output->writeln('-> Entity: '.$a['targetEntity'].'('.array_search($a['targetEntity'], $tableNames).')');
@@ -107,45 +107,9 @@ EOT
                             $targetFields[] = $ffield;
                             $targetColumns[] = $fcolumn;
                         }
-                        $missing = $this->findMissingEntities($a['sourceEntity'], $a['targetEntity'], $a['fieldName'], $output);
+                        $missing = $this->findMissingEntities($a, $output);
                     }
                 }
-                /*
-                $output->writeln($tableNames[$tableName].'->'.array_keys($assoc)[0]);
-
-                $foreignCols = array_key_exists($tableName, $assoc) ? $assoc[$tableName]['sourceToTargetKeyColums'] : null;
-                $foreignCols = $assoc[$tableName];
-                $foreignCols = $foreignCols['sourceToTargetKeyColums'];
-                $cols = '';
-                $dqlCols = '';
-                foreach($foreignCols as $col) {
-                    $cols .= $col . ', ';
-                    $dqlCols .= '_inner.'.$col . ', ';
-                }
-                $cols = substr($cols, 0, strlen($cols) - 2);
-                $dqlCols = substr($dqlCols, 0, strlen($dqlCols) - 2);
-                //$output->writeln("\t".$field.' -> '.$tableNames[$key->getForeignTableName()].'('.$cols.')');
-                $dql =
-                    "SELECT _inner \n".
-                    "  FROM ".$entity[0]['table']." _inner \n".
-                    "  LEFT JOIN ".$entity[0]['foreignTable']." _outer \n".
-                    "  WITH _inner.".$entity[0]['foreignColumn']." = _outer \n".
-                    " WHERE ";
-                $where = '';
-                //foreach($foreignCols as $col) {
-                    $where .= '_outer.'.$entity[0]['foreignColumn'].' IS NULL OR ';
-                //}
-                $dql .= substr($where, 0, strlen($where) - 4);
-
-                $output->writeln('<warn>'.$dql.'</warn>');
-                $query = $entityManager->createQuery($dql);
-                $ret = $query->getResult();
-                foreach($ret as $key => $val) {
-                    foreach(array_keys($val) as $key) {
-                        $output->writeln("\t".$className.' id with missing '.$field.': '.$val[$key]);
-                    }
-                }
-                */
             } catch (MappingException $e) {
                 $output->writeln("<error>[FAIL]</error> ".$className);
                 $output->writeln(sprintf("<comment>%s</comment>", $e->getMessage()));
@@ -154,26 +118,53 @@ EOT
                 $failure = true;
             }
         }
-
         return $failure ? 1 : 0;
     }
 
-    private function findMissingEntities($sourceEntity, $targetEntity, $fieldName, $output) {
+    private function findMissingEntities($entity, $output) {
         $dql = "SELECT _inner, _outer\n"
-              ."  FROM $sourceEntity _inner\n"
-              ."  LEFT JOIN $targetEntity _outer\n"
-              ."  WITH _inner.$fieldName = _outer\n"
-              ." WHERE _outer.id IS NULL";
-
+              ."  FROM ".$entity['sourceEntity']." _inner\n"
+              ."  LEFT JOIN ".$entity['targetEntity']." _outer"
+              .$this->with($entity)
+              .$this->where($entity);
+        
         $entityManager = $this->getHelper('em')->getEntityManager();
-        $query = $entityManager->createQuery($dql);
-        $ret = $query->getResult();
+        try {
+            $query = $entityManager->createQuery($dql);
+            $ret = $query->getResult();
+        } catch(QueryException $e) {
+            $output->writeln("<error>Data model too complex to analyze.</error>");
+            return;
+        }
 
         foreach($ret as $key) {
             if($key == null) {
                 continue;
             }
-            $output->writeln("\t".$targetEntity.' id with missing reference '.$key->getId());
+            $output->writeln("\t".$entity['targetEntity'].' id with missing reference '.$key->getId());
+        }
+    }
+    
+    private function with($entity) {
+        if(count($entity['joinColumns']) == 1 || true) {
+            return "\n  WITH _inner.".$entity['fieldName']." = _outer";
+        }
+        $ret = "\n  WITH ";
+        foreach($entity['joinColumns'] as $column) {
+            $ret .= "_inner.".$column['name']." = _outer.".$column['referencedColumnName']."\n   AND ";
+        }
+        return substr($ret, 0, strlen($ret) - 6);
+    }
+    
+    private function where($entity) {
+        if(count($entity['joinColumns']) != 0) {
+            $ret = "\n WHERE ";
+            foreach($entity['joinColumns'] as $column) {
+                $ret .= "_outer.".$column['referencedColumnName']." IS NULL\n   AND ";
+            }
+            return substr($ret, 0, strlen($ret) - 6);
+        } else {
+            return "\n WHERE _outer IS NULL";
         }
     }
 }
