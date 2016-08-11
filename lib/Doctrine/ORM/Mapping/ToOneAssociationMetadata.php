@@ -27,7 +27,7 @@ class ToOneAssociationMetadata extends AssociationMetadata
     private $joinColumns = [];
 
     /**
-     * @return array
+     * @return array<JoinColumnMetadata>
      */
     public function getJoinColumns()
     {

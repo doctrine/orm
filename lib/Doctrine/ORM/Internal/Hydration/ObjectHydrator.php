@@ -280,25 +280,27 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function getEntityFromIdentityMap($className, array $data)
     {
-        // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
+        // TODO: All of the following share similar logic, consider refactoring: AbstractHydrator::registerManaged,
+        // ObjectHydrator::getEntityFromIdentityMap and UnitOfWork::createEntity().
+        // $id = $this->identifierFlattener->flattenIdentifier($class, $data);
+        /* @var ClassMetadata $class */
         $class = $this->_metadataCache[$className];
+        $id    = [];
 
-        /* @var $class ClassMetadata */
-        if ($class->isIdentifierComposite) {
-            $idHash = '';
+        foreach ($class->identifier as $fieldName) {
+            if (!isset($class->associationMappings[$fieldName])) {
+                $id[$fieldName] = $data[$fieldName];
 
-            foreach ($class->identifier as $fieldName) {
-                $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]);
+                continue;
             }
 
-            return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
-        } else if (isset($class->associationMappings[$class->identifier[0]])) {
-            return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
+            $association = $class->associationMappings[$fieldName];
+            $joinColumn  = reset($association['joinColumns']);
+
+            $id[$fieldName] = $data[$joinColumn->getColumnName()];
         }
 
-        return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
+        return $this->_uow->tryGetByIdHash(implode(' ', $id), $class->rootEntityName);
     }
 
     /**

@@ -99,12 +99,12 @@ class SizeFunction extends FunctionNode
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
-                $property         = $class->getProperty($class->fieldNames[$joinColumn['referencedColumnName']]);
-                $sourceColumnName = $platform->quoteIdentifier($property->getColumnName());
-
-                $sql .= $joinTableAlias . '.' . $joinColumn['name']
-                      . ' = '
-                      . $sourceTableAlias . '.' . $sourceColumnName;
+                $sql .= sprintf('%s.%s = %s.%s',
+                    $joinTableAlias,
+                    $platform->quoteIdentifier($joinColumn->getColumnName()),
+                    $sourceTableAlias,
+                    $platform->quoteIdentifier($joinColumn->getReferencedColumnName())
+                );
             }
         }
 

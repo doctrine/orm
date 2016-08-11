@@ -68,7 +68,7 @@ class IdentityFunction extends FunctionNode
             $joinColumn = null;
 
             foreach ($assoc['joinColumns'] as $mapping) {
-                if ($mapping['referencedColumnName'] === $property->getColumnName()) {
+                if ($mapping->getReferencedColumnName() === $property->getColumnName()) {
                     $joinColumn = $mapping;
 
                     break;
@@ -83,10 +83,10 @@ class IdentityFunction extends FunctionNode
         // The table with the relation may be a subclass, so get the table name from the association definition
         $tableName = $sqlWalker->getEntityManager()->getClassMetadata($assoc['sourceEntity'])->getTableName();
 
-        $tableAlias = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
-        $columnName = $platform->quoteIdentifier($joinColumn['name']);
+        $tableAlias       = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
+        $quotedColumnName = $platform->quoteIdentifier($joinColumn->getColumnName());
 
-        return $tableAlias . '.' . $columnName;
+        return $tableAlias . '.' . $quotedColumnName;
     }
 
     /**

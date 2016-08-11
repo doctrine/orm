@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
@@ -229,18 +228,22 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testOneToOneAssociationsAreExported($class)
     {
         self::assertTrue(isset($class->associationMappings['address']));
-        self::assertEquals(Address::class, $class->associationMappings['address']['targetEntity']);
-        self::assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
-        self::assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
-        self::assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
 
-        self::assertContains('remove', $class->associationMappings['address']['cascade']);
-        self::assertContains('persist', $class->associationMappings['address']['cascade']);
-        self::assertNotContains('refresh', $class->associationMappings['address']['cascade']);
-        self::assertNotContains('merge', $class->associationMappings['address']['cascade']);
-        self::assertNotContains('detach', $class->associationMappings['address']['cascade']);
-        self::assertTrue($class->associationMappings['address']['orphanRemoval']);
-        self::assertEquals(ClassMetadata::FETCH_EAGER, $class->associationMappings['address']['fetch']);
+        $association = $class->associationMappings['address'];
+        $joinColumn  = reset($association['joinColumns']);
+
+        self::assertEquals('Doctrine\Tests\ORM\Tools\Export\Address', $association['targetEntity']);
+        self::assertEquals('address_id', $joinColumn->getColumnName());
+        self::assertEquals('id', $joinColumn->getReferencedColumnName());
+        self::assertEquals('CASCADE', $joinColumn->getOnDelete());
+
+        self::assertContains('remove', $association['cascade']);
+        self::assertContains('persist', $association['cascade']);
+        self::assertNotContains('refresh', $association['cascade']);
+        self::assertNotContains('merge', $association['cascade']);
+        self::assertNotContains('detach', $association['cascade']);
+        self::assertTrue($association['orphanRemoval']);
+        self::assertEquals(ClassMetadata::FETCH_EAGER, $association['fetch']);
 
         return $class;
     }
@@ -284,23 +287,29 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testManyToManyAssociationsAreExported($class)
     {
         self::assertTrue(isset($class->associationMappings['groups']));
+
+        $association       = $class->associationMappings['groups'];
+        $joinColumn        = reset($association['joinTable']['joinColumns']);
+        $inverseJoinColumn = reset($association['joinTable']['inverseJoinColumns']);
+
         //self::assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $class->associationMappings['groups']);
-        self::assertEquals(Group::class, $class->associationMappings['groups']['targetEntity']);
-        self::assertEquals('cms_users_groups', $class->associationMappings['groups']['joinTable']['name']);
+        self::assertEquals(Group::class, $association['targetEntity']);
+        self::assertEquals('cms_users_groups', $association['joinTable']['name']);
 
-        self::assertEquals('user_id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['name']);
-        self::assertEquals('id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('user_id', $joinColumn->getColumnName());
+        self::assertEquals('id', $joinColumn->getReferencedColumnName());
 
-        self::assertEquals('group_id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['name']);
-        self::assertEquals('id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
-        self::assertEquals('INT NULL', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
+        self::assertEquals('group_id', $inverseJoinColumn->getColumnName());
+        self::assertEquals('id', $inverseJoinColumn->getReferencedColumnName());
+        self::assertEquals('INT NULL', $inverseJoinColumn->getColumnDefinition());
 
-        self::assertContains('remove', $class->associationMappings['groups']['cascade']);
-        self::assertContains('persist', $class->associationMappings['groups']['cascade']);
-        self::assertContains('refresh', $class->associationMappings['groups']['cascade']);
-        self::assertContains('merge', $class->associationMappings['groups']['cascade']);
-        self::assertContains('detach', $class->associationMappings['groups']['cascade']);
-        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
+        self::assertContains('remove', $association['cascade']);
+        self::assertContains('persist', $association['cascade']);
+        self::assertContains('refresh', $association['cascade']);
+        self::assertContains('merge', $association['cascade']);
+        self::assertContains('detach', $association['cascade']);
+
+        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $association['fetch']);
 
         return $class;
     }

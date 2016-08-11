@@ -267,10 +267,7 @@ class BasicEntityPersister implements EntityPersister
                 $paramIndex = 1;
 
                 foreach ($insertData[$tableName] as $columnName => $value) {
-                    $type = $this->columns[$columnName] instanceof ColumnMetadata
-                        ? $this->columns[$columnName]->getType()
-                        : $this->columns[$columnName]['type']
-                    ;
+                    $type = $this->columns[$columnName]->getType();
 
                     $stmt->bindValue($paramIndex++, $value, $type);
                 }
@@ -280,12 +277,11 @@ class BasicEntityPersister implements EntityPersister
 
             if ($isPostInsertId) {
                 $generatedId = $idGenerator->generate($this->em, $entity);
-                $id = [
-                    $this->class->identifier[0] => $generatedId
-                ];
+                $id          = [$this->class->identifier[0] => $generatedId];
+
                 $postInsertIds[] = [
                     'generatedId' => $generatedId,
-                    'entity' => $entity,
+                    'entity'      => $entity,
                 ];
             } else {
                 $id = $this->class->getIdentifierValues($entity);
@@ -392,17 +388,10 @@ class BasicEntityPersister implements EntityPersister
         $params = [];
 
         foreach ($updateData as $columnName => $value) {
-            $column = $this->columns[$columnName];
-
-            if ($column instanceof ColumnMetadata) {
-                $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
-                $type             = $column->getType();
-                $placeholder      = $type->convertToDatabaseValueSQL('?', $this->platform);
-            } else {
-                $quotedColumnName = $this->platform->quoteIdentifier($column['name']);
-                $type             = $column['type'];
-                $placeholder      = $type->convertToDatabaseValueSQL('?', $this->platform);
-            }
+            $column           = $this->columns[$columnName];
+            $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
+            $type             = $column->getType();
+            $placeholder      = $type->convertToDatabaseValueSQL('?', $this->platform);
 
             $set[]    = $quotedColumnName . ' = ' . $placeholder;
             $params[] = $value;
@@ -413,35 +402,23 @@ class BasicEntityPersister implements EntityPersister
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
 
         foreach ($this->class->identifier as $idField) {
+            $params[] = $identifier[$idField];
+
             if ( ! isset($this->class->associationMappings[$idField])) {
                 $property = $this->class->getProperty($idField);
 
-                $params[]   = $identifier[$idField];
                 $types[]    = $property->getType();
                 $where[]    = $this->platform->quoteIdentifier($property->getColumnName());
 
                 continue;
             }
 
-            $params[]       = $identifier[$idField];
-            $where[]        = $this->class->associationMappings[$idField]['joinColumns'][0]['name'];
+            $association = $this->class->associationMappings[$idField];
+            $targetClass = $this->em->getClassMetadata($association['targetEntity']);
+            $joinColumn  = reset($association['joinColumns']);
 
-            $targetMapping  = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
-            $property       = $targetMapping->getProperty($targetMapping->identifier[0]);
-
-            if ($property) {
-                $types[] = $property->getType();
-
-                continue;
-            }
-
-            if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
-                $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
-
-                continue;
-            }
-
-            throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+            $where[] = $joinColumn->getColumnName();
+            $types[] = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
         }
 
         if ($versioned) {
@@ -519,17 +496,17 @@ class BasicEntityPersister implements EntityPersister
             $isOnDeleteCascade = false;
 
             foreach ($joinColumns as $joinColumn) {
-                $keys[] = $this->platform->quoteIdentifier($joinColumn['name']);
+                $keys[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                if ($joinColumn['onDelete'] === 'CASCADE') {
+                if ($joinColumn->isOnDeleteCascade()) {
                     $isOnDeleteCascade = true;
                 }
             }
 
             foreach ($otherColumns as $joinColumn) {
-                $otherKeys[] = $this->platform->quoteIdentifier($joinColumn['name']);
+                $otherKeys[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                if ($joinColumn['onDelete'] === 'CASCADE') {
+                if ($joinColumn->isOnDeleteCascade()) {
                     $isOnDeleteCascade = true;
                 }
             }
@@ -538,12 +515,12 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
+            $quotedJoinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
 
-            $this->conn->delete($joinTableName, array_combine($keys, $identifier));
+            $this->conn->delete($quotedJoinTableName, array_combine($keys, $identifier));
 
             if ($selfReferential) {
-                $this->conn->delete($joinTableName, array_combine($otherKeys, $identifier));
+                $this->conn->delete($quotedJoinTableName, array_combine($otherKeys, $identifier));
             }
         }
     }
@@ -665,16 +642,17 @@ class BasicEntityPersister implements EntityPersister
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             foreach ($assoc['joinColumns'] as $joinColumn) {
-                $sourceColumn = $joinColumn['name'];
-                $targetColumn = $joinColumn['referencedColumnName'];
-                $targetField  = $targetClass->getFieldForColumn($targetColumn);
+                $columnName           = $joinColumn->getColumnName();
+                $referencedColumnName = $joinColumn->getReferencedColumnName();
+                $targetField          = $targetClass->getFieldForColumn($referencedColumnName);
 
-                $this->columns[$sourceColumn] = array_merge(
-                    $joinColumn,
-                    ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em)]
+                $joinColumn->setType(
+                    PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
                 );
 
-                $result[$owningTable][$sourceColumn] = $newValId ? $newValId[$targetField] : null;
+                $this->columns[$columnName] = $joinColumn;
+
+                $result[$owningTable][$columnName] = $newValId ? $newValId[$targetField] : null;
             }
         }
 
@@ -996,34 +974,36 @@ class BasicEntityPersister implements EntityPersister
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
 
         foreach ($joinColumns as $joinColumn) {
-            $sourceKeyColumn    = $joinColumn['referencedColumnName'];
-            $quotedKeyColumn    = $this->platform->quoteIdentifier($joinColumn['name']);;
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             switch (true) {
                 case $sourceClass->containsForeignIdentifier:
-                    $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
+                    $field = $sourceClass->getFieldForColumn($referencedColumnName);
                     $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
                     if (isset($sourceClass->associationMappings[$field])) {
+                        $targetClass = $this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity']);
+
                         $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
+                        $value = $value[$targetClass->identifier[0]];
                     }
 
                     break;
 
-                case isset($sourceClass->fieldNames[$sourceKeyColumn]):
-                    $field = $sourceClass->fieldNames[$sourceKeyColumn];
+                case isset($sourceClass->fieldNames[$referencedColumnName]):
+                    $field = $sourceClass->fieldNames[$referencedColumnName];
                     $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
                     break;
 
                 default:
                     throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
+                        $sourceClass->name, $referencedColumnName
                     );
             }
 
-            $criteria[$quotedJoinTable . '.' . $quotedKeyColumn] = $value;
+            $criteria[$quotedJoinTable . '.' . $quotedColumnName] = $value;
 
             $parameters[] = [
                 'value' => $value,
@@ -1169,9 +1149,9 @@ class BasicEntityPersister implements EntityPersister
                 $tableAlias = $this->getSQLTableAlias($class->getTableName());
 
                 foreach ($this->class->associationMappings[$fieldName]['joinColumns'] as $joinColumn) {
-                    $columnName = $this->platform->quoteIdentifier($joinColumn['name']);
+                    $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                    $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
+                    $orderByList[] = $tableAlias . '.' . $quotedColumnName . ' ' . $orientation;
                 }
 
                 continue;
@@ -1278,9 +1258,9 @@ class BasicEntityPersister implements EntityPersister
                     $joinCondition[] = sprintf(
                         '%s.%s = %s.%s',
                         $this->getSQLTableAlias($sourceClass->getTableName()),
-                        $this->platform->quoteIdentifier($joinColumn['name']),
+                        $this->platform->quoteIdentifier($joinColumn->getColumnName()),
                         $tableAlias,
-                        $this->platform->quoteIdentifier($joinColumn['referencedColumnName'])
+                        $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName())
                     );
                 }
 
@@ -1294,14 +1274,15 @@ class BasicEntityPersister implements EntityPersister
 
                 $sourceClass = $this->em->getClassMetadata($association['sourceEntity']);
                 $targetClass = $this->em->getClassMetadata($association['targetEntity']);
+                $tableAlias  = $this->getSQLTableAlias($targetClass->getTableName());
 
                 foreach ($association['joinColumns'] as $joinColumn) {
                     $joinCondition[] = sprintf(
                         '%s.%s = %s.%s',
                         $this->getSQLTableAlias($sourceClass->getTableName(), $assocAlias),
-                        $this->platform->quoteIdentifier($joinColumn['name']),
-                        $this->getSQLTableAlias($targetClass->getTableName()),
-                        $this->platform->quoteIdentifier($joinColumn['referencedColumnName'])
+                        $this->platform->quoteIdentifier($joinColumn->getColumnName()),
+                        $tableAlias,
+                        $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName())
                     );
                 }
             }
@@ -1337,13 +1318,14 @@ class BasicEntityPersister implements EntityPersister
         $sqlTableAlias = $this->getSQLTableAlias($class->getTableName(), ($alias == 'r' ? '' : $alias));
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
-            $quotedColumn     = $this->platform->quoteIdentifier($joinColumn['name']);
-            $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
-            $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+            $columnName       = $joinColumn->getColumnName();
+            $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+            $resultColumnName = $this->getSQLColumnAlias($columnName);
+            $type             = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
 
-            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn['name'], $isIdentifier, $type);
+            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $columnName, $isIdentifier, $type);
 
-            $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
+            $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumnName, $resultColumnName);
         }
 
         return implode(', ', $columnList);
@@ -1364,20 +1346,23 @@ class BasicEntityPersister implements EntityPersister
         $sourceTableAlias   = $this->getSQLTableAlias($this->class->getTableName());
 
         if ( ! $manyToMany['isOwningSide']) {
-            $targetEntity   = $this->em->getClassMetadata($manyToMany['targetEntity']);
-            $association    = $targetEntity->associationMappings[$manyToMany['mappedBy']];
+            $targetEntity = $this->em->getClassMetadata($manyToMany['targetEntity']);
+            $association  = $targetEntity->associationMappings[$manyToMany['mappedBy']];
         }
 
-        $joinTableName  = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
-        $joinColumns    = ($manyToMany['isOwningSide'])
+        $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
+        $joinColumns   = ($manyToMany['isOwningSide'])
             ? $association['joinTable']['inverseJoinColumns']
             : $association['joinTable']['joinColumns'];
 
         foreach ($joinColumns as $joinColumn) {
-            $quotedSourceColumn = $this->platform->quoteIdentifier($joinColumn['name']);
-            $quotedTargetColumn = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
-
-            $conditions[]       = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableName . '.' . $quotedSourceColumn;
+            $conditions[] = sprintf(
+                '%s.%s = %s.%s',
+                $sourceTableAlias,
+                $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName()),
+                $joinTableName,
+                $this->platform->quoteIdentifier($joinColumn->getColumnName())
+            );
         }
 
         return ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
@@ -1459,15 +1444,16 @@ class BasicEntityPersister implements EntityPersister
                     $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $sourceColumn = $joinColumn['name'];
-                        $targetColumn = $joinColumn['referencedColumnName'];
+                        $columnName           = $joinColumn->getColumnName();
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
 
-                        $columns[] = $sourceColumn;
+                        $columns[] = $columnName;
 
-                        $this->columns[$sourceColumn] = array_merge(
-                            $joinColumn,
-                            ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em)]
+                        $joinColumn->setType(
+                            PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
                         );
+
+                        $this->columns[$columnName] = $joinColumn;
                     }
                 }
 
@@ -1703,16 +1689,16 @@ class BasicEntityPersister implements EntityPersister
                     $association = $assoc;
                 }
 
-                $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
-                $joinColumns   = $assoc['isOwningSide']
+                $quotedJoinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
+                $joinColumns         = $assoc['isOwningSide']
                     ? $association['joinTable']['joinColumns']
                     : $association['joinTable']['inverseJoinColumns'];
 
 
                 foreach ($joinColumns as $joinColumn) {
-                    $columnName = $this->platform->quoteIdentifier($joinColumn['name']);
+                    $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                    $columns[] = $joinTableName . '.' . $columnName;
+                    $columns[] = $quotedJoinTableName . '.' . $quotedColumnName;
                 }
 
             } else {
@@ -1726,16 +1712,16 @@ class BasicEntityPersister implements EntityPersister
                 $tableAlias = $this->getSQLTableAlias($class->getTableName());
 
                 foreach ($association['joinColumns'] as $joinColumn) {
-                    $columnName = $this->platform->quoteIdentifier($joinColumn['name']);
+                    $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                    $columns[] = $tableAlias . '.' . $columnName;
+                    $columns[] = $tableAlias . '.' . $quotedColumnName;
                 }
             }
 
             return $columns;
         }
 
-        if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
+        if ($assoc !== null && strpos($field, ' ') === false && strpos($field, '(') === false) {
             // very careless developers could potentially open up this normally hidden api for userland attacks,
             // therefore checking for spaces and function calls which are not allowed.
 
@@ -2053,9 +2039,11 @@ class BasicEntityPersister implements EntityPersister
     {
         // if one of the join columns is nullable, return left join
         foreach ($joinColumns as $joinColumn) {
-             if ( ! isset($joinColumn['nullable']) || $joinColumn['nullable']) {
-                 return 'LEFT JOIN';
+             if (! $joinColumn->isNullable()) {
+                 continue;
              }
+
+            return 'LEFT JOIN';
         }
 
         return 'INNER JOIN';
@@ -2066,7 +2054,11 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getSQLColumnAlias($columnName)
     {
-        return $this->quoteStrategy->getColumnAlias($columnName, $this->currentPersisterContext->sqlAliasCounter++, $this->platform);
+        return $this->quoteStrategy->getColumnAlias(
+            $columnName,
+            $this->currentPersisterContext->sqlAliasCounter++,
+            $this->platform
+        );
     }
 
     /**

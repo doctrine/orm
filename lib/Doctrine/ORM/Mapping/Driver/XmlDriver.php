@@ -24,6 +24,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use SimpleXMLElement;
 
@@ -364,10 +365,10 @@ class XmlDriver extends FileDriver
                     $joinColumns = [];
 
                     if (isset($oneToOneElement->{'join-column'})) {
-                        $joinColumns[] = $this->joinColumnToArray($oneToOneElement->{'join-column'});
+                        $joinColumns[] = $this->convertJoinColumnElementToJoinColumnMetadata($oneToOneElement->{'join-column'});
                     } else if (isset($oneToOneElement->{'join-columns'})) {
                         foreach ($oneToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
+                            $joinColumns[] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                         }
                     }
 
@@ -458,10 +459,10 @@ class XmlDriver extends FileDriver
                 $joinColumns = [];
 
                 if (isset($manyToOneElement->{'join-column'})) {
-                    $joinColumns[] = $this->joinColumnToArray($manyToOneElement->{'join-column'});
+                    $joinColumns[] = $this->convertJoinColumnElementToJoinColumnMetadata($manyToOneElement->{'join-column'});
                 } else if (isset($manyToOneElement->{'join-columns'})) {
                     foreach ($manyToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
+                        $joinColumns[] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                     }
                 }
 
@@ -514,11 +515,11 @@ class XmlDriver extends FileDriver
                     }
 
                     foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                        $joinTable['joinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                     }
 
                     foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                        $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                     }
 
                     $mapping['joinTable'] = $joinTable;
@@ -577,7 +578,7 @@ class XmlDriver extends FileDriver
                     $joinColumns = [];
 
                     foreach ($overrideElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
+                        $joinColumns[] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                     }
 
                     $override['joinColumns'] = $joinColumns;
@@ -595,13 +596,13 @@ class XmlDriver extends FileDriver
 
                     if (isset($joinTableElement->{'join-columns'})) {
                         foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                            $joinTable['joinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                         }
                     }
 
                     if (isset($joinTableElement->{'inverse-join-columns'})) {
                         foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                            $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                         }
                     }
 
@@ -691,28 +692,33 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $joinColumnElement The XML element.
      *
-     * @return array The mapping array.
+     * @return JoinColumnMetadata
      */
-    private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
+    private function convertJoinColumnElementToJoinColumnMetadata(SimpleXMLElement $joinColumnElement)
     {
-        $joinColumn = [
-            'name' => (string) $joinColumnElement['name'],
-            'referencedColumnName' => (string) $joinColumnElement['referenced-column-name'],
-            'onDelete' => isset($joinColumnElement['on-delete'])
-                ? strtoupper((string) $joinColumnElement['on-delete'])
-                : null,
-        ];
+        $joinColumn = new JoinColumnMetadata();
 
-        if (isset($joinColumnElement['unique'])) {
-            $joinColumn['unique'] = $this->evaluateBoolean($joinColumnElement['unique']);
+        $joinColumn->setColumnName((string) $joinColumnElement['name']);
+        $joinColumn->setReferencedColumnName((string) $joinColumnElement['referenced-column-name']);
+
+        if (isset($joinColumnElement['column-definition'])) {
+            $joinColumn->setColumnDefinition((string) $joinColumnElement['column-definition']);
+        }
+
+        if (isset($joinColumnElement['field-name'])) {
+            $joinColumn->setAliasedName((string) $joinColumnElement['field-name']);
         }
 
         if (isset($joinColumnElement['nullable'])) {
-            $joinColumn['nullable'] = $this->evaluateBoolean($joinColumnElement['nullable']);
+            $joinColumn->setNullable($this->evaluateBoolean($joinColumnElement['nullable']));
         }
 
-        if (isset($joinColumnElement['column-definition'])) {
-            $joinColumn['columnDefinition'] = (string) $joinColumnElement['column-definition'];
+        if (isset($joinColumnElement['unique'])) {
+            $joinColumn->setUnique($this->evaluateBoolean($joinColumnElement['unique']));
+        }
+
+        if (isset($joinColumnElement['on-delete'])) {
+            $joinColumn->setOnDelete(strtoupper((string) $joinColumnElement['on-delete']));
         }
 
         return $joinColumn;

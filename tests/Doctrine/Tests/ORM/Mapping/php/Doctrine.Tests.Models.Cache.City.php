@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\State;
@@ -16,18 +17,21 @@ $metadata->enableCache(['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY]);
 $metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
 $metadata->addProperty('name', Type::getType('string'));
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+
+$joinColumn->setColumnName("state_id");
+$joinColumn->setReferencedColumnName("id");
+
+$joinColumns[] = $joinColumn;
+
 $metadata->mapOneToOne(
     [
         'fieldName'    => 'state',
         'targetEntity' => State::class,
         'inversedBy'   => 'cities',
-        'joinColumns'  => [
-            [
-                'name' => 'state_id',
-                'referencedColumnName' => 'id',
-                'onDelete' => null,
-            ],
-        ],
+        'joinColumns'  => $joinColumns,
     ]
 );
 
@@ -35,18 +39,18 @@ $metadata->enableAssociationCache('state', ['usage' => ClassMetadata::CACHE_USAG
 
 $metadata->mapManyToMany(
     [
-       'fieldName' => 'travels',
+       'fieldName'    => 'travels',
        'targetEntity' => Travel::class,
-       'mappedBy' => 'visitedCities',
+       'mappedBy'     => 'visitedCities',
     ]
 );
 
 $metadata->mapOneToMany(
     [
-       'fieldName' => 'attractions',
+       'fieldName'    => 'attractions',
        'targetEntity' => Attraction::class,
-       'mappedBy' => 'city',
-       'orderBy' => ['name' => 'ASC',],
+       'mappedBy'     => 'city',
+       'orderBy'      => ['name' => 'ASC'],
     ]
 );
 

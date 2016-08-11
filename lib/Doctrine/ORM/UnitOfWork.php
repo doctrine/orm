@@ -1160,9 +1160,9 @@ class UnitOfWork implements PropertyChangedListener
                     $newNodes[] = $targetClass;
                 }
 
-                $joinColumns = reset($assoc['joinColumns']);
+                $joinColumn = reset($assoc['joinColumns']);
 
-                $calc->addDependency($targetClass->name, $class->name, (int)empty($joinColumns['nullable']));
+                $calc->addDependency($targetClass->name, $class->name, $joinColumn->isNullable() ? 0 : 1);
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
@@ -2510,6 +2510,8 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata($className);
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
+        // TODO: All of the following share similar logic, consider refactoring: AbstractHydrator::registerManaged,
+        // ObjectHydrator::getEntityFromIdentityMap and UnitOfWork::createEntity().
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
 

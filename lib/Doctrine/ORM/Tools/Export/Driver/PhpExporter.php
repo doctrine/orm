@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * ClassMetadata exporter for PHP code.
@@ -57,7 +58,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->customRepositoryClassName) {
-            $lines[] = "\$metadata->customRepositoryClassName = '" . $metadata->customRepositoryClassName . "';";
+            $lines[] = '$metadata->customRepositoryClassName = "' . $metadata->customRepositoryClassName . '";';
         }
 
         if ($metadata->table) {
@@ -68,6 +69,7 @@ class PhpExporter extends AbstractExporter
             $discrColumn = $metadata->discriminatorColumn;
 
             $lines[] = '$discrColumn = new Mapping\DiscriminatorColumnMetadata();';
+            $lines[] = null;
             $lines[] = '$discrColumn->setTableName("' . $discrColumn->getTableName() . '");';
             $lines[] = '$discrColumn->setColumnName("' . $discrColumn->getColumnName() . '");';
             $lines[] = '$discrColumn->setColumnDefinition("' . $discrColumn->getColumnDefinition() . '");';
@@ -78,6 +80,7 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$discrColumn->setOptions(' . $this->_varExport($discrColumn->getOptions()) . ');';
             $lines[] = '$discrColumn->setNullable(' . $this->_varExport($discrColumn->isNullable()) . ');';
             $lines[] = '$discrColumn->setUnique(' . $this->_varExport($discrColumn->isUnique()) . ');';
+            $lines[] = null;
             $lines[] = '$metadata->setDiscriminatorColumn($discrColumn);';
         }
 
@@ -122,80 +125,96 @@ class PhpExporter extends AbstractExporter
                 $cascade = ['all'];
             }
 
-            $associationMappingArray = [
-                'fieldName'    => $associationMapping['fieldName'],
-                'targetEntity' => $associationMapping['targetEntity'],
-                'cascade'      => $cascade,
-            ];
+            switch (true) {
+                case ($associationMapping['type'] & ClassMetadata::TO_ONE):
+                    $method = $associationMapping['type'] === ClassMetadata::ONE_TO_ONE
+                        ? 'mapOneToOne'
+                        : 'mapManyToOne';
 
-            if (isset($associationMapping['fetch'])) {
-                $associationMappingArray['fetch'] = $associationMapping['fetch'];
-            }
+                    $this->exportJoinColumns($associationMapping['joinColumns'] ?? [], $lines, 'joinColumns');
 
-            switch ($associationMapping['type'] ) {
-                case ClassMetadata::ONE_TO_ONE:
-                    $method = 'mapOneToOne';
-                    $specificMappingArray = [
-                        'mappedBy'      => $associationMapping['mappedBy'],
-                        'inversedBy'    => $associationMapping['inversedBy'],
-                        'joinColumns'   => $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [],
-                        'orphanRemoval' => $associationMapping['orphanRemoval'],
-                    ];
+                    $lines[] = null;
+                    $lines[] = '$metadata->' . $method . '(array(';
+                    $lines[] = '    "fieldName"     => "' . $associationMapping['fieldName'] . '",';
+                    $lines[] = '    "targetEntity"  => "' . $associationMapping['targetEntity'] . '",';
+                    $lines[] = '    "fetch"         => "' . $associationMapping['fetch'] . '",';
+                    $lines[] = '    "mappedBy"      => "' . $associationMapping['mappedBy'] . '",';
+                    $lines[] = '    "inversedBy"    => "' . $associationMapping['inversedBy'] . '",';
+                    $lines[] = '    "joinColumns"   => $joinColumns,';
+                    $lines[] = '    "cascade"       => ' . $this->_varExport($cascade) . ',';
+                    $lines[] = '    "orphanRemoval" => ' . $this->_varExport($associationMapping['orphanRemoval']) . ',';
+                    $lines[] = '));';
                     break;
 
-                case ClassMetadata::MANY_TO_ONE:
-                    $method = 'mapManyToOne';
-                    $specificMappingArray = [
-                        'mappedBy'      => $associationMapping['mappedBy'],
-                        'inversedBy'    => $associationMapping['inversedBy'],
-                        'joinColumns'   => $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [],
-                        'orphanRemoval' => $associationMapping['orphanRemoval'],
-                    ];
-                    break;
+                case ($associationMapping['type'] & ClassMetadata::TO_MANY):
+                    if ($associationMapping['type'] === ClassMetadata::MANY_TO_MANY) {
+                        $method = 'mapManyToMany';
 
-                case ClassMetadata::ONE_TO_MANY:
-                    $method = 'mapOneToMany';
-                    $specificMappingArray = [];
-                        $potentialAssociationMappingIndexes = [
-                        'mappedBy',
-                        'orphanRemoval',
-                        'orderBy',
-                    ];
-
-                    foreach ($potentialAssociationMappingIndexes as $index) {
-                        if (!isset($associationMapping[$index])) {
-                            continue;
-                        }
-
-                        $specificMappingArray[$index] = $associationMapping[$index];
+                        $this->exportJoinTable($associationMapping['joinTable'], $lines, 'joinTable');
+                    } else {
+                        $method = 'mapOneToMany';
                     }
-                    break;
 
-                case ClassMetadata::MANY_TO_MANY:
-                    $method = 'mapManyToMany';
-                    $specificMappingArray = [];
-                        $potentialAssociationMappingIndexes = [
-                        'mappedBy',
-                        'joinTable',
-                        'orderBy',
-                    ];
+                    $lines[] = null;
+                    $lines[] = '$metadata->' . $method . '(array(';
+                    $lines[] = '    "fieldName"     => "' . $associationMapping['fieldName'] . '",';
+                    $lines[] = '    "targetEntity"  => "' . $associationMapping['targetEntity'] . '",';
+                    $lines[] = '    "fetch"         => "' . $associationMapping['fetch'] . '",';
+                    $lines[] = '    "mappedBy"      => "' . $associationMapping['mappedBy'] . '",';
+                    $lines[] = '    "inversedBy"    => "' . $associationMapping['inversedBy'] . '",';
+                    $lines[] = '    "orderBy"       => ' . $this->_varExport($associationMapping['orderBy']) . ',';
 
-                    foreach ($potentialAssociationMappingIndexes as $index) {
-                        if (!isset($associationMapping[$index])) {
-                            continue;
-                        }
-
-                        $specificMappingArray[$index] = $associationMapping[$index];
+                    if ($associationMapping['type'] === ClassMetadata::MANY_TO_MANY) {
+                        $lines[] = '    "joinTable"     => $joinTable,';
                     }
+
+                    $lines[] = '    "cascade"       => ' . $this->_varExport($cascade) . ',';
+                    $lines[] = '    "orphanRemoval" => ' . $this->_varExport($associationMapping['orphanRemoval']) . ',';
+                    $lines[] = '));';
                     break;
             }
-
-            $associationMappingArray = array_merge($associationMappingArray, $specificMappingArray);
-
-            $lines[] = '$metadata->' . $method . '(' . $this->_varExport($associationMappingArray) . ');';
         }
 
         return implode("\n", $lines);
+    }
+
+    private function exportJoinTable(array $joinTable, array &$lines, $variableName)
+    {
+        $this->exportJoinColumns($joinTable['joinColumns'], $lines, 'joinColumns');
+
+        $lines[] = null;
+
+        $this->exportJoinColumns($joinTable['inverseJoinColumns'], $lines, 'inverseJoinColumns');
+
+        $lines[] = null;
+        $lines[] = '$' . $variableName . ' = array(';
+        $lines[] = '    "name"               => "' . $joinTable['name'] . '",';
+        $lines[] = '    "joinColumns"        => $joinColumns,';
+        $lines[] = '    "inverseJoinColumns" => $inverseJoinColumns,';
+        $lines[] = ');';
+    }
+
+    private function exportJoinColumns(array $joinColumns, array &$lines, $variableName)
+    {
+        $lines[] = '$' . $variableName . ' = array();';
+
+        foreach ($joinColumns as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
+            $lines[] = '$joinColumn = new Mapping\JoinColumnMetadata();';
+            $lines[] = null;
+            $lines[] = '$joinColumn->setTableName("' . $joinColumn->getTableName() . '");';
+            $lines[] = '$joinColumn->setColumnName("' . $joinColumn->getColumnName() . '");';
+            $lines[] = '$joinColumn->setReferencedColumnName("' . $joinColumn->getReferencedColumnName() . '");';
+            $lines[] = '$joinColumn->setAliasedName("' . $joinColumn->getAliasedName() . '");';
+            $lines[] = '$joinColumn->setColumnDefinition("' . $joinColumn->getColumnDefinition() . '");';
+            $lines[] = '$joinColumn->setOnDelete("' . $joinColumn->getOnDelete() . '");';
+            $lines[] = '$joinColumn->setOptions(' . $this->_varExport($joinColumn->getOptions()) . ');';
+            $lines[] = '$joinColumn->setNullable("' . $joinColumn->isNullable() . '");';
+            $lines[] = '$joinColumn->setUnique("' . $joinColumn->isUnique() . '");';
+            $lines[] = '$joinColumn->setPrimaryKey("' . $joinColumn->isPrimaryKey() . '");';
+            $lines[] = null;
+            $lines[] = '$' . $variableName . '[] = $joinColumn;';
+        }
     }
 
     /**

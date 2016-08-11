@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM\Mapping\Builder;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * ManyToMany Association Builder
@@ -65,14 +66,19 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
      */
     public function addInverseJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
-        $this->inverseJoinColumns[] = [
-            'name' => $columnName,
-            'referencedColumnName' => $referencedColumnName,
-            'nullable' => $nullable,
-            'unique' => $unique,
-            'onDelete' => $onDelete ? strtoupper($onDelete) : $onDelete,
-            'columnDefinition' => $columnDef,
-        ];
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName($columnName);
+        $joinColumn->setReferencedColumnName($referencedColumnName);
+        $joinColumn->setNullable($nullable);
+        $joinColumn->setUnique($unique);
+        $joinColumn->setColumnDefinition($columnDef);
+
+        if ($onDelete) {
+            $joinColumn->setOnDelete($onDelete);
+        }
+
+        $this->inverseJoinColumns[] = $joinColumn;
 
         return $this;
     }

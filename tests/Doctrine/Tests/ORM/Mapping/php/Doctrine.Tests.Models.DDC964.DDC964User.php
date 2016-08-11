@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /* @var $metadata ClassMetadata */
@@ -24,14 +25,44 @@ $metadata->addProperty(
     ]
 );
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName('address_id');
+$joinColumn->setReferencedColumnName('id');
+
+$joinColumns[] = $joinColumn;
+
 $metadata->mapManyToOne(
     [
        'fieldName'    => 'address',
        'targetEntity' => 'DDC964Address',
        'cascade'      => ['persist','merge'],
-       'joinColumn'   => ['name'=>'address_id', 'referencedColumnMame'=>'id'],
+       'joinColumns'  => $joinColumns,
     ]
 );
+
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName("user_id");
+$joinColumn->setReferencedColumnName("id");
+
+$joinColumns[] = $joinColumn;
+
+$inverseJoinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName("group_id");
+$joinColumn->setReferencedColumnName("id");
+
+$inverseJoinColumns[] = $joinColumn;
+
+$joinTable = [
+    'name'               => 'ddc964_users_groups',
+    'joinColumns'        => $joinColumns,
+    'inverseJoinColumns' => $inverseJoinColumns,
+];
 
 $metadata->mapManyToMany(
     [
@@ -39,23 +70,7 @@ $metadata->mapManyToMany(
        'targetEntity' => 'DDC964Group',
        'inversedBy'   => 'users',
        'cascade'      => ['persist','merge','detach'],
-       'joinTable'    => [
-           'name'        => 'ddc964_users_groups',
-           'joinColumns' => [
-               [
-                   'name'                 => 'user_id',
-                   'referencedColumnName' =>'id',
-                   'onDelete' => null,
-               ]
-           ],
-           'inverseJoinColumns' => [
-               [
-                   'name'=>'group_id',
-                   'referencedColumnName'=>'id',
-                   'onDelete' => null,
-               ]
-           ],
-       ]
+       'joinTable'    => $joinTable,
     ]
 );
 
