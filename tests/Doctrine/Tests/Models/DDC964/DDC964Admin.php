@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\DDC964;
 
+use Doctrine\ORM\Mapping;
+
 /**
  * @Entity
  * @AssociationOverrides({
@@ -23,32 +25,38 @@ class DDC964Admin extends DDC964User
 {
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->setAssociationOverride('address',
-            [
-                'joinColumns'=> [
-                    [
-                        'name' => 'adminaddress_id',
-                        'referencedColumnName' => 'id',
-                        'onDelete' => null,
-                    ]
-                ]
-            ]
-        );
+        $joinColumns = [];
 
-        $metadata->setAssociationOverride('groups',
-            [
-            'joinTable' => [
-                'name'      => 'ddc964_users_admingroups',
-                'joinColumns' => [
-                    [
-                    'name' => 'adminuser_id',
-                    ]
-                ],
-                'inverseJoinColumns' => [[
-                    'name'      => 'admingroup_id',
-                ]]
-            ]
-            ]
-        );
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('adminaddress_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setOnDelete(null);
+
+        $joinColumns[] = $joinColumn;
+
+        $metadata->setAssociationOverride('address', ['joinColumns' => $joinColumns]);
+
+        $joinColumns = [];
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+        $joinColumn->setColumnName('adminuser_id');
+
+        $joinColumns[] = $joinColumn;
+
+        $inverseJoinColumns = [];
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+        $joinColumn->setColumnName('admingroup_id');
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinTable = [
+            'name'               => 'ddc964_users_admingroups',
+            'joinColumns'        => $joinColumns,
+            'inverseJoinColumns' => $inverseJoinColumns,
+        ];
+
+        $metadata->setAssociationOverride('groups', ['joinTable' => $joinTable]);
     }
 }

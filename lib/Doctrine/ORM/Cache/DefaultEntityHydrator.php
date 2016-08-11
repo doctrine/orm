@@ -130,8 +130,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 ? $this->uow->getEntityIdentifier($data[$name])
                 : $data[$name];
 
-            // @TODO - fix it !
-            // handle UnitOfWork#createEntity hash generation
+            // @TODO - fix it ! handle UnitOfWork#createEntity hash generation
             if ( ! is_array($targetId)) {
                 $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
 

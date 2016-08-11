@@ -29,6 +29,7 @@ use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -293,10 +294,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $joinColumns = [];
 
             if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumn::class)) {
-                $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
+                $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
             } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumns::class)) {
                 foreach ($joinColumnsAnnot->value as $joinColumn) {
-                    $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                    $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
                 }
             }
 
@@ -386,11 +387,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     ];
 
                     foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                        $joinTable['joinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
                     }
 
                     foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                        $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
                     }
                 }
 
@@ -429,7 +430,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $joinColumns = [];
 
                     foreach ($associationOverride->joinColumns as $joinColumn) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                        $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
                     }
 
                     $override['joinColumns'] = $joinColumns;
@@ -444,11 +445,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     ];
 
                     foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                        $joinTable['joinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
                     }
 
                     foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                        $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
                     }
 
                     $override['joinTable'] = $joinTable;
@@ -595,20 +596,26 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Parse the given JoinColumn as array
      *
-     * @param Annotation\JoinColumn $joinColumn
+     * @param Annotation\JoinColumn $joinColumnAnnot
      *
-     * @return array
+     * @return JoinColumnMetadata
      */
-    private function joinColumnToArray(Annotation\JoinColumn $joinColumn)
+    private function convertJoinColumnAnnotationToJoinColumnMetadata(Annotation\JoinColumn $joinColumnAnnot)
     {
-        return [
-            'name' => $joinColumn->name,
-            'unique' => $joinColumn->unique,
-            'nullable' => $joinColumn->nullable,
-            'onDelete' => $joinColumn->onDelete ? strtoupper($joinColumn->onDelete) : $joinColumn->onDelete,
-            'columnDefinition' => $joinColumn->columnDefinition,
-            'referencedColumnName' => $joinColumn->referencedColumnName,
-        ];
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName($joinColumnAnnot->name);
+        $joinColumn->setColumnDefinition($joinColumnAnnot->columnDefinition);
+        $joinColumn->setReferencedColumnName($joinColumnAnnot->referencedColumnName);
+        $joinColumn->setAliasedName($joinColumnAnnot->fieldName);
+        $joinColumn->setNullable($joinColumnAnnot->nullable);
+        $joinColumn->setUnique($joinColumnAnnot->unique);
+
+        if ($joinColumnAnnot->onDelete) {
+            $joinColumn->setOnDelete(strtoupper($joinColumnAnnot->onDelete));
+        }
+
+        return $joinColumn;
     }
 
     /**

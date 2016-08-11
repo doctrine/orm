@@ -129,10 +129,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $paramIndex = 1;
 
             foreach ($insertData[$rootTableName] as $columnName => $value) {
-                $type = $this->columns[$columnName] instanceof ColumnMetadata
-                    ? $this->columns[$columnName]->getType()
-                    : $this->columns[$columnName]['type']
-                ;
+                $type = $this->columns[$columnName]->getType();
 
                 $rootTableStmt->bindValue($paramIndex++, $value, $type);
             }
@@ -145,7 +142,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 $postInsertIds[] = [
                     'generatedId' => $generatedId,
-                    'entity' => $entity,
+                    'entity'      => $entity,
                 ];
             } else {
                 $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
@@ -166,10 +163,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     $type = Type::getType('string');
 
                     if (isset($this->columns[$idName])) {
-                        $type = $this->columns[$idName] instanceof ColumnMetadata
-                            ? $this->columns[$idName]->getType()
-                            : $this->columns[$idName]['type']
-                        ;
+                        $type = $this->columns[$idName]->getType();
                     }
 
                     $stmt->bindValue($paramIndex++, $idVal, $type);
@@ -177,10 +171,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 foreach ($data as $columnName => $value) {
                     if (!is_array($id) || !isset($id[$columnName])) {
-                        $type = $this->columns[$columnName] instanceof ColumnMetadata
-                            ? $this->columns[$columnName]->getType()
-                            : $this->columns[$columnName]['type']
-                        ;
+                        $type = $this->columns[$columnName]->getType();
 
                         $stmt->bindValue($paramIndex++, $value, $type);
                     }
@@ -433,9 +424,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
             foreach ($mapping['joinColumns'] as $joinColumn) {
-                $type = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
-
-                $columnList[] = $this->getSelectJoinColumnSQL($joinColumn['tableName'], $joinColumn['name'], $type);
+                $columnList[] = $this->getSelectJoinColumnSQL(
+                    $joinColumn->getTableName(),
+                    $joinColumn->getColumnName(),
+                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
+                );
             }
         }
 
@@ -475,9 +468,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
                 foreach ($mapping['joinColumns'] as $joinColumn) {
-                    $type = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
-
-                    $columnList[] = $this->getSelectJoinColumnSQL($joinColumn['tableName'], $joinColumn['name'], $type);
+                    $columnList[] = $this->getSelectJoinColumnSQL(
+                        $joinColumn->getTableName(),
+                        $joinColumn->getColumnName(),
+                        PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
+                    );
                 }
             }
         }
@@ -526,15 +521,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $sourceColumn = $joinColumn['name'];
-                        $targetColumn = $joinColumn['referencedColumnName'];
+                        $columnName           = $joinColumn->getColumnName();
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
 
-                        $columns[] = $sourceColumn;
-
-                        $this->columns[$sourceColumn] = array_merge(
-                            $joinColumn,
-                            ['type' => PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em)]
+                        $joinColumn->setType(
+                            PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
                         );
+
+                        $columns[] = $columnName;
+
+                        $this->columns[$columnName] = $joinColumn;
                     }
                 }
 
