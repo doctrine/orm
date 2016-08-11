@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -12,13 +13,18 @@ $metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
 $metadata->addProperty('zip', Type::getType('string'), ['length' => 50]);
 $metadata->addProperty('city', Type::getType('string'), ['length' => 50]);
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setReferencedColumnName("id");
+
+$joinColumns[] = $joinColumn;
+
 $metadata->mapOneToOne(
     [
         'fieldName'     => 'user',
         'targetEntity'  => 'CmsUser',
-        'joinColumns'   => [
-            ['referencedColumnName' => 'id', 'onDelete' => null]
-        ]
+        'joinColumns'   => $joinColumns
     ]
 );
 

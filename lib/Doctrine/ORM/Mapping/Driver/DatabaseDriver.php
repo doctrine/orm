@@ -28,6 +28,7 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -227,23 +228,25 @@ class DatabaseDriver implements MappingDriver
                     $fkCols = $myFk->getForeignColumns();
                     $cols = $myFk->getColumns();
 
-                    for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
-                        $associationMapping['joinTable']['joinColumns'][] = [
-                            'name' => $cols[$i],
-                            'referencedColumnName' => $fkCols[$i],
-                            'onDelete' => null,
-                        ];
+                    for ($i = 0, $l = count($cols); $i < $l; $i++) {
+                        $joinColumn = new JoinColumnMetadata();
+
+                        $joinColumn->setColumnName($cols[$i]);
+                        $joinColumn->setReferencedColumnName($fkCols[$i]);
+
+                        $associationMapping['joinTable']['joinColumns'][] = $joinColumn;
                     }
 
                     $fkCols = $otherFk->getForeignColumns();
                     $cols = $otherFk->getColumns();
 
-                    for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
-                        $associationMapping['joinTable']['inverseJoinColumns'][] = [
-                            'name' => $cols[$i],
-                            'referencedColumnName' => $fkCols[$i],
-                            'onDelete' => null,
-                        ];
+                    for ($i = 0, $l = count($cols); $i < $l; $i++) {
+                        $joinColumn = new JoinColumnMetadata();
+
+                        $joinColumn->setColumnName($cols[$i]);
+                        $joinColumn->setReferencedColumnName($fkCols[$i]);
+
+                        $associationMapping['joinTable']['inverseJoinColumns'][] = $joinColumn;
                     }
                 } else {
                     $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
@@ -463,12 +466,13 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['id'] = true;
             }
 
-            for ($i = 0, $fkColumnsCount = count($fkColumns); $i < $fkColumnsCount; $i++) {
-                $associationMapping['joinColumns'][] = [
-                    'name'                 => $fkColumns[$i],
-                    'referencedColumnName' => $fkForeignColumns[$i],
-                    'onDelete' => null,
-                ];
+            for ($i = 0, $l = count($fkColumns); $i < $l; $i++) {
+                $joinColumn = new JoinColumnMetadata();
+
+                $joinColumn->setColumnName($fkColumns[$i]);
+                $joinColumn->setReferencedColumnName($fkForeignColumns[$i]);
+
+                $associationMapping['joinColumns'][] = $joinColumn;
             }
 
             // Here we need to check if $fkColumns are the same as $primaryKeys

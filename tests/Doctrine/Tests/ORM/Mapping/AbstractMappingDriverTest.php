@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\Models\Cache\City;
@@ -407,8 +408,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testJoinColumnUniqueAndNullable($class)
     {
         // Non-Nullability of Join Column
-        self::assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['nullable']);
-        self::assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['unique']);
+        $association = $class->associationMappings['groups'];
+        $joinColumn  = reset($association['joinTable']['joinColumns']);
+
+        self::assertFalse($joinColumn->isNullable());
+        self::assertFalse($joinColumn->isUnique());
 
         return $class;
     }
@@ -421,10 +425,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         self::assertNotNull($class->getProperty('email'));
 
-        $property = $class->getProperty('email');
+        $property    = $class->getProperty('email');
+        $association = $class->associationMappings['groups'];
+        $joinColumn  = reset($association['joinTable']['inverseJoinColumns']);
 
         self::assertEquals("CHAR(32) NOT NULL", $property->getColumnDefinition());
-        self::assertEquals("INT NULL", $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
+        self::assertEquals("INT NULL", $joinColumn->getColumnDefinition());
 
         return $class;
     }
@@ -435,7 +441,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testJoinColumnOnDelete($class)
     {
-        self::assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
+        $association = $class->associationMappings['address'];
+        $joinColumn  = reset($association['joinColumns']);
+
+        self::assertEquals('CASCADE', $joinColumn->getOnDelete());
 
         return $class;
     }
@@ -746,16 +755,22 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($guestGroups['cascade'], $adminGroups['cascade']);
 
          // assert not override attributes
+        $guestGroupsJoinColumn        = reset($guestGroups['joinTable']['joinColumns']);
+        $guestGroupsInverseJoinColumn = reset($guestGroups['joinTable']['inverseJoinColumns']);
+
         self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
-        self::assertEquals('user_id', $guestGroups['joinTable']['joinColumns'][0]['name']);
-        self::assertEquals('group_id', $guestGroups['joinTable']['inverseJoinColumns'][0]['name']);
+        self::assertEquals('user_id', $guestGroupsJoinColumn->getColumnName());
+        self::assertEquals('group_id', $guestGroupsInverseJoinColumn->getColumnName());
 
         self::assertEquals(['user_id'=>'id'], $guestGroups['relationToSourceKeyColumns']);
         self::assertEquals(['group_id'=>'id'], $guestGroups['relationToTargetKeyColumns']);
 
+        $adminGroupsJoinColumn        = reset($adminGroups['joinTable']['joinColumns']);
+        $adminGroupsInverseJoinColumn = reset($adminGroups['joinTable']['inverseJoinColumns']);
+
         self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
-        self::assertEquals('adminuser_id', $adminGroups['joinTable']['joinColumns'][0]['name']);
-        self::assertEquals('admingroup_id', $adminGroups['joinTable']['inverseJoinColumns'][0]['name']);
+        self::assertEquals('adminuser_id', $guestGroupsJoinColumn->getColumnName());
+        self::assertEquals('admingroup_id', $guestGroupsInverseJoinColumn->getColumnName());
 
         self::assertEquals(['adminuser_id'=>'id'], $adminGroups['relationToSourceKeyColumns']);
         self::assertEquals(['admingroup_id'=>'id'], $adminGroups['relationToTargetKeyColumns']);
@@ -777,12 +792,16 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($guestAddress['cascade'], $adminAddress['cascade']);
 
         // assert override
-        self::assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
+        $guestAddressJoinColumn = reset($guestAddress['joinColumns']);
+
+        self::assertEquals('address_id', $guestAddressJoinColumn->getColumnName());
         self::assertEquals(['address_id'=>'id'], $guestAddress['sourceToTargetKeyColumns']);
         self::assertEquals(['address_id'=>'address_id'], $guestAddress['joinColumnFieldNames']);
         self::assertEquals(['id'=>'address_id'], $guestAddress['targetToSourceKeyColumns']);
 
-        self::assertEquals('adminaddress_id', $adminAddress['joinColumns'][0]['name']);
+        $adminAddressJoinColumn = reset($adminAddress['joinColumns']);
+
+        self::assertEquals('adminaddress_id', $adminAddressJoinColumn->getColumnName());
         self::assertEquals(['adminaddress_id'=>'id'], $adminAddress['sourceToTargetKeyColumns']);
         self::assertEquals(['adminaddress_id'=>'adminaddress_id'], $adminAddress['joinColumnFieldNames']);
         self::assertEquals(['id'=>'adminaddress_id'], $adminAddress['targetToSourceKeyColumns']);
@@ -1239,84 +1258,85 @@ class User
         $metadata->setVersionProperty($property);
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
+        $joinColumns = [];
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('address_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setOnDelete('CASCADE');
+
+        $joinColumns[] = $joinColumn;
+
         $metadata->mapOneToOne(
             [
-                'fieldName' => 'address',
-                'targetEntity' => Address::class,
-                'cascade' => [0 => 'remove'],
-                'mappedBy' => null,
-                'inversedBy' => 'user',
-                'joinColumns' => [
-                    0 => [
-                        'name' => 'address_id',
-                        'referencedColumnName' => 'id',
-                        'onDelete' => 'CASCADE',
-                    ],
-                ],
+                'fieldName'     => 'address',
+                'targetEntity'  => Address::class,
+                'cascade'       => ['remove'],
+                'inversedBy'    => 'user',
+                'joinColumns'   => $joinColumns,
                 'orphanRemoval' => false,
             ]
         );
 
         $metadata->mapOneToMany(
             [
-                'fieldName' => 'phonenumbers',
-                'targetEntity' => Phonenumber::class,
-                'cascade' => [0 => 'persist'],
-                'mappedBy' => 'user',
+                'fieldName'     => 'phonenumbers',
+                'targetEntity'  => Phonenumber::class,
+                'cascade'       => ['persist'],
+                'mappedBy'      => 'user',
                 'orphanRemoval' => true,
-                'orderBy' => ['number' => 'ASC'],
+                'orderBy'       => ['number' => 'ASC'],
             ]
         );
 
+        $joinColumns = $inverseJoinColumns = [];
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('user_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setColumnDefinition('INT NULL');
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinTable = [
+            'name'               => 'cms_users_groups',
+            'joinColumns'        => $joinColumns,
+            'inverseJoinColumns' => $inverseJoinColumns,
+        ];
+
         $metadata->mapManyToMany(
             [
-                'fieldName' => 'groups',
+                'fieldName'    => 'groups',
                 'targetEntity' => Group::class,
-                'cascade' => [
-                    0 => 'remove',
-                    1 => 'persist',
-                    2 => 'refresh',
-                    3 => 'merge',
-                    4 => 'detach',
-                ],
-                'mappedBy' => null,
-                'joinTable' => [
-                    'name' => 'cms_users_groups',
-                    'joinColumns' => [
-                        0 => [
-                            'name' => 'user_id',
-                            'referencedColumnName' => 'id',
-                            'onDelete' => null,
-                            'unique' => false,
-                            'nullable' => false,
-                        ],
-                    ],
-                    'inverseJoinColumns' => [
-                        0 => [
-                            'name' => 'group_id',
-                            'referencedColumnName' => 'id',
-                            'onDelete' => null,
-                            'columnDefinition' => 'INT NULL',
-                        ],
-                    ],
-                ],
-                'orderBy' => null,
+                'cascade'      => ['remove', 'persist', 'refresh', 'merge', 'detach'],
+                'joinTable'    => $joinTable,
+                'orderBy' => NULL,
             ]
         );
 
         $metadata->table['uniqueConstraints'] = [
             'search_idx' => [
                 'columns' => ['name', 'user_email'],
-                'options' => ['where' => 'name IS NOT NULL'],
+                'options'=> ['where' => 'name IS NOT NULL']
             ],
         ];
 
-        $metadata->table['uniqueConstraints'] = [
-            'search_idx' => ['columns' => ['name', 'user_email'], 'options'=> ['where' => 'name IS NOT NULL']],
-        ];
-
         $metadata->table['indexes'] = [
-            'name_idx' => ['columns' => ['name']], 0 => ['columns' => ['user_email']]
+            'name_idx' => [
+                'columns' => ['name']
+            ],
+            0 => [ // Unnamed index
+                'columns' => ['user_email']
+            ],
         ];
 
         $metadata->setSequenceGeneratorDefinition(
@@ -1326,6 +1346,7 @@ class User
                 'initialValue' => 1,
             ]
         );
+
         $metadata->addNamedQuery(
             [
                 'name' => 'all',
@@ -1373,7 +1394,6 @@ class Dog extends Animal
 
     }
 }
-
 
 /**
  * @Entity

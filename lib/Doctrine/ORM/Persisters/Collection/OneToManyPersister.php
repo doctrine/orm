@@ -213,8 +213,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         $parameters  = [];
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
-            $columns[]    = $this->platform->quoteIdentifier($joinColumn['name']);
-            $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+            $columns[]    = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName())];
         }
 
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)

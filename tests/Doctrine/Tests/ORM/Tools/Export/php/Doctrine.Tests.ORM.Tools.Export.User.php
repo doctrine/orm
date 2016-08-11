@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Tools\Export;
 
@@ -53,86 +54,89 @@ $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
 $metadata->mapManyToOne(
     [
-        'fieldName' => 'mainGroup',
+        'fieldName'    => 'mainGroup',
         'targetEntity' => Export\Group::class,
     ]
 );
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+
+$joinColumn->setColumnName("address_id");
+$joinColumn->setReferencedColumnName("id");
+$joinColumn->setOnDelete("CASCADE");
+
+$joinColumns[] = $joinColumn;
+
 $metadata->mapOneToOne(
     [
-        'fieldName' => 'address',
-        'targetEntity' => Export\Address::class,
-        'inversedBy' => 'user',
-        'cascade' => ['persist'],
-        'mappedBy' => null,
-        'joinColumns' => [
-            0 => [
-                'name' => 'address_id',
-                'referencedColumnName' => 'id',
-                'onDelete' => 'CASCADE',
-            ],
-        ],
+        'fieldName'     => 'address',
+        'targetEntity'  => Export\Address::class,
+        'inversedBy'    => 'user',
+        'cascade'       => ['persist'],
+        'mappedBy'      => null,
+        'joinColumns'   => $joinColumns,
         'orphanRemoval' => true,
-        'fetch' => ClassMetadata::FETCH_EAGER,
+        'fetch'         => ClassMetadata::FETCH_EAGER,
     ]
 );
 
 $metadata->mapOneToOne(
     [
-        'fieldName' => 'cart',
-        'targetEntity' => Export\Cart::class,
-        'mappedBy' => 'user',
-        'cascade' => [0 => 'persist'],
-        'inversedBy' => null,
+        'fieldName'     => 'cart',
+        'targetEntity'  => Export\Cart::class,
+        'mappedBy'      => 'user',
+        'cascade'       => ['persist'],
+        'inversedBy'    => null,
         'orphanRemoval' => false,
-        'fetch' => ClassMetadata::FETCH_EAGER,
+        'fetch'         => ClassMetadata::FETCH_EAGER,
     ]
 );
 
 $metadata->mapOneToMany(
     [
-        'fieldName' => 'phonenumbers',
-        'targetEntity' => Export\Phonenumber::class,
-        'cascade' => ['persist', 'merge'],
-        'mappedBy' => 'user',
+        'fieldName'     => 'phonenumbers',
+        'targetEntity'  => Export\Phonenumber::class,
+        'cascade'       => ['persist', 'merge'],
+        'mappedBy'      => 'user',
         'orphanRemoval' => true,
-        'fetch' => ClassMetadata::FETCH_LAZY,
-        'orderBy' => ['number' => 'ASC'],
+        'fetch'         => ClassMetadata::FETCH_LAZY,
+        'orderBy'       => ['number' => 'ASC'],
     ]
 );
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName("user_id");
+$joinColumn->setReferencedColumnName("id");
+
+$joinColumns[] = $joinColumn;
+
+$inverseJoinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName("group_id");
+$joinColumn->setReferencedColumnName("id");
+$joinColumn->setColumnDefinition("INT NULL");
+
+$inverseJoinColumns[] = $joinColumn;
+
+$joinTable = [
+    'name'               => 'cms_users_groups',
+    'joinColumns'        => $joinColumns,
+    'inverseJoinColumns' => $inverseJoinColumns,
+];
+
 $metadata->mapManyToMany(
     [
-        'fieldName' => 'groups',
+        'fieldName'    => 'groups',
         'targetEntity' => Export\Group::class,
-        'fetch' => ClassMetadata::FETCH_EXTRA_LAZY,
-        'cascade' => [
-            0 => 'remove',
-            1 => 'persist',
-            2 => 'refresh',
-            3 => 'merge',
-            4 => 'detach',
-        ],
-        'mappedBy' => null,
-        'joinTable' => [
-            'name' => 'cms_users_groups',
-            'joinColumns' => [
-                0 => [
-                    'name' => 'user_id',
-                    'referencedColumnName' => 'id',
-                    'onDelete' => null,
-                    'unique' => false,
-                    'nullable' => false,
-                ],
-            ],
-            'inverseJoinColumns' => [
-                0 => [
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-                    'columnDefinition' => 'INT NULL',
-                ],
-            ],
-        ],
-        'orderBy' => NULL,
+        'cascade'      => ['remove', 'persist', 'refresh', 'merge', 'detach'],
+        'mappedBy'     => null,
+        'orderBy'      => null,
+        'joinTable'    => $joinTable,
+        'fetch'        => ClassMetadata::FETCH_EXTRA_LAZY,
     ]
 );
