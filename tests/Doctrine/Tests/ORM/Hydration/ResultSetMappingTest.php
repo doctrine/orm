@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -108,6 +109,14 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
+        $joinColumns = [];
+
+        $joinColumn = new JoinColumnMetadata();
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setNullable(true);
+
+        $joinColumns[] = $joinColumn;
+
         $cm->mapOneToOne(
             [
                 'fieldName'     => 'email',
@@ -115,60 +124,54 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
                 'cascade'       => ['persist'],
                 'inversedBy'    => 'user',
                 'orphanRemoval' => false,
-                'joinColumns'   => [
-                    [
-                        'nullable' => true,
-                        'referencedColumnName' => 'id',
-                        'onDelete' => null,
-                    ]
-                ]
+                'joinColumns'   => $joinColumns,
             ]
         );
 
         $cm->addNamedNativeQuery(
             [
-            'name'              => 'find-all',
-            'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
-            'resultSetMapping'  => 'find-all',
+                'name'              => 'find-all',
+                'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
+                'resultSetMapping'  => 'find-all',
             ]
         );
 
         $cm->addSqlResultSetMapping(
             [
-            'name'      => 'find-all',
-            'entities'  => [
-                [
-                    'entityClass'   => '__CLASS__',
-                    'fields'        => [
-                        [
-                            'name'  => 'id',
-                            'column'=> 'user_id'
-                        ],
-                        [
-                            'name'  => 'name',
-                            'column'=> 'name'
+                'name'      => 'find-all',
+                'entities'  => [
+                    [
+                        'entityClass'   => '__CLASS__',
+                        'fields'        => [
+                            [
+                                'name'  => 'id',
+                                'column'=> 'user_id'
+                            ],
+                            [
+                                'name'  => 'name',
+                                'column'=> 'name'
+                            ]
+                        ]
+                    ],
+                    [
+                        'entityClass'   => 'CmsEmail',
+                        'fields'        => [
+                            [
+                                'name'  => 'id',
+                                'column'=> 'email_id'
+                            ],
+                            [
+                                'name'  => 'email',
+                                'column'=> 'email'
+                            ]
                         ]
                     ]
                 ],
-                [
-                    'entityClass'   => 'CmsEmail',
-                    'fields'        => [
-                        [
-                            'name'  => 'id',
-                            'column'=> 'email_id'
-                        ],
-                        [
-                            'name'  => 'email',
-                            'column'=> 'email'
-                        ]
+                'columns'   => [
+                    [
+                        'name' => 'scalarColumn'
                     ]
                 ]
-            ],
-            'columns'   => [
-                [
-                    'name' => 'scalarColumn'
-                ]
-            ]
             ]
         );
 

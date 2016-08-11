@@ -258,11 +258,11 @@ class SchemaTool
                 }
 
                 if (isset($class->associationMappings[$identifierField])) {
-                    /* @var $assoc \Doctrine\ORM\Annotation\OneToOne */
+                    /** @var array $assoc */
                     $assoc = $class->associationMappings[$identifierField];
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $pkColumns[] = $this->platform->quoteIdentifier($joinColumn['name']);
+                        $pkColumns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                     }
                 }
             }
@@ -642,24 +642,24 @@ class SchemaTool
         foreach ($joinColumns as $joinColumn) {
             list($definingClass, $referencedFieldName) = $this->getDefiningClass(
                 $class,
-                $joinColumn['referencedColumnName']
+                $joinColumn->getReferencedColumnName()
             );
 
             if ( ! $definingClass) {
                 throw new \Doctrine\ORM\ORMException(sprintf(
                     'Column name "%s" referenced for relation from %s towards %s does not exist.',
-                    $joinColumn['referencedColumnName'],
+                    $joinColumn->getReferencedColumnName(),
                     $mapping['sourceEntity'],
                     $mapping['targetEntity']
                 ));
             }
 
-            $quotedColumnName       = $this->platform->quoteIdentifier($joinColumn['name']);
-            $quotedRefColumnName    = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
+            $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
             $primaryKeyColumns[]    = $quotedColumnName;
             $localColumns[]         = $quotedColumnName;
-            $foreignColumns[]       = $quotedRefColumnName;
+            $foreignColumns[]       = $quotedReferencedColumnName;
 
             if ( ! $theJoinTable->hasColumn($quotedColumnName)) {
                 // Only add the column to the table if it does not exist already.
@@ -668,18 +668,17 @@ class SchemaTool
                 $property  = $definingClass->getProperty($referencedFieldName);
                 $columnDef = null;
 
-                if (isset($joinColumn['columnDefinition'])) {
-                    $columnDef = $joinColumn['columnDefinition'];
+                if (!empty($joinColumn->getColumnDefinition())) {
+                    $columnDef = $joinColumn->getColumnDefinition();
                 } elseif ($property->getColumnDefinition()) {
                     $columnDef = $property->getColumnDefinition();
                 }
 
-                $columnOptions = ['notnull' => false, 'columnDefinition' => $columnDef];
                 $columnType    = $property->getTypeName();
-
-                if (isset($joinColumn['nullable'])) {
-                    $columnOptions['notnull'] = !$joinColumn['nullable'];
-                }
+                $columnOptions = [
+                    'notnull'          => !$joinColumn->isNullable(),
+                    'columnDefinition' => $columnDef,
+                ];
 
                 if ($property->getOptions()) {
                     $columnOptions['options'] = $property->getOptions();
@@ -691,7 +690,7 @@ class SchemaTool
                         break;
 
                     case 'decimal':
-                        $columnOptions['scale'] = $property->getScale();
+                        $columnOptions['scale']     = $property->getScale();
                         $columnOptions['precision'] = $property->getPrecision();
                         break;
                 }
@@ -699,12 +698,12 @@ class SchemaTool
                 $theJoinTable->addColumn($quotedColumnName, $columnType, $columnOptions);
             }
 
-            if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
+            if ($joinColumn->isUnique()) {
                 $uniqueConstraints[] = ['columns' => [$quotedColumnName]];
             }
 
-            if (isset($joinColumn['onDelete'])) {
-                $fkOptions['onDelete'] = $joinColumn['onDelete'];
+            if (!empty($joinColumn->getOnDelete())) {
+                $fkOptions['onDelete'] = $joinColumn->getOnDelete();
             }
         }
 
@@ -715,6 +714,7 @@ class SchemaTool
         }
 
         $compositeName = $theJoinTable->getName().'.'.implode('', $localColumns);
+
         if (isset($addedFks[$compositeName])
             && ($foreignTableName != $addedFks[$compositeName]['foreignTableName']
             || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
@@ -728,10 +728,15 @@ class SchemaTool
                     break;
                 }
             }
+
             $blacklistedFks[$compositeName] = true;
         } elseif (!isset($blacklistedFks[$compositeName])) {
-            $addedFks[$compositeName] = ['foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns];
-            $theJoinTable->addUnnamedForeignKeyConstraint(
+            $addedFks[$compositeName] = [
+                'foreignTableName' => $foreignTableName,
+                'foreignColumns'   => $foreignColumns
+            ];
+
+            $theJoinTable->addForeignKeyConstraint(
                 $foreignTableName,
                 $localColumns,
                 $foreignColumns,

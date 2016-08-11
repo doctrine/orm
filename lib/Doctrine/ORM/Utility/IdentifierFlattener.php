@@ -71,30 +71,34 @@ final class IdentifierFlattener
         $flatId = [];
 
         foreach ($class->identifier as $field) {
-            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_object($id[$field])) {
-                /* @var $targetClassMetadata ClassMetadata */
-                $targetClassMetadata = $this->metadataFactory->getMetadataFor(
-                    $class->associationMappings[$field]['targetEntity']
-                );
-
-                if ($this->unitOfWork->isInIdentityMap($id[$field])) {
-                    $associatedId = $this->flattenIdentifier($targetClassMetadata, $this->unitOfWork->getEntityIdentifier($id[$field]));
-                } else {
-                    $associatedId = $this->flattenIdentifier($targetClassMetadata, $targetClassMetadata->getIdentifierValues($id[$field]));
-                }
-
-                $flatId[$field] = implode(' ', $associatedId);
-            } elseif (isset($class->associationMappings[$field])) {
-                $associatedId = [];
-
-                foreach ($class->associationMappings[$field]['joinColumns'] as $joinColumn) {
-                    $associatedId[] = $id[$joinColumn['name']];
-                }
-
-                $flatId[$field] = implode(' ', $associatedId);
-            } else {
+            if (!isset($class->associationMappings[$field])) {
                 $flatId[$field] = $id[$field];
+
+                continue;
             }
+
+            $assoc = $class->associationMappings[$field];
+
+            if (isset($id[$field]) && is_object($id[$field])) {
+                /* @var $targetClassMetadata ClassMetadata */
+                $targetClassMetadata = $this->metadataFactory->getMetadataFor($assoc['targetEntity']);
+                $identifiers         = $this->unitOfWork->isInIdentityMap($id[$field])
+                    ? $this->unitOfWork->getEntityIdentifier($id[$field])
+                    : $targetClassMetadata->getIdentifierValues($id[$field]);
+                $associatedId        = $this->flattenIdentifier($targetClassMetadata, $identifiers);
+
+                $flatId[$field] = implode(' ', $associatedId);
+
+                continue;
+            }
+
+            $associatedId = [];
+
+            foreach ($assoc['joinColumns'] as $joinColumn) {
+                $associatedId[] = $id[$joinColumn->getColumnName()];
+            }
+
+            $flatId[$field] = implode(' ', $associatedId);
         }
 
         return $flatId;

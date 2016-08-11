@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Mapping\Address;
 use Doctrine\Tests\ORM\Mapping\Group;
@@ -59,68 +60,70 @@ $metadata->setVersionProperty($metadata->addProperty('version', Type::getType('i
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName('address_id');
+$joinColumn->setReferencedColumnName('id');
+$joinColumn->setOnDelete('CASCADE');
+
+$joinColumns[] = $joinColumn;
+
 $metadata->mapOneToOne(
     [
-        'fieldName' => 'address',
-        'targetEntity' => Address::class,
-        'cascade' => [0 => 'remove'],
-        'mappedBy' => null,
-        'inversedBy' => 'user',
-        'joinColumns' => [
-            0 => [
-                'name' => 'address_id',
-                'referencedColumnName' => 'id',
-                'onDelete' => 'CASCADE',
-            ],
-        ],
+        'fieldName'     => 'address',
+        'targetEntity'  => Group::class,
+        'cascade'       => ['remove'],
+        'mappedBy'      => NULL,
+        'inversedBy'    => 'user',
+        'joinColumns'   => $joinColumns,
         'orphanRemoval' => false,
     ]
 );
 
 $metadata->mapOneToMany(
     [
-        'fieldName' => 'phonenumbers',
-        'targetEntity' => Phonenumber::class,
-        'cascade' => [0 => 'persist'],
-        'mappedBy' => 'user',
+        'fieldName'     => 'phonenumbers',
+        'targetEntity'  => Phonenumber::class,
+        'cascade'       => ['persist'],
+        'mappedBy'      => 'user',
         'orphanRemoval' => true,
-        'orderBy' => ['number' => 'ASC'],
+        'orderBy'       => ['number' => 'ASC'],
     ]
 );
 
+$joinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+$joinColumn->setColumnName("user_id");
+$joinColumn->setReferencedColumnName("id");
+
+$joinColumns[] = $joinColumn;
+
+$inverseJoinColumns = [];
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+
+$joinColumn->setColumnName("group_id");
+$joinColumn->setReferencedColumnName("id");
+$joinColumn->setColumnDefinition("INT NULL");
+
+$inverseJoinColumns[] = $joinColumn;
+
+$joinTable = [
+    'name'               => 'cms_users_groups',
+    'joinColumns'        => $joinColumns,
+    'inverseJoinColumns' => $inverseJoinColumns,
+];
+
 $metadata->mapManyToMany(
     [
-        'fieldName' => 'groups',
+        'fieldName'    => 'groups',
         'targetEntity' => Group::class,
-        'cascade' => [
-            0 => 'remove',
-            1 => 'persist',
-            2 => 'refresh',
-            3 => 'merge',
-            4 => 'detach',
-        ],
-        'mappedBy' => null,
-        'joinTable' => [
-            'name' => 'cms_users_groups',
-            'joinColumns' => [
-                0 => [
-                    'name' => 'user_id',
-                    'referencedColumnName' => 'id',
-                    'onDelete' => null,
-    'unique' => false,
-                    'nullable' => false,
-                ],
-            ],
-            'inverseJoinColumns' => [
-                0 => [
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-    'onDelete' => null,
-                    'columnDefinition' => 'INT NULL',
-                ],
-            ],
-        ],
-        'orderBy' => null,
+        'cascade'      => ['remove', 'persist', 'refresh', 'merge', 'detach'],
+        'mappedBy'     => null,
+        'joinTable'    => $joinTable,
+        'orderBy'      => null,
     ]
 );
 
@@ -130,11 +133,15 @@ $metadata->table['options'] = [
 ];
 
 $metadata->table['uniqueConstraints'] = [
-    'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
+    'search_idx' => [
+        'columns' => ['name', 'user_email'],
+        'options' => ['where' => 'name IS NOT NULL']
+    ],
 ];
 
 $metadata->table['indexes'] = [
-    'name_idx' => ['columns' => ['name']], 0 => ['columns' => ['user_email']]
+    'name_idx' => ['columns' => ['name']],
+    0 => ['columns' => ['user_email']]
 ];
 
 $metadata->setSequenceGeneratorDefinition(

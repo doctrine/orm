@@ -168,16 +168,16 @@ class SchemaValidator
                     $targetIdentifierColumns = array_keys($targetMetadata->getIdentifierColumns($this->em));
 
                     foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
-                        if (!in_array($joinColumn['referencedColumnName'], $classIdentifierColumns)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                        if (!in_array($joinColumn->getReferencedColumnName(), $classIdentifierColumns)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->getReferencedColumnName() . "' " .
                                 "has to be a primary key column on the target entity class '".$class->name."'.";
                             break;
                         }
                     }
 
                     foreach ($assoc['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
-                        if (!in_array($inverseJoinColumn['referencedColumnName'], $targetIdentifierColumns)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                        if (!in_array($inverseJoinColumn->getReferencedColumnName(), $targetIdentifierColumns)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->getReferencedColumnName() . "' " .
                                 "has to be a primary key column on the target entity class '".$targetMetadata->name."'.";
                             break;
                         }
@@ -201,8 +201,8 @@ class SchemaValidator
                     $identifierColumns = array_keys($targetMetadata->getIdentifierColumns($this->em));
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        if (!in_array($joinColumn['referencedColumnName'], $identifierColumns)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                        if (!in_array($joinColumn->getReferencedColumnName(), $identifierColumns)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->getReferencedColumnName() . "' " .
                                     "has to be a primary key column on the target entity class '".$targetMetadata->name."'.";
                         }
                     }
@@ -211,7 +211,7 @@ class SchemaValidator
                         $ids = [];
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
-                            $ids[] = $joinColumn['name'];
+                            $ids[] = $joinColumn->getColumnName();
                         }
 
                         $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
