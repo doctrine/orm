@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 class AssociationBuilder
 {
@@ -183,14 +184,19 @@ class AssociationBuilder
      */
     public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
-        $this->joinColumns[] = [
-            'name' => $columnName,
-            'referencedColumnName' => $referencedColumnName,
-            'nullable' => $nullable,
-            'unique' => $unique,
-            'onDelete' => $onDelete ? strtoupper($onDelete) : $onDelete,
-            'columnDefinition' => $columnDef,
-        ];
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName($columnName);
+        $joinColumn->setReferencedColumnName($referencedColumnName);
+        $joinColumn->setNullable($nullable);
+        $joinColumn->setUnique($unique);
+        $joinColumn->setColumnDefinition($columnDef);
+
+        if ($onDelete) {
+            $joinColumn->setOnDelete($onDelete);
+        }
+
+        $this->joinColumns[] = $joinColumn;
 
         return $this;
     }

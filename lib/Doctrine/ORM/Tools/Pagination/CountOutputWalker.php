@@ -119,10 +119,11 @@ class CountOutputWalker extends SqlWalker
             }
 
             if (isset($rootClass->associationMappings[$identifier])) {
-                $joinColumn = $rootClass->associationMappings[$identifier]['joinColumns'][0]['name'];
+                $association = $rootClass->associationMappings[$identifier];
+                $joinColumn  = reset($association['joinColumns']);
 
-                foreach (array_keys($this->rsm->metaMappings, $joinColumn) as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
+                foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName()) as $alias) {
+                    if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
                 }

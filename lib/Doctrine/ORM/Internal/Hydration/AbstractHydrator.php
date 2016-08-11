@@ -23,6 +23,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 use PDO;
 
 /**
@@ -65,6 +66,13 @@ abstract class AbstractHydrator
     protected $_uow;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    protected $identifierFlattener;
+
+    /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
      * @var array
@@ -99,9 +107,10 @@ abstract class AbstractHydrator
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em       = $em;
-        $this->_platform = $em->getConnection()->getDatabasePlatform();
-        $this->_uow      = $em->getUnitOfWork();
+        $this->_em                 = $em;
+        $this->_platform           = $em->getConnection()->getDatabasePlatform();
+        $this->_uow                = $em->getUnitOfWork();
+        $this->identifierFlattener = new IdentifierFlattener($this->_uow, $em->getMetadataFactory());
     }
 
     /**
@@ -443,26 +452,25 @@ abstract class AbstractHydrator
      * @param array         $data
      *
      * @return void
-     *
-     * @todo The "$id" generation is the same of UnitOfWork#createEntity. Remove this duplication somehow
      */
     protected function registerManaged(ClassMetadata $class, $entity, array $data)
     {
-        if ($class->isIdentifierComposite) {
-            $id = [];
+        // TODO: All of the following share similar logic, consider refactoring: AbstractHydrator::registerManaged,
+        // ObjectHydrator::getEntityFromIdentityMap and UnitOfWork::createEntity().
+        // $id = $this->identifierFlattener->flattenIdentifier($class, $data);
+        $id = [];
 
-            foreach ($class->identifier as $fieldName) {
-                $id[$fieldName] = isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName];
+        foreach ($class->identifier as $fieldName) {
+            if (!isset($class->associationMappings[$fieldName])) {
+                $id[$fieldName] = $data[$fieldName];
+
+                continue;
             }
-        } else {
-            $fieldName = $class->identifier[0];
-            $id        = [
-                $fieldName => isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]
-            ];
+
+            $association = $class->associationMappings[$fieldName];
+            $joinColumn  = reset($association['joinColumns']);
+
+            $id[$fieldName] = $data[$joinColumn->getColumnName()];
         }
 
         $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);

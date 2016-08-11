@@ -24,6 +24,7 @@ use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadata instances.
@@ -1251,7 +1252,7 @@ public function __construct(<params>)
         }
 
         foreach ($joinColumns as $joinColumn) {
-            if (isset($joinColumn['nullable']) && !$joinColumn['nullable']) {
+            if (!$joinColumn->isNullable()) {
                 return false;
             }
         }
@@ -1439,36 +1440,31 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array $joinColumn
+     * @param JoinColumnMetadata $joinColumn
      *
      * @return string
      */
-    protected function generateJoinColumnAnnotation(array $joinColumn)
+    protected function generateJoinColumnAnnotation(JoinColumnMetadata $joinColumn)
     {
         $joinColumnAnnot = [];
 
-        if (isset($joinColumn['name'])) {
-            $joinColumnAnnot[] = 'name="' . $joinColumn['name'] . '"';
+        $joinColumnAnnot[] = 'name="' . $joinColumn->getColumnName() . '"';
+        $joinColumnAnnot[] = 'referencedColumnName="' . $joinColumn->getReferencedColumnName() . '"';
+
+        if ($joinColumn->isUnique()) {
+            $joinColumnAnnot[] = 'unique=true';
         }
 
-        if (isset($joinColumn['referencedColumnName'])) {
-            $joinColumnAnnot[] = 'referencedColumnName="' . $joinColumn['referencedColumnName'] . '"';
+        if (!$joinColumn->isNullable()) {
+            $joinColumnAnnot[] = 'nullable=false';
         }
 
-        if (isset($joinColumn['unique']) && $joinColumn['unique']) {
-            $joinColumnAnnot[] = 'unique=' . ($joinColumn['unique'] ? 'true' : 'false');
+        if (!empty($joinColumn->getOnDelete())) {
+            $joinColumnAnnot[] = 'onDelete="' . $joinColumn->getOnDelete() . '"';
         }
 
-        if (isset($joinColumn['nullable'])) {
-            $joinColumnAnnot[] = 'nullable=' . ($joinColumn['nullable'] ? 'true' : 'false');
-        }
-
-        if (isset($joinColumn['onDelete']) && ! empty($joinColumn['onDelete'])) {
-            $joinColumnAnnot[] = 'onDelete="' . ($joinColumn['onDelete'] . '"');
-        }
-
-        if (isset($joinColumn['columnDefinition'])) {
-            $joinColumnAnnot[] = 'columnDefinition="' . $joinColumn['columnDefinition'] . '"';
+        if ($joinColumn->getColumnDefinition()) {
+            $joinColumnAnnot[] = 'columnDefinition="' . $joinColumn->getColumnDefinition() . '"';
         }
 
         return '@' . $this->annotationsPrefix . 'JoinColumn(' . implode(', ', $joinColumnAnnot) . ')';

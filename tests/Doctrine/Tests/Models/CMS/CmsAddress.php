@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * CmsAddress
@@ -150,11 +151,19 @@ class CmsAddress
             ['length' => 50]
         );
 
+        $joinColumns = [];
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
         $metadata->mapOneToOne(
             [
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
-                'joinColumns'   => [['referencedColumnName' => 'id', 'onDelete' => null]]
+                'joinColumns'   => $joinColumns,
             ]
         );
 

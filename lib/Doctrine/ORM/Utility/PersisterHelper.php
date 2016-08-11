@@ -93,35 +93,21 @@ class PersisterHelper
             return $class->getProperty($fieldName)->getType();
         }
 
-        // iterate over to-one association mappings
+        // iterate over association mappings
         foreach ($class->associationMappings as $assoc) {
-            if ( ! isset($assoc['joinColumns'])) {
-                continue;
-            }
+            // resolve join columns over to-one or to-many
+            $joinColumns = (isset($assoc['joinTable']) && isset($assoc['joinTable']['joinColumns']))
+                ? $assoc['joinTable']['joinColumns']
+                : $assoc['joinColumns'];
 
-            foreach ($assoc['joinColumns'] as $joinColumn) {
-                if ($joinColumn['name'] == $columnName) {
-                    $targetColumnName = $joinColumn['referencedColumnName'];
-                    $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
-
-                    return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
+            foreach ($joinColumns as $joinColumn) {
+                if ($joinColumn->getColumnName() !== $columnName) {
+                    continue;
                 }
-            }
-        }
 
-        // iterate over to-many association mappings
-        foreach ($class->associationMappings as $assoc) {
-            if ( ! (isset($assoc['joinTable']) && isset($assoc['joinTable']['joinColumns']))) {
-                continue;
-            }
+                $targetClass = $em->getClassMetadata($assoc['targetEntity']);
 
-            foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
-                if ($joinColumn['name'] == $columnName) {
-                    $targetColumnName = $joinColumn['referencedColumnName'];
-                    $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
-
-                    return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
-                }
+                return self::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $em);
             }
         }
 

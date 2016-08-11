@@ -682,13 +682,13 @@ class SqlWalker implements TreeWalker
                     throw QueryException::associationPathCompositeKeyNotSupported();
                 }
 
-                $joinColumn = $mapping['joinColumns'][0];
+                $joinColumn = reset($mapping['joinColumns']);
 
                 if ($this->useSqlTableAliases) {
-                    $sql .= $this->getSQLTableAlias($joinColumn['tableName'], $dqlAlias) . '.';
+                    $sql .= $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias) . '.';
                 }
 
-                $sql .= $this->platform->quoteIdentifier($joinColumn['name']);
+                $sql .= $this->platform->quoteIdentifier($joinColumn->getColumnName());
                 break;
 
             default:
@@ -769,14 +769,20 @@ class SqlWalker implements TreeWalker
                 $isIdentifier = (isset($assoc['id']) && $assoc['id'] === true);
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
-                    $sqlTableAlias = $this->getSQLTableAlias($joinColumn['tableName'], $dqlAlias);
-                    $columnName    = $this->platform->quoteIdentifier($joinColumn['name']);
-                    $columnAlias   = $this->getSQLColumnAlias($joinColumn['name']);
-                    $columnType    = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                    $columnName       = $joinColumn->getColumnName();
+                    $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+                    $columnAlias      = $this->getSQLColumnAlias($columnName);
+                    $columnType       = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
+                    $sqlTableAlias    = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
 
-                    $sqlSelectExpressions[] = $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = sprintf(
+                        '%s.%s AS %s',
+                        $sqlTableAlias,
+                        $quotedColumnName,
+                        $columnAlias
+                    );
 
-                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $joinColumn['name'], $isIdentifier, $columnType);
+                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $isIdentifier, $columnType);
                 }
             }
 
@@ -796,15 +802,22 @@ class SqlWalker implements TreeWalker
 
                     if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                         $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+                        $isIdentifier = (isset($assoc['id']) && $assoc['id'] === true);
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
-                            $columnName  = $this->platform->quoteIdentifier($joinColumn['name']);
-                            $columnAlias = $this->getSQLColumnAlias($joinColumn['name']);
-                            $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                            $columnName       = $joinColumn->getColumnName();
+                            $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+                            $columnAlias      = $this->getSQLColumnAlias($columnName);
+                            $columnType       = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
 
-                            $sqlSelectExpressions[] = $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                            $sqlSelectExpressions[] = sprintf(
+                                '%s.%s AS %s',
+                                $sqlTableAlias,
+                                $quotedColumnName,
+                                $columnAlias
+                            );
 
-                            $this->rsm->addMetaResult($dqlAlias, $columnAlias, $joinColumn['name'], $subClass->isIdentifier($joinColumn['name']), $columnType);
+                            $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $isIdentifier, $columnType);
                         }
                     }
                 }
@@ -935,7 +948,7 @@ class SqlWalker implements TreeWalker
         $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
 
         if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) == true && (!$this->query->getHint(self::HINT_DISTINCT) || isset($this->selectedClasses[$joinedDqlAlias]))) {
-            if ($relation['type'] == ClassMetadata::ONE_TO_MANY || $relation['type'] == ClassMetadata::MANY_TO_MANY) {
+            if ($relation['type'] & ClassMetadata::TO_MANY) {
                 throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
             }
         }
@@ -950,16 +963,16 @@ class SqlWalker implements TreeWalker
                 $conditions = [];
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
-                    $quotedSourceColumn = $this->platform->quoteIdentifier($joinColumn['name']);
-                    $quotedTargetColumn = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
+                    $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                    $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
                     if ($relation['isOwningSide']) {
-                        $conditions[] = $sourceTableAlias . '.' . $quotedSourceColumn . ' = ' . $targetTableAlias . '.' . $quotedTargetColumn;
+                        $conditions[] = $sourceTableAlias . '.' . $quotedColumnName . ' = ' . $targetTableAlias . '.' . $quotedReferencedColumnName;
 
                         continue;
                     }
 
-                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $quotedSourceColumn;
+                    $conditions[] = $sourceTableAlias . '.' . $quotedReferencedColumnName . ' = ' . $targetTableAlias . '.' . $quotedColumnName;
                 }
 
                 // Apply remaining inheritance restrictions
@@ -982,22 +995,26 @@ class SqlWalker implements TreeWalker
                 ];
                 break;
 
-            case ($assoc['type'] == ClassMetadata::MANY_TO_MANY):
+            case ($assoc['type'] === ClassMetadata::MANY_TO_MANY):
                 // Join relation table
                 $joinTable      = $assoc['joinTable'];
                 $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
                 $joinTableName  = $this->quoteStrategy->getJoinTableName($assoc, $sourceClass, $this->platform);
 
-                $conditions      = [];
-                $relationColumns = ($relation['isOwningSide'])
-                    ? $assoc['joinTable']['joinColumns']
-                    : $assoc['joinTable']['inverseJoinColumns'];
+                $conditions  = [];
+                $joinColumns = ($relation['isOwningSide']) ? $joinTable['joinColumns'] : $joinTable['inverseJoinColumns'];
 
-                foreach ($relationColumns as $joinColumn) {
-                    $quotedSourceColumn = $this->platform->quoteIdentifier($joinColumn['name']);
-                    $quotedTargetColumn = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
+                foreach ($joinColumns as $joinColumn) {
+                    $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                    $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
-                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $quotedSourceColumn;
+                    $conditions[] = sprintf(
+                        '%s.%s = %s.%s',
+                        $sourceTableAlias,
+                        $quotedReferencedColumnName,
+                        $joinTableAlias,
+                        $quotedColumnName
+                    );
                 }
 
                 $sql .= $joinTableName . ' ' . $joinTableAlias . ' ON ' . implode(' AND ', $conditions);
@@ -1005,16 +1022,20 @@ class SqlWalker implements TreeWalker
                 // Join target table
                 $sql .= ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) ? ' LEFT JOIN ' : ' INNER JOIN ';
 
-                $conditions      = [];
-                $relationColumns = ($relation['isOwningSide'])
-                    ? $assoc['joinTable']['inverseJoinColumns']
-                    : $assoc['joinTable']['joinColumns'];
+                $conditions  = [];
+                $joinColumns = ($relation['isOwningSide']) ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
 
-                foreach ($relationColumns as $joinColumn) {
-                    $quotedSourceColumn = $this->platform->quoteIdentifier($joinColumn['name']);
-                    $quotedTargetColumn = $this->platform->quoteIdentifier($joinColumn['referencedColumnName']);
+                foreach ($joinColumns as $joinColumn) {
+                    $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                    $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
-                    $conditions[] = $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $quotedSourceColumn;
+                    $conditions[] = sprintf(
+                        '%s.%s = %s.%s',
+                        $targetTableAlias,
+                        $quotedReferencedColumnName,
+                        $joinTableAlias,
+                        $quotedColumnName
+                    );
                 }
 
                 // Apply remaining inheritance restrictions
@@ -1970,11 +1991,16 @@ class SqlWalker implements TreeWalker
             $joinSqlParts = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $property     = $targetClass->getProperty($targetClass->fieldNames[$joinColumn['referencedColumnName']]);
-                $sourceColumn = $this->platform->quoteIdentifier($joinColumn['name']);
-                $targetColumn = $this->platform->quoteIdentifier($property->getColumnName());
+                $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
-                $joinSqlParts[] = $joinTableAlias . '.' . $sourceColumn . ' = ' . $targetTableAlias . '.' . $targetColumn;
+                $joinSqlParts[] = sprintf(
+                    '%s.%s = %s.%s',
+                    $joinTableAlias,
+                    $quotedColumnName,
+                    $targetTableAlias,
+                    $quotedReferencedColumnName
+                );
             }
 
             $sql .= implode(' AND ', $joinSqlParts);
@@ -1984,11 +2010,16 @@ class SqlWalker implements TreeWalker
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $property     = $class->getProperty($class->fieldNames[$joinColumn['referencedColumnName']]);
-                $sourceColumn = $this->platform->quoteIdentifier($joinColumn['name']);
-                $targetColumn = $this->platform->quoteIdentifier($property->getColumnName());
+                $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
-                $sqlParts[] = $joinTableAlias . '.' . $sourceColumn . ' = ' . $sourceTableAlias . '.' . $targetColumn;
+                $sqlParts[] = sprintf(
+                    '%s.%s = %s.%s',
+                    $joinTableAlias,
+                    $quotedColumnName,
+                    $sourceTableAlias,
+                    $quotedReferencedColumnName
+                );
             }
 
             foreach ($this->quoteStrategy->getIdentifierColumnNames($targetClass, $this->platform) as $targetColumnName) {

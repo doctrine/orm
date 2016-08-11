@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * ClassMetadata exporter for Doctrine XML mapping files.
@@ -310,37 +311,60 @@ class XmlExporter extends AbstractExporter
                 $joinColumnsXml = $joinTableXml->addChild('join-columns');
 
                 foreach ($associationMapping['joinTable']['joinColumns'] as $joinColumn) {
+                    /** @var JoinColumnMetadata $joinColumn */
                     $joinColumnXml = $joinColumnsXml->addChild('join-column');
-                    $joinColumnXml->addAttribute('name', $joinColumn['name']);
-                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
 
-                    if (isset($joinColumn['onDelete']) && ! empty($joinColumn['onDelete'])) {
-                        $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
+                    $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
+                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
+
+                    if (! empty($joinColumn->getAliasedName())) {
+                        $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
+                    }
+
+                    if (! empty($joinColumn->getOnDelete())) {
+                        $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
+                    }
+
+                    if (! empty($joinColumn->getColumnDefinition())) {
+                        $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
+                    }
+
+                    if ($joinColumn->isNullable()) {
+                        $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
+                    }
+
+                    if ($joinColumn->isUnique()) {
+                        $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
                     }
                 }
 
                 $inverseJoinColumnsXml = $joinTableXml->addChild('inverse-join-columns');
 
-                foreach ($associationMapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
-                    $inverseJoinColumnXml = $inverseJoinColumnsXml->addChild('join-column');
+                foreach ($associationMapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+                    /** @var JoinColumnMetadata $joinColumn */
+                    $joinColumnXml = $inverseJoinColumnsXml->addChild('join-column');
 
-                    $inverseJoinColumnXml->addAttribute('name', $inverseJoinColumn['name']);
-                    $inverseJoinColumnXml->addAttribute('referenced-column-name', $inverseJoinColumn['referencedColumnName']);
+                    $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
+                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
 
-                    if (isset($inverseJoinColumn['onDelete']) && ! empty($inverseJoinColumn['onDelete'])) {
-                        $inverseJoinColumnXml->addAttribute('on-delete', $inverseJoinColumn['onDelete']);
+                    if (! empty($joinColumn->getAliasedName())) {
+                        $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
                     }
 
-                    if (isset($inverseJoinColumn['columnDefinition'])) {
-                        $inverseJoinColumnXml->addAttribute('column-definition', $inverseJoinColumn['columnDefinition']);
+                    if (! empty($joinColumn->getOnDelete())) {
+                        $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
                     }
 
-                    if (isset($inverseJoinColumn['nullable'])) {
-                        $inverseJoinColumnXml->addAttribute('nullable', $inverseJoinColumn['nullable']);
+                    if (! empty($joinColumn->getColumnDefinition())) {
+                        $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
                     }
 
-                    if (isset($inverseJoinColumn['orderBy'])) {
-                        $inverseJoinColumnXml->addAttribute('order-by', $inverseJoinColumn['orderBy']);
+                    if ($joinColumn->isNullable()) {
+                        $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
+                    }
+
+                    if ($joinColumn->isUnique()) {
+                        $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
                     }
                 }
             }
@@ -349,21 +373,30 @@ class XmlExporter extends AbstractExporter
                 $joinColumnsXml = $associationMappingXml->addChild('join-columns');
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                    /** @var JoinColumnMetadata $joinColumn */
                     $joinColumnXml = $joinColumnsXml->addChild('join-column');
 
-                    $joinColumnXml->addAttribute('name', $joinColumn['name']);
-                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
+                    $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
+                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
 
-                    if (isset($joinColumn['onDelete']) && ! empty($joinColumn['onDelete'])) {
-                        $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
+                    if (! empty($joinColumn->getAliasedName())) {
+                        $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
                     }
 
-                    if (isset($joinColumn['columnDefinition'])) {
-                        $joinColumnXml->addAttribute('column-definition', $joinColumn['columnDefinition']);
+                    if (! empty($joinColumn->getOnDelete())) {
+                        $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
                     }
 
-                    if (isset($joinColumn['nullable'])) {
-                        $joinColumnXml->addAttribute('nullable', $joinColumn['nullable']);
+                    if (! empty($joinColumn->getColumnDefinition())) {
+                        $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
+                    }
+
+                    if ($joinColumn->isNullable()) {
+                        $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
+                    }
+
+                    if ($joinColumn->isUnique()) {
+                        $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
                     }
                 }
             }

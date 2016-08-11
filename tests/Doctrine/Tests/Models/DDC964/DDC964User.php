@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * @MappedSuperclass
@@ -130,14 +131,45 @@ class DDC964User
             ]
         );
 
+        $joinColumns = [];
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('address_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
         $metadata->mapManyToOne(
             [
                'fieldName'      => 'address',
                'targetEntity'   => 'DDC964Address',
                'cascade'        => ['persist','merge'],
-               'joinColumn'     => ['name'=>'address_id', 'referencedColumnMame'=>'id'],
+               'joinColumns'    => $joinColumns,
             ]
         );
+
+        $joinColumns = $inverseJoinColumns = [];
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('user_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinTable = [
+            'name'               => 'ddc964_users_groups',
+            'joinColumns'        => $joinColumns,
+            'inverseJoinColumns' => $inverseJoinColumns,
+        ];
 
         $metadata->mapManyToMany(
             [
@@ -145,23 +177,7 @@ class DDC964User
                'targetEntity' => 'DDC964Group',
                'inversedBy'   => 'users',
                'cascade'      => ['persist','merge','detach'],
-               'joinTable'    => [
-                    'name'        => 'ddc964_users_groups',
-                    'joinColumns' => [
-                        [
-                            'name' => 'user_id',
-                            'referencedColumnName' => 'id',
-                            'onDelete' => null,
-                        ]
-                    ],
-                    'inverseJoinColumns' => [
-                        [
-                            'name' => 'group_id',
-                            'referencedColumnName'=>'id',
-                            'onDelete' => null,
-                        ]
-                    ]
-               ]
+               'joinTable'    => $joinTable,
             ]
         );
 

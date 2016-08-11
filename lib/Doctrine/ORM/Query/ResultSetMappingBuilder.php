@@ -167,9 +167,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName  = $joinColumn['name'];
+                    $columnName  = $joinColumn->getColumnName();
                     $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
-                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
 
                     if (isset($this->metaMappings[$columnAlias])) {
                         throw new \InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
@@ -243,7 +243,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         foreach ($class->associationMappings as $associationMapping) {
             if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName = $joinColumn['name'];
+                    $columnName  = $joinColumn->getColumnName();
                     $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
                 }
             }
@@ -302,13 +302,14 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
             if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
-                $targetClass = $this->em->getClassMetadata($associationMapping['targetEntity']);
+                $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
+                $isIdentifier = (isset($associationMapping['id']) && $associationMapping['id'] === true);
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName  = $joinColumn['name'];
-                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                    $columnName  = $joinColumn->getColumnName();
+                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
 
-                    $this->addMetaResult($alias, $columnName, $columnName, $classMetadata->isIdentifier($columnName), $columnType);
+                    $this->addMetaResult($alias, $columnName, $columnName, $isIdentifier, $columnType);
                 }
             }
         }
