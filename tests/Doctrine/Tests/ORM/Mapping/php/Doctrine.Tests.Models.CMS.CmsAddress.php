@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
 /* @var $metadata ClassMetadata */
@@ -20,12 +21,18 @@ $metadata->addProperty('city', Type::getType('string'), array(
     'length' => 50,
 ));
 
+$joinColumns = array();
+
+$joinColumn = new Mapping\JoinColumnMetadata();
+
+$joinColumn->setReferencedColumnName("id");
+
+$joinColumns[] = $joinColumn;
+
 $metadata->mapOneToOne(array(
     'fieldName'     => 'user',
     'targetEntity'  => 'CmsUser',
-    'joinColumns'   => array(
-        array('referencedColumnName' => 'id', 'onDelete' => null)
-    )
+    'joinColumns'   => $joinColumns,
 ));
 
 $metadata->addNamedNativeQuery(array (

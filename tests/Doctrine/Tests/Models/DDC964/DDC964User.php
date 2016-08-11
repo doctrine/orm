@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * @MappedSuperclass
@@ -122,31 +123,50 @@ class DDC964User
             'length'    => 250,
         ));
 
+        $joinColumns = array();
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('address_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
         $metadata->mapManyToOne(array(
            'fieldName'      => 'address',
            'targetEntity'   => 'DDC964Address',
            'cascade'        => array('persist','merge'),
-           'joinColumn'     => array('name'=>'address_id', 'referencedColumnMame'=>'id'),
+           'joinColumns'    => $joinColumns,
         ));
 
+        $joinColumns = $inverseJoinColumns = array();
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('user_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinTable = array(
+            'name'               => 'ddc964_users_groups',
+            'joinColumns'        => $joinColumns,
+            'inverseJoinColumns' => $inverseJoinColumns,
+        );
+
         $metadata->mapManyToMany(array(
-           'fieldName'      => 'groups',
-           'targetEntity'   => 'DDC964Group',
-           'inversedBy'     => 'users',
-           'cascade'        => array('persist','merge','detach'),
-           'joinTable'      => array(
-                'name'          => 'ddc964_users_groups',
-                'joinColumns'   => array(array(
-                    'name'=>'user_id',
-                    'referencedColumnName'=>'id',
-                    'onDelete' => null,
-                )),
-                'inverseJoinColumns'=>array(array(
-                    'name'=>'group_id',
-                    'referencedColumnName'=>'id',
-                    'onDelete' => null,
-                ))
-           )
+           'fieldName'    => 'groups',
+           'targetEntity' => 'DDC964Group',
+           'inversedBy'   => 'users',
+           'cascade'      => array('persist','merge','detach'),
+           'joinTable'    => $joinTable,
         ));
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);

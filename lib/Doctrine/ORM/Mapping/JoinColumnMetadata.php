@@ -27,6 +27,11 @@ class JoinColumnMetadata extends ColumnMetadata
     /** @var string */
     private $aliasedName;
 
+    /**
+     * @var boolean
+     */
+    protected $nullable = true;
+
     /** @var string */
     private $onDelete;
 
@@ -75,6 +80,11 @@ class JoinColumnMetadata extends ColumnMetadata
      */
     public function setOnDelete($onDelete)
     {
-        $this->onDelete = $onDelete;
+        $this->onDelete = $onDelete ? strtoupper($onDelete) : $onDelete;
+    }
+
+    public function isOnDeleteCascade()
+    {
+        return $this->onDelete === 'CASCADE';
     }
 }

@@ -83,9 +83,11 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                 $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
                 foreach ($mapping['joinColumns'] as $joinColumn) {
-                    $type = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
-
-                    $columnList[] = $this->getSelectJoinColumnSQL($joinColumn['tableName'], $joinColumn['name'], $type);
+                    $columnList[] = $this->getSelectJoinColumnSQL(
+                        $joinColumn->getTableName(),
+                        $joinColumn->getColumnName(),
+                        PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
+                    );
                 }
             }
         }

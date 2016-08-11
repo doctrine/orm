@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
@@ -90,48 +91,51 @@ class EntityGeneratorTest extends OrmTestCase
             'unique'    => false,
         ));
 
+        $joinColumns = array();
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('author_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
         $metadata->mapOneToOne(array(
             'fieldName'    => 'author',
             'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor',
             'mappedBy'     => 'book',
-            'joinColumns'  => array(
-                array(
-                    'referencedColumnName' => 'id',
-                    'nullable'             => false,
-                    'onDelete'             => null,
-                    'columnDefinition'     => null,
-                ),
-            )
+            'joinColumns'  => $joinColumns,
         ));
+
+        $joinColumns = array();
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName("book_id");
+        $joinColumn->setReferencedColumnName("id");
+
+        $joinColumns[] = $joinColumn;
+
+        $inverseJoinColumns = array();
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName("comment_id");
+        $joinColumn->setReferencedColumnName("id");
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinTable = array(
+            'name'               => 'book_comment',
+            'joinColumns'        => $joinColumns,
+            'inverseJoinColumns' => $inverseJoinColumns,
+        );
 
         $metadata->mapManyToMany(array(
             'fieldName'    => 'comments',
             'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
             'fetch'        => ClassMetadata::FETCH_EXTRA_LAZY,
-            'joinTable'    => array(
-                'name'               => 'book_comment',
-                'schema'             => null,
-                'joinColumns'        => array(
-                    array(
-                        'name'                 => 'book_id',
-                        'referencedColumnName' => 'id',
-                        'nullable'             => false,
-                        'unique'               => false,
-                        'onDelete'             => null,
-                        'columnDefinition'     => null,
-                    ),
-                ),
-                'inverseJoinColumns' => array(
-                    array(
-                        'name'                 => 'comment_id',
-                        'referencedColumnName' => 'id',
-                        'nullable'             => false,
-                        'unique'               => false,
-                        'onDelete'             => null,
-                        'columnDefinition'     => null,
-                    ),
-                ),
-            ),
+            'joinTable'    => $joinTable,
         ));
 
         $metadata->addLifecycleCallback('loading', 'postLoad');
@@ -600,20 +604,48 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
 
+        $joinColumns = array();
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName("idorcamento");
+        $joinColumn->setReferencedColumnName("idorcamento");
+
+        $joinColumns[] = $joinColumn;
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName("idunidade");
+        $joinColumn->setReferencedColumnName("idunidade");
+
+        $joinColumns[] = $joinColumn;
+
+        $inverseJoinColumns = array();
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName("idcentrocusto");
+        $joinColumn->setReferencedColumnName("idcentrocusto");
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName("idpais");
+        $joinColumn->setReferencedColumnName("idpais");
+
+        $inverseJoinColumns[] = $joinColumn;
+
+        $joinTable = array(
+            'name'               => 'unidade_centro_custo',
+            'joinColumns'        => $joinColumns,
+            'inverseJoinColumns' => $inverseJoinColumns,
+        );
+
         $metadata->mapManyToMany(array(
             'fieldName'     => 'centroCustos',
             'targetEntity'  => 'DDC2079CentroCusto',
-            'joinTable'     => array(
-                'name'                  => 'unidade_centro_custo',
-                'joinColumns'           => array(
-                    array('name' => 'idorcamento',      'referencedColumnName' => 'idorcamento'),
-                    array('name' => 'idunidade',        'referencedColumnName' => 'idunidade')
-                ),
-                'inverseJoinColumns'    => array(
-                    array('name' => 'idcentrocusto',    'referencedColumnName' => 'idcentrocusto'),
-                    array('name' => 'idpais',           'referencedColumnName' => 'idpais'),
-                ),
-            ),
+            'joinTable'     => $joinTable,
         ));
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);

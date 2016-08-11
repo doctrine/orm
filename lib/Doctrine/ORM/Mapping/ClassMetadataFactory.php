@@ -283,10 +283,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         // Resolve association join column table names
-        foreach ($class->associationMappings as &$mapping) {
+        foreach ($class->associationMappings as $mapping) {
             if (isset($mapping['joinColumns'])) {
-                foreach ($mapping['joinColumns'] as &$joinColumn) {
-                    $joinColumn['tableName'] = $joinColumn['tableName'] ?? $tableName;
+                foreach ($mapping['joinColumns'] as $joinColumn) {
+                    $joinColumn->setTableName($joinColumn->getTableName() ?? $tableName);
                 }
             }
         }
@@ -485,9 +485,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             // Resolve which table owns the join columns in a to-one mapping
             if (isset($mapping['joinColumns'])) {
-                foreach ($mapping['joinColumns'] as &$joinColumn) {
-                    if ( ! isset($joinColumn['tableName'])) {
-                        $joinColumn['tableName'] = ! $parentClass->isMappedSuperclass ? $tableName : null;
+                foreach ($mapping['joinColumns'] as $joinColumn) {
+                    if ( ! $joinColumn->getTableName()) {
+                        $joinColumn->setTableName(! $parentClass->isMappedSuperclass ? $tableName : null);
                     }
                 }
             }

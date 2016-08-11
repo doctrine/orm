@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -103,19 +104,22 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
 
+        $joinColumns = array();
+
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setNullable(true);
+
+        $joinColumns[] = $joinColumn;
+
         $cm->mapOneToOne(array(
             'fieldName'     => 'email',
             'targetEntity'  => 'Doctrine\Tests\Models\CMS\CmsEmail',
             'cascade'       => array('persist'),
             'inversedBy'    => 'user',
             'orphanRemoval' => false,
-            'joinColumns'   => array(
-                array(
-                    'nullable' => true,
-                    'referencedColumnName' => 'id',
-                    'onDelete' => null,
-                )
-            )
+            'joinColumns'   => $joinColumns,
         ));
 
         $cm->addNamedNativeQuery(array(
