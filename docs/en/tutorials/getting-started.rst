@@ -141,6 +141,14 @@ step:
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
     
+    // Add in the annotation reader
+    AnnotationRegistry::registerFile(__DIR__ . "/../vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
+        $reader = new AnnotationReader();
+        $driverImpl = new AnnotationDriver($reader, array(
+            __DIR__ . "/../src"
+        ));
+        $config->setMetadataDriverImpl($driverImpl);
+    
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
@@ -186,7 +194,10 @@ doctrine command. Its a fairly simple file:
     // cli-config.php
     require_once "bootstrap.php";
     
-    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
+    $helperSet = ConsoleRunner::createHelperSet($entityManager->getConnection());
+    // register the entity manager helper
+    $helperSet->set(new EntityManagerHelper($entityManager), 'em');
+    return $helperSet;
 
 You can then change into your project directory and call the
 Doctrine command-line tool:
