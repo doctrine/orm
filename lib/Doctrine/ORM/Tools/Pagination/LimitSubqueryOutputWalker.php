@@ -348,32 +348,55 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Generates new SQL for statements with an order by clause
      *
-     * @param array           $sqlIdentifier
-     * @param string          $innerSql
-     * @param string          $sql
-     * @param OrderByClause   $orderByClause
+     * @param array $sqlIdentifier
+     * @param string $innerSql
+     * @param string $sql
+     * @param OrderByClause $orderByClause
      *
      * @return string
      */
-    private function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
-    {
+    private function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause) {
         // If the sql statement has an order by clause, we need to wrap it in a new select distinct
         // statement
-        if (! $orderByClause instanceof OrderByClause) {
+        if (!$orderByClause instanceof OrderByClause) {
             return $sql;
         }
 
         // Rebuild the order by clause to work in the scope of the new select statement
         /* @var array $orderBy an array of rebuilt order by items */
         $orderBy = $this->rebuildOrderByClauseForOuterScope($orderByClause);
+        $orderByFields = str_replace([' DESC', ' ASC'], ['', ''], $orderBy);
+
+        $innerSqlIdentifier = [];
+
+        foreach ($orderByFields as $k => $v) {
+            // remove fields that are selected by identifiers,
+            // if those are ordered by in the query
+            if (in_array($v, $sqlIdentifier)) {
+                unset($orderByFields[$k]);
+            }
+        }
+
+        foreach ($sqlIdentifier as $k => $v) {
+            $innerSqlIdentifier[$k] = 'dctrn_result_inner.' . $v;
+            $sqlIdentifier[$k] = 'dctrn_result.' . $v;
+        }
+
+        // add the
+        foreach ($orderByFields as $k => $v) {
+            $innerSqlIdentifier[$k] = 'dctrn_result_inner.' . $v;
+        }
 
         // Build the select distinct statement
         $sql = sprintf(
-            'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
-            implode(', ', $sqlIdentifier),
+            'SELECT DISTINCT %s FROM (%s) dctrn_result_inner ORDER BY %s',
+            implode(', ', $innerSqlIdentifier),
             $innerSql,
             implode(', ', $orderBy)
         );
+
+        // now only select distinct identifier
+        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result', implode(', ', $sqlIdentifier), $sql);
 
         return $sql;
     }
