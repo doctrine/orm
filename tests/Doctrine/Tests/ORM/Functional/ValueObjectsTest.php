@@ -360,7 +360,7 @@ class DDC93Timestamps
     /** @Column(type = "datetime") */
     public $createdAt;
 
-    public function __construct(\DateTime $createdAt)
+    public function __construct(\DateTimeInterface $createdAt)
     {
         $this->createdAt = $createdAt;
     }

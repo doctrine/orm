@@ -33,7 +33,7 @@ abstract class DDC1590Entity
     /**
      * Set createdAt
      *
-     * @param \DateTime $createdAt
+     * @param \DateTimeInterface $createdAt
      *
      * @return DDC1590User
      */
@@ -47,7 +47,7 @@ abstract class DDC1590Entity
     /**
      * Get createdAt
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getCreatedAt()
     {

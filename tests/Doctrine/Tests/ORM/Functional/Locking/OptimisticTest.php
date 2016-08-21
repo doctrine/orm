@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\DBAL\LockMode;
-use DateTime;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OptimisticTest extends OrmFunctionalTestCase
@@ -189,7 +188,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        $this->assertInstanceOf('DateTimeInterface', $test->version);
 
         return $test;
     }
@@ -205,7 +204,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        $this->assertInstanceOf('DateTimeInterface', $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
@@ -238,13 +237,13 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        $this->assertInstanceOf('DateTimeInterface', $test->version);
 
         // Try to lock the record with an older timestamp and it should throw an exception
         $caughtException = null;
 
         try {
-            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp()-3600);
+            $expectedVersionExpired = \DateTime::createFromFormat('U', $test->version->getTimestamp()-3600);
 
             $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
         } catch (OptimisticLockException $e) {

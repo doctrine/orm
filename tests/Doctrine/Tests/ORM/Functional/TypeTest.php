@@ -107,7 +107,7 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTimeDb->date);
+        $this->assertInstanceOf('DateTimeInterface', $dateTimeDb->date);
         $this->assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
     }
 
@@ -122,7 +122,7 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTimeDb->datetime);
+        $this->assertInstanceOf('DateTimeInterface', $dateTimeDb->datetime);
         $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
 
         $articles = $this->_em->getRepository( 'Doctrine\Tests\Models\Generic\DateTimeModel' )->findBy( array( 'datetime' => new \DateTime( "now" ) ) );
@@ -175,7 +175,7 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTime->time);
+        $this->assertInstanceOf('DateTimeInterface', $dateTime->time);
         $this->assertEquals('19:27:20', $dateTime->time->format('H:i:s'));
     }
 }

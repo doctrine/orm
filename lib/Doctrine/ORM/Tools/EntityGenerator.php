@@ -152,10 +152,10 @@ class EntityGenerator
      * @var array
      */
     protected $typeAlias = array(
-        Type::DATETIMETZ    => '\DateTime',
-        Type::DATETIME      => '\DateTime',
-        Type::DATE          => '\DateTime',
-        Type::TIME          => '\DateTime',
+        Type::DATETIMETZ    => '\DateTimeInterface',
+        Type::DATETIME      => '\DateTimeInterface',
+        Type::DATE          => '\DateTimeInterface',
+        Type::TIME          => '\DateTimeInterface',
         Type::OBJECT        => '\stdClass',
         Type::INTEGER       => 'int',
         Type::BIGINT        => 'int',

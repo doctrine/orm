@@ -26,9 +26,9 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertInstanceOf('Doctrine\Tests\Models\Generic\DateTimeModel', $datetime);
 
-        $this->assertInstanceOf('DateTime', $datetime->datetime);
-        $this->assertInstanceOf('DateTime', $datetime->time);
-        $this->assertInstanceOf('DateTime', $datetime->date);
+        $this->assertInstanceOf('DateTimeInterface', $datetime->datetime);
+        $this->assertInstanceOf('DateTimeInterface', $datetime->time);
+        $this->assertInstanceOf('DateTimeInterface', $datetime->date);
     }
 
     public function testScalarResult()
@@ -54,13 +54,13 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(2,$result);
 
-        $this->assertInstanceOf('DateTime', $result[0]['datetime']);
-        $this->assertInstanceOf('DateTime', $result[0]['time']);
-        $this->assertInstanceOf('DateTime', $result[0]['date']);
+        $this->assertInstanceOf('DateTimeInterface', $result[0]['datetime']);
+        $this->assertInstanceOf('DateTimeInterface', $result[0]['time']);
+        $this->assertInstanceOf('DateTimeInterface', $result[0]['date']);
 
-        $this->assertInstanceOf('DateTime', $result[1]['datetime']);
-        $this->assertInstanceOf('DateTime', $result[1]['time']);
-        $this->assertInstanceOf('DateTime', $result[1]['date']);
+        $this->assertInstanceOf('DateTimeInterface', $result[1]['datetime']);
+        $this->assertInstanceOf('DateTimeInterface', $result[1]['time']);
+        $this->assertInstanceOf('DateTimeInterface', $result[1]['date']);
     }
 
     public function testTicketSingleResult()
@@ -70,9 +70,9 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue(is_array($datetime));
 
-        $this->assertInstanceOf('DateTime', $datetime['datetime']);
-        $this->assertInstanceOf('DateTime', $datetime['time']);
-        $this->assertInstanceOf('DateTime', $datetime['date']);
+        $this->assertInstanceOf('DateTimeInterface', $datetime['datetime']);
+        $this->assertInstanceOf('DateTimeInterface', $datetime['time']);
+        $this->assertInstanceOf('DateTimeInterface', $datetime['date']);
     }
 
     public function testTicketResult()
@@ -82,15 +82,15 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(2,$result);
 
-        $this->assertInstanceOf('DateTime', $result[0]['time']);
-        $this->assertInstanceOf('DateTime', $result[0]['date']);
-        $this->assertInstanceOf('DateTime', $result[0]['datetime']);
+        $this->assertInstanceOf('DateTimeInterface', $result[0]['time']);
+        $this->assertInstanceOf('DateTimeInterface', $result[0]['date']);
+        $this->assertInstanceOf('DateTimeInterface', $result[0]['datetime']);
 
         $this->assertEquals('2010-01-01 11:11:11', $result[0]['datetime']->format('Y-m-d G:i:s'));
 
-        $this->assertInstanceOf('DateTime', $result[1]['time']);
-        $this->assertInstanceOf('DateTime', $result[1]['date']);
-        $this->assertInstanceOf('DateTime', $result[1]['datetime']);
+        $this->assertInstanceOf('DateTimeInterface', $result[1]['time']);
+        $this->assertInstanceOf('DateTimeInterface', $result[1]['date']);
+        $this->assertInstanceOf('DateTimeInterface', $result[1]['datetime']);
 
         $this->assertEquals('2010-02-02 12:12:12', $result[1]['datetime']->format('Y-m-d G:i:s'));
     }

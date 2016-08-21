@@ -933,14 +933,14 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertSame('field1', $reflParameters[0]->getName());
         $this->assertFalse($reflParameters[0]->isOptional());
 
-        $this->assertSame('DateTime', $reflParameters[1]->getClass()->name);
+        $this->assertSame('DateTimeInterface', $reflParameters[1]->getClass()->name);
         $this->assertSame('field3', $reflParameters[1]->getName());
         $this->assertFalse($reflParameters[1]->isOptional());
 
         $this->assertSame('field2', $reflParameters[2]->getName());
         $this->assertTrue($reflParameters[2]->isOptional());
 
-        $this->assertSame('DateTime', $reflParameters[3]->getClass()->name);
+        $this->assertSame('DateTimeInterface', $reflParameters[3]->getClass()->name);
         $this->assertSame('field4', $reflParameters[3]->getName());
         $this->assertTrue($reflParameters[3]->isOptional());
     }
@@ -971,25 +971,25 @@ class EntityGeneratorTest extends OrmTestCase
         return array(
             array(array(
                 'fieldName' => 'datetimetz',
-                'phpType' => '\\DateTime',
+                'phpType' => '\\DateTimeInterface',
                 'dbType' => 'datetimetz',
                 'value' => new \DateTime
             )),
             array(array(
                 'fieldName' => 'datetime',
-                'phpType' => '\\DateTime',
+                'phpType' => '\\DateTimeInterface',
                 'dbType' => 'datetime',
                 'value' => new \DateTime
             )),
             array(array(
                 'fieldName' => 'date',
-                'phpType' => '\\DateTime',
+                'phpType' => '\\DateTimeInterface',
                 'dbType' => 'date',
                 'value' => new \DateTime
             )),
             array(array(
                 'fieldName' => 'time',
-                'phpType' => '\DateTime',
+                'phpType' => '\DateTimeInterface',
                 'dbType' => 'time',
                 'value' => new \DateTime
             )),

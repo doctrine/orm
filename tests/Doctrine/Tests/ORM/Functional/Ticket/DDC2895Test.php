@@ -55,7 +55,7 @@ abstract class AbstractDDC2895
 {
     /**
      * @Column(name="last_modified", type="datetimetz", nullable=false)
-     * @var \DateTime
+     * @var \DateTimeInterface
      */
     protected $lastModified;
 
@@ -69,7 +69,7 @@ abstract class AbstractDDC2895
     }
 
     /**
-     * @param \DateTime $lastModified
+     * @param \DateTimeInterface $lastModified
      */
     public function setLastModified( $lastModified )
     {
@@ -77,7 +77,7 @@ abstract class AbstractDDC2895
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getLastModified()
     {
