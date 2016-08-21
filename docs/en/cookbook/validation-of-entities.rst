@@ -106,7 +106,7 @@ validation callbacks.
          */
         public function validate()
         {
-            if (!($this->plannedShipDate instanceof DateTime)) {
+            if (!($this->plannedShipDate instanceof DateTimeInterface)) {
                 throw new ValidateException();
             }
     

@@ -245,7 +245,7 @@ Note that numeric placeholders start with a ? followed by a number
 while the named placeholders start with a : followed by a string.
 
 Calling ``setParameter()`` automatically infers which type you are setting as
-value. This works for integers, arrays of strings/integers, DateTime instances
+value. This works for integers, arrays of strings/integers, DateTimeInterface instances
 and for managed entities. If you want to set a type explicitly you can call
 the third argument to ``setParameter()`` explicitly. It accepts either a PDO
 type or a DBAL Type name for conversion.

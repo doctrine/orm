@@ -480,7 +480,7 @@ We continue with the bug tracker domain, by creating the missing classes
         protected $description;
         /**
          * @Column(type="datetime")
-         * @var DateTime
+         * @var DateTimeInterface
          */
         protected $created;
         /**
@@ -504,7 +504,7 @@ We continue with the bug tracker domain, by creating the missing classes
             $this->description = $description;
         }
 
-        public function setCreated(DateTime $created)
+        public function setCreated(DateTimeInterface $created)
         {
             $this->created = $created;
         }
@@ -888,7 +888,7 @@ the ``Product`` before:
 Here we have the entity, id and primitive type definitions.
 For the "created" field we have used the ``datetime`` type, 
 which translates the YYYY-mm-dd HH:mm:ss database format 
-into a PHP DateTime instance and back.
+into a PHP DateTimeInterface instance and back.
 
 After the field definitions the two qualified references to the
 user entity are defined. They are created by the ``many-to-one``

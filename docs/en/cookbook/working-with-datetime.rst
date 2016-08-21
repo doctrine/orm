@@ -1,11 +1,11 @@
-Working with DateTime Instances
+Working with DateTimeInterface Instances
 ===============================
 
-There are many nitty gritty details when working with PHPs DateTime instances. You have know their inner
+There are many nitty gritty details when working with PHPs DateTimeInterface instances. You have know their inner
 workings pretty well not to make mistakes with date handling. This cookbook entry holds several
-interesting pieces of information on how to work with PHP DateTime instances in Doctrine 2.
+interesting pieces of information on how to work with PHP DateTimeInterface instances in Doctrine 2.
 
-DateTime changes are detected by Reference
+DateTimeInterface changes are detected by Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When calling ``EntityManager#flush()`` Doctrine computes the changesets of all the currently managed entities
@@ -45,7 +45,7 @@ The way to go would be:
 Default Timezone Gotcha
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-By default Doctrine assumes that you are working with a default timezone. Each DateTime instance that
+By default Doctrine assumes that you are working with a default timezone. Each DateTimeInterface instance that
 is created by Doctrine will be assigned the timezone that is currently the default, either through
 the ``date.timezone`` ini setting or by calling ``date_default_timezone_set()``.
 
@@ -60,17 +60,17 @@ If you first come across the requirement to save different timezones you may be 
 to manage this mess,
 however let me crush your expectations fast. There is not a single database out there (supported by Doctrine 2)
 that supports timezones correctly. Correctly here means that you can cover all the use-cases that
-can come up with timezones. If you don't believe me you should read up on `Storing DateTime
+can come up with timezones. If you don't believe me you should read up on `Storing DateTimeInterface
 in Databases <http://derickrethans.nl/storing-date-time-in-database.html>`_.
 
 The problem is simple. Not a single database vendor saves the timezone, only the differences to UTC.
 However with frequent daylight saving and political timezone changes you can have a UTC offset that moves
 in different offset directions depending on the real location.
 
-The solution for this dilemma is simple. Don't use timezones with DateTime and Doctrine 2. However there is a workaround
+The solution for this dilemma is simple. Don't use timezones with DateTimeInterface and Doctrine 2. However there is a workaround
 that even allows correct date-time handling with timezones:
 
-1. Always convert any DateTime instance to UTC.
+1. Always convert any DateTimeInterface instance to UTC.
 2. Only set Timezones for displaying purposes
 3. Save the Timezone in the Entity for persistence.
 
@@ -94,7 +94,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
-            if ($value instanceof \DateTime) {
+            if ($value instanceof \DateTimeInterface) {
                 $value->setTimezone(self::getUtc());
             }
 
@@ -103,7 +103,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
         {
-            if (null === $value || $value instanceof \DateTime) {
+            if (null === $value || $value instanceof \DateTimeInterface) {
                 return $value;
             }
 
@@ -125,8 +125,8 @@ the UTC time at the time of the booking and the timezone the event happened in.
         }
     }
 
-This database type makes sure that every DateTime instance is always saved in UTC, relative
-to the current timezone that the passed DateTime instance has.
+This database type makes sure that every DateTimeInterface instance is always saved in UTC, relative
+to the current timezone that the passed DateTimeInterface instance has.
 
 To actually use this new type instead of the default ``datetime`` type, you need to run following
 code before bootstrapping the ORM:
@@ -167,7 +167,7 @@ requiring timezoned datetimes:
          */
         private $localized = false;
 
-        public function __construct(\DateTime $createDate)
+        public function __construct(\DateTimeInterface $createDate)
         {
             $this->localized = true;
             $this->created = $createDate;
@@ -184,6 +184,6 @@ requiring timezoned datetimes:
     }
 
 This snippet makes use of the previously discussed "changeset by reference only" property of
-objects. That means a new DateTime will only be used during updating if the reference
+objects. That means a new DateTimeInterface instance will only be used during updating if the reference
 changes between retrieval and flush operation. This means we can easily go and modify
 the instance by setting the previous local timezone.
