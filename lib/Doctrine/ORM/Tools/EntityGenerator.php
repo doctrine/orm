@@ -371,7 +371,7 @@ public function __construct(<params>)
             mkdir($dir, 0775, true);
         }
 
-        $this->isNew = !file_exists($path) || (file_exists($path) && $this->regenerateEntityIfExists);
+        $this->isNew = !file_exists($path) || $this->regenerateEntityIfExists;
 
         if ( ! $this->isNew) {
             $this->parseTokensInEntityFile(file_get_contents($path));
@@ -390,7 +390,7 @@ public function __construct(<params>)
         if ($this->isNew) {
             file_put_contents($path, $this->generateEntityClass($metadata));
         // If entity exists and we're allowed to update the entity class
-        } elseif ( ! $this->isNew && $this->updateEntityIfExists) {
+        } elseif ($this->updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
         }
         chmod($path, 0664);
@@ -442,7 +442,7 @@ public function __construct(<params>)
         $body = str_replace('<spaces>', $this->spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : '') . "}\n";
+        return substr($currentCode, 0, $last) . $body . ($body ? "\n" : '') . "}\n";
     }
 
     /**
@@ -802,22 +802,23 @@ public function __construct(<params>)
     protected function parseTokensInEntityFile($src)
     {
         $tokens = token_get_all($src);
-        $lastSeenNamespace = "";
+        $tokensCount = count($tokens);
+        $lastSeenNamespace = '';
         $lastSeenClass = false;
 
         $inNamespace = false;
         $inClass = false;
 
-        for ($i = 0, $tokensCount = count($tokens); $i < $tokensCount; $i++) {
+        for ($i = 0; $i < $tokensCount; $i++) {
             $token = $tokens[$i];
-            if (in_array($token[0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT))) {
+            if (in_array($token[0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT), true)) {
                 continue;
             }
 
             if ($inNamespace) {
-                if ($token[0] == T_NS_SEPARATOR || $token[0] == T_STRING) {
+                if (in_array($token[0], array(T_NS_SEPARATOR, T_STRING), true)) {
                     $lastSeenNamespace .= $token[1];
-                } elseif (is_string($token) && in_array($token, array(';', '{'))) {
+                } elseif (is_string($token) && in_array($token, array(';', '{'), true)) {
                     $inNamespace = false;
                 }
             }
@@ -829,18 +830,18 @@ public function __construct(<params>)
                 $this->staticReflection[$lastSeenClass]['methods'] = array();
             }
 
-            if ($token[0] == T_NAMESPACE) {
-                $lastSeenNamespace = "";
+            if (T_NAMESPACE === $token[0]) {
+                $lastSeenNamespace = '';
                 $inNamespace = true;
-            } elseif ($token[0] == T_CLASS && $tokens[$i-1][0] != T_DOUBLE_COLON) {
+            } elseif (T_CLASS === $token[0] && T_DOUBLE_COLON !== $tokens[$i-1][0]) {
                 $inClass = true;
-            } elseif ($token[0] == T_FUNCTION) {
-                if ($tokens[$i+2][0] == T_STRING) {
+            } elseif (T_FUNCTION === $token[0]) {
+                if (T_STRING === $tokens[$i+2][0]) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = strtolower($tokens[$i+2][1]);
-                } elseif ($tokens[$i+2] == "&" && $tokens[$i+3][0] == T_STRING) {
+                } elseif ($tokens[$i+2] == '&' && T_STRING === $tokens[$i+3][0]) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = strtolower($tokens[$i+3][1]);
                 }
-            } elseif (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i+2][0] != T_FUNCTION) {
+            } elseif (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED), true) && T_FUNCTION !== $tokens[$i+2][0]) {
                 $this->staticReflection[$lastSeenClass]['properties'][] = substr($tokens[$i+2][1], 1);
             }
         }
@@ -871,7 +872,7 @@ public function __construct(<params>)
 
         return (
             isset($this->staticReflection[$metadata->name]) &&
-            in_array($property, $this->staticReflection[$metadata->name]['properties'])
+            in_array($property, $this->staticReflection[$metadata->name]['properties'], true)
         );
     }
 
@@ -901,7 +902,7 @@ public function __construct(<params>)
 
         return (
             isset($this->staticReflection[$metadata->name]) &&
-            in_array(strtolower($method), $this->staticReflection[$metadata->name]['methods'])
+            in_array(strtolower($method), $this->staticReflection[$metadata->name]['methods'], true)
         );
     }
 
@@ -938,7 +939,7 @@ public function __construct(<params>)
      */
     protected function hasNamespace(ClassMetadataInfo $metadata)
     {
-        return strpos($metadata->name, '\\') ? true : false;
+        return (bool) strpos($metadata->name, '\\');
     }
 
     /**
@@ -946,7 +947,7 @@ public function __construct(<params>)
      */
     protected function extendsClass()
     {
-        return $this->classToExtend ? true : false;
+        return (bool) $this->classToExtend;
     }
 
     /**
@@ -1051,7 +1052,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateTableAnnotation($metadata)
+    protected function generateTableAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->isEmbeddedClass) {
             return '';
@@ -1090,7 +1091,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateTableConstraints($constraintName, $constraints)
+    protected function generateTableConstraints($constraintName, array $constraints)
     {
         $annotations = array();
         foreach ($constraints as $name => $constraint) {
@@ -1109,7 +1110,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateInheritanceAnnotation($metadata)
+    protected function generateInheritanceAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             return '@' . $this->annotationsPrefix . 'InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
@@ -1121,7 +1122,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateDiscriminatorColumnAnnotation($metadata)
+    protected function generateDiscriminatorColumnAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             $discrColumn = $metadata->discriminatorColumn;
@@ -1138,7 +1139,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateDiscriminatorMapAnnotation($metadata)
+    protected function generateDiscriminatorMapAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             $inheritanceClassMap = array();
@@ -1228,7 +1229,7 @@ public function __construct(<params>)
      *
      * @return bool
      */
-    protected function isAssociationIsNullable($associationMapping)
+    protected function isAssociationIsNullable(array $associationMapping)
     {
         if (isset($associationMapping['id']) && $associationMapping['id']) {
             return false;
@@ -1381,7 +1382,7 @@ public function __construct(<params>)
         }
 
         $replacements = array(
-          '<description>'       => ucfirst($type) . ' ' . $variableName,
+          '<description>'       => ucfirst($type) . ' ' . $variableName . '.',
           '<methodTypeHint>'    => $methodTypeHint,
           '<variableType>'      => $variableType,
           '<variableName>'      => $variableName,
@@ -1407,7 +1408,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateLifecycleCallbackMethod($name, $methodName, $metadata)
+    protected function generateLifecycleCallbackMethod($name, $methodName, ClassMetadataInfo $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
             return '';

@@ -104,7 +104,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
      *
-     * @var array
+     * @var array|null
      */
     protected $joinedAssociations;
 
@@ -476,7 +476,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $cacheEntry = $this->hydrator->buildCacheEntry($class, $cacheKey, $entity);
         $cached     = $this->region->put($cacheKey, $cacheEntry);
 
-        if ($cached && ($this->joinedAssociations === null || count($this->joinedAssociations) > 0)) {
+        if ($cached && (null === $this->joinedAssociations || $this->joinedAssociations)) {
             $this->storeJoinedAssociations($entity);
         }
 
