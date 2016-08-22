@@ -1,12 +1,12 @@
 Working with DateTimeInterface Instances
-===============================
+========================================
 
 There are many nitty gritty details when working with PHPs DateTimeInterface instances. You have know their inner
 workings pretty well not to make mistakes with date handling. This cookbook entry holds several
 interesting pieces of information on how to work with PHP DateTimeInterface instances in Doctrine 2.
 
 DateTimeInterface changes are detected by Reference
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When calling ``EntityManager#flush()`` Doctrine computes the changesets of all the currently managed entities
 and saves the differences to the database. In case of object properties (@Column(type="datetime") or @Column(type="object"))
