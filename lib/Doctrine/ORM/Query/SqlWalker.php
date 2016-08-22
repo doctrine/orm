@@ -2119,10 +2119,9 @@ class SqlWalker implements TreeWalker
                 return $this->conn->quote($literal->value);
 
             case AST\Literal::BOOLEAN:
-                $bool = strtolower($literal->value) == 'true' ? true : false;
-                $boolVal = $this->conn->getDatabasePlatform()->convertBooleans($bool);
+                $bool = 'true' === strtolower($literal->value);
 
-                return $boolVal;
+                return $this->conn->getDatabasePlatform()->convertBooleans($bool);
 
             case AST\Literal::NUMERIC:
                 return $literal->value;
