@@ -535,9 +535,10 @@ class QueryBuilder
         $filteredParameters = $this->parameters->filter(
             function ($parameter) use ($key)
             {
+                $trimmedKey = trim($key, ':');
                 /* @var Query\Parameter $parameter */
                 // Must not be identical because of string to integer conversion
-                return ($key == $parameter->getName());
+                return ($trimmedKey == $parameter->getName());
             }
         );
 
