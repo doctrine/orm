@@ -46,17 +46,17 @@ class ColumnMetadata
     /**
      * @var integer
      */
-    protected $length = 255;
+    protected $length;
 
     /**
      * @var integer
      */
-    protected $scale = 0;
+    protected $scale;
 
     /**
      * @var integer
      */
-    protected $precision = 0;
+    protected $precision;
 
     /**
      * @var array
@@ -77,6 +77,20 @@ class ColumnMetadata
      * @var boolean
      */
     protected $unique = false;
+
+    /**
+     * ColumnMetadata constructor.
+     *
+     * @param string $columnName
+     * @param Type   $type
+     *
+     * @todo Leverage this implementation instead of default, blank constructor
+     */
+    /*public function __construct(string $columnName, Type $type)
+    {
+        $this->columnName = $columnName;
+        $this->type       = $type;
+    }*/
 
     /**
      * @return string
@@ -145,13 +159,13 @@ class ColumnMetadata
     /**
      * @param string $columnDefinition
      */
-    public function setColumnDefinition($columnDefinition)
+    public function setColumnDefinition(string $columnDefinition)
     {
         $this->columnDefinition = $columnDefinition;
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getLength()
     {
@@ -159,15 +173,15 @@ class ColumnMetadata
     }
 
     /**
-     * @param integer $length
+     * @param int $length
      */
-    public function setLength($length)
+    public function setLength(int $length)
     {
         $this->length = $length;
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getScale()
     {
@@ -175,15 +189,15 @@ class ColumnMetadata
     }
 
     /**
-     * @param integer $scale
+     * @param int $scale
      */
-    public function setScale($scale)
+    public function setScale(int $scale)
     {
         $this->scale = $scale;
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getPrecision()
     {
@@ -191,9 +205,9 @@ class ColumnMetadata
     }
 
     /**
-     * @param integer $precision
+     * @param int $precision
      */
-    public function setPrecision($precision)
+    public function setPrecision(int $precision)
     {
         $this->precision = $precision;
     }
@@ -215,15 +229,15 @@ class ColumnMetadata
     }
 
     /**
-     * @param boolean $isPrimaryKey
+     * @param bool $isPrimaryKey
      */
-    public function setPrimaryKey($isPrimaryKey)
+    public function setPrimaryKey(bool $isPrimaryKey)
     {
         $this->primaryKey = $isPrimaryKey;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isPrimaryKey()
     {
@@ -231,15 +245,15 @@ class ColumnMetadata
     }
 
     /**
-     * @param boolean $isNullable
+     * @param bool $isNullable
      */
-    public function setNullable($isNullable)
+    public function setNullable(bool $isNullable)
     {
         $this->nullable = $isNullable;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isNullable()
     {
@@ -247,15 +261,15 @@ class ColumnMetadata
     }
 
     /**
-     * @param boolean $isUnique
+     * @param bool $isUnique
      */
-    public function setUnique($isUnique)
+    public function setUnique(bool $isUnique)
     {
         $this->unique = $isUnique;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUnique()
     {

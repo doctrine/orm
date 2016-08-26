@@ -72,8 +72,9 @@ class SizeFunction extends FunctionNode
 
                 $property         = $class->getProperty($class->fieldNames[$targetColumn]);
                 $sourceColumnName = $platform->quoteIdentifier($property->getColumnName());
+                $targetColumnName = $platform->quoteIdentifier($sourceColumn);
 
-                $sql .= $targetTableAlias . '.' . $sourceColumn
+                $sql .= $targetTableAlias . '.' . $targetColumnName
                       . ' = '
                       . $sourceTableAlias . '.' . $sourceColumnName;
             }
@@ -86,6 +87,11 @@ class SizeFunction extends FunctionNode
             // SQL table aliases
             $joinTableAlias = $sqlWalker->getSQLTableAlias($joinTable['name']);
             $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
+
+            // Quote in case source table alias matches class table name (happens in an UPDATE statement)
+            if ($sourceTableAlias === $class->getTableName()) {
+                $sourceTableAlias = $platform->quoteIdentifier($sourceTableAlias);
+            }
 
             // join to target table
             $sql .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';

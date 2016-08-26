@@ -2125,17 +2125,32 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addProperty($fieldName, Type $type, array $mapping = [])
     {
-        $property = new FieldMetadata();
+        $property = new FieldMetadata($fieldName);
 
         $property->setDeclaringClass($this);
-        $property->setName($fieldName);
-        $property->setType($type);
-        $property->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
         $property->setColumnName($mapping['columnName'] ?? $this->namingStrategy->propertyToColumnName($fieldName, $this->name));
-        $property->setColumnDefinition($mapping['columnDefinition'] ?? null);
-        $property->setLength($mapping['length'] ?? null);
-        $property->setScale($mapping['scale'] ?? null);
-        $property->setPrecision($mapping['precision'] ?? null);
+        $property->setType($type);
+
+        if (! $this->isMappedSuperclass) {
+            $property->setTableName($this->getTableName());
+        }
+
+        if (isset($mapping['columnDefinition'])) {
+            $property->setColumnDefinition($mapping['columnDefinition']);
+        }
+
+        if (isset($mapping['length'])) {
+            $property->setLength($mapping['length']);
+        }
+
+        if (isset($mapping['scale'])) {
+            $property->setScale($mapping['scale']);
+        }
+
+        if (isset($mapping['precision'])) {
+            $property->setPrecision($mapping['precision']);
+        }
+
         $property->setOptions($mapping['options'] ?? []);
         $property->setPrimaryKey(isset($mapping['id']) && $mapping['id']);
         $property->setNullable(isset($mapping['nullable']) && $mapping['nullable']);
@@ -2192,7 +2207,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addInheritedProperty(Property $property)
     {
-        $inheritedProperty = new FieldMetadata();
+        $inheritedProperty = new FieldMetadata($property->getName());
         $declaringClass    = $property->getDeclaringClass();
 
         if ( ! $declaringClass->isMappedSuperclass) {
@@ -2200,17 +2215,29 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $inheritedProperty->setDeclaringClass($declaringClass);
-        $inheritedProperty->setName($property->getName());
-        $inheritedProperty->setType($property->getType());
+
+        if ($property->getColumnDefinition()) {
+            $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
+        }
+
+        if ($property->getLength()) {
+            $inheritedProperty->setLength($property->getLength());
+        }
+
+        if ($property->getScale()) {
+            $inheritedProperty->setScale($property->getScale());
+        }
+
+        if ($property->getPrecision()) {
+            $inheritedProperty->setPrecision($property->getPrecision());
+        }
+
         $inheritedProperty->setColumnName($property->getColumnName());
-        $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
+        $inheritedProperty->setType($property->getType());
+        $inheritedProperty->setOptions($property->getOptions());
         $inheritedProperty->setPrimaryKey($property->isPrimaryKey());
         $inheritedProperty->setNullable($property->isNullable());
         $inheritedProperty->setUnique($property->isUnique());
-        $inheritedProperty->setLength($property->getLength());
-        $inheritedProperty->setScale($property->getScale());
-        $inheritedProperty->setPrecision($property->getPrecision());
-        $inheritedProperty->setOptions($property->getOptions());
 
         $this->fieldNames[$property->getColumnName()] = $property->getName();
         $this->properties[$property->getName()] = $inheritedProperty;
@@ -2585,7 +2612,7 @@ class ClassMetadata implements ClassMetadataInterface
         $allowedTypeList = ["boolean", "array", "object", "datetime", "time", "date"];
 
         if (in_array($discriminatorColumn->getTypeName(), $allowedTypeList)) {
-            throw MappingException::invalidDiscriminatorColumnType($this->name, $discriminatorColumn->getTypeName());
+            throw MappingException::invalidDiscriminatorColumnType($discriminatorColumn->getTypeName());
         }
 
         $this->discriminatorColumn = $discriminatorColumn;
@@ -2865,11 +2892,7 @@ class ClassMetadata implements ClassMetadataInterface
             return;
         }
 
-        throw MappingException::unsupportedOptimisticLockingType(
-            $this->name,
-            $versionFieldMetadata->getName(),
-            $versionFieldMetadata->getType()
-        );
+        throw MappingException::unsupportedOptimisticLockingType($versionFieldMetadata->getType());
     }
 
     /**

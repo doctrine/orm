@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -202,7 +203,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testSetDiscriminatorColumn()
     {
-        self::assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
+        $discriminatorColumnBuilder = (new DiscriminatorColumnMetadataBuilder())
+            ->withColumnName('discr')
+            ->withLength(124)
+        ;
+
+        self::assertIsFluent($this->builder->setDiscriminatorColumn($discriminatorColumnBuilder->build()));
         self::assertNotNull($this->cm->discriminatorColumn);
 
         $discrColumn = $this->cm->discriminatorColumn;

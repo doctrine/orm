@@ -813,9 +813,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         throw $e;
     }
 
-    public function assertSQLEquals($expectedSql, $actualSql)
+    public static function assertSQLEquals($expectedSql, $actualSql)
     {
-        return self::assertEquals(strtolower($expectedSql), strtolower($actualSql), "Lowercase comparison of SQL statements failed.");
+        return self::assertEquals(
+            strtolower($expectedSql),
+            strtolower($actualSql),
+            "Lowercase comparison of SQL statements failed."
+        );
     }
 
     /**

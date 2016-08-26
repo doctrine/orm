@@ -15,6 +15,11 @@ abstract class PaginationTestCase extends OrmTestCase
     {
         $this->entityManager = $this->_getTestEntityManager();
     }
+
+    public function tearDown()
+    {
+        $this->entityManager = null;
+    }
 }
 
 
