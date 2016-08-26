@@ -837,4 +837,60 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[2]);
         $this->assertNull($users[3]);
     }
+
+    public function testQueryParametersWithALeadingColonInTheParameterKey()
+    {
+        $parameterKey = ':username';
+        $firstParameterValue = 'fancyweb';
+        $newParameterValue = 'bewycnaf';
+
+        $query = $this->_em->createQuery(sprintf('select u from Doctrine\Tests\Models\CMS\CmsUser where u.username = %s', $parameterKey));
+        $query->setParameter($parameterKey, $firstParameterValue);
+
+        $parameter = $query->getParameter($parameterKey);
+        $this->assertNotNull($parameter);
+        if (null !== $parameter) {
+            $this->assertEquals($firstParameterValue, $parameter->getValue());
+        }
+
+        $query->setParameter($parameterKey, $newParameterValue);
+
+        $parameter = $query->getParameter($parameterKey);
+        $this->assertNotNull($parameter);
+        if (null !== $parameter) {
+            $this->assertEquals($newParameterValue, $parameter->getValue());
+        }
+
+        $this->assertEquals(1, count($query->getParameters()));
+    }
+
+    public function testQueryBuilderParametersWithALeadingColonInTheParameterKey()
+    {
+        $parameterKey = ':username';
+        $firstParameterValue = 'fancyweb';
+        $newParameterValue = 'bewycnaf';
+
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where(sprintf('u.username = %s', $parameterKey));
+
+        $qb->setParameter($parameterKey, $firstParameterValue);
+
+        $parameter = $qb->getParameter($parameterKey);
+        $this->assertNotNull($parameter);
+        if (null !== $parameter) {
+            $this->assertEquals($firstParameterValue, $parameter->getValue());
+        }
+
+        $qb->setParameter($parameterKey, $newParameterValue);
+
+        $parameter = $qb->getParameter($parameterKey);
+        $this->assertNotNull($parameter);
+        if (null !== $parameter) {
+            $this->assertEquals($newParameterValue, $parameter->getValue());
+        }
+
+        $this->assertEquals(1, count($qb->getParameters()));
+    }
 }
