@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\DBAL\Types\Type;
 
 class FieldMetadata extends ColumnMetadata implements Property
 {
@@ -37,6 +38,27 @@ class FieldMetadata extends ColumnMetadata implements Property
      * @var string
      */
     private $name;
+
+    /**
+     * FieldMetadata constructor.
+     *
+     * @param string $name
+     * @param string $columnName
+     * @param Type   $type
+     *
+     * @todo Leverage this implementation instead of default, simple constructor
+     */
+    /*public function __construct(string $name, string $columnName, Type $type)
+    {
+        parent::__construct($columnName, $type);
+
+        $this->name = $name;
+    }*/
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
 
     /**
      * {@inheritdoc}
@@ -60,14 +82,6 @@ class FieldMetadata extends ColumnMetadata implements Property
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
     }
 
     /**

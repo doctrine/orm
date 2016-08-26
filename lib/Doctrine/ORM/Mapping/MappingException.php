@@ -439,17 +439,14 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param string $entity
      * @param string $fieldName
      * @param string $unsupportedType
      *
      * @return MappingException
      */
-    public static function unsupportedOptimisticLockingType($entity, $fieldName, $unsupportedType)
+    public static function unsupportedOptimisticLockingType($unsupportedType)
     {
-        return new self('Locking type "'.$unsupportedType.'" (specified in "'.$entity.'", field "'.$fieldName.'") '
-            .'is not supported by Doctrine.'
-        );
+        return new self('Locking type "'.$unsupportedType.'" is not supported by Doctrine.');
     }
 
     /**
@@ -525,14 +522,13 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param string $className
      * @param string $type
      *
      * @return MappingException
      */
-    public static function invalidDiscriminatorColumnType($className, $type)
+    public static function invalidDiscriminatorColumnType($type)
     {
-        return new self("Discriminator column type on entity class '$className' is not allowed to be '$type'. 'string' or 'integer' type variables are suggested!");
+        return new self("Discriminator column type is not allowed to be '$type'. 'string' or 'integer' type variables are suggested!");
     }
 
     /**

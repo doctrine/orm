@@ -27,9 +27,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /** @var string */
     private $aliasedName;
 
-    /**
-     * @var boolean
-     */
+    /** @var boolean */
     protected $nullable = true;
 
     /** @var string */

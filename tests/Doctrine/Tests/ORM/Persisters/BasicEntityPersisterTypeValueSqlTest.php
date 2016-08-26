@@ -44,7 +44,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $this->_em = $this->_getTestEntityManager();
 
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata("Doctrine\Tests\Models\CustomType\CustomTypeParent"));
+        $this->_persister = new BasicEntityPersister(
+            $this->_em,
+            $this->_em->getClassMetadata("Doctrine\Tests\Models\CustomType\CustomTypeParent")
+        );
     }
 
     public function testGetInsertSQLUsesTypeValuesSQL()
@@ -75,7 +78,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $executeUpdates = $this->_em->getConnection()->getExecuteUpdates();
 
-        self::assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeUpdates[0]['query']);
+        self::assertEquals(
+            'UPDATE "customtype_parents" SET "customInteger" = ABS(?), "child_id" = ? WHERE "id" = ?',
+            $executeUpdates[0]['query']
+        );
     }
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL()
@@ -85,7 +91,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $sql = $method->invoke($this->_persister,  array('customInteger' => 1, 'child' => 1));
 
-        self::assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
+        self::assertEquals('t0."customInteger" = ABS(?) AND t0."child_id" = ?', $sql);
     }
 
     /**
@@ -127,17 +133,17 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testSelectConditionStatementWithMultipleValuesContainingNull()
     {
         self::assertEquals(
-            '(t0.id IN (?) OR t0.id IS NULL)',
+            '(t0."id" IN (?) OR t0."id" IS NULL)',
             $this->_persister->getSelectConditionStatementSQL('id', array(null))
         );
 
         self::assertEquals(
-            '(t0.id IN (?) OR t0.id IS NULL)',
+            '(t0."id" IN (?) OR t0."id" IS NULL)',
             $this->_persister->getSelectConditionStatementSQL('id', array(null, 123))
         );
 
         self::assertEquals(
-            '(t0.id IN (?) OR t0.id IS NULL)',
+            '(t0."id" IN (?) OR t0."id" IS NULL)',
             $this->_persister->getSelectConditionStatementSQL('id', array(123, null))
         );
     }
@@ -148,11 +154,13 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         // Using a criteria as array
         $statement = $persister->getCountSQL(array('value' => 'bar'));
+
         self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
 
         // Using a criteria object
         $criteria = new Criteria(Criteria::expr()->eq('value', 'bar'));
         $statement = $persister->getCountSQL($criteria);
+
         self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
     }
 

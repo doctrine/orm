@@ -45,16 +45,16 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
 
         if ($platform->supportsSchemas()) {
-            $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
+            $fullTableName = sprintf('"%s"."%s"', $expectedSchemaName, $expectedTableName);
         } else {
-            $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
+            $fullTableName = sprintf('"%s__%s"', $expectedSchemaName, $expectedTableName);
         }
 
         self::assertEquals($fullTableName, $quotedTableName);
 
         // Checks sequence name validity
         self::assertEquals(
-            $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
+            str_replace('"', '', $fullTableName) . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
             $classMetadata->getSequenceName($platform)
         );
     }
