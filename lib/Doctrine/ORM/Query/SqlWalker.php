@@ -1956,10 +1956,17 @@ class SqlWalker implements TreeWalker
             $sqlParts    = [];
 
             foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
-                $property     = $class->getProperty($class->fieldNames[$targetColumn]);
-                $targetColumn = $this->platform->quoteIdentifier($property->getColumnName());
+                $property         = $class->getProperty($class->fieldNames[$targetColumn]);
+                $sourceColumnName = $this->platform->quoteIdentifier($property->getColumnName());
+                $targetColumnName = $this->platform->quoteIdentifier($sourceColumn);
 
-                $sqlParts[] = $sourceTableAlias . '.' . $targetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
+                $sqlParts[] = sprintf(
+                    '%s.%s = %s.%s',
+                    $sourceTableAlias,
+                    $sourceColumnName,
+                    $targetTableAlias,
+                    $targetColumnName
+                );
             }
 
             foreach ($this->quoteStrategy->getIdentifierColumnNames($targetClass, $this->platform) as $targetColumnName) {

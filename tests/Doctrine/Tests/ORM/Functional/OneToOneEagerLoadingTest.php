@@ -144,16 +144,19 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $train = $this->_em->find(get_class($train), $train->id);
+        $this->_em->find(get_class($train), $train->id);
+
         self::assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.driver_id AS driver_id_2, t4.id AS id_3, t4.name AS name_5, t0.owner_id AS owner_id_6, t8.id AS id_7, t8.name AS name_9 FROM Train t0 LEFT JOIN TrainDriver t4 ON t0.driver_id = t4.id INNER JOIN TrainOwner t8 ON t0.owner_id = t8.id WHERE t0.id = ?",
+            'SELECT t0."id" AS id_1, t0."driver_id" AS driver_id_2, t4."id" AS id_3, t4."name" AS name_5, t0."owner_id" AS owner_id_6, t8."id" AS id_7, t8."name" AS name_9 FROM "Train" t0 LEFT JOIN "TrainDriver" t4 ON t0."driver_id" = t4."id" INNER JOIN "TrainOwner" t8 ON t0."owner_id" = t8."id" WHERE t0."id" = ?',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
         $this->_em->clear();
-        $driver = $this->_em->find(get_class($driver), $driver->id);
+
+        $this->_em->find(get_class($driver), $driver->id);
+
         self::assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.name AS name_2, t4.id AS id_3, t4.driver_id AS driver_id_5, t4.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t4 ON t4.owner_id = t0.id WHERE t0.id IN (?)",
+            'SELECT t0."id" AS id_1, t0."name" AS name_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" IN (?)',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }
@@ -173,17 +176,17 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $this->_em->find(get_class($waggon), $waggon->id);
 
         // The last query is the eager loading of the owner of the train
         self::assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.name AS name_2, t4.id AS id_3, t4.driver_id AS driver_id_5, t4.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t4 ON t4.owner_id = t0.id WHERE t0.id IN (?)",
+            'SELECT t0."id" AS id_1, t0."name" AS name_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" IN (?)',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
         // The one before is the fetching of the waggon and train
         self::assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.train_id AS train_id_2, t4.id AS id_3, t4.driver_id AS driver_id_5, t4.owner_id AS owner_id_6 FROM Waggon t0 INNER JOIN Train t4 ON t0.train_id = t4.id WHERE t0.id = ?",
+            'SELECT t0."id" AS id_1, t0."train_id" AS train_id_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "Waggon" t0 INNER JOIN "Train" t4 ON t0."train_id" = t4."id" WHERE t0."id" = ?',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
         );
     }
@@ -195,13 +198,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     {
         $owner = new TrainOwner('Alexander');
         $train = new Train($owner);
+
         $this->_em->persist($train);
         $this->_em->flush();
         $this->_em->clear();
 
-        $waggon = $this->_em->find(get_class($owner), $owner->id);
+        $this->_em->find(get_class($owner), $owner->id);
+
         self::assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.name AS name_2, t4.id AS id_3, t4.driver_id AS driver_id_5, t4.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t4 ON t4.owner_id = t0.id WHERE t0.id = ?",
+            'SELECT t0."id" AS id_1, t0."name" AS name_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" = ?',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }
@@ -213,6 +218,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     {
         $train = new Train(new TrainOwner('Johannes'));
         $order = new TrainOrder($train);
+
         $this->_em->persist($train);
         $this->_em->persist($order);
         $this->_em->flush();
@@ -220,7 +226,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->getConnection()->exec("UPDATE TrainOrder SET train_id = NULL");
 
         self::assertSame($train, $order->train);
+
         $this->_em->refresh($order);
+
         self::assertTrue($order->train === null, "Train reference was not refreshed to NULL.");
     }
 }
