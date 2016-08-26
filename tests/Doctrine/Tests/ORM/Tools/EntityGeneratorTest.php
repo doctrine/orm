@@ -474,8 +474,8 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertPhpDocReturnType('boolean', new \ReflectionMethod($book, 'removeComment'));
 
         self::assertPhpDocVarType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionProperty($book, 'author'));
-        self::assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'getAuthor'));
-        self::assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'setAuthor'));
+        self::assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'getAuthor'));
+        self::assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'setAuthor'));
 
 //        $expectedClassName = '\\' . $embeddedMetadata->name;
 //        self::assertPhpDocVarType($expectedClassName, new \ReflectionProperty($book, 'isbn'));

@@ -283,23 +283,15 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Sets the discriminator column details.
+     * Sets the discriminator column.
      *
-     * @param string $name
-     * @param string $type
-     * @param int    $length
+     * @param DiscriminatorColumnMetadata $discriminatorColumn
      *
      * @return ClassMetadataBuilder
      */
-    public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
+    public function setDiscriminatorColumn(DiscriminatorColumnMetadata $discriminatorColumn)
     {
-        $discrColumn = new DiscriminatorColumnMetadata();
-
-        $discrColumn->setColumnName($name);
-        $discrColumn->setType(Type::getType($type));
-        $discrColumn->setLength($length);
-
-        $this->cm->setDiscriminatorColumn($discrColumn);
+        $this->cm->setDiscriminatorColumn($discriminatorColumn);
 
         return $this;
     }

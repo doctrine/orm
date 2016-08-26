@@ -190,7 +190,10 @@ class AssociationBuilder
         $joinColumn->setReferencedColumnName($referencedColumnName);
         $joinColumn->setNullable($nullable);
         $joinColumn->setUnique($unique);
-        $joinColumn->setColumnDefinition($columnDef);
+
+        if ($columnDef) {
+            $joinColumn->setColumnDefinition($columnDef);
+        }
 
         if ($onDelete) {
             $joinColumn->setOnDelete($onDelete);
