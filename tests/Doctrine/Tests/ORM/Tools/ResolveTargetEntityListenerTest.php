@@ -104,7 +104,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $evm->addEventSubscriber($this->listener);
 
         self::assertStringMatchesFormat(
-            'SELECT%AFROM ResolveTargetEntity%A',
+            'SELECT %A FROM "ResolveTargetEntity" %A',
             $this
                 ->em
                 ->createQuery('SELECT f FROM Doctrine\Tests\ORM\Tools\ResolveTargetInterface f')

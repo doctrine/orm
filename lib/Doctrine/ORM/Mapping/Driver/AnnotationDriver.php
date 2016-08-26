@@ -27,8 +27,8 @@ use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
@@ -224,35 +224,42 @@ class AnnotationDriver extends AbstractAnnotationDriver
             );
 
             if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                $discrColumn = new DiscriminatorColumnMetadata();
+                $discriminatorColumnBuilder = new DiscriminatorColumnMetadataBuilder();
 
-                $discrColumn->setTableName($metadata->getTableName());
+                $discriminatorColumnBuilder->withTableName($metadata->getTableName());
 
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorColumn::class])) {
-                    $discrColumnAnnot = $classAnnotations[Annotation\DiscriminatorColumn::class];
+                    /** @var Annotation\DiscriminatorColumn $discriminatorColumnAnnotation */
+                    $discriminatorColumnAnnotation = $classAnnotations[Annotation\DiscriminatorColumn::class];
 
-                    $discrColumn->setColumnName($discrColumnAnnot->name);
-                    $discrColumn->setColumnDefinition($discrColumnAnnot->columnDefinition);
-                    $discrColumn->setType(Type::getType($discrColumnAnnot->type ?: 'string'));
-                    $discrColumn->setLength($discrColumnAnnot->length ?: 255);
-                } else {
-                    $discrColumn->setColumnName('dtype');
-                    $discrColumn->setType(Type::getType('string'));
-                    $discrColumn->setLength(255);
+                    $discriminatorColumnBuilder->withColumnName($discriminatorColumnAnnotation->name);
+
+                    if (! empty($discriminatorColumnAnnotation->columnDefinition)) {
+                        $discriminatorColumnBuilder->withColumnDefinition($discriminatorColumnAnnotation->columnDefinition);
+                    }
+
+                    if (! empty($discriminatorColumnAnnotation->type)) {
+                        $discriminatorColumnBuilder->withType(Type::getType($discriminatorColumnAnnotation->type));
+                    }
+
+                    if (! empty($discriminatorColumnAnnotation->length)) {
+                        $discriminatorColumnBuilder->withLength($discriminatorColumnAnnotation->length);
+                    }
                 }
 
-                $metadata->setDiscriminatorColumn($discrColumn);
+                $discriminatorColumn = $discriminatorColumnBuilder->build();
+
+                $metadata->setDiscriminatorColumn($discriminatorColumn);
 
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
-                    $discrMapAnnot = $classAnnotations[Annotation\DiscriminatorMap::class];
+                    $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
 
-                    $metadata->setDiscriminatorMap($discrMapAnnot->value);
+                    $metadata->setDiscriminatorMap($discriminatorMapAnnotation->value);
                 }
             }
         }
-
 
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations[Annotation\ChangeTrackingPolicy::class])) {
@@ -352,6 +359,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $oneToOneAnnot->fetch);
+
                 $metadata->mapOneToOne($mapping);
             } else if ($oneToManyAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OneToMany::class)) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
@@ -376,6 +384,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
+
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\ManyToMany::class)) {
                 $joinTable = [];
@@ -605,11 +614,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $joinColumn = new JoinColumnMetadata();
 
         $joinColumn->setColumnName($joinColumnAnnot->name);
-        $joinColumn->setColumnDefinition($joinColumnAnnot->columnDefinition);
         $joinColumn->setReferencedColumnName($joinColumnAnnot->referencedColumnName);
         $joinColumn->setAliasedName($joinColumnAnnot->fieldName);
         $joinColumn->setNullable($joinColumnAnnot->nullable);
         $joinColumn->setUnique($joinColumnAnnot->unique);
+
+        if (! empty($joinColumnAnnot->columnDefinition)) {
+            $joinColumn->setColumnDefinition($joinColumnAnnot->columnDefinition);
+        }
 
         if ($joinColumnAnnot->onDelete) {
             $joinColumn->setOnDelete(strtoupper($joinColumnAnnot->onDelete));
