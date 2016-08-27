@@ -81,6 +81,8 @@ $joinColumn = new Mapping\JoinColumnMetadata();
 
 $joinColumn->setColumnName("user_id");
 $joinColumn->setReferencedColumnName("id");
+$joinColumn->setNullable(false);
+$joinColumn->setUnique(false);
 
 $joinColumns[] = $joinColumn;
 

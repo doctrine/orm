@@ -40,7 +40,7 @@ class DDC2138Test extends OrmFunctionalTestCase
 
         $localColumns = $fk->getLocalColumns();
 
-        self::assertContains('user_id', $localColumns);
+        self::assertContains('"user_id"', $localColumns);
         self::assertCount(1, $localColumns);
     }
 }
