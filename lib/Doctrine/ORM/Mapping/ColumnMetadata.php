@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -101,9 +104,11 @@ class ColumnMetadata
     }
 
     /**
+     * @todo Enable scalar typehint here
+     *
      * @param string $tableName
      */
-    public function setTableName($tableName)
+    public function setTableName(/*string*/ $tableName)
     {
         $this->tableName = $tableName;
     }
@@ -119,7 +124,7 @@ class ColumnMetadata
     /**
      * @param string $columnName
      */
-    public function setColumnName($columnName)
+    public function setColumnName(string $columnName)
     {
         $this->columnName = $columnName;
     }

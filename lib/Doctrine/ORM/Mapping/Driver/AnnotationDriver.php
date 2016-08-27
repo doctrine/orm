@@ -613,11 +613,21 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         $joinColumn = new JoinColumnMetadata();
 
-        $joinColumn->setColumnName($joinColumnAnnot->name);
-        $joinColumn->setReferencedColumnName($joinColumnAnnot->referencedColumnName);
-        $joinColumn->setAliasedName($joinColumnAnnot->fieldName);
+        // @todo Remove conditionals for name and referencedColumnName once naming strategy is brought into drivers
+        if (! empty($joinColumnAnnot->name)) {
+            $joinColumn->setColumnName($joinColumnAnnot->name);
+        }
+
+        if (! empty($joinColumnAnnot->referencedColumnName)) {
+            $joinColumn->setReferencedColumnName($joinColumnAnnot->referencedColumnName);
+        }
+
         $joinColumn->setNullable($joinColumnAnnot->nullable);
         $joinColumn->setUnique($joinColumnAnnot->unique);
+
+        if (! empty($joinColumnAnnot->fieldName)) {
+            $joinColumn->setAliasedName($joinColumnAnnot->fieldName);
+        }
 
         if (! empty($joinColumnAnnot->columnDefinition)) {
             $joinColumn->setColumnDefinition($joinColumnAnnot->columnDefinition);

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -31,7 +34,7 @@ class JoinColumnMetadata extends ColumnMetadata
     protected $nullable = true;
 
     /** @var string */
-    private $onDelete;
+    private $onDelete = '';
 
     /**
      * @return string
@@ -44,7 +47,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @param string $referencedColumnName
      */
-    public function setReferencedColumnName($referencedColumnName)
+    public function setReferencedColumnName(string $referencedColumnName)
     {
         $this->referencedColumnName = $referencedColumnName;
     }
@@ -60,7 +63,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @param string $aliasedName
      */
-    public function setAliasedName($aliasedName)
+    public function setAliasedName(string $aliasedName)
     {
         $this->aliasedName = $aliasedName;
     }
@@ -76,11 +79,14 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @param string $onDelete
      */
-    public function setOnDelete($onDelete)
+    public function setOnDelete(string $onDelete)
     {
-        $this->onDelete = $onDelete ? strtoupper($onDelete) : $onDelete;
+        $this->onDelete = strtoupper($onDelete);
     }
 
+    /**
+     * @return bool
+     */
     public function isOnDeleteCascade()
     {
         return $this->onDelete === 'CASCADE';
