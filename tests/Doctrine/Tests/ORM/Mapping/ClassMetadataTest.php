@@ -263,9 +263,11 @@ class ClassMetadataTest extends OrmTestCase
     public function testSetInvalidVersionMapping_ThrowsException()
     {
         $metadata = new ClassMetadata(CMS\CmsUser::class);
-        $property = new FieldMetadata('foo', 'foo', Type::getType('string'));
+        $property = new FieldMetadata('foo'); //new FieldMetadata('foo', 'foo', Type::getType('string'));
 
         $property->setDeclaringClass($metadata);
+        $property->setColumnName('foo');
+        $property->setType(Type::getType('string'));
 
         $metadata->initializeReflection(new RuntimeReflectionService());
 
