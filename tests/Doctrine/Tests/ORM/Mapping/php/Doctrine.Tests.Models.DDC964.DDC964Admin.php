@@ -8,7 +8,7 @@ $joinColumn = new Mapping\JoinColumnMetadata();
 
 $joinColumn->setColumnName('adminaddress_id');
 $joinColumn->setReferencedColumnName('id');
-$joinColumn->setOnDelete(null);
+$joinColumn->setOnDelete('');
 
 $joinColumns[] = $joinColumn;
 
