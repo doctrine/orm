@@ -125,11 +125,19 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityUniqueConstraints($class)
     {
-        self::assertArrayHasKey('uniqueConstraints', $class->table,
-            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.');
+        self::assertArrayHasKey(
+            'uniqueConstraints',
+            $class->table,
+            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.'
+        );
 
         self::assertEquals(
-            ["search_idx" => ["columns" => ["name", "user_email"], 'options' => ['where' => 'name IS NOT NULL']]],
+            [
+                'search_idx' => [
+                    'columns' => ['name', 'user_email'],
+                    'options' => ['where' => 'name IS NOT NULL']
+                ]
+            ],
             $class->table['uniqueConstraints']
         );
 
@@ -145,7 +153,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
 
         self::assertEquals(
-            ['foo' => 'bar', 'baz' => ['key' => 'val']],
+            [
+                'foo' => 'bar',
+                'baz' => ['key' => 'val']
+            ],
             $class->table['options']
         );
 
@@ -174,10 +185,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $class = $this->createClassMetadata(Animal::class);
 
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $class->generatorType, "Generator Type");
-        self::assertEquals(
-            ["class" => "stdClass"],
-            $class->customGeneratorDefinition,
-            "Custom Generator Definition");
+        self::assertEquals(["class" => "stdClass"], $class->customGeneratorDefinition, "Custom Generator Definition");
     }
 
 
@@ -550,8 +558,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testNamingStrategy()
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $em      = $this->_getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
 
         self::assertInstanceOf(DefaultNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy(CASE_UPPER));
@@ -884,12 +892,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityListeners()
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $factory    = $this->createClassMetadataFactory();
         $superClass = $factory->getMetadataFor(CompanyContract::class);
         $flexClass  = $factory->getMetadataFor(CompanyFixContract::class);
         $fixClass   = $factory->getMetadataFor(CompanyFlexContract::class);
-        $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
         self::assertArrayHasKey(Events::prePersist, $superClass->entityListeners);
         self::assertArrayHasKey(Events::postPersist, $superClass->entityListeners);
@@ -915,8 +921,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityListenersOverride()
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $factory    = $this->createClassMetadataFactory();
         $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
         //overridden listeners
@@ -949,9 +954,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityListenersNamingConvention()
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
-        $metadata   = $factory->getMetadataFor(CmsAddress::class);
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(CmsAddress::class);
 
         self::assertArrayHasKey(Events::postPersist, $metadata->entityListeners);
         self::assertArrayHasKey(Events::prePersist, $metadata->entityListeners);
@@ -980,7 +984,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $postLoad    = $metadata->entityListeners[Events::postLoad][0];
         $preFlush    = $metadata->entityListeners[Events::preFlush][0];
 
-
         self::assertEquals(CmsAddressListener::class, $postPersist['class']);
         self::assertEquals(CmsAddressListener::class, $prePersist['class']);
         self::assertEquals(CmsAddressListener::class, $postUpdate['class']);
@@ -1005,8 +1008,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testSecondLevelCacheMapping()
     {
-        $em      = $this->_getTestEntityManager();
-        $factory = $this->createClassMetadataFactory($em);
+        $factory = $this->createClassMetadataFactory();
         $class   = $factory->getMetadataFor(City::class);
 
         self::assertArrayHasKey('usage', $class->cache);
@@ -1035,8 +1037,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::class);
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(ExplicitSchemaAndTable::class);
 
         self::assertSame('explicit_schema', $metadata->getSchemaName());
         self::assertSame('explicit_table', $metadata->getTableName());
@@ -1048,8 +1050,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::class);
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(SchemaAndTableInTableName::class);
 
         self::assertSame('implicit_schema', $metadata->getSchemaName());
         self::assertSame('implicit_table', $metadata->getTableName());
@@ -1111,7 +1113,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('dtype', $class->discriminatorColumn->getColumnName());
     }
-
 }
 
 /**
@@ -1289,6 +1290,8 @@ class User
 
         $joinColumn->setColumnName('user_id');
         $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setNullable(false);
+        $joinColumn->setUnique(false);
 
         $joinColumns[] = $joinColumn;
 
