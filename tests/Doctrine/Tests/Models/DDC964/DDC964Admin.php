@@ -31,7 +31,7 @@ class DDC964Admin extends DDC964User
 
         $joinColumn->setColumnName('adminaddress_id');
         $joinColumn->setReferencedColumnName('id');
-        $joinColumn->setOnDelete(null);
+        $joinColumn->setOnDelete('');
 
         $joinColumns[] = $joinColumn;
 
