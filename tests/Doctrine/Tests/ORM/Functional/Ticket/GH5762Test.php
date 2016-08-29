@@ -3,11 +3,13 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group GH-5762
  */
-class GH5762Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class GH5762Test extends OrmFunctionalTestCase
 {
 
     protected function setup()
@@ -25,10 +27,10 @@ class GH5762Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $result = $this->fetchData();
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762Driver', $result);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result->driverRides);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762DriverRide', $result->driverRides->get(0));
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762Car', $result->driverRides->get(0)->car);
+        $this->assertInstanceOf(GH5762Driver::class, $result);
+        $this->assertInstanceOf(PersistentCollection::class, $result->driverRides);
+        $this->assertInstanceOf(GH5762DriverRide::class, $result->driverRides->get(0));
+        $this->assertInstanceOf(GH5762Car::class, $result->driverRides->get(0)->car);
 
         $cars = array();
         foreach ($result->driverRides as $ride) {
@@ -49,7 +51,7 @@ class GH5762Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $qb = $this->_em->createQueryBuilder();
         $qb->select('d, dr, c')
-            ->from(__NAMESPACE__ . '\GH5762Driver', 'd')
+            ->from(GH5762Driver::class, 'd')
             ->leftJoin('d.driverRides', 'dr')
             ->leftJoin('dr.car', 'c')
             ->where('d.id = 1');
