@@ -15,9 +15,9 @@ class GH5762Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setup();
 
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\GH5762Driver'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\GH5762DriverRide'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\GH5762Car'),
+            $this->_em->getClassMetadata(GH5762Driver::class),
+            $this->_em->getClassMetadata(GH5762DriverRide::class),
+            $this->_em->getClassMetadata(GH5762Car::class),
         ));
     }
 
@@ -26,13 +26,13 @@ class GH5762Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $this->fetchData();
 
         $this->assertInstanceOf(__NAMESPACE__ . '\GH5762Driver', $result);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result->getDriverRides());
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762DriverRide', $result->getDriverRides()->get(0));
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762Car', $result->getDriverRides()->get(0)->getCar());
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result->driverRides);
+        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762DriverRide', $result->driverRides->get(0));
+        $this->assertInstanceOf(__NAMESPACE__ . '\GH5762Car', $result->driverRides->get(0)->car);
 
         $cars = array();
-        foreach ($result->getDriverRides() as $ride) {
-            $cars[] = $ride->getCar()->getBrand();
+        foreach ($result->driverRides as $ride) {
+            $cars[] = $ride->car->brand;
         }
         $this->assertEquals(count($cars), count(array_unique($cars)));
 
@@ -93,49 +93,33 @@ class GH5762Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity 
+ * @Entity
  * @Table(name="driver")
  */
 class GH5762Driver
 {
-
     /**
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
-    private $id;
+    public $id;
 
     /**
      * @Column(type="string", length=255);
      */
-    private $name;
+    public $name;
 
     /**
      * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
      */
-    private $driverRides;
+    public $driverRides;
 
-    function __construct($id, $name)
+    public function __construct($id, $name)
     {
         $this->driverRides = new ArrayCollection();
         $this->id = $id;
         $this->name = $name;
-    }
-
-    function getId()
-    {
-        return $this->id;
-    }
-
-    function getName()
-    {
-        return $this->name;
-    }
-
-    function getDriverRides()
-    {
-        return $this->driverRides;
     }
 }
 
@@ -145,38 +129,27 @@ class GH5762Driver
  */
 class GH5762DriverRide
 {
-
     /**
      * @Id
      * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
      * @JoinColumn(name="driver_id", referencedColumnName="id")
      */
-    private $driver;
+    public $driver;
 
     /**
      * @Id
      * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
      * @JoinColumn(name="car", referencedColumnName="brand")
      */
-    private $car;
+    public $car;
 
     function __construct(GH5762Driver $driver, GH5762Car $car)
     {
         $this->driver = $driver;
         $this->car = $car;
 
-        $this->driver->getDriverRides()->add($this);
-        $this->car->getCarRides()->add($this);
-    }
-
-    function getDriver()
-    {
-        return $this->driver;
-    }
-
-    function getCar()
-    {
-        return $this->car;
+        $this->driver->driverRides->add($this);
+        $this->car->carRides->add($this);
     }
 }
 
@@ -192,37 +165,22 @@ class GH5762Car
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
      */
-    private $brand;
+    public $brand;
 
     /**
      * @Column(type="string", length=255);
      */
-    private $model;
+    public $model;
 
     /**
      * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
      */
-    private $carRides;
+    public $carRides;
 
-    function __construct($brand, $model)
+    public function __construct($brand, $model)
     {
         $this->carRides = new ArrayCollection();
         $this->brand = $brand;
         $this->model = $model;
-    }
-
-    function getBrand()
-    {
-        return $this->brand;
-    }
-
-    function getModel()
-    {
-        return $this->model;
-    }
-
-    function getCarRides()
-    {
-        return $this->carRides;
     }
 }
