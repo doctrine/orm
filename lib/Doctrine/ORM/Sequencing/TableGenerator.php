@@ -30,7 +30,7 @@ use Doctrine\ORM\EntityManager;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class TableGenerator extends AbstractGenerator
+class TableGenerator implements Generator
 {
     /**
      * @var string
@@ -70,7 +70,7 @@ class TableGenerator extends AbstractGenerator
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function generate(
         EntityManager $em, $entity)
@@ -105,5 +105,13 @@ class TableGenerator extends AbstractGenerator
         }
 
         return $this->_nextValue++;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }
