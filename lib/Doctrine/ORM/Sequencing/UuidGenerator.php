@@ -27,10 +27,10 @@ use Doctrine\ORM\EntityManager;
  * @since 2.3
  * @author Maarten de Keizer <m.de.keizer@markei.nl>
  */
-class UuidGenerator extends AbstractGenerator
+class UuidGenerator implements Generator
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function generate(EntityManager $em, $entity)
     {
@@ -38,5 +38,13 @@ class UuidGenerator extends AbstractGenerator
         $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
 
         return $conn->query($sql)->fetchColumn(0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }

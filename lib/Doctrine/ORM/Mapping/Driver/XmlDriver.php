@@ -327,16 +327,16 @@ class XmlDriver extends FileDriver
             if (isset($idElement->{'sequence-generator'})) {
                 $seqGenerator = $idElement->{'sequence-generator'};
 
-                $metadata->setSequenceGeneratorDefinition(array(
-                    'sequenceName' => (string) $seqGenerator['sequence-name'],
+                $metadata->setGeneratorDefinition(array(
+                    'sequenceName'   => (string) $seqGenerator['sequence-name'],
                     'allocationSize' => (string) $seqGenerator['allocation-size'],
-                    'initialValue' => (string) $seqGenerator['initial-value']
                 ));
             } else if (isset($idElement->{'custom-id-generator'})) {
                 $customGenerator = $idElement->{'custom-id-generator'};
 
-                $metadata->setCustomGeneratorDefinition(array(
-                    'class' => (string) $customGenerator['class']
+                $metadata->setGeneratorDefinition(array(
+                    'class'     => (string) $customGenerator['class'],
+                    'arguments' => [],
                 ));
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);

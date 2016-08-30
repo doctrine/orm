@@ -28,7 +28,7 @@ use Serializable;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class SequenceGenerator extends AbstractGenerator implements Serializable
+class SequenceGenerator implements Generator, Serializable
 {
     /**
      * The allocation size of the sequence.
@@ -67,7 +67,7 @@ class SequenceGenerator extends AbstractGenerator implements Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function generate(EntityManager $em, $entity)
     {
@@ -125,5 +125,13 @@ class SequenceGenerator extends AbstractGenerator implements Serializable
 
         $this->_sequenceName = $array['sequenceName'];
         $this->_allocationSize = $array['allocationSize'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }

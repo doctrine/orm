@@ -1694,22 +1694,18 @@ public function __construct(<params>)
                     $lines[] = $this->spaces.' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
                 }
 
-                if ($metadata->sequenceGeneratorDefinition) {
-                    $sequenceGenerator = array();
+                if ($metadata->generatorDefinition) {
+                    $generator = array();
 
-                    if (isset($metadata->sequenceGeneratorDefinition['sequenceName'])) {
-                        $sequenceGenerator[] = 'sequenceName="' . $metadata->sequenceGeneratorDefinition['sequenceName'] . '"';
+                    if (isset($metadata->generatorDefinition['sequenceName'])) {
+                        $generator[] = 'sequenceName="' . $metadata->generatorDefinition['sequenceName'] . '"';
                     }
 
-                    if (isset($metadata->sequenceGeneratorDefinition['allocationSize'])) {
-                        $sequenceGenerator[] = 'allocationSize=' . $metadata->sequenceGeneratorDefinition['allocationSize'];
+                    if (isset($metadata->generatorDefinition['allocationSize'])) {
+                        $generator[] = 'allocationSize=' . $metadata->generatorDefinition['allocationSize'];
                     }
 
-                    if (isset($metadata->sequenceGeneratorDefinition['initialValue'])) {
-                        $sequenceGenerator[] = 'initialValue=' . $metadata->sequenceGeneratorDefinition['initialValue'];
-                    }
-
-                    $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
+                    $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $generator) . ')';
                 }
             }
 

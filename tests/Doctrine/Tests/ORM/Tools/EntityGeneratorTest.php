@@ -569,10 +569,9 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
 
-        $metadata->setSequenceGeneratorDefinition(array(
-            'sequenceName'      => 'DDC1784_ID_SEQ',
-            'allocationSize'    => 1,
-            'initialValue'      => 2
+        $metadata->setGeneratorDefinition(array(
+            'sequenceName'   => 'DDC1784_ID_SEQ',
+            'allocationSize' => 1,
         ));
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
@@ -590,7 +589,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertContains('@Id', $docComment);
         self::assertContains('@Column(name="id", type="integer")', $docComment);
         self::assertContains('@GeneratedValue(strategy="SEQUENCE")', $docComment);
-        self::assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1, initialValue=2)', $docComment);
+        self::assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1)', $docComment);
     }
 
     /**

@@ -32,4 +32,7 @@ $metadata->addProperty('id', Type::getType('integer'), array(
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 
-$metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
+$metadata->setGeneratorDefinition(array(
+    'class'     => 'stdClass',
+    'arguments' => [],
+));
