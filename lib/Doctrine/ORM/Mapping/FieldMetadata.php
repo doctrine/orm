@@ -24,6 +24,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Sequencing\Generator;
 
 class FieldMetadata extends ColumnMetadata implements Property
 {
@@ -41,6 +42,16 @@ class FieldMetadata extends ColumnMetadata implements Property
      * @var string
      */
     private $name;
+
+    /**
+     * @var int
+     */
+    private $identifierGeneratorType = ClassMetadata::GENERATOR_TYPE_NONE;
+
+    /**
+     * @var array<string, mixed>
+     */
+    private $identifierGeneratorDefinition = [];
 
     /**
      * FieldMetadata constructor.
@@ -85,6 +96,38 @@ class FieldMetadata extends ColumnMetadata implements Property
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIdentifierGeneratorType()
+    {
+        return $this->identifierGeneratorType;
+    }
+
+    /**
+     * @param int $identifierGeneratorType
+     */
+    public function setIdentifierGeneratorType(int $identifierGeneratorType)
+    {
+        $this->identifierGeneratorType = $identifierGeneratorType;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIdentifierGeneratorDefinition()
+    {
+        return $this->identifierGeneratorDefinition;
+    }
+
+    /**
+     * @param array $identifierGeneratorDefinition
+     */
+    public function setIdentifierGeneratorDefinition(array $identifierGeneratorDefinition)
+    {
+        $this->identifierGeneratorDefinition = $identifierGeneratorDefinition;
     }
 
     /**

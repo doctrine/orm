@@ -227,23 +227,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $rootEntityName;
 
     /**
-     * READ-ONLY: The definition of custom generator. Only used for CUSTOM
-     * generator type
-     *
-     * The definition has the following structure:
-     * <code>
-     * array(
-     *     'class' => 'ClassName',
-     * )
-     * </code>
-     *
-     * @var array
-     *
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
-     */
-    public $customGeneratorDefinition;
-
-    /**
      * The name of the custom repository class used for the entity class.
      * (Optional).
      *
@@ -347,6 +330,36 @@ class ClassMetadata implements ClassMetadataInterface
      * @var int
      */
     public $generatorType = self::GENERATOR_TYPE_NONE;
+
+    /**
+     * READ-ONLY: The definition of the identity generator of this class.
+     * In case of SEQUENCE generation strategy, the definition has the following structure:
+     * <code>
+     * array(
+     *     'sequenceName'   => 'name',
+     *     'allocationSize' => 20,
+     * )
+     * </code>
+     *
+     * In case of CUSTOM generation strategy, the definition has the following structure:
+     * <code>
+     * array(
+     *     'class' => 'ClassName',
+     * )
+     * </code>
+     *
+     * @var array
+     */
+    public $generatorDefinition;
+
+    /**
+     * READ-ONLY: The ID generator used for generating IDs for this class.
+     *
+     * @var \Doctrine\ORM\Sequencing\Generator
+     *
+     * @todo Remove!
+     */
+    public $idGenerator;
 
     /**
      * @var array
@@ -492,34 +505,6 @@ class ClassMetadata implements ClassMetadataInterface
      * @var boolean
      */
     public $containsForeignIdentifier = false;
-
-    /**
-     * READ-ONLY: The ID generator used for generating IDs for this class.
-     *
-     * @var \Doctrine\ORM\Sequencing\AbstractGenerator
-     *
-     * @todo Remove!
-     */
-    public $idGenerator;
-
-    /**
-     * READ-ONLY: The definition of the sequence generator of this class. Only used for the
-     * SEQUENCE generation strategy.
-     *
-     * The definition has the following structure:
-     * <code>
-     * array(
-     *     'sequenceName' => 'name',
-     *     'allocationSize' => 20,
-     *     'initialValue' => 1
-     * )
-     * </code>
-     *
-     * @var array
-     *
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
-     */
-    public $sequenceGeneratorDefinition;
 
     /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
@@ -767,11 +752,12 @@ class ClassMetadata implements ClassMetadataInterface
             $serialized[] = 'subClasses';
         }
 
-        if ($this->generatorType != self::GENERATOR_TYPE_NONE) {
+        if ($this->generatorType !== self::GENERATOR_TYPE_NONE) {
             $serialized[] = 'generatorType';
-            if ($this->generatorType == self::GENERATOR_TYPE_SEQUENCE) {
-                $serialized[] = 'sequenceGeneratorDefinition';
-            }
+        }
+
+        if ($this->generatorDefinition) {
+            $serialized[] = "generatorDefinition";
         }
 
         if ($this->isMappedSuperclass) {
@@ -812,10 +798,6 @@ class ClassMetadata implements ClassMetadataInterface
 
         if ($this->isReadOnly) {
             $serialized[] = 'isReadOnly';
-        }
-
-        if ($this->customGeneratorDefinition) {
-            $serialized[] = "customGeneratorDefinition";
         }
 
         if ($this->cache) {
@@ -2812,7 +2794,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
-     * @param \Doctrine\ORM\Sequencing\AbstractGenerator $generator
+     * @param \Doctrine\ORM\Sequencing\Generator $generator
      *
      * @return void
      */
@@ -2822,42 +2804,36 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Sets definition.
+     * Sets the generator definition for this class.
+     * For sequence definition, it must have the following structure:
      *
-     * @param array $definition
-     *
-     * @return void
-     */
-    public function setCustomGeneratorDefinition(array $definition)
-    {
-        $this->customGeneratorDefinition = $definition;
-    }
-
-    /**
-     * Sets the definition of the sequence ID generator for this class.
-     *
-     * The definition must have the following structure:
      * <code>
      * array(
      *     'sequenceName'   => 'name',
      *     'allocationSize' => 20,
-     *     'initialValue'   => 1,
+     * )
+     * </code>
+     *
+     * For custom definition, it must have the following structure:
+     *
+     * <code>
+     * array(
+     *     'class'     => 'Path\To\ClassName',
+     *     'arguments' => [],
      * )
      * </code>
      *
      * @param array $definition
      *
      * @return void
-     *
-     * @throws MappingException
      */
-    public function setSequenceGeneratorDefinition(array $definition)
+    public function setGeneratorDefinition(array $definition)
     {
-        if ( ! isset($definition['sequenceName'])) {
+        if ($this->generatorType === ClassMetadata::GENERATOR_TYPE_SEQUENCE && ! isset($definition['sequenceName'])) {
             throw MappingException::missingSequenceName($this->name);
         }
 
-        $this->sequenceGeneratorDefinition = $definition;
+        $this->generatorDefinition = $definition;
     }
 
     /**

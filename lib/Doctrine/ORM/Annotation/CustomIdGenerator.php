@@ -29,4 +29,9 @@ final class CustomIdGenerator implements Annotation
      * @var string
      */
     public $class;
+
+    /**
+     * @var array
+     */
+    public $arguments = [];
 }

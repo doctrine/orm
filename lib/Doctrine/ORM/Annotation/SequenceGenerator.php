@@ -34,9 +34,4 @@ final class SequenceGenerator implements Annotation
      * @var integer
      */
     public $allocationSize = 1;
-
-    /**
-     * @var integer
-     */
-    public $initialValue = 1;
 }

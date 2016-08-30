@@ -38,7 +38,7 @@
 
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
-            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+            <sequence-generator sequence-name="tablename_seq" allocation-size="100"/>
             <options>
                 <option name="foo">bar</option>
                 <option name="unsigned">false</option>

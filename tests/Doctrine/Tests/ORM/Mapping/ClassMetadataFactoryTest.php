@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
-use Doctrine\ORM\Sequencing\AbstractGenerator;
+use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
@@ -71,9 +71,16 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
     {
         $cm1 = $this->_createValidClassMetadata();
+
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = ['class' => CustomIdGenerator::class];
+
+        $cm1->generatorDefinition = [
+            'class' => CustomIdGenerator::class,
+            'arguments' => [],
+        ];
+
         $cmf = $this->_createTestFactory();
+
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
         $actual = $cmf->getMetadataFor($cm1->name);
@@ -85,10 +92,18 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
     {
         $cm1 = $this->_createValidClassMetadata();
+
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = ["class" => "NotExistingGenerator"];
+
+        $cm1->generatorDefinition = [
+            'class' => 'NotExistingGenerator',
+            'arguments' => [],
+        ];
+
         $cmf = $this->_createTestFactory();
+
         $cmf->setMetadataForClass($cm1->name, $cm1);
+
         $this->expectException(ORMException::class);
 
         $actual = $cmf->getMetadataFor($cm1->name);
@@ -494,9 +509,20 @@ class TestEntity1
     private $embedded;
 }
 
-class CustomIdGenerator extends AbstractGenerator
+class CustomIdGenerator implements Generator
 {
+    /**
+     * {@inheritdoc}
+     */
     public function generate(EntityManager $em, $entity)
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }

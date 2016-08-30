@@ -335,17 +335,21 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 // Check for SequenceGenerator/TableGenerator definition
                 if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\SequenceGenerator::class)) {
-                    $metadata->setSequenceGeneratorDefinition(
+                    $metadata->setGeneratorDefinition(
                         [
-                            'sequenceName' => $seqGeneratorAnnot->sequenceName,
+                            'sequenceName'   => $seqGeneratorAnnot->sequenceName,
                             'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                            'initialValue' => $seqGeneratorAnnot->initialValue
                         ]
                     );
                 } else if ($this->reader->getPropertyAnnotation($reflProperty, 'Doctrine\ORM\Mapping\TableGenerator')) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\CustomIdGenerator::class)) {
-                    $metadata->setCustomGeneratorDefinition(['class' => $customGeneratorAnnot->class]);
+                    $metadata->setGeneratorDefinition(
+                        [
+                            'class'     => $customGeneratorAnnot->class,
+                            'arguments' => $customGeneratorAnnot->arguments,
+                        ]
+                    );
                 }
             } else if ($oneToOneAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OneToOne::class)) {
                 if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {

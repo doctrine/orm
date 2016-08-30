@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Sequencing\AbstractGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
+use Doctrine\ORM\Sequencing\Generator;
 
 /**
  * @group DDC-2415
@@ -33,8 +34,8 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $childMetadata   = $this->_em->getClassMetadata(DDC2415ChildEntity::class);
 
         self::assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
-        self::assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
-        self::assertEquals(DDC2415Generator::class, $parentMetadata->customGeneratorDefinition['class']);
+        self::assertEquals($parentMetadata->generatorDefinition, $childMetadata->generatorDefinition);
+        self::assertEquals(DDC2415Generator::class, $parentMetadata->generatorDefinition['class']);
 
         $e1 = new DDC2415ChildEntity("ChildEntity 1");
         $e2 = new DDC2415ChildEntity("ChildEntity 2");
@@ -63,7 +64,13 @@ class DDC2415ParentEntity
         $metadata->addProperty('id', Type::getType('string'), ['id' => true]);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(['class' => DDC2415Generator::class]);
+
+        $metadata->setGeneratorDefinition(
+            [
+                'class'     => DDC2415Generator::class,
+                'arguments' => [],
+            ]
+        );
 
         $metadata->isMappedSuperclass = true;
     }
@@ -89,10 +96,15 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
     }
 }
 
-class DDC2415Generator extends AbstractGenerator
+class DDC2415Generator implements Generator
 {
     public function generate(EntityManager $em, $entity)
     {
         return md5($entity->getName());
+    }
+
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }

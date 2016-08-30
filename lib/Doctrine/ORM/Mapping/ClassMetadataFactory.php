@@ -147,13 +147,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
-            if ( ! empty($parent->customGeneratorDefinition) && empty($class->customGeneratorDefinition)) {
-                $class->setCustomGeneratorDefinition($parent->customGeneratorDefinition);
-            }
-
             if ($parent->isMappedSuperclass && empty($class->customRepositoryClassName)) {
                 $class->setCustomRepositoryClass($parent->customRepositoryClassName);
             }
+
+            $this->inheritIdGeneratorMapping($class, $parent);
         }
 
         // Invoke driver
@@ -166,9 +164,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // If this class has a parent the id generator strategy is inherited.
         // However this is only true if the hierarchy of parents contains the root entity,
         // if it consists of mapped superclasses these don't necessarily include the id field.
-        if ($parent && $rootEntityFound) {
-            $this->inheritIdGeneratorMapping($class, $parent);
-        } else {
+        if (! ($parent && $rootEntityFound)) {
             $this->completeIdGeneratorMapping($class);
         }
 
@@ -726,7 +722,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
-                $definition = $class->sequenceGeneratorDefinition;
+                $definition = $class->generatorDefinition;
 
                 if ( ! $definition) {
                     $sequenceName   = $class->getSequenceName($platform);
@@ -734,10 +730,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $definition = [
                         'sequenceName'   => $platform->fixSchemaElementName($sequenceName),
                         'allocationSize' => 1,
-                        'initialValue'   => 1,
                     ];
 
-                    $class->setSequenceGeneratorDefinition($definition);
+                    $class->setGeneratorDefinition($definition);
                 }
 
                 $sequenceName      = $platform->quoteIdentifier($definition['sequenceName']);
@@ -759,10 +754,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
-                $definition = $class->customGeneratorDefinition;
+                $definition = $class->generatorDefinition;
 
                 if ( ! class_exists($definition['class'])) {
-                    throw new ORMException("Can't instantiate custom generator : " . $definition['class']);
+                    throw new ORMException(sprintf('Cannot instantiate custom generator : %s', var_export($definition, true))); //$definition['class']));
                 }
 
                 $class->setIdGenerator(new $definition['class']);
@@ -781,14 +776,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function inheritIdGeneratorMapping(ClassMetadata $class, ClassMetadata $parent)
     {
-        if ($parent->isIdGeneratorSequence()) {
-            $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-        } elseif ($parent->isIdGeneratorTable()) {
-            $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
-        }
-
         if ($parent->generatorType) {
             $class->setIdGeneratorType($parent->generatorType);
+        }
+
+        if ($parent->generatorDefinition) {
+            $class->generatorDefinition = $parent->generatorDefinition;
         }
 
         if ($parent->idGenerator) {

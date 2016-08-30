@@ -40,4 +40,9 @@ $metadata->addProperty(
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 
-$metadata->setCustomGeneratorDefinition(["class" => "stdClass"]);
+$metadata->setGeneratorDefinition(
+    [
+        'class'     => 'stdClass',
+        'arguments' => [],
+    ]
+);

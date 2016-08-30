@@ -164,8 +164,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         self::assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
-            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            ['allocationSize' => 1, 'sequenceName' => 'foo'],
+            $class->generatorDefinition
         );
     }
 
@@ -180,8 +180,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         self::assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
-            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            ['allocationSize' => 1, 'sequenceName' => 'foo'],
+            $class->generatorDefinition
         );
     }
 
@@ -196,8 +196,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         self::assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
-            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            ['allocationSize' => 1, 'sequenceName' => 'foo'],
+            $class->generatorDefinition
         );
     }
 
@@ -292,7 +292,7 @@ abstract class HierarchyBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo", initialValue=10)
+     * @SequenceGenerator(sequenceName="foo")
      * @var int
      */
     public $id;
@@ -343,7 +343,7 @@ abstract class SuperclassBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo", initialValue=10)
+     * @SequenceGenerator(sequenceName="foo")
      */
     public $id;
 }
