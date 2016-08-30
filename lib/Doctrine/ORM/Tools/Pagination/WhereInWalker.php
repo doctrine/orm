@@ -111,6 +111,7 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary = new ConditionalPrimary;
         $conditionalPrimary->simpleConditionalExpression = $expression;
+
         if ($AST->whereClause) {
             if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
                 $AST->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
