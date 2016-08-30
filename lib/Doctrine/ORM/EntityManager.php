@@ -472,7 +472,21 @@ use Doctrine\Common\Util\ClassUtils;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
+            if ($class->isIdentifierComposite) {
+                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+            }
+
             $id = [$class->identifier[0] => $id];
+        }
+
+        foreach ($id as $i => $value) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($id[$i] === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
+            }
         }
 
         $sortedId = [];
@@ -509,24 +523,53 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference($entityName, $id)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
-            return ($entity instanceof $class->name) ? $entity : null;
+        if ( ! is_array($id)) {
+            if ($class->isIdentifierComposite) {
+                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+            }
+
+            $id = [$class->identifier[0] => $id];
         }
 
-        if ( ! is_array($identifier)) {
-            $identifier = [$class->identifier[0] => $identifier];
+        foreach ($id as $i => $value) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($id[$i] === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
+            }
+        }
+
+        $sortedId = [];
+
+        foreach ($class->identifier as $identifier) {
+            if ( ! isset($id[$identifier])) {
+                throw ORMException::missingIdentifierField($class->name, $identifier);
+            }
+
+            $sortedId[$identifier] = $id[$identifier];
+            unset($id[$identifier]);
+        }
+
+        if ($id) {
+            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+        }
+
+        // Check identity map first, if its already in there just return it.
+        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+            return ($entity instanceof $class->name) ? $entity : null;
         }
 
         $entity = $class->newInstance();
 
-        $class->assignIdentifier($entity, $identifier);
+        $class->assignIdentifier($entity, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, []);
+        $this->unitOfWork->registerManaged($entity, $sortedId, []);
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
