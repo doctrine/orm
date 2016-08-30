@@ -63,12 +63,7 @@ class FieldBuilder
     /**
      * @var array
      */
-    private $sequenceDef;
-
-    /**
-     * @var string|null
-     */
-    private $customIdGenerator;
+    private $generatorDefinition;
 
     /**
      * @param ClassMetadataBuilder $builder
@@ -234,16 +229,14 @@ class FieldBuilder
      *
      * @param string $sequenceName
      * @param int    $allocationSize
-     * @param int    $initialValue
      *
      * @return FieldBuilder
      */
-    public function setSequenceGenerator($sequenceName, $allocationSize = 1, $initialValue = 1)
+    public function setSequenceGenerator($sequenceName, $allocationSize = 1)
     {
-        $this->sequenceDef = [
-            'sequenceName' => $sequenceName,
+        $this->generatorDefinition = [
+            'sequenceName'   => $sequenceName,
             'allocationSize' => $allocationSize,
-            'initialValue' => $initialValue,
         ];
 
         return $this;
@@ -265,15 +258,19 @@ class FieldBuilder
 
     /**
      * Set the FQCN of the custom ID generator.
-     * This class must extend \Doctrine\ORM\Sequencing\AbstractGenerator.
+     * This class must extend \Doctrine\ORM\Sequencing\Generator.
      *
      * @param string $customIdGenerator
+     * @param array  $arguments
      *
      * @return $this
      */
-    public function setCustomIdGenerator($customIdGenerator)
+    public function setCustomIdGenerator($customIdGenerator, array $arguments = [])
     {
-        $this->customIdGenerator = (string) $customIdGenerator;
+        $this->generatorDefinition = [
+            'class'     => (string) $customIdGenerator,
+            'arguments' => $arguments,
+        ];
 
         return $this;
     }
@@ -300,13 +297,9 @@ class FieldBuilder
         if ($this->version) {
             $cm->setVersionProperty($property);
         }
-        
-        if ($this->sequenceDef) {
-            $cm->setSequenceGeneratorDefinition($this->sequenceDef);
-        }
 
-        if ($this->customIdGenerator) {
-            $cm->setCustomGeneratorDefinition(['class' => $this->customIdGenerator]);
+        if ($this->generatorDefinition) {
+            $cm->setGeneratorDefinition($this->generatorDefinition);
         }
 
         return $this->builder;

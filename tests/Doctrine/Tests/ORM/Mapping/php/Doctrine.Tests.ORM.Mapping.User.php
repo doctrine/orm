@@ -146,10 +146,9 @@ $metadata->table['indexes'] = [
     0 => ['columns' => ['user_email']]
 ];
 
-$metadata->setSequenceGeneratorDefinition(
+$metadata->setGeneratorDefinition(
     [
-        'sequenceName' => 'tablename_seq',
+        'sequenceName'   => 'tablename_seq',
         'allocationSize' => 100,
-        'initialValue' => 1,
     ]
 );

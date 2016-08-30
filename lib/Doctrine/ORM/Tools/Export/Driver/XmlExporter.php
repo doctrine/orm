@@ -461,7 +461,7 @@ class XmlExporter extends AbstractExporter
      */
     private function exportSequenceInformation(\SimpleXMLElement $identifierXmlNode, ClassMetadata $metadata)
     {
-        $sequenceDefinition = $metadata->sequenceGeneratorDefinition;
+        $sequenceDefinition = $metadata->generatorDefinition;
 
         if (! ($metadata->generatorType === ClassMetadata::GENERATOR_TYPE_SEQUENCE && $sequenceDefinition)) {
             return;
@@ -471,7 +471,6 @@ class XmlExporter extends AbstractExporter
 
         $sequenceGeneratorXml->addAttribute('sequence-name', $sequenceDefinition['sequenceName']);
         $sequenceGeneratorXml->addAttribute('allocation-size', $sequenceDefinition['allocationSize']);
-        $sequenceGeneratorXml->addAttribute('initial-value', $sequenceDefinition['initialValue']);
     }
 
     /**

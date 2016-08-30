@@ -11,8 +11,7 @@ class FieldBuilderTest extends OrmTestCase
 {
     public function testCustomIdGeneratorCanBeSet()
     {
-        $cmBuilder = new ClassMetadataBuilder(new ClassMetadata(CmsUser::class));
-
+        $cmBuilder    = new ClassMetadataBuilder(new ClassMetadata(CmsUser::class));
         $fieldBuilder = $cmBuilder->createField('aField', 'string');
 
         $fieldBuilder->generatedValue('CUSTOM');
@@ -20,7 +19,15 @@ class FieldBuilderTest extends OrmTestCase
 
         $fieldBuilder->build();
 
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $cmBuilder->getClassMetadata()->generatorType);
-        self::assertEquals(['class' => 'stdClass'], $cmBuilder->getClassMetadata()->customGeneratorDefinition);
+        $metadata = $cmBuilder->getClassMetadata();
+
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $metadata->generatorType);
+        self::assertEquals(
+            [
+                'class'     => 'stdClass',
+                'arguments' => [],
+            ],
+            $metadata->generatorDefinition
+        );
     }
 }
