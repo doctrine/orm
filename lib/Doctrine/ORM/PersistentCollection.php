@@ -295,7 +295,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
             $this->owner &&
             $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
-            $this->em->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
+            $this->em->getUnitOfWork()->scheduleForSynchronization($this->owner);
         }
     }
 
