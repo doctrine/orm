@@ -143,7 +143,7 @@ class XmlExporter extends AbstractExporter
 
         foreach ($properties as $name => $property) {
             if ($property->isPrimaryKey()) {
-                $id[$name]['property'] = $property;
+                $id[$name] = $property;
 
                 unset($properties[$name]);
             }
@@ -151,20 +151,15 @@ class XmlExporter extends AbstractExporter
 
         /*foreach ($metadata->associationMappings as $name => $assoc) {
             if (isset($assoc['id']) && $assoc['id']) {
-                $id[$name]['associations'] = [
+                $id[$name] = [
                     'fieldName'      => $name,
                     'associationKey' => true,
                 ];
             }
         }*/
 
-        if ( ! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
-        }
-
         if ($id) {
-            foreach ($id as $field) {
-                $property = $field['property'];
+            foreach ($id as $property) {
                 $idXml    = $root->addChild('id');
                 $idXml->addAttribute('name', $property->getName());
                 $idXml->addAttribute('type', $property->getTypeName());
@@ -174,7 +169,7 @@ class XmlExporter extends AbstractExporter
                     $idXml->addAttribute('length', $property->getLength());
                 }
 
-                /*if (isset($field['associationKey']) && $field['associationKey']) {
+                /*if (isset($property['associationKey']) && $property['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
                 }*/
 
