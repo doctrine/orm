@@ -273,14 +273,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate annotations on properties/fields
         /* @var $reflProperty \ReflectionProperty */
         foreach ($class->getProperties() as $reflProperty) {
-            /*if ($reflProperty->getDeclaringClass()->name !== $class->name) {
-                continue;
-            }*/
-
-            if (($metadata->isMappedSuperclass && ! $reflProperty->isPrivate())
-                || (($property = $metadata->getProperty($reflProperty->name)) !== null && $metadata->isInheritedProperty($property->getName()))
-                || $metadata->isInheritedAssociation($reflProperty->name)
-                || $metadata->isInheritedEmbeddedClass($reflProperty->name)) {
+            if ($reflProperty->getDeclaringClass()->name !== $class->name) {
                 continue;
             }
 
