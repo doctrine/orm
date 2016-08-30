@@ -1706,7 +1706,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
                 if ($class->isChangeTrackingDeferredExplicit()) {
-                    $this->scheduleForDirtyCheck($entity);
+                    $this->scheduleForSynchronization($entity);
                 }
                 break;
 
@@ -1909,7 +1909,7 @@ class UnitOfWork implements PropertyChangedListener
             $visited[$oid] = $managedCopy; // mark visited
 
             if ($class->isChangeTrackingDeferredExplicit()) {
-                $this->scheduleForDirtyCheck($entity);
+                $this->scheduleForSynchronization($entity);
             }
         }
 
@@ -2989,10 +2989,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity The entity to schedule for dirty-checking.
      *
      * @return void
-     *
-     * @todo Rename: scheduleForSynchronization
      */
-    public function scheduleForDirtyCheck($entity)
+    public function scheduleForSynchronization($entity)
     {
         $rootClassName = $this->em->getClassMetadata(get_class($entity))->rootEntityName;
 
@@ -3163,7 +3161,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
 
         if ( ! isset($this->scheduledForSynchronization[$class->rootEntityName][$oid])) {
-            $this->scheduleForDirtyCheck($entity);
+            $this->scheduleForSynchronization($entity);
         }
     }
 
@@ -3483,7 +3481,7 @@ class UnitOfWork implements PropertyChangedListener
                                 && $assoc2['type'] == ClassMetadata::MANY_TO_MANY
                                 && $class->isChangeTrackingNotify()
                             ) {
-                                $this->scheduleForDirtyCheck($managedCopy);
+                                $this->scheduleForSynchronization($managedCopy);
                             }
                         }
                     }
