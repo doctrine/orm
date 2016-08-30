@@ -2000,30 +2000,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Checks whether a mapped association field is inherited from a superclass.
-     *
-     * @param string $fieldName
-     *
-     * @return boolean TRUE if the field is inherited, FALSE otherwise.
-     */
-    public function isInheritedAssociation($fieldName)
-    {
-        return isset($this->associationMappings[$fieldName]['inherited']);
-    }
-
-    /**
-     * Checks whether a mapped embedded field is inherited from a superclass.
-     *
-     * @param string $fieldName
-     *
-     * @return boolean TRUE if the field is inherited, FALSE otherwise.
-     */
-    public function isInheritedEmbeddedClass($fieldName)
-    {
-        //return isset($this->embeddedClasses[$fieldName]['inherited']);
-    }
-
-    /**
      * Sets the primary table definition. The provided array supports the
      * following structure:
      *
