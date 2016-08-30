@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -41,7 +41,7 @@ final class GH5804Test extends OrmFunctionalTestCase
     }
 }
 
-final class GH5804Generator extends AbstractIdGenerator
+final class GH5804Generator implements Generator
 {
     /**
      * {@inheritdoc}
@@ -49,6 +49,14 @@ final class GH5804Generator extends AbstractIdGenerator
     public function generate(EntityManager $em, $entity)
     {
         return 'test5804';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }
 

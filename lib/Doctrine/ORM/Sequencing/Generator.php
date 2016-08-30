@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,7 +24,7 @@ namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
 
-abstract class AbstractGenerator
+interface Generator
 {
     /**
      * Generates an identifier for an entity.
@@ -31,7 +34,7 @@ abstract class AbstractGenerator
      *
      * @return mixed
      */
-    abstract public function generate(EntityManager $em, $entity);
+    public function generate(EntityManager $em, $entity);
 
     /**
      * Gets whether this generator is a post-insert generator which means that
@@ -43,8 +46,5 @@ abstract class AbstractGenerator
      *
      * @return boolean
      */
-    public function isPostInsertGenerator()
-    {
-        return false;
-    }
+    public function isPostInsertGenerator();
 }
