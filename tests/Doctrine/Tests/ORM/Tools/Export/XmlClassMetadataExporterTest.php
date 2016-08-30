@@ -49,11 +49,11 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $metadata->addProperty('id', Type::getType('integer'), ["id" => true]);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
-        $metadata->setSequenceGeneratorDefinition(
+
+        $metadata->setGeneratorDefinition(
             [
-            'sequenceName' => 'seq_entity_test_id',
-            'allocationSize' => 5,
-            'initialValue' => 1
+                'sequenceName'   => 'seq_entity_test_id',
+                'allocationSize' => 5,
             ]
         );
 
@@ -67,7 +67,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
   <entity name="entityTest">
     <id name="id" type="integer" column="id">
       <generator strategy="SEQUENCE"/>
-      <sequence-generator sequence-name="seq_entity_test_id" allocation-size="5" initial-value="1"/>
+      <sequence-generator sequence-name="seq_entity_test_id" allocation-size="5"/>
     </id>
   </entity>
 </doctrine-mapping>

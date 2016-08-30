@@ -31,12 +31,12 @@ use Doctrine\ORM\ORMException;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class AssignedGenerator extends AbstractGenerator
+class AssignedGenerator implements Generator
 {
     /**
      * Returns the identifier assigned to the given entity.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws \Doctrine\ORM\ORMException
      */
@@ -62,5 +62,13 @@ class AssignedGenerator extends AbstractGenerator
         }
 
         return $identifier;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }

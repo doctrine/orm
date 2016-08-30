@@ -316,11 +316,11 @@ class SchemaTool
             $processedClasses[$class->name] = true;
 
             if ($class->isIdGeneratorSequence() && $class->name === $class->rootEntityName) {
-                $definition = $class->sequenceGeneratorDefinition;
+                $definition = $class->generatorDefinition;
                 $quotedName = $this->platform->quoteIdentifier($definition['sequenceName']);
 
                 if ( ! $schema->hasSequence($quotedName)) {
-                    $schema->createSequence($quotedName, $definition['allocationSize'], $definition['initialValue']);
+                    $schema->createSequence($quotedName, $definition['allocationSize']);
                 }
             }
 
