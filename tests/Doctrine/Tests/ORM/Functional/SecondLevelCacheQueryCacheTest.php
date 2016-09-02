@@ -1035,4 +1035,37 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
     }
+
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    {
+        $this->loadFixturesCountries();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT country FROM Doctrine\Tests\Models\Cache\Country country';
+
+        $result1    = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(2, $result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->_em->persist(new Country('France'));
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $result2 = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(3, $result2);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        foreach ($result2 as $entity) {
+            $this->assertInstanceOf(Country::CLASSNAME, $entity);
+        }
+    }
 }
