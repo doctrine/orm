@@ -35,6 +35,6 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
             return true;
         }
 
-        return ($entry->time + $key->lifetime) > time();
+        return ($entry->time + $key->lifetime) > microtime(true);
     }
 }
