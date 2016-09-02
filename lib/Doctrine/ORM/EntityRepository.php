@@ -196,16 +196,32 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Adds support for magic finders.
+     * Counts entities by a set of criteria.
+     *
+     * @todo Add this method to `ObjectRepository` interface in the next major release
+     *
+     * @param array $criteria
+     *
+     * @return int The quantity of objects that matches the criteria.
+     */
+    public function count(array $criteria)
+    {
+        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+
+        return $persister->count($criteria);
+    }
+
+    /**
+     * Adds support for magic finders/counters.
      *
      * @param string $method
      * @param array  $arguments
      *
-     * @return array|object The found entity/entities.
+     * @return array|object|int The found entity/entities or its resulting count.
      *
      * @throws ORMException
-     * @throws \BadMethodCallException If the method called is an invalid find* method
-     *                                 or no find* method at all and therefore an invalid
+     * @throws \BadMethodCallException If the method called is an invalid find* or countBy method
+     *                                 or no find* or countBy method at all and therefore an invalid
      *                                 method call.
      */
     public function __call($method, $arguments)
@@ -221,6 +237,11 @@ class EntityRepository implements ObjectRepository, Selectable
                 $method = 'findOneBy';
                 break;
 
+            case (0 === strpos($method, 'countBy')):
+                $by = substr($method, 7);
+                $method = 'count';
+                break;
+
             default:
                 throw new \BadMethodCallException(
                     "Undefined method '$method'. The method name must start with ".
@@ -228,14 +249,16 @@ class EntityRepository implements ObjectRepository, Selectable
                 );
         }
 
-        if (empty($arguments)) {
+        $argsCount = count($arguments);
+
+        if (0 === $argsCount) {
             throw ORMException::findByRequiresParameter($method . $by);
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
         if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            switch (count($arguments)) {
+            switch ($argsCount) {
                 case 1:
                     return $this->$method(array($fieldName => $arguments[0]));
 
