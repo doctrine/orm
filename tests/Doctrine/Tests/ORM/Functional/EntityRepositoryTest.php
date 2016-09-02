@@ -272,6 +272,30 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->assertEquals(4, count($users));
     }
 
+    public function testCount()
+    {
+        $this->loadFixture();
+        $repos = $this->_em->getRepository(CmsUser::class);
+
+        $userCount = $repos->count(array());
+        $this->assertSame(4, $userCount);
+
+        $userCount = $repos->count(array('status' => 'dev'));
+        $this->assertSame(2, $userCount);
+
+        $userCount = $repos->count(array('status' => 'nonexistent'));
+        $this->assertSame(0, $userCount);
+    }
+
+    public function testCountBy()
+    {
+        $this->loadFixture();
+        $repos = $this->_em->getRepository(CmsUser::class);
+
+        $userCount = $repos->countByStatus('dev');
+        $this->assertSame(2, $userCount);
+    }
+
     /**
      * @expectedException \Doctrine\ORM\ORMException
      */
