@@ -203,7 +203,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @param array $criteria
      *
-     * @return int The quantity of objects that matches the criteria.
+     * @return int The cardinality of the objects that match the given criteria.
      */
     public function count(array $criteria)
     {
