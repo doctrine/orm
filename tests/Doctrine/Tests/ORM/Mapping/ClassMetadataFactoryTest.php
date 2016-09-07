@@ -12,8 +12,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Sequencing\Generator;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
@@ -282,10 +282,19 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cm1->setPrimaryTable(['name' => 'group']);
 
         // Add a mapped field
-        $cm1->addProperty('id', Type::getType('integer'), ['id' => true]);
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $cm1->addProperty($fieldMetadata);
 
         // Add a mapped field
-        $cm1->addProperty('name', Type::getType('string'));
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $cm1->addProperty($fieldMetadata);
 
         // and a mapped association
         $cm1->mapOneToOne(['fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this']);
@@ -293,7 +302,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // and an association on the owning side
         $joinColumns = [];
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName("other_id");
         $joinColumn->setReferencedColumnName("id");

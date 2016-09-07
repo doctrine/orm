@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping;
 
 /**
  * @MappedSuperclass
@@ -111,29 +111,25 @@ class DDC964User
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty(
-            'id',
-            Type::getType('integer'),
-            [
-               'id'         => true,
-               'columnName' => 'user_id',
-            ]
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('user_id');
+        $fieldMetadata->setPrimaryKey(true);
 
-        $metadata->addProperty(
-            'name',
-            Type::getType('string'),
-            [
-                'columnName'=> 'user_name',
-                'nullable'  => true,
-                'unique'    => false,
-                'length'    => 250,
-            ]
-        );
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(250);
+        $fieldMetadata->setColumnName('user_name');
+        $fieldMetadata->setNullable(true);
+        $fieldMetadata->setUnique(false);
+
+        $metadata->addProperty($fieldMetadata);
 
         $joinColumns = [];
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName('address_id');
         $joinColumn->setReferencedColumnName('id');
@@ -151,14 +147,14 @@ class DDC964User
 
         $joinColumns = $inverseJoinColumns = [];
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName('user_id');
         $joinColumn->setReferencedColumnName('id');
 
         $joinColumns[] = $joinColumn;
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');

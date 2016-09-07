@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @MappedSuperclass(repositoryClass = "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository")
@@ -23,8 +24,16 @@ class DDC869Payment
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
-        $metadata->addProperty('value', Type::getType('float'));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('value');
+        $fieldMetadata->setType(Type::getType('float'));
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->isMappedSuperclass = true;
 

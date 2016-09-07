@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC2825;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * Quoted column name to check that sequence names are
@@ -21,8 +22,11 @@ class SchemaAndTableInTableName
             'name' => 'implicit_schema.implicit_table',
         ));
 
-        $metadata->addProperty('id', Type::getType('integer'), array (
-            'id' => true,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
     }
 }
