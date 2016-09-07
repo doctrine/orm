@@ -5,25 +5,23 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /* @var $metadata ClassMetadata */
-$metadata->addProperty(
-    'id',
-    Type::getType('integer'),
-    [
-       'id'         => true,
-       'columnName' => 'user_id',
-    ]
-);
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->addProperty(
-    'name',
-    Type::getType('string'),
-    [
-        'columnName'=> 'user_name',
-        'nullable'  => true,
-        'unique'    => false,
-        'length'    => 250,
-    ]
-);
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setColumnName('user_id');
+$fieldMetadata->setPrimaryKey(true);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('name');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(250);
+$fieldMetadata->setColumnName('user_name');
+$fieldMetadata->setNullable(true);
+$fieldMetadata->setUnique(false);
+
+$metadata->addProperty($fieldMetadata);
 
 $joinColumns = [];
 

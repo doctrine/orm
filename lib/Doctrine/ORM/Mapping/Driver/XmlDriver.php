@@ -22,10 +22,12 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use SimpleXMLElement;
 
 /**
@@ -165,8 +167,11 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($xmlRoot['inheritance-type'])) {
-            $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+            $inheritanceType = strtoupper((string) $xmlRoot['inheritance-type']);
+
+            $metadata->setInheritanceType(
+                constant(sprintf('%s::INHERITANCE_TYPE_%s', ClassMetadata::class, $inheritanceType))
+            );
 
             if ($metadata->inheritanceType !== \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
                 $discriminatorColumnBuilder = new DiscriminatorColumnMetadataBuilder();
@@ -212,8 +217,10 @@ class XmlDriver extends FileDriver
 
         // Evaluate <change-tracking-policy...>
         if (isset($xmlRoot['change-tracking-policy'])) {
+            $changeTrackingPolicy = strtoupper((string) $xmlRoot['change-tracking-policy']);
+
             $metadata->setChangeTrackingPolicy(
-                constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy']))
+                constant(sprintf('%s::CHANGETRACKING_%s', ClassMetadata::class, $changeTrackingPolicy))
             );
         }
 
@@ -229,7 +236,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($indexXml->options)) {
-                    $index['options'] = $this->_parseOptions($indexXml->options->children());
+                    $index['options'] = $this->parseOptions($indexXml->options->children());
                 }
 
                 if (isset($indexXml['name'])) {
@@ -247,7 +254,7 @@ class XmlDriver extends FileDriver
                 $unique = ['columns' => explode(',', (string) $uniqueXml['columns'])];
 
                 if (isset($uniqueXml->options)) {
-                    $unique['options'] = $this->_parseOptions($uniqueXml->options->children());
+                    $unique['options'] = $this->parseOptions($uniqueXml->options->children());
                 }
 
                 if (isset($uniqueXml['name'])) {
@@ -259,21 +266,20 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($xmlRoot->options)) {
-            $metadata->table['options'] = $this->_parseOptions($xmlRoot->options->children());
+            $metadata->table['options'] = $this->parseOptions($xmlRoot->options->children());
         }
 
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
-            foreach ($xmlRoot->field as $mapping) {
-                $fieldMapping = $this->columnToArray($mapping);
-                $fieldName    = (string) $mapping['name'];
-                $fieldType    = Type::getType((string) $fieldMapping['type']);
-                $property     = $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
+            foreach ($xmlRoot->field as $fieldElement) {
+                $fieldName        = (string) $fieldElement['name'];
+                $isFieldVersioned = isset($fieldElement['version']) && $fieldElement['version'];
+                $fieldMetadata    = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $isFieldVersioned);
 
-                if (isset($fieldMapping['version'])) {
-                    $metadata->setVersionProperty($property);
+                $metadata->addProperty($fieldMetadata);
 
-                    unset($fieldMapping['version']);
+                if ($fieldMetadata instanceof VersionFieldMetadata) {
+                    $metadata->setVersionProperty($fieldMetadata);
                 }
             }
         }
@@ -302,27 +308,26 @@ class XmlDriver extends FileDriver
         $associationIds = [];
 
         foreach ($xmlRoot->id as $idElement) {
+            $fieldName = (string) $idElement['name'];
+
             if (isset($idElement['association-key']) && $this->evaluateBoolean($idElement['association-key'])) {
-                $associationIds[(string) $idElement['name']] = true;
+                $associationIds[$fieldName] = true;
 
                 continue;
             }
 
-            $fieldName    = (string) $idElement['name'];
-            $fieldMapping = $this->columnToArray($idElement);
-            $fieldType    = Type::getType((string) $fieldMapping['type']);
+            $fieldMetadata = $this->convertFieldElementToFieldMetadata($idElement, $fieldName, false);
 
-            $fieldMapping['id'] = true;
-
-            $metadata->addProperty($fieldName, $fieldType, $fieldMapping);
+            $fieldMetadata->setPrimaryKey(true);
 
             if (isset($idElement->generator)) {
                 $strategy = isset($idElement->generator['strategy'])
                     ? (string) $idElement->generator['strategy']
-                    : 'AUTO';
+                    : 'AUTO'
+                ;
 
                 $metadata->setIdGeneratorType(
-                    constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $strategy)
+                    constant(sprintf('%s::GENERATOR_TYPE_%s', ClassMetadata::class, strtoupper($strategy)))
                 );
             }
 
@@ -348,6 +353,8 @@ class XmlDriver extends FileDriver
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
             }
+
+            $metadata->addProperty($fieldMetadata);
         }
 
         // Evaluate <one-to-one ...> mappings
@@ -570,10 +577,10 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'attribute-overrides'}->{'attribute-override'} as $overrideElement) {
                 $fieldName = (string) $overrideElement['name'];
 
-                foreach ($overrideElement->field as $field) {
-                    $mapping = $this->columnToArray($field);
+                foreach ($overrideElement->field as $fieldElement) {
+                    $fieldMetadata = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, false);
 
-                    $metadata->setAttributeOverride($fieldName, $mapping);
+                    $metadata->setAttributeOverride($fieldMetadata);
                 }
             }
         }
@@ -670,14 +677,14 @@ class XmlDriver extends FileDriver
      *
      * @return array The options array.
      */
-    private function _parseOptions(SimpleXMLElement $options)
+    private function parseOptions(SimpleXMLElement $options)
     {
         $array = [];
 
         /* @var $option SimpleXMLElement */
         foreach ($options as $option) {
             if ($option->count()) {
-                $value = $this->_parseOptions($option->children());
+                $value = $this->parseOptions($option->children());
             } else {
                 $value = (string) $option;
             }
@@ -692,9 +699,65 @@ class XmlDriver extends FileDriver
             } else {
                 $array[] = $value;
             }
+
         }
 
         return $array;
+    }
+
+    /**
+     * @param SimpleXMLElement $fieldElement
+     * @param string           $fieldName
+     * @param bool             $isVersioned
+     *
+     * @return FieldMetadata
+     */
+    private function convertFieldElementToFieldMetadata(SimpleXMLElement $fieldElement, string $fieldName, bool $isVersioned)
+    {
+        $fieldMetadata = $isVersioned
+            ? new VersionFieldMetadata($fieldName)
+            : new FieldMetadata($fieldName)
+        ;
+
+        $fieldMetadata->setType(Type::getType('string'));
+
+        if (isset($fieldElement['type'])) {
+            $fieldMetadata->setType(Type::getType((string) $fieldElement['type']));
+        }
+
+        if (isset($fieldElement['column'])) {
+            $fieldMetadata->setColumnName((string) $fieldElement['column']);
+        }
+
+        if (isset($fieldElement['length'])) {
+            $fieldMetadata->setLength((int) $fieldElement['length']);
+        }
+
+        if (isset($fieldElement['precision'])) {
+            $fieldMetadata->setPrecision((int) $fieldElement['precision']);
+        }
+
+        if (isset($fieldElement['scale'])) {
+            $fieldMetadata->setScale((int) $fieldElement['scale']);
+        }
+
+        if (isset($fieldElement['unique'])) {
+            $fieldMetadata->setUnique($this->evaluateBoolean($fieldElement['unique']));
+        }
+
+        if (isset($fieldElement['nullable'])) {
+            $fieldMetadata->setNullable($this->evaluateBoolean($fieldElement['nullable']));
+        }
+
+        if (isset($fieldElement['column-definition'])) {
+            $fieldMetadata->setColumnDefinition((string) $fieldElement['column-definition']);
+        }
+
+        if (isset($fieldElement->options)) {
+            $fieldMetadata->setOptions($this->parseOptions($fieldElement->options->children()));
+        }
+
+        return $fieldMetadata;
     }
 
     /**
@@ -707,94 +770,32 @@ class XmlDriver extends FileDriver
      */
     private function convertJoinColumnElementToJoinColumnMetadata(SimpleXMLElement $joinColumnElement)
     {
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumnMetadata = new JoinColumnMetadata();
 
-        $joinColumn->setColumnName((string) $joinColumnElement['name']);
-        $joinColumn->setReferencedColumnName((string) $joinColumnElement['referenced-column-name']);
+        $joinColumnMetadata->setColumnName((string) $joinColumnElement['name']);
+        $joinColumnMetadata->setReferencedColumnName((string) $joinColumnElement['referenced-column-name']);
 
         if (isset($joinColumnElement['column-definition'])) {
-            $joinColumn->setColumnDefinition((string) $joinColumnElement['column-definition']);
+            $joinColumnMetadata->setColumnDefinition((string) $joinColumnElement['column-definition']);
         }
 
         if (isset($joinColumnElement['field-name'])) {
-            $joinColumn->setAliasedName((string) $joinColumnElement['field-name']);
+            $joinColumnMetadata->setAliasedName((string) $joinColumnElement['field-name']);
         }
 
         if (isset($joinColumnElement['nullable'])) {
-            $joinColumn->setNullable($this->evaluateBoolean($joinColumnElement['nullable']));
+            $joinColumnMetadata->setNullable($this->evaluateBoolean($joinColumnElement['nullable']));
         }
 
         if (isset($joinColumnElement['unique'])) {
-            $joinColumn->setUnique($this->evaluateBoolean($joinColumnElement['unique']));
+            $joinColumnMetadata->setUnique($this->evaluateBoolean($joinColumnElement['unique']));
         }
 
         if (isset($joinColumnElement['on-delete'])) {
-            $joinColumn->setOnDelete(strtoupper((string) $joinColumnElement['on-delete']));
+            $joinColumnMetadata->setOnDelete(strtoupper((string) $joinColumnElement['on-delete']));
         }
 
-        return $joinColumn;
-    }
-
-     /**
-     * Parses the given field as array.
-     *
-     * @param SimpleXMLElement $fieldMapping
-     *
-     * @return array
-     */
-    private function columnToArray(SimpleXMLElement $fieldMapping)
-    {
-        $mapping = [
-            'type' => 'string',
-        ];
-
-        if (isset($fieldMapping['type'])) {
-            $params = explode('(', (string) $fieldMapping['type']);
-
-            if (isset($params[1])) {
-                $fieldMapping['length'] = (integer) substr($params[1], 0, strlen($params[1]) - 1);
-            }
-
-            $mapping['type'] = trim($params[0]);
-        }
-
-        if (isset($fieldMapping['column'])) {
-            $mapping['columnName'] = (string) $fieldMapping['column'];
-        }
-
-        if (isset($fieldMapping['length'])) {
-            $mapping['length'] = (int) $fieldMapping['length'];
-        }
-
-        if (isset($fieldMapping['precision'])) {
-            $mapping['precision'] = (int) $fieldMapping['precision'];
-        }
-
-        if (isset($fieldMapping['scale'])) {
-            $mapping['scale'] = (int) $fieldMapping['scale'];
-        }
-
-        if (isset($fieldMapping['unique'])) {
-            $mapping['unique'] = $this->evaluateBoolean($fieldMapping['unique']);
-        }
-
-        if (isset($fieldMapping['nullable'])) {
-            $mapping['nullable'] = $this->evaluateBoolean($fieldMapping['nullable']);
-        }
-
-        if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-            $mapping['version'] = $this->evaluateBoolean($fieldMapping['version']);
-        }
-
-        if (isset($fieldMapping['column-definition'])) {
-            $mapping['columnDefinition'] = (string) $fieldMapping['column-definition'];
-        }
-
-        if (isset($fieldMapping->options)) {
-            $mapping['options'] = $this->_parseOptions($fieldMapping->options->children());
-        }
-
-        return $mapping;
+        return $joinColumnMetadata;
     }
 
     /**

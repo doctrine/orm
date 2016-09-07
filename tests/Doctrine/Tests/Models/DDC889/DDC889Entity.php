@@ -7,9 +7,7 @@ namespace Doctrine\Tests\Models\DDC889;
  */
 class DDC889Entity extends DDC889SuperClass
 {
-
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
     }
-
 }
