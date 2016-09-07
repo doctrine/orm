@@ -19,25 +19,37 @@ $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
 $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
 
-$metadata->addProperty('id', Type::getType('integer'), array(
-   'id' => true,
-));
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->addProperty('name', Type::getType('string'), array(
-   'length'     => 50,
-   'unique'     => true,
-   'nullable'   => true,
-   'columnName' => 'name',
-));
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
 
-$metadata->addProperty('email', Type::getType('string'), array(
-   'columnName'       => 'user_email',
-   'columnDefinition' => 'CHAR(32) NOT NULL',
-));
+$metadata->addProperty($fieldMetadata);
 
-$metadata->addProperty('age', Type::getType('integer'), array(
-   'options' => array('unsigned' => true),
-));
+$fieldMetadata = new Mapping\FieldMetadata('name');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+$fieldMetadata->setColumnName('name');
+$fieldMetadata->setNullable(true);
+$fieldMetadata->setUnique(true);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('email');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setColumnName('user_email');
+$fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('age');
+
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setOptions(['unsigned' => true]);
+
+$metadata->addProperty($fieldMetadata);
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 

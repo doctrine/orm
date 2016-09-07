@@ -36,9 +36,11 @@ final class Column implements Annotation
     public $type = 'string';
 
     /**
+     * The length for a string column (Applied only for string-based column).
+     *
      * @var integer
      */
-    public $length;
+    public $length = 255;
 
     /**
      * The precision for a decimal (exact numeric) column (Applies only for decimal column).
@@ -67,7 +69,7 @@ final class Column implements Annotation
     /**
      * @var array
      */
-    public $options = array();
+    public $options = [];
 
     /**
      * @var string

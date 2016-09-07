@@ -19,28 +19,44 @@ $metadata->addNamedQuery(array(
     'query' => 'SELECT u FROM __CLASS__ u'
 ));
 
-$metadata->addProperty('id', Type::getType('integer'), array(
-    'id'      => true,
-    'options' => array('foo' => 'bar'),
-));
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->addProperty('name', Type::getType('string'), array(
-    'length'     => 50,
-    'unique'     => true,
-    'nullable'   => true,
-    'columnName' => 'name',
-    'options'    => array(
-        'foo' => 'bar',
-        'baz' => array('key' => 'val')
-    ),
-));
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
+$fieldMetadata->setOptions(['foo' => 'bar']);
 
-$metadata->addProperty('email', Type::getType('string'), array(
-    'columnName'       => 'user_email',
-    'columnDefinition' => 'CHAR(32) NOT NULL',
-));
+$metadata->addProperty($fieldMetadata);
 
-$metadata->setVersionProperty($metadata->addProperty('version', Type::getType('integer')));
+$fieldMetadata = new Mapping\FieldMetadata('name');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+$fieldMetadata->setColumnName('name');
+$fieldMetadata->setNullable(true);
+$fieldMetadata->setUnique(true);
+$fieldMetadata->setOptions([
+    'foo' => 'bar',
+    'baz' => [
+        'key' => 'val',
+    ],
+]);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('email');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setColumnName('user_email');
+$fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
+
+$metadata->addProperty($fieldMetadata);
+
+$versionFieldMetadata = new Mapping\VersionFieldMetadata('version');
+
+$versionFieldMetadata->setType(Type::getType('integer'));
+
+$metadata->addProperty($versionFieldMetadata);
+$metadata->setVersionProperty($versionFieldMetadata);
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 

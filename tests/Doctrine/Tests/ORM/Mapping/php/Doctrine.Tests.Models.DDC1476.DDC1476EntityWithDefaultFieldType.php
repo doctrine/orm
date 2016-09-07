@@ -1,13 +1,21 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /* @var $metadata ClassMetadata */
-$metadata->addProperty('id', Type::getType('string'), array(
-   'id' => true,
-));
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->addProperty('name', Type::getType('string'));
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setPrimaryKey(true);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('name');
+
+$fieldMetadata->setType(Type::getType('string'));
+
+$metadata->addProperty($fieldMetadata);
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

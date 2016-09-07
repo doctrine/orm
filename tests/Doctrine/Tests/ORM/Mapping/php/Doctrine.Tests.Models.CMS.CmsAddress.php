@@ -9,17 +9,26 @@ $metadata->setPrimaryTable(array(
    'name' => 'company_person',
 ));
 
-$metadata->addProperty('id', Type::getType('integer'), array(
-    'id' => true,
-));
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->addProperty('zip', Type::getType('string'), array(
-    'length' => 50,
-));
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
 
-$metadata->addProperty('city', Type::getType('string'), array(
-    'length' => 50,
-));
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('zip');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('city');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+
+$metadata->addProperty($fieldMetadata);
 
 $joinColumns = array();
 

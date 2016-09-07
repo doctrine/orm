@@ -19,6 +19,8 @@
  */
 
 namespace Doctrine\Tests\Models\DDC889;
+
+use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -26,13 +28,16 @@ use Doctrine\DBAL\Types\Type;
  */
 class DDC889SuperClass
 {
-
     /** @Column() */
     protected $name;
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty('name', Type::getType('string'));
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->isMappedSuperclass = true;
         

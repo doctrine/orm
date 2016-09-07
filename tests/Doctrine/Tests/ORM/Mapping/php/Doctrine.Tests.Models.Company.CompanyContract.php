@@ -22,11 +22,18 @@ $metadata->setDiscriminatorMap(array(
     "flexultra" => "CompanyFlexUltraContract"
 ));
 
-$metadata->addProperty('id', Type::getType('string'), array(
-    'id' => true,
-));
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->addProperty('completed', Type::getType('boolean'));
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setPrimaryKey(true);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('completed');
+
+$fieldMetadata->setType(Type::getType('boolean'));
+
+$metadata->addProperty($fieldMetadata);
 
 $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

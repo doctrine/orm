@@ -1,13 +1,20 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
 /* @var $metadata ClassMetadata */
-$metadata->addProperty('hoursWorked', Type::getType('integer'), array(
-    'columnName' => 'hoursWorked',
-));
+$fieldMetadata = new Mapping\FieldMetadata('hoursWorked');
 
-$metadata->addProperty('pricePerHour', Type::getType('integer'), array(
-    'columnName' => 'pricePerHour',
-));
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setColumnName('hoursWorked');
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('pricePerHour');
+
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setColumnName('pricePerHour');
+
+$metadata->addProperty($fieldMetadata);

@@ -1,9 +1,13 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
 /** @var ClassMetadata $metadata */
-$metadata->addProperty('id', Type::getType('integer'), array(
-   'id' => true,
-));
+$fieldMetadata = new Mapping\FieldMetadata('id');
+
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
+
+$metadata->addProperty($fieldMetadata);

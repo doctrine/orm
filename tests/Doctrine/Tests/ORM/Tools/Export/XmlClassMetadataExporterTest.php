@@ -22,6 +22,7 @@
 namespace Doctrine\Tests\ORM\Tools\Export;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
@@ -65,9 +66,12 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->addProperty('id', Type::getType('integer'), array(
-            "id" => true,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
 
@@ -104,13 +108,16 @@ XML;
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
-        $metadata->addProperty('myField', Type::getType('string'), array(
-            "columnName" => 'my_field',
-            "options"    => array(
-                "default" => "default_string",
-                "comment" => "The comment for the field",
-            ),
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('myField');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setColumnName('my_field');
+        $fieldMetadata->setOptions([
+            'default' => 'default_string',
+            'comment' => 'The comment for the field',
+        ]);
+
+        $metadata->addProperty($fieldMetadata);
 
         $expectedFileContent = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
@@ -70,13 +71,26 @@ class PhpExporter extends AbstractExporter
 
             $lines[] = '$discrColumn = new Mapping\DiscriminatorColumnMetadata();';
             $lines[] = null;
-            $lines[] = '$discrColumn->setTableName("' . $discrColumn->getTableName() . '");';
             $lines[] = '$discrColumn->setColumnName("' . $discrColumn->getColumnName() . '");';
-            $lines[] = '$discrColumn->setColumnDefinition("' . $discrColumn->getColumnDefinition() . '");';
             $lines[] = '$discrColumn->setType(Type::getType("' . $discrColumn->getTypeName() . '"));';
-            $lines[] = '$discrColumn->setLength(' . $discrColumn->getLength() . ');';
-            $lines[] = '$discrColumn->setScale(' . $discrColumn->getScale() . ');';
-            $lines[] = '$discrColumn->setPrecision(' . $discrColumn->getPrecision() . ');';
+            $lines[] = '$discrColumn->setTableName("' . $discrColumn->getTableName() . '");';
+
+            if (! empty($discrColumn->getColumnDefinition())) {
+                $lines[] = '$property->setColumnDefinition("' . $discrColumn->getColumnDefinition() . '");';
+            }
+
+            if (! empty($discrColumn->getLength())) {
+                $lines[] = '$property->setLength(' . $discrColumn->getLength() . ');';
+            }
+
+            if (! empty($discrColumn->getScale())) {
+                $lines[] = '$property->setScale(' . $discrColumn->getScale() . ');';
+            }
+
+            if (! empty($discrColumn->getPrecision())) {
+                $lines[] = '$property->setPrecision(' . $discrColumn->getPrecision() . ');';
+            }
+
             $lines[] = '$discrColumn->setOptions(' . $this->_varExport($discrColumn->getOptions()) . ');';
             $lines[] = '$discrColumn->setNullable(' . $this->_varExport($discrColumn->isNullable()) . ');';
             $lines[] = '$discrColumn->setUnique(' . $this->_varExport($discrColumn->isUnique()) . ');';
@@ -101,12 +115,40 @@ class PhpExporter extends AbstractExporter
         }
 
         foreach ($metadata->getProperties() as $property) {
+            /** @var FieldMetadata $property */
             $lines[] = sprintf(
-                '$metadata->addProperty("%s", Type::getType("%s"), %s);',
-                $property->getName(),
-                $property->getType()->getName(),
-                $this->_varExport($property->getMapping())
+                '$property = new Mapping\%sFieldMetadata("%s");',
+                ($metadata->versionProperty === $property) ? 'Version' : '',
+                $property->getName()
             );
+
+            $lines[] = null;
+            $lines[] = '$property->setColumnName("' . $property->getColumnName() . '");';
+            $lines[] = '$property->setType(Type::getType("' . $property->getTypeName() . '"));';
+            $lines[] = '$property->setTableName("' . $property->getTableName() . '");';
+
+            if (! empty($property->getColumnDefinition())) {
+                $lines[] = '$property->setColumnDefinition("' . $property->getColumnDefinition() . '");';
+            }
+
+            if (! empty($property->getLength())) {
+                $lines[] = '$property->setLength(' . $property->getLength() . ');';
+            }
+
+            if (! empty($property->getScale())) {
+                $lines[] = '$property->setScale(' . $property->getScale() . ');';
+            }
+
+            if (! empty($property->getPrecision())) {
+                $lines[] = '$property->setPrecision(' . $property->getPrecision() . ');';
+            }
+
+            $lines[] = '$property->setOptions(' . $this->_varExport($property->getOptions()) . ');';
+            $lines[] = '$property->setPrimaryKey(' . $this->_varExport($property->isPrimaryKey()) . ');';
+            $lines[] = '$property->setNullable(' . $this->_varExport($property->isNullable()) . ');';
+            $lines[] = '$property->setUnique(' . $this->_varExport($property->isUnique()) . ');';
+            $lines[] = null;
+            $lines[] = '$metadata->addProperty($property);';
         }
 
         if ( ! $metadata->isIdentifierComposite && $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {

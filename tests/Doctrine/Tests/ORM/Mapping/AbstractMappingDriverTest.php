@@ -6,11 +6,9 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
-use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\Models\Cache\City;
@@ -487,8 +485,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $idProperty = $class->getProperty('id');
         $nameProperty = $class->getProperty('name');
 
-        self::assertInstanceOf(FieldMetadata::class, $idProperty);
-        self::assertInstanceOf(FieldMetadata::class, $nameProperty);
+        self::assertInstanceOf(Mapping\FieldMetadata::class, $idProperty);
+        self::assertInstanceOf(Mapping\FieldMetadata::class, $nameProperty);
 
         self::assertEquals('string', $idProperty->getTypeName());
         self::assertEquals('string', $nameProperty->getTypeName());
@@ -798,6 +796,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         // assert groups association mappings
         self::assertArrayHasKey('groups', $adminMetadata->associationMappings);
+
         $adminGroups = $adminMetadata->associationMappings['groups'];
 
         // assert override
@@ -1180,35 +1179,49 @@ class User
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
 
-        $metadata->addProperty('id', Type::getType('integer'), array(
-            'id'      => true,
-            'options' => array('foo' => 'bar'),
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
 
-        $metadata->addProperty('name', Type::getType('string'), array(
-            'length'   => 50,
-            'unique'   => true,
-            'nullable' => true,
-            'options'  => array(
-                'foo' => 'bar',
-                'baz' => array('key' => 'val')
-            ),
-        ));
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+        $fieldMetadata->setOptions(['foo' => 'bar']);
 
-        $metadata->addProperty('email', Type::getType('string'), array(
-            'columnName'       => 'user_email',
-            'columnDefinition' => 'CHAR(32) NOT NULL',
-        ));
+        $metadata->addProperty($fieldMetadata);
 
-        $property = $metadata->addProperty('version', Type::getType('integer'));
+        $fieldMetadata = new Mapping\FieldMetadata('name');
 
-        $metadata->setVersionProperty($property);
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(50);
+        $fieldMetadata->setNullable(true);
+        $fieldMetadata->setUnique(true);
+        $fieldMetadata->setOptions([
+            'foo' => 'bar',
+            'baz' => [
+                'key' => 'val',
+            ],
+        ]);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('email');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setColumnName('user_email');
+        $fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\VersionFieldMetadata('version');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+
+        $metadata->addProperty($fieldMetadata);
+        $metadata->setVersionProperty($fieldMetadata);
         
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         $joinColumns = array();
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName('address_id');
         $joinColumn->setReferencedColumnName('id');
@@ -1238,7 +1251,7 @@ class User
 
         $joinColumns = $inverseJoinColumns = array();
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName('user_id');
         $joinColumn->setReferencedColumnName('id');
@@ -1247,7 +1260,7 @@ class User
 
         $joinColumns[] = $joinColumn;
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
@@ -1382,14 +1395,20 @@ class DDC1170Entity
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->addProperty('id', Type::getType('integer'), array(
-           'id'               => true,
-           'columnDefinition' => 'INT unsigned NOT NULL',
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
 
-        $metadata->addProperty('value', Type::getType('string'), array(
-            'columnDefinition' => 'VARCHAR(255) NOT NULL',
-        ));
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnDefinition('INT unsigned NOT NULL');
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('value');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setColumnDefinition('VARCHAR(255) NOT NULL');
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
@@ -1413,11 +1432,14 @@ class DDC807Entity
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->addProperty('id', Type::getType('string'), array(
-           'id' => true,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
 
-        $discrColumn = new DiscriminatorColumnMetadata();
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $discrColumn = new Mapping\DiscriminatorColumnMetadata();
 
         $discrColumn->setTableName($metadata->getTableName());
         $discrColumn->setColumnName('dtype');
@@ -1462,11 +1484,13 @@ class Comment
             )
         ));
 
-        $metadata->addProperty('content', Type::getType('text'), array(
-            'length'   => NULL,
-            'unique'   => false,
-            'nullable' => false,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('content');
+
+        $fieldMetadata->setType(Type::getType('text'));
+        $fieldMetadata->setNullable(false);
+        $fieldMetadata->setUnique(false);
+
+        $metadata->addProperty($fieldMetadata);
     }
 }
 
@@ -1489,9 +1513,12 @@ class SingleTableEntityNoDiscriminatorColumnMapping
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->addProperty('id', Type::getType('string'), array(
-            'id' => true,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
@@ -1521,9 +1548,12 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
     public static function loadMetadata(ClassMetadata $metadata)
     {
         // @todo: String != Integer and this should not work
-        $metadata->addProperty('id', Type::getType('string'), array(
-            'id' => true,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
