@@ -295,7 +295,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param string $by        The property name used as condition
      * @param array  $arguments The arguments to pass at method call
      *
-     * @throws ORMException If the method called is invalid.
+     * @throws ORMException If the method called is invalid or the requested field/association does not exist
      *
      * @return mixed
      */
