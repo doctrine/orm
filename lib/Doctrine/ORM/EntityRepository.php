@@ -212,71 +212,34 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Adds support for magic finders/counters.
+     * Adds support for magic method calls.
      *
      * @param string $method
      * @param array  $arguments
      *
-     * @return array|object|int The found entity/entities or its resulting count.
+     * @return mixed The returned value from the resolved method.
      *
      * @throws ORMException
-     * @throws \BadMethodCallException If the method called is an invalid find* or countBy method
-     *                                 or no find* or countBy method at all and therefore an invalid
-     *                                 method call.
+     * @throws \BadMethodCallException If the method called is invalid
      */
     public function __call($method, $arguments)
     {
-        switch (true) {
-            case (0 === strpos($method, 'findBy')):
-                $by = substr($method, 6);
-                $method = 'findBy';
-                break;
-
-            case (0 === strpos($method, 'findOneBy')):
-                $by = substr($method, 9);
-                $method = 'findOneBy';
-                break;
-
-            case (0 === strpos($method, 'countBy')):
-                $by = substr($method, 7);
-                $method = 'count';
-                break;
-
-            default:
-                throw new \BadMethodCallException(
-                    "Undefined method '$method'. The method name must start with ".
-                    "either findBy or findOneBy!"
-                );
+        if (0 === strpos($method, 'findBy')) {
+            return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
         }
 
-        $argsCount = count($arguments);
-
-        if (0 === $argsCount) {
-            throw ORMException::findByRequiresParameter($method . $by);
+        if (0 === strpos($method, 'findOneBy')) {
+            return $this->resolveMagicCall('findOneBy', substr($method, 9), $arguments);
         }
 
-        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
-
-        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            switch ($argsCount) {
-                case 1:
-                    return $this->$method(array($fieldName => $arguments[0]));
-
-                case 2:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
-
-                case 3:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
-
-                case 4:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
-
-                default:
-                    // Do nothing
-            }
+        if (0 === strpos($method, 'countBy')) {
+            return $this->resolveMagicCall('count', substr($method, 7), $arguments);
         }
 
-        throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
+        throw new \BadMethodCallException(
+            "Undefined method '$method'. The method name must start with ".
+            "either findBy or findOneBy!"
+        );
     }
 
     /**
@@ -324,5 +287,48 @@ class EntityRepository implements ObjectRepository, Selectable
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
         return new LazyCriteriaCollection($persister, $criteria);
+    }
+
+    /**
+     * Resolves a magic method call to the proper existent method at `EntityRepository`.
+     *
+     * @param string $method    The method to call
+     * @param string $by        The property name used as condition
+     * @param array  $arguments The arguments to pass at method call
+     *
+     * @throws ORMException If the method called is invalid.
+     *
+     * @return mixed
+     */
+    private function resolveMagicCall($method, $by, array $arguments = [])
+    {
+        $argsCount = count($arguments);
+
+        if (0 === $argsCount) {
+            throw ORMException::findByRequiresParameter($method . $by);
+        }
+
+        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
+
+        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
+            switch ($argsCount) {
+                case 1:
+                    return $this->$method(array($fieldName => $arguments[0]));
+
+                case 2:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
+
+                case 3:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
+
+                case 4:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
+
+                default:
+                    // Do nothing
+            }
+        }
+
+        throw ORMException::invalidMagicCall($this->_entityName, $fieldName, $method.$by);
     }
 }
