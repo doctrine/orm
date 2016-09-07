@@ -103,7 +103,7 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
     $ composer install
 
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-Symfony YAML and Symfony Console into the `vendor` directory. The Symfony
+Symfony YAML and Symfony Console into the `vendor` directory. The Symfony 
 dependencies are not required by Doctrine but will be used in this tutorial.
 
 Add the following directories:
@@ -131,22 +131,22 @@ step:
     // bootstrap.php
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
-
+    
     require_once "vendor/autoload.php";
-
+    
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
-
+    
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
     );
-
+    
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
 
@@ -185,7 +185,7 @@ doctrine command. Its a fairly simple file:
     <?php
     // cli-config.php
     require_once "bootstrap.php";
-
+    
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 You can then change into your project directory and call the
@@ -196,11 +196,11 @@ Doctrine command-line tool:
     $ cd project/
     $ vendor/bin/doctrine orm:schema-tool:create
 
-At this point no entity metadata exists in `src` so you will see a message like
-"No Metadata Classes to process." Don't worry, we'll create a Product entity and
+At this point no entity metadata exists in `src` so you will see a message like 
+"No Metadata Classes to process." Don't worry, we'll create a Product entity and 
 corresponding metadata in the next section.
 
-You should be aware that during the development process you'll periodically need
+You should be aware that during the development process you'll periodically need 
 to update your database schema to be in sync with your Entities metadata.
 
 You can easily recreate the database:
@@ -257,15 +257,15 @@ entity definition:
         }
     }
 
-Note that all fields are set to protected (not public) with a
-mutator (getter and setter) defined for every field except $id.
-The use of mutators allows Doctrine to hook into calls which
-manipulate the entities in ways that it could not if you just
+Note that all fields are set to protected (not public) with a 
+mutator (getter and setter) defined for every field except $id. 
+The use of mutators allows Doctrine to hook into calls which 
+manipulate the entities in ways that it could not if you just 
 directly set the values with ``entity#field = foo;``
 
-The id field has no setter since, generally speaking, your code
-should not set this value since it represents a database id value.
-(Note that Doctrine itself can still set the value using the
+The id field has no setter since, generally speaking, your code 
+should not set this value since it represents a database id value. 
+(Note that Doctrine itself can still set the value using the 
 Reflection API instead of a defined setter function)
 
 The next step for persistence with Doctrine is to describe the
@@ -567,13 +567,13 @@ change dates. Next we will model the dynamic relationships between the entities
 by defining the references between entities.
 
 References between objects are foreign keys in the database. You never have to
-(and never should) work with the foreign keys directly, only with the objects
+(and never should) work with the foreign keys directly, only with the objects 
 that represent the foreign key through their own identity.
 
 For every foreign key you either have a Doctrine ManyToOne or OneToOne
 association. On the inverse sides of these foreign keys you can have
 OneToMany associations. Obviously you can have ManyToMany associations
-that connect two tables with each other through a join table with
+that connect two tables with each other through a join table with 
 two foreign keys.
 
 Now that you know the basics about references in Doctrine, we can extend the
@@ -783,7 +783,7 @@ the database that points from Bugs to Products.
     }
 
 We are now finished with the domain model given the requirements.
-Lets add metadata mappings for the ``User`` and ``Bug`` as we did for
+Lets add metadata mappings for the ``User`` and ``Bug`` as we did for 
 the ``Product`` before:
 
 .. configuration-block::
@@ -886,8 +886,8 @@ the ``Product`` before:
 
 
 Here we have the entity, id and primitive type definitions.
-For the "created" field we have used the ``datetime`` type,
-which translates the YYYY-mm-dd HH:mm:ss database format
+For the "created" field we have used the ``datetime`` type, 
+which translates the YYYY-mm-dd HH:mm:ss database format 
 into a PHP DateTime instance and back.
 
 After the field definitions the two qualified references to the
@@ -1164,10 +1164,10 @@ The console output of this script is then:
 
 
     As a last resort you can still use Native SQL and a description of the
-    result set to retrieve entities from the database. DQL boils down to a
-    Native SQL statement and a ``ResultSetMapping`` instance itself. Using
-    Native SQL you could even use stored procedures for data retrieval, or
-    make use of advanced non-portable database queries like PostgreSql's
+    result set to retrieve entities from the database. DQL boils down to a 
+    Native SQL statement and a ``ResultSetMapping`` instance itself. Using 
+    Native SQL you could even use stored procedures for data retrieval, or 
+    make use of advanced non-portable database queries like PostgreSql's 
     recursive queries.
 
 
@@ -1180,7 +1180,7 @@ objects only from Doctrine however. For a simple list view like the
 previous one we only need read access to our entities and can
 switch the hydration from objects to simple PHP arrays instead.
 
-Hydration can be an expensive process so only retrieving what you need can
+Hydration can be an expensive process so only retrieving what you need can 
 yield considerable performance benefits for read-only requests.
 
 Implementing the same list view as before using array hydration we
@@ -1542,8 +1542,8 @@ deal with it:
 .. code-block:: php
 
     <?php
-    $productCount = $entityManager->getRepository('Product')
-                             ->count(array('name' => $productName));
+    $productCount = $entityManager->getRepository(Product::class)
+                             ->count(['name' => $productName]);
 
 Conclusion
 ----------
