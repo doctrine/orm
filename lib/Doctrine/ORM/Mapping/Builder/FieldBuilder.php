@@ -51,11 +51,6 @@ class FieldBuilder
     private $mapping;
 
     /**
-     * @var bool
-     */
-    private $version;
-
-    /**
      * @var string
      */
     private $generatedValue;
@@ -219,7 +214,7 @@ class FieldBuilder
      */
     public function isVersionField()
     {
-        $this->version = true;
+        $this->mapping['version'] = true;
 
         return $this;
     }
@@ -292,9 +287,11 @@ class FieldBuilder
             );
         }
 
-        $property = $cm->addProperty($this->name, $this->type, $this->mapping);
+        $this->builder->addProperty($this->name, $this->type->getName(), $this->mapping);
 
-        if ($this->version) {
+        $property = $cm->getProperty($this->name);
+
+        if (isset($this->mapping['version']) && $this->mapping['version']) {
             $cm->setVersionProperty($property);
         }
 

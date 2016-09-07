@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity
@@ -33,11 +34,11 @@ class CompanyFlexUltraContract extends CompanyFlexContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty(
-            'maxPrice',
-            Type::getType('integer'),
-            ['columnName' => 'maxPrice']
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('maxPrice');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('maxPrice');
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
         $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

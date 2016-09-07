@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Sequencing\AbstractGenerator;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
 use Doctrine\ORM\Sequencing\Generator;
@@ -61,7 +62,12 @@ class DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->addProperty('id', Type::getType('string'), ['id' => true]);
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 
@@ -92,7 +98,11 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->addProperty('name', Type::getType('string'));
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $metadata->addProperty($fieldMetadata);
     }
 }
 

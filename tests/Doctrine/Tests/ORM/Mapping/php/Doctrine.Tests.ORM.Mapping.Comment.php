@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /* @var $metadata ClassMetadata */
@@ -18,12 +19,10 @@ $metadata->setPrimaryTable(
     ]
 );
 
-$metadata->addProperty(
-    'content',
-    Type::getType('text'),
-    [
-        'length'   => NULL,
-        'unique'   => false,
-        'nullable' => false,
-    ]
-);
+$fieldMetadata = new Mapping\FieldMetadata('content');
+
+$fieldMetadata->setType(Type::getType('text'));
+$fieldMetadata->setNullable(false);
+$fieldMetadata->setUnique(false);
+
+$metadata->addProperty($fieldMetadata);

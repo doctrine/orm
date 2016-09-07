@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity
@@ -15,7 +16,11 @@ class DDC869ChequePayment extends DDC869Payment
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty('serialNumber', Type::getType('string'));
+        $fieldMetadata = new Mapping\FieldMetadata('serialNumber');
+
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $metadata->addProperty($fieldMetadata);
     }
 
 }

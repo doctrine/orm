@@ -22,41 +22,45 @@ $metadata->addNamedQuery(
     ]
 );
 
-$metadata->addProperty(
-    'id',
-    Type::getType('integer'),
+$fieldMetadata = new Mapping\FieldMetadata('id');
+
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
+$fieldMetadata->setOptions(['foo' => 'bar', 'unsigned' => false]);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('name');
+
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+$fieldMetadata->setColumnName('name');
+$fieldMetadata->setNullable(true);
+$fieldMetadata->setUnique(true);
+$fieldMetadata->setOptions(
     [
-        'id'      => true,
-        'options' => ['foo' => 'bar', 'unsigned' => false],
+        'foo' => 'bar',
+        'baz' => ['key' => 'val'],
+        'fixed' => false,
     ]
 );
 
-$metadata->addProperty(
-    'name',
-    Type::getType('string'),
-    [
-        'length'     => 50,
-        'unique'     => true,
-        'nullable'   => true,
-        'columnName' => 'name',
-        'options'    => [
-            'foo' => 'bar',
-            'baz' => ['key' => 'val'],
-            'fixed' => false
-        ],
-    ]
-);
+$metadata->addProperty($fieldMetadata);
 
-$metadata->addProperty(
-    'email',
-    Type::getType('string'),
-    [
-        'columnName'       => 'user_email',
-        'columnDefinition' => 'CHAR(32) NOT NULL',
-    ]
-);
+$fieldMetadata = new Mapping\FieldMetadata('email');
 
-$metadata->setVersionProperty($metadata->addProperty('version', Type::getType('integer')));
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setColumnName('user_email');
+$fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
+
+$metadata->addProperty($fieldMetadata);
+
+$versionFieldMetadata = new Mapping\VersionFieldMetadata('version');
+
+$versionFieldMetadata->setType(Type::getType('integer'));
+
+$metadata->addProperty($versionFieldMetadata);
+$metadata->setVersionProperty($versionFieldMetadata);
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 

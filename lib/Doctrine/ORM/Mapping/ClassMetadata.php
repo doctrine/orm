@@ -1921,42 +1921,30 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Sets the override for a mapped field.
      *
-     * @param string $fieldName
-     * @param array  $overrideMapping
+     * @param FieldMetadata $fieldMetadata
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function setAttributeOverride($fieldName, array $overrideMapping)
+    public function setAttributeOverride(FieldMetadata $fieldMetadata)
     {
-        $property = $this->getProperty($fieldName);
+        $originalProperty = $this->getProperty($fieldMetadata->getName());
 
-        if ( ! $property) {
-            throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
+        if ( ! $originalProperty) {
+            throw MappingException::invalidOverrideFieldName($this->name, $fieldMetadata->getName());
         }
 
-        $originalMapping = array(
-            'tableName'        => $property->getTableName(),
-            'columnName'       => $property->getColumnName(),
-            'columnDefinition' => $property->getColumnDefinition(),
-            'length'           => $property->getLength(),
-            'scale'            => $property->getScale(),
-            'precision'        => $property->getPrecision(),
-            'options'          => $property->getOptions(),
-            'id'               => $property->isPrimaryKey(),
-            'nullable'         => $property->isNullable(),
-            'unique'           => $property->isUnique(),
-        );
+        if ($originalProperty instanceof VersionFieldMetadata) {
+            throw MappingException::invalidOverrideVersionField($this->name, $fieldMetadata->getName());
+        }
 
-        $overrideMapping = array_replace_recursive($originalMapping, $overrideMapping);
+        $fieldMetadata->setPrimaryKey($originalProperty->isPrimaryKey());
 
-        $overrideMapping['id'] = $property->isPrimaryKey();
+        unset($this->properties[$originalProperty->getName()]);
+        unset($this->fieldNames[$originalProperty->getColumnName()]);
 
-        unset($this->properties[$fieldName]);
-        unset($this->fieldNames[$property->getColumnName()]);
-
-        $this->addProperty($fieldName, $property->getType(), $overrideMapping);
+        $this->addProperty($fieldMetadata);
     }
 
     /**
@@ -2065,54 +2053,16 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * @param string $fieldName
-     *
-     * @return Property|null
-     */
-    public function getProperty($fieldName)
-    {
-        return $this->properties[$fieldName] ?? null;
-    }
-
-    /**
-     * @param string $fieldName
-     * @param Type   $type
-     * @param array  $mapping
+     * @param FieldMetadata $property
      *
      * @throws MappingException
      */
-    public function addProperty($fieldName, Type $type, array $mapping = [])
+    public function addProperty(FieldMetadata $property)
     {
-        $property = new FieldMetadata($fieldName);
+        $fieldName  = $property->getName();
+        $columnName = $property->getColumnName();
 
         $property->setDeclaringClass($this);
-        $property->setColumnName($mapping['columnName'] ?? $this->namingStrategy->propertyToColumnName($fieldName, $this->name));
-        $property->setType($type);
-
-        if (! $this->isMappedSuperclass) {
-            $property->setTableName($this->getTableName());
-        }
-
-        if (isset($mapping['columnDefinition'])) {
-            $property->setColumnDefinition($mapping['columnDefinition']);
-        }
-
-        if (isset($mapping['length'])) {
-            $property->setLength($mapping['length']);
-        }
-
-        if (isset($mapping['scale'])) {
-            $property->setScale($mapping['scale']);
-        }
-
-        if (isset($mapping['precision'])) {
-            $property->setPrecision($mapping['precision']);
-        }
-
-        $property->setOptions($mapping['options'] ?? []);
-        $property->setPrimaryKey(isset($mapping['id']) && $mapping['id']);
-        $property->setNullable(isset($mapping['nullable']) && $mapping['nullable']);
-        $property->setUnique(isset($mapping['unique']) && $mapping['unique']);
 
         // Check for empty field name
         if (empty($fieldName)) {
@@ -2124,19 +2074,32 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::duplicateProperty($property);
         }
 
+        if (empty($columnName)) {
+            $columnName = $this->namingStrategy->propertyToColumnName($fieldName, $this->name);
+
+            $property->setColumnName($columnName);
+        }
+
+        if (! $this->isMappedSuperclass) {
+            $property->setTableName($this->getTableName());
+        }
+
         // Check for already declared column
-        if (isset($this->fieldNames[$property->getColumnName()]) ||
-            ($this->discriminatorColumn != null && $this->discriminatorColumn->getColumnName() === $property->getColumnName())) {
-            throw MappingException::duplicateColumnName($this->name, $property->getColumnName());
+        if (isset($this->fieldNames[$columnName]) ||
+            ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName)) {
+            throw MappingException::duplicateColumnName($this->name, $columnName);
         }
 
         // Complete id mapping
-        if (isset($mapping['id']) && $mapping['id']) {
+        if ($property->isPrimaryKey()) {
             if ($this->versionProperty !== null && $this->versionProperty->getName() === $fieldName) {
                 throw MappingException::cannotVersionIdField($this->name, $fieldName);
             }
 
-            assert(! $type->canRequireSQLConversion(), MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property));
+            assert(
+                ! $property->getType()->canRequireSQLConversion(),
+                MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property)
+            );
 
             if (! in_array($fieldName, $this->identifier)) {
                 $this->identifier[] = $fieldName;
@@ -2148,10 +2111,18 @@ class ClassMetadata implements ClassMetadataInterface
             }
         }
 
-        $this->fieldNames[$property->getColumnName()] = $fieldName;
+        $this->fieldNames[$columnName] = $fieldName;
         $this->properties[$fieldName] = $property;
+    }
 
-        return $property;
+    /**
+     * @param string $fieldName
+     *
+     * @return Property|null
+     */
+    public function getProperty($fieldName)
+    {
+        return $this->properties[$fieldName] ?? null;
     }
 
     /**
@@ -2168,7 +2139,7 @@ class ClassMetadata implements ClassMetadataInterface
         $inheritedProperty = new FieldMetadata($property->getName());
         $declaringClass    = $property->getDeclaringClass();
 
-        if ( ! $declaringClass->isMappedSuperclass) {
+        if (! $declaringClass->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
         }
 
@@ -2822,7 +2793,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
-    public function setVersionProperty(FieldMetadata $versionFieldMetadata)
+    public function setVersionProperty(VersionFieldMetadata $versionFieldMetadata)
     {
         $this->versionProperty = $versionFieldMetadata;
 

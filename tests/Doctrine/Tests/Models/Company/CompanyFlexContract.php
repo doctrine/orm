@@ -1,7 +1,9 @@
 <?php
+
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity
@@ -112,16 +114,16 @@ class CompanyFlexContract extends CompanyContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty(
-            'hoursWorked',
-            Type::getType('integer'),
-            ['columnName' => 'hoursWorked']
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('hoursWorked');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('hoursWorked');
 
-        $metadata->addProperty(
-            'pricePerHour',
-            Type::getType('integer'),
-            ['columnName' => 'pricePerHour']
-        );
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('pricePerHour');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('pricePerHour');
+
+        $metadata->addProperty($fieldMetadata);
     }
 }

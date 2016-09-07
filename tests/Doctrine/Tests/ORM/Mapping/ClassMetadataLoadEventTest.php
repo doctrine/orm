@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping;
 use Doctrine\Tests\OrmTestCase;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
@@ -14,20 +15,28 @@ class ClassMetadataLoadEventTest extends OrmTestCase
      */
     public function testEvent()
     {
-        $em = $this->_getTestEntityManager();
-        $metadataFactory = $em->getMetadataFactory();
-        $evm = $em->getEventManager();
-        $evm->addEventListener(Events::loadClassMetadata, $this);
-        $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
-        self::assertTrue($classMetadata->hasField('about'));
-        self::assertArrayHasKey('about', $classMetadata->reflFields);
-        self::assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
+        $entityManager   = $this->_getTestEntityManager();
+        $metadataFactory = $entityManager->getMetadataFactory();
+        $eventManager    = $entityManager->getEventManager();
+
+        $eventManager->addEventListener(Events::loadClassMetadata, $this);
+
+        $metadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
+
+        self::assertTrue($metadata->hasField('about'));
+        self::assertArrayHasKey('about', $metadata->reflFields);
+        self::assertInstanceOf('ReflectionProperty', $metadata->reflFields['about']);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
-        $classMetadata = $eventArgs->getClassMetadata();
-        $classMetadata->addProperty('about', Type::getType('string'), ['length' => 255]);
+        $metadata = $eventArgs->getClassMetadata();
+        $fieldMetadata = new Mapping\FieldMetadata('about');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(255);
+
+        $metadata->addProperty($fieldMetadata);
     }
 }
 

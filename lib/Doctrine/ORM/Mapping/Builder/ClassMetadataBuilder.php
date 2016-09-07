@@ -22,6 +22,8 @@ namespace Doctrine\ORM\Mapping\Builder;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\VersionFieldMetadata;
 
 /**
  * Builder Object for ClassMetadata
@@ -361,7 +363,50 @@ class ClassMetadataBuilder
      */
     public function addProperty($name, $type, array $mapping = [])
     {
-        $this->cm->addProperty($name, Type::getType($type), $mapping);
+        $fieldMetadata = isset($mapping['version']) && $mapping['version']
+            ? new VersionFieldMetadata($name)
+            : new FieldMetadata($name)
+        ;
+
+        $fieldMetadata->setType(Type::getType($type));
+
+        if (isset($mapping['columnName'])) {
+            $fieldMetadata->setColumnName($mapping['columnName']);
+        }
+
+        if (isset($mapping['length'])) {
+            $fieldMetadata->setLength((int) $mapping['length']);
+        }
+
+        if (isset($mapping['precision'])) {
+            $fieldMetadata->setPrecision((int) $mapping['precision']);
+        }
+
+        if (isset($mapping['scale'])) {
+            $fieldMetadata->setScale((int) $mapping['scale']);
+        }
+
+        if (isset($mapping['id'])) {
+            $fieldMetadata->setPrimaryKey($mapping['id']);
+        }
+
+        if (isset($mapping['unique'])) {
+            $fieldMetadata->setUnique($mapping['unique']);
+        }
+
+        if (isset($mapping['nullable'])) {
+            $fieldMetadata->setNullable($mapping['nullable']);
+        }
+
+        if (isset($mapping['columnDefinition'])) {
+            $fieldMetadata->setColumnDefinition($mapping['columnDefinition']);
+        }
+
+        if (isset($mapping['options'])) {
+            $fieldMetadata->setOptions($mapping['options']);
+        }
+
+        $this->cm->addProperty($fieldMetadata);
 
         return $this;
     }

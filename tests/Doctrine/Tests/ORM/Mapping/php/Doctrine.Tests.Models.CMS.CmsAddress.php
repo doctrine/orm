@@ -9,9 +9,23 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 /* @var $metadata ClassMetadata */
 $metadata->setPrimaryTable(['name' => 'company_person']);
 
-$metadata->addProperty('id', Type::getType('integer'), ['id' => true]);
-$metadata->addProperty('zip', Type::getType('string'), ['length' => 50]);
-$metadata->addProperty('city', Type::getType('string'), ['length' => 50]);
+$fieldMetadata = new Mapping\FieldMetadata('id');
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('zip');
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+
+$metadata->addProperty($fieldMetadata);
+
+$fieldMetadata = new Mapping\FieldMetadata('city');
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setLength(50);
+
+$metadata->addProperty($fieldMetadata);
 
 $joinColumns = [];
 
