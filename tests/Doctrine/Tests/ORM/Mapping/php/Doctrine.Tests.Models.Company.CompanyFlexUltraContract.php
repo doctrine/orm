@@ -1,10 +1,16 @@
 <?php
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /* @var $metadata ClassMetadata */
-$metadata->addProperty('maxPrice', Type::getType('integer'), ['columnName' => 'maxPrice']);
+$fieldMetadata = new Mapping\FieldMetadata('maxPrice');
+
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setColumnName('maxPrice');
+
+$metadata->addProperty($fieldMetadata);
 
 $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping;
 
 /**
  * CmsAddress
@@ -127,33 +127,32 @@ class CmsAddress
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->setPrimaryTable(
-            [
-           'name' => 'company_person',
-            ]
-        );
+        $metadata->setPrimaryTable(['name' => 'company_person']);
 
-        $metadata->addProperty(
-            'id',
-            Type::getType('integer'),
-            ['id' => true]
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('id');
 
-        $metadata->addProperty(
-            'zip',
-            Type::getType('string'),
-            ['length' => 50]
-        );
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
 
-        $metadata->addProperty(
-            'city',
-            Type::getType('string'),
-            ['length' => 50]
-        );
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('zip');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(50);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('city');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(50);
+
+        $metadata->addProperty($fieldMetadata);
 
         $joinColumns = [];
 
-        $joinColumn = new JoinColumnMetadata();
+        $joinColumn = new Mapping\JoinColumnMetadata();
 
         $joinColumn->setReferencedColumnName('id');
 

@@ -27,16 +27,14 @@ $metadata->setDiscriminatorMap(
 
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
-$metadata->addProperty(
-    'id',
-    Type::getType('integer'),
-    [
-        'length'   => NULL,
-        'nullable' => false,
-        'unique'   => false,
-        'id'       => true,
-    ]
-);
+$fieldMetadata = new Mapping\FieldMetadata('id');
+
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setPrimaryKey(true);
+$fieldMetadata->setNullable(false);
+$fieldMetadata->setUnique(false);
+
+$metadata->addProperty($fieldMetadata);
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 
