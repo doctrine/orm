@@ -302,9 +302,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     private function resolveMagicCall($method, $by, array $arguments)
     {
-        $argsCount = count($arguments);
-
-        if (0 === $argsCount) {
+        if (! $arguments) {
             throw ORMException::findByRequiresParameter($method . $by);
         }
 
