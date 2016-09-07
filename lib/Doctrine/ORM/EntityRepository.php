@@ -300,7 +300,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @return mixed
      */
-    private function resolveMagicCall($method, $by, array $arguments = [])
+    private function resolveMagicCall($method, $by, array $arguments)
     {
         $argsCount = count($arguments);
 
