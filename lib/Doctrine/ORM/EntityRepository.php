@@ -310,22 +310,10 @@ class EntityRepository implements ObjectRepository, Selectable
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
-        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            switch ($argsCount) {
-                case 1:
-                    return $this->$method(array($fieldName => $arguments[0]));
-
-                case 2:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
-
-                case 3:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
-
-                case 4:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
-            }
+        if (! ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName))) {
+            throw ORMException::invalidMagicCall($this->_entityName, $fieldName, $method . $by);
         }
 
-        throw ORMException::invalidMagicCall($this->_entityName, $fieldName, $method.$by);
+        return $this->$method([$fieldName => $arguments[0]], ...array_slice($arguments, 1));
     }
 }
