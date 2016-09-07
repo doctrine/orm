@@ -718,7 +718,7 @@ abstract class AbstractQuery
      *
      * @param int $hydrationMode
      *
-     * @return array
+     * @return mixed
      */
     public function getResult($hydrationMode = self::HYDRATE_OBJECT)
     {
