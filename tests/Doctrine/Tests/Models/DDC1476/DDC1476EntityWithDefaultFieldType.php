@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC1476;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity()
@@ -45,8 +46,16 @@ class DDC1476EntityWithDefaultFieldType
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty('id', Type::getType('string'), ['id' => true]);
-        $metadata->addProperty('name', Type::getType('string'));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
     }

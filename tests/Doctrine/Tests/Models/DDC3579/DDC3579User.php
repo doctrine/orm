@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /**
  * @MappedSuperclass
@@ -82,25 +83,23 @@ class DDC3579User
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->addProperty(
-            'id',
-            Type::getType('integer'),
-            [
-               'id'         => true,
-               'columnName' => 'user_id',
-            ]
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('id');
 
-        $metadata->addProperty(
-            'name',
-            Type::getType('string'),
-            [
-                'columnName'=> 'user_name',
-                'nullable'  => true,
-                'unique'    => false,
-                'length'    => 250,
-            ]
-        );
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('user_id');
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(250);
+        $fieldMetadata->setColumnName('user_name');
+        $fieldMetadata->setNullable(true);
+        $fieldMetadata->setUnique(false);
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->mapManyToMany(
             [

@@ -140,6 +140,19 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * Exception for invalid version property override.
+     *
+     * @param string $className The entity's name.
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
+    public static function invalidOverrideVersionField($className, $fieldName)
+    {
+        return new self("Invalid version field override named '$fieldName' for class '$className'.");
+    }
+
+    /**
      * Exception for invalid property type override.
      *
      * @param string $className The entity's name.

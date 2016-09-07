@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC2825;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 
 /** @Entity @Table(name="explicit_table", schema="explicit_schema") */
 class ExplicitSchemaAndTable
@@ -17,8 +18,11 @@ class ExplicitSchemaAndTable
             'schema' => 'explicit_schema',
         ));
 
-        $metadata->addProperty('id', Type::getType('integer'), array (
-            'id' => true,
-        ));
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+
+        $metadata->addProperty($fieldMetadata);
     }
 }

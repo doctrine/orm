@@ -146,17 +146,17 @@ abstract class CompanyContract
 
         $metadata->setDiscriminatorColumn($discrColumn);
 
-        $metadata->addProperty(
-            'id',
-            Type::getType('integer'),
-            ['id' => true]
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
 
-        $metadata->addProperty(
-            'completed',
-            Type::getType('boolean'),
-            ['columnName' => 'completed']
-        );
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('completed');
+        $fieldMetadata->setType(Type::getType('boolean'));
+        $fieldMetadata->setColumnName('completed');
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->setDiscriminatorMap(
             [

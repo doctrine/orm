@@ -28,6 +28,7 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
@@ -217,7 +218,7 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['fieldName'] = $this->getFieldNameForColumn($manyTable->getName(), current($otherFk->getColumns()), true);
                 $associationMapping['targetEntity'] = $this->getClassNameForTable($otherFk->getForeignTableName());
 
-                if (current($manyTable->getColumns())->getName() == $localColumn) {
+                if (current($manyTable->getColumns())->getName() === $localColumn) {
                     $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
                     $associationMapping['joinTable'] = [
                         'name' => strtolower($manyTable->getName()),
@@ -363,39 +364,41 @@ class DatabaseDriver implements MappingDriver
                 continue;
             }
 
-            $fieldName    = $this->getFieldNameForColumn($tableName, $column->getName(), false);
-            $fieldMapping = $this->buildFieldMapping($tableName, $column);
+            $fieldName     = $this->getFieldNameForColumn($tableName, $column->getName(), false);
+            $fieldMetadata = $this->convertColumnAnnotationToFieldMetadata($tableName, $column, $fieldName);
 
             if ($primaryKeys && in_array($column->getName(), $primaryKeys)) {
-                $fieldMapping['id'] = true;
+                $fieldMetadata->setPrimaryKey(true);
 
-                $ids[] = $fieldMapping;
+                $ids[] = $fieldMetadata;
             }
 
-            $metadata->addProperty($fieldName, $column->getType(), $fieldMapping);
+            $metadata->addProperty($fieldMetadata);
         }
 
         // We need to check for the columns here, because we might have associations as id as well.
-        if ($ids && count($primaryKeys) == 1) {
+        if ($ids && count($primaryKeys) === 1) {
             $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         }
     }
 
     /**
-     * Build field mapping from a schema column definition
+     * Parse the given Column as FieldMetadata
      *
-     * @param string                       $tableName
-     * @param \Doctrine\DBAL\Schema\Column $column
+     * @param string $tableName
+     * @param Column $column
+     * @param string $fieldName
      *
-     * @return array
+     * @return FieldMetadata
      */
-    private function buildFieldMapping($tableName, Column $column)
+    private function convertColumnAnnotationToFieldMetadata(string $tableName, Column $column, string $fieldName)
     {
-        $fieldMapping = [
-            'columnName' => $column->getName(),
-            'type'       => $column->getType()->getName(),
-            'nullable'   => ( ! $column->getNotnull()),
-        ];
+        $options       = [];
+        $fieldMetadata = new FieldMetadata($fieldName);
+
+        $fieldMetadata->setType($column->getType());
+        $fieldMetadata->setTableName($tableName);
+        $fieldMetadata->setColumnName($column->getName());
 
         // Type specific elements
         switch ($column->getType()->getName()) {
@@ -407,34 +410,39 @@ class DatabaseDriver implements MappingDriver
             case Type::SIMPLE_ARRAY:
             case Type::STRING:
             case Type::TEXT:
-                $fieldMapping['length'] = $column->getLength();
-                $fieldMapping['options']['fixed']  = $column->getFixed();
+                if ($column->getLength()) {
+                    $fieldMetadata->setLength($column->getLength());
+                }
+
+                $options['fixed'] = $column->getFixed();
                 break;
 
             case Type::DECIMAL:
             case Type::FLOAT:
-                $fieldMapping['precision'] = $column->getPrecision();
-                $fieldMapping['scale']     = $column->getScale();
+                $fieldMetadata->setScale($column->getScale());
+                $fieldMetadata->setPrecision($column->getPrecision());
                 break;
 
             case Type::INTEGER:
             case Type::BIGINT:
             case Type::SMALLINT:
-                $fieldMapping['options']['unsigned'] = $column->getUnsigned();
+                $options['unsigned'] = $column->getUnsigned();
                 break;
         }
 
         // Comment
         if (($comment = $column->getComment()) !== null) {
-            $fieldMapping['options']['comment'] = $comment;
+            $options['comment'] = $comment;
         }
 
         // Default
         if (($default = $column->getDefault()) !== null) {
-            $fieldMapping['options']['default'] = $default;
+            $options['default'] = $default;
         }
 
-        return $fieldMapping;
+        $fieldMetadata->setOptions($options);
+
+        return $fieldMetadata;
     }
 
     /**

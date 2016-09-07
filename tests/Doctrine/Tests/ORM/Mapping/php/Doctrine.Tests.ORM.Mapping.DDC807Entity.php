@@ -5,7 +5,11 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /* @var $metadata ClassMetadata */
-$metadata->addProperty('id', Type::getType('string'), ['id' => true]);
+$fieldMetadata = new Mapping\FieldMetadata('id');
+$fieldMetadata->setType(Type::getType('string'));
+$fieldMetadata->setPrimaryKey(true);
+
+$metadata->addProperty($fieldMetadata);
 
 $discrColumn = new Mapping\DiscriminatorColumnMetadata();
 
