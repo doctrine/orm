@@ -1535,6 +1535,16 @@ As an example here is the code of the first use case "List of Bugs":
 Using EntityRepositories you can avoid coupling your model with specific query logic.
 You can also re-use query logic easily throughout your application.
 
+The method ``count()`` takes an array of fields or association keys and the values to match against.
+This provides you with a convenient and lightweight way to count a resultset when you don't need to
+deal with it:
+
+.. code-block:: php
+
+    <?php
+    $productCount = $entityManager->getRepository(Product::class)
+                             ->count(['name' => $productName]);
+
 Conclusion
 ----------
 
