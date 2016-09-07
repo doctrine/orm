@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Collections\Selectable;
@@ -306,7 +307,7 @@ class EntityRepository implements ObjectRepository, Selectable
             throw ORMException::findByRequiresParameter($method . $by);
         }
 
-        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
+        $fieldName = lcfirst(Inflector::classify($by));
 
         if (! ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName))) {
             throw ORMException::invalidMagicCall($this->_entityName, $fieldName, $method . $by);
