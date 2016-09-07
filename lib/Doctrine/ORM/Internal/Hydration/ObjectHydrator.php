@@ -332,6 +332,9 @@ class ObjectHydrator extends AbstractHydrator
         // Split the row data into chunks of class data.
         $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
+        // reset result pointers for each data row
+        $this->resultPointers = [];
+
         // Hydrate the data chunks
         foreach ($rowData['data'] as $dqlAlias => $data) {
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
