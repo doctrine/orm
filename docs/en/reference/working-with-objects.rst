@@ -727,6 +727,14 @@ examples are equivalent:
     // A single user by its nickname (__call magic)
     $user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
 
+Additionally, you can just count the result of the provided conditions when you don't really need the data:
+
+.. code-block:: php
+
+    <?php
+    // Check there is no user with nickname
+    $availableNickname = 0 === $em->getRepository('MyProject\Domain\User')->count(['nickname' => 'nonexistent']);
+
 By Criteria
 ~~~~~~~~~~~
 
