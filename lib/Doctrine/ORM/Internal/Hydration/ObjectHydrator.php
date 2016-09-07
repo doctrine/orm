@@ -333,7 +333,7 @@ class ObjectHydrator extends AbstractHydrator
         $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
         // reset result pointers for each data row
-        $this->resultPointers = array();
+        $this->resultPointers = [];
 
         // Hydrate the data chunks
         foreach ($rowData['data'] as $dqlAlias => $data) {
