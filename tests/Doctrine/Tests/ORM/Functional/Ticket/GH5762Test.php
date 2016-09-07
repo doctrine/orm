@@ -11,10 +11,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH5762Test extends OrmFunctionalTestCase
 {
-
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(GH5762Driver::class),
@@ -27,22 +26,23 @@ class GH5762Test extends OrmFunctionalTestCase
     {
         $result = $this->fetchData();
 
-        $this->assertInstanceOf(GH5762Driver::class, $result);
-        $this->assertInstanceOf(PersistentCollection::class, $result->driverRides);
-        $this->assertInstanceOf(GH5762DriverRide::class, $result->driverRides->get(0));
-        $this->assertInstanceOf(GH5762Car::class, $result->driverRides->get(0)->car);
+        self::assertInstanceOf(GH5762Driver::class, $result);
+        self::assertInstanceOf(PersistentCollection::class, $result->driverRides);
+        self::assertInstanceOf(GH5762DriverRide::class, $result->driverRides->get(0));
+        self::assertInstanceOf(GH5762Car::class, $result->driverRides->get(0)->car);
 
         $cars = array();
         foreach ($result->driverRides as $ride) {
             $cars[] = $ride->car->brand;
         }
-        $this->assertEquals(count($cars), count(array_unique($cars)));
 
-        $this->assertContains('BMW', $cars);
-        $this->assertContains('Crysler', $cars);
-        $this->assertContains('Dodge', $cars);
-        $this->assertContains('Mercedes', $cars);
-        $this->assertContains('Volvo', $cars);
+        self::assertEquals(count($cars), count(array_unique($cars)));
+
+        self::assertContains('BMW', $cars);
+        self::assertContains('Crysler', $cars);
+        self::assertContains('Dodge', $cars);
+        self::assertContains('Mercedes', $cars);
+        self::assertContains('Volvo', $cars);
     }
 
     private function fetchData()
