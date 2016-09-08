@@ -513,6 +513,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadCriteria(Criteria $criteria)
     {
+        $orderBy     = $criteria->getOrderings();
+        $limit       = $criteria->getMaxResults();
+        $offset      = $criteria->getFirstResult();
         $query       = $this->persister->getSelectSQL($criteria);
         $hash        = $this->getHash($query, $criteria, $orderBy, $limit, $offset);
         $rsm         = $this->getResultSetMapping();
