@@ -86,4 +86,34 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
         $hydrator->hydrateAll($stmt, $rsm);
     }
+
+    /**
+     * @group issue-5989
+     */
+    public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\Issue5989\Issue5989Person', 'p');
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'm__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Manager');
+        $rsm->addFieldResult('p', 'e__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Employee');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $resultSet = array(
+            array(
+                'p__id'   => '1',
+                'm__tags' => 'tag1,tag2',
+                'e__tags' => null,
+                'discr'   => 'manager'
+            ),
+        );
+
+        $expectedEntity = new \Doctrine\Tests\Models\Issue5989\Issue5989Manager();
+        $expectedEntity->id = 1;
+        $expectedEntity->tags = ['tag1', 'tag2'];
+
+        $stmt       = new HydratorMockStatement($resultSet);
+        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $this->assertEquals($result[0], $expectedEntity);
+    }
 }
