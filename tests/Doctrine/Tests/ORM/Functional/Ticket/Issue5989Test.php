@@ -21,20 +21,20 @@ class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $manager = new Issue5989Manager();
 
-        $managerTags = array('tag1', 'tag2');
-        $manager->setTags($managerTags);
+        $managerTags = ['tag1', 'tag2'];
+        $manager->tags = $managerTags;
         $this->_em->persist($manager);
 
         $employee = new Issue5989Employee();
 
-        $employeeTags = array('tag2', 'tag3');
-        $employee->setTags($employeeTags);
+        $employeeTags =['tag2', 'tag3'];
+        $employee->tags = $employeeTags;
         $this->_em->persist($employee);
 
         $this->_em->flush();
 
-        $managerId = $manager->getId();
-        $employeeId = $employee->getId();
+        $managerId = $manager->id;
+        $employeeId = $employee->id;
 
         // clear entity manager so that $repository->find actually fetches them and uses the hydrator
         // instead of just returning the existing managed entities
@@ -45,7 +45,7 @@ class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager = $repository->find($managerId);
         $employee = $repository->find($employeeId);
 
-        static::assertEquals($managerTags, $manager->getTags());
-        static::assertEquals($employeeTags, $employee->getTags());
+        static::assertEquals($managerTags, $manager->tags);
+        static::assertEquals($employeeTags, $employee->tags);
     }
 }

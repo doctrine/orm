@@ -20,10 +20,5 @@ class Issue5989Person
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
-
-    public function getId()
-    {
-        return  $this->id;
-    }
+    public $id;
 }
