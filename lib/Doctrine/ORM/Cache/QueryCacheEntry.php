@@ -38,18 +38,18 @@ class QueryCacheEntry implements CacheEntry
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var integer Time creation of this cache entry
+     * @var float Time creation of this cache entry
      */
     public $time;
 
     /**
      * @param array $result
-     * @param integer $time
+     * @param float $time
      */
     public function __construct($result, $time = null)
     {
         $this->result = $result;
-        $this->time   = $time ?: time();
+        $this->time   = $time ?: microtime(true);
     }
 
     /**

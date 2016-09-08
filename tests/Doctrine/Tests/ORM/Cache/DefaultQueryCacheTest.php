@@ -386,7 +386,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             array('id'=>2, 'name' => 'Bar')
         );
 
-        $entry->time = time() - 100;
+        $entry->time = microtime(true) - 100;
 
         $this->region->addReturn('get', $entry);
         $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $entities[0]));

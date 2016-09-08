@@ -28,7 +28,7 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -993,30 +993,52 @@ abstract class AbstractQuery
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
         $rsm        = $this->getResultSetMapping();
-        $querykey   = new QueryCacheKey($this->getHash(), $this->lifetime, $this->cacheMode ?: Cache::MODE_NORMAL);
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
-        $result     = $queryCache->get($querykey, $rsm, $this->_hints);
+        $queryKey   = new QueryCacheKey(
+            $this->getHash(),
+            $this->lifetime,
+            $this->cacheMode ?: Cache::MODE_NORMAL,
+            $this->getTimestampKey()
+        );
+
+        $result     = $queryCache->get($queryKey, $rsm, $this->_hints);
 
         if ($result !== null) {
             if ($this->cacheLogger) {
-                $this->cacheLogger->queryCacheHit($queryCache->getRegion()->getName(), $querykey);
+                $this->cacheLogger->queryCacheHit($queryCache->getRegion()->getName(), $queryKey);
             }
 
             return $result;
         }
 
         $result = $this->executeIgnoreQueryCache($parameters, $hydrationMode);
-        $cached = $queryCache->put($querykey, $rsm, $result, $this->_hints);
+        $cached = $queryCache->put($queryKey, $rsm, $result, $this->_hints);
 
         if ($this->cacheLogger) {
-            $this->cacheLogger->queryCacheMiss($queryCache->getRegion()->getName(), $querykey);
+            $this->cacheLogger->queryCacheMiss($queryCache->getRegion()->getName(), $queryKey);
 
             if ($cached) {
-                $this->cacheLogger->queryCachePut($queryCache->getRegion()->getName(), $querykey);
+                $this->cacheLogger->queryCachePut($queryCache->getRegion()->getName(), $queryKey);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @return \Doctrine\ORM\Cache\TimestampCacheKey|null
+     */
+    private function getTimestampKey()
+    {
+        $entityName = reset($this->_resultSetMapping->aliasMap);
+
+        if (empty($entityName)) {
+            return null;
+        }
+
+        $metadata = $this->_em->getClassMetadata($entityName);
+
+        return new Cache\TimestampCacheKey($metadata->getTableName());
     }
 
     /**
