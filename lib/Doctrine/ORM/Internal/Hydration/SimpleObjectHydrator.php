@@ -121,6 +121,9 @@ class SimpleObjectHydrator extends AbstractHydrator
                 continue;
             }
 
+            // Check if value is null before conversion (because some types convert null to something else)
+            $valueIsNull = null === $value;
+
             // Convert field to a valid PHP value
             if (isset($cacheKeyInfo['type'])) {
                 $type  = $cacheKeyInfo['type'];
@@ -130,7 +133,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             $fieldName = $cacheKeyInfo['fieldName'];
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
-            if ( ! isset($data[$fieldName]) || $value !== null) {
+            if ( ! isset($data[$fieldName]) || ! $valueIsNull) {
                 $data[$fieldName] = $value;
             }
         }
