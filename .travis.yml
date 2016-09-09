@@ -1,3 +1,4 @@
+sudo: false
 language: php
 
 php:
@@ -28,7 +29,7 @@ after_script:
 matrix:
   fast_finish: true
   include:
-    - php: hhvm-3.15
+    - php: hhvm
       sudo: true
       dist: trusty
       group: edge # until the next update
@@ -41,14 +42,14 @@ matrix:
       services:
         - mysql
       env: DB=mysql
-    - php: hhvm-3.15
+    - php: hhvm
       sudo: true
       dist: trusty
       group: edge # until the next update
       services:
         - postgresql
       env: DB=pgsql
-    - php: hhvm-3.15
+    - php: hhvm
       sudo: true
       dist: trusty
       group: edge # until the next update
@@ -66,7 +67,7 @@ matrix:
       env: DB=mariadb
       addons:
         mariadb: 5.5
-    - php: hhvm-3.15
+    - php: hhvm
       sudo: true
       dist: trusty
       group: edge # until the next Trusty update
@@ -96,9 +97,7 @@ matrix:
   allow_failures:
     - php: 7.1
     - php: nightly
-    - php: hhvm-3.15
-
-sudo: false
+    - php: hhvm
 
 cache:
   directories:
