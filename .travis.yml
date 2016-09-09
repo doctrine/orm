@@ -97,7 +97,6 @@ matrix:
     - php: 7.1
     - php: nightly
     - php: hhvm-3.15
-      env: DB=pgsql
 
 sudo: false
 
