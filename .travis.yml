@@ -26,6 +26,7 @@ after_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
 
 matrix:
+  fast_finish: true
   include:
     - php: hhvm-3.15
       sudo: true
@@ -95,6 +96,8 @@ matrix:
   allow_failures:
     - php: 7.1
     - php: nightly
+    - php: hhvm-3.15
+      env: DB=pgsql
 
 sudo: false
 
