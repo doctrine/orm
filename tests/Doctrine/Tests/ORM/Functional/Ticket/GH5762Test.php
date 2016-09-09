@@ -27,7 +27,7 @@ class GH5762Test extends OrmFunctionalTestCase
         $result = $this->fetchData();
 
         self::assertInstanceOf(GH5762Driver::CLASSNAME, $result);
-        self::assertInstanceOf(PersistentCollection::CLASSNAME, $result->driverRides);
+        self::assertInstanceOf('Doctrine\ORM\PersistentCollection', $result->driverRides);
         self::assertInstanceOf(GH5762DriverRide::CLASSNAME, $result->driverRides->get(0));
         self::assertInstanceOf(GH5762Car::CLASSNAME, $result->driverRides->get(0)->car);
 
