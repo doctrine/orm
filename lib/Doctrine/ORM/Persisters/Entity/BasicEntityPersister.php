@@ -1442,7 +1442,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if ($this->class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->class->identifier[0] != $name) {
+            if (! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
                 $columns[]                = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
                 $this->columnTypes[$name] = $this->class->fieldMappings[$name]['type'];
             }
