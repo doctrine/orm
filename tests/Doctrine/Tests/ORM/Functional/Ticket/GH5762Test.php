@@ -16,9 +16,9 @@ class GH5762Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(GH5762Driver::class),
-            $this->_em->getClassMetadata(GH5762DriverRide::class),
-            $this->_em->getClassMetadata(GH5762Car::class),
+            $this->_em->getClassMetadata(GH5762Driver::CLASSNAME),
+            $this->_em->getClassMetadata(GH5762DriverRide::CLASSNAME),
+            $this->_em->getClassMetadata(GH5762Car::CLASSNAME),
         ));
     }
 
@@ -26,10 +26,10 @@ class GH5762Test extends OrmFunctionalTestCase
     {
         $result = $this->fetchData();
 
-        self::assertInstanceOf(GH5762Driver::class, $result);
-        self::assertInstanceOf(PersistentCollection::class, $result->driverRides);
-        self::assertInstanceOf(GH5762DriverRide::class, $result->driverRides->get(0));
-        self::assertInstanceOf(GH5762Car::class, $result->driverRides->get(0)->car);
+        self::assertInstanceOf(GH5762Driver::CLASSNAME, $result);
+        self::assertInstanceOf(PersistentCollection::CLASSNAME, $result->driverRides);
+        self::assertInstanceOf(GH5762DriverRide::CLASSNAME, $result->driverRides->get(0));
+        self::assertInstanceOf(GH5762Car::CLASSNAME, $result->driverRides->get(0)->car);
 
         $cars = array();
         foreach ($result->driverRides as $ride) {
@@ -51,7 +51,7 @@ class GH5762Test extends OrmFunctionalTestCase
 
         $qb = $this->_em->createQueryBuilder();
         $qb->select('d, dr, c')
-            ->from(GH5762Driver::class, 'd')
+            ->from(GH5762Driver::CLASSNAME, 'd')
             ->leftJoin('d.driverRides', 'dr')
             ->leftJoin('dr.car', 'c')
             ->where('d.id = 1');
@@ -100,6 +100,8 @@ class GH5762Test extends OrmFunctionalTestCase
  */
 class GH5762Driver
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @Column(type="integer")
@@ -131,6 +133,8 @@ class GH5762Driver
  */
 class GH5762DriverRide
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Id
      * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
@@ -161,6 +165,7 @@ class GH5762DriverRide
  */
 class GH5762Car
 {
+    const CLASSNAME = __CLASS__;
 
     /**
      * @Id
