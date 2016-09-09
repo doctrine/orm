@@ -40,7 +40,7 @@ class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // instead of just returning the existing managed entities
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(Issue5989Person::class);
+        $repository = $this->_em->getRepository(Issue5989Person::CLASSNAME);
 
         $manager = $repository->find($managerId);
         $employee = $repository->find($employeeId);
