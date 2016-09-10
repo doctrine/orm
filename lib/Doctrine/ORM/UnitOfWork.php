@@ -3404,8 +3404,6 @@ class UnitOfWork implements PropertyChangedListener
                         );
                         $managedCol->setOwner($managedCopy, $assoc2);
                         $prop->setValue($managedCopy, $managedCol);
-
-                        $this->originalEntityData[spl_object_hash($entity)][$name] = $managedCol;
                     }
 
                     if ($assoc2['isCascadeMerge']) {
