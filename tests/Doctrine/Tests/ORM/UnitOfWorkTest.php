@@ -371,10 +371,6 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testObjectHashesOfMergedEntitiesAreNotUsedInOriginalEntityDataMap()
     {
-        $reflectionOriginalEntityData = new \ReflectionProperty('Doctrine\ORM\UnitOfWork', 'originalEntityData');
-
-        $reflectionOriginalEntityData->setAccessible(true);
-
         $user       = new CmsUser();
         $user->name = 'ocramius';
         $mergedUser = $this->_unitOfWork->merge($user);
