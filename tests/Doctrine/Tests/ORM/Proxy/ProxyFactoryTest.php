@@ -12,6 +12,7 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 
@@ -145,39 +146,42 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $companyEmployee = new CompanyEmployee();
         $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
-        $companyEmployee->setName("Bob"); // A property on the parent class, CompanyPerson
+        $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
 
         // Set the id of the CompanyEmployee (which is in the parent CompanyPerson)
-        $class = new \ReflectionClass('Doctrine\Tests\Models\Company\CompanyPerson');
+        $property = new \ReflectionProperty(CompanyPerson::class, 'id');
 
-        $property = $class->getProperty('id');
         $property->setAccessible(true);
-
         $property->setValue($companyEmployee, 42);
 
-        $classMetaData = $this->emMock->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
+        $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);
 
-        $persister = $this->getMock('Doctrine\ORM\Persisters\Entity\BasicEntityPersister', array('load', 'getClassMetadata'), array(), '', false);
-        $this->uowMock->setEntityPersister('Doctrine\Tests\Models\Company\CompanyEmployee', $persister);
+        $persister = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
 
         /* @var $proxy \Doctrine\Common\Proxy\Proxy */
-        $proxy = $this->proxyFactory->getProxy('Doctrine\Tests\Models\Company\CompanyEmployee', array('id' => 42));
+        $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, ['id' => 42]);
 
         $persister
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('load')
-            ->will($this->returnValue($companyEmployee));
+            ->willReturn($companyEmployee);
 
         $persister
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('getClassMetadata')
-            ->will($this->returnValue($classMetaData));
+            ->willReturn($classMetaData);
 
+        /* @var $cloned CompanyEmployee */
         $cloned = clone $proxy;
 
-        $this->assertEquals(42, $cloned->getId(), "Expected the Id to be cloned");
-        $this->assertEquals(1000, $cloned->getSalary(), "Expect properties on the CompanyEmployee class to be cloned");
-        $this->assertEquals("Bob", $cloned->getName(), "Expect properties on the CompanyPerson class to be cloned");
+        self::assertSame(42, $cloned->getId(), 'Expected the Id to be cloned');
+        self::assertSame(1000, $cloned->getSalary(), 'Expect properties on the CompanyEmployee class to be cloned');
+        self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
     }
 }
 
