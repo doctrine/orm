@@ -14,6 +14,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
@@ -458,6 +459,38 @@ class UnitOfWorkTest extends OrmTestCase
             'first null string, two fields'  => [$firstNullString, ['id1' => null, 'id2' => $firstNullString->id2]],
             'second null string, two fields' => [$secondNullString, ['id1' => $secondNullString->id1, 'id2' => null]],
         ];
+    }
+
+    /**
+     * @group 5689
+     * @group 1465
+     */
+    public function testObjectHashesOfMergedEntitiesAreNotUsedInOriginalEntityDataMap()
+    {
+        $reflectionOriginalEntityData = new \ReflectionProperty('Doctrine\ORM\UnitOfWork', 'originalEntityData');
+
+        $reflectionOriginalEntityData->setAccessible(true);
+
+        $user       = new CmsUser();
+        $user->name = 'ocramius';
+        $mergedUser = $this->_unitOfWork->merge($user);
+
+        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
+        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
+
+
+        $user       = null;
+        $mergedUser = null;
+
+        // force garbage collection of $user (frees the used object hashes, which may be recycled)
+        gc_collect_cycles();
+
+        $newUser       = new CmsUser();
+        $newUser->name = 'ocramius';
+
+        $this->_unitOfWork->persist($newUser);
+
+        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
     }
 }
 
