@@ -87,7 +87,7 @@ matrix:
       env: DB=mariadb
       addons:
         mariadb: 10.1
-    - php: hhvm-3.15
+    - php: hhvm
       sudo: true
       dist: trusty
       group: edge # until the next Trusty update
