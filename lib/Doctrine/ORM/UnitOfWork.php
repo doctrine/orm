@@ -19,36 +19,33 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Internal\HydrationCompleteHandler;
-use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
-use Exception;
-use InvalidArgumentException;
-use UnexpectedValueException;
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Common\Persistence\ObjectManagerAware;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Proxy\Proxy;
-
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\ORM\Event\ListenersInvoker;
-
-use Doctrine\ORM\Cache\Persister\CachedPersister;
-use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
-use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
+use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
+use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
+use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Exception;
+use InvalidArgumentException;
+use UnexpectedValueException;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -890,7 +887,14 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
 
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                $idValue = array($class->identifier[0] => $idValue);
+                $idField = $class->identifier[0];
+
+                $idValue = [
+                    $idField => $this->em->getConnection()->convertToPHPValue(
+                        $idValue,
+                        $class->getTypeOfField($idField)
+                    )
+                ];
 
                 $class->setIdentifierValues($entity, $idValue);
             }
@@ -1008,16 +1012,20 @@ class UnitOfWork implements PropertyChangedListener
         if ($postInsertIds) {
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $id      = $postInsertId['generatedId'];
+                $idField = $class->identifier[0];
+                $idValue = $this->em->getConnection()->convertToPHPValue(
+                    $postInsertId['generatedId'],
+                    $class->getTypeOfField($idField)
+                );
+
                 $entity  = $postInsertId['entity'];
                 $oid     = spl_object_hash($entity);
-                $idField = $class->identifier[0];
 
-                $class->reflFields[$idField]->setValue($entity, $id);
+                $class->reflFields[$idField]->setValue($entity, $idValue);
 
-                $this->entityIdentifiers[$oid] = array($idField => $id);
+                $this->entityIdentifiers[$oid] = array($idField => $idValue);
                 $this->entityStates[$oid] = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $id;
+                $this->originalEntityData[$oid][$idField] = $idValue;
 
                 $this->addToIdentityMap($entity);
             }
