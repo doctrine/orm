@@ -349,6 +349,20 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
+    public function testClearManagerWithObject()
+    {
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->_unitOfWork->persist($entity);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+
+        $this->_unitOfWork->clear($entity);
+
+        // true because entity wasn't a string so it wasn't cleared
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity));
+    }
+
     /**
      * Data Provider
      *

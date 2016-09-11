@@ -3442,6 +3442,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function clearIdentityMapForEntityName($entityName)
     {
+        if (is_object($entityName)) {
+            return;
+        }
+
         if (! isset($this->identityMap[$entityName])) {
             return;
         }
