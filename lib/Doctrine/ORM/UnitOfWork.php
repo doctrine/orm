@@ -890,7 +890,11 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
 
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                $idValue = array($class->identifier[0] => $idValue);
+                $idField = $class->identifier[0];
+                $idType  = $class->getTypeOfField($idField);
+
+                $idValue = $this->em->getConnection()->convertToPHPValue($idValue, $idType);
+                $idValue = array($idField => $idValue);
 
                 $class->setIdentifierValues($entity, $idValue);
             }
@@ -1008,16 +1012,20 @@ class UnitOfWork implements PropertyChangedListener
         if ($postInsertIds) {
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $id      = $postInsertId['generatedId'];
+                $idField = $class->identifier[0];
+                $idType  = $class->getTypeOfField($idField);
+
+                $idValue = $postInsertId['generatedId'];
+                $idValue = $this->em->getConnection()->convertToPHPValue($idValue, $idType);
+
                 $entity  = $postInsertId['entity'];
                 $oid     = spl_object_hash($entity);
-                $idField = $class->identifier[0];
 
-                $class->reflFields[$idField]->setValue($entity, $id);
+                $class->reflFields[$idField]->setValue($entity, $idValue);
 
-                $this->entityIdentifiers[$oid] = array($idField => $id);
+                $this->entityIdentifiers[$oid] = array($idField => $idValue);
                 $this->entityStates[$oid] = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $id;
+                $this->originalEntityData[$oid][$idField] = $idValue;
 
                 $this->addToIdentityMap($entity);
             }
