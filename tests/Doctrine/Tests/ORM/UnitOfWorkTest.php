@@ -351,16 +351,28 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testClearManagerWithObject()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('must be a string');
+
         $entity = new Country(456, 'United Kingdom');
 
         $this->_unitOfWork->persist($entity);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $this->_unitOfWork->clear($entity);
+    }
 
-        // true because entity wasn't a string so it wasn't cleared
+    public function testClearManagerWithNullValue()
+    {
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->_unitOfWork->persist($entity);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity));
+
+        $this->_unitOfWork->clear();
+
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity));
+        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity));
     }
 
     /**
