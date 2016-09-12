@@ -157,6 +157,38 @@ class SchemaToolTest extends OrmTestCase
         $this->assertCount(1, $indexes, "there should be only one index");
         $this->assertTrue(current($indexes)->isPrimary(), "index should be primary");
     }
+
+    public function testUpdateSchemaSqlWithManyToManyRelationshipM2MEntityAtTheBottom()
+    {
+        $em         = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $classes    = [
+            $em->getClassMetadata(__NAMESPACE__ . '\\Author'),
+            $em->getClassMetadata(__NAMESPACE__ . '\\Book'),
+            $em->getClassMetadata(__NAMESPACE__ . '\\AuthorBook'),
+        ];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+        $this->assertTrue($schema->hasTable('author'), "Table author should exist.");
+        $this->assertTrue($schema->hasTable('book'), "Table book should exist.");
+        $this->assertTrue($schema->hasTable('author_book'), "Table author_book should exist.");
+    }
+
+    public function testUpdateSchemaSqlWithManyToManyRelationshipOrderedByM2mEntityAtTheTop()
+    {
+        $em         = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $classes    = [
+            $em->getClassMetadata(__NAMESPACE__ . '\\AuthorBook'),
+            $em->getClassMetadata(__NAMESPACE__ . '\\Author'),
+            $em->getClassMetadata(__NAMESPACE__ . '\\Book')
+        ];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+        $this->assertTrue($schema->hasTable('author'), "Table author should exist.");
+        $this->assertTrue($schema->hasTable('book'), "Table book should exist.");
+        $this->assertTrue($schema->hasTable('author_book'), "Table author_book should exist.");
+    }
 }
 
 /**
@@ -247,4 +279,91 @@ class SecondEntity
      * @Column(name="name")
      */
     public $name;
+}
+
+/**
+ * @Entity
+ * @Table(name="author")
+ */
+class Author
+{
+    /**
+     * @Id
+     * @Column(name="id")
+     */
+    public $id;
+
+    /**
+     * @Column(name="name")
+     */
+    public $name;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="AuthorBook", mappedBy="books")
+     * @ORM\JoinTable(name="author_book",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="book_id", referencedColumnName="id")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="author_id", referencedColumnName="id")
+     *   }
+     * )
+     */
+    public $books;
+}
+
+/**
+ * @Entity
+ * @Table(name="book")
+ */
+class Book
+{
+    /**
+     * @Id
+     * @Column(name="id")
+     */
+    public $id;
+
+    /**
+     * @Column(name="title")
+     */
+    public $title;
+
+    /**
+     * @ManyToMany(targetEntity="AuthorBook", inversedBy="authors")
+     * @JoinTable(name="author_book",
+     *   joinColumns={
+     *     @JoinColumn(name="author_id", referencedColumnName="id")
+     *   },
+     *   inverseJoinColumns={
+     *     @JoinColumn(name="book_id", referencedColumnName="id")
+     *   }
+     * )
+     */
+    public $authors;
+}
+
+/**
+ * @Entity
+ * @Table(name="author_book")
+ */
+class AuthorBook
+{
+    /**
+     * @Id
+     * @Column(name="id")
+     */
+    public $id;
+
+    /**
+     * @OneToMany(targetEntity="Author", mappedBy ="authors")
+     * @JoinColumn(name="author_id", referencedColumnName="id")
+     */
+    public $author;
+
+    /**
+     * @OneToMany(targetEntity="Book", mappedBy = "books")
+     * @JoinColumn(name="book_id", referencedColumnName="id")
+     */
+    public $book;
 }
