@@ -2369,6 +2369,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear($entityName = null)
     {
+        if ($entityName !== null && !is_string($entityName)) {
+            throw new \InvalidArgumentException(sprintf('Argument 1 passed to %s() must be a string, %s given', __METHOD__, gettype($entityName)));
+        }
+
         if ($entityName === null) {
             $this->identityMap =
             $this->entityIdentifiers =
@@ -3448,10 +3452,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function clearIdentityMapForEntityName($entityName)
     {
-        if (is_object($entityName)) {
-            return;
-        }
-
         if (! isset($this->identityMap[$entityName])) {
             return;
         }
