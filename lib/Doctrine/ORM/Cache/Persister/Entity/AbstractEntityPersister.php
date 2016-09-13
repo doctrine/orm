@@ -130,7 +130,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
         $this->timestampRegion  = $cacheFactory->getTimestampRegion();
         $this->hydrator         = $cacheFactory->buildEntityHydrator($em, $class);
-        $this->timestampKey     = new TimestampCacheKey($this->class->getTableName());
+        $this->timestampKey     = new TimestampCacheKey($this->class->rootEntityName);
     }
 
     /**
