@@ -1038,7 +1038,7 @@ abstract class AbstractQuery
 
         $metadata = $this->_em->getClassMetadata($entityName);
 
-        return new Cache\TimestampCacheKey($metadata->getTableName());
+        return new Cache\TimestampCacheKey($metadata->rootEntityName);
     }
 
     /**
