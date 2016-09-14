@@ -118,10 +118,25 @@ class XmlExporter extends AbstractExporter
             foreach ($metadata->table['indexes'] as $name => $index) {
                 $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
+
+                if ($index['unique']) {
+                    $indexXml->addAttribute('unique', 'true');
+                }
+
                 $indexXml->addAttribute('columns', implode(',', $index['columns']));
 
                 if (isset($index['flags'])) {
                     $indexXml->addAttribute('flags', implode(',', $index['flags']));
+                }
+
+                if ($index['options']) {
+                    $optionsXml = $indexXml->addChild('options');
+
+                    foreach ($index['options'] as $key => $value) {
+                        $optionXml = $optionsXml->addChild('option', $value);
+
+                        $optionXml->addAttribute('name', $key);
+                    }
                 }
             }
         }
@@ -134,6 +149,16 @@ class XmlExporter extends AbstractExporter
 
                 $uniqueConstraintXml->addAttribute('name', $name);
                 $uniqueConstraintXml->addAttribute('columns', implode(',', $unique['columns']));
+
+                if ($unique['options']) {
+                    $optionsXml = $uniqueConstraintXml->addChild('options');
+
+                    foreach ($unique['options'] as $key => $value) {
+                        $optionXml = $optionsXml->addChild('option', $value);
+
+                        $optionXml->addAttribute('name', $key);
+                    }
+                }
             }
         }
 

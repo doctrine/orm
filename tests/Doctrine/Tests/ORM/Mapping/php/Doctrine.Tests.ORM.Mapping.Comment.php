@@ -11,6 +11,7 @@ $metadata->setPrimaryTable(
     [
        'indexes' => [
            [
+               'unique'  => false,
                'columns' => ['content'],
                'flags'   => ['fulltext'],
                'options' => ['where' => 'content IS NOT NULL'],

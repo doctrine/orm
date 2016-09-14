@@ -141,13 +141,19 @@ $metadata->table['options'] = [
 $metadata->table['uniqueConstraints'] = [
     'search_idx' => [
         'columns' => ['name', 'user_email'],
-        'options' => ['where' => 'name IS NOT NULL']
+        'options' => ['where' => 'name IS NOT NULL'],
     ],
 ];
 
 $metadata->table['indexes'] = [
-    'name_idx' => ['columns' => ['name']],
-    0 => ['columns' => ['user_email']]
+    'name_idx' => [
+        'unique'  => false,
+        'columns' => ['name'],
+    ],
+    0 => [
+        'unique'  => false,
+        'columns' => ['user_email'],
+    ]
 ];
 
 $metadata->setGeneratorDefinition(

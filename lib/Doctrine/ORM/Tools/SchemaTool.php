@@ -284,11 +284,31 @@ class SchemaTool
 
             if (isset($class->table['indexes'])) {
                 foreach ($class->table['indexes'] as $indexName => $indexData) {
+                    $indexName = is_numeric($indexName) ? null : $indexName;
+
                     if ( ! isset($indexData['flags'])) {
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], isset($indexData['options']) ? $indexData['options'] : []);
+                    if ( ! isset($indexData['options'])) {
+                        $indexData['options'] = [];
+                    }
+
+                    $index = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
+
+                    foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
+                        if ($tableIndex->isFullfilledBy($index)) {
+                            $table->dropIndex($tableIndexName);
+                            break;
+                        }
+                    }
+
+                    if ($indexData['unique']) {
+                        $table->addUniqueIndex($indexData['columns'], $indexName, (array) $indexData['options']);
+                    } else {
+                        $table->addIndex($indexData['columns'], $indexName, (array) $indexData['flags'], (array) $indexData['options']);
+                    }
+
                 }
             }
 

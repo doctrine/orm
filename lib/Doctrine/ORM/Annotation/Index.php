@@ -36,6 +36,11 @@ final class Index implements Annotation
     public $columns;
 
     /**
+     * @var bool
+     */
+    public $unique = false;
+
+    /**
      * @var array<string>
      */
     public $flags = [];
