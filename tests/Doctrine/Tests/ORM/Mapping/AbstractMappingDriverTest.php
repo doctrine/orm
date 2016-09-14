@@ -81,16 +81,24 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     }
 
     /**
-     * @depends testEntityTableNameAndInheritance
+     *
      * @param ClassMetadata $class
      */
-    public function testEntityIndexes($class)
+    public function testEntityIndexes()
     {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
+
         self::assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
         self::assertEquals(
             [
-                'name_idx' => ['columns' => ['name']],
-                0 => ['columns' => ['user_email']]
+                'name_idx' => [
+                    'columns' => ['name'],
+                    'unique'  => false,
+                ],
+                0 => [
+                    'columns' => ['user_email'],
+                    'unique'  => false,
+                ]
             ],
             $class->table['indexes']
         );
@@ -105,8 +113,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(
             [
                 0 => [
+                    'unique'  => false,
                     'columns' => ['content'],
-                    'flags' => ['fulltext'],
+                    'flags'   => ['fulltext'],
                     'options' => ['where' => 'content IS NOT NULL'],
                 ]
             ],
@@ -1333,10 +1342,14 @@ class User
             ]
         );
 
-        $metadata->table['uniqueConstraints'] = [
-            'search_idx' => [
-                'columns' => ['name', 'user_email'],
-                'options'=> ['where' => 'name IS NOT NULL']
+        $metadata->table['indexes'] = [
+            'name_idx' => [
+                'unique'  => false,
+                'columns' => ['name'],
+            ],
+            0 => [ // Unnamed index
+                'unique'  => false,
+                'columns' => ['user_email'],
             ],
         ];
 
@@ -1526,6 +1539,7 @@ class Comment
             [
                 'indexes' => [
                     [
+                        'unique'  => false,
                         'columns' => ['content'],
                         'flags'   => ['fulltext'],
                         'options' => ['where' => 'content IS NOT NULL']

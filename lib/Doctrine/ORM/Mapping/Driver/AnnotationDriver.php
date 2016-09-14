@@ -119,6 +119,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $builder->addIndex(
                     $indexAnnot->columns,
                     $indexAnnot->name,
+                    $indexAnnot->unique,
                     $indexAnnot->options,
                     $indexAnnot->flags
                 );

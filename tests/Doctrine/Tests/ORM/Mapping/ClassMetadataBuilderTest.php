@@ -162,14 +162,29 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testAddIndex()
     {
-        self::assertIsFluent($this->builder->addIndex(['username', 'name'], 'users_idx'));
-        self::assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['indexes']);
+        self::assertIsFluent($this->builder->addIndex(array('username', 'name'), 'users_idx'));
+        self::assertEquals(
+            [
+                'users_idx' => [
+                    'unique'  => false,
+                    'columns' => ['username', 'name']
+                ]
+            ],
+            $this->cm->table['indexes']
+        );
     }
 
     public function testAddUniqueConstraint()
     {
         self::assertIsFluent($this->builder->addUniqueConstraint(['username', 'name'], 'users_idx'));
-        self::assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['uniqueConstraints']);
+        self::assertEquals(
+            [
+                'users_idx' => [
+                    'columns' => ['username', 'name']
+                ]
+            ],
+            $this->cm->table['uniqueConstraints']
+        );
     }
 
     public function testSetPrimaryTableRelated()
@@ -181,8 +196,17 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertEquals(
             [
                 'name' => 'users',
-                'indexes' => ['users_idx' => ['columns' => ['username', 'name']]],
-                'uniqueConstraints' => ['users_idx' => ['columns' => ['username', 'name']]],
+                'indexes' => [
+                    'users_idx' => [
+                        'unique'  => false,
+                        'columns' => ['username', 'name']
+                    ]
+                ],
+                'uniqueConstraints' => [
+                    'users_idx' => [
+                        'columns' => ['username', 'name']
+                    ]
+                ],
                 'options' => [],
             ],
             $this->cm->table
