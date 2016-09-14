@@ -23,6 +23,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
@@ -326,17 +327,19 @@ class DatabaseDriver implements MappingDriver
         $indexes   = $this->tables[$tableName]->getIndexes();
 
         foreach ($indexes as $index) {
+            /** @var Index $index */
             if ($index->isPrimary()) {
                 continue;
             }
 
-            $indexName      = $index->getName();
-            $indexColumns   = $index->getColumns();
-            $constraintType = $index->isUnique()
-                ? 'uniqueConstraints'
-                : 'indexes';
+            $indexName = $index->getName();
 
-            $metadata->table[$constraintType][$indexName]['columns'] = $indexColumns;
+            $metadata->table['indexes'][$indexName] = [
+                'unique'  => $index->isUnique(),
+                'columns' => $index->getColumns(),
+                'options' => $index->getOptions(),
+                'flags'   => $index->getFlags(),
+            ];
         }
     }
 
