@@ -133,11 +133,21 @@ $metadata->table['options'] = array(
 );
 
 $metadata->table['uniqueConstraints'] = array(
-    'search_idx' => array('columns' => array('name', 'user_email'), 'options' => array('where' => 'name IS NOT NULL')),
+    'search_idx' => array(
+        'columns' => array('name', 'user_email'),
+        'options' => array('where' => 'name IS NOT NULL'),
+    ),
 );
 
 $metadata->table['indexes'] = array(
-    'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
+    'name_idx' => array(
+        'unique'  => false,
+        'columns' => array('name'),
+    ),
+    0 => array(
+        'unique'  => false,
+        'columns' => array('user_email'),
+    )
 );
 
 $metadata->setGeneratorDefinition(array(

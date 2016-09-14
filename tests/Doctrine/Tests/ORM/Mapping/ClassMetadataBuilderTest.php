@@ -175,13 +175,28 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testAddIndex()
     {
         self::assertIsFluent($this->builder->addIndex(array('username', 'name'), 'users_idx'));
-        self::assertEquals(array('users_idx' => array('columns' => array('username', 'name'))), $this->cm->table['indexes']);
+        self::assertEquals(
+            array(
+                'users_idx' => array(
+                    'unique'  => false,
+                    'columns' => array('username', 'name')
+                )
+            ),
+            $this->cm->table['indexes']
+        );
     }
 
     public function testAddUniqueConstraint()
     {
         self::assertIsFluent($this->builder->addUniqueConstraint(array('username', 'name'), 'users_idx'));
-        self::assertEquals(array('users_idx' => array('columns' => array('username', 'name'))), $this->cm->table['uniqueConstraints']);
+        self::assertEquals(
+            array(
+                'users_idx' => array(
+                    'columns' => array('username', 'name')
+                )
+            ),
+            $this->cm->table['uniqueConstraints']
+        );
     }
 
     public function testSetPrimaryTableRelated()
@@ -193,8 +208,17 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertEquals(
             array(
                 'name' => 'users',
-                'indexes' => array('users_idx' => array('columns' => array('username', 'name'))),
-                'uniqueConstraints' => array('users_idx' => array('columns' => array('username', 'name'))),
+                'indexes' => array(
+                    'users_idx' => array(
+                        'unique'  => false,
+                        'columns' => array('username', 'name')
+                    )
+                ),
+                'uniqueConstraints' => array(
+                    'users_idx' => array(
+                        'columns' => array('username', 'name')
+                    )
+                ),
                 'options' => array(),
             ),
             $this->cm->table

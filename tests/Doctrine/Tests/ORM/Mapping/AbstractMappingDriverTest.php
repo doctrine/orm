@@ -64,16 +64,24 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     }
 
     /**
-     * @depends testEntityTableNameAndInheritance
+     *
      * @param ClassMetadata $class
      */
-    public function testEntityIndexes($class)
+    public function testEntityIndexes()
     {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
+
         self::assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
         self::assertEquals(
             array(
-                'name_idx' => array('columns' => array('name')),
-                0 => array('columns' => array('user_email'))
+                'name_idx' => array(
+                    'columns' => array('name'),
+                    'unique'  => false,
+                ),
+                0 => array(
+                    'columns' => array('user_email'),
+                    'unique'  => false,
+                )
             ),
             $class->table['indexes']
         );
@@ -85,13 +93,17 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Comment');
 
-        self::assertEquals(array(
-            0 => array(
-                'columns' => array('content'),
-                'flags' => array('fulltext'),
-                'options' => array('where' => 'content IS NOT NULL'),
-            )
-        ), $class->table['indexes']);
+        self::assertEquals(
+            array(
+                0 => array(
+                    'unique'  => false,
+                    'columns' => array('content'),
+                    'flags'   => array('fulltext'),
+                    'options' => array('where' => 'content IS NOT NULL'),
+                )
+            ),
+            $class->table['indexes']
+        );
     }
 
     /**
@@ -1291,10 +1303,12 @@ class User
 
         $metadata->table['indexes'] = array(
             'name_idx' => array(
-                'columns' => array('name')
+                'unique'  => false,
+                'columns' => array('name'),
             ),
             0 => array( // Unnamed index
-                'columns' => array('user_email')
+                'unique'  => false,
+                'columns' => array('user_email'),
             ),
         );
 
@@ -1477,6 +1491,7 @@ class Comment
         $metadata->setPrimaryTable(array(
             'indexes' => array(
                 array(
+                    'unique'  => false,
                     'columns' => array('content'),
                     'flags'   => array('fulltext'),
                     'options' => array('where' => 'content IS NOT NULL')

@@ -225,7 +225,10 @@ class XmlDriver extends FileDriver
             $metadata->table['indexes'] = array();
 
             foreach ($xmlRoot->indexes->index as $indexXml) {
-                $index = array('columns' => explode(',', (string) $indexXml['columns']));
+                $index = array(
+                    'unique'  => isset($indexXml['unique']) && $indexXml['unique'],
+                    'columns' => explode(',', (string) $indexXml['columns'])
+                );
 
                 if (isset($indexXml['flags'])) {
                     $index['flags'] = explode(',', (string) $indexXml['flags']);

@@ -10,6 +10,7 @@ $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'indexes' => array(
        array(
+           'unique'  => false,
            'columns' => array('content'),
            'flags'   => array('fulltext'),
            'options' => array('where' => 'content IS NOT NULL'),
