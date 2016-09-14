@@ -174,18 +174,22 @@ class ClassMetadataBuilder
      *
      * @param array       $columns
      * @param string|null $name
+     * @param bool        $unique
      * @param array       $options
      * @param array       $flags
      *
      * @return ClassMetadataBuilder
      */
-    public function addIndex(array $columns, $name, array $options = [], array $flags = [])
+    public function addIndex(array $columns, $name, $unique = false, array $options = [], array $flags = [])
     {
         if (!isset($this->cm->table['indexes'])) {
             $this->cm->table['indexes'] = [];
         }
 
-        $index = ['columns' => $columns];
+        $index = [
+            'columns' => $columns,
+            'unique'  => $unique,
+        ];
 
         if ( ! empty($options)) {
             $index['options'] = $options;
