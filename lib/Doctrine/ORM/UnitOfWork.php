@@ -1582,16 +1582,12 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if ( ! isset($this->entityIdentifiers[$oid])) {
+        if (empty($this->entityIdentifiers[$oid])) {
             return false;
         }
 
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
         $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
-
-        if ($idHash === '') {
-            return false;
-        }
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
