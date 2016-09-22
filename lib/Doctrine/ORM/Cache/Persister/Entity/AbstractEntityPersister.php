@@ -567,12 +567,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
             $list    = $persister->loadCollectionCache($coll, $key);
 
-            foreach ($list as $entity) {
-                if(is_object($entity) && method_exists($entity, "isCacheValid") && !$entity->isCacheValid()) {
-                    $result = null;
-                    break;
+            if ($list !== null) {  
+                foreach ($list as $entity) {
+                    if(is_object($entity) && method_exists($entity, "isCacheValid") && !$entity->isCacheValid()) {
+                        $result = null;
+                        break;
+                    }
                 }
-            }
+           }
 
             if ($list !== null) {
                 if ($this->cacheLogger) {
