@@ -41,7 +41,7 @@ use Doctrine\Common\Collections\Criteria;
  */
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
-     /**
+    /**
      * @var \Doctrine\ORM\UnitOfWork
      */
     protected $uow;
@@ -61,7 +61,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     protected $class;
 
-     /**
+    /**
      * @var array
      */
     protected $queuedCache = array();
@@ -374,6 +374,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $queryCache = $this->cache->getQueryCache($this->regionName);
         $result     = $queryCache->get($queryKey, $rsm);
 
+        if(is_object($result[0]) && method_exists($result[0], "isCacheValid") && !$result[0]->isCacheValid()) {
+            $result = null;
+        }
+
         if ($result !== null) {
             if ($this->cacheLogger) {
                 $this->cacheLogger->queryCacheHit($this->regionName, $queryKey);
@@ -412,6 +416,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $queryKey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL, $this->timestampKey);
         $queryCache = $this->cache->getQueryCache($this->regionName);
         $result     = $queryCache->get($queryKey, $rsm);
+
+        foreach ($result as $subresult) {
+            if(is_object($subresult) && method_exists($subresult, "isCacheValid") && !$subresult->isCacheValid()) {
+                $result = null;
+                break;
+            }
+        }
 
         if ($result !== null) {
             if ($this->cacheLogger) {
@@ -452,8 +463,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             }
 
             if (($entity = $this->hydrator->loadCacheEntry($class, $cacheKey, $cacheEntry, $entity)) !== null) {
-                if ($this->cacheLogger) {
-                    $this->cacheLogger->entityCacheHit($this->regionName, $cacheKey);
+                if(!is_object($entity) || !method_exists($entity, "isCacheValid") || $entity->isCacheValid()) {
+                    if ($this->cacheLogger) {
+                        $this->cacheLogger->entityCacheHit($this->regionName, $cacheKey);
+                    }
                 }
 
                 return $entity;
@@ -552,6 +565,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
             $list    = $persister->loadCollectionCache($coll, $key);
 
+            foreach ($list as $entity) {
+                if(is_object($entity) && method_exists($entity, "isCacheValid") && !$entity->isCacheValid()) {
+                    $result = null;
+                    break;
+                }
+            }
+
             if ($list !== null) {
                 if ($this->cacheLogger) {
                     $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
@@ -586,6 +606,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
             $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
             $list    = $persister->loadCollectionCache($coll, $key);
+
+            foreach ($list as $entity) {
+                if(is_object($entity) && method_exists($entity, "isCacheValid") && !$entity->isCacheValid()) {
+                    $result = null;
+                    break;
+                }
+            }
 
             if ($list !== null) {
                 if ($this->cacheLogger) {
