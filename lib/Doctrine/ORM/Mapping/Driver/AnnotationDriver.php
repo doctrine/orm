@@ -130,7 +130,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $builder->addUniqueConstraint(
                     $uniqueConstraintAnnot->columns,
                     $uniqueConstraintAnnot->name,
-                    $uniqueConstraintAnnot->options
+                    $uniqueConstraintAnnot->options,
+                    $uniqueConstraintAnnot->flags
                 );
             }
         }

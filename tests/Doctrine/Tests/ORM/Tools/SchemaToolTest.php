@@ -137,9 +137,10 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->hasTable('unique_constraint_annotation_table'));
         $table = $schema->getTable('unique_constraint_annotation_table');
 
-        self::assertEquals(2, count($table->getIndexes()));
+        self::assertEquals(1, count($table->getIndexes()));
+        self::assertEquals(1, count($table->getUniqueConstraints()));
         self::assertTrue($table->hasIndex('primary'));
-        self::assertTrue($table->hasIndex('uniq_hash'));
+        self::assertTrue($table->hasUniqueConstraint('uniq_hash'));
     }
 
     public function testRemoveUniqueIndexOverruledByPrimaryKey()
@@ -195,9 +196,12 @@ class GenerateSchemaEventListener
 
 /**
  * @Entity
- * @Table(name="unique_constraint_annotation_table", uniqueConstraints={
- *   @UniqueConstraint(name="uniq_hash", columns={"hash"})
- * })
+ * @Table(
+ *     name="unique_constraint_annotation_table",
+ *     uniqueConstraints={
+ *         @UniqueConstraint(name="uniq_hash", columns={"hash"})
+ *     }
+ * )
  */
 class UniqueConstraintAnnotationModel
 {

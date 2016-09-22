@@ -326,6 +326,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
     <xs:attribute name="columns" type="xs:string" use="required"/>
+    <xs:attribute name="flags" type="xs:string" use="optional"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
