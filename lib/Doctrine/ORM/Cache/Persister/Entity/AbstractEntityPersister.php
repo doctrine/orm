@@ -417,10 +417,12 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $queryCache = $this->cache->getQueryCache($this->regionName);
         $result     = $queryCache->get($queryKey, $rsm);
 
-        foreach ($result as $subresult) {
-            if(is_object($subresult) && method_exists($subresult, "isCacheValid") && !$subresult->isCacheValid()) {
-                $result = null;
-                break;
+	if(is_array($result)) {
+            foreach ($result as $subresult) {
+                if(is_object($subresult) && method_exists($subresult, "isCacheValid") && !$subresult->isCacheValid()) {
+                    $result = null;
+                    break;
+                }
             }
         }
 
