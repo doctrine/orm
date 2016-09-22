@@ -216,10 +216,11 @@ class ClassMetadataBuilder
      * @param array       $columns
      * @param string|null $name
      * @param array       $options
+     * @param array       $flags
      *
      * @return ClassMetadataBuilder
      */
-    public function addUniqueConstraint(array $columns, $name, array $options = [])
+    public function addUniqueConstraint(array $columns, $name, array $options = [], array $flags = [])
     {
         if ( ! isset($this->cm->table['uniqueConstraints'])) {
             $this->cm->table['uniqueConstraints'] = [];
@@ -229,6 +230,10 @@ class ClassMetadataBuilder
 
         if ( ! empty($options)) {
             $index['options'] = $options;
+        }
+
+        if ( ! empty($flags)) {
+            $index['flags'] = $flags;
         }
 
         if (!$name) {
