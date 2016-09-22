@@ -260,6 +260,10 @@ class XmlDriver extends FileDriver
                     $unique['options'] = $this->parseOptions($uniqueXml->options->children());
                 }
 
+                if (isset($uniqueXml['flags'])) {
+                    $unique['flags'] = explode(',', (string) $uniqueXml['flags']);
+                }
+
                 if (isset($uniqueXml['name'])) {
                     $metadata->table['uniqueConstraints'][(string) $uniqueXml['name']] = $unique;
                 } else {

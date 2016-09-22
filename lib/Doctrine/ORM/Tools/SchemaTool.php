@@ -309,7 +309,9 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], $indexData['options'] ?? []);
+                    $flags     = isset($indexData['flags']) ? $indexData['flags'] : [];
+                    $options   = isset($indexData['options']) ? $indexData['options'] : [];
+                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, $flags, $options);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($uniqIndex)) {
@@ -318,7 +320,7 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
+                    $table->addUniqueConstraint($indexData['columns'], is_numeric($indexName) ? null : $indexName, $flags, $options);
                 }
             }
 
