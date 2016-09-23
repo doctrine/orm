@@ -429,7 +429,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             }
         }
 
-        if ($valid && $result !== null) {
+        if ($result !== null) {
             if ($this->cacheLogger) {
                 $this->cacheLogger->queryCacheHit($this->regionName, $queryKey);
             }
