@@ -337,12 +337,13 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if ( ! ($this->entityInsertions ||
-                $this->entityDeletions ||
-                $this->entityUpdates ||
-                $this->collectionUpdates ||
-                $this->collectionDeletions ||
-                $this->orphanRemovals)) {
+        if (!$this->entityInsertions &&
+            !$this->entityDeletions &&
+            !$this->entityUpdates &&
+            !$this->collectionUpdates &&
+            !$this->collectionDeletions &&
+            !$this->orphanRemovals) {
+
             $this->dispatchOnFlushEvent();
             $this->dispatchPostFlushEvent();
 
