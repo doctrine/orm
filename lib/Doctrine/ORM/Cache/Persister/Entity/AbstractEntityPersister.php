@@ -290,13 +290,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      *
      * @return string
      */
-    protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null)
+    protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null, $indexBy = null)
     {
         list($params) = ($criteria instanceof Criteria)
             ? $this->persister->expandCriteriaParameters($criteria)
             : $this->persister->expandParameters($criteria);
 
-        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset);
+        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset . $indexBy);
     }
 
     /**
@@ -404,10 +404,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null, $indexBy = null)
     {
         $query      = $this->persister->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
-        $hash       = $this->getHash($query, $criteria, null, null, null);
+        $hash       = $this->getHash($query, $criteria, null, null, null, $indexBy);
         $rsm        = $this->getResultSetMapping();
         $queryKey   = new QueryCacheKey($hash, 0, Cache::MODE_NORMAL, $this->timestampKey);
         $queryCache = $this->cache->getQueryCache($this->regionName);
@@ -421,7 +421,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             return $result;
         }
 
-        $result = $this->persister->loadAll($criteria, $orderBy, $limit, $offset);
+        $result = $this->persister->loadAll($criteria, $orderBy, $limit, $offset, $indexBy);
         $cached = $queryCache->put($queryKey, $rsm, $result);
 
         if ($this->cacheLogger) {

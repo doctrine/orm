@@ -253,14 +253,15 @@ interface EntityPersister
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
+     * @param array       $criteria
+     * @param array|null  $orderBy
+     * @param int|null    $limit
+     * @param int|null    $offset
+     * @param string|null $indexBy
      *
      * @return array
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null);
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null, $indexBy = null);
 
     /**
      * Gets (sliced or full) elements of the given collection.

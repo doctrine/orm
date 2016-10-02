@@ -877,17 +877,23 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null, $indexBy = null)
     {
         $this->switchPersisterContext($offset, $limit);
 
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
+        $rsm = $this->currentPersisterContext->rsm;
 
-        $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        if ($indexBy) {
+            $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm->addIndexBy('r', $indexBy);
+        }
 
-        return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
+        $hydrator = $this->em->newHydrator(($indexBy || $this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+
+        return $hydrator->hydrateAll($stmt, $rsm, array(UnitOfWork::HINT_DEFEREAGERLOAD => true));
     }
 
     /**

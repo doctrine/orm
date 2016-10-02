@@ -1080,5 +1080,19 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
             $this->assertTrue(in_array($user, array($user1, $user2)));
         }
     }
+
+    public function testFindByIndexBy()
+    {
+        $this->loadFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $usersByUsernameAsc = $repos->findBy(array(), array('username' => 'ASC'), null, null, 'username');
+        $usersByUsernameDesc = $repos->findBy(array(), array('username' => 'DESC'), null, null, 'username');
+        $usersByStatus = $repos->findBy(array(), array(), null, null, 'status');
+
+        $this->assertSame('asm89', key($usersByUsernameAsc));
+        $this->assertSame('romanb', key($usersByUsernameDesc));
+        $this->assertSame('freak', key($usersByStatus));
+    }
 }
 
