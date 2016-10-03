@@ -94,15 +94,17 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string   $alias          The unique alias to use for the root entity.
      * @param array    $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @param string|null $resultAlias The result alias with which the entity result should be
+     *                                 placed in the result structure.
      *
      * @return void
      */
-    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = array(), $renameMode = null)
+    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = array(), $renameMode = null, $resultAlias = null)
     {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
 
-        $this->addEntityResult($class, $alias);
+        $this->addEntityResult($class, $alias, $resultAlias);
         $this->addAllClassFields($class, $alias, $columnAliasMap);
     }
 
