@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping;
+
 /**
  * Description of CompanyPerson
  *
@@ -119,12 +121,10 @@ class CompanyPerson
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('company_person');
 
-        $metadata->setPrimaryTable(
-            [
-           'name' => 'company_person',
-            ]
-        );
+        $metadata->setPrimaryTable($tableMetadata);
 
         $metadata->addNamedNativeQuery(
             [

@@ -8,8 +8,12 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
 
 /* @var $metadata ClassMetadata */
+$tableMetadata = new Mapping\TableMetadata();
+
+$tableMetadata->setName('cache_city');
+
+$metadata->setPrimaryTable($tableMetadata);
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
-$metadata->setPrimaryTable(['name' => 'cache_city']);
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->enableCache(['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY]);

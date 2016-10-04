@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\TableMetadata;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -108,7 +109,10 @@ EOT
                     $this->formatField('Discriminator map', $metadata->discriminatorMap),
                     $this->formatField('Generator type', $metadata->generatorType),
                     $this->formatField('Generator definition', $metadata->generatorDefinition),
-                    $this->formatField('Table', $metadata->table),
+                    $this->formatField('Table', ''),
+                ],
+                $this->formatTable($metadata->table),
+                [
                     $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
                     $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
@@ -311,6 +315,7 @@ EOT
         $output[] = $this->formatField('    isPrimaryKey', $this->formatValue($columnMetadata->isPrimaryKey()));
         $output[] = $this->formatField('    isNullable', $this->formatValue($columnMetadata->isNullable()));
         $output[] = $this->formatField('    isUnique', $this->formatValue($columnMetadata->isUnique()));
+        $output[] = $this->formatField('    options', $this->formatValue($columnMetadata->getOptions()));
 
         return $output;
     }
@@ -325,5 +330,29 @@ EOT
     private function formatEntityListeners(array $entityListeners)
     {
         return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
+    }
+
+    /**
+     * @param TableMetadata|null $tableMetadata
+     *
+     * @return array|string
+     */
+    private function formatTable(TableMetadata $tableMetadata = null)
+    {
+        $output = [];
+
+        if (null === $tableMetadata) {
+            $output[] = '<comment>Null</comment>';
+
+            return $output;
+        }
+
+        $output[] = $this->formatField('    schema', $this->formatValue($tableMetadata->getSchema()));
+        $output[] = $this->formatField('    name', $this->formatValue($tableMetadata->getName()));
+        $output[] = $this->formatField('    indexes', $this->formatValue($tableMetadata->getIndexes()));
+        $output[] = $this->formatField('    uniqueConstaints', $this->formatValue($tableMetadata->getUniqueConstraints()));
+        $output[] = $this->formatField('    options', $this->formatValue($tableMetadata->getOptions()));
+
+        return $output;
     }
 }

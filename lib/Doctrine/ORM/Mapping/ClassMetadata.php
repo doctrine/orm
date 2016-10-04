@@ -407,15 +407,9 @@ class ClassMetadata implements ClassMetadataInterface
     public $discriminatorColumn;
 
     /**
-     * READ-ONLY: The primary table definition. The definition is an array with the
-     * following entries:
+     * READ-ONLY: The primary table metadata.
      *
-     * name => <tableName>
-     * schema => <schemaName>
-     * indexes => array
-     * uniqueConstraints => array
-     *
-     * @var array
+     * @var TableMetadata
      */
     public $table;
 
@@ -573,6 +567,7 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $this->name           = $entityName;
         $this->rootEntityName = $entityName;
+        $this->table          = new TableMetadata();
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
         $this->instantiator   = new Instantiator();
     }
@@ -891,8 +886,8 @@ class ClassMetadata implements ClassMetadataInterface
             $this->name = $this->rootEntityName = $this->reflClass->getName();
         }
 
-        if ( ! isset($this->table['name'])) {
-            $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
+        if (empty($this->table->getName())) {
+            $this->table->setName($this->namingStrategy->classToTableName($this->name));
         }
     }
 
@@ -1401,9 +1396,14 @@ class ClassMetadata implements ClassMetadataInterface
                     throw new RuntimeException("ClassMetadata::setTable() has to be called before defining a one to one relationship.");
                 }
 
-                $this->table['uniqueConstraints'][$mapping['fieldName'] . "_uniq"] = [
-                    'columns' => $uniqueConstraintColumns
-                ];
+                $this->table->addUniqueConstraint(
+                    [
+                        'name'    => sprintf('%s_uniq', $mapping['fieldName']),
+                        'columns' => $uniqueConstraintColumns,
+                        'options' => [],
+                        'flags'   => [],
+                    ]
+                );
             }
 
             $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
@@ -1786,7 +1786,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getTableName()
     {
-        return $this->table['name'];
+        return $this->table->getName();
     }
 
     /**
@@ -1796,7 +1796,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getSchemaName()
     {
-        return isset($this->table['schema']) ? $this->table['schema'] : null;
+        return $this->table->getSchema() ?? null;
     }
 
     /**
@@ -1988,45 +1988,15 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Sets the primary table definition. The provided array supports the
-     * following structure:
+     * Sets the primary table metadata.
      *
-     * name => <tableName> (optional, defaults to class name)
-     * indexes => array of indexes (optional)
-     * uniqueConstraints => array of constraints (optional)
-     *
-     * If a key is omitted, the current value is kept.
-     *
-     * @param array $table The table description.
+     * @param TableMetadata $tableMetadata
      *
      * @return void
      */
-    public function setPrimaryTable(array $table)
+    public function setPrimaryTable(TableMetadata $tableMetadata)
     {
-        if (isset($table['name'])) {
-            // Split schema and table name from a table name like "myschema.mytable"
-            if (strpos($table['name'], '.') !== false) {
-                list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
-            }
-
-            $this->table['name'] = $table['name'];
-        }
-
-        if (isset($table['schema'])) {
-            $this->table['schema'] = $table['schema'];
-        }
-
-        if (isset($table['indexes'])) {
-            $this->table['indexes'] = $table['indexes'];
-        }
-
-        if (isset($table['uniqueConstraints'])) {
-            $this->table['uniqueConstraints'] = $table['uniqueConstraints'];
-        }
-
-        if (isset($table['options'])) {
-            $this->table['options'] = $table['options'];
-        }
+        $this->table = $tableMetadata;
     }
 
     /**

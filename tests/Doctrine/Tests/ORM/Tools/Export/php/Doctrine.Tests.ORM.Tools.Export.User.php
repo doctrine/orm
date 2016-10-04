@@ -9,17 +9,13 @@ use Doctrine\Tests\ORM\Tools\Export\AddressListener;
 use Doctrine\Tests\ORM\Tools\Export\GroupListener;
 use Doctrine\Tests\ORM\Tools\Export\UserListener;
 
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$tableMetadata = new Mapping\TableMetadata();
+$tableMetadata->setName('cms_users');
+$tableMetadata->addOption('engine', 'MyISAM');
+$tableMetadata->addOption('foo', ['bar' => 'baz']);
 
-$metadata->setPrimaryTable(
-    [
-        'name'    => 'cms_users',
-        'options' => [
-            'engine' => 'MyISAM',
-            'foo'    => ['bar' => 'baz']
-        ],
-    ]
-);
+$metadata->setPrimaryTable($tableMetadata);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', Events::prePersist);
