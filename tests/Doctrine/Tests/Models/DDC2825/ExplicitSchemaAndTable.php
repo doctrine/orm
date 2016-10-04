@@ -13,10 +13,12 @@ class ExplicitSchemaAndTable
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->setPrimaryTable(array(
-            'name'   => 'explicit_table',
-            'schema' => 'explicit_schema',
-        ));
+        $tableMetadata = new Mapping\TableMetadata();
+
+        $tableMetadata->setSchema('explicit_schema');
+        $tableMetadata->setName('explicit_table');
+
+        $metadata->setPrimaryTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
 

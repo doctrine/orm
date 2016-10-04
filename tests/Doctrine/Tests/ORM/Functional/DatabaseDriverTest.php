@@ -215,7 +215,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         // Check comment
         self::assertNotNull($metadata->getProperty('columnComment'));
-        
+
         $columnCommentProperty = $metadata->getProperty('columnComment');
         $columnCommentOptions  = $columnCommentProperty->getOptions();
 
@@ -240,16 +240,21 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertEquals(3, $columnDecimalProperty->getScale());
 
         // Check indexes
-        self::assertTrue( ! empty($metadata->table['indexes']['index1']['columns']));
+        $indexes = $metadata->table->getIndexes();
+
+        self::assertTrue( ! empty($indexes['index1']['columns']));
         self::assertEquals(
             ['column_index1','column_index2'],
-            $metadata->table['indexes']['index1']['columns']
+            $indexes['index1']['columns']
         );
 
-        self::assertTrue( ! empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
+        // Check unique constraints
+        $uniqueConstraints = $metadata->table->getUniqueConstraints();
+
+        self::assertTrue( ! empty($uniqueConstraints['unique_index1']['columns']));
         self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
-            $metadata->table['uniqueConstraints']['unique_index1']['columns']
+            $uniqueConstraints['unique_index1']['columns']
         );
     }
 }

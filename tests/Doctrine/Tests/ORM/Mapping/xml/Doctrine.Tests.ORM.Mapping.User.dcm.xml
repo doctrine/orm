@@ -19,11 +19,7 @@
         </indexes>
 
         <unique-constraints>
-            <unique-constraint columns="name,user_email" name="search_idx">
-                <options>
-                    <option name="where">name IS NOT NULL</option>
-                </options>
-            </unique-constraint>
+            <unique-constraint columns="name,user_email" name="search_idx"/>
         </unique-constraints>
 
         <lifecycle-callbacks>

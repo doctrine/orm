@@ -63,7 +63,28 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->table) {
-            $lines[] = '$metadata->setPrimaryTable(' . $this->_varExport($metadata->table) . ');';
+            $table = $metadata->table;
+
+            $lines[] = '$table = new Mapping\TableMetadata();';
+            $lines[] = null;
+
+            if (! empty($table->getSchema())) {
+                $lines[] = '$table->setSchema(' . $table->getSchema() . ');';
+            }
+
+            $lines[] = '$table->setName("' . $table->getName() . '");';
+            $lines[] = '$table->setOptions(' . $this->_varExport($table->getOptions()) . ');';
+
+            foreach ($table->getIndexes() as $index) {
+                $lines[] = '$table->addIndex(' . $this->_varExport($index) . ');';
+            }
+
+            foreach ($table->getUniqueConstraints() as $constraint) {
+                $lines[] = '$table->addUniqueConstraint(' . $this->_varExport($constraint) . ');';
+            }
+
+            $lines[] = null;
+            $lines[] = '$metadata->setPrimaryTable($table);';
         }
 
         if ($metadata->discriminatorColumn) {

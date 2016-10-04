@@ -282,19 +282,10 @@ class SchemaTool
                 }
             }
 
-            if (isset($class->table['indexes'])) {
-                foreach ($class->table['indexes'] as $indexName => $indexData) {
+            if ($class->table->getIndexes()) {
+                foreach ($class->table->getIndexes() as $indexName => $indexData) {
                     $indexName = is_numeric($indexName) ? null : $indexName;
-
-                    if ( ! isset($indexData['flags'])) {
-                        $indexData['flags'] = [];
-                    }
-
-                    if ( ! isset($indexData['options'])) {
-                        $indexData['options'] = [];
-                    }
-
-                    $index = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
+                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($index)) {
@@ -304,19 +295,18 @@ class SchemaTool
                     }
 
                     if ($indexData['unique']) {
-                        $table->addUniqueIndex($indexData['columns'], $indexName, (array) $indexData['options']);
+                        $table->addUniqueIndex($indexData['columns'], $indexName, $indexData['options']);
                     } else {
-                        $table->addIndex($indexData['columns'], $indexName, (array) $indexData['flags'], (array) $indexData['options']);
+                        $table->addIndex($indexData['columns'], $indexName, $indexData['flags'], $indexData['options']);
                     }
 
                 }
             }
 
-            if (isset($class->table['uniqueConstraints'])) {
-                foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $flags     = isset($indexData['flags']) ? $indexData['flags'] : [];
-                    $options   = isset($indexData['options']) ? $indexData['options'] : [];
-                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, $flags, $options);
+            if ($class->table->getUniqueConstraints()) {
+                foreach ($class->table->getUniqueConstraints() as $indexName => $indexData) {
+                    $indexName = is_numeric($indexName) ? null : $indexName;
+                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($uniqIndex)) {
@@ -325,12 +315,12 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueConstraint($indexData['columns'], is_numeric($indexName) ? null : $indexName, $flags, $options);
+                    $table->addUniqueConstraint($indexData['columns'], $indexName, $indexData['flags'], $indexData['options']);
                 }
             }
 
-            if (isset($class->table['options'])) {
-                foreach ($class->table['options'] as $key => $val) {
+            if ($class->table->getOptions()) {
+                foreach ($class->table->getOptions() as $key => $val) {
                     $table->addOption($key, $val);
                 }
             }

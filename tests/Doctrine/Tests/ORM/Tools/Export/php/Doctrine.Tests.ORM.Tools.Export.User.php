@@ -5,17 +5,13 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Tools\Export;
 
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$tableMetadata = new Mapping\TableMetadata();
+$tableMetadata->setName('cms_users');
+$tableMetadata->addOption('engine', 'MyISAM');
+$tableMetadata->addOption('foo', ['bar' => 'baz']);
 
-$metadata->setPrimaryTable(
-    [
-        'name'    => 'cms_users',
-        'options' => [
-            'engine' => 'MyISAM',
-            'foo'    => ['bar' => 'baz']
-        ],
-    ]
-);
+$metadata->setPrimaryTable($tableMetadata);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');

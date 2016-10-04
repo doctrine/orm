@@ -135,8 +135,11 @@ abstract class CompanyContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
-        $metadata->setPrimaryTable(['name' => 'company_contracts']);
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('company_contracts');
+
+        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setInheritanceType(Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
 
         $discrColumn = new Mapping\DiscriminatorColumnMetadata();
 

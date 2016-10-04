@@ -563,18 +563,20 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             return;
         }
 
-        foreach (['uniqueConstraints', 'indexes'] as $indexType) {
-            if ( ! isset($parentClass->table[$indexType])) {
+        foreach ($parentClass->table->getIndexes() as $indexName => $index) {
+            if ($subClass->table->hasIndex($indexName)) {
                 continue;
             }
 
-            foreach ($parentClass->table[$indexType] as $indexName => $index) {
-                if (isset($subClass->table[$indexType][$indexName])) {
-                    continue; // Let the inheriting table override indices
-                }
+            $subClass->table->addIndex($index);
+        }
 
-                $subClass->table[$indexType][$indexName] = $index;
+        foreach ($parentClass->table->getUniqueConstraints() as $constraintName => $constraint) {
+            if ($subClass->table->hasUniqueConstraint($constraintName)) {
+                continue;
             }
+
+            $subClass->table->addUniqueConstraint($constraint);
         }
     }
 

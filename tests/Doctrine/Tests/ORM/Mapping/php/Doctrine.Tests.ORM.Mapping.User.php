@@ -7,8 +7,41 @@ use Doctrine\Tests\ORM\Mapping\Address;
 use Doctrine\Tests\ORM\Mapping\Group;
 use Doctrine\Tests\ORM\Mapping\Phonenumber;
 
+/* @var $metadata ClassMetadata */
+$tableMetadata = new Mapping\TableMetadata();
+
+$tableMetadata->setName('cms_users');
+$tableMetadata->addIndex(
+    [
+        'name'    => 'name_idx',
+        'columns' => ['name'],
+        'unique'  => false,
+        'options' => [],
+        'flags'   => [],
+    ]
+);
+$tableMetadata->addIndex(
+    [
+        'name'    => null,
+        'columns' => ['user_email'],
+        'unique'  => false,
+        'options' => [],
+        'flags'   => [],
+    ]
+);
+$tableMetadata->addUniqueConstraint(
+    [
+        'name'    => 'search_idx',
+        'columns' => ['name', 'user_email'],
+        'options' => [],
+        'flags'   => [],
+    ]
+);
+$tableMetadata->addOption('foo', 'bar');
+$tableMetadata->addOption('baz', ['key' => 'val']);
+
+$metadata->setPrimaryTable($tableMetadata);
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
-$metadata->setPrimaryTable(['name' => 'cms_users']);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
@@ -19,6 +52,13 @@ $metadata->addNamedQuery(
     [
         'name'  => 'all',
         'query' => 'SELECT u FROM __CLASS__ u'
+    ]
+);
+
+$metadata->setGeneratorDefinition(
+    [
+        'sequenceName'   => 'tablename_seq',
+        'allocationSize' => 100,
     ]
 );
 
@@ -130,35 +170,5 @@ $metadata->mapManyToMany(
         'mappedBy'     => null,
         'joinTable'    => $joinTable,
         'orderBy'      => null,
-    ]
-);
-
-$metadata->table['options'] = [
-    'foo' => 'bar',
-    'baz' => ['key' => 'val']
-];
-
-$metadata->table['uniqueConstraints'] = [
-    'search_idx' => [
-        'columns' => ['name', 'user_email'],
-        'options' => ['where' => 'name IS NOT NULL'],
-    ],
-];
-
-$metadata->table['indexes'] = [
-    'name_idx' => [
-        'unique'  => false,
-        'columns' => ['name'],
-    ],
-    0 => [
-        'unique'  => false,
-        'columns' => ['user_email'],
-    ]
-];
-
-$metadata->setGeneratorDefinition(
-    [
-        'sequenceName'   => 'tablename_seq',
-        'allocationSize' => 100,
     ]
 );

@@ -57,13 +57,13 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cm1->hasField('name'));
         self::assertEquals(2, count($cm1->associationMappings));
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
-        self::assertEquals('group', $cm1->table['name']);
+        self::assertEquals('group', $cm1->table->getName());
 
         // Go
         $cmMap1 = $cmf->getMetadataFor($cm1->name);
 
         self::assertSame($cm1, $cmMap1);
-        self::assertEquals('group', $cmMap1->table['name']);
+        self::assertEquals('group', $cmMap1->table->getName());
         self::assertEquals([], $cmMap1->parentClasses);
         self::assertTrue($cmMap1->hasField('name'));
     }
@@ -279,7 +279,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // Self-made metadata
         $cm1 = new ClassMetadata(TestEntity1::class);
         $cm1->initializeReflection(new RuntimeReflectionService());
-        $cm1->setPrimaryTable(['name' => 'group']);
+
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('group');
+
+        $cm1->setPrimaryTable($tableMetadata);
 
         // Add a mapped field
         $fieldMetadata = new Mapping\FieldMetadata('id');

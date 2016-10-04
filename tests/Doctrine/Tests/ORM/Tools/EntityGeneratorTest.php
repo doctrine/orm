@@ -65,9 +65,29 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata = new ClassMetadata($this->_namespace . '\EntityGeneratorBook');
         $metadata->customRepositoryClassName = $this->_namespace  . '\EntityGeneratorBookRepository';
 
-        $metadata->table['name'] = 'book';
-        $metadata->table['uniqueConstraints']['name_uniq'] = ['columns' => ['name']];
-        $metadata->table['indexes']['status_idx'] = ['columns' => ['status']];
+        $tableMetadata = new Mapping\TableMetadata();
+
+        $tableMetadata->setName('book');
+        $tableMetadata->addUniqueConstraint(
+            [
+                'name'    => 'name_uniq',
+                'columns' => ['name'],
+                'options' => [],
+                'flags'   => [],
+            ]
+        );
+
+        $tableMetadata->addIndex(
+            [
+                'name'    => 'status_idx',
+                'columns' => ['status'],
+                'unique'  => false,
+                'options' => [],
+                'flags'   => [],
+            ]
+        );
+
+        $metadata->setPrimaryTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
 
@@ -167,7 +187,11 @@ class EntityGeneratorTest extends OrmTestCase
     private function generateEntityTypeFixture(array $field)
     {
         $metadata = new ClassMetadata($this->_namespace . '\EntityType');
-        $metadata->table['name'] = 'entity_type';
+
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('entity_type');
+
+        $metadata->setPrimaryTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
