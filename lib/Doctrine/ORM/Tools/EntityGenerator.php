@@ -1385,11 +1385,11 @@ public function __construct(<params>)
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $variableName . '.',
           '<methodTypeHint>'    => $methodTypeHint,
-          '<variableType>'      => $variableType.(null !== $defaultValue ? ('|'.$defaultValue) : ''),
+          '<variableType>'      => $variableType . (null !== $defaultValue ? ('|' . $defaultValue) : ''),
           '<variableName>'      => $variableName,
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-          '<variableDefault>'   => ($defaultValue !== null ) ? (' = '.$defaultValue) : '',
+          '<variableDefault>'   => ($defaultValue !== null ) ? (' = ' . $defaultValue) : '',
           '<entity>'            => $this->getClassName($metadata)
         );
 
