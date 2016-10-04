@@ -28,10 +28,12 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\TableMetadata;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -181,28 +183,28 @@ class DatabaseDriver implements MappingDriver
             throw new \InvalidArgumentException("Unknown class " . $className);
         }
 
-        $tableName = $this->classToTableNames[$className];
+        $metadata->name  = $className;
+        $metadata->table = $this->buildTable($metadata);
 
-        $metadata->name = $className;
-        $metadata->table['name'] = $tableName;
-
-        $this->buildIndexes($metadata);
         $this->buildFieldMappings($metadata);
         $this->buildToOneAssociationMappings($metadata);
+
+        $loweredTableName = strtolower($metadata->table->getName());
 
         foreach ($this->manyToManyTables as $manyTable) {
             foreach ($manyTable->getForeignKeys() as $foreignKey) {
                 // foreign key maps to the table of the current entity, many to many association probably exists
-                if ( ! (strtolower($tableName) === strtolower($foreignKey->getForeignTableName()))) {
+                if ( ! ($loweredTableName === strtolower($foreignKey->getForeignTableName()))) {
                     continue;
                 }
 
                 $myFk = $foreignKey;
                 $otherFk = null;
 
-                foreach ($manyTable->getForeignKeys() as $foreignKey) {
-                    if ($foreignKey != $myFk) {
-                        $otherFk = $foreignKey;
+                foreach ($manyTable->getForeignKeys() as $manyTableForeignKey) {
+                    if ($manyTableForeignKey !== $myFk) {
+                        $otherFk = $manyTableForeignKey;
+
                         break;
                     }
                 }
@@ -222,13 +224,13 @@ class DatabaseDriver implements MappingDriver
                 if (current($manyTable->getColumns())->getName() === $localColumn) {
                     $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
                     $associationMapping['joinTable'] = [
-                        'name' => strtolower($manyTable->getName()),
-                        'joinColumns' => [],
+                        'name'               => strtolower($manyTable->getName()),
+                        'joinColumns'        => [],
                         'inverseJoinColumns' => [],
                     ];
 
                     $fkCols = $myFk->getForeignColumns();
-                    $cols = $myFk->getColumns();
+                    $cols   = $myFk->getColumns();
 
                     for ($i = 0, $l = count($cols); $i < $l; $i++) {
                         $joinColumn = new JoinColumnMetadata();
@@ -317,14 +319,19 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Build indexes from a class metadata.
+     * Build table from a class metadata.
      *
      * @param ClassMetadata $metadata
+     *
+     * @return TableMetadata
      */
-    private function buildIndexes(ClassMetadata $metadata)
+    private function buildTable(ClassMetadata $metadata)
     {
-        $tableName = $metadata->getTableName();
-        $indexes   = $this->tables[$tableName]->getIndexes();
+        $tableName    = $this->classToTableNames[$metadata->name];
+        $indexes      = $this->tables[$tableName]->getIndexes();
+        $tableBuilder = new TableMetadataBuilder();
+
+        $tableBuilder->withName($this->classToTableNames[$metadata->name]);
 
         foreach ($indexes as $index) {
             /** @var Index $index */
@@ -332,15 +339,16 @@ class DatabaseDriver implements MappingDriver
                 continue;
             }
 
-            $indexName = $index->getName();
-
-            $metadata->table['indexes'][$indexName] = [
-                'unique'  => $index->isUnique(),
-                'columns' => $index->getColumns(),
-                'options' => $index->getOptions(),
-                'flags'   => $index->getFlags(),
-            ];
+            $tableBuilder->withIndex(
+                $index->getName(),
+                $index->getColumns(),
+                $index->isUnique(),
+                $index->getOptions(),
+                $index->getFlags()
+            );
         }
+
+        return $tableBuilder->build();
     }
 
     /**

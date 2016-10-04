@@ -144,10 +144,10 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testTableIsExported($class)
     {
-        self::assertEquals('cms_users', $class->table['name']);
+        self::assertEquals('cms_users', $class->table->getName());
         self::assertEquals(
             ['engine' => 'MyISAM', 'foo' => ['bar' => 'baz']],
-            $class->table['options']
+            $class->table->getOptions()
         );
 
         return $class;

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity
@@ -271,11 +272,10 @@ class CmsUser
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->setPrimaryTable(
-            [
-           'name' => 'cms_users',
-            ]
-        );
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('cms_users');
+
+        $metadata->setPrimaryTable($tableMetadata);
 
         $metadata->addNamedNativeQuery(
             [

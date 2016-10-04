@@ -1,7 +1,13 @@
 <?php
 
-use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+
+$tableMetadata = new Mapping\TableMetadata();
+$tableMetadata->setName('company_person');
+
+/* @var $metadata ClassMetadata */
+$metadata->setPrimaryTable($tableMetadata);
 
 /** @var ClassMetadata $metadata */
 $metadata->setPrimaryTable(['name' => 'company_person']);

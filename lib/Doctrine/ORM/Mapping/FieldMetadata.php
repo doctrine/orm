@@ -31,27 +31,27 @@ class FieldMetadata extends ColumnMetadata implements Property
     /**
      * @var ClassMetadata
      */
-    private $declaringClass;
+    protected $declaringClass;
 
     /**
      * @var \ReflectionProperty
      */
-    private $reflection;
+    protected $reflection;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var int
      */
-    private $identifierGeneratorType = ClassMetadata::GENERATOR_TYPE_NONE;
+    protected $identifierGeneratorType = ClassMetadata::GENERATOR_TYPE_NONE;
 
     /**
      * @var array<string, mixed>
      */
-    private $identifierGeneratorDefinition = [];
+    protected $identifierGeneratorDefinition = [];
 
     /**
      * FieldMetadata constructor.

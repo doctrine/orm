@@ -55,8 +55,8 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionInfo',
+                'command' => $this->command->getName(),
+                'entityName' => 'AttractionInfo',
             ]
         );
 

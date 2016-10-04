@@ -41,8 +41,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
 
         // Check if table name and schema properties are defined in the class metadata
-        self::assertEquals($expectedTableName, $classMetadata->table['name']);
-        self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
+        self::assertEquals($expectedTableName, $classMetadata->table->getName());
+        self::assertEquals($expectedSchemaName, $classMetadata->table->getSchema());
 
         if ($platform->supportsSchemas()) {
             $fullTableName = sprintf('"%s"."%s"', $expectedSchemaName, $expectedTableName);
