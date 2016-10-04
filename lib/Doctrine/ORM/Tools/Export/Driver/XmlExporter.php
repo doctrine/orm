@@ -58,22 +58,22 @@ class XmlExporter extends AbstractExporter
 
         $root->addAttribute('name', $metadata->name);
 
-        if (isset($metadata->table['name'])) {
-            $root->addAttribute('table', $metadata->table['name']);
+        if ($metadata->table->getName()) {
+            $root->addAttribute('table', $metadata->table->getName());
         }
 
-        if (isset($metadata->table['schema'])) {
-            $root->addAttribute('schema', $metadata->table['schema']);
+        if ($metadata->table->getSchema()) {
+            $root->addAttribute('schema', $metadata->table->getSchema());
         }
 
         if ($metadata->inheritanceType && $metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $root->addAttribute('inheritance-type', $this->_getInheritanceTypeString($metadata->inheritanceType));
         }
 
-        if (isset($metadata->table['options'])) {
+        if ($metadata->table->getOptions()) {
             $optionsXml = $root->addChild('options');
 
-            $this->exportTableOptions($optionsXml, $metadata->table['options']);
+            $this->exportTableOptions($optionsXml, $metadata->table->getOptions());
         }
 
         if ($metadata->discriminatorColumn) {
@@ -112,20 +112,20 @@ class XmlExporter extends AbstractExporter
             $root->addChild('change-tracking-policy', $trackingPolicy);
         }
 
-        if (isset($metadata->table['indexes'])) {
+        if ($metadata->table->getIndexes()) {
             $indexesXml = $root->addChild('indexes');
 
-            foreach ($metadata->table['indexes'] as $name => $index) {
+            foreach ($metadata->table->getIndexes() as $name => $index) {
                 $indexXml = $indexesXml->addChild('index');
+
                 $indexXml->addAttribute('name', $name);
+                $indexXml->addAttribute('columns', implode(',', $index['columns']));
 
                 if ($index['unique']) {
                     $indexXml->addAttribute('unique', 'true');
                 }
 
-                $indexXml->addAttribute('columns', implode(',', $index['columns']));
-
-                if (isset($index['flags'])) {
+                if ($index['flags']) {
                     $indexXml->addAttribute('flags', implode(',', $index['flags']));
                 }
 
@@ -141,19 +141,23 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if (isset($metadata->table['uniqueConstraints'])) {
+        if ($metadata->table->getUniqueConstraints()) {
             $uniqueConstraintsXml = $root->addChild('unique-constraints');
 
-            foreach ($metadata->table['uniqueConstraints'] as $name => $unique) {
+            foreach ($metadata->table->getUniqueConstraints() as $name => $constraint) {
                 $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
 
                 $uniqueConstraintXml->addAttribute('name', $name);
-                $uniqueConstraintXml->addAttribute('columns', implode(',', $unique['columns']));
+                $uniqueConstraintXml->addAttribute('columns', implode(',', $constraint['columns']));
 
-                if ($unique['options']) {
+                if ($constraint['flags']) {
+                    $uniqueConstraintXml->addAttribute('flags', implode(',', $constraint['flags']));
+                }
+
+                if ($constraint['options']) {
                     $optionsXml = $uniqueConstraintXml->addChild('options');
 
-                    foreach ($unique['options'] as $key => $value) {
+                    foreach ($constraint['options'] as $key => $value) {
                         $optionXml = $optionsXml->addChild('option', $value);
 
                         $optionXml->addAttribute('name', $key);

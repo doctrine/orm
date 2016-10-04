@@ -5,9 +5,11 @@ use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
 /* @var $metadata ClassMetadata */
-$metadata->setPrimaryTable(array(
-   'name' => 'company_person',
-));
+$tableMetadata = new Mapping\TableMetadata();
+
+$tableMetadata->setName('company_person');
+
+$metadata->setPrimaryTable($tableMetadata);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 

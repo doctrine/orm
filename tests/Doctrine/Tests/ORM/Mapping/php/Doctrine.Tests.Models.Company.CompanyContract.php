@@ -5,9 +5,12 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping;
 
 /* @var $metadata ClassMetadata */
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
+$tableMetadata = new Mapping\TableMetadata();
 
-$metadata->setPrimaryTable(['name' => 'company_contracts']);
+$tableMetadata->setName('company_contracts');
+
+$metadata->setPrimaryTable($tableMetadata);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
 
 $discrColumn = new Mapping\DiscriminatorColumnMetadata();
 

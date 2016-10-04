@@ -71,19 +71,25 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
 
-        self::assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
+        self::assertCount(2, $class->table->getIndexes());
         self::assertEquals(
             array(
                 'name_idx' => array(
+                    'name'    => 'name_idx',
                     'columns' => array('name'),
                     'unique'  => false,
+                    'options' => array(),
+                    'flags'   => array(),
                 ),
                 0 => array(
+                    'name'    => null,
                     'columns' => array('user_email'),
                     'unique'  => false,
+                    'options' => array(),
+                    'flags'   => array(),
                 )
             ),
-            $class->table['indexes']
+            $class->table->getIndexes()
         );
 
         return $class;
@@ -96,13 +102,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(
             array(
                 0 => array(
-                    'unique'  => false,
+                    'name'    => null,
                     'columns' => array('content'),
+                    'unique'  => false,
                     'flags'   => array('fulltext'),
                     'options' => array('where' => 'content IS NOT NULL'),
                 )
             ),
-            $class->table['indexes']
+            $class->table->getIndexes()
         );
     }
 
@@ -112,20 +119,17 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityUniqueConstraints($class)
     {
-        self::assertArrayHasKey(
-            'uniqueConstraints',
-            $class->table,
-            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.'
-        );
-
+        self::assertCount(1, $class->table->getUniqueConstraints());
         self::assertEquals(
             array(
                 'search_idx' => array(
+                    'name'    => 'search_idx',
                     'columns' => array('name', 'user_email'),
-                    'options' => array('where' => 'name IS NOT NULL')
+                    'options' => array(),
+                    'flags'   => array(),
                 )
             ),
-            $class->table['uniqueConstraints']
+            $class->table->getUniqueConstraints()
         );
 
         return $class;
@@ -137,13 +141,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityOptions($class)
     {
-        self::assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
+        self::assertCount(2, $class->table->getOptions());
         self::assertEquals(
             array(
                 'foo' => 'bar',
                 'baz' => array('key' => 'val')
             ),
-            $class->table['options']
+            $class->table->getOptions()
         );
 
         return $class;
@@ -544,7 +548,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('ID', $class->getColumnName('id'));
         self::assertEquals('NAME', $class->getColumnName('name'));
-        self::assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
+        self::assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table->getName());
     }
 
     /**
@@ -1099,7 +1103,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  * @HasLifecycleCallbacks
  * @Table(
  *  name="cms_users",
- *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"})},
+ *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
  *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
@@ -1176,20 +1180,49 @@ class User
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
-        $metadata->setPrimaryTable(array(
-            'name'    => 'cms_users',
-            'options' => array(
-                'foo' => 'bar',
-                'baz' => array('key' => 'val')
-            ),
-        ));
+        $tableMetadata = new Mapping\TableMetadata();
 
+        $tableMetadata->setName('cms_users');
+        $tableMetadata->addIndex(array(
+            'name'    => 'name_idx',
+            'columns' => array('name'),
+            'unique'  => false,
+            'options' => [],
+            'flags'   => [],
+        ));
+        $tableMetadata->addIndex(array(
+            'name'    => null,
+            'columns' => array('user_email'),
+            'unique'  => false,
+            'options' => [],
+            'flags'   => [],
+        ));
+        $tableMetadata->addUniqueConstraint(array(
+            'name'    => 'search_idx',
+            'columns' => array('name', 'user_email'),
+            'options' => [],
+            'flags'   => [],
+        ));
+        $tableMetadata->addOption('foo', 'bar');
+        $tableMetadata->addOption('baz', array('key' => 'val'));
+
+        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
+
+        $metadata->setGeneratorDefinition(array(
+            'sequenceName'   => 'tablename_seq',
+            'allocationSize' => 100,
+        ));
+
+        $metadata->addNamedQuery(array(
+            'name' => 'all',
+            'query' => 'SELECT u FROM __CLASS__ u'
+        ));
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
 
@@ -1292,34 +1325,6 @@ class User
             'cascade'      => array('remove', 'persist', 'refresh', 'merge', 'detach'),
             'joinTable'    => $joinTable,
             'orderBy' => NULL,
-        ));
-
-        $metadata->table['uniqueConstraints'] = array(
-            'search_idx' => array(
-                'columns' => array('name', 'user_email'),
-                'options'=> array('where' => 'name IS NOT NULL')
-            ),
-        );
-
-        $metadata->table['indexes'] = array(
-            'name_idx' => array(
-                'unique'  => false,
-                'columns' => array('name'),
-            ),
-            0 => array( // Unnamed index
-                'unique'  => false,
-                'columns' => array('user_email'),
-            ),
-        );
-
-        $metadata->setGeneratorDefinition(array(
-            'sequenceName'   => 'tablename_seq',
-            'allocationSize' => 100,
-        ));
-
-        $metadata->addNamedQuery(array(
-            'name' => 'all',
-            'query' => 'SELECT u FROM __CLASS__ u'
         ));
     }
 }

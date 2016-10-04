@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
+use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
@@ -112,14 +113,28 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate Table annotation
         if (isset($classAnnotations[Annotation\Table::class])) {
-            $tableAnnot = $classAnnotations[Annotation\Table::class];
+            $tableAnnot   = $classAnnotations[Annotation\Table::class];
+            $tableBuilder = new TableMetadataBuilder();
 
-            $builder->setTable($tableAnnot->name, $tableAnnot->schema, $tableAnnot->options);
+            if (! empty($tableAnnot->name)) {
+                $metadata->table->setName($tableAnnot->name);
+            }
+
+            if (! empty($tableAnnot->schema)) {
+                $metadata->table->setSchema($tableAnnot->schema);
+            }
+
+            if (! empty($metadata->table->getSchema())) {
+                $tableBuilder->withSchema($metadata->table->getSchema());
+            }
+
+            $tableBuilder->withName($metadata->table->getName());
+            $tableBuilder->withOptions($tableAnnot->options);
 
             foreach ($tableAnnot->indexes as $indexAnnot) {
-                $builder->addIndex(
-                    $indexAnnot->columns,
+                $tableBuilder->withIndex(
                     $indexAnnot->name,
+                    $indexAnnot->columns,
                     $indexAnnot->unique,
                     $indexAnnot->options,
                     $indexAnnot->flags
@@ -127,13 +142,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
 
             foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
-                $builder->addUniqueConstraint(
-                    $uniqueConstraintAnnot->columns,
+                $tableBuilder->withUniqueConstraint(
                     $uniqueConstraintAnnot->name,
+                    $uniqueConstraintAnnot->columns,
                     $uniqueConstraintAnnot->options,
                     $uniqueConstraintAnnot->flags
                 );
             }
+
+            $builder->withTable($tableBuilder->build());
         }
 
         // Evaluate @Cache annotation

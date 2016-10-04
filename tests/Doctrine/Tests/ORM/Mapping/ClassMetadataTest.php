@@ -427,10 +427,12 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->setPrimaryTable([
-            'schema' => 'foo',
-            'name'   => 'bar',
-        ]);
+        $tableMetadata = new Mapping\TableMetadata();
+
+        $tableMetadata->setSchema('foo');
+        $tableMetadata->setName('bar');
+
+        $cm->setPrimaryTable($tableMetadata);
 
         self::assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
     }
@@ -441,11 +443,10 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // When table's name is not given
-        $primaryTable = array();
-        $cm->setPrimaryTable($primaryTable);
+        $cm->setPrimaryTable(new Mapping\TableMetadata());
 
         self::assertEquals('CmsUser', $cm->getTableName());
-        self::assertEquals('CmsUser', $cm->table['name']);
+        self::assertEquals('CmsUser', $cm->table->getName());
 
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -1189,7 +1190,7 @@ class ClassMetadataTest extends OrmTestCase
             'targetEntity' => 'Doctrine\Tests\Models\CMS\CmsUser'
         ));
 
-        self::assertEquals('routing_routingleg', $routingMetadata->table['name']);
+        self::assertEquals('routing_routingleg', $routingMetadata->table->getName());
         self::assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']['name']);
         self::assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']['name']);
     }

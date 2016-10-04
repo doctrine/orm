@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
+use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
@@ -82,17 +83,54 @@ class XmlDriver extends FileDriver
         }
 
         // Evaluate <entity...> attributes
-        $primaryTable = array();
+        $tableBuilder = new TableMetadataBuilder();
 
         if (isset($xmlRoot['table'])) {
-            $primaryTable['name'] = (string) $xmlRoot['table'];
+            $metadata->table->setName((string) $xmlRoot['table']);
         }
 
         if (isset($xmlRoot['schema'])) {
-            $primaryTable['schema'] = (string) $xmlRoot['schema'];
+            $metadata->table->setSchema((string) $xmlRoot['schema']);
         }
 
-        $metadata->setPrimaryTable($primaryTable);
+        if (isset($xmlRoot->options)) {
+            $options = $this->parseOptions($xmlRoot->options->children());
+
+            $tableBuilder->withOptions($options);
+        }
+
+        if (! empty($metadata->table->getSchema())) {
+            $tableBuilder->withSchema($metadata->table->getSchema());
+        }
+
+        $tableBuilder->withName($metadata->table->getName());
+
+        // Evaluate <indexes...>
+        if (isset($xmlRoot->indexes)) {
+            foreach ($xmlRoot->indexes->index as $indexXml) {
+                $indexName = isset($indexXml['name']) ? (string) $indexXml['name'] : null;
+                $columns   = explode(',', (string) $indexXml['columns']);
+                $isUnique  = isset($indexXml['unique']) && $indexXml['unique'];
+                $options   = isset($indexXml->options) ? $this->parseOptions($indexXml->options->children()) : [];
+                $flags     = isset($indexXml['flags']) ? explode(',', (string) $indexXml['flags']) : [];
+
+                $tableBuilder->withIndex($indexName, $columns, $isUnique, $options, $flags);
+            }
+        }
+
+        // Evaluate <unique-constraints..>
+        if (isset($xmlRoot->{'unique-constraints'})) {
+            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
+                $indexName = isset($uniqueXml['name']) ? (string) $uniqueXml['name'] : null;
+                $columns   = explode(',', (string) $uniqueXml['columns']);
+                $options   = isset($uniqueXml->options) ? $this->parseOptions($uniqueXml->options->children()) : [];
+                $flags     = isset($uniqueXml['flags']) ? explode(',', (string) $uniqueXml['flags']) : [];
+
+                $tableBuilder->withUniqueConstraint($indexName, $columns, $options, $flags);
+            }
+        }
+
+        $metadata->setPrimaryTable($tableBuilder->build());
 
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {
@@ -218,60 +256,6 @@ class XmlDriver extends FileDriver
             $metadata->setChangeTrackingPolicy(
                 constant(sprintf('%s::CHANGETRACKING_%s', ClassMetadata::class, $changeTrackingPolicy))
             );
-        }
-
-        // Evaluate <indexes...>
-        if (isset($xmlRoot->indexes)) {
-            $metadata->table['indexes'] = array();
-
-            foreach ($xmlRoot->indexes->index as $indexXml) {
-                $index = array(
-                    'unique'  => isset($indexXml['unique']) && $indexXml['unique'],
-                    'columns' => explode(',', (string) $indexXml['columns'])
-                );
-
-                if (isset($indexXml['flags'])) {
-                    $index['flags'] = explode(',', (string) $indexXml['flags']);
-                }
-
-                if (isset($indexXml->options)) {
-                    $index['options'] = $this->parseOptions($indexXml->options->children());
-                }
-
-                if (isset($indexXml['name'])) {
-                    $metadata->table['indexes'][(string) $indexXml['name']] = $index;
-                } else {
-                    $metadata->table['indexes'][] = $index;
-                }
-            }
-        }
-
-        // Evaluate <unique-constraints..>
-        if (isset($xmlRoot->{'unique-constraints'})) {
-            $metadata->table['uniqueConstraints'] = array();
-
-            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
-                $unique = array('columns' => explode(',', (string) $uniqueXml['columns']));
-
-
-                if (isset($uniqueXml->options)) {
-                    $unique['options'] = $this->parseOptions($uniqueXml->options->children());
-                }
-
-                if (isset($uniqueXml['flags'])) {
-                    $unique['flags'] = explode(',', (string) $uniqueXml['flags']);
-                }
-
-                if (isset($uniqueXml['name'])) {
-                    $metadata->table['uniqueConstraints'][(string) $uniqueXml['name']] = $unique;
-                } else {
-                    $metadata->table['uniqueConstraints'][] = $unique;
-                }
-            }
-        }
-
-        if (isset($xmlRoot->options)) {
-            $metadata->table['options'] = $this->parseOptions($xmlRoot->options->children());
         }
 
         // Evaluate <field ...> mappings

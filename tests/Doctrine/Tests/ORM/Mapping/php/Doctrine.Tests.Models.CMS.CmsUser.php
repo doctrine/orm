@@ -1,8 +1,14 @@
 <?php
 
-$metadata->setPrimaryTable(array(
-   'name' => 'cms_users',
-));
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
+
+/* @var $metadata ClassMetadata */
+$tableMetadata = new Mapping\TableMetadata();
+
+$tableMetadata->setName('cms_users');
+
+$metadata->setPrimaryTable($tableMetadata);
 
 $metadata->addNamedNativeQuery(array (
     'name'              => 'fetchIdAndUsernameWithResultClass',

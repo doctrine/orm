@@ -4,15 +4,14 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$tableMetadata = new Mapping\TableMetadata();
 
-$metadata->setPrimaryTable(array(
-   'name' => 'cms_users',
-   'options' => array(
-       'engine' => 'MyISAM',
-       'foo'    => array('bar' => 'baz')
-   ),
-));
+$tableMetadata->setName('cms_users');
+$tableMetadata->addOption('engine', 'MyISAM');
+$tableMetadata->addOption('foo', array('bar' => 'baz'));
+
+$metadata->setPrimaryTable($tableMetadata);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');

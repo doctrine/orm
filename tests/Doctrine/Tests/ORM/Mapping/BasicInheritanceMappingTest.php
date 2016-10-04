@@ -207,9 +207,9 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(__NAMESPACE__ . '\\EntityIndexSubClass');
 
         self::assertNotNull($class->getProperty('mapped1'));
-        self::assertArrayHasKey('IDX_NAME_INDEX', $class->table['uniqueConstraints']);
-        self::assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table['uniqueConstraints']);
-        self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
+        self::assertArrayHasKey('IDX_NAME_INDEX', $class->table->getUniqueConstraints());
+        self::assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table->getUniqueConstraints());
+        self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table->getIndexes());
     }
 }
 

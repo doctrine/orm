@@ -1,8 +1,14 @@
 <?php
 
-$metadata->setPrimaryTable(array(
-   'name' => 'company_person',
-));
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
+
+/* @var $metadata ClassMetadata */
+$tableMetadata = new Mapping\TableMetadata();
+
+$tableMetadata->setName('company_person');
+
+$metadata->setPrimaryTable($tableMetadata);
 
 $metadata->addNamedNativeQuery(array (
     'name'              => 'fetchAllWithResultClass',

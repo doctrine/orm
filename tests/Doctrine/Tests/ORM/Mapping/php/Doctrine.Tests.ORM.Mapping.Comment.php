@@ -5,18 +5,18 @@ use Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 
 /* @var $metadata ClassMetadata */
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$tableMetadata = new Mapping\TableMetadata();
 
-$metadata->setPrimaryTable(array(
-   'indexes' => array(
-       array(
-           'unique'  => false,
-           'columns' => array('content'),
-           'flags'   => array('fulltext'),
-           'options' => array('where' => 'content IS NOT NULL'),
-       ),
-   )
+$tableMetadata->addIndex(array(
+    'name'    => null,
+    'columns' => array('content'),
+    'unique'  => false,
+    'flags'   => array('fulltext'),
+    'options' => array('where' => 'content IS NOT NULL'),
 ));
+
+$metadata->setPrimaryTable($tableMetadata);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 
 $fieldMetadata = new Mapping\FieldMetadata('content');
 
