@@ -6,8 +6,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 
+$tableMetadata = new Mapping\TableMetadata();
+$tableMetadata->setName('company_person');
+
 /* @var $metadata ClassMetadata */
-$metadata->setPrimaryTable(['name' => 'company_person']);
+$metadata->setPrimaryTable($tableMetadata);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));

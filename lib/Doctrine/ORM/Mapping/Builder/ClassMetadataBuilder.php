@@ -23,6 +23,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\TableMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 
 /**
@@ -132,23 +133,15 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Sets the table name.
+     * Sets the table metadata.
      *
-     * @param string      $name
-     * @param string|null $schema
-     * @param array       $options
+     * @param TableMetadata $tableMetadata
      *
      * @return ClassMetadataBuilder
      */
-    public function setTable($name, $schema = null, array $options = [])
+    public function withTable(TableMetadata $tableMetadata)
     {
-        $this->cm->setPrimaryTable(
-            [
-                'name'    => $name,
-                'schema'  => $schema,
-                'options' => $options,
-            ]
-        );
+        $this->cm->setPrimaryTable($tableMetadata);
 
         return $this;
     }
@@ -167,86 +160,6 @@ class ClassMetadataBuilder
                 'region' => $region,
             ]
         );
-    }
-
-    /**
-     * Adds Index.
-     *
-     * @param array       $columns
-     * @param string|null $name
-     * @param bool        $unique
-     * @param array       $options
-     * @param array       $flags
-     *
-     * @return ClassMetadataBuilder
-     */
-    public function addIndex(array $columns, $name, $unique = false, array $options = [], array $flags = [])
-    {
-        if (!isset($this->cm->table['indexes'])) {
-            $this->cm->table['indexes'] = [];
-        }
-
-        $index = [
-            'columns' => $columns,
-            'unique'  => $unique,
-        ];
-
-        if ( ! empty($options)) {
-            $index['options'] = $options;
-        }
-
-        if ( ! empty($flags)) {
-            $index['flags'] = $flags;
-        }
-
-        if (!$name) {
-            $this->cm->table['indexes'][] = $index;
-
-            return $this;
-        }
-
-        $this->cm->table['indexes'][$name] = $index;
-
-        return $this;
-    }
-
-    /**
-     * Adds Unique Constraint.
-     *
-     * @param array       $columns
-     * @param string|null $name
-     * @param array       $options
-     * @param array       $flags
-     *
-     * @return ClassMetadataBuilder
-     */
-    public function addUniqueConstraint(array $columns, $name, array $options = [], array $flags = [])
-    {
-        if ( ! isset($this->cm->table['uniqueConstraints'])) {
-            $this->cm->table['uniqueConstraints'] = [];
-        }
-
-        $index = ['columns' => $columns];
-
-        if ( ! empty($options)) {
-            $index['options'] = $options;
-        }
-
-        if ( ! empty($flags)) {
-            $index['flags'] = $flags;
-        }
-
-        if (!$name) {
-            $this->cm->table['uniqueConstraints'][] = $index;
-
-            return $this;
-        }
-
-        $this->cm->table['uniqueConstraints'][$name] = $index;
-
-        return $this;
-
-
     }
 
     /**

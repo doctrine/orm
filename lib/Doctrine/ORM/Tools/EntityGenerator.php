@@ -1065,25 +1065,25 @@ public function __construct(<params>)
 
         $table = [];
 
-        if (isset($metadata->table['schema'])) {
-            $table[] = 'schema="' . $metadata->table['schema'] . '"';
+        if ($metadata->table->getSchema()) {
+            $table[] = 'schema="' . $metadata->table->getSchema() . '"';
         }
 
-        if (isset($metadata->table['name'])) {
-            $table[] = 'name="' . $metadata->table['name'] . '"';
+        if ($metadata->table->getName()) {
+            $table[] = 'name="' . $metadata->table->getName() . '"';
         }
 
-        if (isset($metadata->table['options']) && $metadata->table['options']) {
-            $table[] = 'options={' . $this->exportTableOptions((array) $metadata->table['options']) . '}';
+        if ($metadata->table->getOptions()) {
+            $table[] = 'options={' . $this->exportTableOptions($metadata->table->getOptions()) . '}';
         }
 
-        if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
-            $constraints = $this->generateTableConstraints('UniqueConstraint', $metadata->table['uniqueConstraints']);
+        if ($metadata->table->getUniqueConstraints()) {
+            $constraints = $this->generateTableConstraints('UniqueConstraint', $metadata->table->getUniqueConstraints());
             $table[] = 'uniqueConstraints={' . $constraints . '}';
         }
 
-        if (isset($metadata->table['indexes']) && $metadata->table['indexes']) {
-            $constraints = $this->generateTableConstraints('Index', $metadata->table['indexes']);
+        if ($metadata->table->getIndexes()) {
+            $constraints = $this->generateTableConstraints('Index', $metadata->table->getIndexes());
             $table[] = 'indexes={' . $constraints . '}';
         }
 

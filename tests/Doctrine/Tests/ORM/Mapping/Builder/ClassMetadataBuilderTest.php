@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Mapping;
+namespace Doctrine\Tests\ORM\Mapping\Builder;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
@@ -152,65 +152,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         self::assertIsFluent($this->builder->setReadOnly());
         self::assertTrue($this->cm->isReadOnly);
-    }
-
-    public function testSetTable()
-    {
-        self::assertIsFluent($this->builder->setTable('users'));
-        self::assertEquals('users', $this->cm->table['name']);
-    }
-
-    public function testAddIndex()
-    {
-        self::assertIsFluent($this->builder->addIndex(array('username', 'name'), 'users_idx'));
-        self::assertEquals(
-            [
-                'users_idx' => [
-                    'unique'  => false,
-                    'columns' => ['username', 'name']
-                ]
-            ],
-            $this->cm->table['indexes']
-        );
-    }
-
-    public function testAddUniqueConstraint()
-    {
-        self::assertIsFluent($this->builder->addUniqueConstraint(['username', 'name'], 'users_idx'));
-        self::assertEquals(
-            [
-                'users_idx' => [
-                    'columns' => ['username', 'name']
-                ]
-            ],
-            $this->cm->table['uniqueConstraints']
-        );
-    }
-
-    public function testSetPrimaryTableRelated()
-    {
-        $this->builder->addUniqueConstraint(['username', 'name'], 'users_idx');
-        $this->builder->addIndex(['username', 'name'], 'users_idx');
-        $this->builder->setTable('users');
-
-        self::assertEquals(
-            [
-                'name' => 'users',
-                'indexes' => [
-                    'users_idx' => [
-                        'unique'  => false,
-                        'columns' => ['username', 'name']
-                    ]
-                ],
-                'uniqueConstraints' => [
-                    'users_idx' => [
-                        'columns' => ['username', 'name']
-                    ]
-                ],
-                'options' => [],
-            ],
-            $this->cm->table
-        );
     }
 
     public function testSetInheritanceJoined()

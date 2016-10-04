@@ -1,13 +1,13 @@
 <?php
 
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setPrimaryTable(
-    [
-   'name' => 'cms_users',
-    ]
-);
+$tableMetadata = new Mapping\TableMetadata();
+$tableMetadata->setName('cms_users');
+
+/* @var $metadata ClassMetadata */
+$metadata->setPrimaryTable($tableMetadata);
 
 $metadata->addNamedNativeQuery(
     [
