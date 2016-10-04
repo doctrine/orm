@@ -127,7 +127,10 @@ class CmsAddress
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $metadata->setPrimaryTable(['name' => 'company_person']);
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('company_person');
+
+        $metadata->setPrimaryTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
 

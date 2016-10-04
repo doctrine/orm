@@ -25,16 +25,16 @@ namespace Doctrine\ORM\Mapping;
 class JoinColumnMetadata extends ColumnMetadata
 {
     /** @var string */
-    private $referencedColumnName;
+    protected $referencedColumnName;
 
     /** @var string */
-    private $aliasedName;
+    protected $aliasedName;
 
     /** @var boolean */
     protected $nullable = true;
 
     /** @var string */
-    private $onDelete = '';
+    protected $onDelete = '';
 
     /**
      * @return string

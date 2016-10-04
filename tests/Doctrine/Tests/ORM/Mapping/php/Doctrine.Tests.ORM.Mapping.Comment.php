@@ -4,21 +4,21 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-/* @var $metadata ClassMetadata */
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$tableMetadata = new Mapping\TableMetadata();
 
-$metadata->setPrimaryTable(
+$tableMetadata->addIndex(
     [
-       'indexes' => [
-           [
-               'unique'  => false,
-               'columns' => ['content'],
-               'flags'   => ['fulltext'],
-               'options' => ['where' => 'content IS NOT NULL'],
-           ],
-       ]
+        'name'    => null,
+        'columns' => ['content'],
+        'unique'  => false,
+        'flags'   => ['fulltext'],
+        'options' => ['where' => 'content IS NOT NULL'],
     ]
 );
+
+/* @var $metadata ClassMetadata */
+$metadata->setPrimaryTable($tableMetadata);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 
 $fieldMetadata = new Mapping\FieldMetadata('content');
 
