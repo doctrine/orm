@@ -654,25 +654,26 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
-                $sequenceGeneratorDefinition = $class->sequenceGeneratorDefinition;
-
-                $definition = array();
-                $fieldName      = $class->getSingleIdentifierFieldName();
-                $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-                if ( ! $sequenceGeneratorDefinition) {
+                $definition = $class->sequenceGeneratorDefinition;
+                $customDefinition = $class->customGeneratorDefinition;
+                if ( ! $definition || is_array($customDefinition) ) {
+                    $fieldName      = $class->getSingleIdentifierFieldName();
                     $sequenceName   = $class->getSequenceName($this->getTargetPlatform());
-                    $definition['sequenceName'] = $this->getTargetPlatform()->fixSchemaElementName($sequenceName);
-                }else{
-                    $definition['sequenceName'] = $sequenceGeneratorDefinition['sequenceName'];
-                }
-                
-                $definition['allocationSize'] =  1;
-                $definition['initialValue'] = 1;
-                if ($quoted) {
-                    $definition['quoted'] = true;
-                }
+                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
 
-                $class->setSequenceGeneratorDefinition($definition);
+                    $schemaElementName = is_array($customDefinition) ? $customDefinition['sequenceName'] : $this->getTargetPlatform()->fixSchemaElementName($sequenceName);
+                    $definition = array(
+                        'sequenceName'      => $schemaElementName,
+                        'allocationSize'    => 1,
+                        'initialValue'      => 1,
+                    );
+
+                    if ($quoted) {
+                        $definition['quoted'] = true;
+                    }
+
+                    $class->setSequenceGeneratorDefinition($definition);
+                }
 
                 $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
                     $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->getTargetPlatform()),
