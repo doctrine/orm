@@ -1145,7 +1145,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  * @Table(
  *  name="cms_users",
  *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
+ *  indexes={@Index(name="name_idx", columns={"name"}), @Index(columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
  * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
@@ -1550,20 +1550,20 @@ class Comment
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+        $tableMetadata = new Mapping\TableMetadata();
 
-        $metadata->setPrimaryTable(
+        $tableMetadata->addIndex(
             [
-                'indexes' => [
-                    [
-                        'unique'  => false,
-                        'columns' => ['content'],
-                        'flags'   => ['fulltext'],
-                        'options' => ['where' => 'content IS NOT NULL']
-                    ],
-                ]
+                'name'    => null,
+                'unique'  => false,
+                'columns' => ['content'],
+                'flags'   => ['fulltext'],
+                'options' => ['where' => 'content IS NOT NULL'],
             ]
         );
+
+        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 
         $fieldMetadata = new Mapping\FieldMetadata('content');
         $fieldMetadata->setType(Type::getType('text'));

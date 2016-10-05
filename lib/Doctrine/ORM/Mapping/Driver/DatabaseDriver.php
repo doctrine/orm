@@ -184,8 +184,8 @@ class DatabaseDriver implements MappingDriver
         }
 
         $metadata->name  = $className;
-        $metadata->table = $this->buildTable($metadata);
 
+        $this->buildTable($metadata);
         $this->buildFieldMappings($metadata);
         $this->buildToOneAssociationMappings($metadata);
 
@@ -322,16 +322,13 @@ class DatabaseDriver implements MappingDriver
      * Build table from a class metadata.
      *
      * @param ClassMetadata $metadata
-     *
-     * @return TableMetadata
      */
     private function buildTable(ClassMetadata $metadata)
     {
         $tableName    = $this->classToTableNames[$metadata->name];
         $indexes      = $this->tables[$tableName]->getIndexes();
-        $tableBuilder = new TableMetadataBuilder();
 
-        $tableBuilder->withName($this->classToTableNames[$metadata->name]);
+        $metadata->table->setName($this->classToTableNames[$metadata->name]);
 
         foreach ($indexes as $index) {
             /** @var Index $index */
@@ -339,16 +336,14 @@ class DatabaseDriver implements MappingDriver
                 continue;
             }
 
-            $tableBuilder->withIndex(
-                $index->getName(),
-                $index->getColumns(),
-                $index->isUnique(),
-                $index->getOptions(),
-                $index->getFlags()
-            );
+            $metadata->table->addIndex([
+                'name'    => $index->getName(),
+                'columns' => $index->getColumns(),
+                'unique'  => $index->isUnique(),
+                'options' => $index->getOptions(),
+                'flags'   => $index->getFlags(),
+            ]);
         }
-
-        return $tableBuilder->build();
     }
 
     /**

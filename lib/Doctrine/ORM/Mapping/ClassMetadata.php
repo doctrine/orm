@@ -1796,7 +1796,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getSchemaName()
     {
-        return $this->table->getSchema() ?? null;
+        return $this->table->getSchema();
     }
 
     /**
