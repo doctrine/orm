@@ -318,6 +318,10 @@ class YamlDriver extends FileDriver
                         $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
                             . strtoupper($fieldMapping['generator']['strategy'])));
                     }
+                    if(isset($fieldMapping['generator']['sequenceGenerator'])
+                        && strtoupper($fieldMapping['generator']['strategy']) == 'SEQUENCE'){
+                        $metadata->setSequenceGeneratorDefinition($fieldMapping['generator']['sequenceGenerator']);
+                    }
                 }
 
                 if (isset($mapping['version'])) {

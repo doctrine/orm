@@ -12,3 +12,4 @@ lib/Doctrine/DBAL
 .idea
 vendor/
 composer.lock
+nbproject/
