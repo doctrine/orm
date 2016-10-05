@@ -85,7 +85,6 @@ abstract class DDC1595BaseInheritance
 
 /**
  * @Entity
- * @Table(name="entity1")
  */
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
@@ -106,7 +105,6 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 
 /**
  * @Entity
- * @Table(name="entity2")
  */
 class DDC1595InheritedEntity2 extends DDC1595BaseInheritance
 {
