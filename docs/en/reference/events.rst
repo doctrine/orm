@@ -179,7 +179,7 @@ the life-time of their registered entities.
    allows providing fallback metadata even when no actual metadata exists
    or could be found. This event is not a lifecycle callback.
 -  preFlush - The preFlush event occurs at the very beginning of a flush
-   operation. This event is not a lifecycle callback.
+   operation.
 -  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
