@@ -99,7 +99,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="myschema.order")
+ * @Table(name="order", schema="myschema")
  */
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {

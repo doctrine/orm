@@ -82,8 +82,6 @@ class XmlDriver extends FileDriver
         }
 
         // Evaluate <entity...> attributes
-        $tableBuilder = new TableMetadataBuilder();
-
         if (isset($xmlRoot['table'])) {
             $metadata->table->setName((string) $xmlRoot['table']);
         }
@@ -95,14 +93,10 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->options)) {
             $options = $this->parseOptions($xmlRoot->options->children());
 
-            $tableBuilder->withOptions($options);
+            foreach ($options as $optionName => $optionValue) {
+                $metadata->table->addOption($optionName, $optionValue);
+            }
         }
-
-        if (! empty($metadata->table->getSchema())) {
-            $tableBuilder->withSchema($metadata->table->getSchema());
-        }
-
-        $tableBuilder->withName($metadata->table->getName());
 
         // Evaluate <indexes...>
         if (isset($xmlRoot->indexes)) {
@@ -113,11 +107,18 @@ class XmlDriver extends FileDriver
                 $options   = isset($indexXml->options) ? $this->parseOptions($indexXml->options->children()) : [];
                 $flags     = isset($indexXml['flags']) ? explode(',', (string) $indexXml['flags']) : [];
 
-                $tableBuilder->withIndex($indexName, $columns, $isUnique, $options, $flags);
+                $metadata->table->addIndex([
+                    'name'    => $indexName,
+                    'columns' => $columns,
+                    'unique'  => $isUnique,
+                    'options' => $options,
+                    'flags'   => $flags,
+                ]);
             }
         }
 
         // Evaluate <unique-constraints..>
+
         if (isset($xmlRoot->{'unique-constraints'})) {
             foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
                 $indexName = isset($uniqueXml['name']) ? (string) $uniqueXml['name'] : null;
@@ -125,11 +126,14 @@ class XmlDriver extends FileDriver
                 $options   = isset($uniqueXml->options) ? $this->parseOptions($uniqueXml->options->children()) : [];
                 $flags     = isset($uniqueXml['flags']) ? explode(',', (string) $uniqueXml['flags']) : [];
 
-                $tableBuilder->withUniqueConstraint($indexName, $columns, $options, $flags);
+                $metadata->table->addUniqueConstraint([
+                    'name'    => $indexName,
+                    'columns' => $columns,
+                    'options' => $options,
+                    'flags'   => $flags,
+                ]);
             }
         }
-
-        $metadata->setPrimaryTable($tableBuilder->build());
 
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {

@@ -445,8 +445,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // When table's name is not given
-        $cm->setPrimaryTable(new Mapping\TableMetadata());
-
         self::assertEquals('CmsUser', $cm->getTableName());
         self::assertEquals('CmsUser', $cm->table->getName());
 
