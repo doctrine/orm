@@ -112,8 +112,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate Table annotation
         if (isset($classAnnotations[Annotation\Table::class])) {
-            $tableAnnot   = $classAnnotations[Annotation\Table::class];
-            $tableBuilder = new TableMetadataBuilder();
+            $tableAnnot = $classAnnotations[Annotation\Table::class];
 
             if (! empty($tableAnnot->name)) {
                 $metadata->table->setName($tableAnnot->name);
@@ -123,33 +122,28 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->table->setSchema($tableAnnot->schema);
             }
 
-            if (! empty($metadata->table->getSchema())) {
-                $tableBuilder->withSchema($metadata->table->getSchema());
+            foreach ($tableAnnot->options as $optionName => $optionValue) {
+                $metadata->table->addOption($optionName, $optionValue);
             }
 
-            $tableBuilder->withName($metadata->table->getName());
-            $tableBuilder->withOptions($tableAnnot->options);
-
             foreach ($tableAnnot->indexes as $indexAnnot) {
-                $tableBuilder->withIndex(
-                    $indexAnnot->name,
-                    $indexAnnot->columns,
-                    $indexAnnot->unique,
-                    $indexAnnot->options,
-                    $indexAnnot->flags
-                );
+                $metadata->table->addIndex([
+                    'name'    => $indexAnnot->name,
+                    'columns' => $indexAnnot->columns,
+                    'unique'  => $indexAnnot->unique,
+                    'options' => $indexAnnot->options,
+                    'flags'   => $indexAnnot->flags,
+                ]);
             }
 
             foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
-                $tableBuilder->withUniqueConstraint(
-                    $uniqueConstraintAnnot->name,
-                    $uniqueConstraintAnnot->columns,
-                    $uniqueConstraintAnnot->options,
-                    $uniqueConstraintAnnot->flags
-                );
+                $metadata->table->addUniqueConstraint([
+                    'name'    => $uniqueConstraintAnnot->name,
+                    'columns' => $uniqueConstraintAnnot->columns,
+                    'options' => $uniqueConstraintAnnot->options,
+                    'flags'   => $uniqueConstraintAnnot->flags,
+                ]);
             }
-
-            $builder->withTable($tableBuilder->build());
         }
 
         // Evaluate @Cache annotation
