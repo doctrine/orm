@@ -217,8 +217,8 @@ class OneToManyPersister extends AbstractCollectionPersister
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName())];
         }
 
-        $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
-            . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+        $tableName = $targetClass->table->getQuotedQualifiedName($this->platform);
+        $statement = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
         return $this->conn->executeUpdate($statement, $parameters);
     }
@@ -279,8 +279,9 @@ class OneToManyPersister extends AbstractCollectionPersister
         $classNames = array_merge($targetClass->parentClasses, [$targetClass->name], $targetClass->subClasses);
 
         foreach (array_reverse($classNames) as $className) {
-            $tableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($className), $this->platform);
-            $statement = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnNameList . ')'
+            $parentClass = $this->em->getClassMetadata($className);
+            $tableName   = $parentClass->table->getQuotedQualifiedName($this->platform);
+            $statement   = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnNameList . ')'
                 . ' IN (SELECT ' . $idColumnNameList . ' FROM ' . $tempTable . ')';
 
             $this->conn->executeUpdate($statement);

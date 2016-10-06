@@ -348,11 +348,12 @@ class SqlWalker implements TreeWalker
         // INNER JOIN parent class tables
         foreach ($class->parentClasses as $parentClassName) {
             $parentClass = $this->em->getClassMetadata($parentClassName);
+            $tableName   = $parentClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias  = $this->getSQLTableAlias($parentClass->getTableName(), $dqlAlias);
 
             // If this is a joined association we must use left joins to preserve the correct result.
             $sql .= isset($this->queryComponents[$dqlAlias]['relation']) ? ' LEFT ' : ' INNER ';
-            $sql .= 'JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
+            $sql .= 'JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
             $sqlParts = [];
 
@@ -376,9 +377,10 @@ class SqlWalker implements TreeWalker
         // LEFT JOIN child class tables
         foreach ($class->subClasses as $subClassName) {
             $subClass   = $this->em->getClassMetadata($subClassName);
+            $tableName  = $subClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
-            $sql .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
+            $sql .= ' LEFT JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
             $sqlParts = [];
 
@@ -904,9 +906,11 @@ class SqlWalker implements TreeWalker
             $this->rootAliases[] = $dqlAlias;
         }
 
+        $tableName  = $class->table->getQuotedQualifiedName($this->platform);
+        $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+
         $sql = $this->platform->appendLockHint(
-            $this->quoteStrategy->getTableName($class, $this->platform) . ' ' .
-            $this->getSQLTableAlias($class->getTableName(), $dqlAlias),
+            $tableName . ' ' . $tableAlias,
             $this->query->getHint(Query::HINT_LOCK_MODE)
         );
 
@@ -939,7 +943,7 @@ class SqlWalker implements TreeWalker
         $relation        = $this->queryComponents[$joinedDqlAlias]['relation'];
         $targetClass     = $this->em->getClassMetadata($relation['targetEntity']);
         $sourceClass     = $this->em->getClassMetadata($relation['sourceEntity']);
-        $targetTableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+        $targetTableName = $targetClass->table->getQuotedQualifiedName($this->platform);
 
         $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $joinedDqlAlias);
         $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $associationPathExpression->identificationVariable);
@@ -1749,9 +1753,10 @@ class SqlWalker implements TreeWalker
     {
         $class     = $this->em->getClassMetadata($deleteClause->abstractSchemaName);
         $tableName = $class->getTableName();
-        $sql       = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform);
+        $sql       = 'DELETE FROM ' . $class->table->getQuotedQualifiedName($this->platform);
 
         $this->setSQLTableAlias($tableName, $tableName, $deleteClause->aliasIdentificationVariable);
+
         $this->rootAliases[] = $deleteClause->aliasIdentificationVariable;
 
         return $sql;
@@ -1764,7 +1769,7 @@ class SqlWalker implements TreeWalker
     {
         $class     = $this->em->getClassMetadata($updateClause->abstractSchemaName);
         $tableName = $class->getTableName();
-        $sql       = 'UPDATE ' . $this->quoteStrategy->getTableName($class, $this->platform);
+        $sql       = 'UPDATE ' . $class->table->getQuotedQualifiedName($this->platform);
 
         $this->setSQLTableAlias($tableName, $tableName, $updateClause->aliasIdentificationVariable);
         $this->rootAliases[] = $updateClause->aliasIdentificationVariable;
@@ -1947,10 +1952,11 @@ class SqlWalker implements TreeWalker
 
         if ($assoc['type'] == ClassMetadata::ONE_TO_MANY) {
             $targetClass      = $this->em->getClassMetadata($assoc['targetEntity']);
+            $targetTableName  = $targetClass->table->getQuotedQualifiedName($this->platform);
             $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
-            $sql .= $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' ' . $targetTableAlias . ' WHERE ';
+            $sql .= $targetTableName . ' ' . $targetTableAlias . ' WHERE ';
 
             $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
             $sqlParts    = [];
@@ -1985,13 +1991,14 @@ class SqlWalker implements TreeWalker
             $joinTable = $owningAssoc['joinTable'];
 
             // SQL table aliases
+            $joinTableName    = $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform);
             $joinTableAlias   = $this->getSQLTableAlias($joinTable['name']);
+            $targetTableName  = $targetClass->table->getQuotedQualifiedName($this->platform);
             $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             // join to target table
-            $sql .= $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform) . ' ' . $joinTableAlias
-                . ' INNER JOIN ' . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' ' . $targetTableAlias . ' ON ';
+            $sql .= $joinTableName . ' ' . $joinTableAlias . ' INNER JOIN ' . $targetTableName . ' ' . $targetTableAlias . ' ON ';
 
             // join conditions
             $joinColumns  = $assoc['isOwningSide'] ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];

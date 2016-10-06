@@ -30,16 +30,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 interface QuoteStrategy
 {
     /**
-     * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
-     *
-     * @param ClassMetadata    $class
-     * @param AbstractPlatform $platform
-     *
-     * @return string
-     */
-    public function getTableName(ClassMetadata $class, AbstractPlatform $platform);
-
-    /**
      * Gets the (possibly quoted) name of the join table.
      *
      * @param array            $association
