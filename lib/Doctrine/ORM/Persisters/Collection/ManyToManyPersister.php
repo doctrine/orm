@@ -148,7 +148,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         //
         /*if ($criteria && ($expression = $criteria->getWhereExpression()) !== null) {
             // A join is needed on the target entity
-            $targetTableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+            $targetTableName = $targetClass->table->getQuotedQualifiedName($this->platform);
             $targetJoinSql   = ' JOIN ' . $targetTableName . ' te'
                 . ' ON' . implode(' AND ', $this->getOnConditionSQL($association));
 
@@ -268,7 +268,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $params[]       = $value;
         }
 
-        $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+        $tableName    = $targetClass->table->getQuotedQualifiedName($this->platform);
         $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform);
 
         $rsm = new Query\ResultSetMappingBuilder($this->em);
@@ -318,7 +318,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         // A join is needed if there is filtering on the target entity
-        $tableName = $this->quoteStrategy->getTableName($rootClass, $this->platform);
+        $tableName = $rootClass->table->getQuotedQualifiedName($this->platform);
         $joinSql   = ' JOIN ' . $tableName . ' te'
             . ' ON' . implode(' AND ', $this->getOnConditionSQL($mapping));
 
@@ -610,7 +610,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $joinConditions[] = ' t.' . $quotedColumnName . ' = ' . 'tr.' . $quotedReferencedColumnName;
             }
 
-            $tableName        = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+            $tableName        = $targetClass->table->getQuotedQualifiedName($this->platform);
             $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
             $columnName       = $targetClass->getColumnName($indexBy);
 
