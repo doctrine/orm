@@ -22,6 +22,8 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 class TableMetadata
 {
     /** @var string */
@@ -40,6 +42,22 @@ class TableMetadata
     protected $uniqueConstraints = [];
 
     /**
+     * @return string
+     */
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
+    /**
+     * @param string $schema
+     */
+    public function setSchema(string $schema)
+    {
+        $this->schema = $schema;
+    }
+
+    /**
      * @param string $name
      */
     public function setName(string $name)
@@ -56,19 +74,19 @@ class TableMetadata
     }
 
     /**
+     * @param AbstractPlatform $platform
+     *
      * @return string
      */
-    public function getSchema()
+    public function getQuotedQualifiedName(AbstractPlatform $platform)
     {
-        return $this->schema;
-    }
+        if (!$this->schema) {
+            return $platform->quoteIdentifier($this->name);
+        }
 
-    /**
-     * @param string $schema
-     */
-    public function setSchema(string $schema)
-    {
-        $this->schema = $schema;
+        $separator = ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) ? '__' : '.';
+
+        return $platform->quoteIdentifier(sprintf('%s%s%s', $this->schema, $separator, $this->name));
     }
 
     /**

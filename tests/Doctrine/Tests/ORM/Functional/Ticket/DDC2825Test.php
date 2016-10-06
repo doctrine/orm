@@ -38,7 +38,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $classMetadata   = $this->_em->getClassMetadata($className);
         $platform        = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
+        $quotedTableName = $classMetadata->table->getQuotedQualifiedName($platform);
 
         // Check if table name and schema properties are defined in the class metadata
         self::assertEquals($expectedTableName, $classMetadata->table->getName());

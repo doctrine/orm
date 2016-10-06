@@ -31,27 +31,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
 {
     /**
      * {@inheritdoc}
-     *
-     * @todo Table names should be computed in DBAL depending on the platform
-     */
-    public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
-    {
-        $schemaName = $class->getSchemaName();
-        $tableName  = $class->getTableName();
-
-        if ( ! empty($schemaName)) {
-            $tableName = $schemaName . '.' . $tableName;
-
-            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-                $tableName = $schemaName . '__' . $class->getTableName();
-            }
-        }
-
-        return $platform->quoteIdentifier($tableName);
-    }
-
-    /**
-     * {@inheritdoc}
      */
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {

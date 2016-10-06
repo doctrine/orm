@@ -162,7 +162,7 @@ class SchemaTool
                 continue;
             }
 
-            $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
+            $table = $schema->createTable($class->table->getQuotedQualifiedName($this->platform));
 
             if ($class->isInheritanceTypeSingleTable()) {
                 $this->gatherColumns($class, $table);
@@ -227,11 +227,10 @@ class SchemaTool
 
                     if ( ! empty($inheritedKeyColumns)) {
                         // Add a FK constraint on the ID column
+                        $rootClass = $this->em->getClassMetadata($class->rootEntityName);
+
                         $table->addForeignKeyConstraint(
-                            $this->quoteStrategy->getTableName(
-                                $this->em->getClassMetadata($class->rootEntityName),
-                                $this->platform
-                            ),
+                            $rootClass->table->getQuotedQualifiedName($this->platform),
                             $inheritedKeyColumns,
                             $inheritedKeyColumns,
                             ['onDelete' => 'CASCADE']
@@ -648,7 +647,7 @@ class SchemaTool
         $localColumns       = [];
         $foreignColumns     = [];
         $fkOptions          = [];
-        $foreignTableName   = $this->quoteStrategy->getTableName($class, $this->platform);
+        $foreignTableName   = $class->table->getQuotedQualifiedName($this->platform);
         $uniqueConstraints  = [];
 
         foreach ($joinColumns as $joinColumn) {
