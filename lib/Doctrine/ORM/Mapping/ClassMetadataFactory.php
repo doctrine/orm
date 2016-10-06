@@ -655,13 +655,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
                 $definition = $class->sequenceGeneratorDefinition;
-                $customDefinition = $class->customGeneratorDefinition;
-                if ( ! $definition || is_array($customDefinition) ) {
+                $customDefinition = is_array($class->customGeneratorDefinition) ? $class->customGeneratorDefinition : null;
+                if ( ! $definition || $customDefinition ) {
                     $fieldName      = $class->getSingleIdentifierFieldName();
                     $sequenceName   = $class->getSequenceName($this->getTargetPlatform());
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
 
-                    $schemaElementName = is_array($customDefinition) ? $customDefinition['sequenceName'] : $this->getTargetPlatform()->fixSchemaElementName($sequenceName);
+                    $schemaElementName = $customDefinition ? $customDefinition['sequenceName'] : $this->getTargetPlatform()->fixSchemaElementName($sequenceName);
                     $definition = array(
                         'sequenceName'      => $schemaElementName,
                         'allocationSize'    => 1,

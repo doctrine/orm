@@ -317,8 +317,8 @@ class YamlDriver extends FileDriver
                     if (isset($fieldMapping['generator']['strategy'])) {
                         $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
                             . strtoupper($fieldMapping['generator']['strategy'])));
-                        if(isset($fieldMapping['generator']['sequenceGenerator'])
-                            && strtoupper($fieldMapping['generator']['strategy']) == 'SEQUENCE'){
+                        if (isset($fieldMapping['generator']['sequenceGenerator'])
+                            && strtoupper($fieldMapping['generator']['strategy']) === 'SEQUENCE') {
                             $metadata->setSequenceGeneratorDefinition($fieldMapping['generator']['sequenceGenerator']);
                         }
                     }
