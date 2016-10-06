@@ -24,4 +24,46 @@ namespace Doctrine\ORM\Mapping;
 
 class JoinTableMetadata extends TableMetadata
 {
+    /** @var array<JoinColumnMetadata> */
+    protected $joinColumns = [];
+
+    /** @var array<JoinColumnMetadata> */
+    protected $inverseJoinColumns = [];
+
+    /**
+     * @return array<JoinColumnMetadata>
+     */
+    public function getJoinColumns()
+    {
+        return $this->joinColumns;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return JoinColumnMetadata
+     */
+    public function getJoinColumn(string $name)
+    {
+        return $this->joinColumns[$name];
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasOption(string $name)
+    {
+        return isset($this->options[$name]);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     */
+    public function addOption(string $name, $value)
+    {
+        $this->options[$name] = $value;
+    }
 }

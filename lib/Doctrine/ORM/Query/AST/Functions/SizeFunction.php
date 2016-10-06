@@ -58,25 +58,26 @@ class SizeFunction extends FunctionNode
 
         if ($assoc['type'] == \Doctrine\ORM\Mapping\ClassMetadata::ONE_TO_MANY) {
             $targetClass        = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
+            $targetTableName    = $targetClass->table->getQuotedQualifiedName($platform);
             $targetTableAlias   = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias   = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
-            $sql .= $quoteStrategy->getTableName($targetClass, $platform) . ' ' . $targetTableAlias . ' WHERE ';
+            $sql .= $targetTableName . ' ' . $targetTableAlias . ' WHERE ';
 
             $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
-
-            $first = true;
+            $first       = true;
 
             foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
-                $property         = $class->getProperty($class->fieldNames[$targetColumn]);
-                $sourceColumnName = $platform->quoteIdentifier($property->getColumnName());
-                $targetColumnName = $platform->quoteIdentifier($sourceColumn);
+                $property = $class->getProperty($class->fieldNames[$targetColumn]);
 
-                $sql .= $targetTableAlias . '.' . $targetColumnName
-                      . ' = '
-                      . $sourceTableAlias . '.' . $sourceColumnName;
+                $sql .= sprintf('%s.%s = %s.%s',
+                    $targetTableAlias,
+                    $platform->quoteIdentifier($sourceColumn),
+                    $sourceTableAlias,
+                    $platform->quoteIdentifier($property->getColumnName())
+                );
             }
         } else { // many-to-many
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
