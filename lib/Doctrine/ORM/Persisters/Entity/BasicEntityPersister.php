@@ -325,7 +325,7 @@ class BasicEntityPersister implements EntityPersister
     protected function fetchVersionValue(FieldMetadata $versionProperty, array $id)
     {
         $versionedClass = $versionProperty->getDeclaringClass();
-        $tableName      = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+        $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
         $columnName     = $this->platform->quoteIdentifier($versionProperty->getColumnName());
         $identifier     = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
 
@@ -354,7 +354,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $isVersioned     = $this->class->isVersioned();
-        $quotedTableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $quotedTableName = $this->class->table->getQuotedQualifiedName($this->platform);
 
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);
 
@@ -531,7 +531,7 @@ class BasicEntityPersister implements EntityPersister
         $self       = $this;
         $class      = $this->class;
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-        $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
+        $tableName  = $class->table->getQuotedQualifiedName($this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
         $types      = array_map(function ($identifier) use ($class, $self) {
@@ -1055,7 +1055,7 @@ class BasicEntityPersister implements EntityPersister
         $columnList = $this->getSelectColumnsSQL();
         $tableAlias = $this->getSQLTableAlias($this->class->getTableName());
         $filterSql  = $this->generateFilterConditionSQL($this->class, $tableAlias);
-        $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $tableName  = $this->class->table->getQuotedQualifiedName($this->platform);
 
         if ('' !== $filterSql) {
             $conditionSql = $conditionSql
@@ -1082,7 +1082,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getCountSQL($criteria = array())
     {
-        $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $tableName  = $this->class->table->getQuotedQualifiedName($this->platform);
         $tableAlias = $this->getSQLTableAlias($this->class->getTableName());
 
         $conditionSql = ($criteria instanceof Criteria)
@@ -1241,7 +1241,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $joinTableAlias = $this->getSQLTableAlias($eagerEntity->getTableName(), $assocAlias);
-            $joinTableName  = $this->quoteStrategy->getTableName($eagerEntity, $this->platform);
+            $joinTableName  = $eagerEntity->table->getQuotedQualifiedName($this->platform);
 
             if ($assoc['isOwningSide']) {
                 $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
@@ -1374,7 +1374,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $columns   = $this->getInsertColumnList();
-        $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $tableName = $this->class->table->getQuotedQualifiedName($this->platform);
 
         if (empty($columns)) {
             $property        = $this->class->getProperty($this->class->identifier[0]);
@@ -1559,10 +1559,10 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getLockTablesSql($lockMode)
     {
+        $tableName = $this->class->table->getQuotedQualifiedName($this->platform);
+
         return $this->platform->appendLockHint(
-            'FROM '
-            . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
-            . $this->getSQLTableAlias($this->class->getTableName()),
+            'FROM ' . $tableName . ' ' . $this->getSQLTableAlias($this->class->getTableName()),
             $lockMode
         );
     }
