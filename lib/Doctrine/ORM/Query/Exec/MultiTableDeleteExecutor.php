@@ -94,10 +94,13 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
 
         // 3. Create and store DELETE statements
         $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
+
         foreach (array_reverse($classNames) as $className) {
-            $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className), $platform);
+            $parentClass = $em->getClassMetadata($className);
+            $tableName   = $parentClass->table->getQuotedQualifiedName($platform);
+
             $this->_sqlStatements[] = 'DELETE FROM ' . $tableName
-                    . ' WHERE (' . $idColumnNameList . ') IN (' . $idSubselect . ')';
+                . ' WHERE (' . $idColumnNameList . ') IN (' . $idSubselect . ')';
         }
 
         // 4. Store DDL for temporary identifier table.

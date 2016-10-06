@@ -104,9 +104,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $i = -1;
 
         foreach (array_reverse($classNames) as $className) {
-            $affected = false;
-            $class = $em->getClassMetadata($className);
-            $updateSql = 'UPDATE ' . $quoteStrategy->getTableName($class, $platform) . ' SET ';
+            $affected  = false;
+            $class     = $em->getClassMetadata($className);
+            $tableName = $class->table->getQuotedQualifiedName($platform);
+            $updateSql = 'UPDATE ' . $tableName . ' SET ';
 
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
