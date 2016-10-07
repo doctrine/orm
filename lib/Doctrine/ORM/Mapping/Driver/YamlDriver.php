@@ -319,7 +319,7 @@ class YamlDriver extends FileDriver
                             . strtoupper($fieldMapping['generator']['strategy'])));
                         if (isset($fieldMapping['generator']['sequenceGenerator'])
                             && strtoupper($fieldMapping['generator']['strategy']) === 'SEQUENCE') {
-                            $metadata->setSequenceGeneratorDefinition($fieldMapping['generator']['sequenceGenerator']);
+                            $metadata->setCustomGeneratorDefinition($fieldMapping['generator']['sequenceGenerator']);
                         }
                     }
                 }
