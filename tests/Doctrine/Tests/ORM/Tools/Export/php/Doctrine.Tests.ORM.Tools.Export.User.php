@@ -15,6 +15,7 @@ $tableMetadata->addOption('engine', 'MyISAM');
 $tableMetadata->addOption('foo', ['bar' => 'baz']);
 
 $metadata->setPrimaryTable($tableMetadata);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
@@ -22,12 +23,14 @@ $metadata->addLifecycleCallback('doStuffOnPrePersist', Events::prePersist);
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', Events::prePersist);
 $metadata->addLifecycleCallback('doStuffOnPostPersist', Events::postPersist);
 
+
 $fieldMetadata = new Mapping\FieldMetadata('id');
 
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
 
 $metadata->addProperty($fieldMetadata);
+
 
 $fieldMetadata = new Mapping\FieldMetadata('name');
 
@@ -39,6 +42,7 @@ $fieldMetadata->setUnique(true);
 
 $metadata->addProperty($fieldMetadata);
 
+
 $fieldMetadata = new Mapping\FieldMetadata('email');
 
 $fieldMetadata->setType(Type::getType('string'));
@@ -47,6 +51,7 @@ $fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
 
 $metadata->addProperty($fieldMetadata);
 
+
 $fieldMetadata = new Mapping\FieldMetadata('age');
 
 $fieldMetadata->setType(Type::getType('integer'));
@@ -54,7 +59,6 @@ $fieldMetadata->setOptions(['unsigned' => true]);
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
 $metadata->mapManyToOne(
     [
@@ -110,13 +114,14 @@ $metadata->mapOneToMany(
     ]
 );
 
-$joinColumns = [];
+$joinTable = new Mapping\JoinTableMetadata();
+$joinTable->setName('cms_users_groups');
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 $joinColumn->setColumnName("user_id");
 $joinColumn->setReferencedColumnName("id");
 
-$joinColumns[] = $joinColumn;
+$joinTable->addJoinColumn($joinColumn);
 
 $inverseJoinColumns = [];
 
@@ -125,13 +130,7 @@ $joinColumn->setColumnName("group_id");
 $joinColumn->setReferencedColumnName("id");
 $joinColumn->setColumnDefinition("INT NULL");
 
-$inverseJoinColumns[] = $joinColumn;
-
-$joinTable = [
-    'name'               => 'cms_users_groups',
-    'joinColumns'        => $joinColumns,
-    'inverseJoinColumns' => $inverseJoinColumns,
-];
+$joinTable->addInverseJoinColumn($joinColumn);
 
 $metadata->mapManyToMany(
     [

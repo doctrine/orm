@@ -37,25 +37,18 @@ class DDC964Admin extends DDC964User
 
         $metadata->setAssociationOverride('address', ['joinColumns' => $joinColumns]);
 
-        $joinColumns = [];
+        $joinTable = new Mapping\JoinTableMetadata();
+        $joinTable->setName('ddc964_users_admingroups');
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName('adminuser_id');
 
-        $joinColumns[] = $joinColumn;
-
-        $inverseJoinColumns = [];
+        $joinTable->addJoinColumn($joinColumn);
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName('admingroup_id');
 
-        $inverseJoinColumns[] = $joinColumn;
-
-        $joinTable = [
-            'name'               => 'ddc964_users_admingroups',
-            'joinColumns'        => $joinColumns,
-            'inverseJoinColumns' => $inverseJoinColumns,
-        ];
+        $joinTable->addInverseJoinColumn($joinColumn);
 
         $metadata->setAssociationOverride('groups', ['joinTable' => $joinTable]);
     }

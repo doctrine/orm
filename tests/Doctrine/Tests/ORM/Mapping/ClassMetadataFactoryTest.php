@@ -382,11 +382,13 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('address-id', $userAddressJoinColumn->getColumnName());
         self::assertEquals('address-id', $userAddressJoinColumn->getReferencedColumnName());
 
-        $groups                      = $userMetadata->associationMappings['groups'];
-        $userGroupsJoinColumn        = reset($groups['joinTable']['joinColumns']);
-        $userGroupsInverseJoinColumn = reset($groups['joinTable']['inverseJoinColumns']);
+        $groups                       = $userMetadata->associationMappings['groups'];
+        $userGroupsJoinColumns        = $groups['joinTable']->getJoinColumns();
+        $userGroupsJoinColumn         = reset($userGroupsJoinColumns);
+        $userGroupsInverseJoinColumns = $groups['joinTable']->getInverseJoinColumns();
+        $userGroupsInverseJoinColumn  = reset($userGroupsInverseJoinColumns);
 
-        self::assertEquals('quote-users-groups', $groups['joinTable']['name']);
+        self::assertEquals('quote-users-groups', $groups['joinTable']->getName());
         self::assertEquals('user-id', $userGroupsJoinColumn->getColumnName());
         self::assertEquals('user-id', $userGroupsJoinColumn->getReferencedColumnName());
         self::assertEquals('group-id', $userGroupsInverseJoinColumn->getColumnName());

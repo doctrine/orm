@@ -82,11 +82,12 @@ class SizeFunction extends FunctionNode
         } else { // many-to-many
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
 
-            $owningAssoc = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
-            $joinTable = $owningAssoc['joinTable'];
+            $owningAssoc   = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
+            $joinTable     = $owningAssoc['joinTable'];
+            $joinTableName = $joinTable->getQuotedQualifiedName($platform);
 
             // SQL table aliases
-            $joinTableAlias = $sqlWalker->getSQLTableAlias($joinTable['name']);
+            $joinTableAlias   = $sqlWalker->getSQLTableAlias($joinTable->getName());
             $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             // Quote in case source table alias matches class table name (happens in an UPDATE statement)
@@ -95,11 +96,12 @@ class SizeFunction extends FunctionNode
             }
 
             // join to target table
-            $sql .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';
+            $sql .= $joinTableName . ' ' . $joinTableAlias . ' WHERE ';
 
             $joinColumns = $assoc['isOwningSide']
-                ? $joinTable['joinColumns']
-                : $joinTable['inverseJoinColumns'];
+                ? $joinTable->getJoinColumns()
+                : $joinTable->getInverseJoinColumns()
+            ;
 
             $first = true;
 

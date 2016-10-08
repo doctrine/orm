@@ -63,7 +63,7 @@ class PersisterHelper
         $types       = [];
         $targetClass = $em->getClassMetadata($assoc['targetEntity']);
         $joinColumns = ($assoc['type'] & ClassMetadata::MANY_TO_MANY)
-            ? $assoc['joinTable']['joinColumns']
+            ? $assoc['joinTable']->getJoinColumns()
             : $assoc['joinColumns'];
 
         foreach ($joinColumns as $joinColumn) {
@@ -95,7 +95,7 @@ class PersisterHelper
             // resolve join columns over to-one or to-many
             $targetClass = $em->getClassMetadata($assoc['targetEntity']);
             $joinColumns = ($assoc['type'] & ClassMetadata::MANY_TO_MANY)
-                ? $assoc['joinTable']['joinColumns']
+                ? $assoc['joinTable']->getJoinColumns()
                 : $assoc['joinColumns'];
 
             foreach ($joinColumns as $joinColumn) {

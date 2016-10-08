@@ -59,10 +59,13 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     public function build()
     {
         $mapping = $this->mapping;
+
         if ($this->joinColumns) {
             $mapping['joinColumns'] = $this->joinColumns;
         }
+
         $cm = $this->builder->getClassMetadata();
+
         $cm->mapOneToMany($mapping);
 
         return $this->builder;

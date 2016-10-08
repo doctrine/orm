@@ -32,20 +32,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        $schema = '';
-
-        if (isset($association['joinTable']['schema'])) {
-            $schema = $association['joinTable']['schema'] . '.';
-        }
-
-        return $schema . $platform->quoteIdentifier($association['joinTable']['name']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform)
     {
         $quotedColumnNames = [];
