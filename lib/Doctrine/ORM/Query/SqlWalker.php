@@ -1029,11 +1029,14 @@ class SqlWalker implements TreeWalker
             case ($assoc['type'] === ClassMetadata::MANY_TO_MANY):
                 // Join relation table
                 $joinTable      = $assoc['joinTable'];
-                $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
-                $joinTableName  = $this->quoteStrategy->getJoinTableName($assoc, $sourceClass, $this->platform);
+                $joinTableName  = $joinTable->getQuotedQualifiedName($this->platform);
+                $joinTableAlias = $this->getSQLTableAlias($joinTable->getName(), $joinedDqlAlias);
 
                 $conditions  = [];
-                $joinColumns = ($relation['isOwningSide']) ? $joinTable['joinColumns'] : $joinTable['inverseJoinColumns'];
+                $joinColumns = ($relation['isOwningSide'])
+                    ? $joinTable->getJoinColumns()
+                    : $joinTable->getInverseJoinColumns()
+                ;
 
                 foreach ($joinColumns as $joinColumn) {
                     $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
@@ -1054,7 +1057,10 @@ class SqlWalker implements TreeWalker
                 $sql .= ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) ? ' LEFT JOIN ' : ' INNER JOIN ';
 
                 $conditions  = [];
-                $joinColumns = ($relation['isOwningSide']) ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
+                $joinColumns = ($relation['isOwningSide'])
+                    ? $joinTable->getInverseJoinColumns()
+                    : $joinTable->getJoinColumns()
+                ;
 
                 foreach ($joinColumns as $joinColumn) {
                     $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
@@ -1981,13 +1987,12 @@ class SqlWalker implements TreeWalker
             $sql .= implode(' AND ', $sqlParts);
         } else { // many-to-many
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-
             $owningAssoc = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
-            $joinTable = $owningAssoc['joinTable'];
+            $joinTable   = $owningAssoc['joinTable'];
 
             // SQL table aliases
-            $joinTableName    = $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform);
-            $joinTableAlias   = $this->getSQLTableAlias($joinTable['name']);
+            $joinTableName    = $joinTable->getQuotedQualifiedName($this->platform);
+            $joinTableAlias   = $this->getSQLTableAlias($joinTable->getName());
             $targetTableName  = $targetClass->table->getQuotedQualifiedName($this->platform);
             $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
@@ -1996,7 +2001,7 @@ class SqlWalker implements TreeWalker
             $sql .= $joinTableName . ' ' . $joinTableAlias . ' INNER JOIN ' . $targetTableName . ' ' . $targetTableAlias . ' ON ';
 
             // join conditions
-            $joinColumns  = $assoc['isOwningSide'] ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
+            $joinColumns  = $assoc['isOwningSide'] ? $joinTable->getInverseJoinColumns() : $joinTable->getJoinColumns();
             $joinSqlParts = [];
 
             foreach ($joinColumns as $joinColumn) {
@@ -2015,7 +2020,7 @@ class SqlWalker implements TreeWalker
             $sql .= implode(' AND ', $joinSqlParts);
             $sql .= ' WHERE ';
 
-            $joinColumns = $assoc['isOwningSide'] ? $joinTable['joinColumns'] : $joinTable['inverseJoinColumns'];
+            $joinColumns = $assoc['isOwningSide'] ? $joinTable->getJoinColumns() : $joinTable->getInverseJoinColumns();
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {

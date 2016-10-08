@@ -31,6 +31,14 @@ class JoinTableMetadata extends TableMetadata
     protected $inverseJoinColumns = [];
 
     /**
+     * @return bool
+     */
+    public function hasColumns()
+    {
+        return $this->joinColumns || $this->inverseJoinColumns;
+    }
+
+    /**
      * @return array<JoinColumnMetadata>
      */
     public function getJoinColumns()
@@ -39,31 +47,26 @@ class JoinTableMetadata extends TableMetadata
     }
 
     /**
-     * @param string $name
-     *
-     * @return JoinColumnMetadata
+     * @param JoinColumnMetadata $joinColumn
      */
-    public function getJoinColumn(string $name)
+    public function addJoinColumn(JoinColumnMetadata $joinColumn)
     {
-        return $this->joinColumns[$name];
+        $this->joinColumns[] = $joinColumn;
     }
 
     /**
-     * @param string $name
-     *
-     * @return bool
+     * @return array<JoinColumnMetadata>
      */
-    public function hasOption(string $name)
+    public function getInverseJoinColumns()
     {
-        return isset($this->options[$name]);
+        return $this->inverseJoinColumns;
     }
 
     /**
-     * @param string $name
-     * @param mixed  $value
+     * @param JoinColumnMetadata $joinColumn
      */
-    public function addOption(string $name, $value)
+    public function addInverseJoinColumn(JoinColumnMetadata $joinColumn)
     {
-        $this->options[$name] = $value;
+        $this->inverseJoinColumns[] = $joinColumn;
     }
 }
