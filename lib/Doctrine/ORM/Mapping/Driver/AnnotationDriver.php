@@ -32,6 +32,7 @@ use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 
@@ -424,20 +425,27 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
 
             if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\ManyToMany::class)) {
-                $joinTable = [];
+                $joinTable = new JoinTableMetadata();
 
                 if ($joinTableAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinTable::class)) {
-                    $joinTable = [
-                        'name' => $joinTableAnnot->name,
-                        'schema' => $joinTableAnnot->schema
-                    ];
-
-                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
+                    if (! empty($joinTableAnnot->name)) {
+                        $joinTable->setName($joinTableAnnot->name);
                     }
 
-                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
+                    if (! empty($joinTableAnnot->schema)) {
+                        $joinTable->setSchema($joinTableAnnot->schema);
+                    }
+
+                    foreach ($joinTableAnnot->joinColumns as $joinColumnAnnot) {
+                        $joinColumn = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
+
+                        $joinTable->addJoinColumn($joinColumn);
+                    }
+
+                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumnAnnot) {
+                        $joinColumn = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
+
+                        $joinTable->addInverseJoinColumn($joinColumn);
                     }
                 }
 
@@ -491,17 +499,26 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 // Check for JoinTable annotations
                 if ($associationOverride->joinTable) {
                     $joinTableAnnot = $associationOverride->joinTable;
-                    $joinTable      = [
-                        'name'      => $joinTableAnnot->name,
-                        'schema'    => $joinTableAnnot->schema
-                    ];
+                    $joinTable      = new JoinTableMetadata();
 
-                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
+                    if (!empty($joinTableAnnot->name)) {
+                        $joinTable->setName($joinTableAnnot->name);
                     }
 
-                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
+                    if (!empty($joinTableAnnot->schema)) {
+                        $joinTable->setSchema($joinTableAnnot->schema);
+                    }
+
+                    foreach ($joinTableAnnot->joinColumns as $joinColumnAnnot) {
+                        $joinColumn = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
+
+                        $joinTable->addJoinColumn($joinColumn);
+                    }
+
+                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumnAnnot) {
+                        $joinColumn = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
+
+                        $joinTable->addInverseJoinColumn($joinColumn);
                     }
 
                     $override['joinTable'] = $joinTable;

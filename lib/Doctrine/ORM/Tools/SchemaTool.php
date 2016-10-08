@@ -543,17 +543,15 @@ class SchemaTool
                 throw ORMException::notSupported();
             } elseif ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                 // create join table
-                $joinTable = $mapping['joinTable'];
-
-                $theJoinTable = $schema->createTable(
-                    $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform)
-                );
+                $joinTable     = $mapping['joinTable'];
+                $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+                $theJoinTable  = $schema->createTable($joinTableName);
 
                 $primaryKeyColumns = [];
 
                 // Build first FK constraint (relation table => source table)
                 $this->gatherRelationJoinColumns(
-                    $joinTable['joinColumns'],
+                    $joinTable->getJoinColumns(),
                     $theJoinTable,
                     $class,
                     $mapping,
@@ -564,7 +562,7 @@ class SchemaTool
 
                 // Build second FK constraint (relation table => target table)
                 $this->gatherRelationJoinColumns(
-                    $joinTable['inverseJoinColumns'],
+                    $joinTable->getInverseJoinColumns(),
                     $theJoinTable,
                     $foreignClass,
                     $mapping,

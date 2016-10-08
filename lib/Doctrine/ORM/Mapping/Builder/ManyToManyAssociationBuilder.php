@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Builder;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\JoinTableMetadata;
 
 /**
  * ManyToMany Association Builder
@@ -91,18 +92,25 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
      */
     public function build()
     {
-        $mapping = $this->mapping;
-        $mapping['joinTable'] = [];
-        if ($this->joinColumns) {
-            $mapping['joinTable']['joinColumns'] = $this->joinColumns;
-        }
-        if ($this->inverseJoinColumns) {
-            $mapping['joinTable']['inverseJoinColumns'] = $this->inverseJoinColumns;
-        }
+        $mapping   = $this->mapping;
+        $joinTable = new JoinTableMetadata();
+
         if ($this->joinTableName) {
-            $mapping['joinTable']['name'] = $this->joinTableName;
+            $joinTable->setName($this->joinTableName);
         }
+
+        foreach ($this->joinColumns as $joinColumn) {
+            $joinTable->addJoinColumn($joinColumn);
+        }
+
+        foreach ($this->inverseJoinColumns as $joinColumn) {
+            $joinTable->addInverseJoinColumn($joinColumn);
+        }
+
+        $mapping['joinTable'] = $joinTable;
+
         $cm = $this->builder->getClassMetadata();
+
         $cm->mapManyToMany($mapping);
 
         return $this->builder;

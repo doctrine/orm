@@ -136,7 +136,8 @@ $metadata->mapOneToMany(
     ]
 );
 
-$joinColumns = [];
+$joinTable = new Mapping\JoinTableMetadata();
+$joinTable->setName('cms_users_groups');
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 $joinColumn->setColumnName("user_id");
@@ -144,9 +145,7 @@ $joinColumn->setReferencedColumnName("id");
 $joinColumn->setNullable(false);
 $joinColumn->setUnique(false);
 
-$joinColumns[] = $joinColumn;
-
-$inverseJoinColumns = [];
+$joinTable->addJoinColumn($joinColumn);
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 
@@ -154,13 +153,7 @@ $joinColumn->setColumnName("group_id");
 $joinColumn->setReferencedColumnName("id");
 $joinColumn->setColumnDefinition("INT NULL");
 
-$inverseJoinColumns[] = $joinColumn;
-
-$joinTable = [
-    'name'               => 'cms_users_groups',
-    'joinColumns'        => $joinColumns,
-    'inverseJoinColumns' => $inverseJoinColumns,
-];
+$joinTable->addInverseJoinColumn($joinColumn);
 
 $metadata->mapManyToMany(
     [

@@ -32,6 +32,7 @@ use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\TableMetadata;
 
@@ -223,11 +224,10 @@ class DatabaseDriver implements MappingDriver
 
                 if (current($manyTable->getColumns())->getName() === $localColumn) {
                     $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
-                    $associationMapping['joinTable'] = [
-                        'name'               => strtolower($manyTable->getName()),
-                        'joinColumns'        => [],
-                        'inverseJoinColumns' => [],
-                    ];
+                    $associationMapping['joinTable']  = new JoinTableMetadata();
+
+                    $joinTable = $associationMapping['joinTable'];
+                    $joinTable->setName(strtolower($manyTable->getName()));
 
                     $fkCols = $myFk->getForeignColumns();
                     $cols   = $myFk->getColumns();
@@ -238,7 +238,7 @@ class DatabaseDriver implements MappingDriver
                         $joinColumn->setColumnName($cols[$i]);
                         $joinColumn->setReferencedColumnName($fkCols[$i]);
 
-                        $associationMapping['joinTable']['joinColumns'][] = $joinColumn;
+                        $joinTable->addJoinColumn($joinColumn);
                     }
 
                     $fkCols = $otherFk->getForeignColumns();
@@ -250,7 +250,7 @@ class DatabaseDriver implements MappingDriver
                         $joinColumn->setColumnName($cols[$i]);
                         $joinColumn->setReferencedColumnName($fkCols[$i]);
 
-                        $associationMapping['joinTable']['inverseJoinColumns'][] = $joinColumn;
+                        $joinTable->addInverseJoinColumn($joinColumn);
                     }
                 } else {
                     $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);

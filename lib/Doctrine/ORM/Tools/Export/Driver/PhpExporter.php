@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\JoinTableMetadata;
 
 /**
  * ClassMetadata exporter for PHP code.
@@ -69,7 +70,7 @@ class PhpExporter extends AbstractExporter
             $lines[] = null;
 
             if (! empty($table->getSchema())) {
-                $lines[] = '$table->setSchema(' . $table->getSchema() . ');';
+                $lines[] = '$table->setSchema("' . $table->getSchema() . '");';
             }
 
             $lines[] = '$table->setName("' . $table->getName() . '");';
@@ -130,7 +131,7 @@ class PhpExporter extends AbstractExporter
         if ($metadata->lifecycleCallbacks) {
             foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
                 foreach ($callbacks as $callback) {
-                    $lines[] = "\$metadata->addLifecycleCallback('$callback', '$event');";
+                    $lines[] = '$metadata->addLifecycleCallback("' . $callback . '", "' . $event . '");';
                 }
             }
         }
@@ -213,7 +214,7 @@ class PhpExporter extends AbstractExporter
                     if ($associationMapping['type'] === ClassMetadata::MANY_TO_MANY) {
                         $method = 'mapManyToMany';
 
-                        $this->exportJoinTable($associationMapping['joinTable'], $lines, 'joinTable');
+                        $this->exportJoinTable($associationMapping['joinTable'], $lines);
                     } else {
                         $method = 'mapOneToMany';
                     }
@@ -241,20 +242,33 @@ class PhpExporter extends AbstractExporter
         return implode("\n", $lines);
     }
 
-    private function exportJoinTable(array $joinTable, array &$lines, $variableName)
+    private function exportJoinTable(JoinTableMetadata $joinTable, array &$lines)
     {
-        $this->exportJoinColumns($joinTable['joinColumns'], $lines, 'joinColumns');
+        $lines[] = null;
+        $lines[] = '$joinTable = new Mapping\JoinTableMetadata();';
+        $lines[] = null;
+        $lines[] = '$joinTable->setName("' . $joinTable->getName() . '");';
+
+        if (! empty($joinTable->getSchema())) {
+            $lines[] = '$joinTable->setSchema("' . $joinTable->getSchema() . '");';
+        }
+
+        $lines[] = '$joinTable->setOptions(' . $this->_varExport($joinTable->getOptions()) . ');';
+
+        $this->exportJoinColumns($joinTable->getJoinColumns(), $lines, 'joinColumns');
 
         $lines[] = null;
+        $lines[] = 'foreach ($joinColumns as $joinColumn) {';
+        $lines[] = '    $joinTable->addJoinColumn($joinColumn);';
+        $lines[] = '}';
+        $lines[] = null;
 
-        $this->exportJoinColumns($joinTable['inverseJoinColumns'], $lines, 'inverseJoinColumns');
+        $this->exportJoinColumns($joinTable->getInverseJoinColumns(), $lines, 'inverseJoinColumns');
 
         $lines[] = null;
-        $lines[] = '$' . $variableName . ' = array(';
-        $lines[] = '    "name"               => "' . $joinTable['name'] . '",';
-        $lines[] = '    "joinColumns"        => $joinColumns,';
-        $lines[] = '    "inverseJoinColumns" => $inverseJoinColumns,';
-        $lines[] = ');';
+        $lines[] = 'foreach ($inverseJoinColumns as $inverseJoinColumn) {';
+        $lines[] = '    $joinTable->addInverseJoinColumn($inverseJoinColumn);';
+        $lines[] = '}';
     }
 
     private function exportJoinColumns(array $joinColumns, array &$lines, $variableName)

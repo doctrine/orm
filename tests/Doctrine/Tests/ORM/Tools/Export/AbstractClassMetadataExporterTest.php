@@ -288,13 +288,15 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         self::assertTrue(isset($class->associationMappings['groups']));
 
-        $association       = $class->associationMappings['groups'];
-        $joinColumn        = reset($association['joinTable']['joinColumns']);
-        $inverseJoinColumn = reset($association['joinTable']['inverseJoinColumns']);
+        $association        = $class->associationMappings['groups'];
+        $joinColumns        = $association['joinTable']->getJoinColumns();
+        $joinColumn         = reset($joinColumns);
+        $inverseJoinColumns = $association['joinTable']->getInverseJoinColumns();
+        $inverseJoinColumn  = reset($inverseJoinColumns);
 
         //self::assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $class->associationMappings['groups']);
         self::assertEquals(Group::class, $association['targetEntity']);
-        self::assertEquals('cms_users_groups', $association['joinTable']['name']);
+        self::assertEquals('cms_users_groups', $association['joinTable']->getName());
 
         self::assertEquals('user_id', $joinColumn->getColumnName());
         self::assertEquals('id', $joinColumn->getReferencedColumnName());
