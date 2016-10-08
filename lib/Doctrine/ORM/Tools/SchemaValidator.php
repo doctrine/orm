@@ -167,7 +167,7 @@ class SchemaValidator
                     $classIdentifierColumns  = array_keys($class->getIdentifierColumns($this->em));
                     $targetIdentifierColumns = array_keys($targetMetadata->getIdentifierColumns($this->em));
 
-                    foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
+                    foreach ($assoc['joinTable']->getJoinColumns() as $joinColumn) {
                         if (!in_array($joinColumn->getReferencedColumnName(), $classIdentifierColumns)) {
                             $ce[] = "The referenced column name '" . $joinColumn->getReferencedColumnName() . "' " .
                                 "has to be a primary key column on the target entity class '".$class->name."'.";
@@ -175,7 +175,7 @@ class SchemaValidator
                         }
                     }
 
-                    foreach ($assoc['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
+                    foreach ($assoc['joinTable']->getInverseJoinColumns() as $inverseJoinColumn) {
                         if (!in_array($inverseJoinColumn->getReferencedColumnName(), $targetIdentifierColumns)) {
                             $ce[] = "The referenced column name '" . $joinColumn->getReferencedColumnName() . "' " .
                                 "has to be a primary key column on the target entity class '".$targetMetadata->name."'.";
@@ -183,15 +183,15 @@ class SchemaValidator
                         }
                     }
 
-                    if (count($targetIdentifierColumns) !== count($assoc['joinTable']['inverseJoinColumns'])) {
-                        $ce[] = "The inverse join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
+                    if (count($targetIdentifierColumns) !== count($assoc['joinTable']->getInverseJoinColumns())) {
+                        $ce[] = "The inverse join columns of the many-to-many table '" . $assoc['joinTable']->getName() . "' " .
                                 "have to contain to ALL identifier columns of the target entity '". $targetMetadata->name . "', " .
                                 "however '" . implode(", ", array_diff($targetIdentifierColumns, array_values($assoc['relationToTargetKeyColumns']))) .
                                 "' are missing.";
                     }
 
-                    if (count($classIdentifierColumns) !== count($assoc['joinTable']['joinColumns'])) {
-                        $ce[] = "The join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
+                    if (count($classIdentifierColumns) !== count($assoc['joinTable']->getJoinColumns())) {
+                        $ce[] = "The join columns of the many-to-many table '" . $assoc['joinTable']->getName() . "' " .
                                 "have to contain to ALL identifier columns of the source entity '". $class->name . "', " .
                                 "however '" . implode(", ", array_diff($classIdentifierColumns, array_values($assoc['relationToSourceKeyColumns']))) .
                                 "' are missing.";

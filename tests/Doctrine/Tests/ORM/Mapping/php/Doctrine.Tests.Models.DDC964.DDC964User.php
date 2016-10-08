@@ -40,13 +40,14 @@ $metadata->mapManyToOne(
     ]
 );
 
-$joinColumns = [];
+$joinTable = new Mapping\JoinTableMetadata();
+$joinTable->setName('ddc964_users_groups');
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 $joinColumn->setColumnName("user_id");
 $joinColumn->setReferencedColumnName("id");
 
-$joinColumns[] = $joinColumn;
+$joinTable->addJoinColumn($joinColumn);
 
 $inverseJoinColumns = [];
 
@@ -54,13 +55,7 @@ $joinColumn = new Mapping\JoinColumnMetadata();
 $joinColumn->setColumnName("group_id");
 $joinColumn->setReferencedColumnName("id");
 
-$inverseJoinColumns[] = $joinColumn;
-
-$joinTable = [
-    'name'               => 'ddc964_users_groups',
-    'joinColumns'        => $joinColumns,
-    'inverseJoinColumns' => $inverseJoinColumns,
-];
+$joinTable->addInverseJoinColumn($joinColumn);
 
 $metadata->mapManyToMany(
     [

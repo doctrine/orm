@@ -480,15 +480,13 @@ class BasicEntityPersister implements EntityPersister
                 $association = $class->associationMappings[$mapping['mappedBy']];
             }
 
-            $joinColumns = $mapping['isOwningSide']
-                ? $association['joinTable']['joinColumns']
-                : $association['joinTable']['inverseJoinColumns'];
+            $joinTable     = $association['joinTable'];
+            $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+            $joinColumns   = $mapping['isOwningSide'] ? $joinTable->getJoinColumns() : $joinTable->getInverseJoinColumns();
 
 
             if ($selfReferential) {
-                $otherColumns = (! $mapping['isOwningSide'])
-                    ? $association['joinTable']['joinColumns']
-                    : $association['joinTable']['inverseJoinColumns'];
+                $otherColumns = (! $mapping['isOwningSide']) ? $joinTable->getJoinColumns() : $joinTable->getInverseJoinColumns();
             }
 
             $isOnDeleteCascade = false;
@@ -513,12 +511,10 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $quotedJoinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
-
-            $this->conn->delete($quotedJoinTableName, array_combine($keys, $identifier));
+            $this->conn->delete($joinTableName, array_combine($keys, $identifier));
 
             if ($selfReferential) {
-                $this->conn->delete($quotedJoinTableName, array_combine($otherKeys, $identifier));
+                $this->conn->delete($joinTableName, array_combine($otherKeys, $identifier));
             }
         }
     }
@@ -965,11 +961,9 @@ class BasicEntityPersister implements EntityPersister
             $association = $class->associationMappings[$assoc['mappedBy']];
         }
 
-        $joinColumns = $assoc['isOwningSide']
-            ? $association['joinTable']['joinColumns']
-            : $association['joinTable']['inverseJoinColumns'];
-
-        $quotedJoinTable = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
+        $joinTable     = $association['joinTable'];
+        $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+        $joinColumns   = $assoc['isOwningSide'] ? $joinTable->getJoinColumns() : $joinTable->getInverseJoinColumns();
 
         foreach ($joinColumns as $joinColumn) {
             $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
@@ -1001,7 +995,7 @@ class BasicEntityPersister implements EntityPersister
                     );
             }
 
-            $criteria[$quotedJoinTable . '.' . $quotedColumnName] = $value;
+            $criteria[$joinTableName . '.' . $quotedColumnName] = $value;
 
             $parameters[] = [
                 'value' => $value,
@@ -1348,10 +1342,9 @@ class BasicEntityPersister implements EntityPersister
             $association  = $targetEntity->associationMappings[$manyToMany['mappedBy']];
         }
 
-        $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
-        $joinColumns   = ($manyToMany['isOwningSide'])
-            ? $association['joinTable']['inverseJoinColumns']
-            : $association['joinTable']['joinColumns'];
+        $joinTable     = $association['joinTable'];
+        $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+        $joinColumns   = $manyToMany['isOwningSide'] ? $joinTable->getInverseJoinColumns() : $joinTable->getJoinColumns();
 
         foreach ($joinColumns as $joinColumn) {
             $conditions[] = sprintf(
@@ -1678,6 +1671,7 @@ class BasicEntityPersister implements EntityPersister
 
         if (isset($this->class->associationMappings[$field])) {
             $association = $this->class->associationMappings[$field];
+
             // Many-To-Many requires join table check for joinColumn
             $columns = [];
             $class   = $this->class;
@@ -1687,16 +1681,14 @@ class BasicEntityPersister implements EntityPersister
                     $association = $assoc;
                 }
 
-                $quotedJoinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
-                $joinColumns         = $assoc['isOwningSide']
-                    ? $association['joinTable']['joinColumns']
-                    : $association['joinTable']['inverseJoinColumns'];
-
+                $joinTable     = $association['joinTable'];
+                $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+                $joinColumns   = $assoc['isOwningSide'] ? $joinTable->getJoinColumns() : $joinTable->getInverseJoinColumns();
 
                 foreach ($joinColumns as $joinColumn) {
                     $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                    $columns[] = $quotedJoinTableName . '.' . $quotedColumnName;
+                    $columns[] = $joinTableName . '.' . $quotedColumnName;
                 }
 
             } else {

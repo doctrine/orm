@@ -327,14 +327,14 @@ class XmlExporter extends AbstractExporter
                 }
             }
 
-            if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
+            if (isset($associationMapping['joinTable'])) {
                 $joinTableXml = $associationMappingXml->addChild('join-table');
 
-                $joinTableXml->addAttribute('name', $associationMapping['joinTable']['name']);
+                $joinTableXml->addAttribute('name', $associationMapping['joinTable']->getName());
 
                 $joinColumnsXml = $joinTableXml->addChild('join-columns');
 
-                foreach ($associationMapping['joinTable']['joinColumns'] as $joinColumn) {
+                foreach ($associationMapping['joinTable']->getJoinColumns() as $joinColumn) {
                     /** @var JoinColumnMetadata $joinColumn */
                     $joinColumnXml = $joinColumnsXml->addChild('join-column');
 
@@ -364,7 +364,7 @@ class XmlExporter extends AbstractExporter
 
                 $inverseJoinColumnsXml = $joinTableXml->addChild('inverse-join-columns');
 
-                foreach ($associationMapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+                foreach ($associationMapping['joinTable']->getInverseJoinColumns() as $joinColumn) {
                     /** @var JoinColumnMetadata $joinColumn */
                     $joinColumnXml = $inverseJoinColumnsXml->addChild('join-column');
 

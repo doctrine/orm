@@ -134,27 +134,20 @@ class EntityGeneratorTest extends OrmTestCase
             ]
         );
 
-        $joinColumns = [];
+        $joinTable = new Mapping\JoinTableMetadata();
+        $joinTable->setName('book_comment');
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName("book_id");
         $joinColumn->setReferencedColumnName("id");
 
-        $joinColumns[] = $joinColumn;
-
-        $inverseJoinColumns = [];
+        $joinTable->addJoinColumn($joinColumn);
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName("comment_id");
         $joinColumn->setReferencedColumnName("id");
 
-        $inverseJoinColumns[] = $joinColumn;
-
-        $joinTable = array(
-            'name'               => 'book_comment',
-            'joinColumns'        => $joinColumns,
-            'inverseJoinColumns' => $inverseJoinColumns,
-        );
+        $joinTable->addInverseJoinColumn($joinColumn);
 
         $metadata->mapManyToMany(
             [
@@ -674,39 +667,32 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
 
-        $joinColumns = [];
+        $joinTable = new Mapping\JoinTableMetadata();
+        $joinTable->setName('unidade_centro_custo');
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName("idorcamento");
         $joinColumn->setReferencedColumnName("idorcamento");
 
-        $joinColumns[] = $joinColumn;
+        $joinTable->addJoinColumn($joinColumn);
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName("idunidade");
         $joinColumn->setReferencedColumnName("idunidade");
 
-        $joinColumns[] = $joinColumn;
-
-        $inverseJoinColumns = [];
+        $joinTable->addJoinColumn($joinColumn);
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName("idcentrocusto");
         $joinColumn->setReferencedColumnName("idcentrocusto");
 
-        $inverseJoinColumns[] = $joinColumn;
+        $joinTable->addInverseJoinColumn($joinColumn);
 
         $joinColumn = new Mapping\JoinColumnMetadata();
         $joinColumn->setColumnName("idpais");
         $joinColumn->setReferencedColumnName("idpais");
 
-        $inverseJoinColumns[] = $joinColumn;
-
-        $joinTable = [
-            'name'               => 'unidade_centro_custo',
-            'joinColumns'        => $joinColumns,
-            'inverseJoinColumns' => $inverseJoinColumns,
-        ];
+        $joinTable->addInverseJoinColumn($joinColumn);
 
         $metadata->mapManyToMany(
             [
