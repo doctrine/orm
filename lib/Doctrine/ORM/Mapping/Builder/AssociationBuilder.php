@@ -35,9 +35,9 @@ class AssociationBuilder
     protected $mapping;
 
     /**
-     * @var array|null
+     * @var array
      */
-    protected $joinColumns;
+    protected $joinColumns = [];
 
     /**
      * @var int
@@ -236,10 +236,13 @@ class AssociationBuilder
     public function build()
     {
         $mapping = $this->mapping;
+
         if ($this->joinColumns) {
             $mapping['joinColumns'] = $this->joinColumns;
         }
+
         $cm = $this->builder->getClassMetadata();
+
         if ($this->type == ClassMetadata::MANY_TO_ONE) {
             $cm->mapManyToOne($mapping);
         } else if ($this->type == ClassMetadata::ONE_TO_ONE) {

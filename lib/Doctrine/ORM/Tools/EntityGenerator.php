@@ -1575,12 +1575,12 @@ public function __construct(<params>)
                 $lines[] = $this->spaces . ' * })';
             }
 
-            if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
+            if (isset($associationMapping['joinTable'])) {
                 $joinTable = [];
-                $joinTable[] = 'name="' . $associationMapping['joinTable']['name'] . '"';
+                $joinTable[] = 'name="' . $associationMapping['joinTable']->getName() . '"';
 
-                if (isset($associationMapping['joinTable']['schema'])) {
-                    $joinTable[] = 'schema="' . $associationMapping['joinTable']['schema'] . '"';
+                if (!empty($associationMapping['joinTable']->getSchema())) {
+                    $joinTable[] = 'schema="' . $associationMapping['joinTable']->getSchema() . '"';
                 }
 
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'JoinTable(' . implode(', ', $joinTable) . ',';
@@ -1588,7 +1588,7 @@ public function __construct(<params>)
 
                 $joinColumnsLines = [];
 
-                foreach ($associationMapping['joinTable']['joinColumns'] as $joinColumn) {
+                foreach ($associationMapping['joinTable']->getJoinColumns() as $joinColumn) {
                     $joinColumnsLines[] = $this->spaces . ' *     ' . $this->generateJoinColumnAnnotation($joinColumn);
                 }
 
@@ -1598,7 +1598,7 @@ public function __construct(<params>)
 
                 $inverseJoinColumnsLines = [];
 
-                foreach ($associationMapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+                foreach ($associationMapping['joinTable']->getInverseJoinColumns() as $joinColumn) {
                     $inverseJoinColumnsLines[] = $this->spaces . ' *     ' . $this->generateJoinColumnAnnotation($joinColumn);
                 }
 
