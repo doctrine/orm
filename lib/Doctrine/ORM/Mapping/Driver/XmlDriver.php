@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use SimpleXMLElement;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
@@ -513,20 +514,30 @@ class XmlDriver extends FileDriver
                     }
 
                     $joinTableElement = $manyToManyElement->{'join-table'};
-                    $joinTable = array(
-                        'name' => (string) $joinTableElement['name']
-                    );
+                    $joinTable        = new JoinTableMetadata();
+
+                    if (isset($joinTableElement['name'])) {
+                        $joinTable->setName((string) $joinTableElement['name']);
+                    }
 
                     if (isset($joinTableElement['schema'])) {
-                        $joinTable['schema'] = (string) $joinTableElement['schema'];
+                        $joinTable->setSchema((string) $joinTableElement['schema']);
                     }
 
-                    foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinTable['joinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+                    if (isset($joinTableElement->{'join-columns'})) {
+                        foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                            $joinColumn = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+
+                            $joinTable->addJoinColumn($joinColumn);
+                        }
                     }
 
-                    foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+                    if (isset($joinTableElement->{'inverse-join-columns'})) {
+                        foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
+                            $joinColumn = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+
+                            $joinTable->addInverseJoinColumn($joinColumn);
+                        }
                     }
 
                     $mapping['joinTable'] = $joinTable;
@@ -593,23 +604,30 @@ class XmlDriver extends FileDriver
 
                 // Check for join-table
                 if ($overrideElement->{'join-table'}) {
-                    $joinTable          = null;
                     $joinTableElement   = $overrideElement->{'join-table'};
+                    $joinTable          = new JoinTableMetadata();
 
-                    $joinTable = array(
-                        'name'      => (string) $joinTableElement['name'],
-                        'schema'    => (string) $joinTableElement['schema']
-                    );
+                    if (isset($joinTableElement['name'])) {
+                        $joinTable->setName((string) $joinTableElement['name']);
+                    }
+
+                    if (isset($joinTableElement['schema'])) {
+                        $joinTable->setSchema((string) $joinTableElement['schema']);
+                    }
 
                     if (isset($joinTableElement->{'join-columns'})) {
                         foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinTable['joinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+                            $joinColumn = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+
+                            $joinTable->addJoinColumn($joinColumn);
                         }
                     }
 
                     if (isset($joinTableElement->{'inverse-join-columns'})) {
                         foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinTable['inverseJoinColumns'][] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+                            $joinColumn = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
+
+                            $joinTable->addInverseJoinColumn($joinColumn);
                         }
                     }
 

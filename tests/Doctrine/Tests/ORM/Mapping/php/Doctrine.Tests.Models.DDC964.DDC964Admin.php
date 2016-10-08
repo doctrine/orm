@@ -16,27 +16,22 @@ $metadata->setAssociationOverride('address', array(
     'joinColumns' => $joinColumns,
 ));
 
-$joinColumns = array();
+
+$joinTable = new Mapping\JoinTableMetadata();
+
+$joinTable->setName('ddc964_users_admingroups');
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 
 $joinColumn->setColumnName('adminuser_id');
 
-$joinColumns[] = $joinColumn;
-
-$inverseJoinColumns = array();
+$joinTable->addJoinColumn($joinColumn);
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 
 $joinColumn->setColumnName('admingroup_id');
 
-$inverseJoinColumns[] = $joinColumn;
-
-$joinTable = array(
-    'name'               => 'ddc964_users_admingroups',
-    'joinColumns'        => $joinColumns,
-    'inverseJoinColumns' => $inverseJoinColumns,
-);
+$joinTable->addInverseJoinColumn($joinColumn);
 
 $metadata->setAssociationOverride('groups', array(
     'joinTable' => $joinTable,

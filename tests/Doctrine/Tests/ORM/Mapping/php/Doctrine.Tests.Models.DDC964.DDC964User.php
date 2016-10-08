@@ -13,6 +13,7 @@ $fieldMetadata->setPrimaryKey(true);
 
 $metadata->addProperty($fieldMetadata);
 
+
 $fieldMetadata = new Mapping\FieldMetadata('name');
 
 $fieldMetadata->setType(Type::getType('string'));
@@ -22,6 +23,7 @@ $fieldMetadata->setNullable(true);
 $fieldMetadata->setUnique(false);
 
 $metadata->addProperty($fieldMetadata);
+
 
 $joinColumns = array();
 
@@ -39,14 +41,17 @@ $metadata->mapManyToOne(array(
    'joinColumns'    => $joinColumns,
 ));
 
-$joinColumns = array();
+
+$joinTable = new Mapping\JoinTableMetadata();
+
+$joinTable->setName('ddc964_users_groups');
 
 $joinColumn = new Mapping\JoinColumnMetadata();
 
 $joinColumn->setColumnName("user_id");
 $joinColumn->setReferencedColumnName("id");
 
-$joinColumns[] = $joinColumn;
+$joinTable->addJoinColumn($joinColumn);
 
 $inverseJoinColumns = array();
 
@@ -55,13 +60,7 @@ $joinColumn = new Mapping\JoinColumnMetadata();
 $joinColumn->setColumnName("group_id");
 $joinColumn->setReferencedColumnName("id");
 
-$inverseJoinColumns[] = $joinColumn;
-
-$joinTable = array(
-    'name'               => 'ddc964_users_groups',
-    'joinColumns'        => $joinColumns,
-    'inverseJoinColumns' => $inverseJoinColumns,
-);
+$joinTable->addInverseJoinColumn($joinColumn);
 
 $metadata->mapManyToMany(array(
    'fieldName'    => 'groups',

@@ -393,7 +393,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         // Non-Nullability of Join Column
         $association = $class->associationMappings['groups'];
-        $joinColumn  = reset($association['joinTable']['joinColumns']);
+        $joinColumns = $association['joinTable']->getJoinColumns();
+        $joinColumn  = reset($joinColumns);
 
         self::assertFalse($joinColumn->isNullable());
         self::assertFalse($joinColumn->isUnique());
@@ -409,12 +410,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         self::assertNotNull($class->getProperty('email'));
 
-        $property    = $class->getProperty('email');
-        $association = $class->associationMappings['groups'];
-        $joinColumn  = reset($association['joinTable']['inverseJoinColumns']);
+        $property           = $class->getProperty('email');
+        $association        = $class->associationMappings['groups'];
+        $inverseJoinColumns = $association['joinTable']->getInverseJoinColumns();
+        $inverseJoinColumn  = reset($inverseJoinColumns);
 
         self::assertEquals("CHAR(32) NOT NULL", $property->getColumnDefinition());
-        self::assertEquals("INT NULL", $joinColumn->getColumnDefinition());
+        self::assertEquals("INT NULL", $inverseJoinColumn->getColumnDefinition());
 
         return $class;
     }
@@ -750,20 +752,24 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($guestGroups['cascade'], $adminGroups['cascade']);
 
          // assert not override attributes
-        $guestGroupsJoinColumn        = reset($guestGroups['joinTable']['joinColumns']);
-        $guestGroupsInverseJoinColumn = reset($guestGroups['joinTable']['inverseJoinColumns']);
+        $guestGroupsJoinColumns        = $guestGroups['joinTable']->getJoinColumns();
+        $guestGroupsJoinColumn         = reset($guestGroupsJoinColumns);
+        $guestGroupsInverseJoinColumns = $guestGroups['joinTable']->getInverseJoinColumns();
+        $guestGroupsInverseJoinColumn  = reset($guestGroupsInverseJoinColumns);
 
-        self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
+        self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']->getName());
         self::assertEquals('user_id', $guestGroupsJoinColumn->getColumnName());
         self::assertEquals('group_id', $guestGroupsInverseJoinColumn->getColumnName());
 
         self::assertEquals(array('user_id'=>'id'), $guestGroups['relationToSourceKeyColumns']);
         self::assertEquals(array('group_id'=>'id'), $guestGroups['relationToTargetKeyColumns']);
 
-        $adminGroupsJoinColumn        = reset($adminGroups['joinTable']['joinColumns']);
-        $adminGroupsInverseJoinColumn = reset($adminGroups['joinTable']['inverseJoinColumns']);
+        $adminGroupsJoinColumns        = $adminGroups['joinTable']->getJoinColumns();
+        $adminGroupsJoinColumn         = reset($adminGroupsJoinColumns);
+        $adminGroupsInverseJoinColumns = $adminGroups['joinTable']->getInverseJoinColumns();
+        $adminGroupsInverseJoinColumn  = reset($adminGroupsInverseJoinColumns);
 
-        self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
+        self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']->getName());
         self::assertEquals('adminuser_id', $guestGroupsJoinColumn->getColumnName());
         self::assertEquals('admingroup_id', $guestGroupsInverseJoinColumn->getColumnName());
 
@@ -1294,7 +1300,10 @@ class User
             ),
         ));
 
-        $joinColumns = $inverseJoinColumns = array();
+
+        $joinTable = new Mapping\JoinTableMetadata();
+
+        $joinTable->setName('cms_users_groups');
 
         $joinColumn = new Mapping\JoinColumnMetadata();
 
@@ -1303,7 +1312,7 @@ class User
         $joinColumn->setNullable(false);
         $joinColumn->setUnique(false);
 
-        $joinColumns[] = $joinColumn;
+        $joinTable->addJoinColumn($joinColumn);
 
         $joinColumn = new Mapping\JoinColumnMetadata();
 
@@ -1311,20 +1320,14 @@ class User
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setColumnDefinition('INT NULL');
 
-        $inverseJoinColumns[] = $joinColumn;
-
-        $joinTable = array(
-            'name'               => 'cms_users_groups',
-            'joinColumns'        => $joinColumns,
-            'inverseJoinColumns' => $inverseJoinColumns,
-        );
+        $joinTable->addInverseJoinColumn($joinColumn);
 
         $metadata->mapManyToMany(array(
             'fieldName'    => 'groups',
             'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Group',
             'cascade'      => array('remove', 'persist', 'refresh', 'merge', 'detach'),
             'joinTable'    => $joinTable,
-            'orderBy' => NULL,
+            'orderBy'      => NULL,
         ));
     }
 }

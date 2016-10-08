@@ -1469,14 +1469,19 @@ class ClassMetadata implements ClassMetadataInterface
 
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
-            if ( ! isset($mapping['joinTable']['name'])) {
-                $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
+            if (! isset($mapping['joinTable'])) {
+                $mapping['joinTable'] = new JoinTableMetadata();
             }
 
-            $selfReferencingEntityWithoutJoinColumns = $mapping['sourceEntity'] == $mapping['targetEntity']
-                && (! (isset($mapping['joinTable']['joinColumns']) || isset($mapping['joinTable']['inverseJoinColumns'])));
+            if (empty($mapping['joinTable']->getName())) {
+                $joinTableName = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
 
-            if ( ! isset($mapping['joinTable']['joinColumns'])) {
+                $mapping['joinTable']->setName($joinTableName);
+            }
+
+            $selfReferencingEntityWithoutJoinColumns = $mapping['sourceEntity'] == $mapping['targetEntity'] && ! $mapping['joinTable']->hasColumns();
+
+            if (! $mapping['joinTable']->getJoinColumns()) {
                 $referencedColumnName = $this->namingStrategy->referenceColumnName();
                 $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
                 $columnName           = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $sourceReferenceName);
@@ -1486,10 +1491,10 @@ class ClassMetadata implements ClassMetadataInterface
                 $joinColumn->setReferencedColumnName($referencedColumnName);
                 $joinColumn->setOnDelete('CASCADE');
 
-                $mapping['joinTable']['joinColumns'][] = $joinColumn;
+                $mapping['joinTable']->addJoinColumn($joinColumn);
             }
 
-            if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
+            if (! $mapping['joinTable']->getInverseJoinColumns()) {
                 $referencedColumnName = $this->namingStrategy->referenceColumnName();
                 $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
                 $columnName           = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $targetReferenceName);
@@ -1499,10 +1504,10 @@ class ClassMetadata implements ClassMetadataInterface
                 $joinColumn->setReferencedColumnName($referencedColumnName);
                 $joinColumn->setOnDelete('CASCADE');
 
-                $mapping['joinTable']['inverseJoinColumns'][] = $joinColumn;
+                $mapping['joinTable']->addInverseJoinColumn($joinColumn);
             }
 
-            foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            foreach ($mapping['joinTable']->getJoinColumns() as $joinColumn) {
                 if (! $joinColumn->getReferencedColumnName()) {
                     $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
@@ -1520,7 +1525,7 @@ class ClassMetadata implements ClassMetadataInterface
                 $mapping['relationToSourceKeyColumns'][$columnName] = $referencedColumnName;
             }
 
-            foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
+            foreach ($mapping['joinTable']->getInverseJoinColumns() as $inverseJoinColumn) {
                 if (! $inverseJoinColumn->getReferencedColumnName()) {
                     $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
