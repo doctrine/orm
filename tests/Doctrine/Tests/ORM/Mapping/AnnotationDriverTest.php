@@ -250,7 +250,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     public function testAttributeOverridesMappingWithTrait()
     {
-        $factory       = $this->createClassMetadataFactory();
+        $factory = $this->createClassMetadataFactory();
 
         $metadataWithoutOverride = $factory->getMetadataFor(DDC1872ExampleEntityWithoutOverride::class);
         $metadataWithOverride = $factory->getMetadataFor(DDC1872ExampleEntityWithOverride::class);
@@ -264,8 +264,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         self::assertEquals('trait_foo', $fooPropertyWithoutOverride->getColumnName());
         self::assertEquals('foo_overridden', $fooPropertyWithOverride->getColumnName());
 
-        self::assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
-        self::assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
+        $barPropertyWithoutOverride = $metadataWithoutOverride->associationMappings['bar'];
+        $barPropertyWithOverride    = $metadataWithOverride->associationMappings['bar'];
+
+        self::assertEquals('example_trait_bar_id', $barPropertyWithoutOverride['joinColumns'][0]->getColumnName());
+        self::assertEquals('example_entity_overridden_bar_id', $barPropertyWithOverride['joinColumns'][0]->getColumnName());
     }
 }
 
