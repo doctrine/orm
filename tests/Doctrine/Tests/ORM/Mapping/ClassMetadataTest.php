@@ -546,9 +546,8 @@ class ClassMetadataTest extends OrmTestCase
         $association = $metadata->associationMappings['user'];
         $joinColumn  = reset($association['joinColumns']);
 
-        self::assertEquals(['USER_ID'=>'ID'], $association['sourceToTargetKeyColumns']);
-        self::assertEquals(['USER_ID'=>'USER_ID'], $association['joinColumnFieldNames']);
-        self::assertEquals(['ID'=>'USER_ID'], $association['targetToSourceKeyColumns']);
+        self::assertEquals(['USER_ID' => 'ID'], $association['sourceToTargetKeyColumns']);
+        self::assertEquals(['ID' => 'USER_ID'], $association['targetToSourceKeyColumns']);
 
         self::assertEquals('USER_ID', $joinColumn->getColumnName());
         self::assertEquals('ID', $joinColumn->getReferencedColumnName());
