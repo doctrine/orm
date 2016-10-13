@@ -132,7 +132,10 @@ class DefaultEntityHydrator implements EntityHydrator
 
             // @TODO - fix it ! handle UnitOfWork#createEntity hash generation
             if ( ! is_array($targetId)) {
-                $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
+                $joinColumns = $assoc['joinColumns'];
+                $columnName  = $joinColumns[0]->getAliasedName() ?? $joinColumns[0]->getColumnName();
+
+                $data[$columnName] = $targetId;
 
                 $targetEntity = $this->em->getClassMetadata($assoc['targetEntity']);
                 $targetId     = [$targetEntity->identifier[0] => $targetId];
