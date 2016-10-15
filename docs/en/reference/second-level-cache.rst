@@ -156,17 +156,17 @@ Cached persisters are responsible to access cache regions.
     +-----------------------+-------------------------------------------------------------------------------+
     | Cache Usage           | Persister                                                                     |
     +=======================+===============================================================================+
-    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\ReadOnlyCachedEntityPersister                |
+    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadOnlyCachedEntityPersister                |
     +-----------------------+-------------------------------------------------------------------------------+
-    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\ReadWriteCachedEntityPersister               |
+    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadWriteCachedEntityPersister               |
     +-----------------------+-------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\NonStrictReadWriteCachedEntityPersister      |
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Entity\\NonStrictReadWriteCachedEntityPersister      |
     +-----------------------+-------------------------------------------------------------------------------+
-    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\ReadOnlyCachedCollectionPersister            |
+    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadOnlyCachedCollectionPersister            |
     +-----------------------+-------------------------------------------------------------------------------+
-    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\ReadWriteCachedCollectionPersister           |
+    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadWriteCachedCollectionPersister           |
     +-----------------------+-------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\NonStrictReadWriteCacheCollectionPersister   |
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCacheCollectionPersister   |
     +-----------------------+-------------------------------------------------------------------------------+
 
 Configuration
