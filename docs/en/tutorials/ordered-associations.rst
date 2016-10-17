@@ -24,7 +24,7 @@ can specify the ``@OrderBy`` in the following way:
         
             /**
              * @ManyToMany(targetEntity="Group")
-             * @OrderBy({"name" = "ASC"})
+             * @OrderBy({"name"="ASC"})
              **/
             private $groups;
         }
