@@ -166,7 +166,7 @@ Cached persisters are responsible to access cache regions.
     +-----------------------+-------------------------------------------------------------------------------------------+
     | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadWriteCachedCollectionPersister           |
     +-----------------------+-------------------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCacheCollectionPersister   |
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCachedCollectionPersister  |
     +-----------------------+-------------------------------------------------------------------------------------------+
 
 Configuration
