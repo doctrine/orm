@@ -315,7 +315,7 @@ depending on whether the classes are in the namespace or not.
 @Embeddable
 ~~~~~~~~~~~~~~~~~~~~~
 
-The embeddable is required on an entity targed to be embeddable inside
+The embeddable is required on an entity targeted to be embeddable inside
 another. It works together with the :ref:`@Embedded <annref_embedded>`
 annotation to establish the relationship between two entities.
 
