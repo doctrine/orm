@@ -67,16 +67,14 @@ class SizeFunction extends FunctionNode
             $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
             $first       = true;
 
-            foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
+            foreach ($owningAssoc['joinColumns'] as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
-
-                $property = $class->getProperty($class->fieldNames[$targetColumn]);
 
                 $sql .= sprintf('%s.%s = %s.%s',
                     $targetTableAlias,
-                    $platform->quoteIdentifier($sourceColumn),
+                    $platform->quoteIdentifier($joinColumn->getColumnName()),
                     $sourceTableAlias,
-                    $platform->quoteIdentifier($property->getColumnName())
+                    $platform->quoteIdentifier($joinColumn->getReferencedColumnName())
                 );
             }
         } else { // many-to-many
