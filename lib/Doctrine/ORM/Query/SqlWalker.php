@@ -1967,17 +1967,13 @@ class SqlWalker implements TreeWalker
             $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
             $sqlParts    = [];
 
-            foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
-                $property         = $class->getProperty($class->fieldNames[$targetColumn]);
-                $sourceColumnName = $this->platform->quoteIdentifier($property->getColumnName());
-                $targetColumnName = $this->platform->quoteIdentifier($sourceColumn);
-
+            foreach ($owningAssoc['joinColumns'] as $joinColumn) {
                 $sqlParts[] = sprintf(
                     '%s.%s = %s.%s',
                     $sourceTableAlias,
-                    $sourceColumnName,
+                    $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName()),
                     $targetTableAlias,
-                    $targetColumnName
+                    $this->platform->quoteIdentifier($joinColumn->getColumnName())
                 );
             }
 
