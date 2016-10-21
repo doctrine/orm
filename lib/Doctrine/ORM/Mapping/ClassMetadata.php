@@ -1404,8 +1404,6 @@ class ClassMetadata implements ClassMetadataInterface
                     ]
                 );
             }
-
-            $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
         }
 
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
