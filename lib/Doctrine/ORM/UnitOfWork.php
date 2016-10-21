@@ -2671,9 +2671,10 @@ class UnitOfWork implements PropertyChangedListener
                     $associatedId = [];
 
                     // TODO: Is this even computed right in all cases of composite keys?
-                    foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
-                        $joinColumnValue = $data[$srcColumn] ?? null;
-                        $targetField     = $targetClass->getFieldForColumn($targetColumn);
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                        $joinColumnName  = $joinColumn->getColumnName();
+                        $joinColumnValue = $data[$joinColumnName] ?? null;
+                        $targetField     = $targetClass->getFieldForColumn($joinColumn->getReferencedColumnName());
 
                         if ($joinColumnValue === null && in_array($targetField, $targetClass->identifier, true)) {
                             // the missing key is part of target's entity primary key

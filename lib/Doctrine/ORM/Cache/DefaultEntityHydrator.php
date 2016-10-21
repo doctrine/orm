@@ -100,7 +100,9 @@ class DefaultEntityHydrator implements EntityHydrator
 
                 foreach ($associationIds as $fieldName => $fieldValue) {
                     if (($property = $targetClassMetadata->getProperty($fieldName)) !== null) {
-                        $data[$owningAssociation['targetToSourceKeyColumns'][$property->getColumnName()]] = $fieldValue;
+                        $localColumn = $owningAssociation['targetToSourceKeyColumns'][$property->getColumnName()];
+
+                        $data[$localColumn] = $fieldValue;
 
                         continue;
                     }
