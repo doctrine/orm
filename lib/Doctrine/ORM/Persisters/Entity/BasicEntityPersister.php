@@ -748,21 +748,26 @@ class BasicEntityPersister implements EntityPersister
             return $targetEntity;
         }
 
-        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-        $owningAssoc = $targetClass->getAssociationMapping($assoc['mappedBy']);
+        $sourceClass      = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $owningAssoc      = $targetClass->getAssociationMapping($assoc['mappedBy']);
+        $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
 
-        // TRICKY: since the association is specular source and target are flipped
-        foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
+        foreach ($owningAssoc['joinColumns'] as $joinColumn) {
+            $sourceKeyColumn = $joinColumn->getReferencedColumnName();
+            $targetKeyColumn = $joinColumn->getColumnName();
+
             if ( ! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                 throw MappingException::joinColumnMustPointToMappedField(
                     $sourceClass->name, $sourceKeyColumn
                 );
             }
 
+            $field = $sourceClass->fieldNames[$sourceKeyColumn];
+            $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+
             // unset the old value and set the new sql aliased value here. By definition
             // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
-            $identifier[$this->getSQLTableAlias($targetClass->getTableName()) . "." . $targetKeyColumn] =
-                $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            $identifier[$targetTableAlias . "." . $targetKeyColumn] = $value;
 
             unset($identifier[$targetKeyColumn]);
         }
@@ -1792,38 +1797,23 @@ class BasicEntityPersister implements EntityPersister
             : $this->class;
         $tableAlias  = $this->getSQLTableAlias($class->getTableName());
 
-        foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
-            if ($sourceClass->containsForeignIdentifier) {
-                $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
-                $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
-
-                if (isset($sourceClass->associationMappings[$field])) {
-                    $targetClass = $this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity']);
-
-                    $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$targetClass->identifier[0]];
-                }
-
-                $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
-                $parameters[] = [
-                    'value' => $value,
-                    'field' => $field,
-                    'class' => $sourceClass,
-                ];
-
-                continue;
-            }
-
-            $field = $sourceClass->fieldNames[$sourceKeyColumn];
+        foreach ($owningAssoc['joinColumns'] as $joinColumn) {
+            $field = $sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName());
             $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
-            $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
+            if ($sourceClass->containsForeignIdentifier && isset($sourceClass->associationMappings[$field])) {
+                $targetClass = $this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity']);
+
+                $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
+                $value = $value[$targetClass->identifier[0]];
+            }
+
+            $criteria[$tableAlias . "." . $joinColumn->getColumnName()] = $value;
             $parameters[] = [
                 'value' => $value,
                 'field' => $field,
                 'class' => $sourceClass,
             ];
-
         }
 
         $sql                  = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
@@ -1916,9 +1906,10 @@ class BasicEntityPersister implements EntityPersister
                     ? $assoc['relationToTargetKeyColumns']
                     : $assoc['sourceToTargetKeyColumns'];
 
-                foreach ($columns as $column){
+                foreach ($columns as $column) {
                     $types[] = PersisterHelper::getTypeOfColumn($column, $class, $this->em);
                 }
+
                 break;
 
             default:
