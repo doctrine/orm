@@ -99,19 +99,33 @@ class DefaultEntityHydrator implements EntityHydrator
                 unset($data[$name]);
 
                 foreach ($associationIds as $fieldName => $fieldValue) {
+                    // $fieldName = "name"
+                    // $fieldColumnName = "custom_name"
                     if (($property = $targetClassMetadata->getProperty($fieldName)) !== null) {
-                        $localColumn = $owningAssociation['targetToSourceKeyColumns'][$property->getColumnName()];
+                        foreach ($owningAssociation['joinColumns'] as $joinColumn) {
+                            // $joinColumnName = "custom_name"
+                            // $joinColumnReferencedColumnName = "other_side_of_assoc_column_name"
+                            if ($joinColumn->getReferencedColumnName() !== $property->getColumnName()) {
+                                continue;
+                            }
 
-                        $data[$localColumn] = $fieldValue;
+                            $data[$joinColumn->getColumnName()] = $fieldValue;
+
+                            break;
+                        }
 
                         continue;
                     }
 
                     $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
 
-                    foreach($assoc['targetToSourceKeyColumns'] as $referencedColumn => $localColumn) {
-                        if (isset($targetAssoc['sourceToTargetKeyColumns'][$referencedColumn])) {
-                            $data[$localColumn] = $fieldValue;
+                    foreach ($assoc['joinColumns'] as $assocJoinColumn) {
+                        foreach ($targetAssoc['joinColumns'] as $targetAssocJoinColumn) {
+                            if ($assocJoinColumn->getReferencedColumnName() !== $targetAssocJoinColumn->getColumnName()) {
+                                continue;
+                            }
+
+                            $data[$assocJoinColumn->getColumnName()] = $fieldValue;
                         }
                     }
                 }
