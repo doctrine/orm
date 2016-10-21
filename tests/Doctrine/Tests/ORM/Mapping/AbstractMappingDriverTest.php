@@ -825,12 +825,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $guestAddressJoinColumn = reset($guestAddress['joinColumns']);
 
         self::assertEquals('address_id', $guestAddressJoinColumn->getColumnName());
-        self::assertEquals(['address_id'=>'id'], $guestAddress['sourceToTargetKeyColumns']);
 
         $adminAddressJoinColumn = reset($adminAddress['joinColumns']);
 
         self::assertEquals('adminaddress_id', $adminAddressJoinColumn->getColumnName());
-        self::assertEquals(['adminaddress_id'=>'id'], $adminAddress['sourceToTargetKeyColumns']);
     }
 
     /*
