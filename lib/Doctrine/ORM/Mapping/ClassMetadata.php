@@ -1380,10 +1380,6 @@ class ClassMetadata implements ClassMetadataInterface
                 if (! $joinColumn->getReferencedColumnName()) {
                     $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
-
-                $columnName = $joinColumn->getColumnName();
-
-                $mapping['sourceToTargetKeyColumns'][$columnName] = $joinColumn->getReferencedColumnName();
             }
 
             if ($uniqueConstraintColumns) {
@@ -1899,7 +1895,6 @@ class ClassMetadata implements ClassMetadataInterface
             $mapping['joinTable'] = $overrideMapping['joinTable'];
         }
 
-        $mapping['sourceToTargetKeyColumns']    = null;
         $mapping['relationToSourceKeyColumns']  = null;
         $mapping['relationToTargetKeyColumns']  = null;
 
