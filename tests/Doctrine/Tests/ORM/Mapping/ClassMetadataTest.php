@@ -546,7 +546,6 @@ class ClassMetadataTest extends OrmTestCase
         $joinColumn  = reset($association['joinColumns']);
 
         self::assertEquals(array('USER_ID'=>'ID'), $association['sourceToTargetKeyColumns']);
-        self::assertEquals(array('ID'=>'USER_ID'), $association['targetToSourceKeyColumns']);
 
         self::assertEquals('USER_ID', $joinColumn->getColumnName());
         self::assertEquals('ID', $joinColumn->getReferencedColumnName());

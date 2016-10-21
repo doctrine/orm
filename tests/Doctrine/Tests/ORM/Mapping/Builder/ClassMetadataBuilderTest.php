@@ -374,12 +374,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceToTargetKeyColumns' => array (
                         'group_id' => 'id',
                     ),
-                    'joinColumnFieldNames' => array (
-                        'group_id' => 'group_id',
-                    ),
-                    'targetToSourceKeyColumns' => array (
-                        'id' => 'group_id',
-                    ),
                     'orphanRemoval' => false,
                     'declaringClass' => $this->cm,
                   ),
@@ -433,12 +427,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceToTargetKeyColumns' => array(
                         'group_id' => 'id',
                     ),
-                    'joinColumnFieldNames' => array(
-                        'group_id' => 'group_id',
-                    ),
-                    'targetToSourceKeyColumns' => array(
-                        'id' => 'group_id',
-                    ),
                     'orphanRemoval' => false,
                     'declaringClass' => $this->cm,
                     'id' => true,
@@ -489,12 +477,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                     'sourceToTargetKeyColumns' => array (
                         'group_id' => 'id',
-                    ),
-                    'joinColumnFieldNames' => array (
-                        'group_id' => 'group_id',
-                    ),
-                    'targetToSourceKeyColumns' => array (
-                        'id' => 'group_id',
                     ),
                     'orphanRemoval' => false,
                     'declaringClass' => $this->cm,
@@ -547,12 +529,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                     'sourceToTargetKeyColumns' => array(
                         'group_id' => 'id',
-                    ),
-                    'joinColumnFieldNames' => array(
-                        'group_id' => 'group_id',
-                    ),
-                    'targetToSourceKeyColumns' => array(
-                        'id' => 'group_id',
                     ),
                     'orphanRemoval' => false,
                     'declaringClass' => $this->cm,
@@ -740,12 +716,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceEntity' => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
                     'sourceToTargetKeyColumns' => array (
                       'group_id' => 'id',
-                    ),
-                    'joinColumnFieldNames' => array (
-                      'group_id' => 'group_id',
-                    ),
-                    'targetToSourceKeyColumns' => array (
-                      'id' => 'group_id',
                     ),
                     'orphanRemoval' => true,
                     'declaringClass' => $this->cm,
