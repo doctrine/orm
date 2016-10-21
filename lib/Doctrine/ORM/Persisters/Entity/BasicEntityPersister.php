@@ -1902,12 +1902,18 @@ class BasicEntityPersister implements EntityPersister
                     $class = $this->em->getClassMetadata($assoc['targetEntity']);
                 }
 
-                $columns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
-                    ? $assoc['relationToTargetKeyColumns']
-                    : $assoc['sourceToTargetKeyColumns'];
+                $joinColumns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
+                    ? $assoc['joinTable']->getInverseJoinColumns()
+                    : $assoc['joinColumns'];
 
-                foreach ($columns as $column) {
-                    $types[] = PersisterHelper::getTypeOfColumn($column, $class, $this->em);
+                foreach ($joinColumns as $joinColumn) {
+                    if (! $joinColumn->getType()) {
+                        $type = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $class, $this->em);
+
+                        $joinColumn->setType($type);
+                    }
+
+                    $types[] = $joinColumn->getType();
                 }
 
                 break;
