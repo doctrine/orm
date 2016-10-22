@@ -572,8 +572,6 @@ class ClassMetadataTest extends OrmTestCase
         $inverseJoinColumn  = reset($inverseJoinColumns);
 
         self::assertEquals('CMS_ADDRESS_CMS_USER', $association['joinTable']->getName());
-        self::assertEquals(['CMS_ADDRESS_ID' => 'ID'], $association['relationToSourceKeyColumns']);
-        self::assertEquals(['CMS_USER_ID' => 'ID'], $association['relationToTargetKeyColumns']);
 
         self::assertEquals('CMS_ADDRESS_ID', $joinColumn->getColumnName());
         self::assertEquals('ID', $joinColumn->getReferencedColumnName());
@@ -1353,8 +1351,6 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('customtypeparent_customtypeparent', $association['joinTable']->getName());
         self::assertEquals($joinColumns, $association['joinTable']->getJoinColumns());
         self::assertEquals($inverseJoinColumns, $association['joinTable']->getInverseJoinColumns());
-        self::assertEquals(['customtypeparent_source' => 'id'], $association['relationToSourceKeyColumns']);
-        self::assertEquals(['customtypeparent_target' => 'id'], $association['relationToTargetKeyColumns']);
     }
 
     /**
