@@ -53,7 +53,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         // Prechecks
         self::assertEquals([], $cm1->parentClasses);
-        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
+        self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
         self::assertTrue($cm1->hasField('name'));
         self::assertEquals(2, count($cm1->associationMappings));
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);

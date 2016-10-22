@@ -139,7 +139,7 @@ abstract class CompanyContract
         $tableMetadata->setName('company_contracts');
 
         $metadata->setPrimaryTable($tableMetadata);
-        $metadata->setInheritanceType(Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
+        $metadata->setInheritanceType(Mapping\InheritanceType::JOINED);
 
         $discrColumn = new Mapping\DiscriminatorColumnMetadata();
 

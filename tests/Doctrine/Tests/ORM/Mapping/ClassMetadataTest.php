@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
-use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -42,7 +41,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CMS\CmsUser::class, $cm->rootEntityName);
         self::assertEquals([], $cm->subClasses);
         self::assertEquals([], $cm->parentClasses);
-        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
+        self::assertEquals(Mapping\InheritanceType::NONE, $cm->inheritanceType);
 
         // Customize state
         $discrColumn = new DiscriminatorColumnMetadata();
@@ -50,7 +49,7 @@ class ClassMetadataTest extends OrmTestCase
         $discrColumn->setColumnName('disc');
         $discrColumn->setType(Type::getType('integer'));
 
-        $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $cm->setInheritanceType(Mapping\InheritanceType::SINGLE_TABLE);
         $cm->setSubclasses(["One", "Two", "Three"]);
         $cm->setParentClasses(["UserParent"]);
         $cm->setCustomRepositoryClass("UserRepository");

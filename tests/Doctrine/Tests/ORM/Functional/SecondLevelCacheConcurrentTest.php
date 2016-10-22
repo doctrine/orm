@@ -131,6 +131,8 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
 class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 {
+    private $cache;
+
     public function __construct(Cache $cache)
     {
         $this->cache = $cache;
