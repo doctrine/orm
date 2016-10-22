@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -1211,7 +1212,7 @@ class BasicEntityPersister implements EntityPersister
 
             $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
 
-            if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($eagerEntity->inheritanceType !== InheritanceType::NONE) {
                 continue; // now this is why you shouldn't use inheritance
             }
 

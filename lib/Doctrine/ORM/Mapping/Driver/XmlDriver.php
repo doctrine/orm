@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -213,10 +214,10 @@ class XmlDriver extends FileDriver
             $inheritanceType = strtoupper((string) $xmlRoot['inheritance-type']);
 
             $metadata->setInheritanceType(
-                constant(sprintf('%s::INHERITANCE_TYPE_%s', ClassMetadata::class, $inheritanceType))
+                constant(sprintf('%s::%s', InheritanceType::class, $inheritanceType))
             );
 
-            if ($metadata->inheritanceType !== \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== InheritanceType::NONE) {
                 $discriminatorColumnBuilder = new DiscriminatorColumnMetadataBuilder();
 
                 $discriminatorColumnBuilder->withTableName($metadata->getTableName());
