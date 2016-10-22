@@ -790,9 +790,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('user_id', $guestGroupsJoinColumn->getColumnName());
         self::assertEquals('group_id', $guestGroupsInverseJoinColumn->getColumnName());
 
-        self::assertEquals(['user_id'=>'id'], $guestGroups['relationToSourceKeyColumns']);
-        self::assertEquals(['group_id'=>'id'], $guestGroups['relationToTargetKeyColumns']);
-
         $adminGroupsJoinColumns        = $adminGroups['joinTable']->getJoinColumns();
         $adminGroupsJoinColumn         = reset($adminGroupsJoinColumns);
         $adminGroupsInverseJoinColumns = $adminGroups['joinTable']->getInverseJoinColumns();
@@ -801,9 +798,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']->getName());
         self::assertEquals('adminuser_id', $adminGroupsJoinColumn->getColumnName());
         self::assertEquals('admingroup_id', $adminGroupsInverseJoinColumn->getColumnName());
-
-        self::assertEquals(['adminuser_id'=>'id'], $adminGroups['relationToSourceKeyColumns']);
-        self::assertEquals(['admingroup_id'=>'id'], $adminGroups['relationToTargetKeyColumns']);
 
         // assert address association mappings
         self::assertArrayHasKey('address', $guestMetadata->associationMappings);
