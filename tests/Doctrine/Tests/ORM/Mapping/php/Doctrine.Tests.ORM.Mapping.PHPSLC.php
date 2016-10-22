@@ -1,13 +1,13 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 
 $metadata->enableCache(array(
-    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
+    'usage' => Mapping\CacheUsage::READ_ONLY,
 ));
 
 $metadata->mapManyToOne(array(
     'fieldName'    => 'foo',
     'id'           => true,
-    'targetEntity' => 'PHPSLCFoo'
+    'targetEntity' => 'PHPSLCFoo',
 ));

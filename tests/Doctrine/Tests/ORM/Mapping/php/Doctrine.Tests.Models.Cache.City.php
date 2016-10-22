@@ -15,7 +15,7 @@ $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->enableCache(array(
-    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
+    'usage' => Mapping\CacheUsage::READ_ONLY,
 ));
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
@@ -48,7 +48,7 @@ $metadata->mapOneToOne(array(
 ));
 
 $metadata->enableAssociationCache('state', array(
-    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
+    'usage' => Mapping\CacheUsage::READ_ONLY,
 ));
 
 $metadata->mapManyToMany(array(
@@ -67,5 +67,5 @@ $metadata->mapOneToMany(array(
 ));
 
 $metadata->enableAssociationCache('attractions', array(
-    'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY
+    'usage' => Mapping\CacheUsage::READ_ONLY,
 ));
