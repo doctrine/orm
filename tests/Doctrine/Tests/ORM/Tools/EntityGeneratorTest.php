@@ -795,7 +795,7 @@ class EntityGeneratorTest extends OrmTestCase
         $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
         $method     = new \ReflectionMethod($this->_generator, 'getChangeTrackingPolicyString');
         $constants  = $reflection->getConstants();
-        $pattern    = '/^CHANGETRACKING_/';
+        $pattern    = '/^ChangeTrackingPolicy::/';
 
         $method->setAccessible(true);
 

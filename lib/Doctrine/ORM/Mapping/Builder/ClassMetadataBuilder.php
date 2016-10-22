@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -243,7 +244,7 @@ class ClassMetadataBuilder
      */
     public function setChangeTrackingPolicyDeferredExplicit()
     {
-        $this->cm->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT);
+        $this->cm->setChangeTrackingPolicy(ChangeTrackingPolicy::DEFERRED_EXPLICIT);
 
         return $this;
     }
@@ -255,7 +256,7 @@ class ClassMetadataBuilder
      */
     public function setChangeTrackingPolicyNotify()
     {
-        $this->cm->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_NOTIFY);
+        $this->cm->setChangeTrackingPolicy(ChangeTrackingPolicy::NOTIFY);
 
         return $this;
     }
