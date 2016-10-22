@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
@@ -107,10 +108,8 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        $trackingPolicy = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
-
-        if ( $trackingPolicy !== 'DEFERRED_IMPLICIT') {
-            $root->addChild('change-tracking-policy', $trackingPolicy);
+        if ($metadata->changeTrackingPolicy !== ChangeTrackingPolicy::DEFERRED_IMPLICIT) {
+            $root->addChild('change-tracking-policy', $metadata->changeTrackingPolicy);
         }
 
         if ($metadata->table->getIndexes()) {

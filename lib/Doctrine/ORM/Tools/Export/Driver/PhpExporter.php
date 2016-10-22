@@ -125,7 +125,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->changeTrackingPolicy) {
-            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
+            $lines[] = '$metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::' . $metadata->changeTrackingPolicy . ');';
         }
 
         if ($metadata->lifecycleCallbacks) {

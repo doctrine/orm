@@ -3,11 +3,11 @@
 namespace Doctrine\Tests\ORM\Mapping\Builder;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -198,13 +198,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testChangeTrackingPolicyExplicit()
     {
         self::assertIsFluent($this->builder->setChangeTrackingPolicyDeferredExplicit());
-        self::assertEquals(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
+        self::assertEquals(ChangeTrackingPolicy::DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
     }
 
     public function testChangeTrackingPolicyNotify()
     {
         self::assertIsFluent($this->builder->setChangeTrackingPolicyNotify());
-        self::assertEquals(ClassMetadata::CHANGETRACKING_NOTIFY, $this->cm->changeTrackingPolicy);
+        self::assertEquals(ChangeTrackingPolicy::NOTIFY, $this->cm->changeTrackingPolicy);
     }
 
     public function testAddField()
