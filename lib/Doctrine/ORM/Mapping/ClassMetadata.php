@@ -178,21 +178,6 @@ class ClassMetadata implements ClassMetadataInterface
     const TO_MANY = 12;
 
     /**
-     * ReadOnly cache can do reads, inserts and deletes, cannot perform updates or employ any locks,
-     */
-    const CACHE_USAGE_READ_ONLY = 1;
-
-    /**
-     * Nonstrict Read Write Cache doesn’t employ any locks but can do inserts, update and deletes.
-     */
-    const CACHE_USAGE_NONSTRICT_READ_WRITE = 2;
-
-    /**
-     * Read Write Attempts to lock the entity before update/delete.
-     */
-    const CACHE_USAGE_READ_WRITE = 3;
-
-    /**
      * READ-ONLY: The name of the entity class.
      *
      * @var string
@@ -948,7 +933,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function enableCache(array $cache)
     {
         if ( ! isset($cache['usage'])) {
-            $cache['usage'] = self::CACHE_USAGE_READ_ONLY;
+            $cache['usage'] = CacheUsage::READ_ONLY;
         }
 
         if ( ! isset($cache['region'])) {
@@ -980,7 +965,7 @@ class ClassMetadata implements ClassMetadataInterface
         if ( ! isset($cache['usage'])) {
             $cache['usage'] = isset($this->cache['usage'])
                 ? $this->cache['usage']
-                : self::CACHE_USAGE_READ_ONLY;
+                : CacheUsage::READ_ONLY;
         }
 
         if ( ! isset($cache['region'])) {
