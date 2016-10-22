@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
@@ -186,17 +187,6 @@ class EntityGenerator
         ClassMetadata::GENERATOR_TYPE_NONE      => 'NONE',
         ClassMetadata::GENERATOR_TYPE_UUID      => 'UUID',
         ClassMetadata::GENERATOR_TYPE_CUSTOM    => 'CUSTOM'
-    ];
-
-    /**
-     * Hash-map to handle the change tracking policy string.
-     *
-     * @var array
-     */
-    protected static $changeTrackingPolicyMap = [
-        ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT  => 'DEFERRED_IMPLICIT',
-        ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT  => 'DEFERRED_EXPLICIT',
-        ClassMetadata::CHANGETRACKING_NOTIFY             => 'NOTIFY',
     ];
 
     /**
@@ -1779,11 +1769,11 @@ public function __construct(<params>)
      */
     protected function getChangeTrackingPolicyString($type)
     {
-        if ( ! isset(static::$changeTrackingPolicyMap[$type])) {
+        if ( ! defined(sprintf('%s::%s', ChangeTrackingPolicy::class, $type))) {
             throw new \InvalidArgumentException(sprintf('Invalid provided ChangeTrackingPolicy: %s', $type));
         }
 
-        return static::$changeTrackingPolicyMap[$type];
+        return $type;
     }
 
     /**

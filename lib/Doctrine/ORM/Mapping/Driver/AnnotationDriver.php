@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\CacheUsage;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -285,7 +286,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $changeTrackingAnnot = $classAnnotations[Annotation\ChangeTrackingPolicy::class];
 
             $metadata->setChangeTrackingPolicy(
-                constant(sprintf('%s::CHANGETRACKING_%s', ClassMetadata::class, $changeTrackingAnnot->value))
+                constant(sprintf('%s::%s', ChangeTrackingPolicy::class, $changeTrackingAnnot->value))
             );
         }
 

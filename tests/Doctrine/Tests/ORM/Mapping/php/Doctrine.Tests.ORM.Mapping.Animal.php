@@ -23,7 +23,7 @@ $metadata->setDiscriminatorMap(
 );
 
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
-$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 
