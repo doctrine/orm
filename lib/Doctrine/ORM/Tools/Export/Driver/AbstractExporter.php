@@ -180,28 +180,6 @@ abstract class AbstractExporter
     }
 
     /**
-     * @param int $type
-     *
-     * @return string
-     */
-    protected function _getInheritanceTypeString($type)
-    {
-        switch ($type) {
-            case ClassMetadata::INHERITANCE_TYPE_NONE:
-                return 'NONE';
-
-            case ClassMetadata::INHERITANCE_TYPE_JOINED:
-                return 'JOINED';
-
-            case ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE:
-                return 'SINGLE_TABLE';
-
-            case ClassMetadata::INHERITANCE_TYPE_TABLE_PER_CLASS:
-                return 'PER_CLASS';
-        }
-    }
-
-    /**
      * @param int $policy
      *
      * @return string

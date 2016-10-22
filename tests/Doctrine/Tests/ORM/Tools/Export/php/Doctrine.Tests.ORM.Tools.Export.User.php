@@ -16,7 +16,7 @@ $tableMetadata->addOption('foo', ['bar' => 'baz']);
 
 $metadata->setPrimaryTable($tableMetadata);
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', Events::prePersist);

@@ -18,7 +18,7 @@ $tableMetadata->addIndex(
 
 /* @var $metadata ClassMetadata */
 $metadata->setPrimaryTable($tableMetadata);
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 
 $fieldMetadata = new Mapping\FieldMetadata('content');
 
