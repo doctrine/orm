@@ -23,6 +23,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\TableMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 
@@ -189,7 +190,7 @@ class ClassMetadataBuilder
      */
     public function setJoinedTableInheritance()
     {
-        $this->cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
+        $this->cm->setInheritanceType(InheritanceType::JOINED);
 
         return $this;
     }
@@ -201,7 +202,7 @@ class ClassMetadataBuilder
      */
     public function setSingleTableInheritance()
     {
-        $this->cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $this->cm->setInheritanceType(InheritanceType::SINGLE_TABLE);
 
         return $this;
     }
