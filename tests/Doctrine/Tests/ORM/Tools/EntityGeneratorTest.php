@@ -153,7 +153,7 @@ class EntityGeneratorTest extends OrmTestCase
             [
                 'fieldName'    => 'comments',
                 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
-                'fetch'        => ClassMetadata::FETCH_EXTRA_LAZY,
+                'fetch'        => Mapping\FetchMode::EXTRA_LAZY,
                 'joinTable'    => $joinTable,
             ]
         );
@@ -527,7 +527,7 @@ class EntityGeneratorTest extends OrmTestCase
 //        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
 
-        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $cm->associationMappings['comments']['fetch']);
+        self::assertEquals(Mapping\FetchMode::EXTRA_LAZY, $cm->associationMappings['comments']['fetch']);
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //

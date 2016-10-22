@@ -28,29 +28,19 @@ use Doctrine\ORM\Sequencing\Generator;
 
 class FieldMetadata extends ColumnMetadata implements Property
 {
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     protected $declaringClass;
 
-    /**
-     * @var \ReflectionProperty
-     */
+    /** @var \ReflectionProperty */
     protected $reflection;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $identifierGeneratorType = ClassMetadata::GENERATOR_TYPE_NONE;
 
-    /**
-     * @var array<string, mixed>
-     */
+    /** @var array<string, mixed> */
     protected $identifierGeneratorDefinition = [];
 
     /**

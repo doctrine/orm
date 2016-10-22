@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
@@ -1549,13 +1550,8 @@ public function __construct(<params>)
                 $typeOptions[] = 'orphanRemoval=' . ($associationMapping['orphanRemoval'] ? 'true' : 'false');
             }
 
-            if (isset($associationMapping['fetch']) && $associationMapping['fetch'] !== ClassMetadata::FETCH_LAZY) {
-                $fetchMap = [
-                    ClassMetadata::FETCH_EXTRA_LAZY => 'EXTRA_LAZY',
-                    ClassMetadata::FETCH_EAGER      => 'EAGER',
-                ];
-
-                $typeOptions[] = 'fetch="' . $fetchMap[$associationMapping['fetch']] . '"';
+            if (isset($associationMapping['fetch']) && $associationMapping['fetch'] !== FetchMode::LAZY) {
+                $typeOptions[] = 'fetch="' . $associationMapping['fetch'] . '"';
             }
 
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . '' . $type . '(' . implode(', ', $typeOptions) . ')';

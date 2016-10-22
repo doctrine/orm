@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,30 +26,32 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 
 class AssociationMetadata implements Property
 {
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $declaringClass;
 
-    /**
-     * @var \ReflectionProperty
-     */
+    /** @var \ReflectionProperty */
     private $reflection;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $targetEntity;
 
-    /**
-     * @var array
-     */
+    /** @var array<string> */
     private $cascade = [];
+
+    /** @var string */
+    private $fetchMode = FetchMode::LAZY;
+
+    /** @var string */
+    private $mappedBy;
+
+    /** @var null|string */
+    private $inversedBy;
+
+    /** @var bool */
+    private $orphanRemoval = false;
 
     /**
      * {@inheritdoc}

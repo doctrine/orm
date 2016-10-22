@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
@@ -1034,7 +1035,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // configuring lazy loading
         $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata->associationMappings['shipping']['fetch'] = FetchMode::LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
@@ -1083,7 +1084,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // configuring lazy loading
         $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata->associationMappings['shipping']['fetch'] = FetchMode::LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);

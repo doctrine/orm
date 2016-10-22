@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -41,11 +42,11 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $class = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']['fetch'] = FetchMode::EXTRA_LAZY;
         $class->associationMappings['groups']['indexBy'] = 'name';
-        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['articles']['fetch'] = FetchMode::EXTRA_LAZY;
         $class->associationMappings['articles']['indexBy'] = 'topic';
-        $class->associationMappings['phonenumbers']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['phonenumbers']['fetch'] = FetchMode::EXTRA_LAZY;
         $class->associationMappings['phonenumbers']['indexBy'] = 'phonenumber';
 
         unset($class->associationMappings['phonenumbers']['cache']);
@@ -53,7 +54,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         unset($class->associationMappings['users']['cache']);
 
         $class = $this->_em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['users']['fetch'] = FetchMode::EXTRA_LAZY;
         $class->associationMappings['users']['indexBy'] = 'username';
 
         $this->loadFixture();
@@ -64,16 +65,16 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['phonenumbers']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['groups']['fetch'] = FetchMode::LAZY;
+        $class->associationMappings['articles']['fetch'] = FetchMode::LAZY;
+        $class->associationMappings['phonenumbers']['fetch'] = FetchMode::LAZY;
 
         unset($class->associationMappings['groups']['indexBy']);
         unset($class->associationMappings['articles']['indexBy']);
         unset($class->associationMappings['phonenumbers']['indexBy']);
 
         $class = $this->_em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['users']['fetch'] = FetchMode::LAZY;
 
         unset($class->associationMappings['users']['indexBy']);
     }
