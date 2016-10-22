@@ -10,7 +10,7 @@ $tableMetadata = new Mapping\TableMetadata();
 $tableMetadata->setName('cache_city');
 
 $metadata->setPrimaryTable($tableMetadata);
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 

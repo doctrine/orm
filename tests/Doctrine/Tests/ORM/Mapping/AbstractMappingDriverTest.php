@@ -58,7 +58,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testEntityTableNameAndInheritance($class)
     {
         self::assertEquals('cms_users', $class->getTableName());
-        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->inheritanceType);
+        self::assertEquals(Mapping\InheritanceType::NONE, $class->inheritanceType);
 
         return $class;
     }
@@ -1201,7 +1201,7 @@ class User
         $tableMetadata->addOption('baz', array('key' => 'val'));
 
         $metadata->setPrimaryTable($tableMetadata);
-        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
         $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
@@ -1493,7 +1493,7 @@ class Comment
         ]);
 
         $metadata->setPrimaryTable($tableMetadata);
-        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 
         $fieldMetadata = new Mapping\FieldMetadata('content');
 

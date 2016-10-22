@@ -5,8 +5,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping;
 
 /* @var ClassMetadata $metadata */
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
-
 $discrColumn = new Mapping\DiscriminatorColumnMetadata();
 
 $discrColumn->setTableName($metadata->getTableName());
@@ -21,6 +19,7 @@ $metadata->setDiscriminatorMap(array(
     'dog' => 'Doctrine\\Tests\\ORM\\Mapping\\Dog',
 ));
 
+$metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');

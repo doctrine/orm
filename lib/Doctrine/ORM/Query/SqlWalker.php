@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -484,25 +485,28 @@ class SqlWalker implements TreeWalker
      */
     private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if (!$this->em->hasFilters()) {
+        if (! $this->em->hasFilters()) {
             return '';
         }
 
-        switch($targetEntity->inheritanceType) {
-            case ClassMetadata::INHERITANCE_TYPE_NONE:
+        switch ($targetEntity->inheritanceType) {
+            case InheritanceType::NONE:
                 break;
-            case ClassMetadata::INHERITANCE_TYPE_JOINED:
+
+            case InheritanceType::JOINED:
                 // The classes in the inheritance will be added to the query one by one,
                 // but only the root node is getting filtered
                 if ($targetEntity->name !== $targetEntity->rootEntityName) {
                     return '';
                 }
                 break;
-            case ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE:
+
+            case InheritanceType::SINGLE_TABLE:
                 // With STI the table will only be queried once, make sure that the filters
                 // are added to the root entity
                 $targetEntity = $this->em->getClassMetadata($targetEntity->rootEntityName);
                 break;
+
             default:
                 //@todo: throw exception?
                 return '';

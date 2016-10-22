@@ -34,7 +34,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->rootEntityName);
         self::assertEquals(array(), $cm->subClasses);
         self::assertEquals(array(), $cm->parentClasses);
-        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
+        self::assertEquals(Mapping\InheritanceType::NONE, $cm->inheritanceType);
 
         // Customize state
         $discrColumn = new DiscriminatorColumnMetadata();
@@ -42,7 +42,7 @@ class ClassMetadataTest extends OrmTestCase
         $discrColumn->setColumnName('disc');
         $discrColumn->setType(Type::getType('integer'));
 
-        $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $cm->setInheritanceType(Mapping\InheritanceType::SINGLE_TABLE);
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");
