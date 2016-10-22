@@ -11,8 +11,8 @@ $tableMetadata->setName('cache_city');
 
 $metadata->setPrimaryTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
+$metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
-$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->enableCache(array(
     'usage' => Mapping\CacheUsage::READ_ONLY,

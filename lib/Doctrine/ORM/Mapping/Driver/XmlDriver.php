@@ -23,6 +23,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\CacheUsage;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -261,7 +262,7 @@ class XmlDriver extends FileDriver
             $changeTrackingPolicy = strtoupper((string) $xmlRoot['change-tracking-policy']);
 
             $metadata->setChangeTrackingPolicy(
-                constant(sprintf('%s::CHANGETRACKING_%s', ClassMetadata::class, $changeTrackingPolicy))
+                constant(sprintf('%s::%s', ChangeTrackingPolicy::class, $changeTrackingPolicy))
             );
         }
 

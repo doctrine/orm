@@ -33,7 +33,7 @@ $tableMetadata->addOption('baz', array('key' => 'val'));
 
 $metadata->setPrimaryTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
-$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
