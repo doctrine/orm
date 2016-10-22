@@ -22,6 +22,7 @@
 namespace Doctrine\Tests\ORM\Tools\Export;
 
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\EntityGenerator;
@@ -260,7 +261,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertNotContains('merge', $association['cascade']);
         self::assertNotContains('detach', $association['cascade']);
         self::assertTrue($association['orphanRemoval']);
-        self::assertEquals(ClassMetadata::FETCH_EAGER, $association['fetch']);
+        self::assertEquals(FetchMode::EAGER, $association['fetch']);
 
         return $class;
     }
@@ -292,7 +293,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('merge', $class->associationMappings['phonenumbers']['cascade']);
         self::assertNotContains('detach', $class->associationMappings['phonenumbers']['cascade']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        self::assertEquals(ClassMetadata::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
+        self::assertEquals(FetchMode::LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
         return $class;
     }
@@ -328,7 +329,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('merge', $association['cascade']);
         self::assertContains('detach', $association['cascade']);
 
-        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $association['fetch']);
+        self::assertEquals(FetchMode::EXTRA_LAZY, $association['fetch']);
 
         return $class;
     }

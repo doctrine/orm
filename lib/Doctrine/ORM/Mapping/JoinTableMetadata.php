@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-class JoinTableMetadata extends TableMetadata
+final class JoinTableMetadata extends TableMetadata
 {
     /** @var array<JoinColumnMetadata> */
     protected $joinColumns = [];

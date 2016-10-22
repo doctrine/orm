@@ -80,7 +80,7 @@ $metadata->mapOneToOne(array(
     'mappedBy'      => NULL,
     'joinColumns'   => $joinColumns,
     'orphanRemoval' => true,
-    'fetch'         => ClassMetadata::FETCH_EAGER,
+    'fetch'         => Mapping\FetchMode::EAGER,
 ));
 
 $metadata->mapOneToOne(array(
@@ -90,7 +90,7 @@ $metadata->mapOneToOne(array(
     'cascade'       => array('persist'),
     'inversedBy'    => NULL,
     'orphanRemoval' => false,
-    'fetch'         => ClassMetadata::FETCH_EAGER,
+    'fetch'         => Mapping\FetchMode::EAGER,
 ));
 
 $metadata->mapOneToMany(array(
@@ -99,7 +99,7 @@ $metadata->mapOneToMany(array(
     'cascade'       => array('persist', 'merge'),
     'mappedBy'      => 'user',
     'orphanRemoval' => true,
-    'fetch'         => ClassMetadata::FETCH_LAZY,
+    'fetch'         => Mapping\FetchMode::LAZY,
     'orderBy'       => array(
         'number' => 'ASC'
     ),
@@ -134,5 +134,5 @@ $metadata->mapManyToMany(array(
     'mappedBy'     => NULL,
     'orderBy'      => NULL,
     'joinTable'    => $joinTable,
-    'fetch'        => ClassMetadata::FETCH_EXTRA_LAZY,
+    'fetch'        => Mapping\FetchMode::EXTRA_LAZY,
 ));

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
@@ -999,10 +1000,12 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $qc = $this->getCurrentQueryCount();
         $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1";
-        $article = $this->_em->createQuery($dql)
-                             ->setParameter(1, $article->id)
-                             ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', ClassMetadata::FETCH_EAGER)
-                             ->getSingleResult();
+        $article = $this->_em
+            ->createQuery($dql)
+            ->setParameter(1, $article->id)
+            ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', FetchMode::EAGER)
+            ->getSingleResult();
+
         self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $article->user, "It IS a proxy, ...");
         self::assertTrue($article->user->__isInitialized__, "...but its initialized!");
         self::assertEquals($qc+2, $this->getCurrentQueryCount());

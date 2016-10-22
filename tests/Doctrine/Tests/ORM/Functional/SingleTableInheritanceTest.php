@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Persisters\PersisterException;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -408,10 +409,11 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $dql = 'SELECT f FROM Doctrine\Tests\Models\Company\CompanyFixContract f WHERE f.id = ?1';
-        $contract = $this->_em->createQuery($dql)
-                              ->setFetchMode('Doctrine\Tests\Models\Company\CompanyFixContract', 'salesPerson', ClassMetadata::FETCH_EAGER)
-                              ->setParameter(1, $this->fix->getId())
-                              ->getSingleResult();
+        $contract = $this->_em
+            ->createQuery($dql)
+            ->setFetchMode('Doctrine\Tests\Models\Company\CompanyFixContract', 'salesPerson', FetchMode::EAGER)
+            ->setParameter(1, $this->fix->getId())
+            ->getSingleResult();
 
         self::assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $contract->getSalesPerson());
     }

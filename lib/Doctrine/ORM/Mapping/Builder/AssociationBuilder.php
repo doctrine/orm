@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 class AssociationBuilder
@@ -145,7 +146,7 @@ class AssociationBuilder
      */
     public function fetchExtraLazy()
     {
-        $this->mapping['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $this->mapping['fetch'] = FetchMode::EXTRA_LAZY;
 
         return $this;
     }
@@ -155,7 +156,7 @@ class AssociationBuilder
      */
     public function fetchEager()
     {
-        $this->mapping['fetch'] = ClassMetadata::FETCH_EAGER;
+        $this->mapping['fetch'] = FetchMode::EAGER;
 
         return $this;
     }
@@ -165,7 +166,7 @@ class AssociationBuilder
      */
     public function fetchLazy()
     {
-        $this->mapping['fetch'] = ClassMetadata::FETCH_LAZY;
+        $this->mapping['fetch'] = FetchMode::LAZY;
 
         return $this;
     }
