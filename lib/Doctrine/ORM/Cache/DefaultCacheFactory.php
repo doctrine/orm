@@ -35,6 +35,7 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -117,22 +118,22 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
     {
-        $region     = $this->getRegion($metadata->cache);
-        $usage      = $metadata->cache['usage'];
+        $region = $this->getRegion($metadata->cache);
+        $usage  = $metadata->cache['usage'];
 
-        if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyCachedEntityPersister($persister, $region, $em, $metadata);
+        switch ($usage) {
+            case CacheUsage::READ_ONLY:
+                return new ReadOnlyCachedEntityPersister($persister, $region, $em, $metadata);
+
+            case CacheUsage::READ_WRITE:
+                return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
+
+            case CacheUsage::NONSTRICT_READ_WRITE:
+                return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
+
+            default:
+                throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
         }
-
-        if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
-        }
-
-        if ($usage === ClassMetadata::CACHE_USAGE_READ_WRITE) {
-            return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
-        }
-
-        throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
     }
 
     /**
@@ -140,22 +141,22 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping)
     {
-        $usage      = $mapping['cache']['usage'];
-        $region     = $this->getRegion($mapping['cache']);
+        $region = $this->getRegion($mapping['cache']);
+        $usage  = $mapping['cache']['usage'];
 
-        if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
-            return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
+        switch ($usage) {
+            case CacheUsage::READ_ONLY:
+                return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
+
+            case CacheUsage::READ_WRITE:
+                return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+
+            case CacheUsage::NONSTRICT_READ_WRITE:
+                return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+
+            default:
+                throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
         }
-
-        if ($usage === ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE) {
-            return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
-        }
-
-        if ($usage === ClassMetadata::CACHE_USAGE_READ_WRITE) {
-            return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
-        }
-
-        throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
     }
 
     /**
@@ -168,7 +169,7 @@ class DefaultCacheFactory implements CacheFactory
             $this->getRegion(
                 [
                     'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
-                    'usage'  => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
+                    'usage'  => CacheUsage::NONSTRICT_READ_WRITE,
                 ]
             )
         );
@@ -207,8 +208,7 @@ class DefaultCacheFactory implements CacheFactory
             ? new DefaultMultiGetRegion($name, $cacheAdapter, $lifetime)
             : new DefaultRegion($name, $cacheAdapter, $lifetime);
 
-        if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
-
+        if ($cache['usage'] === CacheUsage::READ_WRITE) {
             if ( ! $this->fileLockRegionDirectory) {
                 throw new \LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .

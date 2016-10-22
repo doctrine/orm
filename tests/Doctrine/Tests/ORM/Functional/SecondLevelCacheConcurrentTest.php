@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
@@ -40,7 +41,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $this->countryMetadata = $this->_em->getClassMetadata(Country::class);
         $countryMetadata       = clone $this->countryMetadata;
 
-        $countryMetadata->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
+        $countryMetadata->cache['usage'] = CacheUsage::NONSTRICT_READ_WRITE;
 
         $this->_em->getMetadataFactory()->setMetadataFor(Country::class, $countryMetadata);
     }
