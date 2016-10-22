@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * Performs strict validation of the mapping schema
@@ -184,16 +185,30 @@ class SchemaValidator
                     }
 
                     if (count($targetIdentifierColumns) !== count($assoc['joinTable']->getInverseJoinColumns())) {
+                        $columnNames = array_map(
+                            function (JoinColumnMetadata $joinColumn) {
+                                return $joinColumn->getReferencedColumnName();
+                            },
+                            $assoc['joinTable']->getInverseJoinColumns()
+                        );
+
                         $ce[] = "The inverse join columns of the many-to-many table '" . $assoc['joinTable']->getName() . "' " .
                                 "have to contain to ALL identifier columns of the target entity '". $targetMetadata->name . "', " .
-                                "however '" . implode(", ", array_diff($targetIdentifierColumns, array_values($assoc['relationToTargetKeyColumns']))) .
+                                "however '" . implode(", ", array_diff($targetIdentifierColumns, $columnNames)) .
                                 "' are missing.";
                     }
 
                     if (count($classIdentifierColumns) !== count($assoc['joinTable']->getJoinColumns())) {
+                        $columnNames = array_map(
+                            function (JoinColumnMetadata $joinColumn) {
+                                return $joinColumn->getReferencedColumnName();
+                            },
+                            $assoc['joinTable']->getJoinColumns()
+                        );
+
                         $ce[] = "The join columns of the many-to-many table '" . $assoc['joinTable']->getName() . "' " .
                                 "have to contain to ALL identifier columns of the source entity '". $class->name . "', " .
-                                "however '" . implode(", ", array_diff($classIdentifierColumns, array_values($assoc['relationToSourceKeyColumns']))) .
+                                "however '" . implode(", ", array_diff($classIdentifierColumns, $columnNames)) .
                                 "' are missing.";
                     }
 
