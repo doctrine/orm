@@ -16,7 +16,7 @@ $metadata->setPrimaryTable($tableMetadata);
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
-$metadata->enableCache(['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY]);
+$metadata->enableCache(['usage' => Mapping\CacheUsage::READ_ONLY]);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
@@ -47,7 +47,7 @@ $metadata->mapOneToOne(
     ]
 );
 
-$metadata->enableAssociationCache('state', ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY]);
+$metadata->enableAssociationCache('state', ['usage' => Mapping\CacheUsage::READ_ONLY]);
 
 $metadata->mapManyToMany(
     [
@@ -66,4 +66,4 @@ $metadata->mapOneToMany(
     ]
 );
 
-$metadata->enableAssociationCache('attractions', ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY]);
+$metadata->enableAssociationCache('attractions', ['usage' => Mapping\CacheUsage::READ_ONLY]);

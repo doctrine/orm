@@ -29,6 +29,7 @@ use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
+use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -153,7 +154,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $cacheAnnot = $classAnnotations[Annotation\Cache::class];
 
             $builder->setCache(
-                constant(sprintf('%s::CACHE_USAGE_%s', ClassMetadata::class, $cacheAnnot->usage)),
+                constant(sprintf('%s::%s', CacheUsage::class, $cacheAnnot->usage)),
                 $cacheAnnot->region
             );
         }
@@ -357,7 +358,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['cache'] = $metadata->getAssociationCacheDefaults(
                     $mapping['fieldName'],
                     [
-                        'usage'  => constant(sprintf('%s::CACHE_USAGE_%s', ClassMetadata::class, $cacheAnnot->usage)),
+                        'usage'  => constant(sprintf('%s::%s', CacheUsage::class, $cacheAnnot->usage)),
                         'region' => $cacheAnnot->region,
                     ]
                 );
