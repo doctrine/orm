@@ -17,7 +17,7 @@ use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\RegionsConfiguration;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
@@ -73,7 +73,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new BasicEntityPersister($em, $metadata);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
 
-        $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
+        $metadata->cache['usage'] = CacheUsage::READ_ONLY;
 
         $this->factory->expects($this->once())
             ->method('getRegion')
@@ -93,7 +93,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new BasicEntityPersister($em, $metadata);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
 
-        $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
+        $metadata->cache['usage'] = CacheUsage::READ_WRITE;
 
         $this->factory->expects($this->once())
             ->method('getRegion')
@@ -113,7 +113,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new BasicEntityPersister($em, $metadata);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
 
-        $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
+        $metadata->cache['usage'] = CacheUsage::NONSTRICT_READ_WRITE;
 
         $this->factory->expects($this->once())
             ->method('getRegion')
@@ -134,7 +134,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
+        $mapping['cache']['usage'] = CacheUsage::READ_ONLY;
 
         $this->factory->expects($this->once())
             ->method('getRegion')
@@ -156,7 +156,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
+        $mapping['cache']['usage'] = CacheUsage::READ_WRITE;
 
         $this->factory->expects($this->once())
             ->method('getRegion')
@@ -177,7 +177,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
+        $mapping['cache']['usage'] = CacheUsage::NONSTRICT_READ_WRITE;
 
         $this->factory->expects($this->once())
             ->method('getRegion')
@@ -269,8 +269,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $factory->getRegion(
             [
-                'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
-                'region'  => 'foo'
+                'region' => 'foo',
+                'usage'  => CacheUsage::READ_WRITE,
             ]
         );
     }
@@ -282,13 +282,13 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $fooRegion = $factory->getRegion(
             [
                 'region' => 'foo',
-                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+                'usage'  => CacheUsage::READ_ONLY,
             ]
         );
         $barRegion = $factory->getRegion(
             [
                 'region' => 'bar',
-                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+                'usage'  => CacheUsage::READ_ONLY,
             ]
         );
 
@@ -332,7 +332,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
             $factory->getRegion(
                 [
                     'region' => 'bar',
-                    'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+                    'usage'  => CacheUsage::READ_ONLY,
                 ]
             )
         );
@@ -350,7 +350,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
             $factory->getRegion(
                 [
                     'region' => 'bar',
-                    'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+                    'usage'  => CacheUsage::READ_ONLY,
                 ]
             )
         );
