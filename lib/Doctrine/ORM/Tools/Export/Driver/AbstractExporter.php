@@ -180,25 +180,6 @@ abstract class AbstractExporter
     }
 
     /**
-     * @param int $policy
-     *
-     * @return string
-     */
-    protected function _getChangeTrackingPolicyString($policy)
-    {
-        switch ($policy) {
-            case ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT:
-                return 'DEFERRED_IMPLICIT';
-
-            case ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT:
-                return 'DEFERRED_EXPLICIT';
-
-            case ClassMetadata::CHANGETRACKING_NOTIFY:
-                return 'NOTIFY';
-        }
-    }
-
-    /**
      * @param int $type
      *
      * @return string

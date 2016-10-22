@@ -100,29 +100,6 @@ class ClassMetadata implements ClassMetadataInterface
     const GENERATOR_TYPE_CUSTOM = 7;
 
     /**
-     * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
-     * by doing a property-by-property comparison with the original data. This will
-     * be done for all entities that are in MANAGED state at commit-time.
-     *
-     * This is the default change tracking policy.
-     */
-    const CHANGETRACKING_DEFERRED_IMPLICIT = 1;
-
-    /**
-     * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
-     * by doing a property-by-property comparison with the original data. This will
-     * be done only for entities that were explicitly saved (through persist() or a cascade).
-     */
-    const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
-
-    /**
-     * NOTIFY means that Doctrine relies on the entities sending out notifications
-     * when their properties change. Such entity classes must implement
-     * the <tt>NotifyPropertyChanged</tt> interface.
-     */
-    const CHANGETRACKING_NOTIFY = 3;
-
-    /**
      * Identifies a one-to-one association.
      */
     const ONE_TO_ONE = 1;
@@ -447,7 +424,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var integer
      */
-    public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
+    public $changeTrackingPolicy = ChangeTrackingPolicy::DEFERRED_IMPLICIT;
 
     /**
      * READ-ONLY: The field which is used for versioning in optimistic locking (if any).
@@ -672,7 +649,7 @@ class ClassMetadata implements ClassMetadataInterface
         ];
 
         // The rest of the metadata is only serialized if necessary.
-        if ($this->changeTrackingPolicy != self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+        if ($this->changeTrackingPolicy != ChangeTrackingPolicy::DEFERRED_IMPLICIT) {
             $serialized[] = 'changeTrackingPolicy';
         }
 
@@ -969,7 +946,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isChangeTrackingDeferredExplicit()
     {
-        return self::CHANGETRACKING_DEFERRED_EXPLICIT === $this->changeTrackingPolicy;
+        return ChangeTrackingPolicy::DEFERRED_EXPLICIT === $this->changeTrackingPolicy;
     }
 
     /**
@@ -979,7 +956,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isChangeTrackingDeferredImplicit()
     {
-        return self::CHANGETRACKING_DEFERRED_IMPLICIT === $this->changeTrackingPolicy;
+        return ChangeTrackingPolicy::DEFERRED_IMPLICIT === $this->changeTrackingPolicy;
     }
 
     /**
@@ -989,7 +966,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isChangeTrackingNotify()
     {
-        return self::CHANGETRACKING_NOTIFY === $this->changeTrackingPolicy;
+        return ChangeTrackingPolicy::NOTIFY === $this->changeTrackingPolicy;
     }
 
     /**
