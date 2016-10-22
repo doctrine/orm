@@ -105,9 +105,6 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $meta = $cm->associationMappings['manyToMany'];
 
         self::assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
-
-        self::assertEquals(array('resolvetargetentity_id' => 'id'), $meta['relationToSourceKeyColumns']);
-        self::assertEquals(array('targetinterface_id' => 'id'), $meta['relationToTargetKeyColumns']);
     }
 
     /**
