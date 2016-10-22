@@ -1514,10 +1514,6 @@ class ClassMetadata implements ClassMetadataInterface
 
                     $joinColumn->setColumnName($columnName);
                 }
-
-                $columnName = $joinColumn->getColumnName();
-
-                $mapping['relationToSourceKeyColumns'][$columnName] = $referencedColumnName;
             }
 
             foreach ($mapping['joinTable']->getInverseJoinColumns() as $inverseJoinColumn) {
@@ -1532,10 +1528,6 @@ class ClassMetadata implements ClassMetadataInterface
 
                     $inverseJoinColumn->setColumnName($columnName);
                 }
-
-                $columnName = $inverseJoinColumn->getColumnName();
-
-                $mapping['relationToTargetKeyColumns'][$columnName] = $referencedColumnName;
             }
         }
 
@@ -1892,9 +1884,6 @@ class ClassMetadata implements ClassMetadataInterface
         if (isset($overrideMapping['joinTable'])) {
             $mapping['joinTable'] = $overrideMapping['joinTable'];
         }
-
-        $mapping['relationToSourceKeyColumns']  = null;
-        $mapping['relationToTargetKeyColumns']  = null;
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
