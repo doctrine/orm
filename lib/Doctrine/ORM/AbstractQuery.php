@@ -665,7 +665,7 @@ abstract class AbstractQuery
     /**
      * Change the default fetch mode of an association for this query.
      *
-     * $fetchMode can be one of ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY
+     * $fetchMode can be one of FetchMode::EAGER, FetchMode::LAZY or FetchMode::EXTRA_LAZY
      *
      * @param string $class
      * @param string $assocName
@@ -675,8 +675,8 @@ abstract class AbstractQuery
      */
     public function setFetchMode($class, $assocName, $fetchMode)
     {
-        if ($fetchMode !== Mapping\ClassMetadata::FETCH_EAGER) {
-            $fetchMode = Mapping\ClassMetadata::FETCH_LAZY;
+        if ($fetchMode !== Mapping\FetchMode::EAGER) {
+            $fetchMode = Mapping\FetchMode::LAZY;
         }
 
         $this->_hints['fetchMode'][$class][$assocName] = $fetchMode;

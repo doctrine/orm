@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,46 +20,33 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Annotation;
-use Doctrine\ORM\Mapping\FetchMode;
+namespace Doctrine\ORM\Mapping;
 
-/**
- * @Annotation
- * @Target("PROPERTY")
- */
-final class OneToMany implements Annotation
+final class FetchMode
 {
     /**
-     * @var string
+     * Specifies that an association is to be fetched when it is first accessed.
      */
-    public $mappedBy;
+    const LAZY = 'LAZY';
 
     /**
-     * @var string
+     * Specifies that an association is to be fetched when the owner of the
+     * association is fetched.
      */
-    public $targetEntity;
+    const EAGER = 'EAGER';
 
     /**
-     * @var array<string>
+     * Specifies that an association is to be fetched lazy (on first access) and that
+     * commands such as Collection#count, Collection#slice are issued directly against
+     * the database if the collection is not yet initialized.
      */
-    public $cascade;
+    const EXTRA_LAZY = 'EXTRA_LAZY';
 
     /**
-     * The fetching strategy to use for the association.
+     * Will break upon instantiation.
      *
-     * @var string
-     *
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
-    public $fetch = FetchMode::LAZY;
-
-    /**
-     * @var boolean
-     */
-    public $orphanRemoval = false;
-
-    /**
-     * @var string
-     */
-    public $indexBy;
+    private function __construct()
+    {
+    }
 }

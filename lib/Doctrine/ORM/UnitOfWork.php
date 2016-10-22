@@ -35,6 +35,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -2680,7 +2681,7 @@ class UnitOfWork implements PropertyChangedListener
                             // If this is an uninitialized proxy, we are deferring eager loads,
                             // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
                             // then we can append this entity for eager loading!
-                            if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
+                            if ($hints['fetchMode'][$class->name][$field] == FetchMode::EAGER &&
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 !$targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
@@ -2701,7 +2702,7 @@ class UnitOfWork implements PropertyChangedListener
                         default:
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
-                                case ($hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER):
+                                case ($hints['fetchMode'][$class->name][$field] !== FetchMode::EAGER):
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
                                     break;
 
@@ -2770,7 +2771,7 @@ class UnitOfWork implements PropertyChangedListener
                     $reflField = $class->reflFields[$field];
                     $reflField->setValue($entity, $pColl);
 
-                    if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
+                    if ($assoc['fetch'] == FetchMode::EAGER) {
                         $this->loadCollection($pColl);
                         $pColl->takeSnapshot();
                     }

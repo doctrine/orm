@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Util\ClassUtils;
 
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
@@ -183,7 +184,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             $assocClass     = $data[$name]->class;
             $assocId        = $data[$name]->identifier;
-            $isEagerLoad    = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
+            $isEagerLoad    = ($assoc['fetch'] === FetchMode::EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
 
             if ( ! $isEagerLoad) {
                 $data[$name] = $this->em->getReference($assocClass, $assocId);

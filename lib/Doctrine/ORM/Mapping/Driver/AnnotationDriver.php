@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
@@ -608,7 +609,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     private function getFetchMode($className, $fetchMode)
     {
-        $fetchModeConstant = sprintf('%s::FETCH_%s', ClassMetadata::class, $fetchMode);
+        $fetchModeConstant = sprintf('%s::%s', FetchMode::class, $fetchMode);
 
         if ( ! defined($fetchModeConstant)) {
             throw MappingException::invalidFetchMode($className, $fetchMode);

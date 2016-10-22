@@ -1369,7 +1369,7 @@ can mark a many-to-one or one-to-one association as fetched temporarily to batch
 
     <?php
     $query = $em->createQuery("SELECT u FROM MyProject\User u");
-    $query->setFetchMode("MyProject\User", "address", \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+    $query->setFetchMode("MyProject\User", "address", \Doctrine\ORM\Mapping\FetchMode::EAGER);
     $query->execute();
 
 Given that there are 10 users and corresponding addresses in the database the executed queries will look something like:

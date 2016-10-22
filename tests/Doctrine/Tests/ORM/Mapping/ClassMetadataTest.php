@@ -89,7 +89,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
 
-        self::assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
+        self::assertTrue($oneOneMapping['fetch'] == Mapping\FetchMode::LAZY);
         self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
         self::assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
         self::assertTrue($cm->isReadOnly);

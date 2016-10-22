@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query\QueryException;
@@ -464,24 +465,31 @@ class QueryTest extends OrmFunctionalTestCase
     {
         for ($i = 0; $i < 10; $i++) {
             $article = new CmsArticle;
+
             $article->topic = "dr. dolittle";
             $article->text = "Once upon a time ...";
+
             $author = new CmsUser;
+
             $author->name = "anonymous";
             $author->username = "anon".$i;
             $author->status = "here";
             $article->user = $author;
+
             $this->_em->persist($author);
             $this->_em->persist($article);
         }
+
         $this->_em->flush();
         $this->_em->clear();
 
-        $articles = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
-                         ->setFetchMode(CmsArticle::class, 'user', ClassMetadata::FETCH_EAGER)
-                         ->getResult();
+        $articles = $this->_em
+            ->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
+            ->setFetchMode(CmsArticle::class, 'user', FetchMode::EAGER)
+            ->getResult();
 
         self::assertEquals(10, count($articles));
+
         foreach ($articles AS $article) {
             self::assertNotInstanceOf(Proxy::class, $article);
         }

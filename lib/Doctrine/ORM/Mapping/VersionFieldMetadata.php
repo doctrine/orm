@@ -22,6 +22,6 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-class VersionFieldMetadata extends FieldMetadata
+final class VersionFieldMetadata extends FieldMetadata
 {
 }
