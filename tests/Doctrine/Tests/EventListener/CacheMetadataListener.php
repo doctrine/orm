@@ -4,6 +4,7 @@ namespace Doctrine\Tests\EventListener;
 
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 class CacheMetadataListener
@@ -64,7 +65,7 @@ class CacheMetadataListener
         }
 
         $cache = [
-            'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
+            'usage' => CacheUsage::NONSTRICT_READ_WRITE,
         ];
 
         if ($metadata->isVersioned()) {
