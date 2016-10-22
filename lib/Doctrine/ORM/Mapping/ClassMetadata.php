@@ -148,24 +148,6 @@ class ClassMetadata implements ClassMetadataInterface
     const CHANGETRACKING_NOTIFY = 3;
 
     /**
-     * Specifies that an association is to be fetched when it is first accessed.
-     */
-    const FETCH_LAZY = 2;
-
-    /**
-     * Specifies that an association is to be fetched when the owner of the
-     * association is fetched.
-     */
-    const FETCH_EAGER = 3;
-
-    /**
-     * Specifies that an association is to be fetched lazy (on first access) and that
-     * commands such as Collection#count, Collection#slice are issued directly against
-     * the database if the collection is not yet initialized.
-     */
-    const FETCH_EXTRA_LAZY = 4;
-
-    /**
      * Identifies a one-to-one association.
      */
     const ONE_TO_ONE = 1;
@@ -457,8 +439,8 @@ class ClassMetadata implements ClassMetadataInterface
      * Example: array('priority' => 'desc')
      *
      * - <b>fetch</b> (integer, optional)
-     * The fetching strategy to use for the association, usually defaults to FETCH_LAZY.
-     * Possible values are: ClassMetadata::FETCH_EAGER, ClassMetadata::FETCH_LAZY.
+     * The fetching strategy to use for the association, usually defaults to LAZY.
+     * Possible values are: FetchMode::EAGER, FetchMode::LAZY, FetchMode::EXTRA_LAZY.
      *
      * - <b>joinTable</b> (array, optional, many-to-many only)
      * Specification of the join table and its join columns (foreign keys).
@@ -1314,7 +1296,7 @@ class ClassMetadata implements ClassMetadataInterface
 
         // Fetch mode. Default fetch mode to LAZY, if not set.
         if ( ! isset($mapping['fetch'])) {
-            $mapping['fetch'] = self::FETCH_LAZY;
+            $mapping['fetch'] = FetchMode::LAZY;
         }
 
         // Cascades

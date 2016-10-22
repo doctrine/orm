@@ -58,7 +58,7 @@ class CachedPersisterContext
 
     /**
      * The JOIN SQL fragment used to eagerly load all many-to-one and one-to-one
-     * associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
+     * associations configured as FetchMode::EAGER, as well as all inverse one-to-one associations.
      *
      * @var string
      */

@@ -28,6 +28,7 @@ use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -102,7 +103,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $regionName;
 
     /**
-     * Associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
+     * Associations configured as FetchMode::EAGER, as well as all inverse one-to-one associations.
      *
      * @var array|null
      */
@@ -254,7 +255,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             foreach ($this->class->associationMappings as $name => $assoc) {
                 if (isset($assoc['cache']) &&
                     ($assoc['type'] & ClassMetadata::TO_ONE) &&
-                    ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc['isOwningSide'])) {
+                    ($assoc['fetch'] === FetchMode::EAGER || ! $assoc['isOwningSide'])) {
 
                     $associations[] = $name;
                 }

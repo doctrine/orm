@@ -304,7 +304,7 @@ class XmlExporter extends AbstractExporter
             }
 
             if (isset($associationMapping['fetch'])) {
-                $associationMappingXml->addAttribute('fetch', $this->_getFetchModeString($associationMapping['fetch']));
+                $associationMappingXml->addAttribute('fetch', $associationMapping['fetch']);
             }
 
             $cascades = [];
