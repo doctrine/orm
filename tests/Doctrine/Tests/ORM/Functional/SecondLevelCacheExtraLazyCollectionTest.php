@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
@@ -19,8 +20,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $sourceEntity = $this->_em->getClassMetadata(Travel::class);
         $targetEntity = $this->_em->getClassMetadata(City::class);
 
-        $sourceEntity->associationMappings['visitedCities']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
+        $sourceEntity->associationMappings['visitedCities']['fetch'] = FetchMode::EXTRA_LAZY;
+        $targetEntity->associationMappings['travels']['fetch']       = FetchMode::EXTRA_LAZY;
     }
 
     public function tearDown()
@@ -30,8 +31,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $sourceEntity = $this->_em->getClassMetadata(Travel::class);
         $targetEntity = $this->_em->getClassMetadata(City::class);
 
-        $sourceEntity->associationMappings['visitedCities']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_LAZY;
+        $sourceEntity->associationMappings['visitedCities']['fetch'] = FetchMode::LAZY;
+        $targetEntity->associationMappings['travels']['fetch']       = FetchMode::LAZY;
     }
 
     public function testCacheCountAfterAddThenFlush()

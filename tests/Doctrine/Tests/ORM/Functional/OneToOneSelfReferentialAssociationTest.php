@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -76,7 +77,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->_createFixture();
 
         $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
-        $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata->associationMappings['mentor']['fetch'] = FetchMode::LAZY;
 
         $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
         $result = $query->getResult();
