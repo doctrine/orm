@@ -41,7 +41,7 @@ $tableMetadata->addOption('foo', 'bar');
 $tableMetadata->addOption('baz', ['key' => 'val']);
 
 $metadata->setPrimaryTable($tableMetadata);
-$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');

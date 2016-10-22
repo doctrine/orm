@@ -677,7 +677,7 @@ you need to use the following, explicit syntax:
 ## XML Mapping Driver
 
 The 'inheritance-type' attribute changed to take last bit of ClassMetadata constant names, i.e.
-NONE, SINGLE_TABLE, INHERITANCE_TYPE_JOINED
+NONE, SINGLE_TABLE, JOINED
 
 ## YAML Mapping Driver
 

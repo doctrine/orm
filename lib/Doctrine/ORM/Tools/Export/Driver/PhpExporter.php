@@ -56,7 +56,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->inheritanceType) {
-            $lines[] = '$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
+            $lines[] = '$metadata->setInheritanceType(Mapping\InheritanceType::' . $metadata->inheritanceType . ');';
         }
 
         if ($metadata->customRepositoryClassName) {

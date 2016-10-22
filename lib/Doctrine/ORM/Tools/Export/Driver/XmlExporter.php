@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
@@ -66,8 +67,8 @@ class XmlExporter extends AbstractExporter
             $root->addAttribute('schema', $metadata->table->getSchema());
         }
 
-        if ($metadata->inheritanceType && $metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-            $root->addAttribute('inheritance-type', $this->_getInheritanceTypeString($metadata->inheritanceType));
+        if ($metadata->inheritanceType && $metadata->inheritanceType !== InheritanceType::NONE) {
+            $root->addAttribute('inheritance-type', $metadata->inheritanceType);
         }
 
         if ($metadata->table->getOptions()) {

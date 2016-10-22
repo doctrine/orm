@@ -13,6 +13,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\ORM\Mapping\FetchMode;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -158,13 +159,13 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testSetInheritanceJoined()
     {
         self::assertIsFluent($this->builder->setJoinedTableInheritance());
-        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_JOINED, $this->cm->inheritanceType);
+        self::assertEquals(InheritanceType::JOINED, $this->cm->inheritanceType);
     }
 
     public function testSetInheritanceSingleTable()
     {
         self::assertIsFluent($this->builder->setSingleTableInheritance());
-        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE, $this->cm->inheritanceType);
+        self::assertEquals(InheritanceType::SINGLE_TABLE, $this->cm->inheritanceType);
     }
 
     public function testSetDiscriminatorColumn()

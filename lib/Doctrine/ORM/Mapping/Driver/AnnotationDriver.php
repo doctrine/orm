@@ -33,6 +33,7 @@ use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -238,10 +239,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $inheritanceTypeAnnot = $classAnnotations[Annotation\InheritanceType::class];
 
             $metadata->setInheritanceType(
-                constant(sprintf('%s::INHERITANCE_TYPE_%s', ClassMetadata::class, $inheritanceTypeAnnot->value))
+                constant(sprintf('%s::%s', InheritanceType::class, $inheritanceTypeAnnot->value))
             );
 
-            if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== InheritanceType::NONE) {
                 $discriminatorColumnBuilder = new DiscriminatorColumnMetadataBuilder();
 
                 $discriminatorColumnBuilder->withTableName($metadata->getTableName());

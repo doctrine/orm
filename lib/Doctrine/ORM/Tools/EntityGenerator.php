@@ -25,6 +25,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
@@ -196,18 +197,6 @@ class EntityGenerator
         ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT  => 'DEFERRED_IMPLICIT',
         ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT  => 'DEFERRED_EXPLICIT',
         ClassMetadata::CHANGETRACKING_NOTIFY             => 'NOTIFY',
-    ];
-
-    /**
-     * Hash-map to handle the inheritance type string.
-     *
-     * @var array
-     */
-    protected static $inheritanceTypeMap = [
-        ClassMetadata::INHERITANCE_TYPE_NONE            => 'NONE',
-        ClassMetadata::INHERITANCE_TYPE_JOINED          => 'JOINED',
-        ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE    => 'SINGLE_TABLE',
-        ClassMetadata::INHERITANCE_TYPE_TABLE_PER_CLASS => 'TABLE_PER_CLASS',
     ];
 
     /**
@@ -1121,7 +1110,7 @@ public function __construct(<params>)
      */
     protected function generateInheritanceAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType !== InheritanceType::NONE) {
             return '@' . $this->annotationsPrefix . 'InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
         }
     }
@@ -1133,7 +1122,7 @@ public function __construct(<params>)
      */
     protected function generateDiscriminatorColumnAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType !== InheritanceType::NONE) {
             $discrColumn = $metadata->discriminatorColumn;
 
             $columnDefinition = sprintf(
@@ -1154,7 +1143,7 @@ public function __construct(<params>)
      */
     protected function generateDiscriminatorMapAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType !== InheritanceType::NONE) {
             $inheritanceClassMap = [];
 
             foreach ($metadata->discriminatorMap as $type => $class) {
@@ -1774,11 +1763,11 @@ public function __construct(<params>)
      */
     protected function getInheritanceTypeString($type)
     {
-        if ( ! isset(static::$inheritanceTypeMap[$type])) {
+        if ( ! defined(sprintf('%s::%s', InheritanceType::class, $type))) {
             throw new \InvalidArgumentException(sprintf('Invalid provided InheritanceType: %s', $type));
         }
 
-        return static::$inheritanceTypeMap[$type];
+        return $type;
     }
 
     /**

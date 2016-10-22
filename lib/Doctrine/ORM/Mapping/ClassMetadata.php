@@ -54,31 +54,6 @@ use RuntimeException;
  */
 class ClassMetadata implements ClassMetadataInterface
 {
-    /* The inheritance mapping types */
-    /**
-     * NONE means the class does not participate in an inheritance hierarchy
-     * and therefore does not need an inheritance mapping type.
-     */
-    const INHERITANCE_TYPE_NONE = 1;
-
-    /**
-     * JOINED means the class will be persisted according to the rules of
-     * <tt>Class Table Inheritance</tt>.
-     */
-    const INHERITANCE_TYPE_JOINED = 2;
-
-    /**
-     * SINGLE_TABLE means the class will be persisted according to the rules of
-     * <tt>Single Table Inheritance</tt>.
-     */
-    const INHERITANCE_TYPE_SINGLE_TABLE = 3;
-
-    /**
-     * TABLE_PER_CLASS means the class will be persisted according to the rules
-     * of <tt>Concrete Table Inheritance</tt>.
-     */
-    const INHERITANCE_TYPE_TABLE_PER_CLASS = 4;
-
     /* The Id generator types. */
     /**
      * AUTO means the generator type will depend on what the used platform prefers.
@@ -289,7 +264,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var integer
      */
-    public $inheritanceType = self::INHERITANCE_TYPE_NONE;
+    public $inheritanceType = InheritanceType::NONE;
 
     /**
      * READ-ONLY: The Id generator type used by the class.
@@ -705,7 +680,7 @@ class ClassMetadata implements ClassMetadataInterface
             $serialized[] = 'customRepositoryClassName';
         }
 
-        if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
+        if ($this->inheritanceType != InheritanceType::NONE) {
             $serialized[] = 'inheritanceType';
             $serialized[] = 'discriminatorColumn';
             $serialized[] = 'discriminatorValue';
@@ -1649,7 +1624,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeNone()
     {
-        return $this->inheritanceType == self::INHERITANCE_TYPE_NONE;
+        return $this->inheritanceType == InheritanceType::NONE;
     }
 
     /**
@@ -1660,7 +1635,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeJoined()
     {
-        return $this->inheritanceType == self::INHERITANCE_TYPE_JOINED;
+        return $this->inheritanceType == InheritanceType::JOINED;
     }
 
     /**
@@ -1671,7 +1646,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeSingleTable()
     {
-        return $this->inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE;
+        return $this->inheritanceType == InheritanceType::SINGLE_TABLE;
     }
 
     /**
@@ -1682,7 +1657,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeTablePerClass()
     {
-        return $this->inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+        return $this->inheritanceType == InheritanceType::TABLE_PER_CLASS;
     }
 
     /**
@@ -1960,10 +1935,10 @@ class ClassMetadata implements ClassMetadataInterface
      */
     private function isInheritanceType($type)
     {
-        return $type == self::INHERITANCE_TYPE_NONE
-            || $type == self::INHERITANCE_TYPE_SINGLE_TABLE
-            || $type == self::INHERITANCE_TYPE_JOINED
-            || $type == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+        return $type == InheritanceType::NONE
+            || $type == InheritanceType::SINGLE_TABLE
+            || $type == InheritanceType::JOINED
+            || $type == InheritanceType::TABLE_PER_CLASS;
     }
 
     /**

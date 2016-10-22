@@ -731,7 +731,7 @@ class EntityGeneratorTest extends OrmTestCase
         $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
         $method     = new \ReflectionMethod($this->_generator, 'getInheritanceTypeString');
         $constants  = $reflection->getConstants();
-        $pattern    = '/^INHERITANCE_TYPE_/';
+        $pattern    = '/^InheritanceType::/';
 
         $method->setAccessible(true);
 

@@ -7,10 +7,7 @@ use Doctrine\Tests\ORM\Mapping\Cat;
 use Doctrine\Tests\ORM\Mapping\Dog;
 
 /* @var $metadata ClassMetadata */
-$metadata->setInheritanceType(Mapping\ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
-
 $discrColumn = new Mapping\DiscriminatorColumnMetadata();
-
 $discrColumn->setTableName($metadata->getTableName());
 $discrColumn->setColumnName('dtype');
 $discrColumn->setType(Type::getType('string'));
@@ -25,6 +22,7 @@ $metadata->setDiscriminatorMap(
     ]
 );
 
+$metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
