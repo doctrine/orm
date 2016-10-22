@@ -45,7 +45,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     }
 
     /**
-     * Tests that PersistentCollection::isEmpty() does not initialize the collection when FETCH_EXTRA_LAZY is used.
+     * Tests that PersistentCollection::isEmpty() does not initialize the collection when FetchMode::EXTRA_LAZY is used.
      */
     public function testExtraLazyIsEmptyDoesNotInitializeCollection()
     {

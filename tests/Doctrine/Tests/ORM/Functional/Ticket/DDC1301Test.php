@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models;
 
 /**
@@ -21,9 +22,9 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         $class = $this->_em->getClassMetadata(Models\Legacy\LegacyUser::class);
-        $class->associationMappings['_articles']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['_references']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['_cars']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['_articles']['fetch'] = FetchMode::EXTRA_LAZY;
+        $class->associationMappings['_references']['fetch'] = FetchMode::EXTRA_LAZY;
+        $class->associationMappings['_cars']['fetch'] = FetchMode::EXTRA_LAZY;
 
         $this->loadFixture();
     }
@@ -33,9 +34,9 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->_em->getClassMetadata(Models\Legacy\LegacyUser::class);
-        $class->associationMappings['_articles']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['_references']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['_cars']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['_articles']['fetch'] = FetchMode::LAZY;
+        $class->associationMappings['_references']['fetch'] = FetchMode::LAZY;
+        $class->associationMappings['_cars']['fetch'] = FetchMode::LAZY;
     }
 
     public function testCountNotInitializesLegacyCollection()

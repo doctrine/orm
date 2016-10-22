@@ -6,7 +6,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -245,7 +245,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertNotContains('merge', $association['cascade']);
         self::assertNotContains('detach', $association['cascade']);
         self::assertTrue($association['orphanRemoval']);
-        self::assertEquals(ClassMetadata::FETCH_EAGER, $association['fetch']);
+        self::assertEquals(FetchMode::EAGER, $association['fetch']);
 
         return $class;
     }
@@ -277,7 +277,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('merge', $class->associationMappings['phonenumbers']['cascade']);
         self::assertNotContains('detach', $class->associationMappings['phonenumbers']['cascade']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        self::assertEquals(ClassMetadata::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
+        self::assertEquals(FetchMode::LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
         return $class;
     }
@@ -313,7 +313,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('merge', $association['cascade']);
         self::assertContains('detach', $association['cascade']);
 
-        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $association['fetch']);
+        self::assertEquals(FetchMode::EXTRA_LAZY, $association['fetch']);
 
         return $class;
     }
@@ -368,7 +368,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $type = $this->_getType();
 
         if ($type == 'xml') {
-            $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
+            $xml = simplexml_load_string(
+                file_get_contents(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml')
+            );
 
             $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:one-to-many[@field='interests']/d:cascade/d:*");
