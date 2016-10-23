@@ -123,6 +123,17 @@ class ClassMetadata implements ClassMetadataInterface
     public $isEmbeddedClass = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of a read-only class.
+     * That means it is never considered for change-tracking in the UnitOfWork.
+     * It is a very helpful performance optimization for entities that are immutable,
+     * either in your domain or through the relation database (coming from a view,
+     * or a history table for example).
+     *
+     * @var boolean
+     */
+    public $isReadOnly = false;
+
+    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -184,12 +195,42 @@ class ClassMetadata implements ClassMetadataInterface
     public $sqlResultSetMappings = [];
 
     /**
+     * READ-ONLY: The registered lifecycle callbacks for entities of this class.
+     *
+     * @var array
+     */
+    public $lifecycleCallbacks = [];
+
+    /**
+     * READ-ONLY: The registered entity listeners.
+     *
+     * @var array
+     */
+    public $entityListeners = [];
+
+    /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
      * @var array
      */
     public $identifier = [];
+
+    /**
+     * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
+     *
+     * @var boolean
+     */
+    public $isIdentifierComposite = false;
+
+    /**
+     * READ-ONLY: Flag indicating whether the identifier/primary key contains at least one foreign key association.
+     *
+     * This flag is necessary because some code blocks require special treatment of this cases.
+     *
+     * @var boolean
+     */
+    public $containsForeignIdentifier = false;
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
@@ -230,6 +271,8 @@ class ClassMetadata implements ClassMetadataInterface
      * </code>
      *
      * @var array
+     *
+     * @todo Remove!
      */
     public $generatorDefinition;
 
@@ -241,19 +284,6 @@ class ClassMetadata implements ClassMetadataInterface
      * @todo Remove!
      */
     public $idGenerator;
-
-    /**
-     * @var array
-     */
-    protected $properties = [];
-
-    /**
-     * READ-ONLY: An array of field names. Used to look up field names from column names.
-     * Keys are column names and values are field names.
-     *
-     * @var array
-     */
-    public $fieldNames = [];
 
     /**
      * READ-ONLY: The discriminator value of this class.
@@ -295,18 +325,17 @@ class ClassMetadata implements ClassMetadataInterface
     public $table;
 
     /**
-     * READ-ONLY: The registered lifecycle callbacks for entities of this class.
+     * READ-ONLY: An array of field names. Used to look up field names from column names.
+     * Keys are column names and values are field names.
      *
      * @var array
      */
-    public $lifecycleCallbacks = [];
+    public $fieldNames = [];
 
     /**
-     * READ-ONLY: The registered entity listeners.
-     *
      * @var array
      */
-    public $entityListeners = [];
+    protected $properties = [];
 
     /**
      * READ-ONLY: The association mappings of this class.
@@ -366,22 +395,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $associationMappings = [];
 
     /**
-     * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
-     *
-     * @var boolean
-     */
-    public $isIdentifierComposite = false;
-
-    /**
-     * READ-ONLY: Flag indicating whether the identifier/primary key contains at least one foreign key association.
-     *
-     * This flag is necessary because some code blocks require special treatment of this cases.
-     *
-     * @var boolean
-     */
-    public $containsForeignIdentifier = false;
-
-    /**
      * READ-ONLY: The field which is used for versioning in optimistic locking (if any).
      *
      * @var FieldMetadata|null
@@ -399,17 +412,6 @@ class ClassMetadata implements ClassMetadataInterface
      * @var ReflectionClass
      */
     public $reflClass;
-
-    /**
-     * Is this entity marked as "read-only"?
-     *
-     * That means it is never considered for change-tracking in the UnitOfWork. It is a very helpful performance
-     * optimization for entities that are immutable, either in your domain or through the relation database
-     * (coming from a view, or a history table for example).
-     *
-     * @var bool
-     */
-    public $isReadOnly = false;
 
     /**
      * NamingStrategy determining the default column and table names.
@@ -892,36 +894,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function setChangeTrackingPolicy($policy)
     {
         $this->changeTrackingPolicy = $policy;
-    }
-
-    /**
-     * Whether the change tracking policy of this class is "deferred explicit".
-     *
-     * @return boolean
-     */
-    public function isChangeTrackingDeferredExplicit()
-    {
-        return ChangeTrackingPolicy::DEFERRED_EXPLICIT === $this->changeTrackingPolicy;
-    }
-
-    /**
-     * Whether the change tracking policy of this class is "deferred implicit".
-     *
-     * @return boolean
-     */
-    public function isChangeTrackingDeferredImplicit()
-    {
-        return ChangeTrackingPolicy::DEFERRED_IMPLICIT === $this->changeTrackingPolicy;
-    }
-
-    /**
-     * Whether the change tracking policy of this class is "notify".
-     *
-     * @return boolean
-     */
-    public function isChangeTrackingNotify()
-    {
-        return ChangeTrackingPolicy::NOTIFY === $this->changeTrackingPolicy;
     }
 
     /**
@@ -1484,17 +1456,11 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Gets an array containing all the column names.
      *
-     * @param array|null $fieldNames
-     *
      * @return array
      */
-    public function getColumnNames(array $fieldNames = null)
+    public function getColumnNames()
     {
-        if (null === $fieldNames) {
-            return array_keys($this->fieldNames);
-        }
-
-        return array_values(array_map([$this, 'getColumnName'], $fieldNames));
+        return array_keys($this->fieldNames);
     }
 
     /**
@@ -2384,60 +2350,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Is this an association that only has a single join column?
-     *
-     * @param string $fieldName
-     *
-     * @return bool
-     */
-    public function isAssociationWithSingleJoinColumn($fieldName)
-    {
-        return isset($this->associationMappings[$fieldName])
-            && isset($this->associationMappings[$fieldName]['joinColumns'][0])
-            && ! isset($this->associationMappings[$fieldName]['joinColumns'][1]);
-    }
-
-    /**
-     * Returns the single association join column (if any).
-     *
-     * @param string $fieldName
-     *
-     * @return string
-     *
-     * @throws MappingException
-     */
-    public function getSingleAssociationJoinColumnName($fieldName)
-    {
-        if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
-            throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
-        }
-
-        $joinColumn = reset($this->associationMappings[$fieldName]['joinColumns']);
-
-        return $joinColumn->getColumnName();
-    }
-
-    /**
-     * Returns the single association referenced join column name (if any).
-     *
-     * @param string $fieldName
-     *
-     * @return string
-     *
-     * @throws MappingException
-     */
-    public function getSingleAssociationReferencedJoinColumnName($fieldName)
-    {
-        if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
-            throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
-        }
-
-        $joinColumn = reset($this->associationMappings[$fieldName]['joinColumns']);
-
-        return $joinColumn->getReferencedColumnName();
-    }
-
-    /**
      * Used to retrieve a fieldname for either field or association from a given column.
      *
      * This method is used in foreign-key as primary-key contexts.
@@ -2455,10 +2367,12 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         foreach ($this->associationMappings as $assocName => $mapping) {
-            if ($this->isAssociationWithSingleJoinColumn($assocName) &&
-                $this->associationMappings[$assocName]['joinColumns'][0]->getColumnName() === $columnName) {
+            foreach ($mapping['joinColumns'] as $joinColumn) {
+                if ($joinColumn->getColumnName() === $columnName) {
+                    //$this->fieldNames[$columnName] = $assocName;
 
-                return $assocName;
+                    return $assocName;
+                }
             }
         }
 
@@ -2663,7 +2577,6 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getMetadataValue($name)
     {
-
         if (isset($this->$name)) {
             return $this->$name;
         }

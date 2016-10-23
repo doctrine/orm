@@ -72,23 +72,23 @@ class TableGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(
-        EntityManager $em, $entity)
+    public function generate(EntityManager $em, $entity)
     {
-        if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
+        if ($this->_maxValue === null || $this->_nextValue === $this->_maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
 
             if ($conn->getTransactionNestingLevel() === 0) {
                 // use select for update
-                $sql          = $conn->getDatabasePlatform()->getTableHiLoCurrentValSql($this->_tableName, $this->_sequenceName);
+                $platform     = $conn->getDatabasePlatform();
+                $sql          = $platform->getTableHiLoCurrentValSql($this->_tableName, $this->_sequenceName);
                 $currentLevel = $conn->fetchColumn($sql);
 
-                if ($currentLevel != null) {
+                if ($currentLevel !== null) {
                     $this->_nextValue = $currentLevel;
-                    $this->_maxValue = $this->_nextValue + $this->_allocationSize;
+                    $this->_maxValue  = $this->_nextValue + $this->_allocationSize;
 
-                    $updateSql = $conn->getDatabasePlatform()->getTableHiLoUpdateNextValSql(
+                    $updateSql = $platform->getTableHiLoUpdateNextValSql(
                         $this->_tableName, $this->_sequenceName, $this->_allocationSize
                     );
 

@@ -24,6 +24,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 
@@ -295,7 +296,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association['isOwningSide'] &&
             $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
             $this->owner &&
-            $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+            $this->em->getClassMetadata(get_class($this->owner))->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
             $this->em->getUnitOfWork()->scheduleForSynchronization($this->owner);
         }
     }
