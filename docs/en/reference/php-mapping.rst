@@ -261,12 +261,7 @@ Identifier Getters
 
 
 -  ``getIdentifierColumnNames()``
--  ``usesIdGenerator()``
 -  ``isIdentifier($fieldName)``
--  ``isIdGeneratorIdentity()``
--  ``isIdGeneratorSequence()``
--  ``isIdGeneratorTable()``
--  ``isIdentifierNatural()``
 -  ``getIdentifierFieldNames()``
 -  ``getSingleIdentifierFieldName()``
 -  ``getSingleIdentifierColumnName()``
@@ -275,20 +270,8 @@ Inheritance Getters
 ~~~~~~~~~~~~~~~~~~~
 
 
--  ``isInheritanceTypeNone()``
--  ``isInheritanceTypeJoined()``
--  ``isInheritanceTypeSingleTable()``
--  ``isInheritanceTypeTablePerClass()``
 -  ``isInheritedField($fieldName)``
 -  ``isInheritedAssociation($fieldName)``
-
-Change Tracking Getters
-~~~~~~~~~~~~~~~~~~~~~~~
-
-
--  ``isChangeTrackingDeferredExplicit()``
--  ``isChangeTrackingDeferredImplicit()``
--  ``isChangeTrackingNotify()``
 
 Field & Association Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
