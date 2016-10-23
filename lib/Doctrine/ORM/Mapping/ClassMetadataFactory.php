@@ -688,12 +688,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $idGenType = $class->generatorType;
         $platform  = $this->getTargetPlatform();
 
-        if ($idGenType === ClassMetadata::GENERATOR_TYPE_AUTO) {
+        if ($idGenType === GeneratorType::AUTO) {
             $idGenType = $platform->prefersSequences()
-                ? ClassMetadata::GENERATOR_TYPE_SEQUENCE
+                ? GeneratorType::SEQUENCE
                 : ($platform->prefersIdentityColumns()
-                    ? ClassMetadata::GENERATOR_TYPE_IDENTITY
-                    : ClassMetadata::GENERATOR_TYPE_TABLE
+                    ? GeneratorType::IDENTITY
+                    : GeneratorType::TABLE
                 );
 
             $class->setIdGeneratorType($idGenType);
@@ -701,7 +701,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         // Create & assign an appropriate ID generator instance
         switch ($class->generatorType) {
-            case ClassMetadata::GENERATOR_TYPE_IDENTITY:
+            case GeneratorType::IDENTITY:
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
@@ -722,7 +722,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
+            case GeneratorType::SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
                 $definition = $class->generatorDefinition;
 
@@ -743,19 +743,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator($sequenceGenerator);
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_NONE:
+            case GeneratorType::NONE:
                 $class->setIdGenerator(new Sequencing\AssignedGenerator());
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_UUID:
+            case GeneratorType::UUID:
                 $class->setIdGenerator(new Sequencing\UuidGenerator());
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_TABLE:
+            case GeneratorType::TABLE:
                 throw new ORMException("TableGenerator not yet implemented.");
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_CUSTOM:
+            case GeneratorType::CUSTOM:
                 $definition = $class->generatorDefinition;
 
                 if ( ! class_exists($definition['class'])) {

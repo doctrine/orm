@@ -28,4 +28,4 @@ $metadata->mapManyToMany(
     ]
 );
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

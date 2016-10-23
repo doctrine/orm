@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\FetchMode;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -178,7 +179,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         self::assertTrue($property->isPrimaryKey());
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_IDENTITY, $class->generatorType, "Generator Type wrong");
+        self::assertEquals(GeneratorType::IDENTITY, $class->generatorType, "Generator Type wrong");
 
         return $class;
     }
