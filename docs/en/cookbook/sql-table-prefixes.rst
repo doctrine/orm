@@ -25,7 +25,9 @@ appropriate autoloaders.
     <?php
     
     namespace DoctrineExtensions;
-    use \Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+
+    use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+    use Doctrine\ORM\Mapping;
     
     class TablePrefix
     {
@@ -40,12 +42,13 @@ appropriate autoloaders.
         {
             $classMetadata = $eventArgs->getClassMetadata();
 
-            if (!$classMetadata->isInheritanceTypeSingleTable() || $classMetadata->getName() === $classMetadata->rootEntityName) {
+            if ($classMetadata->inheritanceType !== Mapping\InheritanceType::SINGLE_TABLE ||
+                $classMetadata->getName() === $classMetadata->rootEntityName) {
                 $classMetadata->setTableName($this->prefix . $classMetadata->getTableName());
             }
 
             foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
-                if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
+                if ($mapping['type'] == Mapping\ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                     $mappedTableName = $mapping['joinTable']['name'];
                     $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
                 }

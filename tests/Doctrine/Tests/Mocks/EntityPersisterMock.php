@@ -56,7 +56,7 @@ class EntityPersisterMock extends BasicEntityPersister
     {
         $this->inserts[] = $entity;
 
-        if ($this->mockIdGeneratorType === GeneratorType::IDENTITY || $this->class->isIdGeneratorIdentity()) {
+        if ($this->mockIdGeneratorType === GeneratorType::IDENTITY || $this->class->generatorType === GeneratorType::IDENTITY) {
             $id = $this->identityColumnValueCounter++;
 
             $this->postInsertIds[] = [
