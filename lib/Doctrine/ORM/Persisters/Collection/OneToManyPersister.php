@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -54,7 +55,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-        return $targetClass->isInheritanceTypeJoined()
+        return $targetClass->inheritanceType === InheritanceType::JOINED
             ? $this->deleteJoinedEntityCollection($collection)
             : $this->deleteEntityCollection($collection);
     }

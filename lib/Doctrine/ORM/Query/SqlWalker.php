@@ -263,14 +263,14 @@ class SqlWalker implements TreeWalker
             case ($AST instanceof AST\DeleteStatement):
                 $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
 
-                return ($primaryClass->isInheritanceTypeJoined())
+                return ($primaryClass->inheritanceType === InheritanceType::JOINED)
                     ? new Exec\MultiTableDeleteExecutor($AST, $this)
                     : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
 
             case ($AST instanceof AST\UpdateStatement):
                 $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
 
-                return ($primaryClass->isInheritanceTypeJoined())
+                return ($primaryClass->inheritanceType === InheritanceType::JOINED)
                     ? new Exec\MultiTableUpdateExecutor($AST, $this)
                     : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
 
@@ -443,7 +443,9 @@ class SqlWalker implements TreeWalker
         foreach ($dqlAliases as $dqlAlias) {
             $class = $this->queryComponents[$dqlAlias]['metadata'];
 
-            if ( ! $class->isInheritanceTypeSingleTable()) continue;
+            if ($class->inheritanceType !== InheritanceType::SINGLE_TABLE) {
+                continue;
+            }
 
             $conn   = $this->em->getConnection();
             $values = array();
@@ -644,7 +646,7 @@ class SqlWalker implements TreeWalker
 
         $property = $class->getProperty($fieldName);
 
-        if ($class->isInheritanceTypeJoined() && $class->isInheritedProperty($fieldName)) {
+        if ($class->inheritanceType === InheritanceType::JOINED && $class->isInheritedProperty($fieldName)) {
             $class = $property->getDeclaringClass();
         }
 
@@ -740,7 +742,7 @@ class SqlWalker implements TreeWalker
                 );
             }
 
-            if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
+            if ($class->inheritanceType === InheritanceType::SINGLE_TABLE || $class->inheritanceType === InheritanceType::JOINED) {
                 // Add discriminator columns to SQL
                 $discrColumn      = $class->discriminatorColumn;
                 $discrColumnName  = $discrColumn->getColumnName();
@@ -919,7 +921,7 @@ class SqlWalker implements TreeWalker
             $this->query->getHint(Query::HINT_LOCK_MODE)
         );
 
-        if ($class->isInheritanceTypeJoined()) {
+        if ($class->inheritanceType === InheritanceType::JOINED) {
             $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
         }
 
@@ -1080,8 +1082,9 @@ class SqlWalker implements TreeWalker
         // Handle WITH clause
         $withCondition = (null === $condExpr) ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
 
-        if ($targetClass->isInheritanceTypeJoined()) {
+        if ($targetClass->inheritanceType === InheritanceType::JOINED) {
             $ctiJoins = $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+
             // If we have WITH condition, we need to build nested joins for target class table and cti joins
             if ($withCondition) {
                 $sql .= '(' . $targetTableJoin['table'] . $ctiJoins . ') ON ' . $targetTableJoin['condition'];
@@ -1180,7 +1183,7 @@ class SqlWalker implements TreeWalker
                     $conditions[] = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 }
 
-                $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER)
+                $condExprConjunction = ($class->inheritanceType === InheritanceType::JOINED && $joinType !== AST\Join::JOIN_TYPE_LEFT && $joinType !== AST\Join::JOIN_TYPE_LEFTOUTER)
                     ? ' AND '
                     : ' ON ';
 
@@ -1463,7 +1466,7 @@ class SqlWalker implements TreeWalker
                 // 1) on Single Table Inheritance: always, since its marginal overhead
                 // 2) on Class Table Inheritance only if partial objects are disallowed,
                 //    since it requires outer joining subtables.
-                if ($class->isInheritanceTypeSingleTable() || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+                if ($class->inheritanceType === InheritanceType::SINGLE_TABLE || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
                     foreach ($class->subClasses as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 

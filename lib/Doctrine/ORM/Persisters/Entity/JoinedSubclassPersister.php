@@ -24,6 +24,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -540,8 +541,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 continue;
             }
 
-            if ($this->class->name != $this->class->rootEntityName
-                || ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
+            if (
+                $this->class->name !== $this->class->rootEntityName ||
+                $this->class->generatorType !== GeneratorType::IDENTITY ||
+                $this->class->identifier[0] !== $name
+            ) {
                 $columnName = $property->getColumnName();
 
                 $columns[] = $columnName;

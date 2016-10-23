@@ -21,6 +21,8 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\ORMException;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
@@ -129,7 +131,7 @@ class SchemaTool
             isset($processedClasses[$class->name]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
-            ($class->isInheritanceTypeSingleTable() && $class->name !== $class->rootEntityName)
+            ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->name !== $class->rootEntityName)
         );
     }
 
@@ -164,87 +166,97 @@ class SchemaTool
 
             $table = $schema->createTable($class->table->getQuotedQualifiedName($this->platform));
 
-            if ($class->isInheritanceTypeSingleTable()) {
-                $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+            switch ($class->inheritanceType) {
+                case InheritanceType::SINGLE_TABLE:
+                    $this->gatherColumns($class, $table);
+                    $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
-                // Add the discriminator column
-                $this->addDiscriminatorColumnDefinition($class, $table);
-
-                // Aggregate all the information from all classes in the hierarchy
-                foreach ($class->parentClasses as $parentClassName) {
-                    // Parent class information is already contained in this class
-                    $processedClasses[$parentClassName] = true;
-                }
-
-                foreach ($class->subClasses as $subClassName) {
-                    $subClass = $this->em->getClassMetadata($subClassName);
-
-                    $this->gatherColumns($subClass, $table);
-                    $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
-
-                    $processedClasses[$subClassName] = true;
-                }
-            } elseif ($class->isInheritanceTypeJoined()) {
-                // Add all non-inherited fields as columns
-                $pkColumns = array();
-
-                foreach ($class->getProperties() as $fieldName => $property) {
-                    if (! $class->isInheritedProperty($fieldName)) {
-                        $columnName = $this->platform->quoteIdentifier($property->getColumnName());
-
-                        $this->gatherColumn($class, $property, $table);
-
-                        if ($class->isIdentifier($fieldName)) {
-                            $pkColumns[] = $columnName;
-                        }
-                    }
-                }
-
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
-
-                // Add the discriminator column only to the root table
-                if ($class->name === $class->rootEntityName) {
+                    // Add the discriminator column
                     $this->addDiscriminatorColumnDefinition($class, $table);
-                } else {
-                    // Add an ID FK column to child tables
-                    $inheritedKeyColumns = array();
 
-                    foreach ($class->identifier as $identifierField) {
-                        $idProperty = $class->getProperty($identifierField);
+                    // Aggregate all the information from all classes in the hierarchy
+                    foreach ($class->parentClasses as $parentClassName) {
+                        // Parent class information is already contained in this class
+                        $processedClasses[$parentClassName] = true;
+                    }
 
-                        if ($class->isInheritedProperty($identifierField)) {
-                            $column     = $this->gatherColumn($class, $idProperty, $table);
-                            $columnName = $column->getQuotedName($this->platform);
+                    foreach ($class->subClasses as $subClassName) {
+                        $subClass = $this->em->getClassMetadata($subClassName);
 
-                            // TODO: This seems rather hackish, can we optimize it?
-                            $column->setAutoincrement(false);
+                        $this->gatherColumns($subClass, $table);
+                        $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
 
-                            $pkColumns[] = $columnName;
-                            $inheritedKeyColumns[] = $columnName;
+                        $processedClasses[$subClassName] = true;
+                    }
+
+                    break;
+
+                case InheritanceType::JOINED:
+                    // Add all non-inherited fields as columns
+                    $pkColumns = array();
+
+                    foreach ($class->getProperties() as $fieldName => $property) {
+                        if (! $class->isInheritedProperty($fieldName)) {
+                            $columnName = $this->platform->quoteIdentifier($property->getColumnName());
+
+                            $this->gatherColumn($class, $property, $table);
+
+                            if ($class->isIdentifier($fieldName)) {
+                                $pkColumns[] = $columnName;
+                            }
                         }
                     }
 
-                    if ( ! empty($inheritedKeyColumns)) {
-                        // Add a FK constraint on the ID column
-                        $rootClass = $this->em->getClassMetadata($class->rootEntityName);
+                    $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
-                        $table->addForeignKeyConstraint(
-                            $rootClass->table->getQuotedQualifiedName($this->platform),
-                            $inheritedKeyColumns,
-                            $inheritedKeyColumns,
-                            array('onDelete' => 'CASCADE')
-                        );
+                    // Add the discriminator column only to the root table
+                    if ($class->name === $class->rootEntityName) {
+                        $this->addDiscriminatorColumnDefinition($class, $table);
+                    } else {
+                        // Add an ID FK column to child tables
+                        $inheritedKeyColumns = array();
+
+                        foreach ($class->identifier as $identifierField) {
+                            $idProperty = $class->getProperty($identifierField);
+
+                            if ($class->isInheritedProperty($identifierField)) {
+                                $column     = $this->gatherColumn($class, $idProperty, $table);
+                                $columnName = $column->getQuotedName($this->platform);
+
+                                // TODO: This seems rather hackish, can we optimize it?
+                                $column->setAutoincrement(false);
+
+                                $pkColumns[] = $columnName;
+                                $inheritedKeyColumns[] = $columnName;
+                            }
+                        }
+
+                        if ( ! empty($inheritedKeyColumns)) {
+                            // Add a FK constraint on the ID column
+                            $rootClass = $this->em->getClassMetadata($class->rootEntityName);
+
+                            $table->addForeignKeyConstraint(
+                                $rootClass->table->getQuotedQualifiedName($this->platform),
+                                $inheritedKeyColumns,
+                                $inheritedKeyColumns,
+                                array('onDelete' => 'CASCADE')
+                            );
+                        }
+
                     }
 
-                }
+                    $table->setPrimaryKey($pkColumns);
 
-                $table->setPrimaryKey($pkColumns);
-            } elseif ($class->isInheritanceTypeTablePerClass()) {
-                throw ORMException::notSupported();
-            } else {
-                $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                    break;
+
+                case InheritanceType::TABLE_PER_CLASS:
+                    throw ORMException::notSupported();
+
+                default:
+                    $this->gatherColumns($class, $table);
+                    $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+
+                    break;
             }
 
             $pkColumns = array();
@@ -326,7 +338,7 @@ class SchemaTool
 
             $processedClasses[$class->name] = true;
 
-            if ($class->isIdGeneratorSequence() && $class->name === $class->rootEntityName) {
+            if ($class->generatorType === GeneratorType::SEQUENCE && $class->name === $class->rootEntityName) {
                 $definition = $class->generatorDefinition;
                 $quotedName = $this->platform->quoteIdentifier($definition['sequenceName']);
 
@@ -407,7 +419,7 @@ class SchemaTool
         $pkColumns = array();
 
         foreach ($class->getProperties() as $fieldName => $property) {
-            if ($class->isInheritanceTypeSingleTable() && $class->isInheritedProperty($fieldName)) {
+            if ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->isInheritedProperty($fieldName)) {
                 continue;
             }
 
@@ -448,7 +460,7 @@ class SchemaTool
             ),
         );
 
-        if ($classMetadata->isInheritanceTypeSingleTable() && count($classMetadata->parentClasses) > 0) {
+        if ($classMetadata->inheritanceType === InheritanceType::SINGLE_TABLE && count($classMetadata->parentClasses) > 0) {
             $options['notnull'] = false;
         }
 
@@ -484,11 +496,11 @@ class SchemaTool
             $options['customSchemaOptions'] = $fieldOptions;
         }
 
-        if ($classMetadata->isIdGeneratorIdentity() && $classMetadata->getIdentifierFieldNames() == array($fieldName)) {
+        if ($classMetadata->generatorType === GeneratorType::IDENTITY && $classMetadata->getIdentifierFieldNames() == array($fieldName)) {
             $options['autoincrement'] = true;
         }
 
-        if ($classMetadata->isInheritanceTypeJoined() && $classMetadata->name != $classMetadata->rootEntityName) {
+        if ($classMetadata->inheritanceType === InheritanceType::JOINED && $classMetadata->name != $classMetadata->rootEntityName) {
             $options['autoincrement'] = false;
         }
 
