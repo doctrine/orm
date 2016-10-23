@@ -783,7 +783,7 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::identifierRequired($this->name);
         }
 
-        if ($this->usesIdGenerator() && $this->isIdentifierComposite) {
+        if ($this->generatorType !== GeneratorType::NONE && $this->isIdentifierComposite) {
             throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->name);
         }
     }
@@ -1239,7 +1239,7 @@ class ClassMetadata implements ClassMetadataInterface
             $uniqueConstraintColumns = [];
 
             foreach ($mapping['joinColumns'] as $joinColumn) {
-                if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
+                if ($mapping['type'] === self::ONE_TO_ONE && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
                     if (1 === count($mapping['joinColumns'])) {
                         if (empty($mapping['id'])) {
                             $joinColumn->setUnique(true);
@@ -1539,108 +1539,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function setIdGeneratorType($generatorType)
     {
         $this->generatorType = $generatorType;
-    }
-
-    /**
-     * Checks whether the mapped class uses an Id generator.
-     *
-     * @return boolean TRUE if the mapped class uses an Id generator, FALSE otherwise.
-     */
-    public function usesIdGenerator()
-    {
-        return $this->generatorType !== GeneratorType::NONE;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isInheritanceTypeNone()
-    {
-        return $this->inheritanceType === InheritanceType::NONE;
-    }
-
-    /**
-     * Checks whether the mapped class uses the JOINED inheritance mapping strategy.
-     *
-     * @return boolean TRUE if the class participates in a JOINED inheritance mapping,
-     *                 FALSE otherwise.
-     */
-    public function isInheritanceTypeJoined()
-    {
-        return $this->inheritanceType === InheritanceType::JOINED;
-    }
-
-    /**
-     * Checks whether the mapped class uses the SINGLE_TABLE inheritance mapping strategy.
-     *
-     * @return boolean TRUE if the class participates in a SINGLE_TABLE inheritance mapping,
-     *                 FALSE otherwise.
-     */
-    public function isInheritanceTypeSingleTable()
-    {
-        return $this->inheritanceType === InheritanceType::SINGLE_TABLE;
-    }
-
-    /**
-     * Checks whether the mapped class uses the TABLE_PER_CLASS inheritance mapping strategy.
-     *
-     * @return boolean TRUE if the class participates in a TABLE_PER_CLASS inheritance mapping,
-     *                 FALSE otherwise.
-     */
-    public function isInheritanceTypeTablePerClass()
-    {
-        return $this->inheritanceType === InheritanceType::TABLE_PER_CLASS;
-    }
-
-    /**
-     * Checks whether the class uses an identity column for the Id generation.
-     *
-     * @return boolean TRUE if the class uses the IDENTITY generator, FALSE otherwise.
-     */
-    public function isIdGeneratorIdentity()
-    {
-        return $this->generatorType === GeneratorType::IDENTITY;
-    }
-
-    /**
-     * Checks whether the class uses a sequence for id generation.
-     *
-     * @return boolean TRUE if the class uses the SEQUENCE generator, FALSE otherwise.
-     */
-    public function isIdGeneratorSequence()
-    {
-        return $this->generatorType === GeneratorType::SEQUENCE;
-    }
-
-    /**
-     * Checks whether the class uses a table for id generation.
-     *
-     * @return boolean TRUE if the class uses the TABLE generator, FALSE otherwise.
-     */
-    public function isIdGeneratorTable()
-    {
-        return $this->generatorType === GeneratorType::TABLE;
-    }
-
-    /**
-     * Checks whether the class has a natural identifier/pk (which means it does
-     * not use any Id generator.
-     *
-     * @return boolean
-     */
-    public function isIdentifierNatural()
-    {
-        return $this->generatorType === GeneratorType::NONE;
-    }
-
-    /**
-     * Checks whether the class use a UUID for id generation.
-     *
-     * @return boolean
-     */
-    public function isIdentifierUuid()
-    {
-        return $this->generatorType === GeneratorType::UUID;
     }
 
     /**

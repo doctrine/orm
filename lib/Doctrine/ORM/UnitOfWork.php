@@ -36,6 +36,8 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
+use Doctrine\ORM\Mapping\GeneratorType;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -570,7 +572,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ( ! $class->isInheritanceTypeNone()) {
+        if ($class->inheritanceType !== InheritanceType::NONE) {
             $class = $this->em->getClassMetadata(get_class($entity));
         }
 
@@ -615,7 +617,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
+            if (( ! $class->isIdentifier($name) || $class->generatorType !== GeneratorType::IDENTITY)
                 && (! $class->isVersioned() || $name !== $class->versionProperty->getName())) {
                 $actualData[$name] = $value;
             }
@@ -937,14 +939,14 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ( ! $class->isInheritanceTypeNone()) {
+        if ($class->inheritanceType !== InheritanceType::NONE) {
             $class = $this->em->getClassMetadata(get_class($entity));
         }
 
         $actualData = [];
 
         foreach ($class->reflFields as $name => $refProp) {
-            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
+            if (( ! $class->isIdentifier($name) || $class->generatorType !== GeneratorType::IDENTITY)
                 && ($class->versionProperty === null || $name !== $class->versionProperty->getName())
                 && ! $class->isCollectionValuedAssociation($name)) {
                 $actualData[$name] = $refProp->getValue($entity);
@@ -1102,7 +1104,7 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if ( ! $class->isIdentifierNatural()) {
+            if ($class->generatorType !== GeneratorType::NONE) {
                 $class->reflFields[$class->identifier[0]]->setValue($entity, null);
             }
 
@@ -1462,7 +1464,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         switch (true) {
-            case ($class->isIdentifierNatural()):
+            case ($class->generatorType === GeneratorType::NONE):
                 // Check for a version field, if available, to avoid a db lookup.
                 if ($class->isVersioned()) {
                     return $class->versionProperty->getValue($entity)
@@ -1847,7 +1849,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy === null) {
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
-                    if ( ! $class->isIdentifierNatural()) {
+                    if ($class->generatorType !== GeneratorType::NONE) {
                         throw EntityNotFoundException::fromClassNameAndIdentifier(
                             $class->getName(),
                             $this->identifierFlattener->flattenIdentifier($class, $id)
@@ -3010,15 +3012,15 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata($entityName);
 
         switch (true) {
-            case ($class->isInheritanceTypeNone()):
+            case ($class->inheritanceType === InheritanceType::NONE):
                 $persister = new BasicEntityPersister($this->em, $class);
                 break;
 
-            case ($class->isInheritanceTypeSingleTable()):
+            case ($class->inheritanceType === InheritanceType::SINGLE_TABLE):
                 $persister = new SingleTablePersister($this->em, $class);
                 break;
 
-            case ($class->isInheritanceTypeJoined()):
+            case ($class->inheritanceType === InheritanceType::JOINED):
                 $persister = new JoinedSubclassPersister($this->em, $class);
                 break;
 
