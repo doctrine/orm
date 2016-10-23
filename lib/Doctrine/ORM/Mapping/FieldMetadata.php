@@ -157,29 +157,6 @@ class FieldMetadata extends ColumnMetadata implements Property
      */
     public function wakeupReflection(ReflectionService $reflectionService)
     {
-        $this->reflection = $reflectionService->getAccessibleProperty(
-            $this->getDeclaringClass()->name,
-            $this->name
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function getMapping()
-    {
-        return [
-            'declaringClass'   => $this->declaringClass->name,
-            'tableName'        => $this->tableName,
-            'columnName'       => $this->columnName,
-            'columnDefinition' => $this->columnDefinition,
-            'length'           => $this->length,
-            'scale'            => $this->scale,
-            'precision'        => $this->precision,
-            'options'          => $this->options,
-            'id'               => $this->primaryKey,
-            'nullable'         => $this->nullable,
-            'unique'           => $this->unique,
-        ];
+        $this->reflection = $reflectionService->getAccessibleProperty($this->declaringClass->name, $this->name);
     }
 }

@@ -285,7 +285,6 @@ Field & Association Getters
 -  ``getAssociationMappings()``
 -  ``getFieldName($columnName)``
 -  ``hasField($fieldName)``
--  ``getColumnNames(array $fieldNames = null)``
 -  ``getTypeOfField($fieldName)``
 -  ``getTypeOfColumn($columnName)``
 -  ``hasAssociation($fieldName)``

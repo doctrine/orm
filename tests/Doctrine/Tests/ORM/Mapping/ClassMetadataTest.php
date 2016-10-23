@@ -1426,7 +1426,7 @@ class ClassMetadataTest extends OrmTestCase
         );
     }
 
-    public function testGetColumnNamesWithGivenFieldNames()
+    public function testGetColumnNames()
     {
         $metadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
@@ -1454,8 +1454,8 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->addProperty($fieldMetadata);
 
         self::assertSame(
-            ['foo', 'baz'],
-            $metadata->getColumnNames(['status', 'name'])
+            ['foo', 'bar', 'baz'],
+            $metadata->getColumnNames()
         );
     }
 }
