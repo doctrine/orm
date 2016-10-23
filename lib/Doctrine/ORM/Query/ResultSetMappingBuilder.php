@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -181,14 +182,14 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
     }
 
-    private function isInheritanceSupported(ClassMetadata $classMetadata)
+    private function isInheritanceSupported(ClassMetadata $metadata)
     {
-        if ($classMetadata->isInheritanceTypeSingleTable()
-            && in_array($classMetadata->name, $classMetadata->discriminatorMap, true)) {
+        if ($metadata->inheritanceType === InheritanceType::SINGLE_TABLE
+            && in_array($metadata->name, $metadata->discriminatorMap, true)) {
             return true;
         }
 
-        return ! ($classMetadata->isInheritanceTypeSingleTable() || $classMetadata->isInheritanceTypeJoined());
+        return ! in_array($metadata->inheritanceType, [InheritanceType::SINGLE_TABLE, InheritanceType::JOINED]);
     }
 
     /**
