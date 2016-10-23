@@ -18,4 +18,4 @@ $fieldMetadata->setType(Type::getType('string'));
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);

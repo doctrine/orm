@@ -23,6 +23,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\FetchMode;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\EntityGenerator;
@@ -194,7 +195,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         self::assertTrue($property->isPrimaryKey());
         self::assertEquals(array('id'), $class->identifier);
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_IDENTITY, $class->generatorType, "Generator Type wrong");
+        self::assertEquals(GeneratorType::IDENTITY, $class->generatorType, "Generator Type wrong");
 
         return $class;
     }

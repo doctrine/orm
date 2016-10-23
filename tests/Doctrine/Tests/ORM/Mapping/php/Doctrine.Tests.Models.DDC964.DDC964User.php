@@ -70,4 +70,4 @@ $metadata->mapManyToMany(array(
    'joinTable'    => $joinTable,
 ));
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

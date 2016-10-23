@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
@@ -323,9 +324,7 @@ class XmlDriver extends FileDriver
                     : 'AUTO'
                 ;
 
-                $metadata->setIdGeneratorType(
-                    constant(sprintf('%s::GENERATOR_TYPE_%s', ClassMetadata::class, strtoupper($strategy)))
-                );
+                $metadata->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, strtoupper($strategy))));
             }
 
             // Check for SequenceGenerator/TableGenerator definition

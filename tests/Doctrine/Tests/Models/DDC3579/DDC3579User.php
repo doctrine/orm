@@ -81,7 +81,7 @@ class DDC3579User
         return $this->groups;
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('id');
 
@@ -106,6 +106,6 @@ class DDC3579User
            'targetEntity'   => 'DDC3579Group'
         ));
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }

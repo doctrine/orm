@@ -20,4 +20,4 @@ $discrColumn->setColumnDefinition("ENUM('ONE','TWO')");
 
 $metadata->setDiscriminatorColumn($discrColumn);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);

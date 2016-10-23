@@ -40,7 +40,7 @@ class DDC869Payment
     protected $value;
 
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('id');
 
@@ -58,7 +58,7 @@ class DDC869Payment
         $metadata->isMappedSuperclass = true;
 
         $metadata->setCustomRepositoryClass("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 
 }

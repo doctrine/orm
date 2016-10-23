@@ -20,4 +20,4 @@ $fieldMetadata->setColumnDefinition('VARCHAR(255) NOT NULL');
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);

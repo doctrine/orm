@@ -1332,10 +1332,10 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+        $cm->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(Mapping\MappingException::class);
 
         $cm->setGeneratorDefinition(array());
     }

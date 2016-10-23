@@ -88,7 +88,7 @@ $versionFieldMetadata->setType(Type::getType('integer'));
 $metadata->addProperty($versionFieldMetadata);
 $metadata->setVersionProperty($versionFieldMetadata);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
 $joinColumns = array();
 

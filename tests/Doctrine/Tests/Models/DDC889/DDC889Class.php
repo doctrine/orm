@@ -32,7 +32,7 @@ class DDC889Class extends DDC889SuperClass
      */
     protected $id;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('id');
 
@@ -41,7 +41,7 @@ class DDC889Class extends DDC889SuperClass
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 
 }

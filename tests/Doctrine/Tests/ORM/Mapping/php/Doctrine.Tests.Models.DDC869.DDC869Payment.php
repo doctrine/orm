@@ -21,4 +21,4 @@ $fieldMetadata->setType(Type::getType('float'));
 $metadata->addProperty($fieldMetadata);
 
 $metadata->setCustomRepositoryClass("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

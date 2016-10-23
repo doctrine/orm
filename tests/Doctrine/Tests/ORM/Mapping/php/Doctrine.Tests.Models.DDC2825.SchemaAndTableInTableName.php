@@ -11,7 +11,7 @@ $tableMetadata->setSchema('implicit_schema');
 $tableMetadata->setName('implicit_table');
 
 $metadata->setPrimaryTable($tableMetadata);
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 

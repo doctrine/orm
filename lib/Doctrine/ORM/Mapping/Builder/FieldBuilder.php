@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Builder;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\GeneratorType;
 
 /**
  * Field Builder
@@ -282,9 +283,7 @@ class FieldBuilder
         $cm = $this->builder->getClassMetadata();
 
         if ($this->generatedValue) {
-            $cm->setIdGeneratorType(
-                constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue)
-            );
+            $cm->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, strtoupper($this->generatedValue))));
         }
 
         $this->builder->addProperty($this->name, $this->type->getName(), $this->mapping);

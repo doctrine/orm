@@ -25,6 +25,7 @@ use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
@@ -171,21 +172,6 @@ class EntityGenerator
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
         Type::BOOLEAN       => 'bool',
-    );
-
-    /**
-     * Hash-map to handle generator types string.
-     *
-     * @var array
-     */
-    protected static $generatorStrategyMap = array(
-        ClassMetadata::GENERATOR_TYPE_AUTO      => 'AUTO',
-        ClassMetadata::GENERATOR_TYPE_SEQUENCE  => 'SEQUENCE',
-        ClassMetadata::GENERATOR_TYPE_TABLE     => 'TABLE',
-        ClassMetadata::GENERATOR_TYPE_IDENTITY  => 'IDENTITY',
-        ClassMetadata::GENERATOR_TYPE_NONE      => 'NONE',
-        ClassMetadata::GENERATOR_TYPE_UUID      => 'UUID',
-        ClassMetadata::GENERATOR_TYPE_CUSTOM    => 'CUSTOM'
     );
 
     /**
@@ -1158,7 +1144,7 @@ public function __construct(<params>)
 
             $fieldType = $property->getTypeName();
 
-            if (( ! $property->isPrimaryKey() || $metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) &&
+            if (( ! $property->isPrimaryKey() || $metadata->generatorType == GeneratorType::NONE) &&
                 ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)) {
                 if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $fieldType)) {
                     $methods[] = $code;
@@ -1779,15 +1765,15 @@ public function __construct(<params>)
      *
      * @return string The literal string for the generator type.
      *
-     * @throws \InvalidArgumentException    When the generator type does not exist.
+     * @throws \InvalidArgumentException When the generator type does not exist.
      */
     protected function getIdGeneratorTypeString($type)
     {
-        if ( ! isset(static::$generatorStrategyMap[$type])) {
+        if ( ! defined(sprintf('%s::%s', GeneratorType::class, $type))) {
             throw new \InvalidArgumentException(sprintf('Invalid provided IdGeneratorType: %s', $type));
         }
 
-        return static::$generatorStrategyMap[$type];
+        return $type;
     }
 
     /**

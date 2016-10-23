@@ -28,4 +28,4 @@ $metadata->mapManyToMany(array(
     'targetEntity'   => 'DDC3579Group'
 ));
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

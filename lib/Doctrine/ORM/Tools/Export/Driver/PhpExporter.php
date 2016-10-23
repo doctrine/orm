@@ -173,8 +173,8 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$metadata->addProperty($property);';
         }
 
-        if ( ! $metadata->isIdentifierComposite && $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $lines[] = '$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_' . $generatorType . ');';
+        if ( ! $metadata->isIdentifierComposite) {
+            $lines[] = '$metadata->setIdGeneratorType(Mapping\GeneratorType::' . $metadata->generatorType . ');';
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
