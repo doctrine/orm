@@ -160,7 +160,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
             $metadata->mapEmbedded(
@@ -201,7 +201,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
@@ -625,7 +625,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
 
         $metadata->setGeneratorDefinition(
             [
@@ -665,7 +665,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
 
         $joinTable = new Mapping\JoinTableMetadata();
         $joinTable->setName('unidade_centro_custo');
@@ -789,7 +789,7 @@ class EntityGeneratorTest extends OrmTestCase
         $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
         $method     = new \ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
         $constants  = $reflection->getConstants();
-        $pattern    = '/^GENERATOR_TYPE_/';
+        $pattern    = '/^GeneratorType::/';
 
         $method->setAccessible(true);
 

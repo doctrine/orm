@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
@@ -1460,7 +1461,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name) {
+            if ($this->class->generatorType !== GeneratorType::IDENTITY || $this->class->identifier[0] !== $name) {
                 $property   = $this->class->getProperty($name);
                 $columnName = $property->getColumnName();
 

@@ -53,7 +53,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
 
         $metadata->setGeneratorDefinition(
             [
