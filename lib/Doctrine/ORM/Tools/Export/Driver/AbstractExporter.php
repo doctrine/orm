@@ -178,32 +178,4 @@ abstract class AbstractExporter
     {
         $this->_extension = $extension;
     }
-
-    /**
-     * @param int $type
-     *
-     * @return string
-     */
-    protected function _getIdGeneratorTypeString($type)
-    {
-        switch ($type) {
-            case ClassMetadata::GENERATOR_TYPE_AUTO:
-                return 'AUTO';
-
-            case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
-                return 'SEQUENCE';
-
-            case ClassMetadata::GENERATOR_TYPE_TABLE:
-                return 'TABLE';
-
-            case ClassMetadata::GENERATOR_TYPE_IDENTITY:
-                return 'IDENTITY';
-
-            case ClassMetadata::GENERATOR_TYPE_UUID:
-                return 'UUID';
-
-            case ClassMetadata::GENERATOR_TYPE_CUSTOM:
-                return 'CUSTOM';
-        }
-    }
 }
