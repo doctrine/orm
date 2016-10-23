@@ -38,7 +38,7 @@ class FieldMetadata extends ColumnMetadata implements Property
     protected $name;
 
     /** @var int */
-    protected $identifierGeneratorType = ClassMetadata::GENERATOR_TYPE_NONE;
+    protected $identifierGeneratorType = GeneratorType::NONE;
 
     /** @var array<string, mixed> */
     protected $identifierGeneratorDefinition = [];

@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use \SimpleXMLElement;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
@@ -202,10 +203,10 @@ class XmlExporter extends AbstractExporter
                     $idXml->addAttribute('association-key', 'true');
                 }*/
 
-                if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+                if ($metadata->generatorType) {
                     $generatorXml = $idXml->addChild('generator');
 
-                    $generatorXml->addAttribute('strategy', $idGeneratorType);
+                    $generatorXml->addAttribute('strategy', $metadata->generatorType);
 
                     $this->exportSequenceInformation($idXml, $metadata);
                 }
@@ -491,7 +492,7 @@ class XmlExporter extends AbstractExporter
     {
         $sequenceDefinition = $metadata->generatorDefinition;
 
-        if (! ($metadata->generatorType === ClassMetadata::GENERATOR_TYPE_SEQUENCE && $sequenceDefinition)) {
+        if (! ($metadata->generatorType === GeneratorType::SEQUENCE && $sequenceDefinition)) {
             return;
         }
 

@@ -34,7 +34,7 @@ $fieldMetadata->setUnique(false);
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
 
 $metadata->setGeneratorDefinition(
     [

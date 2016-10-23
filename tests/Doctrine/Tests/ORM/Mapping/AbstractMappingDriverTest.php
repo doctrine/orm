@@ -190,7 +190,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $class = $this->createClassMetadata(Animal::class);
 
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $class->generatorType, "Generator Type");
+        self::assertEquals(Mapping\GeneratorType::CUSTOM, $class->generatorType, "Generator Type");
         self::assertEquals(
             [
                 'class'     => 'stdClass',
@@ -315,7 +315,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('integer', $property->getTypeName());
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
+        self::assertEquals(Mapping\GeneratorType::AUTO, $class->generatorType, "ID-Generator is not GeneratorType::AUTO");
 
         return $class;
     }
@@ -549,7 +549,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('id', $idProperty->getColumnName());
         self::assertEquals('name', $nameProperty->getColumnName());
 
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
+        self::assertEquals(Mapping\GeneratorType::NONE, $class->generatorType);
     }
 
     /**
@@ -1309,7 +1309,7 @@ class User
 
         $metadata->addProperty($fieldMetadata);
         $metadata->setVersionProperty($fieldMetadata);
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         $joinColumns = [];
 
@@ -1391,7 +1391,7 @@ abstract class Animal
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
         $metadata->setGeneratorDefinition(
             [
                 'class'     => 'stdClass',
@@ -1477,7 +1477,7 @@ class DDC1170Entity
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 
 }
@@ -1515,7 +1515,7 @@ class DDC807Entity
 
         $metadata->setDiscriminatorColumn($discrColumn);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }
 
@@ -1588,7 +1588,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }
 
@@ -1622,7 +1622,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }
 
