@@ -123,7 +123,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         /* @var $class ClassMetadata */
         /* @var $parent ClassMetadata */
         if ($parent) {
-            if ($parent->isInheritanceTypeSingleTable()) {
+            if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
                 $class->setPrimaryTable($parent->table);
             }
 
@@ -203,7 +203,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }*/
 
         if ($parent) {
-            if ($parent->isInheritanceTypeSingleTable()) {
+            if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
                 $class->setPrimaryTable($parent->table);
             }
 
@@ -236,7 +236,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $class->setParentClasses($nonSuperclassParents);
 
-        if ($class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
+        if ($class->isRootEntity() && $class->inheritanceType !== InheritanceType::NONE && ! $class->discriminatorMap) {
             $this->addDefaultDiscriminatorMap($class);
         }
 
@@ -317,7 +317,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
-        if ( ! $class->isMappedSuperclass && ! $class->isInheritanceTypeNone()) {
+        if ( ! $class->isMappedSuperclass && $class->inheritanceType !== InheritanceType::NONE) {
             if ( ! $parent) {
                 if (count($class->discriminatorMap) === 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);
