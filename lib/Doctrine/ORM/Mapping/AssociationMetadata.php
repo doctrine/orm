@@ -118,6 +118,70 @@ class AssociationMetadata implements Property
     }
 
     /**
+     * @return string
+     */
+    public function getFetchMode()
+    {
+        return $this->fetchMode;
+    }
+
+    /**
+     * @param string $fetchMode
+     */
+    public function setFetchMode(string $fetchMode)
+    {
+        $this->fetchMode = $fetchMode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMappedBy()
+    {
+        return $this->mappedBy;
+    }
+
+    /**
+     * @param string $mappedBy
+     */
+    public function setMappedBy(string $mappedBy)
+    {
+        $this->mappedBy = $mappedBy;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getInversedBy()
+    {
+        return $this->inversedBy;
+    }
+
+    /**
+     * @param null|string $inversedBy
+     */
+    public function setInversedBy($inversedBy)
+    {
+        $this->inversedBy = $inversedBy;
+    }
+
+    /**
+     * @param bool $orphanRemoval
+     */
+    public function setOrphanRemoval(bool $orphanRemoval)
+    {
+        $this->orphanRemoval = $orphanRemoval;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOrphanRemoval()
+    {
+        return $this->orphanRemoval;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setValue($object, $value)
@@ -154,9 +218,6 @@ class AssociationMetadata implements Property
      */
     public function wakeupReflection(ReflectionService $reflectionService)
     {
-        $this->reflection = $reflectionService->getAccessibleProperty(
-            $this->getDeclaringClass()->name,
-            $this->name
-        );
+        $this->reflection = $reflectionService->getAccessibleProperty($this->declaringClass->name, $this->name);
     }
 }

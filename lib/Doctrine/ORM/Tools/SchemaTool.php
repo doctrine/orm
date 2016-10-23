@@ -616,12 +616,22 @@ class SchemaTool
         if (in_array($referencedColumnName, $idColumnNameList)) {
             // it seems to be an entity as foreign key
             foreach ($class->getIdentifierFieldNames() as $fieldName) {
-                if ($class->hasAssociation($fieldName)
-                    && $class->getSingleAssociationJoinColumnName($fieldName) === $referencedColumnName) {
-                    return $this->getDefiningClass(
-                        $this->em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
-                        $class->getSingleAssociationReferencedJoinColumnName($fieldName)
-                    );
+                if (! $class->hasAssociation($fieldName)) {
+                    continue;
+                }
+
+                $association = $class->getAssociationMapping($fieldName);
+
+                if (count($association['joinColumns']) > 1) {
+                    throw MappingException::noSingleAssociationJoinColumnFound($class->name, $fieldName);
+                }
+
+                $joinColumn = reset($association['joinColumns']);
+
+                if ($joinColumn->getColumnName() === $referencedColumnName) {
+                    $targetEntity = $this->em->getClassMetadata($association['targetEntity']);
+
+                    return $this->getDefiningClass($targetEntity, $joinColumn->getReferencedColumnName());
                 }
             }
         }

@@ -234,19 +234,21 @@ class ResultSetMappingBuilder extends ResultSetMapping
             $mode = self::COLUMN_RENAMING_CUSTOM;
         }
 
-        $columnAlias = [];
-        $class       = $this->em->getClassMetadata($className);
+        $columnAlias   = [];
+        $classMetadata = $this->em->getClassMetadata($className);
 
-        foreach ($class->getColumnNames() as $columnName) {
+        foreach ($classMetadata->getColumnNames() as $columnName) {
             $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
         }
 
-        foreach ($class->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName  = $joinColumn->getColumnName();
-                    $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
-                }
+        foreach ($classMetadata->associationMappings as $associationMapping) {
+            if (! ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE)) {
+                continue;
+            }
+
+            foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                $columnName  = $joinColumn->getColumnName();
+                $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
             }
         }
 

@@ -37,7 +37,7 @@ class ToOneAssociationMetadata extends AssociationMetadata
     /**
      * @param JoinColumnMetadata $joinColumn
      */
-    public function addJoinColumns(JoinColumnMetadata $joinColumn)
+    public function addJoinColumn(JoinColumnMetadata $joinColumn)
     {
         $this->joinColumns[] = $joinColumn;
     }
