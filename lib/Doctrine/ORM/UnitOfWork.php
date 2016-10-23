@@ -34,6 +34,7 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -45,6 +46,7 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Sequencing\AssignedGenerator;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use InvalidArgumentException;
 use Throwable;
@@ -507,7 +509,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        if ($state === self::STATE_MANAGED && $class->isChangeTrackingDeferredImplicit()) {
+        if ($state === self::STATE_MANAGED && $class->changeTrackingPolicy === ChangeTrackingPolicy::DEFERRED_IMPLICIT) {
             $this->persist($entity);
         }
 
@@ -687,7 +689,7 @@ class UnitOfWork implements PropertyChangedListener
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData           = $this->originalEntityData[$oid];
-            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
+            $isChangeTrackingNotify = $class->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY;
             $changeSet              = ($isChangeTrackingNotify && isset($this->entityChangeSets[$oid]))
                 ? $this->entityChangeSets[$oid]
                 : [];
@@ -812,7 +814,7 @@ class UnitOfWork implements PropertyChangedListener
             // If change tracking is explicit or happens through notification, then only compute
             // changes on entities of that type that are explicitly marked for synchronization.
             switch (true) {
-                case ($class->isChangeTrackingDeferredImplicit()):
+                case ($class->changeTrackingPolicy === ChangeTrackingPolicy::DEFERRED_IMPLICIT):
                     $entitiesToProcess = $entities;
                     break;
 
@@ -936,7 +938,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! $idGen->isPostInsertGenerator()) {
             $idValue = $idGen->generate($this->em, $entity);
 
-            if ( ! $idGen instanceof \Doctrine\ORM\Sequencing\AssignedGenerator) {
+            if ( ! $idGen instanceof AssignedGenerator) {
                 $idValue = [$class->getSingleIdentifierFieldName() => $this->convertSingleFieldIdentifierToPHPValue($class, $idValue)];
 
                 $class->assignIdentifier($entity, $idValue);
@@ -977,7 +979,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // skip if change tracking is "NOTIFY"
-        if ($class->isChangeTrackingNotify()) {
+        if ($class->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
             return;
         }
 
@@ -1505,47 +1507,46 @@ class UnitOfWork implements PropertyChangedListener
             $id = $this->identifierFlattener->flattenIdentifier($class, $id);
         }
 
-        switch (true) {
-            case ($class->generatorType === GeneratorType::NONE):
-                // Check for a version field, if available, to avoid a db lookup.
-                if ($class->isVersioned()) {
-                    return $class->versionProperty->getValue($entity)
-                        ? self::STATE_DETACHED
-                        : self::STATE_NEW;
-                }
+        if ($class->generatorType === GeneratorType::NONE) {
+            // Check for a version field, if available, to avoid a db lookup.
+            if ($class->isVersioned()) {
+                return $class->versionProperty->getValue($entity)
+                    ? self::STATE_DETACHED
+                    : self::STATE_NEW;
+            }
 
-                // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class->rootEntityName)) {
-                    return self::STATE_DETACHED;
-                }
-
-                // db lookup
-                if ($this->getEntityPersister($class->name)->exists($entity)) {
-                    return self::STATE_DETACHED;
-                }
-
-                return self::STATE_NEW;
-
-            case ( ! $class->idGenerator->isPostInsertGenerator()):
-                // if we have a pre insert generator we can't be sure that having an id
-                // really means that the entity exists. We have to verify this through
-                // the last resort: a db lookup
-
-                // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class->rootEntityName)) {
-                    return self::STATE_DETACHED;
-                }
-
-                // db lookup
-                if ($this->getEntityPersister($class->name)->exists($entity)) {
-                    return self::STATE_DETACHED;
-                }
-
-                return self::STATE_NEW;
-
-            default:
+            // Last try before db lookup: check the identity map.
+            if ($this->tryGetById($id, $class->rootEntityName)) {
                 return self::STATE_DETACHED;
+            }
+
+            // db lookup
+            if ($this->getEntityPersister($class->name)->exists($entity)) {
+                return self::STATE_DETACHED;
+            }
+
+            return self::STATE_NEW;
         }
+
+        if ( ! $class->idGenerator->isPostInsertGenerator()) {
+            // if we have a pre insert generator we can't be sure that having an id
+            // really means that the entity exists. We have to verify this through
+            // the last resort: a db lookup
+
+            // Last try before db lookup: check the identity map.
+            if ($this->tryGetById($id, $class->rootEntityName)) {
+                return self::STATE_DETACHED;
+            }
+
+            // db lookup
+            if ($this->getEntityPersister($class->name)->exists($entity)) {
+                return self::STATE_DETACHED;
+            }
+
+            return self::STATE_NEW;
+        }
+
+        return self::STATE_DETACHED;
     }
 
     /**
@@ -1708,7 +1709,7 @@ class UnitOfWork implements PropertyChangedListener
         switch ($entityState) {
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
-                if ($class->isChangeTrackingDeferredExplicit()) {
+                if ($class->changeTrackingPolicy === ChangeTrackingPolicy::DEFERRED_EXPLICIT) {
                     $this->scheduleForSynchronization($entity);
                 }
                 break;
@@ -1911,7 +1912,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $visited[$oid] = $managedCopy; // mark visited
 
-            if ($class->isChangeTrackingDeferredExplicit()) {
+            if ($class->changeTrackingPolicy === ChangeTrackingPolicy::DEFERRED_EXPLICIT) {
                 $this->scheduleForSynchronization($entity);
             }
         }
@@ -3483,7 +3484,7 @@ class UnitOfWork implements PropertyChangedListener
 
                             if ($assoc2['isOwningSide']
                                 && $assoc2['type'] == ClassMetadata::MANY_TO_MANY
-                                && $class->isChangeTrackingNotify()
+                                && $class->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY
                             ) {
                                 $this->scheduleForSynchronization($managedCopy);
                             }
@@ -3492,7 +3493,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($class->isChangeTrackingNotify()) {
+            if ($class->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
                 // Just treat all properties as changed, there is no other choice.
                 $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
             }

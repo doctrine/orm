@@ -39,6 +39,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 
 /**
@@ -183,39 +184,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $sqlResultSetMappingsAnnot = $classAnnotations[Annotation\SqlResultSetMappings::class];
 
             foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
-                $entities = [];
-                $columns  = [];
+                $sqlResultSetMapping = $this->convertSqlResultSetMapping($resultSetMapping);
 
-                foreach ($resultSetMapping->entities as $entityResultAnnot) {
-                    $entityResult = [
-                        'fields'                => [],
-                        'entityClass'           => $entityResultAnnot->entityClass,
-                        'discriminatorColumn'   => $entityResultAnnot->discriminatorColumn,
-                    ];
-
-                    foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
-                        $entityResult['fields'][] = [
-                            'name'      => $fieldResultAnnot->name,
-                            'column'    => $fieldResultAnnot->column
-                        ];
-                    }
-
-                    $entities[] = $entityResult;
-                }
-
-                foreach ($resultSetMapping->columns as $columnResultAnnot) {
-                    $columns[] = [
-                        'name' => $columnResultAnnot->name,
-                    ];
-                }
-
-                $metadata->addSqlResultSetMapping(
-                    [
-                        'name'          => $resultSetMapping->name,
-                        'entities'      => $entities,
-                        'columns'       => $columns
-                    ]
-                );
+                $metadata->addSqlResultSetMapping($sqlResultSetMapping);
             }
         }
 
@@ -298,6 +269,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 continue;
             }
 
+//            $property = $this->convertProperty($reflProperty);
+//
+//            $metadata->addProperty($property);
+
             // Field can only be annotated with one of:
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             $fieldName = $reflProperty->getName();
@@ -365,20 +340,20 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 );
             }
 
-            // Check for JoinColumn/JoinColumns annotations
-            $joinColumns = [];
-
-            if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumn::class)) {
-                $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
-            } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumns::class)) {
-                foreach ($joinColumnsAnnot->value as $joinColumn) {
-                    $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
-                }
-            }
-
             if ($oneToOneAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\OneToOne::class)) {
                 if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
                     $mapping['id'] = true;
+                }
+
+                // Check for JoinColumn/JoinColumns annotations
+                $joinColumns = [];
+
+                if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumn::class)) {
+                    $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
+                } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumns::class)) {
+                    foreach ($joinColumnsAnnot->value as $joinColumn) {
+                        $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
+                    }
                 }
 
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;
@@ -414,6 +389,17 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($manyToOneAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\ManyToOne::class)) {
                 if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
                     $mapping['id'] = true;
+                }
+
+                // Check for JoinColumn/JoinColumns annotations
+                $joinColumns = [];
+
+                if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumn::class)) {
+                    $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
+                } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\JoinColumns::class)) {
+                    foreach ($joinColumnsAnnot->value as $joinColumn) {
+                        $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumn);
+                    }
                 }
 
                 $mapping['joinColumns'] = $joinColumns;
@@ -670,6 +656,106 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
+     * @param Annotation\SqlResultSetMapping $resultSetMapping
+     *
+     * @return array
+     */
+    private function convertSqlResultSetMapping(Annotation\SqlResultSetMapping $resultSetMapping)
+    {
+        $entities = [];
+
+        foreach ($resultSetMapping->entities as $entityResultAnnot) {
+            $entityResult = [
+                'fields'                => [],
+                'entityClass'           => $entityResultAnnot->entityClass,
+                'discriminatorColumn'   => $entityResultAnnot->discriminatorColumn,
+            ];
+
+            foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
+                $entityResult['fields'][] = [
+                    'name'      => $fieldResultAnnot->name,
+                    'column'    => $fieldResultAnnot->column
+                ];
+            }
+
+            $entities[] = $entityResult;
+        }
+
+        $columns = [];
+
+        foreach ($resultSetMapping->columns as $columnResultAnnot) {
+            $columns[] = [
+                'name' => $columnResultAnnot->name,
+            ];
+        }
+
+        return [
+            'name'     => $resultSetMapping->name,
+            'entities' => $entities,
+            'columns'  => $columns
+        ];
+    }
+
+    /**
+     * @param \ReflectionProperty $reflProperty
+     *
+     * @return Property
+     */
+    private function convertProperty(\ReflectionProperty $reflProperty)
+    {
+        if ($columnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Column::class)) {
+            $className = $reflProperty->getDeclaringClass()->name;
+
+            if ($columnAnnot->type == null) {
+                throw MappingException::propertyTypeIsRequired($className, $reflProperty->getName());
+            }
+
+            $isFieldVersioned = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class) !== null;
+            $fieldMetadata    = $this->convertColumnAnnotationToFieldMetadata($columnAnnot, $reflProperty->getName(), $isFieldVersioned);
+
+            // Check for Id
+            if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
+                $fieldMetadata->setPrimaryKey(true);
+            }
+
+            // Check for GeneratedValue strategy
+            if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\GeneratedValue::class)) {
+                $strategy = strtoupper($generatedValueAnnot->strategy);
+
+                $metadata->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, $strategy)));
+            }
+
+            // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
+            if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\SequenceGenerator::class)) {
+                $metadata->setGeneratorDefinition(
+                    [
+                        'sequenceName'   => $seqGeneratorAnnot->sequenceName,
+                        'allocationSize' => $seqGeneratorAnnot->allocationSize,
+                    ]
+                );
+            } else if ($this->reader->getPropertyAnnotation($reflProperty, 'Doctrine\ORM\Mapping\TableGenerator')) {
+                throw MappingException::tableIdGeneratorNotImplemented($className);
+            } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\CustomIdGenerator::class)) {
+                $metadata->setGeneratorDefinition(
+                    [
+                        'class'     => $customGeneratorAnnot->class,
+                        'arguments' => $customGeneratorAnnot->arguments,
+                    ]
+                );
+            }
+
+            $metadata->addProperty($fieldMetadata);
+
+            // Check for Version
+            if ($this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class)) {
+                $metadata->setVersionProperty($fieldMetadata);
+            }
+
+            return $fieldMetadata;
+        }
+    }
+
+    /**
      * Parse the given Column as FieldMetadata
      *
      * @param Annotation\Column $columnAnnot
@@ -747,39 +833,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         return $joinColumn;
-    }
-
-    /**
-     * Parse the given Column as array
-     *
-     * @param string            $fieldName
-     * @param Annotation\Column $column
-     *
-     * @return array
-     */
-    private function columnToArray(Annotation\Column $column)
-    {
-        $mapping = [
-            'scale'     => $column->scale,
-            'length'    => $column->length,
-            'unique'    => $column->unique,
-            'nullable'  => $column->nullable,
-            'precision' => $column->precision
-        ];
-
-        if ($column->options) {
-            $mapping['options'] = $column->options;
-        }
-
-        if (isset($column->name)) {
-            $mapping['columnName'] = $column->name;
-        }
-
-        if (isset($column->columnDefinition)) {
-            $mapping['columnDefinition'] = $column->columnDefinition;
-        }
-
-        return $mapping;
     }
 
     /**
