@@ -54,51 +54,6 @@ use RuntimeException;
  */
 class ClassMetadata implements ClassMetadataInterface
 {
-    /* The Id generator types. */
-    /**
-     * AUTO means the generator type will depend on what the used platform prefers.
-     * Offers full portability.
-     */
-    const GENERATOR_TYPE_AUTO = 1;
-
-    /**
-     * SEQUENCE means a separate sequence object will be used. Platforms that do
-     * not have native sequence support may emulate it. Full portability is currently
-     * not guaranteed.
-     */
-    const GENERATOR_TYPE_SEQUENCE = 2;
-
-    /**
-     * TABLE means a separate table is used for id generation.
-     * Offers full portability.
-     */
-    const GENERATOR_TYPE_TABLE = 3;
-
-    /**
-     * IDENTITY means an identity column is used for id generation. The database
-     * will fill in the id column on insertion. Platforms that do not support
-     * native identity columns may emulate them. Full portability is currently
-     * not guaranteed.
-     */
-    const GENERATOR_TYPE_IDENTITY = 4;
-
-    /**
-     * NONE means the class does not have a generated id. That means the class
-     * must have a natural, manually assigned id.
-     */
-    const GENERATOR_TYPE_NONE = 5;
-
-    /**
-     * UUID means that a UUID/GUID expression is used for id generation. Full
-     * portability is currently not guaranteed.
-     */
-    const GENERATOR_TYPE_UUID = 6;
-
-    /**
-     * CUSTOM means that customer will use own ID generator that supposedly work
-     */
-    const GENERATOR_TYPE_CUSTOM = 7;
-
     /**
      * Identifies a one-to-one association.
      */
@@ -239,16 +194,23 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
      *
-     * @var integer
+     * @var string
      */
     public $inheritanceType = InheritanceType::NONE;
 
     /**
      * READ-ONLY: The Id generator type used by the class.
      *
-     * @var int
+     * @var string
      */
-    public $generatorType = self::GENERATOR_TYPE_NONE;
+    public $generatorType = GeneratorType::NONE;
+
+    /**
+     * READ-ONLY: The policy used for change-tracking on entities of this class.
+     *
+     * @var string
+     */
+    public $changeTrackingPolicy = ChangeTrackingPolicy::DEFERRED_IMPLICIT;
 
     /**
      * READ-ONLY: The definition of the identity generator of this class.
@@ -418,13 +380,6 @@ class ClassMetadata implements ClassMetadataInterface
      * @var boolean
      */
     public $containsForeignIdentifier = false;
-
-    /**
-     * READ-ONLY: The policy used for change-tracking on entities of this class.
-     *
-     * @var integer
-     */
-    public $changeTrackingPolicy = ChangeTrackingPolicy::DEFERRED_IMPLICIT;
 
     /**
      * READ-ONLY: The field which is used for versioning in optimistic locking (if any).
@@ -666,7 +621,7 @@ class ClassMetadata implements ClassMetadataInterface
             $serialized[] = 'subClasses';
         }
 
-        if ($this->generatorType !== self::GENERATOR_TYPE_NONE) {
+        if ($this->generatorType !== GeneratorType::NONE) {
             $serialized[] = 'generatorType';
         }
 
@@ -1593,7 +1548,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function usesIdGenerator()
     {
-        return $this->generatorType != self::GENERATOR_TYPE_NONE;
+        return $this->generatorType !== GeneratorType::NONE;
     }
 
     /**
@@ -1601,7 +1556,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeNone()
     {
-        return $this->inheritanceType == InheritanceType::NONE;
+        return $this->inheritanceType === InheritanceType::NONE;
     }
 
     /**
@@ -1612,7 +1567,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeJoined()
     {
-        return $this->inheritanceType == InheritanceType::JOINED;
+        return $this->inheritanceType === InheritanceType::JOINED;
     }
 
     /**
@@ -1623,7 +1578,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeSingleTable()
     {
-        return $this->inheritanceType == InheritanceType::SINGLE_TABLE;
+        return $this->inheritanceType === InheritanceType::SINGLE_TABLE;
     }
 
     /**
@@ -1634,7 +1589,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isInheritanceTypeTablePerClass()
     {
-        return $this->inheritanceType == InheritanceType::TABLE_PER_CLASS;
+        return $this->inheritanceType === InheritanceType::TABLE_PER_CLASS;
     }
 
     /**
@@ -1644,7 +1599,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isIdGeneratorIdentity()
     {
-        return $this->generatorType == self::GENERATOR_TYPE_IDENTITY;
+        return $this->generatorType === GeneratorType::IDENTITY;
     }
 
     /**
@@ -1654,7 +1609,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isIdGeneratorSequence()
     {
-        return $this->generatorType == self::GENERATOR_TYPE_SEQUENCE;
+        return $this->generatorType === GeneratorType::SEQUENCE;
     }
 
     /**
@@ -1664,7 +1619,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isIdGeneratorTable()
     {
-        return $this->generatorType == self::GENERATOR_TYPE_TABLE;
+        return $this->generatorType === GeneratorType::TABLE;
     }
 
     /**
@@ -1675,7 +1630,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isIdentifierNatural()
     {
-        return $this->generatorType == self::GENERATOR_TYPE_NONE;
+        return $this->generatorType === GeneratorType::NONE;
     }
 
     /**
@@ -1685,7 +1640,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isIdentifierUuid()
     {
-        return $this->generatorType == self::GENERATOR_TYPE_UUID;
+        return $this->generatorType === GeneratorType::UUID;
     }
 
     /**
@@ -2650,7 +2605,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function setGeneratorDefinition(array $definition)
     {
-        if ($this->generatorType === ClassMetadata::GENERATOR_TYPE_SEQUENCE && ! isset($definition['sequenceName'])) {
+        if ($this->generatorType === GeneratorType::SEQUENCE && ! isset($definition['sequenceName'])) {
             throw MappingException::missingSequenceName($this->name);
         }
 

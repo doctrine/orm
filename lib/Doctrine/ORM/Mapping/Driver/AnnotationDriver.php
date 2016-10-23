@@ -34,6 +34,7 @@ use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
@@ -316,11 +317,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 // Check for GeneratedValue strategy
                 if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\GeneratedValue::class)) {
-                    $idGeneratorType = constant(
-                        sprintf('%s::GENERATOR_TYPE_%s', ClassMetadata::class, $generatedValueAnnot->strategy)
-                    );
+                    $strategy = strtoupper($generatedValueAnnot->strategy);
 
-                    $metadata->setIdGeneratorType($idGeneratorType);
+                    $metadata->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, $strategy)));
                 }
 
                 // Check for CustomGenerator/SequenceGenerator/TableGenerator definition

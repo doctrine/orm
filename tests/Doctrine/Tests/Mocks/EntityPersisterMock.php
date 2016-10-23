@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
@@ -32,7 +33,7 @@ class EntityPersisterMock extends BasicEntityPersister
     private $identityColumnValueCounter = 0;
 
     /**
-     * @var int|null
+     * @var string|null
      */
     private $mockIdGeneratorType;
 
@@ -54,15 +55,17 @@ class EntityPersisterMock extends BasicEntityPersister
     public function addInsert($entity)
     {
         $this->inserts[] = $entity;
-        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->class->isIdGeneratorIdentity()) {
+
+        if ($this->mockIdGeneratorType === GeneratorType::IDENTITY || $this->class->isIdGeneratorIdentity()) {
             $id = $this->identityColumnValueCounter++;
+
             $this->postInsertIds[] = [
                 'generatedId' => $id,
                 'entity' => $entity,
             ];
             return $id;
         }
+
         return null;
     }
 

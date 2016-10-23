@@ -20,4 +20,4 @@ $fieldMetadata->setType(Type::getType('float'));
 $metadata->addProperty($fieldMetadata);
 
 $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

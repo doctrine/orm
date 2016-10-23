@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -77,7 +78,7 @@ class UnitOfWorkTest extends OrmTestCase
         // Setup fake persister and id generator for identity generation
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
         $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
-        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $userPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
 
         // Test
         $user = new ForumUser();
@@ -117,11 +118,11 @@ class UnitOfWorkTest extends OrmTestCase
         //ForumUser
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
         $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
-        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $userPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
         // ForumAvatar
         $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumAvatar::class));
         $this->_unitOfWork->setEntityPersister(ForumAvatar::class, $avatarPersister);
-        $avatarPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $avatarPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
 
         // Test
         $user = new ForumUser();
@@ -229,7 +230,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
-        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $userPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
         $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
 
         // Create a test user

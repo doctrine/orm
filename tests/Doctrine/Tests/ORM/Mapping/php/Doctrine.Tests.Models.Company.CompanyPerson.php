@@ -9,22 +9,19 @@ $tableMetadata->setName('company_person');
 /* @var $metadata ClassMetadata */
 $metadata->setPrimaryTable($tableMetadata);
 
-/** @var ClassMetadata $metadata */
-$metadata->setPrimaryTable(['name' => 'company_person']);
-
 $metadata->addNamedNativeQuery(
     [
-    'name'              => 'fetchAllWithResultClass',
-    'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-    'resultClass'       => CompanyPerson::class,
+        'name'              => 'fetchAllWithResultClass',
+        'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
+        'resultClass'       => CompanyPerson::class,
     ]
 );
 
 $metadata->addNamedNativeQuery(
     [
-    'name'              => 'fetchAllWithSqlResultSetMapping',
-    'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-    'resultSetMapping'  => 'mappingFetchAll',
+        'name'              => 'fetchAllWithSqlResultSetMapping',
+        'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
+        'resultSetMapping'  => 'mappingFetchAll',
     ]
 );
 

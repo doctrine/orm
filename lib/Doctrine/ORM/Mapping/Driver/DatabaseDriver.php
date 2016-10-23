@@ -31,6 +31,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -384,7 +385,7 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+            $metadata->setIdGeneratorType(GeneratorType::AUTO);
         }
     }
 

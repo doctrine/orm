@@ -54,9 +54,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // Prechecks
         self::assertEquals([], $cm1->parentClasses);
         self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
+        self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->generatorType);
         self::assertTrue($cm1->hasField('name'));
         self::assertEquals(2, count($cm1->associationMappings));
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
         self::assertEquals('group', $cm1->table->getName());
 
         // Go
@@ -72,7 +72,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cm1 = $this->_createValidClassMetadata();
 
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm1->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
 
         $cm1->generatorDefinition = [
             'class' => CustomIdGenerator::class,
@@ -85,7 +85,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $actual = $cmf->getMetadataFor($cm1->name);
 
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->generatorType);
+        self::assertEquals(Mapping\GeneratorType::CUSTOM, $actual->generatorType);
         self::assertInstanceOf(CustomIdGenerator::class, $actual->idGenerator);
     }
 
@@ -93,7 +93,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cm1 = $this->_createValidClassMetadata();
 
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm1->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
 
         $cm1->generatorDefinition = [
             'class' => 'NotExistingGenerator',
@@ -112,7 +112,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
     {
         $cm1 = $this->_createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm1->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->expectException(ORMException::class);
@@ -322,7 +322,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         );
 
         // and an id generator type
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cm1->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         return $cm1;
     }

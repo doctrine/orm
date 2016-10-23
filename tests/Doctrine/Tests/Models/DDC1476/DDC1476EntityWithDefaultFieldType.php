@@ -44,7 +44,7 @@ class DDC1476EntityWithDefaultFieldType
         $this->name = $name;
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('string'));
@@ -57,7 +57,7 @@ class DDC1476EntityWithDefaultFieldType
 
         $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 
 }

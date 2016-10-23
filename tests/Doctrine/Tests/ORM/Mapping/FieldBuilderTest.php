@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 
@@ -21,7 +22,7 @@ class FieldBuilderTest extends OrmTestCase
 
         $metadata = $cmBuilder->getClassMetadata();
 
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $metadata->generatorType);
+        self::assertEquals(GeneratorType::CUSTOM, $metadata->generatorType);
         self::assertEquals(
             [
                 'class'     => 'stdClass',

@@ -13,13 +13,13 @@ class DDC889SuperClass
     /** @Column() */
     protected $name;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('name');
         $fieldMetadata->setType(Type::getType('string'));
 
         $metadata->addProperty($fieldMetadata);
         $metadata->isMappedSuperclass = true;
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }

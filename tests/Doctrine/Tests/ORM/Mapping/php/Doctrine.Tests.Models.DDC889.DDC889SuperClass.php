@@ -13,4 +13,4 @@ $fieldMetadata->setType(Type::getType('string'));
 $metadata->addProperty($fieldMetadata);
 
 $metadata->setCustomRepositoryClass(DDC889SuperClass::class);
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
