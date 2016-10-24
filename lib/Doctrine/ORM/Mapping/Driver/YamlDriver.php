@@ -191,6 +191,11 @@ class YamlDriver extends FileDriver
             }
         }
 
+        // Evaluate DiscriminatorValue annotation
+        if (isset($element['discriminatorValue'])) {
+            $metadata->discriminatorValue = $element['discriminatorValue'];
+        }
+
 
         // Evaluate changeTrackingPolicy
         if (isset($element['changeTrackingPolicy'])) {

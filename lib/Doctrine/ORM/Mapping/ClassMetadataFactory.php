@@ -350,18 +350,24 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $allClasses = $this->driver->getAllClassNames();
         $fqcn = $class->getName();
-        $map = array($this->getShortName($class->name) => $fqcn);
+        $map = array($this->getDiscriminatorValue($class) => $fqcn);
 
         $duplicates = array();
         foreach ($allClasses as $subClassCandidate) {
             if (is_subclass_of($subClassCandidate, $fqcn)) {
-                $shortName = $this->getShortName($subClassCandidate);
 
-                if (isset($map[$shortName])) {
-                    $duplicates[] = $shortName;
+                // Todo: Hack for class metadata. Call getMetadataFor() leads to a recursion-loop
+                $metadata = $this->newClassMetadataInstance($subClassCandidate);
+                $this->driver->loadMetadataForClass($subClassCandidate, $metadata);
+
+                $discriminatorValue = $this->getDiscriminatorValue($metadata);
+
+
+                if (isset($map[$discriminatorValue])) {
+                    $duplicates[] = $discriminatorValue;
                 }
 
-                $map[$shortName] = $subClassCandidate;
+                $map[$discriminatorValue] = $subClassCandidate;
             }
         }
 
@@ -370,6 +376,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $class->setDiscriminatorMap($map);
+    }
+
+    /**
+     * @param ClassMetadata $metadata
+     * @return string
+     */
+    private function getDiscriminatorValue(ClassMetadata $metadata)
+    {
+        if ($metadata->discriminatorValue) {
+            return $metadata->discriminatorValue;
+        } else {
+            return $this->getShortName($metadata->getName());
+        }
     }
 
     /**

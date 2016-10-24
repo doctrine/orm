@@ -184,6 +184,11 @@ class XmlDriver extends FileDriver
             }
         }
 
+        // Evaluate DiscriminatorValue annotation
+        if (isset($xmlRoot->{'discriminator-value'})) {
+            $metadata->discriminatorValue = (string) $xmlRoot->{'discriminator-value'};
+        }
+
 
         // Evaluate <change-tracking-policy...>
         if (isset($xmlRoot['change-tracking-policy'])) {
