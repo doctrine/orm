@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: avasilenko
- * Date: 24/04/15
- * Time: 19:01
- */
 
 namespace Doctrine\Tests\Mocks;
 

@@ -7,8 +7,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- */
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
     protected function setUp()
