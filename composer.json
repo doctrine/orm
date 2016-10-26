@@ -25,8 +25,7 @@
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0",
-        "phpunit/phpunit": "^5.4",
-        "malukenho/docheader": "^0.1.4"
+        "phpunit/phpunit": "^5.4"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
