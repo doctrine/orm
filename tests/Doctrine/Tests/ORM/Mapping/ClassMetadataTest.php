@@ -328,6 +328,32 @@ class ClassMetadataTest extends OrmTestCase
         $this->assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
     }
 
+    public function testIsSingleAssociationJoinColumnNullable()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapOneToOne(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
+            'joinColumns' => array(array('referencedColumnName' => 'id', 'nullable' => true))));
+
+        $this->assertTrue($cm->isSingleAssociationJoinColumnNullable('user'));
+    }
+
+    public function testIsSingleAssociationJoinColumnNotNullable()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapOneToOne(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
+            'joinColumns' => array(array('referencedColumnName' => 'id', 'nullable' => false))));
+
+        $this->assertFalse($cm->isSingleAssociationJoinColumnNullable('user'));
+    }
+
     /**
      * @group DDC-559
      */

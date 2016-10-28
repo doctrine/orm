@@ -2893,6 +2893,24 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Checks whether the single association join column (if any) is nullable.
+     *
+     * @param string $fieldName
+     *
+     * @return bool
+     *
+     * @throws MappingException
+     */
+    public function isSingleAssociationJoinColumnNullable($fieldName)
+    {
+        if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
+            throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
+        }
+
+        return isset($this->associationMappings[$fieldName]['joinColumns'][0]['nullable']) && $this->associationMappings[$fieldName]['joinColumns'][0]['nullable'] == true;
+    }
+
+    /**
      * Returns the single association join column (if any).
      *
      * @param string $fieldName
