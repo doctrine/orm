@@ -83,4 +83,29 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
     }
+
+    /**
+     * Test that PersistentCollection::clear() clear elements, and reset keys
+     */
+    public function testClear()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->assertEquals([0], array_keys($this->collection->toArray()));
+
+        $this->collection->removeElement('dummy');
+        $this->assertEquals([], array_keys($this->collection->toArray()));
+
+        $this->collection->add('dummy');
+        $this->collection->clear();
+        $this->assertEquals([], array_keys($this->collection->toArray()));
+
+        // test fix clear doesn't reset collection keys when collection is empty
+        $this->collection->add('dummy');
+        $this->collection->removeElement('dummy');
+        $this->collection->clear();
+        $this->collection->add('dummy');
+        $this->assertEquals([0], array_keys($this->collection->toArray()));
+    }
 }
