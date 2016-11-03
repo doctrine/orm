@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Entity;
 
-class ConstructorTest extends \Doctrine\Tests\OrmTestCase
+use Doctrine\Tests\OrmTestCase;
+
+class ConstructorTest extends OrmTestCase
 {
     public function testFieldInitializationInConstructor()
     {

@@ -1,12 +1,18 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class LifecycleCallbackTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
@@ -470,7 +476,7 @@ class LifecycleCallbackCascader
 
     public function __construct()
     {
-        $this->entities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->entities = new ArrayCollection();
     }
 
     /** @PostLoad */
@@ -516,7 +522,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PostPersist
      */
-    public function postPersistHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function postPersistHandler(LifecycleEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -524,7 +530,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PrePersist
      */
-    public function prePersistHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function prePersistHandler(LifecycleEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -532,7 +538,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PostUpdate
      */
-    public function postUpdateHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function postUpdateHandler(LifecycleEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -540,7 +546,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PreUpdate
      */
-    public function preUpdateHandler(\Doctrine\ORM\Event\PreUpdateEventArgs $event)
+    public function preUpdateHandler(PreUpdateEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -548,7 +554,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PostRemove
      */
-    public function postRemoveHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function postRemoveHandler(LifecycleEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -556,7 +562,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PreRemove
      */
-    public function preRemoveHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function preRemoveHandler(LifecycleEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -564,7 +570,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PreFlush
      */
-    public function preFlushHandler(\Doctrine\ORM\Event\PreFlushEventArgs $event)
+    public function preFlushHandler(PreFlushEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -572,7 +578,7 @@ class LifecycleCallbackEventArgEntity
     /**
      * @PostLoad
      */
-    public function postLoadHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function postLoadHandler(LifecycleEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }

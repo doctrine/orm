@@ -2,7 +2,15 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -287,6 +295,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\VersionedManyToOne\Category',
             'Doctrine\Tests\Models\VersionedManyToOne\Article',
         ),
+        'issue5989' => array(
+            'Doctrine\Tests\Models\Issue5989\Issue5989Person',
+            'Doctrine\Tests\Models\Issue5989\Issue5989Employee',
+            'Doctrine\Tests\Models\Issue5989\Issue5989Manager',
+        ),
     );
 
     /**
@@ -452,8 +465,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cache_state');
             $conn->executeUpdate('DELETE FROM cache_country');
             $conn->executeUpdate('DELETE FROM cache_login');
-            $conn->executeUpdate('DELETE FROM cache_complex_action');
             $conn->executeUpdate('DELETE FROM cache_token');
+            $conn->executeUpdate('DELETE FROM cache_complex_action');
             $conn->executeUpdate('DELETE FROM cache_action');
             $conn->executeUpdate('DELETE FROM cache_client');
         }
@@ -555,6 +568,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM versioned_many_to_one_category');
         }
 
+        if (isset($this->_usedModelSets['issue5989'])) {
+            $conn->executeUpdate('DELETE FROM issue5989_persons');
+            $conn->executeUpdate('DELETE FROM issue5989_employees');
+            $conn->executeUpdate('DELETE FROM issue5989_managers');
+        }
+
         $this->_em->clear();
     }
 
@@ -599,7 +618,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if ( ! isset(static::$_sharedConn)) {
             static::$_sharedConn = TestUtil::getConnection();
 
-            if (static::$_sharedConn->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
+            if (static::$_sharedConn->getDriver() instanceof SqliteDriver) {
                 $forceCreateTables = true;
             }
         }
@@ -614,7 +633,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if ( ! $this->_em) {
             $this->_em = $this->_getEntityManager();
-            $this->_schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+            $this->_schemaTool = new SchemaTool($this->_em);
         }
 
         $classes = array();
@@ -652,20 +671,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
                 self::$_metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL'];
             } else {
-                self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+                self::$_metadataCacheImpl = new ArrayCache();
             }
         }
 
         if (is_null(self::$_queryCacheImpl)) {
-            self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            self::$_queryCacheImpl = new ArrayCache();
         }
 
-        $this->_sqlLoggerStack = new \Doctrine\DBAL\Logging\DebugStack();
+        $this->_sqlLoggerStack = new DebugStack();
         $this->_sqlLoggerStack->enabled = false;
 
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');
@@ -675,7 +694,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
 
-            $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
+            $cacheConfig    = new CacheConfiguration();
             $cache          = $this->getSharedSecondLevelCacheDriverImpl();
             $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
 
@@ -721,10 +740,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['debug_uow_listener'])) {
-            $evm->addEventListener(array('onFlush'), new \Doctrine\ORM\Tools\DebugUnitOfWorkListener());
+            $evm->addEventListener(array('onFlush'), new DebugUnitOfWorkListener());
         }
 
-        return \Doctrine\ORM\EntityManager::create($conn, $config);
+        return EntityManager::create($conn, $config);
     }
 
     /**
@@ -734,7 +753,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @throws \Exception
      */
-    protected function onNotSuccessfulTest(\Exception $e)
+    protected function onNotSuccessfulTest($e)
     {
         if ($e instanceof \PHPUnit_Framework_AssertionFailedError) {
             throw $e;
@@ -742,10 +761,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if(isset($this->_sqlLoggerStack->queries) && count($this->_sqlLoggerStack->queries)) {
             $queries = "";
-            for($i = count($this->_sqlLoggerStack->queries)-1; $i > max(count($this->_sqlLoggerStack->queries)-25, 0) && isset($this->_sqlLoggerStack->queries[$i]); $i--) {
-                $query = $this->_sqlLoggerStack->queries[$i];
-                $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return "'".$p."'"; }, $query['params'] ?: array());
-                $queries .= ($i+1).". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
+            $last25queries = array_slice(array_reverse($this->_sqlLoggerStack->queries, true), 0, 25, true);
+            foreach ($last25queries as $i => $query) {
+                $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return var_export($p, true); }, $query['params'] ?: array());
+                $queries .= $i.". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
             }
 
             $trace = $e->getTrace();

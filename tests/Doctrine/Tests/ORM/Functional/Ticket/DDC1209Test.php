@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1209Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1209Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

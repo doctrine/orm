@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
@@ -30,10 +31,10 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $user = new \Doctrine\DBAL\Schema\Table("ddc2059_user");
+        $user = new Table("ddc2059_user");
         $user->addColumn('id', 'integer');
         $user->setPrimaryKey(array('id'));
-        $project = new \Doctrine\DBAL\Schema\Table("ddc2059_project");
+        $project = new Table("ddc2059_project");
         $project->addColumn('id', 'integer');
         $project->addColumn('user_id', 'integer');
         $project->addColumn('user', 'string');
@@ -52,7 +53,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
+        $table = new Table("dbdriver_foo");
         $table->addColumn('id', 'integer');
         $table->setPrimaryKey(array('id'));
         $table->addColumn('bar', 'string', array('notnull' => false, 'length' => 200));
@@ -83,13 +84,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $tableB = new \Doctrine\DBAL\Schema\Table("dbdriver_bar");
+        $tableB = new Table("dbdriver_bar");
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(array('id'));
 
         $this->_sm->dropAndCreateTable($tableB);
 
-        $tableA = new \Doctrine\DBAL\Schema\Table("dbdriver_baz");
+        $tableA = new Table("dbdriver_baz");
         $tableA->addColumn('id', 'integer');
         $tableA->setPrimaryKey(array('id'));
         $tableA->addColumn('bar_id', 'integer');
@@ -133,15 +134,15 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails()
     {
-        $tableB = new \Doctrine\DBAL\Schema\Table("dbdriver_bar");
+        $tableB = new Table("dbdriver_bar");
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(array('id'));
 
-        $tableA = new \Doctrine\DBAL\Schema\Table("dbdriver_baz");
+        $tableA = new Table("dbdriver_baz");
         $tableA->addColumn('id', 'integer');
         $tableA->setPrimaryKey(array('id'));
 
-        $tableMany = new \Doctrine\DBAL\Schema\Table("dbdriver_bar_baz");
+        $tableMany = new Table("dbdriver_bar_baz");
         $tableMany->addColumn('bar_id', 'integer');
         $tableMany->addColumn('baz_id', 'integer');
         $tableMany->addForeignKeyConstraint('dbdriver_bar', array('bar_id'), array('id'));
@@ -157,7 +158,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
+        $table = new Table("dbdriver_foo");
 
         $table->addColumn('id', 'integer', array('unsigned' => true));
         $table->setPrimaryKey(array('id'));

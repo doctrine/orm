@@ -1,21 +1,4 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM;
 
@@ -27,6 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -36,7 +20,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
  * @author      Roman Borschel <roman@code-factory.org
  * @since       2.0
  */
-class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
+class QueryBuilderTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -50,7 +34,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     protected function assertValidQueryBuilder(QueryBuilder $qb, $expectedDql)
     {
-        $dql = $qb->getDql();
+        $dql = $qb->getDQL();
         $q = $qb->getQuery();
 
         $this->assertEquals($expectedDql, $dql);
@@ -631,7 +615,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-           ->where($qb->expr()->orx('u.username = :username', 'u.username = :username2'));
+           ->where($qb->expr()->orX('u.username = :username', 'u.username = :username2'));
 
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter('username', 'jwage'));
@@ -787,7 +771,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $q1 = $qb->getQuery();
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDql());
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDQL());
         $this->assertEquals(1, count($q1->getParameters()));
 
         // add another condition and construct a second query
@@ -796,7 +780,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $q2 = $qb->getQuery();
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDql());
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDQL());
         $this->assertTrue($q1 !== $q2); // two different, independent queries
         $this->assertEquals(2, count($q2->getParameters()));
         $this->assertEquals(1, count($q1->getParameters())); // $q1 unaffected
@@ -842,7 +826,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('u.username = ?1', (string)$qb->getDQLPart('where'));
         $this->assertEquals(1, count($qb->getDQLPart('orderBy')));
 
-        $qb->resetDqlPart('where')->resetDqlPart('orderBy');
+        $qb->resetDQLPart('where')->resetDQLPart('orderBy');
 
         $this->assertNull($qb->getDQLPart('where'));
         $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
@@ -1082,7 +1066,8 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testWhereAppend()
     {
-        $this->setExpectedException('InvalidArgumentException', "Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
 
         $qb = $this->_em->createQueryBuilder()
             ->add('where', 'u.foo = ?1')

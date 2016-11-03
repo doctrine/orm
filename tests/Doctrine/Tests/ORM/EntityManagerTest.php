@@ -2,7 +2,12 @@
 
 namespace Doctrine\Tests\ORM;
 
-class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\OrmTestCase;
+
+class EntityManagerTest extends OrmTestCase
 {
     private $_em;
 
@@ -54,7 +59,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreateNativeQuery()
     {
-        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm = new ResultSetMapping();
         $query = $this->_em->createNativeQuery('SELECT foo', $rsm);
 
         $this->assertSame('SELECT foo', $query->getSql());
@@ -65,7 +70,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCreateNamedNativeQuery()
     {
-        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm = new ResultSetMapping();
         $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
         
         $query = $this->_em->createNamedNativeQuery('foo');
@@ -139,8 +144,9 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      */
     public function testThrowsExceptionOnNonObjectValues($methodName) {
-        $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException',
-            'EntityManager#'.$methodName.'() expects parameter 1 to be an entity object, NULL given.');
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
+
         $this->_em->$methodName(null);
     }
 
@@ -161,7 +167,8 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAffectedByErrorIfClosedException($methodName)
     {
-        $this->setExpectedException('Doctrine\ORM\ORMException', 'closed');
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('closed');
 
         $this->_em->close();
         $this->_em->$methodName(new \stdClass());
@@ -186,7 +193,9 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed()
     {
-        $this->setExpectedException('InvalidArgumentException', 'Expected argument of type "callable", got "object"');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected argument of type "callable", got "object"');
+
         $this->_em->transactional($this);
     }
 

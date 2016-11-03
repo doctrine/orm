@@ -10,9 +10,9 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
  */
 class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2256User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2256Group')

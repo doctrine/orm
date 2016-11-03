@@ -101,7 +101,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntityOneToMany($em, __FUNCTION__);
 
-        $this->assertEquals(487, $this->countQuery($em));
+        $this->assertEquals(472, $this->countQuery($em));
     }
 
     public function testQueryEntityWithoutCache()

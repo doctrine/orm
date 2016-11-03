@@ -2,12 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- */
-class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PersistentCollectionTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -114,7 +114,7 @@ class PersistentCollectionHolder extends PersistentObject
 
     public function __construct()
     {
-        $this->collection = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->collection = new ArrayCollection();
     }
 
     /**

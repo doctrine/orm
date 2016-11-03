@@ -2,10 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsAddress,
-    Doctrine\Tests\Models\CMS\CmsPhonenumber,
-    Doctrine\ORM\Query;
+use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * IdentityMapTest
@@ -15,9 +16,10 @@ use Doctrine\Tests\Models\CMS\CmsUser,
  *
  * @author Roman Borschel <roman@code-factory.org>
  */
-class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class IdentityMapTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }

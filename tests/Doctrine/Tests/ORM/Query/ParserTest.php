@@ -5,8 +5,10 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\OrmTestCase;
 
-class ParserTest extends \Doctrine\Tests\OrmTestCase
+class ParserTest extends OrmTestCase
 {
 
     /**
@@ -89,7 +91,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMatchFailure($expectedToken, $inputString)
     {
-        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
 
         $parser = $this->createParser($inputString);
 

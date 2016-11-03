@@ -2,14 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  *
  * @author robo
  */
-class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
@@ -151,7 +153,7 @@ class Lemma {
 	private $types;
 
 	public function __construct() {
-		$this->types = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->types = new ArrayCollection();
 	}
 
 
@@ -257,7 +259,7 @@ class Type {
 	private $lemmas;
 
 	public function __construct(){
-		$this->lemmas = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->lemmas = new ArrayCollection();
 	}
 
 	/**
@@ -372,7 +374,7 @@ class Phrase {
     private $definitions;
 
     public function __construct() {
-        $this->definitions = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->definitions = new ArrayCollection;
     }
 
     /**
@@ -464,7 +466,7 @@ class PhraseType {
     private $phrases;
 
     public function __construct() {
-        $this->phrases = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->phrases = new ArrayCollection;
     }
 
     /**

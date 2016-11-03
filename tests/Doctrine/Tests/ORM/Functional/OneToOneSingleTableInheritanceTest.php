@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;

@@ -1,5 +1,11 @@
 # Upgrade to 2.5
 
+## Minor BC BREAK: query cache key time is now a float
+
+As of 2.5.5, the `QueryCacheEntry#time` property will contain a float value
+instead of an integer in order to have more precision and also to be consistent
+with the `TimestampCacheEntry#time`.
+
 ## Minor BC BREAK: discriminator map must now include all non-transient classes
 
 It is now required that you declare the root of an inheritance in the

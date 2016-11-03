@@ -1,25 +1,10 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for custom AST walking and modification.
@@ -29,7 +14,7 @@ use Doctrine\ORM\Query;
  * @link        http://www.doctrine-project.org
  * @since       2.0
  */
-class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
+class CustomTreeWalkersTest extends OrmTestCase
 {
     private $_em;
 
@@ -89,7 +74,9 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSetUnknownQueryComponentThrowsException()
     {
-        $this->setExpectedException("Doctrine\ORM\Query\QueryException", "Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage("Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
+
         $this->generateSql(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             array(),

@@ -189,6 +189,21 @@ class ORMException extends Exception
 
     /**
      * @param string $entityName
+     * @param string $fieldName
+     * @param string $method
+     *
+     * @return ORMException
+     */
+    public static function invalidMagicCall($entityName, $fieldName, $method)
+    {
+        return new self(
+            "Entity '".$entityName."' has no field '".$fieldName."'. ".
+            "You can therefore not call '".$method."' on the entities' repository"
+        );
+    }
+
+    /**
+     * @param string $entityName
      * @param string $associationFieldName
      *
      * @return ORMException

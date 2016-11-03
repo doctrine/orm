@@ -4,15 +4,15 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional Query tests.
  *
  * @author Benjamin <kontakt@beberlei.de>
  */
-class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

@@ -1,26 +1,10 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -32,7 +16,7 @@ use Doctrine\ORM\Query;
  * @since       2.0
  * @version     $Revision$
  */
-class ExprTest extends \Doctrine\Tests\OrmTestCase
+class ExprTest extends OrmTestCase
 {
     private $_em;
 
@@ -119,20 +103,20 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndExpr()
     {
-        $this->assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
+        $this->assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andX((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
 
     public function testIntelligentParenthesisPreventionAndExpr()
     {
         $this->assertEquals(
             '1 = 1 AND 2 = 2',
-            (string) $this->_expr->andx($this->_expr->orx($this->_expr->andx($this->_expr->eq(1, 1))), (string) $this->_expr->eq(2, 2))
+            (string) $this->_expr->andX($this->_expr->orX($this->_expr->andX($this->_expr->eq(1, 1))), (string) $this->_expr->eq(2, 2))
         );
     }
 
     public function testOrExpr()
     {
-        $this->assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
+        $this->assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orX((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
 
     public function testAbsExpr()
@@ -310,11 +294,11 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndxOrxExpr()
     {
-        $andExpr = $this->_expr->andx();
+        $andExpr = $this->_expr->andX();
         $andExpr->add($this->_expr->eq(1, 1));
         $andExpr->add($this->_expr->lt(1, 5));
 
-        $orExpr = $this->_expr->orx();
+        $orExpr = $this->_expr->orX();
         $orExpr->add($andExpr);
         $orExpr->add($this->_expr->eq(1, 1));
 
@@ -323,7 +307,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrxExpr()
     {
-        $orExpr = $this->_expr->orx();
+        $orExpr = $this->_expr->orX();
         $orExpr->add($this->_expr->eq(1, 1));
         $orExpr->add($this->_expr->lt(1, 5));
 
@@ -355,7 +339,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddThrowsException()
     {
-        $orExpr = $this->_expr->orx();
+        $orExpr = $this->_expr->orX();
         $orExpr->add($this->_expr->quot(5, 2));
     }
 
@@ -432,15 +416,17 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('foo', 'bar'), $select->getParts());
     }
 
-    public function testAddEmpty() {
-        $andExpr = $this->_expr->andx();
-        $andExpr->add($this->_expr->andx());
+    public function testAddEmpty()
+    {
+        $andExpr = $this->_expr->andX();
+        $andExpr->add($this->_expr->andX());
         
         $this->assertEquals(0, $andExpr->count());
     }
 
-    public function testAddNull() {
-        $andExpr = $this->_expr->andx();
+    public function testAddNull()
+    {
+        $andExpr = $this->_expr->andX();
         $andExpr->add(null);
         
         $this->assertEquals(0, $andExpr->count());

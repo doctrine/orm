@@ -1,10 +1,11 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-451
  */
-class UUIDGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class UUIDGeneratorTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {

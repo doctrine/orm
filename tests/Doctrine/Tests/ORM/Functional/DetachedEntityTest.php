@@ -2,20 +2,22 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Description of DetachedEntityTest
  *
  * @author robo
  */
-class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DetachedEntityTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -216,7 +218,9 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = "UPDATE cms_articles SET version = version+1 WHERE id = " . $article->id;
         $this->_em->getConnection()->executeUpdate($sql);
 
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException', 'The optimistic lock failed, version 1 was expected, but is actually 2');
+        $this->expectException(OptimisticLockException::class);
+        $this->expectExceptionMessage('The optimistic lock failed, version 1 was expected, but is actually 2');
+
         $this->_em->merge($article);
     }
 }

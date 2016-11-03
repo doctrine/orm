@@ -2,10 +2,12 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\UnitOfWork;
+
 /**
  * Mock class for UnitOfWork.
  */
-class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
+class UnitOfWorkMock extends UnitOfWork
 {
     /**
      * @var array

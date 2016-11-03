@@ -55,7 +55,9 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->paginator->setUseOutputWalkers(false);
 
-        $this->setExpectedException('RuntimeException', 'Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
+
         foreach ($this->paginator as $ad) {
             $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails', $ad);
         }

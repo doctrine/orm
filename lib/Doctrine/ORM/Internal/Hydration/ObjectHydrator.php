@@ -24,9 +24,6 @@ use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PostLoadEventDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
 
@@ -332,6 +329,9 @@ class ObjectHydrator extends AbstractHydrator
         // Split the row data into chunks of class data.
         $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
+        // reset result pointers for each data row
+        $this->resultPointers = [];
+
         // Hydrate the data chunks
         foreach ($rowData['data'] as $dqlAlias => $data) {
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
@@ -586,10 +586,7 @@ class ObjectHydrator extends AbstractHydrator
         parent::onClear($eventArgs);
 
         $aliases             = array_keys($this->identifierMap);
-        $this->identifierMap = array();
 
-        foreach ($aliases as $alias) {
-            $this->identifierMap[$alias] = array();
-        }
+        $this->identifierMap = array_fill_keys($aliases, []);
     }
 }

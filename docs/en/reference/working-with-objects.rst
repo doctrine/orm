@@ -699,8 +699,6 @@ You can also load by owning side associations through the repository:
     $number = $em->find('MyProject\Domain\Phonenumber', 1234);
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('phone' => $number->getId()));
 
-Be careful that this only works by passing the ID of the associated entity, not yet by passing the associated entity itself.
-
 The ``EntityRepository#findBy()`` method additionally accepts orderings, limit and offset as second to fourth parameters:
 
 .. code-block:: php
@@ -728,6 +726,14 @@ examples are equivalent:
     
     // A single user by its nickname (__call magic)
     $user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
+
+Additionally, you can just count the result of the provided conditions when you don't really need the data:
+
+.. code-block:: php
+
+    <?php
+    // Check there is no user with nickname
+    $availableNickname = 0 === $em->getRepository('MyProject\Domain\User')->count(['nickname' => 'nonexistent']);
 
 By Criteria
 ~~~~~~~~~~~

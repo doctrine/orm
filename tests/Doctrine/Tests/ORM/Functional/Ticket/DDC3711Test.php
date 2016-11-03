@@ -1,7 +1,4 @@
 <?php
-/**
- * @author Marc Pantel <pantel.m@gmail.com>
- */
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
@@ -9,6 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Mapping\YamlMappingDriverTest;
 
+/**
+ * @author Marc Pantel <pantel.m@gmail.com>
+ */
 class DDC3711Test extends YamlMappingDriverTest
 {
     public function testCompositeKeyForJoinTableInManyToManyCreation()

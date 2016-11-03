@@ -13,9 +13,9 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(array(
@@ -29,7 +29,10 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIsListenerCalledOnlyOnceOnPreFlush()
     {
-        $listener = $this->getMock('Doctrine\Tests\ORM\Functional\Ticket\DDC2692Listener', array('preFlush'));
+        $listener = $this->getMockBuilder(DDC2692Listener::class)
+                         ->setMethods(array('preFlush'))
+                         ->getMock();
+
         $listener->expects($this->once())->method('preFlush');
 
         $this->_em->getEventManager()->addEventSubscriber($listener);

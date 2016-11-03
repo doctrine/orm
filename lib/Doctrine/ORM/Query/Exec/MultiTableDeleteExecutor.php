@@ -118,8 +118,6 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
      */
     public function execute(Connection $conn, array $params, array $types)
     {
-        $numDeleted = 0;
-
         // Create temporary id table
         $conn->executeUpdate($this->_createTempTableSql);
 

@@ -71,7 +71,7 @@ class EntityCacheEntry implements CacheEntry
     /**
      * Retrieves the entity data resolving cache entries
      *
-     * @param \Doctrine\ORM\EntityManagerInterfac $em
+     * @param \Doctrine\ORM\EntityManagerInterface $em
      *
      * @return array
      */

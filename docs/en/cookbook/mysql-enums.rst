@@ -98,7 +98,7 @@ For example for the previous enum type:
 
         public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
-            return "ENUM('visible', 'invisible') COMMENT '(DC2Type:enumvisibility)'";
+            return "ENUM('visible', 'invisible')";
         }
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -117,6 +117,11 @@ For example for the previous enum type:
         public function getName()
         {
             return self::ENUM_VISIBILITY;
+        }
+
+        public function requiresSQLCommentHint(AbstractPlatform $platform)
+        {
+            return true;
         }
     }
 
@@ -152,7 +157,7 @@ You can generalize this approach easily to create a base class for enums:
         {
             $values = array_map(function($val) { return "'".$val."'"; }, $this->values);
 
-            return "ENUM(".implode(", ", $values).") COMMENT '(DC2Type:".$this->name.")'";
+            return "ENUM(".implode(", ", $values).")";
         }
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -171,6 +176,11 @@ You can generalize this approach easily to create a base class for enums:
         public function getName()
         {
             return $this->name;
+        }
+
+        public function requiresSQLCommentHint(AbstractPlatform $platform)
+        {
+            return true;
         }
     }
 

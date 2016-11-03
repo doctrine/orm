@@ -2,9 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -126,7 +128,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
     }
 }
 
-class CacheFactorySecondLevelCacheConcurrentTest extends \Doctrine\ORM\Cache\DefaultCacheFactory
+class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 {
     public function __construct(Cache $cache)
     {
@@ -143,6 +145,6 @@ class CacheFactorySecondLevelCacheConcurrentTest extends \Doctrine\ORM\Cache\Def
 
     public function getTimestampRegion()
     {
-        return new \Doctrine\Tests\Mocks\TimestampRegionMock();
+        return new TimestampRegionMock();
     }
 }

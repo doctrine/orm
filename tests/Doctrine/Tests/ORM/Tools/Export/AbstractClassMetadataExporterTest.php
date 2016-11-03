@@ -1,37 +1,20 @@
 <?php
-/*
- *  $Id$
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
-use Doctrine\Tests\Mocks\DatabasePlatformMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
+use Symfony\Component\Yaml\Parser;
 
 /**
  * Test case for ClassMetadataExporter
@@ -43,7 +26,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
  * @since       2.0
  * @version     $Revision$
  */
-abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
+abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 {
     protected $_extension;
 
@@ -52,12 +35,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     protected function _createEntityManager($metadataDriver)
     {
         $driverMock = new DriverMock();
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
         $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
-        $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
@@ -376,7 +358,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
             $this->assertEquals('cascade-all', $nodes[0]->getName());
         } else if ($type == 'yaml') {
-            $yaml = new \Symfony\Component\Yaml\Parser();
+            $yaml = new Parser();
             $value = $yaml->parse(file_get_contents(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
 
             $this->assertTrue(isset($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));

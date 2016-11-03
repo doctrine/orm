@@ -1,6 +1,7 @@
-<?php namespace Doctrine\Tests\ORM\Functional\Ticket;
+<?php
 
-use Doctrine\ORM\Cache\Persister\CachedPersister;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
 

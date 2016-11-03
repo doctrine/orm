@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Query\Parameter;
@@ -13,17 +14,19 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * NativeQueryTest
  *
  * @author robo
  */
-class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class NativeQueryTest extends OrmFunctionalTestCase
 {
     private $platform = null;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         $this->useModelSet('company');
         parent::setUp();
@@ -197,7 +200,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm = new ResultSetMapping;
 
         $q = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
-        $q2 = $q->setSql('foo', $rsm)
+        $q2 = $q->setSQL('foo')
           ->setResultSetMapping($rsm)
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
@@ -322,7 +325,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'ResultSetMapping builder does not currently support your inheritance scheme.');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
+
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\Company\CompanyContract', 'c');
     }
@@ -349,10 +354,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
-        $this->setExpectedException(
-            "Doctrine\ORM\Internal\Hydration\HydrationException",
-            "The parent object of entity result with alias 'a' was not found. The parent alias is 'un'."
-        );
+        $this->expectException(HydrationException::class);
+        $this->expectExceptionMessage("The parent object of entity result with alias 'a' was not found. The parent alias is 'un'.");
+
         $users = $query->getResult();
     }
 

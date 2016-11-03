@@ -31,7 +31,7 @@ $helperSet = null;
 if (file_exists($configFile)) {
     if ( ! is_readable($configFile)) {
         trigger_error(
-            'Configuration file [' . $configFile . '] does not have read permission.', E_ERROR
+            'Configuration file [' . $configFile . '] does not have read permission.', E_USER_ERROR
         );
     }
 

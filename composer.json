@@ -14,7 +14,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.4",
+        "php": "^5.6 || ^7.0",
         "ext-pdo": "*",
         "doctrine/collections": "~1.2",
         "doctrine/dbal": ">=2.5-dev,<2.7-dev",
@@ -25,7 +25,7 @@
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0",
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "^5.4"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
@@ -43,6 +43,6 @@
         }
     },
     "archive": {
-        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp", "*coveralls.yml"]
+        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
     }
 }

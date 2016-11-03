@@ -2,12 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
-use Doctrine\ORM\Cache\EntityCacheKey;
 
 /**
  * @author  Asmir Mustafic <goetas@gmail.com>

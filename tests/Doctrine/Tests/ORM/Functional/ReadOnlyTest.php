@@ -1,13 +1,14 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional Query tests.
  *
  * @group DDC-692
  */
-class ReadOnlyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ReadOnlyTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

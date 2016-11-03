@@ -1,31 +1,16 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-659
  */
-class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
+class ClassMetadataBuilderTest extends OrmTestCase
 {
     /**
      * @var ClassMetadata
@@ -39,7 +24,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function setUp()
     {
         $this->cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $this->cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $this->cm->initializeReflection(new RuntimeReflectionService());
         $this->builder = new ClassMetadataBuilder($this->cm);
     }
 
@@ -526,7 +511,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this
             ->builder
@@ -622,7 +607,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testThrowsExceptionOnCreateManyToManyWithIdentity()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder->createManyToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                           ->makePrimaryKey()
@@ -675,7 +660,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testThrowsExceptionOnCreateOneToManyWithIdentity()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder->createOneToMany('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')
                 ->makePrimaryKey()
@@ -773,7 +758,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testExceptionOnOrphanRemovalOnManyToOne()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
         $this->builder
             ->createManyToOne('groups', 'Doctrine\Tests\Models\CMS\CmsGroup')

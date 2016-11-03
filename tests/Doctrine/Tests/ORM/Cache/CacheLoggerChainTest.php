@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -29,7 +30,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
         parent::setUp();
 
         $this->logger = new CacheLoggerChain();
-        $this->mock   = $this->getMock('Doctrine\ORM\Cache\Logging\CacheLogger');
+        $this->mock   = $this->createMock(CacheLogger::class);
     }
 
     public function testGetAndSetLogger()

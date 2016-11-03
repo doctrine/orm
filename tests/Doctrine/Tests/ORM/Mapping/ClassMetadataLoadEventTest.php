@@ -2,10 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmTestCase;
 
-class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
+class ClassMetadataLoadEventTest extends OrmTestCase
 {
     /**
      * @group DDC-1610
@@ -22,7 +23,7 @@ class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
     }
 
-    public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
         $field = array(
