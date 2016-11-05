@@ -1,10 +1,11 @@
+sudo: false
 language: php
 
 php:
   - 5.6
   - 7.0
+  - 7.1
   - nightly
-  - hhvm
 
 env:
   - DB=mysql
@@ -13,7 +14,7 @@ env:
 
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
-  - if [[ $TRAVIS_PHP_VERSION != '7.0' && $TRAVIS_PHP_VERSION != 'hhvm' ]]; then phpenv config-rm xdebug.ini; fi
+  - if [[ $TRAVIS_PHP_VERSION -lt '7.0' && $TRAVIS_PHP_VERSION != 'hhv*' ]]; then phpenv config-rm xdebug.ini; fi
   - composer self-update
   - composer install --prefer-source
 
@@ -26,39 +27,57 @@ after_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
 
 matrix:
+  fast_finish: true
   include:
     - php: 5.6
       env: DB=mariadb
       addons:
-        mariadb: 5.5
+        mariadb: 10.1
     - php: 7.0
       env: DB=mariadb
       addons:
-        mariadb: 5.5
-    - php: hhvm
+        mariadb: 10.1
+    - php: 7.1
       env: DB=mariadb
       addons:
-        mariadb: 5.5
+        mariadb: 10.1
+    - php: hhvm
+      sudo: true
+      dist: trusty
+      group: edge # until the next Trusty update
+      addons:
+        mariadb: 10.1
+      env: DB=mariadb
+    - php: hhvm
+      sudo: true
+      dist: trusty
+      group: edge # until the next update
+      addons:
+        apt:
+          packages:
+            - mysql-server-5.6
+            - mysql-client-core-5.6
+            - mysql-client-5.6
+      services:
+        - mysql
+      env: DB=mysql
+    - php: hhvm
+      sudo: true
+      dist: trusty
+      group: edge # until the next update
+      services:
+        - postgresql
+      env: DB=pgsql
+    - php: hhvm
+      sudo: true
+      dist: trusty
+      group: edge # until the next update
+      env: DB=sqlite
 
-    - php: 5.6
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: 7.0
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: hhvm
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-  exclude:
-    - php: hhvm
-      env: DB=pgsql  # driver for PostgreSQL currently unsupported by HHVM, requires 3rd party dependency
   allow_failures:
+    - php: 7.1
     - php: nightly
-
-sudo: false
+    - php: hhvm
 
 cache:
   directories:
