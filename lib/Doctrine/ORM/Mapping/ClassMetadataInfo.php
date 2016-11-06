@@ -1629,7 +1629,6 @@ class ClassMetadataInfo implements ClassMetadata
                     ? $joinColumn['fieldName']
                     : $joinColumn['name'];
             }
-            unset($joinColumn);
 
             if ($uniqueConstraintColumns) {
                 if ( ! $this->table) {
@@ -1755,7 +1754,6 @@ class ClassMetadataInfo implements ClassMetadata
                 $mapping['relationToSourceKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
-            unset($joinColumn);
 
             foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
                 if (empty($inverseJoinColumn['name'])) {
@@ -1783,7 +1781,6 @@ class ClassMetadataInfo implements ClassMetadata
                 $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }
-            unset($inverseJoinColumn);
         }
 
         $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
