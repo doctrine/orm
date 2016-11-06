@@ -53,6 +53,6 @@ class Lock
      */
     public static function createLockRead()
     {
-        return new self(uniqid(time()));
+        return new self(uniqid(time(), true));
     }
 }

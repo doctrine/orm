@@ -314,7 +314,7 @@ class DefaultCache implements Cache
     private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {
         if ( ! is_array($ownerIdentifier)) {
-            $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);;
+            $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
         }
 
         return new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);

@@ -180,6 +180,7 @@ EOT
                 );
             }
         }
+        unset($dirName);
 
         if ( ! file_exists($destPath)) {
             throw new \InvalidArgumentException(
