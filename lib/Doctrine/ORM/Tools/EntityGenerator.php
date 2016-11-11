@@ -145,6 +145,22 @@ class EntityGenerator
      * @var boolean.
      */
     protected $embeddablesImmutable = false;
+    
+    
+    /**
+     * Whether or not to exlude the namespace from the path, unless {@link $$skipNamespacePart} is set
+     * 
+     * @var bool 
+     */
+    protected $skipNamespaceInPath = false;
+    
+    
+    /**
+     * Namespace part to exclude from path if any.
+     * 
+     * @var string
+     */
+    protected $skipNamespacePartInPath = null;
 
     /**
      * Hash-map for handle types.
@@ -364,7 +380,7 @@ public function __construct(<params>)
      */
     public function writeEntityClass(ClassMetadataInfo $metadata, $outputDirectory)
     {
-        $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->extension;
+        $path = $this->generateEntityPath($metadata, $outputDirectory);
         $dir = dirname($path);
 
         if ( ! is_dir($dir)) {
@@ -378,6 +394,7 @@ public function __construct(<params>)
         } else {
             $this->staticReflection[$metadata->name] = array('properties' => array(), 'methods' => array());
         }
+        
 
         if ($this->backupExisting && file_exists($path)) {
             $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . "~";
@@ -468,6 +485,47 @@ public function __construct(<params>)
     public function setExtension($extension)
     {
         $this->extension = $extension;
+    }
+    
+    /**
+     * Sets wheter or not the namespace should be excluded from the path
+     * 
+     * @return bool
+     */
+    public function getSkipNamespaceInPath()
+    {
+        return $this->skipNamespaceInPath;
+    }
+
+    /**
+     * Returns wheter or not the namespace should be excluded from the path
+     * 
+     * @param bool $skipNamespaceInPath
+     */
+    public function setSkipNamespaceInPath($skipNamespaceInPath)
+    {
+        $this->skipNamespaceInPath = $skipNamespaceInPath;
+    }
+    
+    /**
+     * Returns the namespace part to skip path 
+     * 
+     * @return type
+     */
+    public function getSkipNamespacePartInPath()
+    {
+        return $this->skipNamespacePartInPath;
+    }
+
+    /**
+     * Sets the namespace part to skip from path
+     * 
+     * @param string $skipNamespacePartInPath namespace part to skip (null to use the whole namespace)
+     * 
+     */
+    public function setSkipNamespacePartInPath($skipNamespacePartInPath)
+    {
+        $this->skipNamespacePartInPath = $skipNamespacePartInPath;
     }
 
     /**
@@ -604,9 +662,35 @@ public function __construct(<params>)
     protected function generateEntityNamespace(ClassMetadataInfo $metadata)
     {
         if ($this->hasNamespace($metadata)) {
-            return 'namespace ' . $this->getNamespace($metadata) .';';
+            return 'namespace ' . trim($this->getNamespace($metadata), '\\') .';';
         }
     }
+    
+    /**
+     * Generates the output path for the entity class
+     * 
+     * @param ClassMetadataInfo $metadata
+     * @param type $outputDirectory
+     */
+    protected function generateEntityPath(ClassMetadataInfo $metadata, $outputDirectory)
+    {
+        $cn = $metadata->name;
+        if ($this->skipNamespaceInPath) {
+            $x = strrpos($cn, '\\');
+            if ($x) {
+                $cn = substr($cn, $x + 1);
+            }
+        } else {
+            if ($this->skipNamespacePartInPath) {
+                $x = strpos($cn, $this->skipNamespacePartInPath);
+                if ($x === 0) {
+                    $cn = substr_replace($cn, '', 0, strlen($this->skipNamespacePartInPath));
+                }
+            }
+        }
+        return $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $cn) . $this->extension;
+    }
+    
 
     protected function generateEntityUse()
     {
@@ -938,7 +1022,7 @@ public function __construct(<params>)
      */
     protected function hasNamespace(ClassMetadataInfo $metadata)
     {
-        return strpos($metadata->name, '\\') ? true : false;
+        return strpos($metadata->name, '\\') !== false ? true : false;
     }
 
     /**
