@@ -250,6 +250,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
         $this->assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
     }
+
+
+    public function testDiscriminatorValue()
+    {
+        $factory = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationDiscriminatorValue');
+
+        $this->assertEquals('annotation.discriminator_value', $metadata->discriminatorValue);
+    }
 }
 
 /**
@@ -395,4 +404,17 @@ class AnnotationSLCFoo
      * @Column(type="string")
      */
     public $id;
+}
+
+/**
+ * @Entity
+ * @DiscriminatorValue("annotation.discriminator_value")
+ */
+class AnnotationDiscriminatorValue
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     */
+    private $id;
 }

@@ -24,6 +24,7 @@ require_once __DIR__.'/../Embedded.php';
 require_once __DIR__.'/../MappedSuperclass.php';
 require_once __DIR__.'/../InheritanceType.php';
 require_once __DIR__.'/../DiscriminatorColumn.php';
+require_once __DIR__.'/../DiscriminatorValue.php';
 require_once __DIR__.'/../DiscriminatorMap.php';
 require_once __DIR__.'/../Id.php';
 require_once __DIR__.'/../GeneratedValue.php';

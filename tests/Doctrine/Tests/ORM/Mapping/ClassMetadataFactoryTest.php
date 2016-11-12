@@ -186,8 +186,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
 
         $this->assertEquals('rootclass', $rootClassKey);
-        $this->assertEquals('childclass', $childClassKey);
-        $this->assertEquals('anotherchildclass', $anotherChildClassKey);
+        $this->assertEquals('custom_discriminator_value', $childClassKey);
+        $this->assertEquals('another.child.class', $anotherChildClassKey);
 
         $this->assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
         $this->assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
