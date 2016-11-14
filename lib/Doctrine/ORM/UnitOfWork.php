@@ -46,6 +46,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;
+use Doctrine\ORM\Id\IdGeneratorInterface;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -881,10 +882,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
+        /* @var $idGen IdGeneratorInterface */
         $idGen = $class->idGenerator;
 
         if ( ! $idGen->isPostInsertGenerator()) {
-            $idValue = $idGen->generate($this->em, $entity);
+            $idValue = $idGen->generateId($this->em, $entity);
 
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
                 $idValue = [$class->getSingleIdentifierFieldName() => $this->convertSingleFieldIdentifierToPHPValue($class, $idValue)];

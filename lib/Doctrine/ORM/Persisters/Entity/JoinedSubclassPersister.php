@@ -26,6 +26,7 @@ use Doctrine\DBAL\Types\Type;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Doctrine\ORM\Id\IdGeneratorInterface;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -130,8 +131,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return [];
         }
 
-        $postInsertIds  = [];
+        /* @var $idGenerator IdGeneratorInterface */
         $idGenerator    = $this->class->idGenerator;
+        $postInsertIds  = [];
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
         $rootClass      = ($this->class->name !== $this->class->rootEntityName)
             ? $this->em->getClassMetadata($this->class->rootEntityName)
@@ -175,7 +177,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootTableStmt->execute();
 
             if ($isPostInsertId) {
-                $generatedId = $idGenerator->generate($this->em, $entity);
+                $generatedId = $idGenerator->generateId($this->em, $entity);
                 $id = [
                     $this->class->identifier[0] => $generatedId
                 ];

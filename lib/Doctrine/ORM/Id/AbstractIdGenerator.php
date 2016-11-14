@@ -20,11 +20,14 @@
 namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Id\IdGeneratorInterface;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManagerInterface;
 
-abstract class AbstractIdGenerator
+abstract class AbstractIdGenerator implements IdGeneratorInterface
 {
     /**
-     * Generates an identifier for an entity.
+     * {@inheritDoc}
      *
      * @param EntityManager $em
      * @param \Doctrine\ORM\Mapping\Entity $entity
@@ -32,10 +35,29 @@ abstract class AbstractIdGenerator
      */
     abstract public function generate(EntityManager $em, $entity);
 
+    public final function generateId(EntityManagerInterface $em, $entity)
+    {
+        /* @var $id mixed */
+        $id = null;
+
+        if ($em instanceof EntityManager) {
+            $id = $this->generate($em, $entity);
+
+        } else {
+            throw new ORMException(sprintf(
+                "Tried to use non-doctrine entity-manager %s with old id-generator %s which is not supported! ".
+                "This id-generator must be upgraded to use the %s to make it work with different entity-managers!",
+                get_class($em),
+                get_class($this),
+                IdGeneratorInterface::class
+            ));
+        }
+
+        return $id;
+    }
+
     /**
-     * Gets whether this generator is a post-insert generator which means that
-     * {@link generate()} must be called after the entity has been inserted
-     * into the database.
+     * {@inheritDoc}
      *
      * By default, this method returns FALSE. Generators that have this requirement
      * must override this method and return TRUE.

@@ -243,7 +243,7 @@ This annotations allows you to specify a user-provided class to generate identif
 
 Required attributes:
 
--  **class**: name of the class which should extend Doctrine\ORM\Id\AbstractIdGenerator
+-  **class**: name of the class which should implement Doctrine\ORM\Id\IdGeneratorInterface
 
 Example:
 
@@ -251,7 +251,7 @@ Example:
 
     <?php
     /**
-     * @Id 
+     * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="My\Namespace\MyIdGenerator")
@@ -1321,4 +1321,3 @@ Example:
      * @Version
      */
     protected $version;
-

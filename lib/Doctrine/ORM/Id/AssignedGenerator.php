@@ -21,6 +21,8 @@ namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Id\IdGeneratorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Special generator for application-assigned identifiers (doesn't really generate anything).
@@ -31,7 +33,7 @@ use Doctrine\ORM\ORMException;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class AssignedGenerator extends AbstractIdGenerator
+class AssignedGenerator implements IdGeneratorInterface
 {
     /**
      * Returns the identifier assigned to the given entity.
@@ -40,7 +42,7 @@ class AssignedGenerator extends AbstractIdGenerator
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    public function generate(EntityManager $em, $entity)
+    public function generateId(EntityManagerInterface $em, $entity)
     {
         $class      = $em->getClassMetadata(get_class($entity));
         $idFields   = $class->getIdentifierFieldNames();
@@ -63,4 +65,13 @@ class AssignedGenerator extends AbstractIdGenerator
 
         return $identifier;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
+    }
+
 }
