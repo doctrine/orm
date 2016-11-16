@@ -50,6 +50,7 @@
                 <option name="baz">
                     <option name="key">val</option>
                 </option>
+                <option name="bool_opt">false</option>
             </options>
         </field>
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
