@@ -19,7 +19,7 @@ $metadata->mapField(array(
    'fieldName' => 'id',
    'type' => 'integer',
    'columnName' => 'id',
-   'options' => array('foo' => 'bar'),
+   'options' => array('foo' => 'bar', 'unsigned' => false),
   ));
 $metadata->mapField(array(
    'fieldName' => 'name',
@@ -28,7 +28,7 @@ $metadata->mapField(array(
    'unique' => true,
    'nullable' => true,
    'columnName' => 'name',
-   'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
+   'options' => array('foo' => 'bar', 'baz' => array('key' => 'val'), 'fixed' => false),
   ));
 $metadata->mapField(array(
    'fieldName' => 'email',

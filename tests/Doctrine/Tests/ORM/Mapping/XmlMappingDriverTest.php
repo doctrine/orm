@@ -141,16 +141,6 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     }
 
     /**
-     * @group #6129
-     */
-    public function testBooleanValuesForOptionIsSetCorrectly()
-    {
-        $class = $this->createClassMetadata(User::class);
-        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['bool_opt']);
-        $this->assertFalse($class->fieldMappings['name']['options']['bool_opt']);
-    }
-
-    /**
      * @param string $xmlMappingFile
      * @dataProvider dataValidSchema
      * @group DDC-2429
