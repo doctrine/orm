@@ -140,9 +140,12 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->createClassMetadata('Doctrine\Tests\Models\Generic\SerializationModel');
     }
 
+    /**
+     * @group #6129
+     */
     public function testBooleanValuesForOptionIsSetCorrectly()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
+        $class = $this->createClassMetadata(User::class);
         $this->assertInternalType('bool', $class->fieldMappings['name']['options']['bool_opt']);
         $this->assertFalse($class->fieldMappings['name']['options']['bool_opt']);
     }
