@@ -661,10 +661,13 @@ class XmlDriver extends FileDriver
                 $value = (string) $option;
             }
 
-            $attr = $option->attributes();
+            $attributes = $option->attributes();
 
-            if (isset($attr->name)) {
-                $array[(string) $attr->name] = $value;
+            if (isset($attributes->name)) {
+                $nameAttribute = (string) $attributes->name;
+                $array[$nameAttribute] = in_array($nameAttribute, ['unsigned', 'fixed'])
+                    ? $this->evaluateBoolean($value)
+                    : $value;
             } else {
                 $array[] = $value;
             }

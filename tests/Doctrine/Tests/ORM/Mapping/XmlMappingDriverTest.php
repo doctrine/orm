@@ -34,7 +34,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     }
 
     /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedException \Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.
      */
     public function testFailingSecondLevelCacheAssociation()
@@ -132,7 +132,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      *
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
     public function testInvalidMappingFileException()

@@ -210,11 +210,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     /**
      * @depends testEntityTableNameAndInheritance
+     *
      * @param ClassMetadata $class
+     *
+     * @return ClassMetadata
      */
-    public function testFieldOptions($class)
+    public function testFieldOptions(ClassMetadata $class)
     {
-        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        $expected = ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false];
         $this->assertEquals($expected, $class->fieldMappings['name']['options']);
 
         return $class;
@@ -226,7 +229,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testIdFieldOptions($class)
     {
-        $this->assertEquals(array('foo' => 'bar'), $class->fieldMappings['id']['options']);
+        $this->assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
 
         return $class;
     }
@@ -240,6 +243,26 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals(array('id'), $class->identifier);
         $this->assertEquals('integer', $class->fieldMappings['id']['type']);
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
+
+        return $class;
+    }
+
+    /**
+     * @group #6129
+     *
+     * @depends testLoadMapping
+     *
+     * @param ClassMetadata $class
+     *
+     * @return ClassMetadata
+     */
+    public function testBooleanValuesForOptionIsSetCorrectly(ClassMetadata $class)
+    {
+        $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
+        $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
+
+        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['fixed']);
+        $this->assertFalse($class->fieldMappings['name']['options']['fixed']);
 
         return $class;
     }
@@ -1048,14 +1071,14 @@ class User
 {
     /**
      * @Id
-     * @Column(type="integer", options={"foo": "bar"})
+     * @Column(type="integer", options={"foo": "bar", "unsigned": false})
      * @generatedValue(strategy="AUTO")
      * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
      **/
     public $id;
 
     /**
-     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}})
+     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
      */
     public $name;
 
@@ -1129,7 +1152,7 @@ class User
            'fieldName' => 'id',
            'type' => 'integer',
            'columnName' => 'id',
-           'options' => array('foo' => 'bar'),
+           'options' => array('foo' => 'bar', 'unsigned' => false),
           ));
         $metadata->mapField(array(
            'fieldName' => 'name',
@@ -1138,7 +1161,7 @@ class User
            'unique' => true,
            'nullable' => true,
            'columnName' => 'name',
-           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
+           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val'), 'fixed' => false),
           ));
         $metadata->mapField(array(
            'fieldName' => 'email',
