@@ -860,7 +860,7 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         if ( ! $connection instanceof Connection) {
-            throw new \InvalidArgumentException("Invalid argument: " . $connection);
+            throw new \InvalidArgumentException(sprintf('Invalid argument for connection "%s".', is_object($connection) ? get_class($connection) : gettype($connection) . '#' . $connection));
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
