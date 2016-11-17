@@ -250,7 +250,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group #6129
      *
-     * @depends testIdentifier
+     * @depends testLoadMapping
      *
      * @param ClassMetadata $class
      *

@@ -653,8 +653,6 @@ class XmlDriver extends FileDriver
     {
         $array = array();
 
-        $booleanOptions = ['unsigned', 'fixed'];
-
         /* @var $option SimpleXMLElement */
         foreach ($options as $option) {
             if ($option->count()) {
@@ -663,11 +661,11 @@ class XmlDriver extends FileDriver
                 $value = (string) $option;
             }
 
-            $attr = $option->attributes();
+            $attributes = $option->attributes();
 
-            if (isset($attr->name)) {
-                $attrName = (string) $attr->name;
-                $array[$attrName] = in_array($attrName, $booleanOptions)
+            if (isset($attributes->name)) {
+                $nameAttribute = (string) $attributes->name;
+                $array[$nameAttribute] = in_array($nameAttribute, ['unsigned', 'fixed'])
                     ? $this->evaluateBoolean($value)
                     : $value;
             } else {
