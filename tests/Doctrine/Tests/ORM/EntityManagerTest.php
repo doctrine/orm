@@ -208,12 +208,11 @@ class EntityManagerTest extends OrmTestCase
         return 'callback';
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp /^Invalid argument for connection \"integer#1\".$/
-     */
     public function testCreateInvalidConnection()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('/^Invalid \$connection argument of type integer given: \"1\".$/');
+
         $config = new Configuration();
         $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
         EntityManager::create(1, $config);
