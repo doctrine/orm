@@ -1627,7 +1627,7 @@ public function __construct(<params>)
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']) . ($this->getNullableField($fieldMapping) ? '|' . $this->getNullableField($fieldMapping) : '');;
+        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']) . ($this->getNullableField($fieldMapping) ? '|' . $this->getNullableField($fieldMapping) : '');
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
