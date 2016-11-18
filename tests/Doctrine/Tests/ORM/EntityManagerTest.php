@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -72,9 +75,9 @@ class EntityManagerTest extends OrmTestCase
     {
         $rsm = new ResultSetMapping();
         $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
-        
+
         $query = $this->_em->createNamedNativeQuery('foo');
-        
+
         $this->assertInstanceOf('Doctrine\ORM\NativeQuery', $query);
     }
 
@@ -116,14 +119,14 @@ class EntityManagerTest extends OrmTestCase
         $this->assertInstanceOf('Doctrine\ORM\Query', $q);
         $this->assertEquals('SELECT 1', $q->getDql());
     }
-    
+
     /**
      * @covers Doctrine\ORM\EntityManager::createNamedQuery
      */
     public function testCreateNamedQuery()
     {
         $this->_em->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
-        
+
         $query = $this->_em->createNamedQuery('foo');
         $this->assertInstanceOf('Doctrine\ORM\Query', $query);
         $this->assertEquals('SELECT 1', $query->getDql());
@@ -203,5 +206,15 @@ class EntityManagerTest extends OrmTestCase
     {
         $this->assertSame($this->_em, $em);
         return 'callback';
+    }
+
+    public function testCreateInvalidConnection()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid $connection argument of type integer given: "1".');
+
+        $config = new Configuration();
+        $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
+        EntityManager::create(1, $config);
     }
 }
