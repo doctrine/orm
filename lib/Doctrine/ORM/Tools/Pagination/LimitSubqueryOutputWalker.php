@@ -354,46 +354,39 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Generates new SQL for statements with an order by clause
      *
-     * @param array $sqlIdentifier
-     * @param string $innerSql
-     * @param string $sql
-     * @param OrderByClause $orderByClause
+     * @param array           $sqlIdentifier
+     * @param string          $innerSql
+     * @param string          $sql
+     * @param OrderByClause   $orderByClause
      *
      * @return string
      */
-    private function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause) {
+    private function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
+    {
         // If the sql statement has an order by clause, we need to wrap it in a new select distinct
         // statement
-        if (!$orderByClause instanceof OrderByClause) {
+        if (! $orderByClause instanceof OrderByClause) {
             return $sql;
         }
 
         // Rebuild the order by clause to work in the scope of the new select statement
         /* @var array $orderBy an array of rebuilt order by items */
         $orderBy = $this->rebuildOrderByClauseForOuterScope($orderByClause);
-        $orderByFields = str_replace([' DESC', ' ASC'], ['', ''], $orderBy);
 
-        $innerSqlIdentifier = [];
+        $innerSqlIdentifier = $sqlIdentifier;
 
-        foreach ($orderByFields as $k => $v) {
-            // remove fields that are selected by identifiers,
+        foreach ($orderBy as $field) {
+            $field = preg_replace('/((\S+)\s+(ASC|DESC)\s*,?)*/', '${2}', $field);
+
+            // skip fields that are selected by identifiers,
             // if those are ordered by in the query
-            if (in_array($v, $sqlIdentifier)) {
-                unset($orderByFields[$k]);
+            if (in_array($field, $sqlIdentifier, true)) {
+                continue;
             }
+            $innerSqlIdentifier[] = $field;
         }
 
-        foreach ($sqlIdentifier as $k => $v) {
-            $innerSqlIdentifier[$k] = 'dctrn_result_inner.' . $v;
-            $sqlIdentifier[$k] = 'dctrn_result.' . $v;
-        }
-
-        // add the
-        foreach ($orderByFields as $k => $v) {
-            $innerSqlIdentifier[$k] = 'dctrn_result_inner.' . $v;
-        }
-
-        // Build the select distinct statement
+        // Build the innner select statement
         $sql = sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result_inner ORDER BY %s',
             implode(', ', $innerSqlIdentifier),
