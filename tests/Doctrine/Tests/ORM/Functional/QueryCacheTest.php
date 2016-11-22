@@ -135,7 +135,9 @@ class QueryCacheTest extends OrmFunctionalTestCase
                     ->method('execute')
                     ->will($this->returnValue( 10 ));
 
-        $parserResultMock = $this->createMock(ParserResult::class);
+        $parserResultMock = $this->getMockBuilder(ParserResult::class)
+                                 ->setMethods(array('getSqlExecutor'))
+                                 ->getMock();
         $parserResultMock->expects($this->once())
                          ->method('getSqlExecutor')
                          ->will($this->returnValue($sqlExecMock));
