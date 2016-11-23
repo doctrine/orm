@@ -211,7 +211,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         $contact = new AttractionContactInfo(
             '1234-1234',
-            $this->_em->find(Attraction::class, $this->attractions[5]->getId())
+            $this->_em->find(Attraction::CLASSNAME, $this->attractions[5]->getId())
         );
 
         $this->_em->persist($contact);
