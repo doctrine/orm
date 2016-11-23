@@ -231,7 +231,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         $contact = new Beach(
             'Botafogo',
-            $this->_em->find(City::class, $this->cities[1]->getId())
+            $this->_em->find(City::CLASSNAME, $this->cities[1]->getId())
         );
 
         $this->_em->persist($contact);
