@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\Attraction;
-use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
+use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 
 /**
@@ -187,5 +187,48 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         $this->assertInstanceOf(AttractionContactInfo::CLASSNAME, $entity->getInfos()->get(0));
         $this->assertEquals($this->attractionsInfo[0]->getFone(), $entity->getInfos()->get(0)->getFone());
+    }
+
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+        $this->loadFixturesAttractionsInfo();
+        $this->evictRegions();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT attractionInfo FROM Doctrine\Tests\Models\Cache\AttractionInfo attractionInfo';
+
+        $result1    = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(count($this->attractionsInfo), $result1);
+        $this->assertEquals($queryCount + 5, $this->getCurrentQueryCount());
+
+        $contact = new AttractionContactInfo(
+            '1234-1234',
+            $this->_em->find(Attraction::CLASSNAME, $this->attractions[5]->getId())
+        );
+
+        $this->_em->persist($contact);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $result2 = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(count($this->attractionsInfo) + 1, $result2);
+        $this->assertEquals($queryCount + 6, $this->getCurrentQueryCount());
+
+        foreach ($result2 as $entity) {
+            $this->assertInstanceOf(AttractionInfo::CLASSNAME, $entity);
+        }
     }
 }

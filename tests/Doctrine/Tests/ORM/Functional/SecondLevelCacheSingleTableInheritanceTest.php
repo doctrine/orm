@@ -210,4 +210,45 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
         $this->assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
     }
+
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT attraction FROM Doctrine\Tests\Models\Cache\Attraction attraction';
+
+        $result1    = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(count($this->attractions), $result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $contact = new Beach(
+            'Botafogo',
+            $this->_em->find(City::CLASSNAME, $this->cities[1]->getId())
+        );
+
+        $this->_em->persist($contact);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $result2 = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(count($this->attractions) + 1, $result2);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        foreach ($result2 as $entity) {
+            $this->assertInstanceOf(Attraction::CLASSNAME, $entity);
+        }
+    }
 }
