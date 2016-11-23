@@ -24,6 +24,13 @@ class GH6141Test extends OrmFunctionalTestCase
         );
     }
 
+    /**
+     * The intent of this test is to ensure that the ORM is capable
+     * of using objects as discriminators (which makes things a bit
+     * more dynamic as you can see on the mapping of `GH6141Person`)
+     *
+     * @group 6141
+     */
     public function testEnumDiscriminatorsShouldBeConvertedToString()
     {
         $boss = new GH6141Boss('John');
@@ -157,8 +164,8 @@ class GH6141People
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="gh6141people")
  * @DiscriminatorMap({
- *      "boss"     = GH6141Boss::class,
- *      "employee" = GH6141Employee::class
+ *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::BOSS     = GH6141Boss::class,
+ *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::EMPLOYEE = GH6141Employee::class
  * })
  */
 abstract class GH6141Person
