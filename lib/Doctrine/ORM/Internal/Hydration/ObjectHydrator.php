@@ -251,12 +251,13 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             $discrMap = $this->_metadataCache[$className]->discriminatorMap;
+            $discriminatorValue = (string) $data[$discrColumn];
 
-            if ( ! isset($discrMap[$data[$discrColumn]])) {
-                throw HydrationException::invalidDiscriminatorValue($data[$discrColumn], array_keys($discrMap));
+            if ( ! isset($discrMap[$discriminatorValue])) {
+                throw HydrationException::invalidDiscriminatorValue($discriminatorValue, array_keys($discrMap));
             }
 
-            $className = $discrMap[$data[$discrColumn]];
+            $className = $discrMap[$discriminatorValue];
 
             unset($data[$discrColumn]);
         }
