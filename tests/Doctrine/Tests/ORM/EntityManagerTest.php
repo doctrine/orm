@@ -208,14 +208,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertSame('callback', $this->_em->transactional([$this, 'transactionalCallback']));
     }
 
-    public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected argument of type "callable", got "object"');
-
-        $this->_em->transactional($this);
-    }
-
     public function testTransactionalAcceptsReturnFalse()
     {
         $return = $this->_em->transactional(function ($em) {

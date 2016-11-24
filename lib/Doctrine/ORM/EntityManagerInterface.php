@@ -83,7 +83,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return mixed The value returned from the closure.
      */
-    public function transactional($func);
+    public function transactional(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
