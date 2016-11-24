@@ -234,7 +234,7 @@ use Doctrine\Common\Util\ClassUtils;
             $this->conn->commit();
 
             return $return;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->close();
             $this->conn->rollBack();
 

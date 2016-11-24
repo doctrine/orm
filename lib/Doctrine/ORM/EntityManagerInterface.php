@@ -82,6 +82,8 @@ interface EntityManagerInterface extends ObjectManager
      * @param callable $func The function to execute transactionally.
      *
      * @return mixed The value returned from the closure.
+     *
+     * @throws \Throwable
      */
     public function transactional(callable $func);
 
