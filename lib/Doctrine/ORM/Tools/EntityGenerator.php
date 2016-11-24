@@ -147,6 +147,20 @@ class EntityGenerator
     protected $embeddablesImmutable = false;
 
     /**
+     * Whether or not to add PHP strict types.
+     *
+     * @var boolean
+     */
+    protected $strictTypes = false;
+
+    /**
+     * Whether or not to force type hinting for method result and scalar parameters.
+     *
+     * @var boolean
+     */
+    protected $generateMethodsTypeHinting = false;
+
+    /**
      * Hash-map for handle types.
      *
      * @var array
@@ -166,6 +180,20 @@ class EntityGenerator
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
         Type::BOOLEAN       => 'bool',
+    );
+
+    /**
+     * Hash-map for handle strict types
+     *
+     * @var array
+     */
+    protected $typeHintingAlias = array(
+        Type::TARRAY        => 'array',
+        Type::SIMPLE_ARRAY  => 'array',
+        Type::JSON_ARRAY    => 'array',
+        Type::STRING        => 'string',
+        Type::FLOAT         => 'float',
+        Type::GUID          => 'string',
     );
 
     /**
@@ -211,7 +239,7 @@ class EntityGenerator
      */
     protected static $classTemplate =
 '<?php
-
+<strictTypes>
 <namespace>
 <useStatement>
 <entityAnnotation>
@@ -230,7 +258,7 @@ class EntityGenerator
  *
  * @return <variableType>
  */
-public function <methodName>()
+public function <methodName>() <methodTypeReturn>
 {
 <spaces>return $this-><fieldName>;
 }';
@@ -246,7 +274,7 @@ public function <methodName>()
  *
  * @return <entity>
  */
-public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
+public function <methodName>(<methodTypeHint>$<variableName><variableDefault>) <methodTypeReturn>
 {
 <spaces>$this-><fieldName> = $<variableName>;
 
@@ -264,7 +292,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
  *
  * @return <entity>
  */
-public function <methodName>(<methodTypeHint>$<variableName>)
+public function <methodName>(<methodTypeHint>$<variableName>) <methodTypeReturn>
 {
 <spaces>$this-><fieldName>[] = $<variableName>;
 
@@ -282,7 +310,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
  *
  * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
  */
-public function <methodName>(<methodTypeHint>$<variableName>)
+public function <methodName>(<methodTypeHint>$<variableName>) <methodTypeReturn>
 {
 <spaces>return $this-><fieldName>->removeElement($<variableName>);
 }';
@@ -406,6 +434,7 @@ public function __construct(<params>)
     public function generateEntityClass(ClassMetadataInfo $metadata)
     {
         $placeHolders = array(
+            '<strictTypes>',
             '<namespace>',
             '<useStatement>',
             '<entityAnnotation>',
@@ -414,6 +443,7 @@ public function __construct(<params>)
         );
 
         $replacements = array(
+            $this->generateEntityStrictTypes(),
             $this->generateEntityNamespace($metadata),
             $this->generateEntityUse(),
             $this->generateEntityDocBlock($metadata),
@@ -583,6 +613,30 @@ public function __construct(<params>)
     }
 
     /**
+     * Set whether or not to add PHP strict types.
+     *
+     * @param bool $bool
+     *
+     * @return void
+     */
+    public function setStrictTypes($bool)
+    {
+        $this->strictTypes = $bool;
+    }
+
+    /**
+     * Set whether or not to force type hinting for method result and scalar parameters.
+     *
+     * @param bool $bool
+     *
+     * @param void
+     */
+    public function setGenerateMethodsTypeHinting($bool)
+    {
+        $this->generateMethodsTypeHinting = $bool;
+    }
+
+    /**
      * @param string $type
      *
      * @return string
@@ -594,6 +648,18 @@ public function __construct(<params>)
         }
 
         return $type;
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateEntityStrictTypes()
+    {
+        if ($this->strictTypes) {
+            return "\n".'declare(strict_types=1);'."\n";
+        }
+
+        return '';
     }
 
     /**
@@ -1380,6 +1446,16 @@ public function __construct(<params>)
             $methodTypeHint =  '\\' . $typeHint . ' ';
         }
 
+        $methodReturnType = null;
+        if ($this->generateMethodsTypeHinting) {
+            $methodReturnType = $this->getMethodReturnType($metadata, $type, $fieldName, $variableType);
+
+            if (null === $methodTypeHint) {
+                $type = isset($this->typeHintingAlias[$variableType]) ? $this->typeHintingAlias[$variableType] : $variableType;
+                $methodTypeHint = $type.' ';
+            }
+        }
+
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $variableName,
           '<methodTypeHint>'    => $methodTypeHint,
@@ -1388,7 +1464,8 @@ public function __construct(<params>)
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
           '<variableDefault>'   => ($defaultValue !== null ) ? (' = '.$defaultValue) : '',
-          '<entity>'            => $this->getClassName($metadata)
+          '<entity>'            => $this->getClassName($metadata),
+          '<methodTypeReturn>'  => $methodReturnType,
         );
 
         $method = str_replace(
@@ -1828,5 +1905,37 @@ public function __construct(<params>)
         }
 
         return implode(',', $optionsStr);
+    }
+
+    /**
+     * @param ClassMetadataInfo $metadata
+     * @param string            $type
+     * @param string            $fieldName
+     * @param string            $variableType
+     * @return string
+     */
+    private function getMethodReturnType(ClassMetadataInfo $metadata, $type, $fieldName, $variableType)
+    {
+        if (in_array($type, array('set', 'add'))) {
+            return sprintf(': self', $this->getClassName($metadata));
+        }
+
+        if ('get' === $type) {
+            if (
+                $metadata->isSingleValuedAssociation($fieldName) ||
+                (!$metadata->hasAssociation($fieldName) && $metadata->isNullable($fieldName))
+            ) {
+                return null;
+            }
+
+            $type = isset($this->typeHintingAlias[$variableType]) ? $this->typeHintingAlias[$variableType] : $variableType;
+            return sprintf(': %s', $type);
+        }
+
+        if ('remove' === $type) {
+            return ': bool';
+        }
+
+        return null;
     }
 }
