@@ -72,9 +72,9 @@ class EntityManagerTest extends OrmTestCase
     {
         $rsm = new ResultSetMapping();
         $this->_em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
-        
+
         $query = $this->_em->createNamedNativeQuery('foo');
-        
+
         self::assertInstanceOf('Doctrine\ORM\NativeQuery', $query);
     }
 
@@ -116,14 +116,14 @@ class EntityManagerTest extends OrmTestCase
         self::assertInstanceOf('Doctrine\ORM\Query', $q);
         self::assertEquals('SELECT 1', $q->getDql());
     }
-    
+
     /**
      * @covers Doctrine\ORM\EntityManager::createNamedQuery
      */
     public function testCreateNamedQuery()
     {
         $this->_em->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
-        
+
         $query = $this->_em->createNamedQuery('foo');
         self::assertInstanceOf('Doctrine\ORM\Query', $query);
         self::assertEquals('SELECT 1', $query->getDql());
@@ -197,6 +197,15 @@ class EntityManagerTest extends OrmTestCase
         $this->expectExceptionMessage('Expected argument of type "callable", got "object"');
 
         $this->_em->transactional($this);
+    }
+
+    public function testTransactionalAcceptsReturnFalse()
+    {
+        $return = $this->_em->transactional(function ($em) {
+            return false;
+        });
+
+        self::assertEquals(false, $return);
     }
 
     public function transactionalCallback($em)
