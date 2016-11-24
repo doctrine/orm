@@ -71,7 +71,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function transactional($func)
+    public function transactional(callable $func)
     {
         return $this->wrapped->transactional($func);
     }
