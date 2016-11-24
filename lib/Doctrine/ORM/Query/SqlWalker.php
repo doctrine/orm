@@ -501,7 +501,6 @@ class SqlWalker implements TreeWalker
             default:
                 //@todo: throw exception?
                 return '';
-                break;
         }
 
         $filterClauses = array();

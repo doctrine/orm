@@ -946,7 +946,7 @@ public function __construct(<params>)
      */
     protected function extendsClass()
     {
-        return $this->classToExtend ? true : false;
+        return (bool)$this->classToExtend;
     }
 
     /**
@@ -1257,21 +1257,21 @@ public function __construct(<params>)
      */
     protected function generateEntityLifecycleCallbackMethods(ClassMetadataInfo $metadata)
     {
-        if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
-            $methods = array();
-
-            foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
-                foreach ($callbacks as $callback) {
-                    if ($code = $this->generateLifecycleCallbackMethod($name, $callback, $metadata)) {
-                        $methods[] = $code;
-                    }
-                }
-            }
-
-            return implode("\n\n", $methods);
+        if (empty($metadata->lifecycleCallbacks)) {
+            return '';
         }
 
-        return "";
+        $methods = [];
+
+        foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
+            foreach ($callbacks as $callback) {
+                if ($code = $this->generateLifecycleCallbackMethod($name, $callback, $metadata)) {
+                    $methods[] = $code;
+                }
+            }
+        }
+
+        return implode("\n\n", $methods);
     }
 
     /**
