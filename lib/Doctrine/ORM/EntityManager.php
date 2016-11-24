@@ -228,7 +228,7 @@ use Doctrine\Common\Util\ClassUtils;
         $this->conn->beginTransaction();
 
         try {
-            $return = call_user_func($func, $this);
+            $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
