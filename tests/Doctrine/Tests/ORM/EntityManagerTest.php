@@ -216,6 +216,15 @@ class EntityManagerTest extends OrmTestCase
         $this->_em->transactional($this);
     }
 
+    public function testTransactionalAcceptsReturnFalse()
+    {
+        $return = $this->_em->transactional(function ($em) {
+            return false;
+        });
+
+        self::assertEquals(false, $return);
+    }
+
     public function transactionalCallback($em)
     {
         self::assertSame($this->_em, $em);
