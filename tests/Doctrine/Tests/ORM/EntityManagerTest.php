@@ -191,30 +191,31 @@ class EntityManagerTest extends OrmTestCase
         $this->_em->$methodName(new \stdClass());
     }
 
-    /**
-     * @group DDC-1125
-     */
-    public function testTransactionalAcceptsReturn()
+    public function dataToBeReturnedByTransactional()
     {
-        $return = $this->_em->transactional(function ($em) {
-            return 'foo';
-        });
+        return [
+            [null],
+            [false],
+            ['foo'],
+        ];
+    }
 
-        self::assertEquals('foo', $return);
+    /**
+     * @dataProvider dataToBeReturnedByTransactional
+     */
+    public function testTransactionalAcceptsReturn($value)
+    {
+        self::assertSame(
+            $value,
+            $this->_em->transactional(function ($em) use ($value) {
+                return $value;
+            })
+        );
     }
 
     public function testTransactionalAcceptsVariousCallables()
     {
         self::assertSame('callback', $this->_em->transactional([$this, 'transactionalCallback']));
-    }
-
-    public function testTransactionalAcceptsReturnFalse()
-    {
-        $return = $this->_em->transactional(function ($em) {
-            return false;
-        });
-
-        self::assertEquals(false, $return);
     }
 
     public function transactionalCallback($em)
