@@ -233,7 +233,7 @@ use Throwable;
             $this->conn->commit();
 
             return $return ?: true;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->close();
             $this->conn->rollBack();
 
@@ -273,7 +273,7 @@ use Throwable;
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className) : Mapping\ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
@@ -765,8 +765,7 @@ use Throwable;
     public function contains($entity)
     {
         return $this->unitOfWork->isScheduledForInsert($entity)
-            || $this->unitOfWork->isInIdentityMap($entity)
-            && ! $this->unitOfWork->isScheduledForDelete($entity);
+            || ($this->unitOfWork->isInIdentityMap($entity) && !$this->unitOfWork->isScheduledForDelete($entity));
     }
 
     /**
