@@ -1018,7 +1018,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postRemove]);
         $hasListeners = $this->evm->hasListeners(Events::postRemove);
 
-        foreach ($this->entityDeletions as $oid => $entity) {
+        foreach ($this->entityDeletions as $oid => &$entity) {
             if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
