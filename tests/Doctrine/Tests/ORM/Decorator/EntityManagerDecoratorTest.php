@@ -52,6 +52,11 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), ['name', new ResultSetMapping()]];
         }
 
+        /** Special case EntityManager::transactional() */
+        if ($method->getName() === 'transactional') {
+            return [$method->getName(), [function () {}]];
+        }
+
         if ($method->getNumberOfRequiredParameters() === 0) {
             return [$method->getName(), []];
         }
@@ -60,7 +65,7 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
         }
 
-        if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
+        if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
             return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
         }
 
