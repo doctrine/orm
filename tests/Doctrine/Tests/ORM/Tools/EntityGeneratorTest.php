@@ -23,7 +23,7 @@ class EntityGeneratorTest extends OrmTestCase
     private $_tmpDir;
     private $_namespace;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->_namespace = uniqid("doctrine_");
         $this->_tmpDir = \sys_get_temp_dir();
@@ -37,7 +37,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
         foreach ($ri AS $file) {
@@ -67,9 +67,6 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'options' => array('default' => 'published')));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
-        $joinColumns = array(
-            array('name' => 'author_id', 'referencedColumnName' => 'id')
-        );
         $metadata->mapManyToMany(array(
             'fieldName' => 'comments',
             'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
@@ -82,6 +79,7 @@ class EntityGeneratorTest extends OrmTestCase
         ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
+
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
@@ -106,6 +104,26 @@ class EntityGeneratorTest extends OrmTestCase
         $name  = $field['fieldName'];
         $type  = $field['dbType'];
         $metadata->mapField(array('fieldName' => $name, 'type' => $type));
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        return $metadata;
+    }
+
+    private function generateLifecycleEntityFixture(array $callbacks)
+    {
+        $metadata = new ClassMetadataInfo($this->_namespace . '\LifecycleEntity');
+        $metadata->namespace = $this->_namespace;
+
+        $metadata->table['name'] = 'lifecycle_entity';
+        $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+
+        foreach ($callbacks as $method => $events) {
+            foreach ($events as $event) {
+                $metadata->addLifecycleCallback($method, $event);
+            }
+        }
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
@@ -278,6 +296,39 @@ class EntityGeneratorTest extends OrmTestCase
         $reflMethod = new \ReflectionMethod($metadata->name, 'setIsbn');
         $reflParameters = $reflMethod->getParameters();
         $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getClass()->name);
+    }
+
+    /**
+     * @param array $callbacks
+     *
+     * @dataProvider lifecycleCallbacksGenerationProvider
+     */
+    public function testLifecycleCallbacksGeneration($callbacks)
+    {
+        $metadata = $this->generateLifecycleEntityFixture($callbacks);
+        $this->loadEntityClass($metadata);
+
+        $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
+
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        foreach ($callbacks as $method => $events) {
+            $events = array_unique($events);
+
+            $this->assertTrue(method_exists($metadata->name, $method), sprintf("%s::%s() missing.", $metadata->name, $method));
+
+            $reflMethod = $reflClass->getMethod($method);
+            $docComment = $reflMethod->getDocComment();
+
+            preg_match_all('#@(.*?)\n#s', $docComment, $annotationMatches);
+            $annotations = array_map('trim', $annotationMatches[0]);
+
+            $this->assertCount(count($events), $annotations);
+
+            foreach ($events as $event) {
+                $this->assertContains(sprintf('@%s', $event), $annotations);
+            }
+        }
     }
 
     public function testEntityUpdatingWorks()
@@ -961,6 +1012,24 @@ class EntityGeneratorTest extends OrmTestCase
         $classNew = file_get_contents($path);
 
         $this->assertSame($classTest,$classNew);
+    }
+
+    public function lifecycleCallbacksGenerationProvider()
+    {
+        return [
+            'with callbacks' => [
+                'callbacks' => [
+                    'updatedAt' => ['PreUpdate'],
+                    'createdAt' => ['PreUpdate', 'PrePersist'],
+                ],
+            ],
+            'with duplicated callbacks' => [
+                'callbacks' => [
+                    'updatedAt' => ['PreUpdate'],
+                    'createdAt' => ['PreUpdate', 'PrePersist', 'PrePersist'],
+                ],
+            ],
+        ];
     }
 
     /**

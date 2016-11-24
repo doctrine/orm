@@ -292,7 +292,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
      */
     protected static $lifecycleCallbackMethodTemplate =
 '/**
- * @<name>
+ * <lifecycleNames>
  */
 public function <methodName>()
 {
@@ -1257,21 +1257,17 @@ public function __construct(<params>)
      */
     protected function generateEntityLifecycleCallbackMethods(ClassMetadataInfo $metadata)
     {
-        if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
-            $methods = array();
+        $methods = $this->getLifecycleCallbackMethods($metadata);
 
-            foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
-                foreach ($callbacks as $callback) {
-                    if ($code = $this->generateLifecycleCallbackMethod($name, $callback, $metadata)) {
-                        $methods[] = $code;
-                    }
-                }
+        $methodsCode = array();
+
+        foreach ($methods as $methodName => $lifecycleNames) {
+            if ($code = $this->generateLifecycleCallbacks($lifecycleNames, $methodName, $metadata)) {
+                $methodsCode[] = $code;
             }
-
-            return implode("\n\n", $methods);
         }
 
-        return "";
+        return implode("\n\n", $methodsCode);
     }
 
     /**
@@ -1401,22 +1397,32 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string            $name
+     * @param string[]          $lifecycleNames
      * @param string            $methodName
      * @param ClassMetadataInfo $metadata
      *
      * @return string
      */
-    protected function generateLifecycleCallbackMethod($name, $methodName, $metadata)
+    protected function generateLifecycleCallbacks($lifecycleNames, $methodName, $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
         }
-        $this->staticReflection[$metadata->name]['methods'][] = $methodName;
+
+        $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
+
+        $lifecycles = implode("\n * ",
+            array_map(
+                function ($name) {
+                    return '@' . $this->annotationsPrefix . ucfirst($name);
+                },
+                $lifecycleNames
+            )
+        );
 
         $replacements = array(
-            '<name>'        => $this->annotationsPrefix . ucfirst($name),
-            '<methodName>'  => $methodName,
+            '<lifecycleNames>' => $lifecycles,
+            '<methodName>'     => $methodName,
         );
 
         $method = str_replace(
@@ -1828,5 +1834,29 @@ public function __construct(<params>)
         }
 
         return implode(',', $optionsStr);
+    }
+
+    /**
+     * Get lifecycle callback methods grouped by method name
+     *
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return array
+     */
+    private function getLifecycleCallbackMethods(ClassMetadataInfo $metadata)
+    {
+        if (!isset($metadata->lifecycleCallbacks)) {
+            return array();
+        }
+
+        $methods = array();
+
+        foreach ($metadata->lifecycleCallbacks as $lifecycleName => $methodNames) {
+            foreach ($methodNames as $methodName) {
+                $methods[$methodName][] = $lifecycleName;
+            }
+        }
+
+        return $methods;
     }
 }
