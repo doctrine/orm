@@ -2203,6 +2203,18 @@ class ClassMetadataInfo implements ClassMetadata
             $overrideMapping['id'] = $mapping['id'];
         }
 
+        if (isset($mapping['originalClass'])) {
+            $overrideMapping['originalClass'] = $mapping['originalClass'];
+        }
+
+        if (isset($mapping['declaredField'])) {
+            $overrideMapping['declaredField'] = $mapping['declaredField'];
+        }
+
+        if (isset($mapping['originalField'])) {
+            $overrideMapping['originalField'] = $mapping['originalField'];
+        }
+
         if ( ! isset($overrideMapping['type'])) {
             $overrideMapping['type'] = $mapping['type'];
         }
@@ -3286,6 +3298,7 @@ class ClassMetadataInfo implements ClassMetadata
             'columnPrefix' => $mapping['columnPrefix'],
             'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
             'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'attributeOverrides' => isset($mapping['attributeOverrides']) ? $mapping['attributeOverrides'] : null,
         );
     }
 

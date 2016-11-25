@@ -406,6 +406,22 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 $metadata->mapManyToMany($mapping);
             } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
+                // Evaluate Embeddable AttributeOverrides annotation
+                if ($attributeOverridesAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\AttributeOverrides')) {
+                    $mapping['attributeOverrides'] = array_reduce($attributeOverridesAnnot->value, function($map, $attributeOverrideAnnot) {
+                        $attributeOverride = ($attributeOverrideAnnot->column)
+                            ? $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column)
+                            : null;
+                        $map[$attributeOverrideAnnot->name] = $attributeOverride;
+                        return $map;
+                    }, []);
+                }
+                // Evaluate Embeddable AttributeOverride annotation
+                else if ($attributeOverrideAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\AttributeOverride')) {
+                    $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
+                    $mapping['attributeOverrides'] = array($attributeOverrideAnnot->name => $attributeOverride);
+                }
+
                 $mapping['class'] = $embeddedAnnot->class;
                 $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
 
