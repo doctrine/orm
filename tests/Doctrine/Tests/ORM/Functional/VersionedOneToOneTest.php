@@ -60,4 +60,35 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
         $this->assertSame($secondRelatedEntity, $secondEntity);
         $this->assertSame($firstEntity->secondEntity, $secondEntity);
     }
+
+    public function testUpdateVersion()
+	{
+		$secondRelatedEntity = new SecondRelatedEntity();
+		$secondRelatedEntity->name = 'Bob';
+
+		$this->_em->persist($secondRelatedEntity);
+		$this->_em->flush();
+
+		$firstRelatedEntity = new FirstRelatedEntity();
+		$firstRelatedEntity->name = 'Fred';
+		$firstRelatedEntity->secondEntity = $secondRelatedEntity;
+
+		$this->_em->persist($firstRelatedEntity);
+		$this->_em->flush();
+
+		$this->assertSame(1, $firstRelatedEntity->version);
+		$this->assertSame(1, $secondRelatedEntity->version);
+		
+		$firstRelatedEntity->name = 'Fred2';
+		$this->_em->flush();
+
+		$firstEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity')
+			->findOneBy(array('name' => 'Fred2'));
+
+		$secondEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity')
+			->findOneBy(array('name' => 'Bob'));
+
+		$this->assertSame(1, $firstEntity->version);
+		$this->assertSame(2, $secondEntity->version);
+	}
 }
