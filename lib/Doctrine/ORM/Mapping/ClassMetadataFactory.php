@@ -187,7 +187,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 if ($embeddableClass['attributeOverrides']) {
                     foreach ($embeddableClass['attributeOverrides'] as $name => $attributeOverride) {
-                        $embeddableMetadata->setAttributeOverride($name, $attributeOverride);
+                        if ($attributeOverride) {
+                            $embeddableMetadata->setAttributeOverride($name, $attributeOverride);
+                        } else {
+                            $embeddableMetadata->removeFieldMapping($name);
+                        }
                     }
                 }
 

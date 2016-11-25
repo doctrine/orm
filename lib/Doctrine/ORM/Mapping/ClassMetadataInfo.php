@@ -2227,13 +2227,32 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
         }
 
-        unset($this->fieldMappings[$fieldName]);
-        unset($this->fieldNames[$mapping['columnName']]);
-        unset($this->columnNames[$mapping['fieldName']]);
-
+        $this->removeFieldMapping($fieldName);
         $this->_validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
+    }
+
+    /**
+     * Remove a mapped field.
+     *
+     * @param string $fieldName
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    public function removeFieldMapping($fieldName)
+    {
+        if ( ! isset($this->fieldMappings[$fieldName])) {
+            throw MappingException::mappingNotFound($this->name, $fieldName);
+        }
+
+        $mapping = $this->fieldMappings[$fieldName];
+
+        unset($this->fieldMappings[$mapping['fieldName']]);
+        unset($this->fieldNames[$mapping['columnName']]);
+        unset($this->columnNames[$mapping['fieldName']]);
     }
 
     /**
