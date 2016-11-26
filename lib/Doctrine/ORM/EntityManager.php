@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -237,7 +236,12 @@ use Doctrine\Common\Util\ClassUtils;
             $this->conn->commit();
 
             return $return ?: true;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            $this->close();
+            $this->conn->rollBack();
+
+            throw $e;
+        } catch (\Exception $e) { // PHP 5
             $this->close();
             $this->conn->rollBack();
 

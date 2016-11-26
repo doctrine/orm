@@ -23,7 +23,6 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
-use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;
 
@@ -399,7 +398,14 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $conn->commit();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            $this->em->close();
+            $conn->rollBack();
+
+            $this->afterTransactionRolledBack();
+
+            throw $e;
+        } catch (\Exception $e) { // PHP 5
             $this->em->close();
             $conn->rollBack();
 

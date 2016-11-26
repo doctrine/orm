@@ -30,11 +30,11 @@ class ToolsException extends ORMException
 {
     /**
      * @param string     $sql
-     * @param \Exception $e
+     * @param \Exception $e   The original exception, or duck-typed Throwable in PHP 7.
      *
      * @return ToolsException
      */
-    public static function schemaToolFailure($sql, \Exception $e)
+    public static function schemaToolFailure($sql, $e)
     {
         return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, "0", $e);
     }
