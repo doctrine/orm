@@ -109,9 +109,9 @@ class PersistentCollectionTest extends OrmTestCase
     }
 
     /**
-     * Test that PersistentCollection::clear() clear elements, and reset keys
+     * @group 6110
      */
-    public function testClear()
+    public function testRemovingElementsAlsoRemovesKeys()
     {
         $this->setUpPersistentCollection();
 
@@ -120,12 +120,27 @@ class PersistentCollectionTest extends OrmTestCase
 
         $this->collection->removeElement('dummy');
         $this->assertEquals([], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testClearWillAlsoClearKeys()
+    {
+        $this->setUpPersistentCollection();
 
         $this->collection->add('dummy');
         $this->collection->clear();
         $this->assertEquals([], array_keys($this->collection->toArray()));
+    }
 
-        // test fix clear doesn't reset collection keys when collection is empty
+    /**
+     * @group 6110
+     */
+    public function testClearWillAlsoResetKeyPositions()
+    {
+        $this->setUpPersistentCollection();
+
         $this->collection->add('dummy');
         $this->collection->removeElement('dummy');
         $this->collection->clear();
