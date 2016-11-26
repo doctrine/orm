@@ -1168,17 +1168,18 @@ public function __construct(<params>)
                 continue;
             }
 
+            $nullableField = $this->getNullableField($fieldMapping);
             if (( ! isset($fieldMapping['id']) ||
                     ! $fieldMapping['id'] ||
                     $metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE
                 ) && (! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)
             ) {
-                if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)) {
                     $methods[] = $code;
                 }
             }
 
-            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)) {
                 $methods[] = $code;
             }
         }
@@ -1205,7 +1206,7 @@ public function __construct(<params>)
                 if ($code = $this->generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], $nullable)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'], $nullable)) {
                     $methods[] = $code;
                 }
             } elseif ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
@@ -1355,7 +1356,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null,  $defaultValue = null)
+    protected function generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null, $defaultValue = null)
     {
         $methodName = $type . Inflector::classify($fieldName);
         $variableName = Inflector::camelize($fieldName);
@@ -1384,11 +1385,11 @@ public function __construct(<params>)
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $variableName . '.',
           '<methodTypeHint>'    => $methodTypeHint,
-          '<variableType>'      => $variableType,
+          '<variableType>'      => $variableType . (null !== $defaultValue ? ('|' . $defaultValue) : ''),
           '<variableName>'      => $variableName,
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-          '<variableDefault>'   => ($defaultValue !== null ) ? (' = '.$defaultValue) : '',
+          '<variableDefault>'   => ($defaultValue !== null ) ? (' = ' . $defaultValue) : '',
           '<entity>'            => $this->getClassName($metadata)
         );
 
@@ -1627,7 +1628,7 @@ public function __construct(<params>)
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']);
+        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']) . ($this->getNullableField($fieldMapping) ? '|' . $this->getNullableField($fieldMapping) : '');
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
@@ -1807,6 +1808,18 @@ public function __construct(<params>)
         }
 
         return static::$generatorStrategyMap[$type];
+    }
+
+    /**
+     * @param array $fieldMapping
+     *
+     * @return string|null
+     */
+    protected function getNullableField(array $fieldMapping)
+    {
+        if (isset($fieldMapping['nullable']) && true === $fieldMapping['nullable']) {
+            return 'null';
+        }
     }
 
     /**
