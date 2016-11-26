@@ -8,6 +8,7 @@ use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -351,7 +352,7 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testClearManagerWithObject()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(ORMException::class);
         $this->expectExceptionMessage('must be a string');
 
         $entity = new Country(456, 'United Kingdom');
