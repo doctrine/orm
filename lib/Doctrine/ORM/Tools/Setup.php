@@ -126,7 +126,7 @@ class Setup
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
-            } elseif (extension_loaded('xcache')) {
+            } elseif (ini_get('xcache.cacher')) {
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
             } elseif (extension_loaded('memcache')) {
                 $memcache = new \Memcache();
