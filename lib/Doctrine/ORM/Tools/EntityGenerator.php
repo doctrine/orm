@@ -1168,7 +1168,8 @@ public function __construct(<params>)
                 continue;
             }
 
-            $nullableField = $this->getNullableField($fieldMapping);
+            $nullableField = $this->nullableFieldExpression($fieldMapping);
+
             if (( ! isset($fieldMapping['id']) ||
                     ! $fieldMapping['id'] ||
                     $metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE
@@ -1629,7 +1630,7 @@ public function __construct(<params>)
         $lines[] = $this->spaces . '/**';
         $lines[] = $this->spaces . ' * @var '
             . $this->getType($fieldMapping['type'])
-            . ($this->getNullableField($fieldMapping) ? '|null' : '');
+            . ($this->nullableFieldExpression($fieldMapping) ? '|null' : '');
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
@@ -1816,11 +1817,13 @@ public function __construct(<params>)
      *
      * @return string|null
      */
-    protected function getNullableField(array $fieldMapping)
+    private function nullableFieldExpression(array $fieldMapping)
     {
         if (isset($fieldMapping['nullable']) && true === $fieldMapping['nullable']) {
             return 'null';
         }
+
+        return null;
     }
 
     /**
