@@ -426,14 +426,14 @@ class SchemaTool
         $options = array();
         $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
-        if ($class->isInheritanceTypeSingleTable() && count($class->parentClasses) > 0) {
+        if ($class->isInheritanceTypeSingleTable() && $class->parentClasses) {
             $options['notnull'] = false;
         }
 
         $options['platformOptions'] = array();
-        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
+        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping['fieldName'];
 
-        if (strtolower($columnType) == 'string' && $options['length'] === null) {
+        if (strtolower($columnType) === 'string' && null === $options['length']) {
             $options['length'] = 255;
         }
 
@@ -470,7 +470,7 @@ class SchemaTool
         if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == array($mapping['fieldName'])) {
             $options['autoincrement'] = true;
         }
-        if ($class->isInheritanceTypeJoined() && $class->name != $class->rootEntityName) {
+        if ($class->isInheritanceTypeJoined() && $class->name !== $class->rootEntityName) {
             $options['autoincrement'] = false;
         }
 

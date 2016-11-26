@@ -720,7 +720,7 @@ class ClassMetadataInfo implements ClassMetadata
             foreach ($this->identifier as $idField) {
                 $value = $this->reflFields[$idField]->getValue($entity);
 
-                if ($value !== null) {
+                if (null !== $value) {
                     $id[$idField] = $value;
                 }
             }
@@ -1085,7 +1085,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function enableAssociationCache($fieldName, array $cache)
     {
-        $this->associationMappings[$fieldName]['cache'] = $this->getAssociationCacheDefaults ($fieldName, $cache);
+        $this->associationMappings[$fieldName]['cache'] = $this->getAssociationCacheDefaults($fieldName, $cache);
     }
 
     /**
@@ -1128,7 +1128,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isChangeTrackingDeferredExplicit()
     {
-        return $this->changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_EXPLICIT;
+        return self::CHANGETRACKING_DEFERRED_EXPLICIT === $this->changeTrackingPolicy;
     }
 
     /**
@@ -1138,7 +1138,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isChangeTrackingDeferredImplicit()
     {
-        return $this->changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_IMPLICIT;
+        return self::CHANGETRACKING_DEFERRED_IMPLICIT === $this->changeTrackingPolicy;
     }
 
     /**
@@ -1148,7 +1148,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isChangeTrackingNotify()
     {
-        return $this->changeTrackingPolicy == self::CHANGETRACKING_NOTIFY;
+        return self::CHANGETRACKING_NOTIFY === $this->changeTrackingPolicy;
     }
 
     /**
@@ -1169,7 +1169,7 @@ class ClassMetadataInfo implements ClassMetadata
             return $fieldName === $this->identifier[0];
         }
 
-        return in_array($fieldName, $this->identifier);
+        return in_array($fieldName, $this->identifier, true);
     }
 
     /**
@@ -1183,11 +1183,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $mapping = $this->getFieldMapping($fieldName);
 
-        if ($mapping !== false) {
-            return isset($mapping['unique']) && $mapping['unique'] == true;
-        }
-
-        return false;
+        return false !== $mapping && isset($mapping['unique']) && $mapping['unique'];
     }
 
     /**
@@ -1201,11 +1197,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $mapping = $this->getFieldMapping($fieldName);
 
-        if ($mapping !== false) {
-            return isset($mapping['nullable']) && $mapping['nullable'] == true;
-        }
-
-        return false;
+        return false !== $mapping && isset($mapping['nullable']) && $mapping['nullable'];
     }
 
     /**
@@ -1391,7 +1383,7 @@ class ClassMetadataInfo implements ClassMetadata
     protected function _validateAndCompleteFieldMapping(array &$mapping)
     {
         // Check mandatory fields
-        if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
+        if ( ! isset($mapping['fieldName']) || !$mapping['fieldName']) {
             throw MappingException::missingFieldName($this->name);
         }
 
@@ -1405,21 +1397,21 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->name);
         }
 
-        if ($mapping['columnName'][0] === '`') {
+        if ('`' === $mapping['columnName'][0]) {
             $mapping['columnName']  = trim($mapping['columnName'], '`');
             $mapping['quoted']      = true;
         }
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
 
-        if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $mapping['columnName'])) {
+        if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping['columnName'])) {
             throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
         }
 
         $this->fieldNames[$mapping['columnName']] = $mapping['fieldName'];
 
         // Complete id mapping
-        if (isset($mapping['id']) && $mapping['id'] === true) {
+        if (isset($mapping['id']) && true === $mapping['id']) {
             if ($this->versionField == $mapping['fieldName']) {
                 throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName']);
             }
@@ -1435,7 +1427,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
-            if (isset($mapping['id']) && $mapping['id'] === true) {
+            if (isset($mapping['id']) && true === $mapping['id']) {
                  throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
             }
 
@@ -1478,13 +1470,13 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
-        if (($mapping['type'] & self::MANY_TO_ONE) > 0 && isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'] == true) {
+        if (($mapping['type'] & self::MANY_TO_ONE) > 0 && isset($mapping['orphanRemoval']) && $mapping['orphanRemoval']) {
             throw MappingException::illegalOrphanRemoval($this->name, $mapping['fieldName']);
         }
 
         // Complete id mapping
-        if (isset($mapping['id']) && $mapping['id'] === true) {
-            if (isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'] == true) {
+        if (isset($mapping['id']) && true === $mapping['id']) {
+            if (isset($mapping['orphanRemoval']) && $mapping['orphanRemoval']) {
                 throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->name, $mapping['fieldName']);
             }
 
@@ -1511,7 +1503,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         // Mandatory attributes for both sides
         // Mandatory: fieldName, targetEntity
-        if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
+        if ( ! isset($mapping['fieldName']) || !$mapping['fieldName']) {
             throw MappingException::missingFieldName($this->name);
         }
 
@@ -1531,7 +1523,7 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['isOwningSide'] = false;
         }
 
-        if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & self::TO_MANY) {
+        if (isset($mapping['id']) && true === $mapping['id'] && $mapping['type'] & self::TO_MANY) {
             throw MappingException::illegalToManyIdentifierAssociation($this->name, $mapping['fieldName']);
         }
 
@@ -3247,7 +3239,7 @@ class ClassMetadataInfo implements ClassMetadata
             return $className;
         }
 
-        if ($className !== null && strpos($className, '\\') === false && strlen($this->namespace) > 0) {
+        if ($className !== null && strpos($className, '\\') === false && $this->namespace) {
             return $this->namespace . '\\' . $className;
         }
 

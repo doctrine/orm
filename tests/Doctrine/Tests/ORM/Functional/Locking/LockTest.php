@@ -126,7 +126,8 @@ class LockTest extends OrmFunctionalTestCase
     public function testLockPessimisticWrite()
     {
         $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
-        if (strlen($writeLockSql) == 0) {
+
+        if (! $writeLockSql) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
         }
 
@@ -157,7 +158,8 @@ class LockTest extends OrmFunctionalTestCase
     public function testLockPessimisticRead()
     {
         $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
-        if (strlen($readLockSql) == 0) {
+
+        if (! $readLockSql) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
         }
 
