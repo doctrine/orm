@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\DBAL\Types;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
@@ -890,7 +891,11 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
 
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                $idValue = array($class->identifier[0] => $idValue);
+                $platform       = $this->em->getConnection()->getDatabasePlatform();
+                $idField        = $class->identifier[0];
+                $idType         = $this->em->getClassMetadata(get_class($entity))->fieldMappings[$idField]['type'];
+                $mappedIdValue  = Types\Type::getType($idType)->convertToPHPValue($idValue, $platform);
+                $idValue        = array($idField => $mappedIdValue);
 
                 $class->setIdentifierValues($entity, $idValue);
             }
@@ -987,6 +992,7 @@ class UnitOfWork implements PropertyChangedListener
         $className  = $class->name;
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
+        $platform   = $this->em->getConnection()->getDatabasePlatform();
 
         foreach ($this->entityInsertions as $oid => $entity) {
 
@@ -1008,16 +1014,18 @@ class UnitOfWork implements PropertyChangedListener
         if ($postInsertIds) {
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $id      = $postInsertId['generatedId'];
-                $entity  = $postInsertId['entity'];
-                $oid     = spl_object_hash($entity);
-                $idField = $class->identifier[0];
+                $id       = $postInsertId['generatedId'];
+                $entity   = $postInsertId['entity'];
+                $oid      = spl_object_hash($entity);
+                $idField  = $class->identifier[0];
+                $idType   = $this->em->getClassMetadata(get_class($entity))->fieldMappings[$idField]['type'];
+                $mappedId = Types\Type::getType($idType)->convertToPHPValue($id, $platform);
 
-                $class->reflFields[$idField]->setValue($entity, $id);
+                $class->reflFields[$idField]->setValue($entity, $mappedId);
 
-                $this->entityIdentifiers[$oid] = array($idField => $id);
+                $this->entityIdentifiers[$oid] = array($idField => $mappedId);
                 $this->entityStates[$oid] = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $id;
+                $this->originalEntityData[$oid][$idField] = $mappedId;
 
                 $this->addToIdentityMap($entity);
             }
