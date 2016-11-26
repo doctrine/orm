@@ -561,7 +561,7 @@ final class Query extends AbstractQuery
      */
     public function contains($dql)
     {
-        return stripos($this->getDQL(), $dql) === false ? false : true;
+        return stripos($this->getDQL(), $dql) !== false;
     }
 
     /**
