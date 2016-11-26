@@ -371,7 +371,7 @@ public function __construct(<params>)
             mkdir($dir, 0775, true);
         }
 
-        $this->isNew = !file_exists($path) || $this->regenerateEntityIfExists;
+        $this->isNew = ! file_exists($path) || $this->regenerateEntityIfExists;
 
         if ( ! $this->isNew) {
             $this->parseTokensInEntityFile(file_get_contents($path));
