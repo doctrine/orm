@@ -1267,13 +1267,11 @@ public function __construct(<params>)
 
         foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
             foreach ($callbacks as $callback) {
-                if ($code = $this->generateLifecycleCallbackMethod($name, $callback, $metadata)) {
-                    $methods[] = $code;
-                }
+                $methods[] = $this->generateLifecycleCallbackMethod($name, $callback, $metadata);
             }
         }
 
-        return implode("\n\n", $methods);
+        return implode("\n\n", array_filter($methods));
     }
 
     /**
