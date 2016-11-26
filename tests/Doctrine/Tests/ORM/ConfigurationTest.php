@@ -136,6 +136,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->addNamedQuery('QueryName', $dql);
         $this->assertSame($dql, $this->configuration->getNamedQuery('QueryName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
+        $this->expectExceptionMessage('a named query');
         $this->configuration->getNamedQuery('NonExistingQuery');
     }
 
@@ -148,7 +149,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertSame($sql, $fetched[0]);
         $this->assertSame($rsm, $fetched[1]);
         $this->expectException(\Doctrine\ORM\ORMException::class);
-        $this->configuration->getNamedQuery('NonExistingQuery');
+        $this->expectExceptionMessage('a named native query');
+        $this->configuration->getNamedNativeQuery('NonExistingQuery');
     }
 
     /**
