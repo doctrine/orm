@@ -1173,10 +1173,9 @@ public function __construct(<params>)
                     ! $fieldMapping['id'] ||
                     $metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE
                 ) && (! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)
+                && $code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)
             ) {
-                if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)) {
-                    $methods[] = $code;
-                }
+                $methods[] = $code;
             }
 
             if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)) {
