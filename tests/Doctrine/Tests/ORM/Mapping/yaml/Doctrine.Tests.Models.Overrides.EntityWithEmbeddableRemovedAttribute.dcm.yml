@@ -1,0 +1,12 @@
+Doctrine\Tests\Models\Overrides\EntityWithEmbeddableRemovedAttribute:
+  type: entity
+  id:
+    id:
+      type: integer
+  embedded:
+    valueObject:
+      class: Doctrine\Tests\Models\ValueObjects\ValueObject
+      columnPrefix: false
+      attributeOverrides:
+        value:
+          column: null

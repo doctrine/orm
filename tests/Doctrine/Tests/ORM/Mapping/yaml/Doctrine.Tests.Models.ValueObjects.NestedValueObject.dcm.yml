@@ -1,0 +1,6 @@
+Doctrine\Tests\Models\ValueObjects\NestedValueObject:
+  type: embeddable
+  embedded:
+    nested:
+      class: Doctrine\Tests\Models\ValueObjects\ValueObject
+      columnPrefix: false

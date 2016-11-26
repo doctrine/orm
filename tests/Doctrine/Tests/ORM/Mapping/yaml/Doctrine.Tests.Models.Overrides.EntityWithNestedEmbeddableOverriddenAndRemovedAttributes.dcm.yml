@@ -1,0 +1,15 @@
+Doctrine\Tests\Models\Overrides\EntityWithNestedEmbeddableOverriddenAndRemovedAttributes:
+  type: entity
+  id:
+    id:
+      type: integer
+  embedded:
+    nestedValueObject:
+      class: Doctrine\Tests\Models\ValueObjects\NestedValueObject
+      columnPrefix: false
+      attributeOverrides:
+        nested.value:
+          column: value_override
+          type: string
+        nested.count:
+          column: null

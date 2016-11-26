@@ -1,0 +1,13 @@
+Doctrine\Tests\Models\Overrides\EntityWithEmbeddableOverriddenAttribute:
+  type: entity
+  id:
+    id:
+      type: integer
+  embedded:
+    valueObject:
+      class: Doctrine\Tests\Models\ValueObjects\ValueObject
+      columnPrefix: false
+      attributeOverrides:
+        value:
+          column: value_override
+          type: string

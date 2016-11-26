@@ -1166,6 +1166,80 @@ class ClassMetadataTest extends OrmTestCase
         $this->assertEquals(array('test' => null, 'test.embeddedProperty' => null), $classMetadata->getReflectionProperties());
     }
 
+    /**
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage No mapping found for field 'foo' on class 'Doctrine\Tests\ORM\Mapping\TestEntity1'.
+     */
+    public function testRemoveFieldMappingInvalidFieldException()
+    {
+        $classMetadata = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $classMetadata->removeFieldMapping('foo');
+    }
+
+    public function testRemoveFieldMapping()
+    {
+        $classMetadata = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $classMetadata->mapEmbedded(array(
+            'fieldName'    => 'test',
+            'class'        => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'columnPrefix' => false,
+        ));
+
+        $field = array(
+            'fieldName' => 'test.embeddedProperty',
+            'type' => 'string',
+            'originalClass' => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'declaredField' => 'test',
+            'originalField' => 'embeddedProperty',
+        );
+        $classMetadata->mapField($field);
+
+        $this->assertArrayHasKey('test.embeddedProperty', $classMetadata->fieldNames);
+        $this->assertArrayHasKey('test.embeddedProperty', $classMetadata->fieldMappings);
+        $this->assertArrayHasKey('test.embeddedProperty', $classMetadata->columnNames);
+
+        $classMetadata->removeFieldMapping('test.embeddedProperty');
+
+        $this->assertArrayNotHasKey('test.embeddedProperty', $classMetadata->fieldNames);
+        $this->assertArrayNotHasKey('test.embeddedProperty', $classMetadata->fieldMappings);
+        $this->assertArrayNotHasKey('test.embeddedProperty', $classMetadata->columnNames);
+    }
+
+    public function testEmbeddableAttributeOverride()
+    {
+        $classMetadata = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $classMetadata->mapEmbedded(array(
+            'fieldName'    => 'test',
+            'class'        => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'columnPrefix' => false,
+        ));
+
+        $field = array(
+            'fieldName' => 'test.embeddedProperty',
+            'type' => 'string',
+            'originalClass' => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'declaredField' => 'test',
+            'originalField' => 'embeddedProperty',
+        );
+        $classMetadata->mapField($field);
+
+        $overridefield = array(
+            'fieldName' => 'test.embeddedProperty',
+            'type' => 'string',
+            'columnName' => 'test.overridden',
+        );
+        $classMetadata->setAttributeOverride('test.embeddedProperty', $overridefield);
+
+        $this->assertEquals($classMetadata->fieldMappings['test.embeddedProperty'], array(
+            'fieldName' => 'test.embeddedProperty',
+            'type' => 'string',
+            'columnName' => 'test.overridden',
+            'originalClass' => 'Doctrine\Tests\ORM\Mapping\TestEntity1',
+            'declaredField' => 'test',
+            'originalField' => 'embeddedProperty',
+        ));
+    }
+
     public function testGetColumnNamesWithGivenFieldNames()
     {
         $metadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
