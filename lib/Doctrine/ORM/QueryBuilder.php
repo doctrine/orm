@@ -1458,7 +1458,7 @@ class QueryBuilder
      */
     public function resetDQLParts($parts = null)
     {
-        if (is_null($parts)) {
+        if (null === $parts) {
             $parts = array_keys($this->_dqlParts);
         }
 

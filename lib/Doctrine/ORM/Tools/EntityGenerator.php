@@ -808,7 +808,7 @@ public function __construct(<params>)
         $inNamespace = false;
         $inClass = false;
 
-        for ($i = 0; $i < count($tokens); $i++) {
+        for ($i = 0, $tokensCount = count($tokens); $i < $tokensCount; $i++) {
             $token = $tokens[$i];
             if (in_array($token[0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT))) {
                 continue;

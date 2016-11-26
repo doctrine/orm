@@ -227,7 +227,7 @@ class DatabaseDriver implements MappingDriver
                     $fkCols = $myFk->getForeignColumns();
                     $cols = $myFk->getColumns();
 
-                    for ($i = 0; $i < count($cols); $i++) {
+                    for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
                         $associationMapping['joinTable']['joinColumns'][] = array(
                             'name' => $cols[$i],
                             'referencedColumnName' => $fkCols[$i],
@@ -237,7 +237,7 @@ class DatabaseDriver implements MappingDriver
                     $fkCols = $otherFk->getForeignColumns();
                     $cols = $otherFk->getColumns();
 
-                    for ($i = 0; $i < count($cols); $i++) {
+                    for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
                         $associationMapping['joinTable']['inverseJoinColumns'][] = array(
                             'name' => $cols[$i],
                             'referencedColumnName' => $fkCols[$i],
@@ -465,7 +465,7 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['id'] = true;
             }
 
-            for ($i = 0; $i < count($fkColumns); $i++) {
+            for ($i = 0, $fkColumnsCount = count($fkColumns); $i < $fkColumnsCount; $i++) {
                 $associationMapping['joinColumns'][] = array(
                     'name'                 => $fkColumns[$i],
                     'referencedColumnName' => $fkForeignColumns[$i],
