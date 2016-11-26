@@ -368,8 +368,8 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertPhpDocReturnType('boolean', new \ReflectionMethod($book, 'removeComment'));
 
         $this->assertPhpDocVarType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionProperty($book, 'author'));
-        $this->assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'getAuthor'));
-        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'setAuthor'));
+        $this->assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'getAuthor'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'setAuthor'));
 
         $expectedClassName = '\\' . $embeddedMetadata->name;
         $this->assertPhpDocVarType($expectedClassName, new \ReflectionProperty($book, 'isbn'));
@@ -1080,17 +1080,25 @@ class
      */
     private function assertPhpDocVarType($type, \ReflectionProperty $property)
     {
-        $this->assertEquals(1, preg_match('/@var\s+([^\s]+)/',$property->getDocComment(), $matches));
+        $docComment = $property->getDocComment();
+        $regex      = '/@var\s+([\S]+)$/m';
+
+        $this->assertRegExp($regex, $docComment);
+        $this->assertEquals(1, preg_match($regex, $docComment, $matches));
         $this->assertEquals($type, $matches[1]);
     }
 
     /**
      * @param string $type
-     * @param \ReflectionProperty $method
+     * @param \ReflectionMethod $method
      */
     private function assertPhpDocReturnType($type, \ReflectionMethod $method)
     {
-        $this->assertEquals(1, preg_match('/@return\s+([^\s]+)/', $method->getDocComment(), $matches));
+        $docComment = $method->getDocComment();
+        $regex      = '/@return\s+([\S]+)(\s+.*)$/m';
+
+        $this->assertRegExp($regex, $docComment);
+        $this->assertEquals(1, preg_match($regex, $docComment, $matches));
         $this->assertEquals($type, $matches[1]);
     }
 
