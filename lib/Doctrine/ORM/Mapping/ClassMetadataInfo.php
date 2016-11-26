@@ -463,7 +463,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
      *
-     * @var array
+     * @var array[]
      */
     public $lifecycleCallbacks = array();
 
