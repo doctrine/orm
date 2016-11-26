@@ -242,7 +242,7 @@ class XmlDriver extends FileDriver
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldMapping) {
-                $mapping = $this->columnToArray($fieldMapping);
+                $mapping = $this->columnToArray((string) $fieldMapping['name'], $fieldMapping);
 
                 if (isset($mapping['version'])) {
                     $metadata->setVersionMapping($mapping);
@@ -268,6 +268,20 @@ class XmlDriver extends FileDriver
                     'class' => (string) $embeddedMapping['class'],
                     'columnPrefix' => $useColumnPrefix ? $columnPrefix : false
                 );
+
+                if (isset($embeddedMapping->{'attribute-overrides'})) {
+                    $attributeOverrides = array();
+                    foreach ($embeddedMapping->{'attribute-overrides'}->{'attribute-override'} as $overrideElement) {
+                        $fieldName = (string) $overrideElement['name'];
+                        $attributeOverrides[$fieldName] = ($field = $overrideElement->field) ? $this->columnToArray($fieldName, $field) : null;
+                    }
+                    $mapping['attributeOverrides'] = $attributeOverrides;
+                } else if (isset($embeddedMapping->{'attribute-override'})) {
+                    $overrideElement = $embeddedMapping->{'attribute-override'};
+                    $fieldName = (string) $overrideElement['name'];
+                    $attributeOverride = ($field = $overrideElement->field) ? $this->columnToArray($fieldName, $field) : null;
+                    $mapping['attributeOverrides'] = array($fieldName => $attributeOverride);
+                }
 
                 $metadata->mapEmbedded($mapping);
             }
@@ -558,7 +572,7 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'attribute-overrides'}->{'attribute-override'} as $overrideElement) {
                 $fieldName = (string) $overrideElement['name'];
                 foreach ($overrideElement->field as $field) {
-                    $mapping = $this->columnToArray($field);
+                    $mapping = $this->columnToArray($fieldName, $field);
                     $mapping['fieldName'] = $fieldName;
                     $metadata->setAttributeOverride($fieldName, $mapping);
                 }
@@ -717,11 +731,9 @@ class XmlDriver extends FileDriver
      *
      * @return array
      */
-    private function columnToArray(SimpleXMLElement $fieldMapping)
+    private function columnToArray($fieldName, SimpleXMLElement $fieldMapping)
     {
-        $mapping = array(
-            'fieldName' => (string) $fieldMapping['name'],
-        );
+        $mapping = array('fieldName' => $fieldName);
 
         if (isset($fieldMapping['type'])) {
             $mapping['type'] = (string) $fieldMapping['type'];
