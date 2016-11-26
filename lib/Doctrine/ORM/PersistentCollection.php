@@ -543,7 +543,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         if ($this->initialized && $this->isEmpty()) {
             $this->collection->clear();
-            
+
             return;
         }
 
