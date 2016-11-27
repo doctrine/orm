@@ -40,7 +40,7 @@ final class ManyToOne implements Annotation
      *
      * @var string
      *
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
+     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY", "USE_PROXY"})
      */
     public $fetch = 'LAZY';
 

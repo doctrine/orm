@@ -718,7 +718,18 @@ class BasicEntityPersister implements EntityPersister
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        $hydrator = $this->em->newHydrator($this->currentPersisterContext->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hydrationMode = $this->currentPersisterContext->selectJoinSql ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT;
+        if (
+            $assoc
+            && ClassMetadata::FETCH_USE_PROXY === $assoc['fetch']
+            && $assoc['isOwningSide']
+            && $this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE
+            && ! $this->currentPersisterContext->selectJoinSql
+        ) {
+            $hydrationMode = Query::HYDRATE_PROXY;
+        }
+
+        $hydrator = $this->em->newHydrator($hydrationMode);
         $entities = $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, $hints);
 
         return $entities ? $entities[0] : null;

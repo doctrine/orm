@@ -806,6 +806,9 @@ use Doctrine\Common\Util\ClassUtils;
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
+            case Query::HYDRATE_PROXY:
+                return new Internal\Hydration\ProxyHydrator($this);
+
             default:
                 if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
                     return new $class($this);
