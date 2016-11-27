@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Mapping\MappingException;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -539,10 +540,22 @@ use Doctrine\Common\Util\ClassUtils;
      * @param string|null $entityName if given, only entities of this type will get detached
      *
      * @return void
+     *
+     * @throws ORMInvalidArgumentException                           if a non-null non-string value is given
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
+     *                                                               found in the mappings
      */
     public function clear($entityName = null)
     {
-        $this->unitOfWork->clear($entityName);
+        if (null !== $entityName && ! is_string($entityName)) {
+            throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        }
+
+        $this->unitOfWork->clear(
+            null === $entityName
+                ? null
+                : $this->metadataFactory->getMetadataFor($entityName)->getName()
+        );
     }
 
     /**
