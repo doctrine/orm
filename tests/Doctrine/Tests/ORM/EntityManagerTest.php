@@ -69,7 +69,7 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
-     * @covers Doctrine\ORM\EntityManager::createNamedNativeQuery
+     * @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery
      */
     public function testCreateNamedNativeQuery()
     {
