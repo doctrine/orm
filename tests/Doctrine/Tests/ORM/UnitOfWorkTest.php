@@ -357,18 +357,12 @@ class UnitOfWorkTest extends OrmTestCase
 
         $entity = new Country(456, 'United Kingdom');
 
-        $this->_unitOfWork->persist($entity);
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-
         $this->_unitOfWork->clear($entity);
     }
 
     public function testClearManagerWithNullValue()
     {
         $entity = new Country(456, 'United Kingdom');
-
-        $this->_unitOfWork->persist($entity);
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $this->_unitOfWork->clear();
 
