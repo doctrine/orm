@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -360,6 +361,16 @@ class UnitOfWorkTest extends OrmTestCase
         $this->expectException(ORMInvalidArgumentException::class);
 
         $this->_unitOfWork->clear($entity);
+    }
+
+    /**
+     * @group 6017
+     */
+    public function testClearManagerWithUnknownEntityName()
+    {
+        $this->expectException(MappingException::class);
+
+        $this->_unitOfWork->clear(uniqid('nonExisting', true));
     }
 
     /**
