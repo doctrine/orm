@@ -2382,12 +2382,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->visitedCollections =
             $this->orphanRemovals = array();
         } else {
-            if (! is_string($entityName)) {
-                throw ORMInvalidArgumentException::invalidEntityName($entityName);
-            }
-
-            $entityName = $this->em->getClassMetadata($entityName)->getName();
-
             $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertionsForEntityName($entityName);
         }
