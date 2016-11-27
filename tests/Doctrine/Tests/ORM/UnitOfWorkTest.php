@@ -350,6 +350,9 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
+    /**
+     * @group 6017
+     */
     public function testClearManagerWithObject()
     {
         $this->expectException(ORMException::class);
@@ -360,6 +363,9 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->clear($entity);
     }
 
+    /**
+     * @group 6017
+     */
     public function testClearManagerWithNullValue()
     {
         $entity = new Country(456, 'United Kingdom');
