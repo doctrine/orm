@@ -18,10 +18,10 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if (DBALTypes\Type::hasType(DDC5684ObjectIdType::NAME)) {
-            DBALTypes\Type::overrideType(DDC5684ObjectIdType::NAME, DDC5684ObjectIdType::CLASSNAME);
+        if (DBALTypes\Type::hasType(DDC5684ObjectIdType::CLASSNAME)) {
+            DBALTypes\Type::overrideType(DDC5684ObjectIdType::CLASSNAME, DDC5684ObjectIdType::CLASSNAME);
         } else {
-            DBALTypes\Type::addType(DDC5684ObjectIdType::NAME, DDC5684ObjectIdType::CLASSNAME);
+            DBALTypes\Type::addType(DDC5684ObjectIdType::CLASSNAME, DDC5684ObjectIdType::CLASSNAME);
         }
 
         $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::CLASSNAME)]);
@@ -60,7 +60,6 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 class DDC5684ObjectIdType extends DBALTypes\IntegerType
 {
-    const NAME      = 'ticket_5684_object_id';
     const CLASSNAME = __CLASS__;
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -75,7 +74,7 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
 
     public function getName()
     {
-        return self::NAME;
+        return self::CLASSNAME;
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)
@@ -111,7 +110,7 @@ class DDC5684Object
 
     /**
      * @Id
-     * @Column(type="ticket_5684_object_id")
+     * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
