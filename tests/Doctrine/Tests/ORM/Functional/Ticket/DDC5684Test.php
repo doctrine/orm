@@ -5,6 +5,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types as DBALTypes;
 
+/**
+ * This test verifies that custom post-insert identifiers respect type conversion semantics.
+ * The generated identifier must be converted via DBAL types before populating the entity
+ * identifier field.
+ *
+ * @group 5935 5684 6020 6152
+ */
 class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
