@@ -300,6 +300,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Issue5989\Issue5989Employee',
             'Doctrine\Tests\Models\Issue5989\Issue5989Manager',
         ),
+        'post_insert_custom_id_object_type' => array(
+            'Doctrine\Tests\Models\PostInsertCustomType\PostInsertCustomTypeUser',
+        ),
     );
 
     /**
@@ -572,6 +575,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM issue5989_persons');
             $conn->executeUpdate('DELETE FROM issue5989_employees');
             $conn->executeUpdate('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->_usedModelSets['post_insert_custom_id_object_type'])) {
+            $conn->executeUpdate('DELETE FROM custom_id_user');
         }
 
         $this->_em->clear();
