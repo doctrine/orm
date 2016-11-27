@@ -352,66 +352,6 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @group 6017
-     */
-    public function testClearManagerWithObject()
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->expectException(ORMInvalidArgumentException::class);
-
-        $this->_unitOfWork->clear($entity);
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithUnknownEntityName()
-    {
-        $this->expectException(MappingException::class);
-
-        $this->_unitOfWork->clear(uniqid('nonExisting', true));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithProxyClassName()
-    {
-        $proxy = $this->_emMock->getReference(Country::class, ['id' => random_int(457, 100000)]);
-
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->_unitOfWork->persist($entity);
-
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity));
-
-        $this->_unitOfWork->clear(get_class($proxy));
-
-        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity));
-        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithNullValue()
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->_unitOfWork->persist($entity);
-
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity));
-
-        $this->_unitOfWork->clear();
-
-        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity));
-        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity));
-    }
-
-    /**
      * Data Provider
      *
      * @return mixed[][]
