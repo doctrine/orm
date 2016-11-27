@@ -2360,13 +2360,11 @@ class UnitOfWork implements PropertyChangedListener
      * @param string|null $entityName if given, only entities of this type will get detached.
      *
      * @return void
+     *
+     * @throws ORMInvalidArgumentException if an invalid entity name is given
      */
     public function clear($entityName = null)
     {
-        if ($entityName !== null && !is_string($entityName)) {
-            throw ORMException::invalidEntityName($entityName);
-        }
-
         if ($entityName === null) {
             $this->identityMap =
             $this->entityIdentifiers =
@@ -2384,6 +2382,10 @@ class UnitOfWork implements PropertyChangedListener
             $this->visitedCollections =
             $this->orphanRemovals = array();
         } else {
+            if (! is_string($entityName)) {
+                throw ORMInvalidArgumentException::invalidEntityName($entityName);
+            }
+
             $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertionsForEntityName($entityName);
         }
