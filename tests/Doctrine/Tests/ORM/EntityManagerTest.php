@@ -250,7 +250,7 @@ class EntityManagerTest extends OrmTestCase
      */
     public function testClearManagerWithProxyClassName()
     {
-        $proxy = $this->_em->getReference(Country::class, ['id' => random_int(457, 100000)]);
+        $proxy = $this->_em->getReference(Country::class, ['id' => rand(457, 100000)]);
 
         $entity = new Country(456, 'United Kingdom');
 
