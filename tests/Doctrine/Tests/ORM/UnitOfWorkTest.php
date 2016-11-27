@@ -355,10 +355,9 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testClearManagerWithObject()
     {
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('must be a string');
-
         $entity = new Country(456, 'United Kingdom');
+
+        $this->expectException(ORMInvalidArgumentException::class);
 
         $this->_unitOfWork->clear($entity);
     }
