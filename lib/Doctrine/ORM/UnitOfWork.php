@@ -2386,6 +2386,8 @@ class UnitOfWork implements PropertyChangedListener
                 throw ORMInvalidArgumentException::invalidEntityName($entityName);
             }
 
+            $entityName = $this->em->getClassMetadata($entityName)->getName();
+
             $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertionsForEntityName($entityName);
         }
