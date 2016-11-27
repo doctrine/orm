@@ -887,14 +887,7 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
 
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                $idField = $class->identifier[0];
-
-                $idValue = [
-                    $idField => $this->em->getConnection()->convertToPHPValue(
-                        $idValue,
-                        $class->getTypeOfField($idField)
-                    )
-                ];
+                $idValue = [$class->getSingleIdentifierFieldName() => $this->convertSingleFieldIdentifierToPHPValue($class, $idValue)];
 
                 $class->setIdentifierValues($entity, $idValue);
             }
@@ -1012,11 +1005,8 @@ class UnitOfWork implements PropertyChangedListener
         if ($postInsertIds) {
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $idField = $class->identifier[0];
-                $idValue = $this->em->getConnection()->convertToPHPValue(
-                    $postInsertId['generatedId'],
-                    $class->getTypeOfField($idField)
-                );
+                $idField = $class->getSingleIdentifierFieldName();
+                $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $postInsertId['generatedId']);
 
                 $entity  = $postInsertId['entity'];
                 $oid     = spl_object_hash($entity);
@@ -3474,5 +3464,21 @@ class UnitOfWork implements PropertyChangedListener
                 unset($this->entityInsertions[$hash]);
             }
         }
+    }
+
+    /**
+     * @param ClassMetadata $class
+     * @param mixed         $identifierValue
+     *
+     * @return mixed the identifier after type conversion
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException if the entity has more than a single identifier
+     */
+    private function convertSingleFieldIdentifierToPHPValue(ClassMetadata $class, $identifierValue)
+    {
+        return $this->em->getConnection()->convertToPHPValue(
+            $identifierValue,
+            $class->getTypeOfField($class->getSingleIdentifierFieldName())
+        );
     }
 }
