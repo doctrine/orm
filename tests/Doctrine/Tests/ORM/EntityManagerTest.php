@@ -3,15 +3,20 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 
 class EntityManagerTest extends OrmTestCase
 {
+    /**
+     * @var EntityManager
+     */
     private $_em;
 
     function setUp()
@@ -69,7 +74,7 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
-     * @covers Doctrine\ORM\EntityManager::createNamedNativeQuery
+     * @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery
      */
     public function testCreateNamedNativeQuery()
     {
@@ -216,5 +221,61 @@ class EntityManagerTest extends OrmTestCase
         $config = new Configuration();
         $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
         EntityManager::create(1, $config);
+    }
+
+    /**
+     * @group 6017
+     */
+    public function testClearManagerWithObject()
+    {
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_em->clear($entity);
+    }
+
+    /**
+     * @group 6017
+     */
+    public function testClearManagerWithUnknownEntityName()
+    {
+        $this->expectException(MappingException::class);
+
+        $this->_em->clear(uniqid('nonExisting', true));
+    }
+
+    /**
+     * @group 6017
+     */
+    public function testClearManagerWithProxyClassName()
+    {
+        $proxy = $this->_em->getReference(Country::class, ['id' => rand(457, 100000)]);
+
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->_em->persist($entity);
+
+        $this->assertTrue($this->_em->contains($entity));
+
+        $this->_em->clear(get_class($proxy));
+
+        $this->assertFalse($this->_em->contains($entity));
+    }
+
+    /**
+     * @group 6017
+     */
+    public function testClearManagerWithNullValue()
+    {
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->_em->persist($entity);
+
+        $this->assertTrue($this->_em->contains($entity));
+
+        $this->_em->clear(null);
+
+        $this->assertFalse($this->_em->contains($entity));
     }
 }

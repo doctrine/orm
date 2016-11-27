@@ -2360,6 +2360,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param string|null $entityName if given, only entities of this type will get detached.
      *
      * @return void
+     *
+     * @throws ORMInvalidArgumentException if an invalid entity name is given
      */
     public function clear($entityName = null)
     {
